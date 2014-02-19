@@ -7,18 +7,31 @@
      <dtml-call expr="REQUEST.set('txa_txt_observacao', '')">
      <dtml-call expr="REQUEST.set('hdn_cod_ordem', cod_ordem)">
      <dtml-call expr="REQUEST.set('hdn_cod_materia', cod_materia)">
+     <dtml-call expr="REQUEST.set('hdn_cod_emenda', '')">
+     <dtml-call expr="REQUEST.set('hdn_cod_subemenda', '')">
+     <dtml-call expr="REQUEST.set('hdn_cod_substitutivo', '')">
      <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(nom_resultado='Despachada')">
        <dtml-call expr="REQUEST.set('lst_tip_resultado', tip_resultado_votacao)">
      </dtml-in>
-
-<dtml-call expr="zsql.votacao_incluir_zsql(num_votos_sim         = txt_votos_sim,
-                                           num_votos_nao         = txt_votos_nao,
-                                           num_abstencao         = txt_votos_abstencao,
-                                           txt_observacao        = txa_txt_observacao,
-                                           cod_ordem             = hdn_cod_ordem,
-                                           cod_materia           = hdn_cod_materia,
-                                           tip_resultado_votacao = lst_tip_resultado
-                                           )">
+     <dtml-in expr="zsql.votacao_expediente_materia_obter_zsql(cod_ordem=cod_ordem,
+                                                               cod_materia=cod_materia)">
+      <dtml-if cod_votacao >
+        <dtml-call expr="REQUEST.set('metodo', zsql.votacao_atualizar_zsql)">
+      <dtml-else>
+        <dtml-call expr="REQUEST.set('metodo', zsql.votacao_incluir_zsql)">
+      </dtml-if>
+     </dtml-in>
+<dtml-call expr="metodo(num_votos_sim  = txt_votos_sim,
+                        num_votos_nao         = txt_votos_nao,
+                        num_abstencao         = txt_votos_abstencao,
+                        txt_observacao        = txa_txt_observacao,
+                        cod_ordem             = hdn_cod_ordem,
+                        cod_materia           = hdn_cod_materia,
+                        cod_emenda            = hdn_cod_emenda,
+                        cod_subemenda         = hdn_cod_subemenda,
+                        cod_substitutivo      = hdn_cod_substitutivo,
+                        tip_resultado_votacao = lst_tip_resultado
+                       )">
   </dtml-if>
   </dtml-in>
 </dtml-in>

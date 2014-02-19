@@ -5,13 +5,31 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=assunto
+##parameters=assunto, tipo, numero, ano
 ##title=
 ##
 
-from Products.AdvancedQuery import Eq, Ge, In
+from Products.AdvancedQuery import And, Or, Eq, Ge, In
 
-query = Eq('PrincipiaSearchSource',assunto) | Eq('ementa', assunto)
+if numero != '':
+  numero = int(numero)
+else:
+  numero = ''
+
+if ano != '':
+  ano = int(ano)
+else:
+  ano = ''
+
+if tipo != '' and numero =='' and ano =='':
+ query = (Eq('tipo_norma', tipo) & ~ Eq('ano_norma', ano) & ~ Eq('num_norma', numero)) & (Eq('ementa', assunto) | Eq('PrincipiaSearchSource', assunto))
+
+if tipo == '' and numero =='' and ano !='':
+ query = Eq('ano_norma', ano) & (Eq('ementa', assunto) | Eq('PrincipiaSearchSource', assunto))
+
+else:
+ query = Eq('ementa', assunto) | Eq('PrincipiaSearchSource', assunto)
+
 results = context.sapl_documentos.norma_juridica.Catalog.evalAdvancedQuery(query,('tipo_norma',('num_norma','desc'),))
 
 return results

@@ -1,6 +1,7 @@
-### Script a ser rodado com "zopectl run" durante o processo de instalacao do OpenLegis.
-### Versao do Sistema: 2.6
-### Versao deste script: 2.1 - OpenLegis - 19/02/2014
+### Script a ser rodado com "zopectl run" durante o processo de instalacao do SAPL.
+### Criado por Ciciliati, em 26/10/2005
+### Versao do SAPL: 2.6
+### Versao deste script: 1.8 - Luciano De Fazio - 17/11/2013
 
 import App.version_txt
 
@@ -24,14 +25,14 @@ while i < len(l_users):
         break
     i=i+1
 if not t_username:
-    print "*** ERRO! Na foi encontrado um usuário administrador do Zope. Contacte a OpenLegis. ***"
+    print "*** ERRO! Na foi encontrado um usuário administrador do Zope.Contacte o Interlegis. ***"
 ######## 1.2 - Registrar esse usuario nesta sessao
 from AccessControl.SecurityManagement import newSecurityManager
 adminuser=app.acl_users.getUser(t_username).__of__(app.acl_users)
 newSecurityManager (None, adminuser)
 
 ### Adicionar o SAPL ###
-app.manage_addProduct['ILSAPL'].manage_addSAPL(id='sapl',title='OpenLegis-Automação do Processo Legislativo', database='MySQL')
+app.manage_addProduct['ILSAPL'].manage_addSAPL(id='sapl',title='SAPL-Sistema de Apoio ao Processo Legislativo', database='MySQL')
   
 ### Criar "sapl_documentos"  
 

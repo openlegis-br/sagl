@@ -60,17 +60,23 @@ for norma in context.zsql.norma_juridica_obter_zsql(tip_norma=REQUEST['lst_tip_n
                                            ano_norma=REQUEST['txt_ano'], des_assunto=REQUEST['txt_assunto'], 
                                            cod_assunto=REQUEST['lst_assunto_norma'], dat_norma=REQUEST['dt_norma'],
                                            dat_norma2=REQUEST['dt_norma2'], dat_publicacao=REQUEST['dt_public'],
+                                           cod_situacao=REQUEST['lst_tip_situacao_norma'],
                                            dat_publicacao2=REQUEST['dt_public2'],rd_ordem=REQUEST['rd_ordenacao']):
 
         dic={}
 
-        dic['titulo']=norma.sgl_tipo_norma+" "+str(norma.num_norma)+" "+str(norma.ano_norma)+" - "+norma.des_tipo_norma
+        dic['titulo']= norma.des_tipo_norma.upper()+" N° "+str(norma.num_norma)+", DE "+str(norma.dat_norma)
         dic['txt_ementa']=norma.txt_ementa 
 
         dic['materia_vinculada']=" "
         if norma.cod_materia!=None:
            for materia_vinculada in context.zsql.materia_obter_zsql(cod_materia=str(norma.cod_materia)):
-               dic['materia_vinculada']=materia_vinculada.sgl_tipo_materia+" "+str(materia_vinculada.num_ident_basica)+"/"+str(materia_vinculada.ano_ident_basica)
+                dic['materia_vinculada']= materia_vinculada.sgl_tipo_materia+" "+str(materia_vinculada.num_ident_basica)+"/"+str(materia_vinculada.ano_ident_basica)
+
+        dic['situacao_norma']=" "
+        if norma.cod_situacao!=None:
+           for situacao_norma in context.zsql.tipo_situacao_norma_obter_zsql(ind_excluido=0, tip_situacao_norma=norma.cod_situacao):
+                dic['situacao_norma']= situacao_norma.des_tipo_situacao
 
         normas.append(dic)
 
@@ -85,6 +91,11 @@ filtro['tipo_norma']=''
 if REQUEST.lst_tip_norma!='':
     for tipo_norma in context.zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0, tip_norma=REQUEST.lst_tip_norma):
         filtro['tipo_norma']= tipo_norma.sgl_tipo_norma + ' - ' + tipo_norma.des_tipo_norma
+
+filtro['situacao_norma']=''
+if REQUEST.lst_tip_situacao_norma!='':
+    for situacao in context.zsql.tipo_situacao_norma_obter_zsql(ind_exluido=0,tip_situacao_norma=REQUEST.lst_tip_situacao_norma):
+        filtro['situacao_norma']=situacao.des_tipo_situacao
 
 sessao=session.id
 caminho = context.pdf_norma_gerar(sessao,imagem,data,normas,cabecalho,rodape,filtro)

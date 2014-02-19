@@ -55,7 +55,7 @@ $(document).ready(function() {
 
  <fieldset>
          <div class="pesq_parlamentar">
-           <a href="parlamentar_pesquisar_form" class="botao-link popup" data-fancybox-type="iframe">Pesquisar em todas as Legislaturas</a>
+           <a href="parlamentar_pesquisar_form" class="botao-link popup" data-fancybox-type="iframe">Pesquisar</a>
          </div>
          <div><label for="lst_num_legislatura">Legislatura:</label>
          <select id="lst_num_legislatura" name="lst_num_legislatura" size="1" onChange="parlamentar_legislatura_listar(document.index_form)">    
@@ -105,12 +105,21 @@ $(document).ready(function() {
 
     <dtml-if primeiro_listado>
       <dtml-call expr="REQUEST.set('primeiro_listado', 0)">          
+     
+     <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=hdn_num_legislatura)">
+        <dtml-if expr="(_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim)">
+           <dtml-call expr="REQUEST.set('legislatura_atual', 1)">
+        </dtml-if>
+     </dtml-in>
 
      <table>
               <tr> 
                 <th class="form-label">Nome Completo</th>
-                <th class="form-label">Partido </th>
-                <th class="form-label">Ativo?</th>
+                <th width="15%" class="form-label">Partido </th>
+                <th width="20%" class="form-label">Natureza do Mandato</th>
+                <dtml-if legislatura_atual>
+                   <th width="15%" class="form-label">Em exercício?</th>
+                </dtml-if>
               </tr>
     </dtml-if primeiro_listado>
     <tr> 
@@ -129,11 +138,44 @@ $(document).ready(function() {
           <td class="texto"><dtml-var sgl_partido null=""></td>
         </dtml-if>
       <td align="center" class="texto">
-        <dtml-if ind_ativo>Sim
-        <dtml-else>Não
-        </dtml-if></td>
+        <dtml-if ind_titular>Titular
+        <dtml-else>Suplente
+        </dtml-if>
+      <dtml-if legislatura_atual>
+      </td>
+      <td align="center" class="texto">
+       <dtml-if expr="ind_titular==0">
+         <dtml-in expr="zsql.mandato_obter_zsql(num_legislatura=hdn_num_legislatura,cod_parlamentar=cod_parlamentar)">
+            <dtml-if expr="((mdat_fim != None) and (_.DateTime() >= mdat_inicio and _.DateTime() <= mdat_fim))">
+              <dtml-call expr="REQUEST.set('em_exercicio', 1)">
+            <dtml-elif expr="((mdat_fim == None) and (_.DateTime() >= mdat_inicio))">
+              <dtml-call expr="REQUEST.set('em_exercicio', 1)">
+            </dtml-if>
+         </dtml-in>
+         <dtml-if expr="_.has_key('em_exercicio') and em_exercicio==1">
+           Sim
+         <dtml-else>
+           Não
+         </dtml-if>
+       <dtml-elif expr="ind_titular==1">
+         <dtml-in expr="zsql.afastamento_obter_zsql(num_legislatura=hdn_num_legislatura,cod_parlamentar=cod_parlamentar)" size="1">
+            <dtml-if expr="((adat_fim != None) and (_.DateTime() >= adat_inicio and _.DateTime() <= adat_fim))">
+              <dtml-call expr="REQUEST.set('em_afastamento', 1)">
+            <dtml-elif expr="((adat_fim == None) and (_.DateTime() >= adat_inicio))">
+              <dtml-call expr="REQUEST.set('em_afastamento', 1)">
+            </dtml-if>
+         <dtml-if expr="_.has_key('cod_afastamento') and _.has_key('em_afastamento') and em_afastamento==1">
+           Não
+         <dtml-else>
+           Sim
+         </dtml-if>
+         <dtml-else>
+           Sim
+         </dtml-in>
+       </dtml-if>
+      </td>
+      </dtml-if>
     </tr>
-
   </dtml-if listar>
 </dtml-in>
 

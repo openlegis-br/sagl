@@ -22,14 +22,38 @@
 <dtml-if step>
  <dtml-call "REQUEST.set('step', _.int(step))">
 <dtml-else>
- <dtml-call "REQUEST.set('step', 8)">
+ <dtml-call "REQUEST.set('step', 12)">
 </dtml-if>
 
 <dtml-call "REQUEST.set('start',(page-1) * step + 1)">
 
-<dtml-call "REQUEST.set(txt_assunto, 'txt_assunto')">
+<dtml-if expr="lst_tip_norma == ''">
+   <dtml-call "REQUEST.set('tipo', '')">
+<dtml-else>
+  <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(tip_norma=lst_tip_norma,ind_excluido=0)">
+   <dtml-call "REQUEST.set('tipo', str(sgl_tipo_norma +' - ' + des_tipo_norma))">
+  </dtml-in>
+</dtml-if>
 
-<dtml-in expr="pysc.norma_texto_buscar_pysc(assunto=txt_assunto)" size="step" start="start" orphan=0>
+<dtml-if expr="txt_numero == ''">
+  <dtml-call "REQUEST.set('txt_numero', '')">
+<dtml-else>
+  <dtml-call "REQUEST.set(txt_numero, 'txt_numero')">
+</dtml-if>
+
+<dtml-if expr="txt_ano == ''">
+  <dtml-call "REQUEST.set('txt_ano', '')">
+<dtml-else>
+  <dtml-call "REQUEST.set(txt_ano, 'txt_ano')">
+</dtml-if>
+
+<dtml-if expr="txt_assunto == ''">
+  <dtml-call "REQUEST.set('txt_assunto', '')">
+<dtml-else>
+  <dtml-call "REQUEST.set(txt_assunto, 'txt_assunto')">
+</dtml-if>
+
+<dtml-in expr="pysc.norma_texto_buscar_pysc(assunto=txt_assunto,tipo=tipo,numero=txt_numero,ano=txt_ano)" size="step" start="start" orphan=0>
  <dtml-if sequence-start>
    <fieldset>
      <legend>Pesquisa Textual</legend>
@@ -52,36 +76,33 @@
         <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
        </dtml-if>
        <dtml-var sgl_tipo_norma> <dtml-var num_norma> <dtml-var ano_norma> - <dtml-var des_tipo_norma upper></a></b><br>
-       <dtml-var txt_ementa missing><br />
-         <b>Situação:</b>
+       <dtml-var txt_ementa missing>
              <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(tip_situacao_norma=cod_situacao)">
+              <dtml-if expr="des_tipo_situacao!=0">
+                   <br /><b>Situação:</b>
                <dtml-var des_tipo_situacao missing null="0" upper>
-             </dtml-in> <br />
+              </dtml-if>
+             </dtml-in>
 
-  <b>Status:</b>
-          <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+     <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+       <dtml-if sequence-start>
+         <br /><b>Relacionamentos:</b><br />
+       </dtml-if>
+            <dtml-if "tip_vinculo=='A'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_altera.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Alterada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-if "tip_vinculo=='A'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_altera.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma alterada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='R'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_integral.gif">&nbsp;<span style="color:#C72100;font-weight:normal;">Revogada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-elif "tip_vinculo=='R'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_integral.gif">&nbsp;<span style="color:#C72100;font-weight:normal;">Norma revogada integralmente pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='P'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Revogada parcialmente pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-elif "tip_vinculo=='P'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma revogada parcialmente pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='T'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_integral.gif">&nbsp;<span style="color:#C72100;font-weight:normal;"><span style="color:#C72100;font-weight:normal;">Revogada por consolidação pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-elif "tip_vinculo=='T'"><span style="color:#C72100;font-weight:normal;">Norma revogada por consolidação.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='C'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_correlata.gif">&nbsp;<span style="color:#62682F;font-weight:normal;">Norma correlata:&nbsp;<a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-elif "tip_vinculo=='C'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_correlata.gif">&nbsp;<span style="color:#62682F;font-weight:normal;">Norma correlata / regulamentadora:&nbsp;<a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='I'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Execução suspensa pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-elif "tip_vinculo=='S'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma ressalvada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='E'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma reeditada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='I'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma reeditada com alteração pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='G'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma regulamentada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='G'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Regulamentada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
             </dtml-if>
-            <dtml-else><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_vigente.gif" alt="Norma Vigente">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma sem alterações posteriores.</span><br />
           </dtml-in>
-
       </dtml-in>
 
     </td>    
@@ -106,14 +127,14 @@
    </dtml-if> 
    <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
     <p class="texto" align="center" ><b>
-    <dtml-var "sapl.pysc.PageListOutput_pysc('norma_juridica_texto_pesquisar_proc', page, step, _['sequence-length'], incluir=incluir, txt_assunto=txt_assunto)">
+    <dtml-var "sapl.pysc.PageListOutput_pysc('norma_juridica_texto_pesquisar_proc', page, step, _['sequence-length'], incluir=incluir, txt_assunto=txt_assunto, lst_tip_norma=lst_tip_norma, txt_numero=txt_numero, txt_ano=txt_ano)">
    </p>
    </dtml-if>
    </dtml-if sequence-end>
 
  <dtml-else>
   <fieldset>
-   <legend>Normas Jurídicas</legend>
+   <legend>Pesquisa Textual</legend>
     <table> 
       <tr>
         <th class="label">Resultado da Pesquisa</th>

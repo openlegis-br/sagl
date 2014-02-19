@@ -64,7 +64,7 @@ for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_docume
                                                     dat_apres2=REQUEST['dt_apres2'], rd_ordem=REQUEST['rd_ordenacao']):
         dic={}
 
-        dic['titulo']=documento.sgl_tipo_documento+" "+str(documento.num_documento)+" "+str(documento.ano_documento)+" - "+documento.des_tipo_documento
+        dic['titulo']=documento.des_tipo_documento.upper()+" N° "+str(documento.num_documento)+"/"+str(documento.ano_documento)
         dic['txt_assunto']=documento.txt_assunto
         dic['txt_interessado']=documento.txt_interessado      
            

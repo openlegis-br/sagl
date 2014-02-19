@@ -22,12 +22,19 @@ data_emissao= DateTime().strftime("%d/%m/%Y")
 rodape= casa 
 rodape['data_emissao']= data_emissao
 
+estados=context.zsql.localidade_obter_zsql(tip_localidade="u")
+for uf in estados:
+ if localidade[0].sgl_uf==uf.sgl_uf:
+  nom_estado=uf.nom_localidade
+  break
 inf_basicas_dic = {}
 inf_basicas_dic['nom_camara']= casa['nom_casa']
+inf_basicas_dic["nom_estado"]="Estado de "+nom_estado
 REQUEST=context.REQUEST
 for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_localidade']):
   rodape['nom_localidade']= "   "+local.nom_localidade
   rodape['sgl_uf']= local.sgl_uf
+
 
 for materia in context.zsql.materia_obter_zsql(cod_materia=REQUEST['cod_materia']):
 #Abaixo é gerado os dados para o bloco Informações Básicas (ln 23)
@@ -37,8 +44,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=REQUEST['cod_materia'
  inf_basicas_dic['publicada']= materia.dat_publicacao
  inf_basicas_dic['objeto']= materia.des_objeto
  inf_basicas_dic['tramitacao']= materia.ind_tramitacao
- inf_basicas_dic['cod_projeto']= materia.sgl_tipo_materia+"   "+ str(materia.num_ident_basica)+" de "+ str(materia.ano_ident_basica)
- inf_basicas_dic['nom_projeto']= materia.des_tipo_materia
+ inf_basicas_dic['cod_projeto']= materia.des_tipo_materia.upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)
  
  for tramitacao in context.zsql.regime_tramitacao_obter_zsql(cod_regime_tramitacao=materia.cod_regime_tramitacao):
 #  """#tratando possíveis erros"""
@@ -102,9 +108,9 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=REQUEST['cod_materia'
  for autoria in context.zsql.autoria_obter_zsql(cod_materia = materia.cod_materia):
   dic_autor = {}
   if autoria.ind_primeiro_autor: 
-   dic_autor['tipo']= "primeiro autor"
+   dic_autor['tipo']= "1° autor"
   else:
-   dic_autor['tipo']= " "
+   dic_autor['tipo']= "co-autor"
   
   for autor in context.zsql.autor_obter_zsql(cod_autor = autoria.cod_autor):
    dic_autor['cargo']= " "
@@ -258,7 +264,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=REQUEST['cod_materia'
   dic_dados['indexacao']= documento.txt_indexacao
   lst_acessorios.append(dic_dados)
 
-caminho=context.pdf_detalhe_materia_gerar(imagem, rodape,inf_basicas_dic,orig_externa_dic,lst_mat_anexadas,lst_autoria,
+caminho=context.pdf_detalhe_materia_gerar(imagem,rodape,inf_basicas_dic,orig_externa_dic,lst_mat_anexadas,lst_autoria,
                                           lst_des_iniciais,dic_tramitacoes,lst_relatorias,lst_numeracoes,
                                           lst_legis_citadas,lst_acessorios,sessao=session.id)
 if caminho=='aviso':

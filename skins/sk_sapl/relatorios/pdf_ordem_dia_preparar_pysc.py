@@ -3,14 +3,16 @@ import os
 request=context.REQUEST
 response=request.RESPONSE
 session= request.SESSION
-if context.REQUEST['data']!='':
-    dat_ordem = context.REQUEST['data']
+if context.REQUEST['cod_sessao_plen']!='':
     cod_sessao_plen = context.REQUEST['cod_sessao_plen']
     splen = [] # lista contendo as sessões plenárias na data indicada
-    pauta = [] # lista contendo a pauta da ordem do dia a ser impressa    
-    data = context.pysc.data_converter_pysc(dat_ordem) # converte data para formato yyyy/mm/dd
+    pauta = [] # lista contendo a pauta da ordem do dia a ser impressa 
+    data = ""
+    for dat_sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
+     data = context.pysc.data_converter_pysc(dat_sessao.dat_inicio_sessao) # converte data para formato yyyy/mm/dd
+     dat_ordem = context.pysc.data_converter_pysc(dat_sessao.dat_inicio_sessao) # converte data para formato yyyy/mm/dd
     # seleciona dados da sessão plenária
-    for sp in context.zsql.sessao_plenaria_obter_zsql(dat_inicio_sessao=data, cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
+    for sp in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
         dicsp = {} # dicionário que armazenará os dados a serem impressos de uma sessão plenária
         ts = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sp.tip_sessao)[0]
         dicsp["sessao"] = str(sp.num_sessao_plen)+"ª SESSÃO "+ts.nom_sessao.upper()+" DA "+str(sp.num_legislatura)+"ª LEGISLATURA"
@@ -85,12 +87,12 @@ if context.REQUEST['data']!='':
         # adiciona o dicionário na pauta
         pauta.append(dic) 
 
-    # obtém o nome do Presidente da Câmara
+    # obtém o nome do Presidente da Câmara titular
     lst_presidente = []
-    for sleg in context.zsql.sessao_legislativa_obter_zsql(num_legislatura=sp.num_legislatura,num_sessao_leg=sp.num_sessao_leg):
-      for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_sessao_leg=sleg.cod_sessao_leg,cod_cargo=1):
+    for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sessao.num_legislatura,data=data):
+      for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
         for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-          lst_presidente = presidencia.nom_completo
+          lst_presidente = presidencia.nom_completo.encode('utf-8')
 
     # obtém as propriedades da casa legislativa para montar o cabeçalho e o rodapé da página
     casa = {} 
@@ -142,7 +144,7 @@ if context.REQUEST['data']!='':
     rodape = [linha1, linha2, dat_emissao]
     
     sessao=session.id
-    caminho = context.pdf_ordem_dia_gerar( sessao, imagem, dat_ordem, splen, pauta, cabecalho, rodape, lst_presidente)
+    caminho = context.pdf_ordem_dia_gerar(sessao, imagem, dat_ordem, cod_sessao_plen, splen, pauta, cabecalho, rodape, lst_presidente)
     if caminho=='aviso':
         return response.redirect('mensagem_emitir_proc')
     else:

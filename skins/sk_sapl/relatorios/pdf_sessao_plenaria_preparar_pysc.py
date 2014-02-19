@@ -260,8 +260,8 @@ if context.REQUEST['data']!='':
 
     # obtém o nome do Presidente da Câmara titular
     lst_presidente = []
-    for sleg in context.zsql.sessao_legislativa_obter_zsql(num_legislatura=sessao.num_legislatura,num_sessao_leg=sessao.num_sessao_leg):
-      for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_sessao_leg=sleg.cod_sessao_leg,cod_cargo=1):
+    for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sessao.num_legislatura,data=data):
+      for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
         for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
           lst_presidente = presidencia.nom_completo.encode('utf-8')
 
