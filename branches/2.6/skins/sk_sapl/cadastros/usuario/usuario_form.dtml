@@ -1,0 +1,146 @@
+﻿<dtml-var standard_html_header>
+<div class="helpsapl"><a id="ajuda" href="&dtml-portal_url;/ajuda/gerenciamento_usuarios">Ajuda</a></div>
+<h1 class="firstHeading"> Usuários </h1>
+<dtml-comment>
+ <dtml-var manage_page_header>
+</dtml-comment>
+
+<script type="text/javascript">
+<!--
+   function campos_criticar() {
+     /*-------------------------------------
+       Função que critica os campos obrigatórios do formulário.
+       Em Sucesso, executa o submit;
+       Em erro, emite alert avisando sobre o erro no campo.
+       Alterado em 06/09, Daniel C. Azevedo
+     -------------------------------------------*/
+
+      var form=document.usuario_form;       
+
+      if (form.txt_nome.value=="") {
+          alert("O nome do usuário deve ser preenchido!");
+          form.txt_nome.focus();
+          return;
+      }
+
+      if (! (form.password.value=="password" && form.confirm.value=="pconfirm"))
+        if ((form.password.value=="") || ((form.password.value=="password") && (form.confirm.value!="password")) || 
+            ((form.password.value!="pconfirm") && (form.confirm.value=="pconfirm")) || (form.password.value!=form.confirm.value)){
+           alert("A senha e confirmação não batem!");
+           form.password.value="";
+           form.confirm.value="";
+           form.password.focus();
+           return;
+        }
+
+      var indice=0;
+
+      for (i=0; i<form.length; i++){
+         if (form.elements[i].name.substring(0,5)=='roles') {
+             indice = i;
+             break;
+         }
+      }
+
+      if (form.elements[indice].selectedIndex < 0){
+        alert("O perfil do usuário deve ser selecionado!");
+        form.elements[indice].focus();
+        return;
+      }
+
+      form.name.value = form.txt_nome.value;        
+      form.submit();      
+   }
+//-->
+</script>
+<table width="95%" align="center" >
+    
+  <tr bgcolor="#ffffff">
+    <td><fieldset><legend>Gerenciamento de Usuários</legend>
+   <form name="usuario_form" action="usuario_salvar_proc" method="post">
+    <dtml-if nome>
+       <input type="hidden" name="atualizar" value="1"/>
+       <dtml-let user="acl_users.getUser(nome)">
+        <dtml-call expr="REQUEST.set('username', user.getUserName())">
+         <dtml-call expr="REQUEST.set('domains', user.getDomains())">
+         <dtml-call expr="REQUEST.set('roles', user.getRoles())">
+       </dtml-let>
+    </dtml-if>
+
+     <table align="center" width="98%">
+       <tr style="height:30">
+         <td valign="middle" width="15%" class="form-element">
+	    Nome
+	 </td>
+	 
+         <td valign="middle" width="85%">
+            <dtml-if username>
+               <dtml-if expr="pysc.browser_verificar_pysc(HTTP_USER_AGENT)">
+                  <input name="txt_nome" type="text" size="12"
+   	       maxlength="12" value="<dtml-var username>"  disabled/>
+               <dtml-else>
+                  <input type="hidden" name="txt_nome" value="<dtml-var
+   	       username>"/>
+                  <dtml-var username>
+               </dtml-if>
+               <dtml-else>
+                  <input name="txt_nome" type="text" size="12"
+   	    maxlength="12" />
+               </dtml-if>
+         </td>
+       </tr>
+       
+       <tr style="height:30">
+         <td valign="middle" width="15%" class="form-element">
+	    Nova Senha
+	 </td>
+	 
+         <td valign="top" width="85%">
+            <input type="PASSWORD" name="password" SIZE="12" maxlength="12" <dtml-if username> value="password" </dtml-if> />
+         </td>
+       </tr>
+       
+       <tr style="height:30">
+         <td valign="middle" width="15%" class="form-element">
+	    Confirmar
+	 </td>
+         <td valign="top" width="85%">
+            <input type="PASSWORD" name="confirm" SIZE="12" maxlength="12" <dtml-if username> value="pconfirm" </dtml-if> />
+         </td>
+       </tr>
+       
+       <tr>
+         <td><input type="hidden" name="domains:tokens"
+                    value="<dtml-if domains><dtml-in expr="domains"> <dtml-var sequence-item html_quote> </dtml-in></dtml-if>" />
+         </td>
+       </tr>
+       
+       <tr>
+         <td valign="top" width="15%" class="form-element">Perfil</TD>
+         <td valign="top" width="85%">
+         <select name="roles:list" SIZE="5" multiple>
+         <dtml-in valid_roles>
+         <dtml-unless expr="_['sequence-item'] in ['Autor', 'Anonymous', 'Manager', 'Owner', 'Authenticated', 'Alterar Senha']">
+         <option value="<dtml-var sequence-item html_quote>" 
+         <dtml-if expr="(_.has_key('roles')) and (not _['sequence-item'] in ['Anonymous', 'Manager', 'Owner', 'Authenticated']) and (_['sequence-item'] != 'Shared') and (_['sequence-item'] in roles)">
+            selected
+         </dtml-if>><dtml-var sequence-item>
+         </dtml-unless>
+         </dtml-in valid_roles>
+         </select>
+
+         <input type="hidden" name="name" value="<dtml-var username html_quote missing>" />
+         <br /><br />
+         <input class="botao" type="button" name="btn_salvar" VALUE="Salvar" onClick="campos_criticar()"/>
+         </td>
+       </tr>
+     </table>
+    </form></fieldset>
+    </td>
+  </tr>
+</table>
+<dtml-comment>
+  <dtml-var manage_page_footer>
+</dtml-comment>
+<dtml-var standard_html_footer>
+

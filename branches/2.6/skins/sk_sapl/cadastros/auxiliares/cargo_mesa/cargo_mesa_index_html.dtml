@@ -1,0 +1,76 @@
+﻿<dtml-var standard_html_header>
+<script type="text/javascript">
+<!--
+    function submeter(cod_cargo, campo , campo1, form) {
+    
+    if (campo.value == "") {
+      alert("O campo não pode ficar vazio!");
+      campo.focus();
+      return;
+    }
+
+    form.hdn_cod_cargo.value = cod_cargo;
+    form.hdn_des_cargo.value = campo.value;
+    form.hdn_ind_unico.value = campo1.checked; 
+
+    form.submit();
+
+  }
+
+  function excluir(cod_cargo) {
+    location.href = "<dtml-var absolute_url>/cargo_mesa_excluir_proc?cod_cargo=" + cod_cargo;
+  }
+
+//-->
+</script>
+<form name="cargo_mesa_form" method="post" action="cargo_mesa_salvar_proc">  
+
+<div class="helpsapl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/cargo_mesa">Ajuda</a> </div>
+<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+
+<input type="hidden" name="hdn_cod_cargo" value=0 />
+<input type="hidden" name="hdn_des_cargo"  />  
+<input type="hidden" name="hdn_ind_unico" />  
+
+<fieldset><legend>Cargos na Mesa</legend>
+   <dtml-in expr="zsql.cargo_mesa_obter_zsql(ind_excluido=0)">
+    <dtml-if sequence-start>
+       <table>
+         <tr> 
+           <th width="10%" class="form-label">Código</th>
+           <th width="55%" class="form-label">Cargo na Mesa</th>
+           <th width="15%" class="form-label">Cargo Único</th>
+           <th width="20%" class="form-label">Ação</th>        
+         </tr>
+       </dtml-if sequence-start>
+         <tr> 
+           <td class="form-text"><dtml-var cod_cargo></td>
+           <td><input type="text" name="txt_des_cargo_<dtml-var cod_cargo>" value="<dtml-var des_cargo missing>" size="40" maxlength="50" /></td>                 
+           <td><input type="checkbox" name="chk_ind_unico_<dtml-var cod_cargo>" 
+                <dtml-if expr="ind_unico==1">checked</dtml-if> /></td>
+           <td class="form-element"><a href="javascript:submeter(<dtml-var cod_cargo>,document.cargo_mesa_form.txt_des_cargo_<dtml-var cod_cargo>,document.cargo_mesa_form.chk_ind_unico_<dtml-var cod_cargo>,document.cargo_mesa_form)">
+            Atualizar</a>/ <a href="javascript:excluir(<dtml-var cod_cargo>)">Excluir</a>
+        </tr>
+    <dtml-if sequence-end>
+      </table>
+    </dtml-if sequence-end>
+   <dtml-else>
+       <table>
+         <tr><td class="form-text">Nenhum cargo cadastrado.</td></tr>
+       </table>
+   </dtml-in>
+<dtml-if chk_ind_unico>
+   <dtml-var chk_ind_unico>
+</dtml-if>
+  <table>
+   <tr>
+    <td align="center" class="form-text">
+<input type="text" name="txt_des_cargo" value="<dtml-var des_cargo missing>" size="40" maxlength="50" />
+<input type="checkbox" name="chk_ind_unico" />&nbsp;Cargo Único
+<br /><input type="button" class="botao" name="btn_cargo_mesa_militar_incluir" value="Incluir Cargo" onClick="submeter(0, document.cargo_mesa_form.txt_des_cargo , document.cargo_mesa_form.chk_ind_unico, document.cargo_mesa_form)" />
+    </td>
+  </tr>
+ </table>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

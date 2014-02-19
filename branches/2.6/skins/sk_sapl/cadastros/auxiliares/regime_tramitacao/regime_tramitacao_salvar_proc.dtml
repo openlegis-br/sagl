@@ -1,0 +1,32 @@
+﻿<dtml-comment> 
+****************************************************************
+*    Função: Salva os dados do partido vindos do formulário,   *
+*         seja uma inclusão/atualização.                       *
+*    Argumentos: cod_nivel_instrucao int - argumento que deter-*
+*         mina se esse método vai ser uma inclusão/atualização.* 
+*                                                              *
+*    Retorno: Mensagem de sucesso ou erro.                     *
+*    21/03/2001                                                *
+****************************************************************
+</dtml-comment>   
+
+<dtml-if expr="_.int(hdn_cod_regime_tramitacao) != 0">
+  <dtml-call expr="REQUEST.set('metodo', zsql.regime_tramitacao_atualizar_zsql)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.regime_tramitacao_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_regime_tramitacao = hdn_cod_regime_tramitacao,
+                          des_regime_tramitacao = hdn_des_regime_tramitacao)">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar os dados do Regime de Tramitação. Tente novamente!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+
+<dtml-else>
+  <dtml-let mensagem="'Regime de Tramitação salvo com sucesso!'" sucesso="1">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>

@@ -1,0 +1,212 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript">
+$(function() {
+	$('#dt_apres').datepick();
+	$('#dt_apres2').datepick();
+        $('#dt_public').datepick();
+        $('#dt_public2').datepick();
+});
+</script>
+
+<script type="text/javascript">
+<!--
+  function tipo_autor_trocar(form) {
+    form.txt_autor.value = "";
+    form.hdn_txt_autor.value = "";
+    form.hdn_cod_autor.value = "";
+    return;
+  }
+//-->
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 500,
+		maxHeight	: 320,
+		fitToView	: false,
+		width		: '70%',
+		height		: '72%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_materia">Ajuda</a>
+
+<h1 class="firstHeading">Matérias Legislativas</h1> 
+
+<dtml-if expr="incluir=='1'">
+    <ul>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/materia/materia_form_resumido">Incluir Matéria</a>
+        </li>
+    </ul>
+</dtml-if>
+
+<form name="pesq_basica_form" action="materia_pesquisar_proc">
+  <fieldset>
+    <legend>Pesquisa Avançada</legend>
+    <input type="hidden" name="incluir" value="<dtml-var incluir>" />
+    <input type="hidden" name="existe_ocorrencia" value="0" />
+ <dtml-if expr="_.has_key('tip_materia_sel')">
+    <input type="hidden" name="lst_tip_materia" value="<dtml-var tip_materia_sel>" />
+ </dtml-if>
+    <table>
+      <tr>
+        <th><label for="lst_tip_materia">Tipo de Matéria</label></th>
+        <td colspan="3">
+          <select id="lst_tip_materia" name="lst_tip_materia"
+           <dtml-if expr="_.has_key('tip_materia_sel')">
+             disabled
+           </dtml-if>>
+            <option value="">Todos</option>
+            <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+              <option 
+               <dtml-if expr="_.has_key('tip_materia_sel') and _.int(tip_materia)==_.int(tip_materia_sel)">
+                selected</dtml-if>
+                 value="<dtml-var tip_materia missing>">
+                <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+              </option>
+            </dtml-in>
+          </select>
+        </td>
+      </tr>
+      <tr> 
+        <th><label for="txt_numero">Número da Matéria</label></th>
+        <td>
+          <input id="txt_numero" type="text" name="txt_numero" null="" missing="" size="6" maxlength="6" />
+        </td>
+        <td>
+          <label for="txt_ano">Ano</label>
+          <input id="txt_ano" type="text" name="txt_ano" null="" size="6" maxlength="4" />
+        </td>
+      </tr>
+       <tr>
+         <th><label for="txt_npc">Nº do Processo</label></th>
+         <td>
+          <input id="txt_npc" type="text" name="txt_npc" null="" missing="" size="6" maxlength="6" />
+        </td>
+         <td>
+          <label for="txt_num_protocolo">Nº de Protocolo</label>
+          <input id="txt_num_protocolo" type="text" name="txt_num_protocolo" null="" missing="" size="6" maxlength="6" />
+        </td>
+      </tr>
+      <tr>
+        <th class="label">Período de Apresentação:</th>
+        <td colspan="2">
+          <label for="dt_apres">Inicial</label>
+          <input type="text" id="dt_apres" name="dt_apres" size="10" maxlength=10 onblur="formata_data(form.dt_apres)" />
+          &nbsp;
+          <label for="dt_apres2">Final</label>
+          <input type="text" id="dt_apres2" name="dt_apres2" size="10" maxlength="10" onblur="formata_data(form.dt_apres2)" />
+        </td>
+      </tr>
+      <tr>
+        <th class="label">Período de Publicação:</th>
+        <td colspan="2">
+          <label for="dt_public">Inicial</label>
+          <input type="text" id="dt_public" name="dt_public" size="10" maxlength="10" onblur="formata_data(form.dt_public)" />
+          &nbsp;
+          <label for="dt_public2">Final</label>
+          <input type="text" id="dt_public2" name="dt_public2" size="10" maxlength="10" onblur="formata_data(form.dt_public2)" />
+        </td>
+      </tr>
+      <tr> 
+        <th><label for="txt_autor">Autor</label></th>
+        <td colspan="2">
+          <input id="txt_autor" type="text" name="txt_autor" null="" size="33" maxlength="50" disabled onFocus="javascript:this.blur()" />
+          <input type="hidden" name="hdn_txt_autor" value="" />
+    <a href="autor_pesquisar_form?hdn_tipo_pesquisa=pesq_basica" class="botao-link popup" data-fancybox-type="iframe">Selecionar</a>
+          <input type="hidden" name="hdn_cod_autor" value="" />
+        </td>
+      </tr>
+      <tr> 
+        <th><label for="lst_tip_autor">Tipo de Autor</label></th>
+        <td colspan="2">
+          <select id="lst_tip_autor" name="lst_tip_autor" onChange="tipo_autor_trocar(document.pesq_basica_form)">
+            <option value="">Todos</option>
+            <dtml-in expr="zsql.tipo_autor_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var des_tipo_autor missing>">
+                <dtml-var des_tipo_autor>
+              </option>
+            </dtml-in>
+          </select>      
+        </td>
+      </tr>
+      <tr> 
+         <th><label for="txt_relator">Relator</label></th>
+         <td colspan="2">
+           <input id="txt_relator" type="text" name="txt_relator" null="" size="45" maxlength="50" />
+         </td>
+      </tr>
+      <tr>
+        <th><label for="txt_assunto">Assunto (Ementa)</label></th>
+        <td colspan="2">
+          <input id="txt_assunto" type="text" name="txt_assunto" null="" size="45" />
+        </td>
+      </tr>
+      <tr>
+        <th class="label">Tramitando</th>
+        <td class="campoRadio" colspan="3">
+          <dtml-in expr="[('Sim', '1'), ('Não', '0'), ('Tanto Faz', '')]">
+            <input type="radio" name="rad_tramitando" value="<dtml-var expr="_['sequence-item']">"
+              id="rad_tramitando<dtml-var expr="_['sequence-item']">"
+              <dtml-if expr="_['sequence-item']==''">checked="1"</dtml-if> />
+             <label for="rad_tramitando<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"></label>
+           </dtml-in>
+        </td>
+      </tr>
+      <tr> 
+        <th><label for="lst_localizacao">Localização Atual</label></th>
+        <td colspan="2">
+          <select id="lst_localizacao" name="lst_localizacao">
+            <option value=""></option>
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
+              <option value="<dtml-var cod_unid_tramitacao missing>">                
+                <dtml-var nom_unidade_join>
+              </option>
+            </dtml-in>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th><label for="lst_status">Situação</label></th>
+        <td colspan="2">
+          <select id="lst_status" name="lst_status">
+            <option value=""></option>
+            <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var cod_status missing>">
+                <dtml-var sgl_status> - <dtml-var des_status>
+              </option>
+            </dtml-in>
+          </select>
+        </td>
+      </tr>
+      <tr>
+       <th class="label">Ordenação do Resultado &nbsp;</th>
+          <td class="campoRadio" colspan="2">
+          <dtml-in expr="[('Descendente', '1'), ('Ascendente', '2')]">     
+           <input type="radio" name="rd_ordenacao" value="<dtml-var expr="_['sequence-item']">"
+                  id="rd_ordenacao<dtml-var expr="_['sequence-item']">"
+                <dtml-if expr="_['sequence-item']=='1'">checked="1"</dtml-if> />
+             <label for="rd_ordenacao_t<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"> &nbsp;</label>
+          </dtml-in>
+      </tr>
+      <tr>
+    </table>
+  </fieldset>
+        <p align="center">
+          <input type="hidden" name="lst_cod_partido" value="" />
+          <input type="hidden" name="chk_coautor" value="" />
+          <input class="botao" type="submit" name="btn_materia_pesquisar" value="Pesquisar" />
+          <input class="botaoExtra" type="reset" name="btn_materia_limpar" value="Limpar" />
+        </p>
+</form>
+<dtml-var standard_html_footer>

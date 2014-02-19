@@ -1,0 +1,103 @@
+<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/relatorios#rel_autor">Ajuda</a>
+
+<h1 class="firstHeading">Matérias por Autor</h1>
+
+<fieldset>
+<form method="post" action="resumoPropositurasAutor_index_html">
+  <dtml-if impressao>
+    <input type="hidden" name="impressao" value="<dtml-var impressao>">
+  </dtml-if>
+  <!--dtml-if expr="not _.has_key('impressao') or (_.has_key('impressao') and not _.has_key('selAno'))"-->
+  <dtml-if expr="not _.has_key('impressao') or (_.has_key('impressao') and not _.has_key('selAno'))">
+<table id="hideprint">
+  <tr>
+   <td colspan="2" align="center"><label>Selecione o Ano: </label>
+      <select name="selAno">
+        <option value="" selected></option>
+<dtml-in listaAnosMaterias>
+        <option value="<dtml-var ano_mat>"><dtml-var ano_mat></option>
+</dtml-in>
+      </select>
+      <input type="submit" class="botao" value="Pesquisar">
+  </dtml-if>
+</form>
+   </td>
+  </tr>
+</table>
+</fieldset>
+ <dtml-if selAno>
+  <h3 align="center"> <dtml-var document_title> Ano de <dtml-var selAno> </h3>
+  <p></p>
+
+<dtml-in "autorMateriaAno(ano=selAno)">
+ <table>
+  <tr>
+   <th colspan="2" class="form-label">
+     <h3 align="center">
+      <dtml-var nom_completo missing null=""> 
+      <dtml-var nom_comissao missing null="">
+      <dtml-var nom_bancada missing null="">
+      <dtml-var nom_autor missing null="">
+     </h3>
+   </th>
+  </tr>
+  <tr>
+   <td colspan="2">
+      <dtml-in "qtdeAutor(autor=cod_autor,ano=selAno)">
+        <span class="texto"><b>Matérias apresentadas:</b> <dtml-var qtde></span>
+      </dtml-in>
+   </td>
+  </tr>
+ <dtml-in "materiaAutorAno(autor=cod_autor,ano=selAno)">
+  <tr>
+   <td class="texto" width="35%">
+     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+     <b><dtml-var des_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a></b></td>
+     <td class="texto" width="65%"><dtml-var txt_ementa>
+   </td>
+  </tr>
+ </dtml-in>
+  <tr>
+ </table>
+ <div class="page-break"></div>
+</dtml-in>
+
+ <table>
+  <tr>
+   <th colspan="2" class="label"><h3 align="center">QUADRO GERAL</h3></th>
+  </tr>
+  <tr>
+   <td width="65%" class="form-label">
+     Tipo Matéria
+   </td>
+   <td class="form-label">
+     Quantidade
+   </td>
+  </tr>
+ <dtml-in "tipoQtdeGeral(ano=selAno)">
+  <tr>
+   <td class="texto">
+     <dtml-var des_tipo_materia>
+   </td>
+   <td class="texto" align="center">
+     <dtml-var qtde>
+   </td>
+  </tr>
+ </dtml-in>
+
+ <dtml-in "qtdeGeral(ano=selAno)">
+  <tr>
+   <td class="texto">
+     <b>TOTAL</b>
+   </td>
+   <td class="texto" align="center">
+     <b><dtml-var qtde></b>
+   </td>
+  </tr>
+ </table>
+</dtml-in>
+</dtml-if>
+
+<dtml-var standard_html_footer>

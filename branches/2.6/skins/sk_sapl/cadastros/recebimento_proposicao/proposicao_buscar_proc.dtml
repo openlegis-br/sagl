@@ -1,0 +1,26 @@
+<dtml-try>
+  <dtml-let cod_seguranca="txtCodDoc.upper()"
+            cod_proposicao="txtCodDoc.split('/')[1]">
+    <dtml-call expr="REQUEST.set('erro',1)">
+    <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao, ind_enviado=1)">
+      <dtml-call expr="REQUEST.set('erro',0)">
+      <dtml-if expr="cod_seguranca != pysc.proposicao_calcular_checksum_pysc(cod_proposicao)">
+        <dtml-let mensagem="'Código do Documento Inválido!'">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+      <dtml-else>
+        <dtml-call expr="REQUEST.set('txtCodDoc',txtCodDoc)">
+        <dtml-var proposicao_receber_form>
+      </dtml-if>
+    </dtml-in>
+    <dtml-if erro>
+      <dtml-let mensagem="'Documento Inexistente!'">
+        <dtml-var mensagem_emitir>
+      </dtml-let>      
+    </dtml-if>
+  </dtml-let>
+<dtml-except>
+  <dtml-let mensagem="'Houve um erro!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>  

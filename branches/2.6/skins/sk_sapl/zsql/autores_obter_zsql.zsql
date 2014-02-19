@@ -1,0 +1,18 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : txt_dat_apresentacao="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT 
+    DISTINCT REPLACE(p.cod_parlamentar, 'L', '') as cod_parlamentar
+FROM 
+    parlamentar p left join mandato m on (p.cod_parlamentar=m.cod_parlamentar) left join legislatura l on (m.num_legislatura=l.num_legislatura)
+WHERE
+    l.dat_inicio is not null and
+    l.dat_fim is not null    and
+    <dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> between l.dat_inicio and l.dat_fim and
+    <dtml-sqlvar ind_excluido type="int"> = p.ind_excluido and
+    <dtml-sqlvar ind_excluido type="int"> = m.ind_excluido and
+    <dtml-sqlvar ind_excluido type="int"> = l.ind_excluido
+ORDER BY 1

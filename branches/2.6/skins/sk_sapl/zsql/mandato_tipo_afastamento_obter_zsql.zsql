@@ -1,0 +1,18 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+max_rows : 1000
+max_cache : 100
+arguments : cod_mandato=0 ind_afastamento=1
+</dtml-comment>
+SELECT DISTINCT(m.cod_mandato) as codm,
+       REPLACE(t.tip_afastamento, 'L', '') as tip_afastamento,
+       t.des_afastamento
+WHERE
+     mandato m LEFT JOIN tipo_afastamento t ON
+     m.tip_afastamento = t.tip_afastamento
+<dtml-sqlgroup where>
+ m.ind_excluido = 0    <dtml-and>
+ t.ind_afastamento = 1 <dtml-and>
+ <dtml-sqltest cod_mandato op="=" column="m.cod_mandato" type="int"> 
+</dtml-sqlgroup>
+

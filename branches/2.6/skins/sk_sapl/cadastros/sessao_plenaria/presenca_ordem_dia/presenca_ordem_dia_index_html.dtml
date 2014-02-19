@@ -1,0 +1,102 @@
+﻿<dtml-var standard_html_header>
+<script type="text/javascript">
+function submeter(endereco){
+
+        var form = document.presenca_ordem_dia_form;
+        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
+        endereco += '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value;
+        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
+        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
+        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
+
+        if (form.hdn_cod_sessao_plen.value!=""){
+            location.href = endereco;
+        }
+        return;
+    }
+
+function checkAll(field)
+{
+for (i = 0; i < field.length; i++)
+        field[i].checked = true ;
+}
+
+function uncheckAll(field)
+{
+for (i = 0; i < field.length; i++)
+        field[i].checked = false ;
+}
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_lista_presenca_ordem_dia">Ajuda</a>
+
+<h1 class="firstHeading">Presença na Ordem do Dia</h1>
+
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+<form name="presenca_ordem_dia_form" method="post" action="presenca_ordem_dia_salvar_proc">
+   <dtml-var sessao_plenaria_menu>
+   <dtml-if cod_sessao_plen>
+    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
+      <input type="hidden" name="dat_inicio_sessao" value="<dtml-var dat_inicio_sessao>" />
+    <dtml-if expr="zsql.ordem_dia_obter_zsql(dat_ordem = pysc.data_converter_pysc(data=dat_inicio_sessao), ind_excluido=0)">
+      <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura = cod_num_legislatura, ind_ativo=1, ind_excluido=0)">
+        <dtml-if sequence-start>
+        <fieldset>
+        <legend>Parlamentares presentes</legend>
+        <table>
+            <tr>
+                <th width="25%" class="form-label">
+               <input type="button" class="botao" name="CheckAll" value="Todos" onClick="checkAll(document.presenca_ordem_dia_form.chk_presen_parlamentar)">
+                <input type="button" class="botaoExtra" name="UnCheckAll" value="Nenhum" onClick="uncheckAll(document.presenca_ordem_dia_form.chk_presen_parlamentar)">
+                </th>
+                <th class="form-label">Parlamentar</th>
+            </tr>
+        </dtml-if sequence-start>
+         <dtml-if sequence-even>
+          <tr>
+         <dtml-else>
+          <tr class="even">
+         </dtml-if>
+            <td>
+                <input type="checkbox" id="chk_presen_parlamentar" name="chk_presen_parlamentar" value="<dtml-var cod_parlamentar>" 
+                    <dtml-if expr="zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen, dat_ordem = pysc.data_converter_pysc(data=dat_inicio_sessao),cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                        checked=1
+                    </dtml-if> />
+            </td>
+            <td>
+                <label for="chk_presen_parlamentar">
+                    <dtml-var nom_completo>/<dtml-var sgl_partido missing null="">
+                </label>
+            </td>
+        </tr>
+    <dtml-if sequence-end>
+    </table>
+        <p align="center">
+                <input class="botao" type="submit" name="button" value="Salvar" />
+        </p>
+    </dtml-if sequence-end>
+  <dtml-else>
+      <fieldset>
+       <legend>Presença na Ordem do Dia</legend>
+        <table>
+            <tr>
+                <td class="form-text">Não há nenhum parlamentar com mandato cadastrado na Legislatura.</td>
+            </tr>
+       </table>
+      </fieldset>
+  </dtml-in>
+<dtml-else>
+      <fieldset>
+       <legend>Presença na Ordem do Dia</legend>
+        <table>
+            <tr>
+                <td class="form-text">Não constam matérias na Ordem do Dia.</td>
+            </tr>
+       </table>
+      </fieldset>
+</dtml-if>
+</dtml-in>
+</dtml-if>
+</form>
+<dtml-var standard_html_footer>

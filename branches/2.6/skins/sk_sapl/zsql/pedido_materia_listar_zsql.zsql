@@ -1,0 +1,48 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_pedido="" cod_autor="" num_pedido="" tip_materia="" dat_pedido="" txt_pedido="" dat_envio="" col_username
+max_rows : 2000
+max_cache : 100
+</dtml-comment>
+
+SELECT
+REPLACE(pedido.cod_pedido, 'L', '') as cod_pedido,
+REPLACE(pedido.cod_autor, 'L', '') as cod_autor,
+autor.cod_parlamentar,
+autor.col_username,
+REPLACE(pedido.num_pedido, 'L', '') as num_pedido,
+REPLACE(pedido.tip_materia, 'L', '') as tip_materia,
+tipo_materia.sgl_tipo_materia,
+tipo_materia.des_tipo_materia,
+DATE_FORMAT(pedido.dat_pedido, '%d/%m/%Y') as dat_pedido,
+DATE_FORMAT(pedido.dat_pedido, '%H:%i:%s') as dat_hor_pedido,
+UPPER(pedido.txt_pedido) as txt_pedido,
+DATE_FORMAT(pedido.dat_envio, '%d/%m/%Y') as dat_envio,
+DATE_FORMAT(pedido.dat_envio, '%H:%i:%s') as dat_hor_envio,
+pedido.cod_materia,
+pedido.txt_observacao
+
+FROM 
+pedido_materia as pedido LEFT JOIN autor ON 
+pedido.cod_autor=autor.cod_autor,
+tipo_materia_legislativa as tipo_materia
+
+<dtml-sqlgroup where>
+<dtml-sqltest cod_pedido   column="pedido.cod_pedido"  op="=" type="int" optional> <dtml-and>
+<dtml-sqltest num_pedido   column="pedido.num_pedido"  op="=" type="int" optional> <dtml-and>
+<dtml-sqltest tip_materia  column="pedido.tip_materia" op="=" type="int" optional> <dtml-and>
+pedido.ind_excluido = 0 and
+pedido.tip_materia = tipo_materia.tip_materia
+<dtml-if col_username>
+and <dtml-sqltest col_username column="autor.col_username" op="=" type="string">
+</dtml-if>
+<dtml-if dat_pedido>
+ and DATE(pedido.dat_pedido) = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_pedido)" type="nb">
+</dtml-if>
+<dtml-if expr="cod_autor != '0'">
+ and <dtml-sqltest cod_autor    column="pedido.cod_autor "  op="=" type="int" optional> 
+</dtml-if>
+ and pedido.dat_envio is not null
+</dtml-sqlgroup>
+
+ORDER BY pedido.dat_pedido DESC

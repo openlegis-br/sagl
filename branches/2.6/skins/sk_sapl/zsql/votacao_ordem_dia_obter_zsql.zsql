@@ -1,0 +1,74 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_ordem="" ind_excluido=0 cod_materia="" num_ordem="" dat_ordem="" cod_sessao_plen=""
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT DISTINCT
+       REPLACE(ordem_dia.cod_ordem,  'L', '') as cod_ordem,
+       REPLACE(ordem_dia.cod_materia,    'L', '') as cod_materia,
+       REPLACE(registro_votacao.cod_votacao,    'L', '') as cod_votacao,
+       DATE_FORMAT(ordem_dia.dat_ordem, '%d/%m/%Y') as dat_ordem,
+       ordem_dia.num_ordem,
+       ordem_dia.tip_votacao,
+       ordem_dia.txt_observacao as ordem_observacao,
+       registro_votacao.tip_resultado_votacao,
+       registro_votacao.txt_observacao as votacao_observacao,
+       registro_votacao.num_votos_nao as num_votos_nao,
+       registro_votacao.num_votos_sim as num_votos_sim,
+       registro_votacao.num_abstencao as num_abstencao
+
+FROM
+   ordem_dia
+
+LEFT JOIN registro_votacao ON
+        registro_votacao.cod_ordem = ordem_dia.cod_ordem and registro_votacao.cod_materia=ordem_dia.cod_materia
+LEFT JOIN materia_legislativa ON
+        ordem_dia.cod_materia=materia_legislativa.cod_materia and materia_legislativa.ind_excluido=0
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_materia column="ordem_dia.cod_materia"   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_ordem    column="ordem_dia.cod_ordem"    op="=" type="int" optional ><dtml-and>
+    <dtml-sqltest cod_votacao column="registro_votacao.cod_votacao"   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ordem_dia.ind_excluido op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_ordem op="=" type="int" optional><dtml-and>
+    <dtml-sqltest dat_ordem op="=" type="nb" optional><dtml-and>
+    <dtml-sqltest cod_sessao_plen column="ordem_dia.cod_sessao_plen"   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ind_excluido column="ordem_dia.ind_excluido" op="=" type="int">
+  </dtml-sqlgroup>
+GROUP BY cod_ordem
+ORDER BY dat_ordem, num_ordem
+
+<dtml-else>
+
+SELECT DISTINCT
+       ordem_dia.cod_ordem as cod_ordem,
+       ordem_dia.cod_materia as cod_materia,
+       registro_votacao.cod_votacao as cod_votacao,
+       TO_CHAR(ordem_dia.dat_ordem, 'DD/MM/YYYY') as dat_ordem,
+       ordem_dia.num_ordem,
+       ordem_dia.tip_votacao,
+       ordem_dia.txt_observacao as ordem_observacao,
+       registro_votacao.tip_resultado_votacao,
+       registro_votacao.txt_observacao as votacao_observacao
+
+FROM
+   ordem_dia
+
+LEFT JOIN registro_votacao ON
+        registro_votacao.cod_ordem = ordem_dia.cod_ordem
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_materia column="ordem_dia.cod_materia"   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_ordem    column="ordem_dia.cod_ordem"    op="=" type="int" optional ><dtml-and>
+    <dtml-sqltest cod_votacao column="registro_votacao.cod_votacao"   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ordem_dia.ind_excluido op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_ordem op="=" type="int" optional><dtml-and>
+    <dtml-sqltest dat_ordem op="=" type="nb" optional><dtml-and>
+    <dtml-sqltest ind_excluido column="ordem_dia.ind_excluido" op="=" type="int">
+  </dtml-sqlgroup>
+GROUP BY cod_ordem
+ORDER BY dat_ordem, num_ordem
+
+</dtml-if>
