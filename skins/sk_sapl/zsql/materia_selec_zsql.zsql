@@ -1,0 +1,27 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : data_inicial="" data_final="" tipo_propositura
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+SELECT
+    mat.cod_materia,
+    tip.sgl_tipo_materia, tip.des_tipo_materia,
+    mat.num_ident_basica, mat.dat_apresentacao,
+    mat.ano_ident_basica
+
+FROM
+    materia_legislativa mat,
+    tipo_materia_legislativa tip
+
+<dtml-sqlgroup where>
+    mat.ind_excluido=0  and
+    mat.tip_id_basica = <dtml-var tipo_propositura>  and 
+    tip.ind_excluido = 0  and
+    mat.tip_id_basica = tip.tip_materia  and
+    mat.dat_apresentacao >= '<dtml-var data_inicial>'  and
+    mat.dat_apresentacao <= '<dtml-var data_final>'
+</dtml-sqlgroup>
+
+ORDER BY mat.num_ident_basica

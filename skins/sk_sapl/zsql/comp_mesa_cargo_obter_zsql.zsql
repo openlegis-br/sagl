@@ -1,0 +1,21 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_cargo="" cod_sessao_leg=""
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT cargo_mesa.* 
+       FROM cargo_mesa
+       LEFT JOIN composicao_mesa
+       ON composicao_mesa.cod_cargo=cargo_mesa.cod_cargo 
+          and composicao_mesa.ind_excluido=0 
+          and cargo_mesa.ind_excluido=0
+	  and cargo_mesa.ind_unico=1
+	   <dtml-if cod_sessao_leg>
+	  and composicao_mesa.cod_sessao_leg=<dtml-var cod_sessao_leg>
+	  </dtml-if>
+<dtml-sqlgroup where>
+composicao_mesa.cod_cargo is null
+and cargo_mesa.ind_excluido=0 <dtml-and> 
+  <dtml-sqltest cod_cargo op="=" type="int" optional>
+</dtml-sqlgroup>

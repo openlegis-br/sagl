@@ -1,0 +1,93 @@
+﻿<dtml-var standard_html_header>
+<script type="text/javascript">
+function submeter(endereco){
+
+        var form = document.presenca_sessao_form;
+        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
+        endereco += '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value;
+        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
+        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
+        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
+
+        if (form.hdn_cod_sessao_plen.value!=""){
+            location.href = endereco;
+        }
+        return;
+    }
+
+function checkAll(field)
+{
+for (i = 0; i < field.length; i++)
+	field[i].checked = true ;
+}
+
+function uncheckAll(field)
+{
+for (i = 0; i < field.length; i++)
+	field[i].checked = false ;
+}
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_lista_presenca_sessao">Ajuda</a>
+
+<h1 class="firstHeading">Presença na Abertura Sessão</h1>
+
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+<form name="presenca_sessao_form" method="post" action="presenca_sessao_salvar_proc">
+    <dtml-var sessao_plenaria_menu>
+    <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura = cod_num_legislatura, ind_ativo=1, ind_excluido=0)">
+        <dtml-if sequence-start>
+        <fieldset>
+        <legend>Parlamentares presentes</legend>
+        <table>
+            <tr>
+                <th width="25%" class="form-label">
+               <input type="button" class="botao" name="CheckAll" value="Todos" onClick="checkAll(document.presenca_sessao_form.chk_presen_parlamentar)">&nbsp;
+                <input type="button" class="botaoExtra" name="UnCheckAll" value="Nenhum" onClick="uncheckAll(document.presenca_sessao_form.chk_presen_parlamentar)">
+                </th>
+                <th class="form-label">Parlamentar</th>
+            </tr>
+
+        </dtml-if sequence-start>
+
+        <tr>
+            <td>
+                <input type="checkbox" id="chk_presen_parlamentar" name="chk_presen_parlamentar" value="<dtml-var cod_parlamentar>" 
+                    <dtml-if expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                        checked=1
+                    </dtml-if> />
+            </td>
+            <td>
+                <label for="chk_presen_parlamentar">
+                    <dtml-var nom_completo>/<dtml-var sgl_partido missing null="">
+                </label>
+            </td>
+        </tr>
+    <dtml-if sequence-end>
+        <dtml-if tip_sessao>
+        <tr>
+            <td class="texto" colspan="2">
+                <dtml-var expr="pysc.quantidade_presentes_sessao_plenaria_pysc(cod_sessao_plen=cod_sessao_plen,tip_sessao=tip_sessao)">
+            </td>
+        </tr>
+        </dtml-if>
+    </table>
+<p align="center">
+   <input class="botao" type="submit" name="button" value="Salvar" />
+</p>
+
+  </dtml-if sequence-end>
+  <dtml-else>
+      <fieldset>
+       <legend>Presença na Sessão Plenária</legend>
+        <table>
+            <tr>
+                <td class="form-text">Não há nenhum parlamentar com mandato cadastrado na Legislatura.</td>
+            </tr>
+       </table>
+      </fieldset>
+</dtml-in>
+</form>
+<dtml-var standard_html_footer>
