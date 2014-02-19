@@ -67,7 +67,7 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=REQUEST['lst_ti
 
         dic={}
 
-        dic['titulo']=materia.sgl_tipo_materia+" "+materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+        dic['titulo']=materia.des_tipo_materia.upper()+" N° "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
         dic['txt_ementa']=materia.txt_ementa 
         dic['nom_autor'] = " " 
         for autoria in context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia, ind_primeiro_autor=1):
@@ -84,8 +84,8 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=REQUEST['lst_ti
                 else:
                     dic['nom_autor']=autor.nom_autor
             
-        des_status = ''
-        txt_tramitacao=''
+        des_status = " "
+        txt_tramitacao= " "
 
         dic['localizacao_atual']=" "
         for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=materia.cod_materia,ind_ult_tramitacao=1):
@@ -103,13 +103,13 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=REQUEST['lst_ti
             des_status=tramitacao.des_status
             txt_tramitacao=tramitacao.txt_tramitacao
 
-        dic['des_situacao']=des_status
-        dic['ultima_acao']=txt_tramitacao
+        dic['des_situacao'] = des_status
+        dic['ultima_acao'] = txt_tramitacao
 
 
-        dic['norma_vinculada']=" "
+        dic['norma_vinculada']= " "
         for norma_vinculada in context.zsql.materia_buscar_norma_juridica_zsql(cod_materia=materia.cod_materia):
-            dic['norma_vinculada']=norma_vinculada.des_norma+" "+str(norma_vinculada.num_norma)+"/"+str(norma_vinculada.ano_norma)
+            dic['norma_vinculada']= norma_vinculada.sgl_norma+" "+str(norma_vinculada.num_norma)+"/"+str(norma_vinculada.ano_norma)
 
         materias.append(dic)
 

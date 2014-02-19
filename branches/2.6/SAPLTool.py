@@ -123,7 +123,9 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 urn += consulta.ano_norma
             else:
                 urn += consulta.num_norma
-                      
+           
+           
+               
             if consulta.dat_vigencia and consulta.dat_publicacao:
                 urn += '@'
                 urn += self.pysc.port_to_iso_pysc(consulta.dat_vigencia)
@@ -132,6 +134,11 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             elif consulta.dat_publicacao:
                 urn += '@'
                 urn += 'inicio.vigencia;publicacao;' + self.pysc.port_to_iso_pysc(consulta.dat_publicacao)
+#            else:
+#                urn += 'inicio.vigencia;publicacao;'
+#               
+#            if consulta.dat_publicacao:
+#                urn += self.pysc.port_to_iso_pysc(consulta.dat_publicacao)
                
             return urn
         else:
@@ -139,6 +146,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
    
     def monta_xml(self,urn,cod_norma):
         #criacao do xml
+        # consultas
         consulta = self.zsql.lexml_normas_juridicas_obter_zsql(cod_norma=cod_norma)
         publicador = self.zsql.lexml_publicador_obter_zsql()
         if consulta and publicador:
@@ -193,10 +201,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            
             documento_individual = E.DocumentoIndividual(urn)
             oai_lexml.append(documento_individual)
-            oai_lexml.append(E.Epigrafe(epigrafe.decode('utf-8')))
-            oai_lexml.append(E.Ementa(ementa.decode('utf-8')))
+            oai_lexml.append(E.Epigrafe(epigrafe.decode('iso-8859-1')))
+            oai_lexml.append(E.Ementa(ementa.decode('iso-8859-1')))
             if indexacao:
-                oai_lexml.append(E.Indexacao(indexacao.decode('utf-8')))
+                oai_lexml.append(E.Indexacao(indexacao.decode('iso-8859-1')))
             return etree.tostring(oai_lexml)
         else:
             return None
@@ -228,13 +236,21 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             xml_lexml = self.monta_xml(urn,cod_norma)
            
             resultado['tx_metadado_xml'] = xml_lexml
+            #resultado['id_registro_item'] = resultado['name']
+            #del resultado['name']
+            #record['sets'] = record['sets'].strip().split(' ')
+            #if resultado['sets'] == [u'']:
+            #    resultado['sets'] = []
             resultado['cd_status'] = 'N'
             resultado['id'] = identificador
             resultado['when_modified'] = norma.timestamp
             resultado['deleted'] = 0
             if norma.ind_excluido == 1:
                 resultado['deleted'] = 1
+#                resultado['cd_status'] = 'D'
             yield {'record': resultado,
+#                   'sets': ['person'],
                    'metadata': resultado['tx_metadado_xml'],
+#                   'assets':{}
                    }
 InitializeClass(SAPLTool)

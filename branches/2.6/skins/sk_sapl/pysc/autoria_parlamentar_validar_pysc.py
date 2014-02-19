@@ -15,10 +15,12 @@
 """  
 codigo = str(cod_parlamentar)
 autores = context.zsql.autores_obter_zsql(txt_dat_apresentacao=txt_dat_apresentacao) or []
+
 for p in autores:
-     s = str(p.cod_parlamentar)
-     if s == codigo:
-        return 1
+  s = str(p.cod_parlamentar)
+  if s == codigo:
+    return 1
+
 return 0
 
 

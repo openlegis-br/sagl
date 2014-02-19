@@ -9,6 +9,10 @@ $(function() {
 });
 </script>
 
+<script type="text/javascript" src="javascript/jtip.js"></script>
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+
 <script type="text/javascript">
 <!--
   function tipo_autor_trocar(form) {
@@ -24,10 +28,10 @@ $(function() {
 $(document).ready(function() {
 	$(".popup").fancybox({
 		maxWidth	: 500,
-		maxHeight	: 320,
+		maxHeight	: 430,
 		fitToView	: false,
-		width		: '70%',
-		height		: '72%',
+		width		: '85%',
+		height		: '80%',
 		autoSize	: false,
 		closeClick	: false,
                 scrolling       : 'auto',
@@ -50,22 +54,20 @@ $(document).ready(function() {
     </ul>
 </dtml-if>
 
-<form name="pesq_basica_form" action="materia_pesquisar_proc">
+<form class="pf-form" id="pesq_basica_form" name="pesq_basica_form" action="materia_pesquisar_proc">
   <fieldset>
-    <legend>Pesquisa Avançada</legend>
+  <div id="inputs">
     <input type="hidden" name="incluir" value="<dtml-var incluir>" />
     <input type="hidden" name="existe_ocorrencia" value="0" />
  <dtml-if expr="_.has_key('tip_materia_sel')">
     <input type="hidden" name="lst_tip_materia" value="<dtml-var tip_materia_sel>" />
  </dtml-if>
-    <table>
-      <tr>
-        <th><label for="lst_tip_materia">Tipo de Matéria</label></th>
-        <td colspan="3">
-          <select id="lst_tip_materia" name="lst_tip_materia"
+     <div class="pf-element pf-full-width">
+        <label for="lst_tip_materia"><span class="pf-label">Tipo de Matéria</span></label>
+          <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia"
            <dtml-if expr="_.has_key('tip_materia_sel')">
              disabled
-           </dtml-if>>
+           </dtml-if> style="max-width: 224px; width: 100%;">
             <option value="">Todos</option>
             <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
               <option 
@@ -76,137 +78,127 @@ $(document).ready(function() {
               </option>
             </dtml-in>
           </select>
-        </td>
-      </tr>
-      <tr> 
-        <th><label for="txt_numero">Número da Matéria</label></th>
-        <td>
-          <input id="txt_numero" type="text" name="txt_numero" null="" missing="" size="6" maxlength="6" />
-        </td>
-        <td>
-          <label for="txt_ano">Ano</label>
-          <input id="txt_ano" type="text" name="txt_ano" null="" size="6" maxlength="4" />
-        </td>
-      </tr>
-       <tr>
-         <th><label for="txt_npc">Nº do Processo</label></th>
-         <td>
-          <input id="txt_npc" type="text" name="txt_npc" null="" missing="" size="6" maxlength="6" />
-        </td>
-         <td>
-          <label for="txt_num_protocolo">Nº de Protocolo</label>
-          <input id="txt_num_protocolo" type="text" name="txt_num_protocolo" null="" missing="" size="6" maxlength="6" />
-        </td>
-      </tr>
-      <tr>
-        <th class="label">Período de Apresentação:</th>
-        <td colspan="2">
-          <label for="dt_apres">Inicial</label>
-          <input type="text" id="dt_apres" name="dt_apres" size="10" maxlength=10 onblur="formata_data(form.dt_apres)" />
-          &nbsp;
-          <label for="dt_apres2">Final</label>
-          <input type="text" id="dt_apres2" name="dt_apres2" size="10" maxlength="10" onblur="formata_data(form.dt_apres2)" />
-        </td>
-      </tr>
-      <tr>
-        <th class="label">Período de Publicação:</th>
-        <td colspan="2">
-          <label for="dt_public">Inicial</label>
-          <input type="text" id="dt_public" name="dt_public" size="10" maxlength="10" onblur="formata_data(form.dt_public)" />
-          &nbsp;
-          <label for="dt_public2">Final</label>
-          <input type="text" id="dt_public2" name="dt_public2" size="10" maxlength="10" onblur="formata_data(form.dt_public2)" />
-        </td>
-      </tr>
-      <tr> 
-        <th><label for="txt_autor">Autor</label></th>
-        <td colspan="2">
-          <input id="txt_autor" type="text" name="txt_autor" null="" size="33" maxlength="50" disabled onFocus="javascript:this.blur()" />
+     </div>
+     <div class="pf-element pf-full-width">
+        <label for="txt_numero"><span class="pf-label">Número</span></label>
+        <div class="pf-group">
+          <input class="pf-field" id="txt_numero" type="text" name="txt_numero" null="" missing="" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="6" />
+          <label for="txt_ano">&nbsp;Ano
+            <input class="pf-field" id="txt_ano" type="text" name="txt_ano" null="" style="min-width: 85px; max-width: 85px; width: 20%;" maxlength="4" />
+          </label>
+        </div>
+     </div>      
+     <div class="pf-element pf-full-width">
+        <label for="txt_npc"><span class="pf-label">Processo</span></label>
+        <div class="pf-group">
+            <input class="pf-field"  id="txt_npc" type="text" name="txt_npc" null="" missing="" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="6" />
+          <label for="txt_num_protocolo">&nbsp;Protocolo
+            <input class="pf-field" id="txt_num_protocolo" type="text" name="txt_num_protocolo" null="" missing="" style="min-width: 53px; max-width: 53px; width: 20%;" maxlength="6" />
+          </label>
+        </div>
+     </div>
+     <div class="pf-element pf-full-width">
+       <label><span class="pf-label">Período de Apresentação:</span></label>
+        <div class="pf-group">
+          <label for="dt_apres">
+            <input class="pf-field" type="text" id="dt_apres" name="dt_apres" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength=10 onblur="formata_data(form.dt_apres)" />
+          </label>
+          <label for="dt_apres2">&nbsp;a&nbsp;
+            <input class="pf-field" type="text" id="dt_apres2" name="dt_apres2" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_apres2)" />
+          </label>
+        </div>
+     </div> 
+     <div class="pf-element pf-full-width">
+       <label><span class="pf-label">Período de Publicação:</span></label>
+        <div class="pf-group">
+          <label for="dt_public">
+            <input class="pf-field" type="text" id="dt_public" name="dt_public" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_public)" />
+          </label>
+          <label for="dt_public2">&nbsp;a&nbsp;
+            <input class="pf-field" type="text" id="dt_public2" name="dt_public2" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_public2)" />
+          </label>
+        </div>
+     </div> 
+     <div class="pf-element pf-full-width">
+       <label for="txt_autor"><span class="pf-label">Autor</span></label>
+       <div class="pf-group">
+         <input class="pf-field" id="txt_autor" type="text" name="txt_autor" null="" placeholder="Todos" style="max-width: 224px; width: 60%;" maxlength="50" disabled onFocus="javascript:this.blur()" />
           <input type="hidden" name="hdn_txt_autor" value="" />
     <a href="autor_pesquisar_form?hdn_tipo_pesquisa=pesq_basica" class="botao-link popup" data-fancybox-type="iframe">Selecionar</a>
           <input type="hidden" name="hdn_cod_autor" value="" />
-        </td>
-      </tr>
-      <tr> 
-        <th><label for="lst_tip_autor">Tipo de Autor</label></th>
-        <td colspan="2">
-          <select id="lst_tip_autor" name="lst_tip_autor" onChange="tipo_autor_trocar(document.pesq_basica_form)">
+        </div>
+          <select class="pf-field" id="lst_tip_autor" name="lst_tip_autor" style="visibility:hidden; max-width: 224px; width: 100%;" onChange="tipo_autor_trocar(document.pesq_basica_form)">
             <option value="">Todos</option>
             <dtml-in expr="zsql.tipo_autor_obter_zsql(ind_excluido=0)">
               <option value="<dtml-var des_tipo_autor missing>">
                 <dtml-var des_tipo_autor>
               </option>
             </dtml-in>
-          </select>      
-        </td>
-      </tr>
-      <tr> 
-         <th><label for="txt_relator">Relator</label></th>
-         <td colspan="2">
-           <input id="txt_relator" type="text" name="txt_relator" null="" size="45" maxlength="50" />
-         </td>
-      </tr>
-      <tr>
-        <th><label for="txt_assunto">Assunto (Ementa)</label></th>
-        <td colspan="2">
-          <input id="txt_assunto" type="text" name="txt_assunto" null="" size="45" />
-        </td>
-      </tr>
-      <tr>
-        <th class="label">Tramitando</th>
-        <td class="campoRadio" colspan="3">
+          </select> 
+     </div>    
+   <dtml-comment>
+     <div class="pf-element pf-full-width">
+        <label for="txt_relator"><span class="pf-label">Relator</span></label>
+           <input class="pf-field" id="txt_relator" type="text" name="txt_relator" null="" style="max-width: 224px; width: 100%;" maxlength="50" />
+     </div>
+   </dtml-comment> 
+     <div class="pf-element pf-full-width">
+        <label for="txt_assunto"><span class="pf-label">Assunto / Ementa</span></label></th>
+          <input class="pf-field" id="txt_assunto" type="text" name="txt_assunto" null="" style="max-width: 224px; width: 85%;" />
+          <span class="formInfo"><a href="&dtml-portal_url;/generico/ajuda_pesquisa_html" class="jTip botao" id="one" name="Operadores booleanos">?</a></span>
+     </div>
+     <div class="pf-element pf-full-width">
+        <label><span class="pf-label">Tramitando?</span></label>
+        <div class="pf-group">
           <dtml-in expr="[('Sim', '1'), ('Não', '0'), ('Tanto Faz', '')]">
             <input type="radio" name="rad_tramitando" value="<dtml-var expr="_['sequence-item']">"
               id="rad_tramitando<dtml-var expr="_['sequence-item']">"
               <dtml-if expr="_['sequence-item']==''">checked="1"</dtml-if> />
-             <label for="rad_tramitando<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"></label>
+             <label style="vertical-align: top;" for="rad_tramitando<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"></label>
            </dtml-in>
-        </td>
-      </tr>
-      <tr> 
-        <th><label for="lst_localizacao">Localização Atual</label></th>
-        <td colspan="2">
-          <select id="lst_localizacao" name="lst_localizacao">
-            <option value=""></option>
+        </div>
+     </div>
+     <div class="pf-element pf-full-width">
+        <label for="lst_localizacao"><span class="pf-label">Localização Atual</span></label>
+          <select class="pf-field" id="lst_localizacao" name="lst_localizacao" style="max-width: 224px; width: 100%;">
+            <option value="">Todas</option>
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
               <option value="<dtml-var cod_unid_tramitacao missing>">                
                 <dtml-var nom_unidade_join>
               </option>
             </dtml-in>
           </select>
-        </td>
-      </tr>
-      <tr>
-        <th><label for="lst_status">Situação</label></th>
-        <td colspan="2">
-          <select id="lst_status" name="lst_status">
-            <option value=""></option>
+     </div>
+     <div class="pf-element pf-full-width">
+        <label for="lst_status"><span class="pf-label">Situação</span></label>
+          <select class="pf-field" id="lst_status" name="lst_status" style="max-width: 224px; width: 100%;">
+            <option value="">Todas</option>
             <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
               <option value="<dtml-var cod_status missing>">
                 <dtml-var sgl_status> - <dtml-var des_status>
               </option>
             </dtml-in>
           </select>
-        </td>
-      </tr>
-      <tr>
-       <th class="label">Ordenação do Resultado &nbsp;</th>
-          <td class="campoRadio" colspan="2">
+     </div>
+     <div class="pf-element pf-full-width">
+        <label><span class="pf-label">Ordenação do Resultado</span></label>
+        <div class="pf-group">
           <dtml-in expr="[('Descendente', '1'), ('Ascendente', '2')]">     
            <input type="radio" name="rd_ordenacao" value="<dtml-var expr="_['sequence-item']">"
                   id="rd_ordenacao<dtml-var expr="_['sequence-item']">"
                 <dtml-if expr="_['sequence-item']=='1'">checked="1"</dtml-if> />
-             <label for="rd_ordenacao_t<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"> &nbsp;</label>
+             <label style="vertical-align: top;" for="rd_ordenacao_t<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"> &nbsp;</label>
           </dtml-in>
-      </tr>
-      <tr>
-    </table>
+        </div>
+     </div>
+     <input type="hidden" name="txt_relator" value="" />
+     <input type="hidden" name="lst_cod_partido" value="" />
+     <input type="hidden" name="chk_coautor" value="" />
+     <div class="pf-element pf-buttons">
+          <input class="pf-button btn botao" type="submit" name="btn_materia_pesquisar" value="Pesquisar" />
+          <input class="pf-button btn botao" type="reset" name="btn_materia_limpar" value="Limpar" />
+     </div>
+   </div>
   </fieldset>
-        <p align="center">
-          <input type="hidden" name="lst_cod_partido" value="" />
-          <input type="hidden" name="chk_coautor" value="" />
-          <input class="botao" type="submit" name="btn_materia_pesquisar" value="Pesquisar" />
-          <input class="botaoExtra" type="reset" name="btn_materia_limpar" value="Limpar" />
-        </p>
 </form>
 <dtml-var standard_html_footer>

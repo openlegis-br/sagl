@@ -1,4 +1,4 @@
-##parameters=sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente
+##parameters=sessao,imagem,dat_ordem,cod_sessao_plen,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente
 
 """Ordem do Dia
 """
@@ -11,9 +11,9 @@ def cabecalho(dic_cabecalho,dat_ordem,imagem):
     """Gera o codigo rml do cabecalho"""
 
     tmp=''
-    tmp+='\t\t\t\t<image x="6.1cm" y="27.1cm" width="56" height="59" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<image x="6.1cm" y="26.9cm" width="74" height="80" file="' + imagem + '"/>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
-    tmp+='\t\t\t\t<drawString x="11cm" y="27.6cm">Estado de ' + str(dic_cabecalho['nom_estado']) + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="10.5cm" y="27.6cm">Estado de ' + str(dic_cabecalho['nom_estado']) + '</drawString>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="14"/>\n'
     tmp+='\t\t\t\t<drawString x="9cm" y="28.1cm">' + str(dic_cabecalho['nom_casa']) + '</drawString>\n'
     return tmp
@@ -44,7 +44,7 @@ def paraStyle():
     tmp+='\t\t<initialize>\n'
     tmp+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp+='\t\t</initialize>\n'
-    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11.0" leading="12" alignment="CENTER"/>\n'
+    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="10.6" leading="12" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="9" alignment="LEFT"/>\n'
     tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="9.0" leading="11" alignment="JUSTIFY"/>\n'
@@ -143,7 +143,8 @@ def principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_roda
         rodapé      => Uma lista contendo informações para o Rodapé do relatório.
     """
 
-    arquivoPdf=str(int(time.time()*100))+".pdf"
+    #arquivoTemporario=str(cod_sessao_plen)+"_pauta_sessao.pdf"
+    arquivoPdf=str(cod_sessao_plen)+"_pauta_sessao.pdf"
 
     tmp=''
     tmp+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
@@ -163,15 +164,14 @@ def principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_roda
     tmp+=pauta(lst_splen, lst_pauta)
     tmp+=presidente(lst_presidente)    
     tmp+='</document>\n'
-    tmp_pdf=parseString(tmp)
-    
+    tmp_pdf=parseString(tmp)   
 
-    if hasattr(context.temp_folder,arquivoPdf):
-        context.temp_folder.manage_delObjects(ids=arquivoPdf)
-    context.temp_folder.manage_addFile(arquivoPdf)
-    arq=context.temp_folder[arquivoPdf]
-    arq.manage_edit(title='Arquivo PDF temporário.',filedata=tmp_pdf,content_type='application/pdf')
-
-    return "/temp_folder/"+arquivoPdf
+    if hasattr(context.sapl_documentos.pauta_sessao,arquivoPdf):
+        context.sapl_documentos.pauta_sessao.manage_delObjects(ids=arquivoPdf)
+    context.sapl_documentos.pauta_sessao.manage_addFile(arquivoPdf)
+    arq=context.sapl_documentos.pauta_sessao[arquivoPdf]
+    arq.manage_edit(title='Ordem do Dia',filedata=tmp_pdf,content_type='application/pdf')
+   
+    return "/sapl/sapl_documentos/pauta_sessao/"+arquivoPdf
 
 return principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente)

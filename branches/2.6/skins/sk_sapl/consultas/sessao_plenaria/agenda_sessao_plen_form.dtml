@@ -168,14 +168,14 @@ $(document).ready(function() {
 
 <dtml-if expr="url_audio or url_video">
 <fieldset>
-   <legend class="heading02"Conteúdo Multimídia [+]</legend>
+   <legend class="heading02">Conteúdo Multimídia [+]</legend>
   <div class="content02">
     <table>
          <tr>
             <td width="50%" class="texto">
               <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_audio.png">
                <dtml-if url_audio>
-                  <a href="#" onClick="javascript:window.open('sessao_plenaria_player_audio?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_audio=<dtml-var url_audio>','PlayerAudio','width=530,height=425,top=200,left=200,scrollbars=no');"/>
+                  <a href="#" onClick="javascript:window.open('sessao_plenaria_player_audio?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_audio=<dtml-var url_audio>','PlayerAudio','width=540,height=435,top=200,left=200,scrollbars=no');"/>
                    <b>Gravação em Áudio</b></a>
                <dtml-else>
                   Áudio não disponível
@@ -184,7 +184,7 @@ $(document).ready(function() {
             <td width="50%"  class="texto">
               <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_video.png">
                <dtml-if url_video>
-                  <a href="#" onClick="javascript:window.open('sessao_plenaria_player_video?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_video=<dtml-var url_video>','PlayerVideo','width=530,height=425,top=200,left=200,scrollbars=no');"/>
+                  <a href="#" onClick="javascript:window.open('sessao_plenaria_player_video?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_video=<dtml-var url_video>','PlayerVideo','width=540,height=435,top=200,left=200,scrollbars=no');"/>
                   <b>Gravação em Vídeo</b></a>
                <dtml-else>
                   Vídeo não disponível
@@ -403,7 +403,7 @@ $(document).ready(function() {
                 <dtml-if tip_resultado_votacao>
                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
                     <dtml-if expr="tip_votacao == 2 ">
-                       <a href="sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&tipo_materia=expediente" class="popup" data-fancybox-type="iframe">
+                       <a href="sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tipo_materia=expediente" class="popup" data-fancybox-type="iframe">
                         <b><dtml-var nom_resultado></a></b><br />
                     <dtml-else>
                         <b><dtml-var nom_resultado></b><br />
@@ -546,9 +546,14 @@ $(document).ready(function() {
     <legend class="heading8">Matérias da Ordem do Dia [+]</legend>
   <div class="content8">
     <table>
-        <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+    <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+      <dtml-if sequence-even>
+         <dtml-call "REQUEST.set ('class', 'odd')">
+      <dtml-else>
+         <dtml-call "REQUEST.set ('class', 'even')">
+      </dtml-if>
      <dtml-if sequence-start>
-        <tr>
+        <tr class="<dtml-var class>">
             <th class="form-label" width="5%" class="form-label">Item</th>
             <th class="form-label" width="30%" class="form-label">Matéria</th>
             <th class="form-label" width="50%" class="form-label">Ementa</th>
@@ -560,7 +565,6 @@ $(document).ready(function() {
          <dtml-else>
           <tr class="even">
          </dtml-if>
-        <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_ordem = cod_ordem, ind_excluido=0)">     
             <td class="texto" valign="top">
               <b><dtml-var num_ordem></b> 
             </td>   
@@ -610,10 +614,11 @@ $(document).ready(function() {
                <dtml-var txt_observacao>
             </td>
             <td class="texto" valign="top">
+             <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_materia=cod_materia, cod_ordem=cod_ordem, ind_excluido=0)">     
                 <dtml-if tip_resultado_votacao>
                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
                     <dtml-if expr="tip_votacao == 2 ">
-                       <a href="sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&tipo_materia=ordemdia" class="popup" data-fancybox-type="iframe">
+                       <a href="sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tipo_materia=ordemdia" class="popup" data-fancybox-type="iframe">
                         <b><dtml-var nom_resultado></a></b><br />
                     <dtml-else>
                         <b><dtml-var nom_resultado></b><br />
@@ -624,9 +629,103 @@ $(document).ready(function() {
                 </dtml-in>
                 <dtml-else><i>Matéria não votada</i>
                 </dtml-if>
+             </dtml-in> 
             </td>
         </tr>
-       </dtml-in> 
+   <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+        <tr class="<dtml-var class>">
+            <td valign="top" style="padding-left: 50px" colspan="2" class="texto">
+                   <b>Substitutivo <dtml-var num_substitutivo></b><br />
+              <b>Autor:</b> 
+              <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+              <dtml-if expr="des_tipo_autor=='Parlamentar'">
+                <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                   <dtml-var nom_completo>
+                </dtml-in>
+              <dtml-elif expr="des_tipo_autor=='Comissao'">
+                <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                   <dtml-var nom_comissao>
+                </dtml-in>
+              <dtml-elif expr="des_tipo_autor=='Bancada'">
+                <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
+                   <dtml-var nom_bancada>
+                </dtml-in>
+              <dtml-else>
+                <dtml-var nom_autor>
+              </dtml-if>
+              </dtml-in>
+            </td>
+            <td valign="top" class="texto">
+              <dtml-var txt_ementa>
+            </td>
+            <td class="texto">
+             <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+                <dtml-if tip_resultado_votacao>
+                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                    <dtml-if expr="tip_votacao == 2 ">
+                       <a href="sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tipo_materia=acessoria" class="popup" data-fancybox-type="iframe">
+                        <b><dtml-var nom_resultado></a></b><br />
+                    <dtml-else>
+                        <b><dtml-var nom_resultado></b><br />
+                    </dtml-if>
+                    <dtml-if votacao_observacao>
+                        <dtml-var votacao_observacao>
+                    </dtml-if>
+                </dtml-in>
+                <dtml-else><i>Matéria não votada</i>
+                </dtml-if>
+                <dtml-else><i>Matéria não votada</i>
+             </dtml-in>
+            </td>
+        </tr>
+   </dtml-in>
+   <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+        <tr class="<dtml-var class>">
+            <td valign="top" style="padding-left: 50px" colspan="2" class="texto">
+                <b>Emenda <dtml-var num_emenda> - <dtml-var tip_emenda></b><br/>
+              <b>Autor:</b> 
+              <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+              <dtml-if expr="des_tipo_autor=='Parlamentar'">
+                <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                   <dtml-var nom_completo>
+                </dtml-in>
+              <dtml-elif expr="des_tipo_autor=='Comissao'">
+                <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                   <dtml-var nom_comissao>
+                </dtml-in>
+              <dtml-elif expr="des_tipo_autor=='Bancada'">
+                <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
+                   <dtml-var nom_bancada>
+                </dtml-in>
+              <dtml-else>
+                <dtml-var nom_autor>
+              </dtml-if>
+              </dtml-in>
+            </td>
+            <td valign="top" class="texto">
+              <dtml-var txt_ementa>
+            </td>
+            <td class="texto">
+             <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, ind_excluido=0)">
+                <dtml-if tip_resultado_votacao>
+                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                    <dtml-if expr="tip_votacao == 2 ">
+                       <a href="sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tipo_materia=acessoria" class="popup" data-fancybox-type="iframe">
+                        <b><dtml-var nom_resultado></a></b><br />
+                    <dtml-else>
+                        <b><dtml-var nom_resultado></b><br />
+                    </dtml-if>
+                    <dtml-if votacao_observacao>
+                        <dtml-var votacao_observacao>
+                    </dtml-if>
+                </dtml-in>
+                <dtml-else><i>Matéria não votada</i>
+                </dtml-if>
+                <dtml-else><i>Matéria não votada</i>
+             </dtml-in>
+            </td>
+        </tr>
+   </dtml-in>
        </dtml-in>
     </table>
 </div>

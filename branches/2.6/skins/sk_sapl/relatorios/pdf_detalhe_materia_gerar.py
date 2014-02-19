@@ -14,21 +14,16 @@ def cabecalho(dic_inf_basicas,imagem):
     """
     Função que gera o código rml do cabeçalho da página
     """
-
     tmp=''
-    tmp+='\t\t\t\t<image x="2.1cm" y="25.7cm" width="59" height="62" file="' + imagem + '"/>\n'
-    tmp+='\t\t\t\t<lines>2cm 24.5cm 19cm 24.5cm</lines>\n'
-    if dic_inf_basicas['nom_camara']!="" and dic_inf_basicas['nom_camara']!=None:
-        tmp+='\t\t\t\t<setFont name="Helvetica" size="16"/>\n'
-        tmp+='\t\t\t\t<drawString x="5cm" y="27.2cm">' + dic_inf_basicas['nom_camara'] + '</drawString>\n'
-    tmp+='\t\t\t\t<setFont name="Helvetica" size="14"/>\n'
-    tmp+='\t\t\t\t<drawString x="5cm" y="26.5cm">Sistema de Apoio ao Processo Legislativo</drawString>\n'
-    if str(dic_inf_basicas['nom_projeto']) != "" and str(dic_inf_basicas['nom_projeto']) != None:
-        tmp+='\t\t\t\t<setFont name="Helvetica" size="15"/>\n'
-        tmp+='\t\t\t\t<drawCentredString x="10.5cm" y="25.2cm">' + str(dic_inf_basicas['nom_projeto']) + '</drawCentredString>\n'
+    tmp+='\t\t\t\t<image x="6.1cm" y="26.9cm" width="74" height="80" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<lines>3.3cm 26.3cm 19.5cm 26.3cm</lines>\n'
+    tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="15"/>\n'
+    tmp+='\t\t\t\t<drawString x="9cm" y="28.1cm">' + dic_inf_basicas['nom_camara'] + '</drawString>\n'
+    tmp+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
+    tmp+='\t\t\t\t<drawString x="10.5cm" y="27.6cm">' + dic_inf_basicas['nom_estado'] + '</drawString>\n'
     if str(dic_inf_basicas['cod_projeto']) != "" and str(dic_inf_basicas['cod_projeto']) != None:
-        tmp+='\t\t\t\t<setFont name="Helvetica" size="15"/>\n'
-        tmp+='\t\t\t\t<drawCentredString x="10.5cm" y="24.7cm">' + str(dic_inf_basicas['cod_projeto']) + '</drawCentredString>\n'
+        tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="12"/>\n'
+        tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="25.2cm">' + str(dic_inf_basicas['cod_projeto']) + '</drawCentredString>\n'
     return tmp
 
 def rodape(dic_rodape):
@@ -55,12 +50,12 @@ def rodape(dic_rodape):
     if dic_rodape['data_emissao']!="" and dic_rodape['data_emissao']!=None:
         data_emissao = dic_rodape['data_emissao']
 
-    tmp+='\t\t\t\t<lines>2cm 3.2cm 19cm 3.2cm</lines>\n'
+    tmp+='\t\t\t\t<lines>3.3cm 2.2cm 19.5cm 2.2cm</lines>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="8"/>\n'
-    tmp+='\t\t\t\t<drawString x="2cm" y="3.3cm">' + data_emissao + '</drawString>\n'
-    tmp+='\t\t\t\t<drawString x="17.9cm" y="3.3cm">Página <pageNumber/></drawString>\n'
-    tmp+='\t\t\t\t<drawCentredString x="10.5cm" y="2.7cm">' + linha1 + '</drawCentredString>\n'
-    tmp+='\t\t\t\t<drawCentredString x="10.5cm" y="2.3cm">' + linha2 + '</drawCentredString>\n'
+    tmp+='\t\t\t\t<drawString x="3.3cm" y="2.4cm">' + data_emissao + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="18.4cm" y="2.4cm">Página <pageNumber/></drawString>\n'
+    tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="1.7cm">' + linha1 + '</drawCentredString>\n'
+    tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="1.3cm">' + linha2 + '</drawCentredString>\n'
 
     return tmp
 
@@ -77,10 +72,10 @@ def paraStyle():
     tmp+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp+='\t\t</initialize>\n'
     #titulo do parágrafo: é por default centralizado
-    tmp+='\t\t<paraStyle name="style.Title" fontName="Helvetica" fontSize="11" leading="13" alignment="RIGHT"/>\n'
-    tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="12.0" textColor="gray" leading="14" spaceBefore="6" alignment="LEFT"/>\n'
-    tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="10.0" leading="10" alignment="LEFT"/>\n'
-    tmp+='\t\t<paraStyle name="texto_projeto" fontName="Helvetica" fontSize="12.0" leading="12" spaceAfter="10" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="style.Title" fontName="Helvetica" fontSize="11" leading="13" spaceAfter="2" alignment="RIGHT"/>\n'
+    tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="12.0" textColor="gray" leading="14" spaceAfter="2" spaceBefore="8" alignment="LEFT"/>\n'
+    tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="10.0" leading="12" spaceAfter="2" alignment="LEFT"/>\n'
+    tmp+='\t\t<paraStyle name="texto_projeto" fontName="Helvetica" fontSize="11.0" leading="14" spaceAfter="5" alignment="JUSTIFY"/>\n'
     tmp+='\t</stylesheet>\n'
 
     return tmp
@@ -96,45 +91,39 @@ def inf_basicas(dic_inf_basicas):
     if texto_projeto != "" and texto_projeto != None :
         tmp+='\t\t<para style="texto_projeto">' + texto_projeto.replace('&','&amp;') + '</para>\n'
 
-    #inÃ­cio das informações básicas
+    #iní­cio das informações básicas
     tmp+='\t\t<para style="P1">Informações Básicas</para>\n'
     if str(dic_inf_basicas['apresentada']) != "" and str(dic_inf_basicas['apresentada']) != None:
-        tmp+='\t\t<para style="P2"><b>Apresentada em: </b> ' + str(dic_inf_basicas['apresentada']) + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Apresentação: </b> ' + str(dic_inf_basicas['apresentada']) + '</para>\n'
 
-    if str(dic_inf_basicas['formato']) != "" and str(dic_inf_basicas['formato']) != None:
-        tmp+='\t\t<para style="P2"><b>Formato: </b> ' + str(dic_inf_basicas['formato']) + '</para>\n'
+    if str(dic_inf_basicas['formato']) == 'E':
+        tmp+='\t\t<para style="P2"><b>Formato: </b> Escrito</para>\n'
+    else:
+        tmp+='\t\t<para style="P2"><b>Formato: </b> Oral</para>\n'
 
     if dic_inf_basicas['publicada']==0:
-        tmp+='\t\t<para style="P2"><b>Publicada:</b> Não</para>\n'
+        tmp+='\t\t<para style="P2"><b>Publicado:</b> Não</para>\n'
     else: 
-        tmp+='\t\t<para style="P2"><b>Publicada:</b> Sim</para>\n'
+        tmp+='\t\t<para style="P2"><b>Publicado:</b> Sim</para>\n'
 
     if str(dic_inf_basicas['objeto']) != "" and str(dic_inf_basicas['objeto']) != None:
         tmp+='\t\t<para style="P2"><b>Objeto: </b> ' + str(dic_inf_basicas['objeto']) + '</para>\n'
 
     if dic_inf_basicas['tramitacao']==0:
-        tmp+='\t\t<para style="P2"><b>Tramitação:</b> Não</para>\n'
+        tmp+='\t\t<para style="P2"><b>Tramitando:</b> Não</para>\n'
     else:
-        tmp+='\t\t<para style="P2"><b>Tramitação:</b> Sim</para>\n'
+        tmp+='\t\t<para style="P2"><b>Tramitando:</b> Sim</para>\n'
 
-    if str(dic_inf_basicas['reg_tramitacao']) != "" and str(dic_inf_basicas['reg_tramitacao']) != None:
-        tmp+='\t\t<para style="P2"><b>Regime: </b> ' + str(dic_inf_basicas['reg_tramitacao']) + '</para>\n'
+    if str(dic_inf_basicas['reg_tramitacao']) != " " and str(dic_inf_basicas['reg_tramitacao']) != None:
+        tmp+='\t\t<para style="P2"><b>Regime de tramitação: </b> ' + str(dic_inf_basicas['reg_tramitacao']) + '</para>\n'
 
-    if str(dic_inf_basicas['prazo']) != "" and str(dic_inf_basicas['prazo']) != None:
+    prazo = (dic_inf_basicas['prazo'])
+    if prazo != " " and prazo != None:
         tmp+='\t\t<para style="P2"><b>Dias de prazo: </b> ' + str(dic_inf_basicas['prazo']) + '</para>\n'
 
-    if str(dic_inf_basicas['fim_prazo']) != "" and str(dic_inf_basicas['fim_prazo']) != None:
+    fim_prazo = (dic_inf_basicas['fim_prazo'])
+    if fim_prazo != "" and fim_prazo != None:
         tmp+='\t\t<para style="P2"><b>Data do fim do prazo: </b> ' + str(dic_inf_basicas['fim_prazo']) + '</para>\n'
-
-    if dic_inf_basicas['mat_complementar'] == 0:
-        tmp+='\t\t<para style="P2"><b>Matéria Complementar:</b> Não</para>\n'
-    else:
-        tmp+='\t\t<para style="P2"><b>Matéria Complementar:</b> Sim</para>\n'
-
-    if dic_inf_basicas['polemica'] == 0:
-        tmp+='\t\t<para style="P2"><b>Polêmica:</b> Não</para>\n'
-    else:
-        tmp+='\t\t<para style="P2"><b>Polêmica:</b> Sim</para>\n'
 
     apelido = dic_inf_basicas['apelido']
     if apelido != "" and apelido != None:
@@ -178,7 +167,7 @@ def mat_anexadas(lst_mat_anexadas):
     tmp=''
     tmp+='\t\t<para style="P1">Matérias Anexadas</para>\n'
     for dic_mat in  lst_mat_anexadas:
-        if dic_mat['nom_mat']!="" and dic_mat['nom_mat']!= None:
+        if dic_mat['nom_mat']!=" " and dic_mat['nom_mat']!= None:
             tmp+='\t\t<para style="P2"><b>Nome da matéria:</b> ' + dic_mat['nom_mat'] + '</para>\n'
             tmp+='\t\t<para style="P2"><b>Data:</b> ' + dic_mat['data'] + '</para>\n'
             tmp+='\t\t<para style="P2"><b>Data final:</b> ' + str(dic_mat['data_fim']) + '</para>\n'
@@ -187,22 +176,19 @@ def mat_anexadas(lst_mat_anexadas):
 def autoria(lst_autoria):
 
     tmp=''
-    tmp+='\t\t<para style="P1">Autores</para>\n'
+    tmp+='\t\t<para style="P1">Autoria</para>\n'
     for dic_autor in lst_autoria:
-        if dic_autor['nom_autor'] != "" and dic_autor['nom_autor'] != None:
-            tmp+='\t\t<para style="P2"><b>Nome do Autor:</b> ' + dic_autor['nom_autor'] + '</para>\n'
+        if dic_autor['nom_autor'] != " " and dic_autor['nom_autor'] != None:
+            tmp+='\t\t<para style="P2"><b>Nome:</b> ' + dic_autor['nom_autor'] + '</para>\n'
 
-        if dic_autor['nom_autor'] != "" and dic_autor['cargo'] != None:
-            tmp+='\t\t<para style="P2"><b>Cargo:</b> ' + dic_autor['cargo'] + '</para>\n'
-
-        if dic_autor['nom_autor'] != "" and dic_autor['tipo'] != None:
+        if dic_autor['nom_autor'] != " " and dic_autor['tipo'] != None:
             tmp+='\t\t<para style="P2"><b>Tipo:</b> ' + dic_autor['tipo'] + '</para>\n'
     return tmp
 
 def despachos_iniciais(lst_des_iniciais):
 
     tmp=''
-    tmp+='\t\t<para style="P1">Despachos Iniciais</para>\n'
+    tmp+='\t\t<para style="P1">Despacho Inicial</para>\n'
     for dic_dados in lst_des_iniciais:
         if dic_dados['nom_comissao']==None:
             dic_dados['nom_comissao']=" "
@@ -212,20 +198,25 @@ def despachos_iniciais(lst_des_iniciais):
 def tramitacoes(dic_tramitacoes):
 
     tmp=''
-    tmp+='\t\t<para style="P1">Última Tramitação</para>\n'
+    tmp+='\t\t<para style="P1">Situação Atual</para>\n'
     try:
         tmp+='\t\t<para style="P2"><b>Data Ação:</b> ' + str(dic_tramitacoes['data']) + '</para>\n'
-        tmp+='\t\t<para style="P2"><b>Unidade Local:</b> ' + dic_tramitacoes['unidade'] + '</para>\n'
-        tmp+='\t\t<para style="P2"><b>Encaminhada em:</b> ' + str(dic_tramitacoes['data_enc']) + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Origem:</b> ' + dic_tramitacoes['unidade'] + '</para>\n'
+        data_enc = dic_tramitacoes['data_enc']
+        if data_enc != "" and data_enc != None:
+            tmp+='\t\t<para style="P2"><b>Encaminhada em:</b> ' + str(dic_tramitacoes['data_enc']) + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Destino:</b> ' + dic_tramitacoes['destino'] + '</para>\n'
-        tmp+='\t\t<para style="P2"><b>Turno:</b> ' + dic_tramitacoes['turno'] + '</para>\n'
+        turno = dic_tramitacoes['turno']
+        if turno != "" and turno != None:
+            tmp+='\t\t<para style="P2"><b>Turno:</b> ' + dic_tramitacoes['turno'] + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Status:</b> ' + dic_tramitacoes['status'] + '</para>\n'
         if dic_tramitacoes['urgente']==0:
             tmp+='\t\t<para style="P2"><b>Urgente:</b> Não</para>\n'
         else: 
             tmp+='\t\t<para style="P2"><b>Urgente:</b> Sim</para>\n'
-
-        tmp+='\t\t<para style="P2"><b>Data do fim do prazo:</b> ' + str(dic_tramitacoes['data_fim']) + '</para>\n'
+        data_fim = dic_tramitacoes['data_fim']
+        if data_fim != "" and data_fim != None:
+            tmp+='\t\t<para style="P2"><b>Fim do prazo:</b> ' + str(dic_tramitacoes['data_fim']) + '</para>\n'
         if dic_tramitacoes['texto_acao'] != "" and dic_tramitacoes['texto_acao'] != None :
             tmp+='\t\t<para style="P2"><b>Texto da Ação:</b> ' + dic_tramitacoes['texto_acao'].replace('&','&amp;') + '</para>\n'
 
@@ -235,19 +226,19 @@ def tramitacoes(dic_tramitacoes):
 def relatorias(lst_relatorias):
 
     tmp=''
-    tmp+='\t\t<para style="P1">Relatorias</para>\n'
+    tmp+='\t\t<para style="P1">Relatoria</para>\n'
     for dic_comissao in lst_relatorias:
         tmp+='\t\t<para style="P2"><b>Comissão:</b> ' + dic_comissao['nom_comissao'] + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Data Designação:</b> ' + str(dic_comissao['data_desig']) + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Parlamentar:</b> ' + dic_comissao['parlamentar'] + '</para>\n'
-        tmp+='\t\t<para style="P2"><b>Data Destituição:</b> ' + str(dic_comissao['data_dest']) + '</para>\n'
-        tmp+='\t\t<para style="P2"><b>Motivo Fim Relatoria:</b> ' + dic_comissao['motivo'] + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Data Parecer:</b> ' + str(dic_comissao['data_dest']) + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Resultado na Comissão:</b> ' + dic_comissao['motivo'] + '</para>\n'
     return tmp
 
 def numeracoes(lst_numeracoes):
 
     tmp=''
-    tmp+='\t\t<para style="P1">Numerações</para>\n'
+    tmp+='\t\t<para style="P1">Outras Numerações</para>\n'
     for dic_dados in lst_numeracoes:
         tmp+='\t\t<para style="P2"><b>Nome:</b> ' + dic_dados['nome'] + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Ano:</b> ' + str(dic_dados['ano']) + '</para>\n'
@@ -312,20 +303,17 @@ def principal(imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexad
     tmp+=cabecalho(dic_inf_basicas,imagem)
     tmp+=rodape(dic_rodape)
     tmp+='\t\t\t</pageGraphics>\n'
-    tmp+='\t\t\t<frame id="first" x1="2cm" y1="4cm" width="17cm" height="20.5cm"/>\n'
+    tmp+='\t\t\t<frame id="first" x1="3cm" y1="2cm" width="16cm" height="23cm"/>\n'
     tmp+='\t\t</pageTemplate>\n'
     tmp+='\t</template>\n'
     tmp+=paraStyle()
     tmp+='\t<story>\n'
     tmp+=inf_basicas(dic_inf_basicas)
+    tmp+=autoria(lst_autoria)
     tmp+=orig_externa(dic_orig_externa)
     tmp+=mat_anexadas(lst_mat_anexadas)
-    tmp+=autoria(lst_autoria)
-    tmp+=despachos_iniciais(lst_des_iniciais)
-    tmp+=tramitacoes(dic_tramitacoes)
     tmp+=relatorias(lst_relatorias)
-    tmp+=numeracoes(lst_numeracoes)
-    tmp+=legislacoes_citadas(lst_leg_citadas)
+    tmp+=tramitacoes(dic_tramitacoes)
     tmp+=documentos_acessorios(lst_acessorios)
     tmp+='\t</story>\n'
     tmp+='</document>\n'

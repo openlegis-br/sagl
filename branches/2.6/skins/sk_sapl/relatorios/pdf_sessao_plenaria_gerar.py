@@ -12,9 +12,9 @@ def cabecalho(inf_basicas_dic,imagem):
     """
     """
     tmp=''
-    tmp+='\t\t\t\t<image x="6.1cm" y="27.1cm" width="56" height="59" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<image x="6.1cm" y="26.9cm" width="74" height="80" file="' + imagem + '"/>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
-    tmp+='\t\t\t\t<drawString x="11cm" y="27.6cm">Estado de ' + str(inf_basicas_dic['nom_estado']) + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="10.5cm" y="27.6cm">Estado de ' + str(inf_basicas_dic['nom_estado']) + '</drawString>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="14"/>\n'
     tmp+='\t\t\t\t<drawString x="9cm" y="28.1cm">' + str(inf_basicas_dic['nom_camara']) + '</drawString>\n'
     return tmp

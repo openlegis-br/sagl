@@ -42,6 +42,17 @@ $(document).ready(function() {
 });
 </script>
 
+                             <script type="text/javascript">
+                               function ordem_dia_pdf_gerar(cod_sessao_plen){
+                                 if (confirm("Confirma a geração do arquivo ODT?")) {
+                                  window.open('&dtml-portal_url;/relatorios/pdf_ordem_dia_preparar_pysc?cod_sessao_plen='+cod_sessao_plen, '_newtab');
+                                  setTimeout(function(){window.location.reload(true)},2000);
+                                 return true;
+                                 }
+                               return;
+                               }
+                             </script>
+
 <a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria">Ajuda</a>
 
 <h1 class="firstHeading">Sessões Plenárias</h1>
@@ -62,8 +73,9 @@ $(document).ready(function() {
                 <select id="lst_ano_sessao" name="lst_ano_sessao" size="1" onChange="atualiza_ano_sessao(document.sessao_plen_form.lst_ano_sessao[document.sessao_plen_form.lst_ano_sessao.selectedIndex].value)">
                     <dtml-in expr="zsql.sessao_plenaria_listar_ano_zsql()">
                         <option value="<dtml-var ano_sessao missing>" 
-                          <dtml-if expr="(not _.has_key('ano_sessao_sel') and (_.DateTime().year() == ano_sessao))
-                           or (_.has_key('ano_sessao_sel') and ano_sessao == _.int(ano_sessao_sel))">
+                          <dtml-if expr="((not _.has_key('ano_sessao_sel') and (_.DateTime().year() == ano_sessao)))
+                                           or (not _.has_key('ano_sessao_sel') and (_.DateTime().year() > ano_sessao))
+                                           or (_.has_key('ano_sessao_sel') and ano_sessao == _.int(ano_sessao_sel))">
                             selected
                           <dtml-call expr="REQUEST.set('ano_sessao_sel', ano_sessao)">
                          </dtml-if>>
@@ -157,7 +169,7 @@ $(document).ready(function() {
         </dtml-if sequence-start>
    <table>
                 <tr>
-                    <th class="form-element" colspan="4"><h3 align="center">
+                    <th class="form-element" colspan="4"><h2 align="center">
                         <dtml-var num_sessao missing>
                         <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
                     <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Sessao Plenaria', 'Operador Ordem Dia'])">
@@ -165,46 +177,25 @@ $(document).ready(function() {
                     <dtml-else>
                       <a href="agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
                     </dtml-if>
-                            <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> da <dtml-var num_sessao_leg>ª Sessão Legislativa da <dtml-var num_legislatura>ª Legislatura<br /></h3></a>
+                            <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> da <dtml-var num_sessao_leg>ª Sessão Legislativa da <dtml-var num_legislatura>ª Legislatura<br /></h2></a>
                           <h4 align="center"><dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_inicio_sessao)"> (<dtml-var dia_sessao>) - <dtml-var expr="pysc.hora_formatar_pysc(hora=hr_inicio_sessao)">
                         </dtml-in>
                    </h4> </th>
                 </tr>
-           <dtml-if expr="url_audio or url_video">
-                <tr>
-                  <td class="texto">
-                  <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_audio.png">
-                  <dtml-if url_audio>
-                     <a href="#" onClick="javascript:window.open('sessao_plenaria_player_audio?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_audio=<dtml-var url_audio>','PlayerAudio','width=530,height=425,top=200,left=200,scrollbars=no');"/>
-                     <b>Gravação em Áudio</b></a>
-                  <dtml-else> Áudio não disponível
-                  </dtml-if>
-                  </td>
-                  <td></td>
-                  <td class="texto">
-                  <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_video.png">
-                  <dtml-if url_video>
-                     <a href="#" onClick="javascript:window.open('sessao_plenaria_player_video?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_video=<dtml-var url_video>','PlayerVideo','width=530,height=425,top=200,left=200,scrollbars=no');"/>
-                     <b>Gravação em Vídeo</b></a>
-                  <dtml-else> Vídeo não disponível
-                  </dtml-if>
-                  </td>
-                </tr>
-           </dtml-if>
                 <tr>
                   <td class="texto" align="center" width="33%">
                     <div align="center">
                       <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">
                          <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
                            <dtml-let pauta="_.getattr(sapl_documentos.pauta_sessao,id_pauta).absolute_url">
-                             <a class="popup" href="&dtml-portal_url;/javascript/Viewer.js#<dtml-var pauta>" data-fancybox-type="iframe"><img align="absmiddle" border="0" src="sapl/imagens/archiv.gif" alt="Arquivo PDF" title="Arquivo PDF" /></a>
+                             <a target="_blank" href="<dtml-var pauta>"><img align="absmiddle" src="sapl/imagens/archiv.gif" alt="Arquivo PDF" title="Arquivo PDF" /></a>
                              <b>Ordem do Dia</b>
                            </dtml-let>
                          <dtml-else>
                           <img class="img-disabled" align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível" />
                           <b>Ordem do Dia</b>
                             <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Sessao Plenaria'])">
-                              &nbsp;&nbsp;<a class="botao-link" target="_blank" href="&dtml-portal_url;/relatorios/pdf_ordem_dia_preparar_pysc?data=<dtml-var dat_inicio_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>">Gerar PDF</a>
+                              &nbsp;&nbsp;<a class="botao-link" target="_blank" href="javascript:ordem_dia_pdf_gerar(<dtml-var cod_sessao_plen>)">Gerar PDF</a>
                             </dtml-if>
                          </dtml-if>
                        </dtml-let>
@@ -249,6 +240,35 @@ $(document).ready(function() {
                   </div>
                   </td>
                 </tr>
+           <dtml-if expr="url_audio or url_video">
+                <tr>
+           <dtml-if expr="url_audio">
+                  <td colspan="3" class="texto">
+                  <div align="center">
+                  <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_audio.png">
+                  <dtml-if url_audio>
+                     <a href="#" onClick="javascript:window.open('sessao_plenaria_player_audio?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_audio=<dtml-var url_audio>','PlayerAudio','width=540,height=435,top=200,left=200,scrollbars=no');"/>
+                     <b>Gravação em Áudio</b></a>
+                  <dtml-else> Áudio não disponível
+                  </dtml-if>
+                  </div>
+                  </td>
+           </dtml-if>
+           <dtml-if expr="url_video">
+                  <td></td>
+                  <td colspan="3" class="texto">
+                  <div align="center">
+                  <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_video.png">
+                  <dtml-if url_video>
+                     <a href="#" onClick="javascript:window.open('sessao_plenaria_player_video?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_video=<dtml-var url_video>','PlayerVideo','width=540,height=435,top=200,left=200,scrollbars=no');"/>
+                     <b>Gravação em Vídeo</b></a>
+                  <dtml-else> Vídeo não disponível
+                  </dtml-if>
+                  </div>
+                  </td>
+           </dtml-if>
+                </tr>
+           </dtml-if>
    </table>
 <br />
         <dtml-if sequence-end>

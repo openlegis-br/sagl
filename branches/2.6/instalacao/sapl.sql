@@ -1,5 +1,5 @@
 -- Servidor: localhost
--- Tempo de Geração: 19/02/2014 às 11h51min
+-- Tempo de Geração: 25/01/2014 às 14h36min
 -- Versão do Servidor: 5.5.34
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
@@ -12,7 +12,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Banco de Dados: `openlegis`
+-- Banco de Dados: `interlegis`
 --
 
 -- --------------------------------------------------------
@@ -29,6 +29,30 @@ CREATE TABLE IF NOT EXISTS `acomp_materia` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_cadastro`),
   UNIQUE KEY `fk_{CCECA63D-5992-437B-BCD3-D7C98DA3E926}` (`cod_materia`,`end_email`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `afastamento`
+--
+
+CREATE TABLE IF NOT EXISTS `afastamento` (
+  `cod_afastamento` int(11) NOT NULL AUTO_INCREMENT,
+  `cod_parlamentar` int(11) NOT NULL,
+  `cod_mandato` int(11) NOT NULL,
+  `num_legislatura` int(11) NOT NULL,
+  `tip_afastamento` int(11) NOT NULL,
+  `dat_inicio_afastamento` date NOT NULL,
+  `dat_fim_afastamento` date DEFAULT NULL,
+  `cod_parlamentar_suplente` int(11) NOT NULL,
+  `txt_observacao` text COLLATE utf8_unicode_ci,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_afastamento`),
+  KEY `idx_parlamentar_mandato` (`cod_parlamentar`,`num_legislatura`),
+  KEY `idx_afastamento_datas` (`cod_parlamentar`,`dat_inicio_afastamento`,`dat_fim_afastamento`),
+  KEY `idx_tip_afastamento` (`tip_afastamento`),
+  KEY `idx__parlamentar_suplente` (`cod_parlamentar_suplente`,`num_legislatura`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -355,11 +379,12 @@ CREATE TABLE IF NOT EXISTS `composicao_comissao` (
 
 CREATE TABLE IF NOT EXISTS `composicao_mesa` (
   `cod_parlamentar` int(11) NOT NULL,
-  `cod_sessao_leg` int(11) NOT NULL,
+  `cod_sessao_leg` int(11) DEFAULT NULL,
+  `cod_periodo_comp` int(11) NOT NULL,
   `cod_cargo` tinyint(4) NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
-  PRIMARY KEY (`cod_parlamentar`,`cod_sessao_leg`,`cod_cargo`),
-  KEY `fk_{B15DAF29-A146-4581-A1DF-96856DDDA6B0}` (`cod_sessao_leg`),
+  PRIMARY KEY (`cod_parlamentar`,`cod_periodo_comp`,`cod_cargo`),
+  KEY `fk_{B15DAF29-A146-4581-A1DF-96856DDDA6B0}` (`cod_periodo_comp`),
   KEY `fk_{7AAD6A7F-70B0-43D2-9FD9-906B3C09E9CF}` (`cod_cargo`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
@@ -6767,6 +6792,22 @@ CREATE TABLE IF NOT EXISTS `periodo_comp_comissao` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_periodo_comp`),
   KEY `ind_percompcom_datas` (`dat_inicio_periodo`,`dat_fim_periodo`,`ind_excluido`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `periodo_comp_mesa`
+--
+
+CREATE TABLE IF NOT EXISTS `periodo_comp_mesa` (
+  `cod_periodo_comp` int(11) NOT NULL AUTO_INCREMENT,
+  `num_legislatura` int(11) NOT NULL,
+  `dat_inicio_periodo` date NOT NULL,
+  `dat_fim_periodo` date NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_periodo_comp`),
+  KEY `ind_percompmesa_datas` (`dat_inicio_periodo`,`dat_fim_periodo`,`ind_excluido`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------

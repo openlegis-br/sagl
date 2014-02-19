@@ -313,7 +313,7 @@ CREATE TABLE IF NOT EXISTS `substitutivo` (
 
 ALTER TABLE  `documento_acessorio` ADD  `txt_observacao` TEXT NULL DEFAULT NULL AFTER  `txt_ementa`;
 
-DROP TABLE IF EXISTS `partido`;
+RENAME TABLE partido TO partido_old;
 
 CREATE TABLE `partido` (
   `cod_partido` int(11) NOT NULL AUTO_INCREMENT,
@@ -357,4 +357,55 @@ ALTER TABLE  `registro_votacao` ADD  `cod_emenda` INT( 11 ) NULL DEFAULT NULL AF
 ALTER TABLE  `registro_votacao` ADD  `cod_subemenda` INT( 11 ) NULL DEFAULT NULL AFTER  `cod_emenda`;
 
 ALTER TABLE  `registro_votacao` ADD  `cod_substitutivo` INT( 11 ) NULL DEFAULT NULL AFTER  `cod_subemenda`;
+
+CREATE TABLE  `periodo_comp_mesa` (
+`cod_periodo_comp` INT( 11 ) NOT NULL AUTO_INCREMENT ,
+`num_legislatura` INT( 11 ) NOT NULL,
+`dat_inicio_periodo` date NOT NULL ,
+`dat_fim_periodo` date NOT NULL ,
+`ind_excluido` TINYINT( 4 ) NOT NULL ,
+PRIMARY KEY (  `cod_periodo_comp` ) ,
+KEY  `ind_percompmesa_datas` (  `dat_inicio_periodo` ,  `dat_fim_periodo` ,  `ind_excluido` )
+) ENGINE = MYISAM DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci PACK_KEYS =0;
+
+INSERT INTO periodo_comp_mesa (cod_periodo_comp,num_legislatura,dat_inicio_periodo,dat_fim_periodo,ind_excluido) SELECT cod_sessao_leg,num_legislatura, dat_inicio,dat_fim,ind_excluido FROM sessao_legislativa ORDER BY cod_sessao_leg;
+
+ALTER TABLE  `composicao_mesa` ADD  `cod_periodo_comp` INT( 11 ) NOT NULL AFTER  `cod_sessao_leg`;
+
+UPDATE composicao_mesa SET cod_periodo_comp = cod_sessao_leg;
+
+ALTER TABLE `composicao_mesa` DROP PRIMARY KEY,
+ADD PRIMARY KEY (`cod_parlamentar`, `cod_periodo_comp`, `cod_cargo`);
+
+ALTER TABLE  `composicao_mesa` CHANGE  `cod_sessao_leg`  `cod_sessao_leg` INT( 11 ) NULL DEFAULT NULL;
+
+ALTER TABLE  `composicao_mesa` ADD INDEX  `idx_cod_periodo_comp` (  `cod_periodo_comp` );
+
+CREATE TABLE `afastamento` (
+  `cod_afastamento` int(11) NOT NULL AUTO_INCREMENT,
+  `cod_parlamentar` int(11) NOT NULL,
+  `cod_mandato` int(11) NOT NULL,
+  `num_legislatura` int(11) NOT NULL,
+  `tip_afastamento` int(11) NOT NULL,
+  `dat_inicio_afastamento` date NOT NULL,
+  `dat_fim_afastamento` date DEFAULT NULL,
+  `cod_parlamentar_suplente` int(11) NOT NULL,
+  `txt_observacao` text COLLATE utf8_unicode_ci,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_afastamento`),
+  KEY `idx_parlamentar_mandato` (`cod_parlamentar`,`num_legislatura`),
+  KEY `idx_afastamento_datas` (`cod_parlamentar`,`dat_inicio_afastamento`,`dat_fim_afastamento`),
+  KEY `idx_tip_afastamento` (`tip_afastamento`),
+  KEY `idx__parlamentar_suplente` (`cod_parlamentar_suplente`,`num_legislatura`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+
+UPDATE
+  mandato m 
+  LEFT JOIN legislatura l ON m.num_legislatura = l.num_legislatura
+SET
+   m.dat_inicio_mandato = l.dat_inicio,
+   m.dat_fim_mandato = l.dat_fim
+WHERE
+   m.ind_titular = 1;
+
 

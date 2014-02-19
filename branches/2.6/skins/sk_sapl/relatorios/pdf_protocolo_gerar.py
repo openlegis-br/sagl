@@ -13,14 +13,14 @@ import time
 def cabecalho(inf_basicas_dic,imagem):
     """Gera o codigo rml do cabecalho"""
     tmp_data=''
-    tmp_data+='\t\t\t\t<image x="2.1cm" y="25.7cm" width="59" height="62" file="' + imagem + '"/>\n'
+    tmp_data+='\t\t\t\t<image x="2.1cm" y="25.9cm" width="74" height="80" file="' + imagem + '"/>\n'
     tmp_data+='\t\t\t\t<lines>2cm 25.4cm 19cm 25.4cm</lines>\n'
     tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="15"/>\n'
-    tmp_data+='\t\t\t\t<drawString x="5cm" y="27.2cm">' + dic_cabecalho['nom_casa'] + '</drawString>\n'
-    tmp_data+='\t\t\t\t<setFont name="Helvetica" size="12"/>\n'
-    tmp_data+='\t\t\t\t<drawString x="5cm" y="26.6cm">Sistema de Apoio ao Processo Legislativo</drawString>\n'
-    tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="13"/>\n'
-    tmp_data+='\t\t\t\t<drawString x="2.2cm" y="24.6cm">Relatório de Controle do Protocolo</drawString>\n'
+    tmp_data+='\t\t\t\t<drawString x="5cm" y="27.1cm">' + dic_cabecalho['nom_casa'] + '</drawString>\n'
+    tmp_data+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
+    tmp_data+='\t\t\t\t<drawString x="5.05cm" y="26.6cm">' + dic_cabecalho['nom_estado'] + '</drawString>\n'
+    tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="12"/>\n'
+    tmp_data+='\t\t\t\t<drawCentredString x="10.5cm" y="24.8cm">Controle de Protocolo</drawCentredString>\n'
 
     return tmp_data
 
@@ -49,8 +49,8 @@ def paraStyle():
     tmp_data+='\t\t<initialize>\n'
     tmp_data+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp_data+='\t\t</initialize>\n'
-    tmp_data+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="10" alignment="CENTER"/>\n'
-    tmp_data+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="10.0" leading="13" alignment="justify"/>\n'
+    tmp_data+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="12" spaceAfter="2" alignment="left"/>\n'
+    tmp_data+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="12" spaceAfter="2" alignment="justify"/>\n'
     tmp_data+='\t</stylesheet>\n'
 
     return tmp_data
@@ -68,19 +68,13 @@ def protocolos(lst_protocolos):
         tmp_data+='\t\t<para style="P2">\n'
         tmp_data+='\t\t\t<font color="white"> </font>\n'
         tmp_data+='\t\t</para>\n'
-        tmp_data+='\t\t<para style="P2">\n'
-        tmp_data+='\t\t\t<font color="white"> </font>\n'
-        tmp_data+='\t\t</para>\n'
 
         #condicao para a quebra de pagina
-        tmp_data+='\t\t<condPageBreak height="4cm"/>\n'
+        tmp_data+='\t\t<condPageBreak height="1.5cm"/>\n'
 
         #protocolos 
         if dic['titulo']!=None:
-            tmp_data+='\t\t<para style="P1">Protocolo ' + dic['titulo'] + '</para>\n'
-            tmp_data+='\t\t<para style="P1">\n'
-            tmp_data+='\t\t\t<font color="white"> </font>\n'
-            tmp_data+='\t\t</para>\n'
+            tmp_data+='\t\t<para style="P1">PROTOCOLO N° ' + dic['titulo'] + '</para>\n'
         if dic['txt_assunto']!=None:
             txt_assunto = dic['txt_assunto'].replace('&','&amp;')
             tmp_data+='\t\t<para style="P2">' + txt_assunto + '</para>\n'
@@ -115,7 +109,7 @@ def principal(sessao,imagem,data,lst_protocolos,dic_cabecalho,lst_rodape,dic_fil
     tmp_data+=cabecalho(dic_cabecalho,imagem)
     tmp_data+=rodape(lst_rodape)
     tmp_data+='\t\t\t</pageGraphics>\n'
-    tmp_data+='\t\t\t<frame id="first" x1="2cm" y1="3cm" width="17cm" height="21cm"/>\n'
+    tmp_data+='\t\t\t<frame id="first" x1="2cm" y1="4cm" width="17cm" height="21cm"/>\n'
     tmp_data+='\t\t</pageTemplate>\n'
     tmp_data+='\t</template>\n'
     tmp_data+=paraStyle()

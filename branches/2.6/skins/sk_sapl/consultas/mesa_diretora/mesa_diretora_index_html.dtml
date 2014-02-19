@@ -2,8 +2,8 @@
 
 <script type="text/javascript">
 <!--
-    function atualiza_sessao_leg(cod_sessao_leg, num_legislatura){  
-        location.href = "<dtml-var absolute_url>/index_html?cod_sessao_leg_sel="+cod_sessao_leg+"&num_legislatura_sel="+num_legislatura;
+    function atualiza_periodo_comp(cod_periodo_comp, num_legislatura){  
+        location.href = "<dtml-var absolute_url>/index_html?cod_periodo_comp_sel="+cod_periodo_comp+"&num_legislatura_sel="+num_legislatura;
 
     }   
 
@@ -48,24 +48,24 @@
        </dtml-if>
    </div>
    <div class="col span_1_of_2">
-       <label for="lst_sessao_leg">Sessão Legislativa:</label>
-              <select id="lst_sessao_leg" name="lst_sessao_leg" size="1" onChange="atualiza_sessao_leg(form.lst_sessao_leg[form.lst_sessao_leg.selectedIndex].value,
-                            form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value)">
-      <dtml-in expr="zsql.sessao_legislativa_obter_zsql(ind_excluido=0)">
-            <dtml-if expr="num_legislatura == num_legislatura_sel">
+       <label for="lst_periodo_comp">Período:</label>
+         <select id="lst_periodo_comp" name="lst_periodo_comp" size="1" onChange="atualiza_periodo_comp(form.lst_periodo_comp[form.lst_periodo_comp.selectedIndex].value, form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value)">
+      <dtml-in expr="zsql.periodo_comp_mesa_obter_zsql(num_legislatura=num_legislatura_sel)">
+
               <option
-                <dtml-if expr="(not _.has_key('cod_sessao_leg_sel') and not _.has_key('prim_sel') and (_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim))
-                                or
-                               (_.has_key('cod_sessao_leg_sel') and cod_sessao_leg == cod_sessao_leg_sel)">
+                <dtml-if expr="((not _.has_key('cod_periodo_comp_sel') and not _.has_key('prim_sel') 
+                                and (_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim)))
+                                or (not _.has_key('cod_periodo_comp_sel') and not _.has_key('prim_sel')) 
+                                or (_.has_key('cod_periodo_comp_sel') and cod_periodo_comp == cod_periodo_comp_sel)">
                      selected
-                     <dtml-call expr="REQUEST.set('prim_sel', cod_sessao_leg)">
-                     <dtml-call expr="REQUEST.set('cod_sessao_leg_sel', cod_sessao_leg)">
+                     <dtml-call expr="REQUEST.set('prim_sel', cod_periodo_comp)">
+                     <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', cod_periodo_comp)">
                 </dtml-if>
-                 value="<dtml-var cod_sessao_leg>">
-                 <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_sessao_leg, dat_inicio, dat_fim)">
+                 value="<dtml-var cod_periodo_comp>">
+                 <dtml-var dat_inicio_periodo> a <dtml-var dat_fim_periodo>
 		<dtml-if expr="(_.DateTime() >= dat_inicio) and (_.DateTime() <= dat_fim)">(Atual)</dtml-if>
               </option>
-            </dtml-if>
+
       </dtml-in>
      </select>
     </div>
@@ -73,10 +73,8 @@
 </fieldset>
 
 <fieldset>
-
-    <dtml-if cod_sessao_leg_sel>
-
-      <dtml-in expr="zsql.composicao_mesa_obter_zsql(cod_sessao_leg=cod_sessao_leg_sel, ind_excluido=0)">
+  <dtml-if cod_periodo_comp_sel>
+      <dtml-in expr="zsql.composicao_mesa_obter_zsql(cod_periodo_comp=cod_periodo_comp_sel, ind_excluido=0)">
         <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
           <dtml-in expr="zsql.cargo_mesa_obter_zsql(cod_cargo=cod_cargo, ind_excluido=0)">  
        
@@ -117,7 +115,7 @@
     <dtml-else>
   <div class="vereador">
     <dtml-if expr="num_legislatura_sel=='-1'">
-          <span class="texto">Não há nenhuma Legislatura cadastrada.</span>
+          <span class="texto">Não há nenhum período de composição cadastrado.</span>
     <dtml-else>
           <span class="texto">Não há nenhuma Sessão Legislativa cadastrada para a Legislatura selecionada.</span>
     </dtml-if>

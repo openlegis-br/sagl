@@ -26,13 +26,16 @@
 <dtml-if step>
   <dtml-call "REQUEST.set('step', _.int(step))">
 <dtml-else>
-  <dtml-call "REQUEST.set('step', 8)">
+  <dtml-call "REQUEST.set('step', 12)">
 </dtml-if>
 <dtml-call "REQUEST.set('start',(page-1) * step + 1)">
 
 <dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=lst_tip_norma, num_norma=pysc.extrai_id_pysc(id=txt_numero), ano_norma=txt_ano, des_assunto=txt_assunto, cod_assunto=lst_assunto_norma, cod_situacao=lst_tip_situacao_norma, dat_norma=dt_norma, dat_norma2=dt_norma2, dat_publicacao=dt_public, dat_publicacao2=dt_public2, rd_ordem=rd_ordenacao)" size="step" start="start" orphan=0>
 
  <dtml-if sequence-start>
+    <dtml-if next-sequence>
+       <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+    </dtml-if>
      <table>
       <tr>
          <th colspan="2" class="form-label">Resultado da Pesquisa: <dtml-var sequence-length> norma<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> encontrada<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>.
@@ -51,33 +54,31 @@
               <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma missing>">
             </dtml-if>
                <dtml-var sgl_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma> - <dtml-var des_tipo_norma upper></a></b><br>
-               <dtml-var txt_ementa missing> <br />
-         <b>Situação:</b>
+               <dtml-var txt_ementa missing>
              <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(tip_situacao_norma=cod_situacao)">
+              <dtml-if expr="des_tipo_situacao!=0">
+                      <br /><b>Situação:</b>
                <dtml-var des_tipo_situacao missing null="0" upper>
-             </dtml-in> <br />
-        <b>Status:</b>
-          <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+              </dtml-if>
+             </dtml-in> 
+     <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+       <dtml-if sequence-start>
+         <br /><b>Relacionamentos:</b><br />
+       </dtml-if>
+            <dtml-if "tip_vinculo=='A'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_altera.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Alterada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-if "tip_vinculo=='A'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_altera.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma alterada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='R'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_integral.gif">&nbsp;<span style="color:#C72100;font-weight:normal;">Revogada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-elif "tip_vinculo=='R'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_integral.gif">&nbsp;<span style="color:#C72100;font-weight:normal;">Norma revogada integralmente pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='P'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Revogada parcialmente pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-elif "tip_vinculo=='P'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma revogada parcialmente pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='T'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_integral.gif">&nbsp;<span style="color:#C72100;font-weight:normal;"><span style="color:#C72100;font-weight:normal;">Revogada por consolidação pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-elif "tip_vinculo=='T'"><span style="color:#C72100;font-weight:normal;">Norma revogada por consolidação.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='C'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_correlata.gif">&nbsp;<span style="color:#62682F;font-weight:normal;">Norma correlata:&nbsp;<a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-elif "tip_vinculo=='C'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_correlata.gif">&nbsp;<span style="color:#62682F;font-weight:normal;">Norma correlata / regulamentadora:&nbsp;<a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='I'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Execução suspensa pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
-            <dtml-elif "tip_vinculo=='S'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma ressalvada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='E'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma reeditada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='I'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma reeditada com alteração pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='G'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma regulamentada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+            <dtml-elif "tip_vinculo=='G'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Regulamentada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
             </dtml-if>
-            <dtml-else><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_vigente.gif" alt="Norma Vigente">&nbsp;<span style="color:#32682F;font-weight:normal;">Norma sem alterações posteriores.</span><br />
           </dtml-in>
          </td>   
           <td width="10%"> 
