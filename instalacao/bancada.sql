@@ -408,4 +408,6 @@ SET
 WHERE
    m.ind_titular = 1;
 
+UPDATE norma_juridica set cod_situacao = 1;
+
 
