@@ -1,10 +1,8 @@
-##parameters=imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexadas,lst_autoria,lst_des_iniciais,dic_tramitacoes,lst_relatorias,lst_numeracoes,lst_leg_citadas,lst_acessorios,sessao=''
+##parameters=imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexadas,lst_autoria,lst_des_iniciais,lst_tramitacoes,lst_relatorias,lst_numeracoes,lst_leg_citadas,lst_acessorios,sessao=''
 
 """relatorio_detalhe_materia.py
    External method para gerar o arquivo rml do resultado da pesquisa de uma matéria
-   Autor: Leandro Gasparotto Valladares
-   Empresa: Interlegis
-   versão: 1.0
+   OpenLegis
 """
 from trml2pdf import parseString
 from cStringIO import StringIO
@@ -23,7 +21,7 @@ def cabecalho(dic_inf_basicas,imagem):
     tmp+='\t\t\t\t<drawString x="10.5cm" y="27.6cm">' + dic_inf_basicas['nom_estado'] + '</drawString>\n'
     if str(dic_inf_basicas['cod_projeto']) != "" and str(dic_inf_basicas['cod_projeto']) != None:
         tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="12"/>\n'
-        tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="25.2cm">' + str(dic_inf_basicas['cod_projeto']) + '</drawCentredString>\n'
+        tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="25.6cm">' + str(dic_inf_basicas['cod_projeto']) + '</drawCentredString>\n'
     return tmp
 
 def rodape(dic_rodape):
@@ -71,7 +69,6 @@ def paraStyle():
     tmp+='\t\t<initialize>\n'
     tmp+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp+='\t\t</initialize>\n'
-    #titulo do parágrafo: é por default centralizado
     tmp+='\t\t<paraStyle name="style.Title" fontName="Helvetica" fontSize="11" leading="13" spaceAfter="2" alignment="RIGHT"/>\n'
     tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="12.0" textColor="gray" leading="14" spaceAfter="2" spaceBefore="8" alignment="LEFT"/>\n'
     tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="10.0" leading="12" spaceAfter="2" alignment="LEFT"/>\n'
@@ -92,7 +89,7 @@ def inf_basicas(dic_inf_basicas):
         tmp+='\t\t<para style="texto_projeto">' + texto_projeto.replace('&','&amp;') + '</para>\n'
 
     #iní­cio das informações básicas
-    tmp+='\t\t<para style="P1">Informações Básicas</para>\n'
+    tmp+='\t\t<para style="P1">Identificação Básica</para>\n'
     if str(dic_inf_basicas['apresentada']) != "" and str(dic_inf_basicas['apresentada']) != None:
         tmp+='\t\t<para style="P2"><b>Apresentação: </b> ' + str(dic_inf_basicas['apresentada']) + '</para>\n'
 
@@ -163,11 +160,10 @@ def orig_externa(dic_orig_externa):
     return tmp
 
 def mat_anexadas(lst_mat_anexadas):
-
     tmp=''
-    tmp+='\t\t<para style="P1">Matérias Anexadas</para>\n'
     for dic_mat in  lst_mat_anexadas:
         if dic_mat['nom_mat']!=" " and dic_mat['nom_mat']!= None:
+            tmp+='\t\t<para style="P1">Matérias Anexadas</para>\n'
             tmp+='\t\t<para style="P2"><b>Nome da matéria:</b> ' + dic_mat['nom_mat'] + '</para>\n'
             tmp+='\t\t<para style="P2"><b>Data:</b> ' + dic_mat['data'] + '</para>\n'
             tmp+='\t\t<para style="P2"><b>Data final:</b> ' + str(dic_mat['data_fim']) + '</para>\n'
@@ -186,7 +182,6 @@ def autoria(lst_autoria):
     return tmp
 
 def despachos_iniciais(lst_des_iniciais):
-
     tmp=''
     tmp+='\t\t<para style="P1">Despacho Inicial</para>\n'
     for dic_dados in lst_des_iniciais:
@@ -195,11 +190,10 @@ def despachos_iniciais(lst_des_iniciais):
         tmp+='\t\t<para style="P2"><b>Nome da comissão:</b> ' + dic_dados['nom_comissao'] + '</para>\n'
     return tmp
 
-def tramitacoes(dic_tramitacoes):
-
+def tramitacoes(lst_tramitacoes):
     tmp=''
-    tmp+='\t\t<para style="P1">Situação Atual</para>\n'
-    try:
+    tmp+='\t\t<para style="P1">Histórico de Tramitações</para>\n'
+    for dic_tramitacoes in lst_tramitacoes:
         tmp+='\t\t<para style="P2"><b>Data Ação:</b> ' + str(dic_tramitacoes['data']) + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Origem:</b> ' + dic_tramitacoes['unidade'] + '</para>\n'
         data_enc = dic_tramitacoes['data_enc']
@@ -219,12 +213,11 @@ def tramitacoes(dic_tramitacoes):
             tmp+='\t\t<para style="P2"><b>Fim do prazo:</b> ' + str(dic_tramitacoes['data_fim']) + '</para>\n'
         if dic_tramitacoes['texto_acao'] != "" and dic_tramitacoes['texto_acao'] != None :
             tmp+='\t\t<para style="P2"><b>Texto da Ação:</b> ' + dic_tramitacoes['texto_acao'].replace('&','&amp;') + '</para>\n'
-
-    except: pass
+        tmp+='\t\t<para style="P2"></para>\n'
+        tmp+='\t\t<para style="P2"></para>\n'
     return tmp
 
 def relatorias(lst_relatorias):
-
     tmp=''
     tmp+='\t\t<para style="P1">Relatoria</para>\n'
     for dic_comissao in lst_relatorias:
@@ -233,10 +226,11 @@ def relatorias(lst_relatorias):
         tmp+='\t\t<para style="P2"><b>Parlamentar:</b> ' + dic_comissao['parlamentar'] + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Data Parecer:</b> ' + str(dic_comissao['data_dest']) + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Resultado na Comissão:</b> ' + dic_comissao['motivo'] + '</para>\n'
+        tmp+='\t\t<para style="P2"></para>\n'
+        tmp+='\t\t<para style="P2"></para>\n'
     return tmp
 
 def numeracoes(lst_numeracoes):
-
     tmp=''
     tmp+='\t\t<para style="P1">Outras Numerações</para>\n'
     for dic_dados in lst_numeracoes:
@@ -245,7 +239,6 @@ def numeracoes(lst_numeracoes):
     return tmp
 
 def legislacoes_citadas(lst_leg_citadas):
-
     tmp=''
     tmp+='\t\t<para style="P1">Legislações Citadas</para>\n'
     for dic_dados in lst_leg_citadas:
@@ -265,7 +258,6 @@ def legislacoes_citadas(lst_leg_citadas):
     return tmp
 
 def documentos_acessorios(lst_acessorios):
-
     tmp=''
     tmp+='\t\t<para style="P1">Documentos Acessórios</para>\n'
     for dic_dados in lst_acessorios:
@@ -283,6 +275,8 @@ def documentos_acessorios(lst_acessorios):
             tmp+='\t\t<para style="P2"><b>Ementa:</b> ' + dic_dados['ementa'].replace('&','&amp;') + '</para>\n'
         if dic_dados['indexacao']!=None:
             tmp+='\t\t<para style="P2"><b>Ementa:</b> ' + dic_dados['indexacao'].replace('&','&amp;') + '</para>\n'
+        tmp+='\t\t<para style="P2"></para>\n'
+        tmp+='\t\t<para style="P2"></para>\n'
     return tmp
 
 def principal(imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexadas,lst_autoria,lst_des_iniciais,
@@ -303,7 +297,7 @@ def principal(imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexad
     tmp+=cabecalho(dic_inf_basicas,imagem)
     tmp+=rodape(dic_rodape)
     tmp+='\t\t\t</pageGraphics>\n'
-    tmp+='\t\t\t<frame id="first" x1="3cm" y1="2cm" width="16cm" height="23cm"/>\n'
+    tmp+='\t\t\t<frame id="first" x1="3cm" y1="2.6cm" width="16cm" height="23cm"/>\n'
     tmp+='\t\t</pageTemplate>\n'
     tmp+='\t</template>\n'
     tmp+=paraStyle()
@@ -311,10 +305,10 @@ def principal(imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexad
     tmp+=inf_basicas(dic_inf_basicas)
     tmp+=autoria(lst_autoria)
     tmp+=orig_externa(dic_orig_externa)
+    tmp+=documentos_acessorios(lst_acessorios)
     tmp+=mat_anexadas(lst_mat_anexadas)
     tmp+=relatorias(lst_relatorias)
-    tmp+=tramitacoes(dic_tramitacoes)
-    tmp+=documentos_acessorios(lst_acessorios)
+    tmp+=tramitacoes(lst_tramitacoes)
     tmp+='\t</story>\n'
     tmp+='</document>\n'
     tmp_pdf=parseString(tmp)
@@ -328,4 +322,4 @@ def principal(imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexad
     return "/temp_folder/"+arquivoPdf
 
 return principal(imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexadas,lst_autoria,lst_des_iniciais,
-                 dic_tramitacoes,lst_relatorias,lst_numeracoes,lst_leg_citadas,lst_acessorios,sessao)
+                 lst_tramitacoes,lst_relatorias,lst_numeracoes,lst_leg_citadas,lst_acessorios,sessao)
