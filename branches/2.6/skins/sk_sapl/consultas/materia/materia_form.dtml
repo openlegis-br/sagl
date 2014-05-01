@@ -52,7 +52,32 @@ $(document).ready(function() {
           <tr>
              <th class="form-label">Ementa:</th>
              <td colspan="3" class="texto">
-               <b><dtml-var txt_ementa missing></b>
+          <dtml-comment>verifica se usuário é anônimo</dtml-comment>
+          <dtml-if expr="portal_membership.isAnonymousUser()">
+                  <dtml-call expr="REQUEST.set('substituiEmentaTitulo', '0')">
+                  <dtml-comment>verifica se matéria trata de título honorífico a partir de 2014</dtml-comment>
+                  <dtml-if expr="sgl_tipo_materia=='PDL' and txt_indexacao=='TÍTULO' and ano_ident_basica>=2014">
+                    <dtml-call expr="REQUEST.set('substituiEmentaTitulo', '1')">
+                    <dtml-call expr="REQUEST.set('sgl_status', '')">
+                    <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia)">
+                     <dtml-if expr="cod_tramitacao and cod_tramitacao!=''">
+                       <dtml-call expr="REQUEST.set('sgl_status', sgl_status)">
+                       <dtml-comment>verifica se matéria foi aprovada ou promulgada pela Câmara</dtml-comment>
+                       <dtml-if expr="sgl_status=='APROVADA' or sgl_status=='LEI CAMARA'">
+                         <dtml-call expr="REQUEST.set('substituiEmentaTitulo', '0')">
+                       </dtml-if>
+                     </dtml-if>
+                    </dtml-in>
+                  </dtml-if>
+                  <dtml-comment>mostra a ementa completa somente após aprovação ou promulgação</dtml-comment>
+                  <dtml-if expr="substituiEmentaTitulo=='1'">
+                    <b>CONCEDE TÍTULO HONORÍFICO</b>
+                  <dtml-else>
+                     <b><dtml-var txt_ementa missing><b>
+                  </dtml-if>
+          <dtml-else>
+                  <dtml-var txt_ementa missing><br />
+          </dtml-if>
              </td>
           </tr>
           <tr>
@@ -124,6 +149,7 @@ $(document).ready(function() {
              </tr>
         </dtml-in>
   </dtml-in>
+     <dtml-if expr="portal_membership.isAnonymousUser() and substituiEmentaTitulo=='0'">
         <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
            <dtml-call expr="REQUEST.set('temDespacho', cod_comissao_sel)">
         </dtml-in>
@@ -151,6 +177,7 @@ $(document).ready(function() {
                </td>
              </tr>
         </dtml-if>
+     </dtml-if>
 	<dtml-if txt_observacao>
           <tr>
              <th class="form-label">Observações:</th> 
@@ -491,7 +518,8 @@ $(document).ready(function() {
   </table>
 </fieldset>
 </dtml-in>
-    
+
+<dtml-if expr="portal_membership.isAnonymousUser() and substituiEmentaTitulo=='0'">   
 <dtml-if expr="zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
 <fieldset>
 <legend>Documentos Acessórios</legend>
@@ -519,6 +547,7 @@ $(document).ready(function() {
  </table>
 </fieldset>
 </dtml-if> 
+</dtml-if>
 
 <dtml-if expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia)">
  <fieldset>
