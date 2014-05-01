@@ -85,7 +85,32 @@ $(document).ready(function() {
                 </dtml-if>
                 <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var des_tipo_materia upper></b></a></br>
 
-                <dtml-var txt_ementa missing><br>
+          <dtml-comment>verifica se usuário é anônimo</dtml-comment>
+          <dtml-if expr="portal_membership.isAnonymousUser()">
+                  <dtml-call expr="REQUEST.set('substituiEmentaTitulo', '0')">
+                  <dtml-comment>verifica se matéria trata de título honorífico a partir de 2014</dtml-comment>
+                  <dtml-if expr="sgl_tipo_materia=='PDL' and txt_indexacao=='TÍTULO' and ano_ident_basica>=2014">
+                  <dtml-call expr="REQUEST.set('substituiEmentaTitulo', '1')">
+                    <dtml-call expr="REQUEST.set('sgl_status', '')">
+                    <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia)">
+                     <dtml-if expr="cod_tramitacao and cod_tramitacao!=''">
+                       <dtml-call expr="REQUEST.set('sgl_status', sgl_status)">
+                       <dtml-comment>verifica se matéria foi aprovada ou promulgada pela Câmara</dtml-comment>
+                       <dtml-if expr="sgl_status=='APROVADA' or sgl_status=='LEI CAMARA'">
+                         <dtml-call expr="REQUEST.set('substituiEmentaTitulo', '0')">
+                       </dtml-if>
+                     </dtml-if>
+                    </dtml-in>
+                  </dtml-if>
+                  <dtml-comment>mostra a ementa completa somente após aprovação ou promulgação</dtml-comment>
+                  <dtml-if expr="substituiEmentaTitulo=='1'">
+                    CONCEDE TÍTULO HONORÍFICO<br />
+                  <dtml-else>
+                     <dtml-var txt_ementa missing><br />
+                  </dtml-if>
+          <dtml-else>
+                  <dtml-var txt_ementa missing><br />
+          </dtml-if>
 
                 <dtml-comment>obtém a autoria da matéria.</dtml-comment>
                 <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
