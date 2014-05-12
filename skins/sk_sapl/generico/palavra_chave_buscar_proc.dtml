@@ -1,200 +1,59 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript">
-$(document).ready(function() {
-	$(".popup").fancybox({
-		maxWidth	: 500,
-		maxHeight	: 350,
-		fitToView	: false,
-		width		: '70%',
-		height		: '72%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-		closeEffect	: 'fade'
-	});
-});
-</script>
+<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas">Ajuda</a>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_materia">Ajuda</a>
+<h1 class="firstHeading">Resultado da busca por "<i><dtml-var txt_palavra_chave></i>"</h1>
 
-<h1 class="firstHeading">Busca por palavra-chave</h1>
-
-<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
-<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
-<dtml-if page>
-  <dtml-call "REQUEST.set('page', _.int(page))">
-<dtml-else>
-  <dtml-call "REQUEST.set('page', 1)">
-</dtml-if>
-<dtml-if step>
-  <dtml-call "REQUEST.set('step', _.int(step))">
-<dtml-else>
-  <dtml-call "REQUEST.set('step', 8)">
-</dtml-if>
-<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
-
-<dtml-in expr="zsql.materia_obter_zsql(txt_busca=txt_palavra_chave)" size="step" start="start" orphan=0>
-<dtml-if sequence-start>
 <fieldset>
-   <legend>Matérias Legislativas</legend>
+ <dtml-with expr="_.namespace(tipo=zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0))">
+  <dtml-with expr="_.namespace(total=zsql.materia_obter_zsql(txt_busca=txt_palavra_chave))">
+   <legend>Matérias Legislativas: <dtml-if expr="_.len(total) == 0">nenhuma<dtml-else> <dtml-var  expr="_.len(total)"></dtml-if> ocorrência<dtml-if expr="_.len(total) > 1">s</dtml-if></legend>
+  </dtml-with>
      <table>
-  <tr>
-   <th colspan="2" class="form-label">
-    <b>Resultado da Pesquisa: <dtml-var sequence-length> matéria<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> encontrada<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> com o termo <i>"<dtml-var txt_palavra_chave>"</i>.</b>
-       <dtml-if expr="_['sequence-length'] == 1000"><br />LIMITE DE RESULTADOS ATINGIDO! Melhore os argumentos da pesquisa.</dtml-if>
-   </th>
-  </tr>
-    <dtml-if previous-sequence>
-      <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
-    </dtml-if previous-sequence>
-   </dtml-if sequence-start>
-           <tr <dtml-if sequence-odd>class="even"</dtml-if>>                        
-              <td class="texto">
-            <dtml-if expr="_.str(AUTHENTICATED_USER)=='Anonymous User'">
-              <a href="<dtml-var "sapl" url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-            <dtml-else>
-              <a href="<dtml-var "sapl" url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-            </dtml-if>
-                <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica> <dtml-var ano_ident_basica> - <dtml-var des_tipo_materia upper></b><br /></a>
-                <dtml-var txt_ementa missing><br />
-
-                <dtml-comment>obtém a autoria da matéria.</dtml-comment>
-                <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
-                  <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
-                      <b>Autores:</b>
-                  <dtml-else>
-                      <b>Autor:</b>
-                  </dtml-if>
-                </dtml-if>  
-                <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
-                  <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
-                    <dtml-if expr="des_tipo_autor=='Parlamentar'">
-                      <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
-                               <dtml-var nom_completo><br>
-                      </dtml-in>
-                    <dtml-elif expr="des_tipo_autor=='Comissao'">
-                      <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
-                               <dtml-var nom_comissao><br>
-                      </dtml-in>
-                    <dtml-elif expr="des_tipo_autor=='Bancada'">
-                      <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
-                               <dtml-var nom_bancada><br>
-                      </dtml-in>
-                    <dtml-else>
-                               <dtml-var nom_autor><br>
-                    </dtml-if>
-                  </dtml-in>
-                </dtml-in>
-
-              <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">
-               <dtml-if num_materia>
-               <b>Processo:</b>&nbsp;<dtml-var num_materia>/<dtml-var ano_materia> <br />
-               </dtml-if>
-               </dtml-in>
-
-               <dtml-if num_protocolo>
-                 <b>Protocolo Geral:</b>&nbsp;<dtml-var num_protocolo>/<dtml-var ano_ident_basica>  
-                  <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=num_protocolo,ano_protocolo=ano_ident_basica)">
-                     -<b> Data de Entrada:</b> <dtml-var "pysc.iso_to_port_pysc(dat_protocolo)">
-                  </dtml-in> <br />
-               </dtml-if>
-
-                <dtml-call expr="REQUEST.set('des_status', '')">
-                <dtml-call expr="REQUEST.set('txt_tramitacao', '')">
-                <dtml-comment>obtém a última tramitação da matéria.</dtml-comment>
-                <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
-                  <dtml-if cod_unid_tram_dest>
-                    <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
-                  <dtml-else>
-                    <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_local)">
-                  </dtml-if>
-                  <dtml-comment>obtém a unidade de tramitação da matéria.</dtml-comment>
-                  <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram)">
-                    <dtml-if cod_orgao>
-                      <b>Localização Atual: </b><dtml-var nom_orgao><br>
-                    <dtml-elif cod_comissao>
-                      <b>Localização Atual: </b><dtml-var nom_comissao><br>
-                    <dtml-else> 
-                      <b>Localização Atual: </b><dtml-var nom_parlamentar><br> 
-                    </dtml-if>
-                  </dtml-in>
-                  <dtml-call expr="REQUEST.set('des_status', des_status)">
-                  <dtml-call expr="REQUEST.set('txt_tramitacao', txt_tramitacao)">
-                <dtml-if des_status>
-                  <b>Situação: </b><dtml-var des_status null=""><br>
-                </dtml-if>
-                <dtml-if txt_tramitacao>
-                  <b>Última Ação: </b><dtml-var txt_tramitacao>, em <dtml-var dat_tramitacao><br>
-                </dtml-if>
-                <dtml-if dat_fim_prazo>
-                  <b>Data Fim do Prazo: </b> <dtml-var dat_fim_prazo><br>
-                </dtml-if>
-               </dtml-in>
-              <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_anexada=cod_materia, ind_excluido=0)">
-                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal, ind_excluido = 0)">
-                  <b>Matéria Anexadora:</b>
-                     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>">
-                     <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica></b></a> -
-                     <b>Data Anexação:</b> <dtml-var dat_anexacao missing><br />
-                 </dtml-in>
-               </dtml-in>
-              <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_principal=cod_materia, ind_excluido=0)">
-                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_anexada, ind_excluido = 0)">
-                    <b>Matéria Anexada:</b>
-                     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-                     <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica></b></a> -
-                     <b>Data Anexação:</b> <dtml-var dat_anexacao missing><br />
-                 </dtml-in>
-               </dtml-in>
-                <dtml-comment>obtém norma jurídica derivada</dtml-comment>
-                <dtml-in expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia=cod_materia)">
-                   <dtml-if cod_norma>
-                   <b>Norma Derivada:</b>
-                   <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> <dtml-var num_norma>/<dtml-var ano_norma></b></a><br />
-                   </dtml-if>
-                </dtml-in> 
-                <dtml-if expr="ind_tramitacao==1">
-                  <img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/acomp_email.png">&nbsp;<span style="color:#32682F;font-weight:normal;"><a href="&dtml-portal_url;/consultas/materia/acompanhamento/acomp_materia_form?cod_materia=<dtml-var cod_materia>" class="popup" data-fancybox-type="iframe"><b>Acompanhar matéria</b></a>&nbsp;</span>
-                </dtml-if>
-              </td>
-              <td width="10%">
-                <dtml-let id_documento="_.str(cod_materia)+'_texto_integral.pdf'">
-                  <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
-                    <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-                      <a target="_blank" href="<dtml-var documento>"><img align="middle" border="0" src="sapl/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
-                    </dtml-let>
-                  <dtml-else>
-                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
-                  </dtml-if>
-                </dtml-let>
-              </td>
-            </tr>
-  <dtml-if sequence-end>
-  </table>
+         <dtml-in name="tipo">
+           <dtml-with expr="_.namespace(subtotal=zsql.materia_obter_zsql(tip_id_basica=tip_materia,txt_busca=txt_palavra_chave))">
+           <dtml-if expr="_.len(subtotal) > 0">
+             <tr>
+               <td class="texto" width="80%">
+                <a href="&dtml-portal_url;/generico/materia_pesquisar_proc?incluir=0&existe_ocorrencia=0&lst_tip_materia=<dtml-var tip_materia>&txt_numero=&txt_prot_pref=&txt_ano=&txt_npc=&txt_num_protocolo=&dt_apres=&dt_apres2=&dt_public=&dt_public2=&hdn_txt_autor=&hdn_cod_autor=&lst_tip_autor=&lst_cod_partido=&txt_relator=&txt_assunto=<dtml-var txt_palavra_chave>&rad_tramitando=&lst_localizacao=&lst_status=&rd_ordenacao=1&chk_coautor=0&btn_materia_pesquisar=Pesquisar">
+                  <dtml-var des_tipo_materia>
+                </a>
+               </td>               
+               <td class="texto">
+                  <dtml-var  expr="_.len(subtotal)">
+               </td>
+             </tr>
+           </dtml-if>
+           </dtml-with>
+         </dtml-in>
+     </table>
+ </dtml-with>
 </fieldset>
-  <dtml-if next-sequence>
-      <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
-    </dtml-if next-sequence>
-    <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
-      <p class="texto" align="center">          
-          <b><dtml-var "sapl.pysc.PageListOutput_pysc('palavra_chave_buscar_proc', page, step, _['sequence-length'], txt_palavra_chave=txt_palavra_chave)"></b>
-      </p>
-    </dtml-if>
-</dtml-if sequence-end>
-<dtml-else>
- <table>
-  <tr>
-     <th class="texto"><b>Resultado da Pesquisa</b></th>
-  </tr>
-  <tr>
-     <td class="texto">Nenhuma ocorrência encontrada com o termo <i>"<dtml-var txt_palavra_chave>"</i>.</td>
-  </tr>
-</table>
-</fieldset>
-</dtml-in>
 
+<fieldset>
+ <dtml-with expr="_.namespace(tipo_norma=zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0))">
+  <dtml-with expr="_.namespace(total_normas=zsql.norma_juridica_obter_zsql(des_assunto=txt_palavra_chave))">
+   <legend>Normas Jurídicas: <dtml-if expr="_.len(total_normas) == 0">nenhuma<dtml-else> <dtml-var  expr="_.len(total_normas)"></dtml-if> ocorrência<dtml-if expr="_.len(total_normas) > 1">s</dtml-if></legend>
+  </dtml-with>
+     <table>
+         <dtml-in name="tipo_norma">
+           <dtml-with expr="_.namespace(subtotal_normas=zsql.norma_juridica_obter_zsql(tip_norma=tip_norma,des_assunto=txt_palavra_chave))">
+           <dtml-if expr="_.len(subtotal_normas) > 0">
+             <tr <dtml-if sequence-odd>class="even"</dtml-if>>
+               <td class="texto" width="80%">
+                <a href="&dtml-portal_url;/generico/norma_juridica_pesquisar_proc?incluir=0&lst_tip_norma=<dtml-var tip_norma>&txt_numero=&txt_ano=&lst_assunto_norma=&dt_norma=&dt_norma2=&dt_public=&dt_public2=&txt_assunto=<dtml-var txt_palavra_chave>&lst_tip_situacao_norma=&rd_ordenacao=1">
+                  <dtml-var des_tipo_norma>
+                </a>
+               </td>               
+               <td class="texto">
+                  <dtml-var  expr="_.len(subtotal_normas)">
+               </td>
+             </tr>
+           </dtml-if>
+           </dtml-with>
+         </dtml-in>
+     </table>
+ </dtml-with>
+</fieldset>
 
 <dtml-var standard_html_footer>
