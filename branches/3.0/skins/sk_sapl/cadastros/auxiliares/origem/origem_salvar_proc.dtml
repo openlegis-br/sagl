@@ -1,0 +1,33 @@
+﻿<dtml-comment> 
+********************************************************************
+*    Função: Salva os dados do órgão vindos do                     *
+*         formulário, seja uma inclusão/atualização.               *
+*    Argumentos: hdn_cod_orgao: int - argumento que deter-         *
+*         mina se esse método vai ser uma inclusão/atualização.    * 
+*                                                                  *
+*    Retorno: Mensagem de sucesso ou erro.                         *
+*    Rommel Carvalho e Danilo Custódio em 30/03/2001               *
+********************************************************************
+</dtml-comment>   
+
+<dtml-if hdn_cod_origem>
+  <dtml-call expr="REQUEST.set('metodo', zsql.origem_atualizar_zsql)">
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.origem_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_origem = hdn_cod_origem,
+                          nom_origem = txt_nom_origem,
+                          sgl_origem = txt_sgl_origem
+                          )">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar os dados da origem. Tente novamente!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>   
+    <dtml-let mensagem="'Origem salva com sucesso!'" sucesso="1">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+</dtml-try>

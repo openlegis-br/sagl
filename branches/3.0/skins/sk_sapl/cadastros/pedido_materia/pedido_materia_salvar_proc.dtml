@@ -1,0 +1,94 @@
+<dtml-if hdn_cod_pedido>
+  <dtml-call expr="REQUEST.set('atualizar', 1)">
+  <dtml-in expr="zsql.pedido_materia_obter_zsql(cod_pedido=hdn_cod_pedido)">
+    <dtml-call expr="REQUEST.set('ped_enviado',(dat_envio!=None))">
+    <dtml-call expr="REQUEST.set('nao_existe_pedido',(cod_pedido!=hdn_cod_pedido))">
+    <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
+  </dtml-in>
+  <dtml-if expr="ped_enviado"> 
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-if>
+  <dtml-if expr="nao_existe_pedido">
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-if>
+  <dtml-if expr="not usr_eh_autor">
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-if>
+<dtml-else>
+  <dtml-call expr="REQUEST.set('atualizar', 0)">
+   <dtml-in expr="zsql.autor_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+     <dtml-call expr="REQUEST.set('hdn_cod_autor', _.str(_.int(cod_autor)))">
+   </dtml-in>
+    <dtml-in expr="zsql.numero_pedido_materia_obter_zsql()">
+      <dtml-call expr="REQUEST.set('txt_num_pedido', _.str(novo_numero))">
+    </dtml-in>
+</dtml-if>
+
+<dtml-if erro>
+    <dtml-let  mensagem="'<b>Não foi possível salvar o pedido!</b> <br />
+      Verifique se o pedido existe, se ele já foi enviado ou se usuário possui as permissões adequadas.'">
+      <dtml-var mensagem_popup_emitir>
+    </dtml-let>
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+  <dtml-if expr="atualizar==1">
+    <dtml-call expr="zsql.pedido_materia_atualizar_zsql(
+          cod_pedido         = hdn_cod_pedido,
+          tip_materia        = lst_tip_materia,   
+          txt_pedido         = txa_txt_pedido,   
+          txt_observacao     = txa_txt_observacao)">
+
+  <dtml-else>
+    <dtml-call expr="zsql.pedido_materia_incluir_zsql(
+          cod_autor          = hdn_cod_autor,
+          num_pedido         = _.int(txt_num_pedido),
+          tip_materia        = lst_tip_materia,   
+          txt_pedido         = txa_txt_pedido,   
+          txt_observacao     = txa_txt_observacao)">
+      <dtml-in expr="zsql.pedido_materia_incluido_codigo_obter_zsql()">
+        <dtml-call expr="REQUEST.set('hdn_cod_pedido', _.int(cod_pedido))">
+      </dtml-in>
+  </dtml-if>
+
+    <dtml-if expr="radTI=='I' or radTI=='S'">                
+        <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
+        <dtml-if expr="(_.int(hdn_file_pedido)==1)">
+            <dtml-if hdn_cod_pedido>
+                <dtml-call expr="REQUEST.set('id_pedido', _.str(hdn_cod_pedido)+'_pedido.pdf')">
+                <dtml-if "_.hasattr(sapl_documentos.pedido_materia,id_pedido)">
+                    <dtml-let pedido="_.getattr(sapl_documentos.pedido_materia,id_pedido) ">
+                        <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
+                        <dtml-try>
+                            <dtml-call "pedido.manage_upload(file=file_nom_arquivo_pedido)">           
+                        </dtml-try>
+                    </dtml-let>
+                </dtml-if>
+            <dtml-else>
+               <dtml-call expr="REQUEST.set('id_pedido',_.str(hdn_cod_pedido)+'_pedido.pdf')">
+             </dtml-if>
+             <dtml-if "not existe_arquivo">
+          <dtml-try>            
+                  <dtml-call expr="sapl_documentos.pedido_materia.manage_addProduct['ExtFile'].manage_addExtFile(id=id_pedido,file=file_nom_arquivo_pedido,permission_check=0)">            
+                 </dtml-try>      
+             </dtml-if>
+         </dtml-if>
+     <dtml-elif expr="radTI=='E'">
+         <dtml-if hdn_cod_pedido>
+             <dtml-call expr="REQUEST.set('id_pedido', _.str(hdn_cod_pedido)+'_pedido.pdf')">
+             <dtml-call "sapl_documentos.pedido_materia.manage_delObjects(id_pedido)">
+         </dtml-if>
+     </dtml-if>
+    <dtml-if erro>
+        <dtml-let mensagem="'Não foi possível salvar o anexo do pedido.'">
+            <dtml-var mensagem_popup_emitir>
+        </dtml-let>
+</dtml-if>
+
+<dtml-let mensagem="'Pedido salvo com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close();'">
+    <dtml-var mensagem_popup_emitir>
+</dtml-let>
+
+  </dtml-try>
+</dtml-unless>

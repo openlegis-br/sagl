@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Cadastro de Relator</title>
+<dtml-var standard_css_slot>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.datepick.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.fancybox.pack.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+
+<script type="text/javascript">
+<!--
+   function campos_criticar(form){
+
+     if (form.lst_relator[form.lst_relator.selectedIndex].value=="0"){
+        alert('O Relator deve ser selecionado!');
+        form.lst_relator.focus();
+        return false;
+     }
+
+     if (form.txt_dat_desig_relator.value==""){
+        alert('A data de designação deve ser preenchida!');
+        form.txt_dat_desig_relator.focus();
+        form.txt_dat_desig_relator.select();
+        return false;
+     }
+
+     if (!IsValidDate(form.txt_dat_desig_relator.value)) {
+        alert("Digite uma data de parecer válida!");
+        form.txt_dat_desig_relator.focus();
+        form.txt_dat_desig_relator.select();
+        return false;
+     }
+
+     if (form.txt_dat_destit_relator.value!=""){
+        if (!IsValidDate(form.txt_dat_destit_relator.value)){
+            alert("Digite uma data de destituição válida!");
+            form.txt_dat_destit_relator.focus();
+            form.txt_dat_destit_relator.select();
+            return false;
+        }else{
+            dat_desig=form.txt_dat_desig_relator.value;
+            dat_desig=dat_desig.substring(6,10)+dat_desig.substring(3,5)+dat_desig.substring(0,2);
+            dat_destit=form.txt_dat_destit_relator.value;
+            dat_destit=dat_destit.substring(6,10)+dat_destit.substring(3,5)+dat_destit.substring(0,2);
+            if (dat_desig > dat_destit){
+               alert("Digite uma data de parecer válida! \nNão deve ser anterior à designação!");
+               form.txt_dat_destit_relator.focus();
+               form.txt_dat_destit_relator.select();
+               return false;      
+            }
+        }
+     }       
+
+    if (form.file_nom_arquivo_parecer.value != "") {
+    form.hdn_file_parecer.value = 1;
+    }    
+
+     form.submit();   
+  }
+
+  function texto_odt_gerar(){
+
+      if (confirm("Confirma a geração do arquivo ODT?")) {
+         location.href="&dtml-portal_url;/modelo_proposicao/parecer?cod_materia=<dtml-var cod_materia missing>&cod_comissao=<dtml-var cod_comissao missing>";
+         setTimeout(function(){window.location.reload(true)},2500);
+         return true;
+       }
+         return;
+  }
+
+
+  function texto_integral_odt_excluir(){
+
+       if (confirm("Deseja realmente excluir o arquivo ODT?")) {
+          location.href="&dtml-portal_url;/cadastros/comissao/materia/texto_odt_parecer_excluir_proc?cod_relatoria=<dtml-var cod_relatoria missing>";
+       }
+       return;
+  }
+
+  function relatoria_excluir(){
+
+       if (confirm("Deseja realmente excluir?")) {
+          location.href="relatoria_excluir_proc?cod_relatoria=<dtml-var cod_relatoria missing>&amp;cod_materia=<dtml-var cod_materia missing>";
+       }
+       
+   }   
+
+ function ativa_desativa_file_field_parecer(form) {
+ form.file_nom_arquivo_parecer.disabled = !(form.radTI[2].checked);
+ }
+
+-->
+</script>
+
+<script type="text/javascript">
+$(function() {
+        $('#txt_dat_desig_relator').datepick();
+        $('#txt_dat_destit_relator').datepick();
+});
+</script>
+
+</head>
+
+<dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+  <dtml-call expr="REQUEST.set('nom_comissao', nom_comissao)">
+</dtml-in>
+
+<dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+   <dtml-call expr="REQUEST.set('id_materia', _.str(des_tipo_materia)+ ' ' +_.str(num_ident_basica)+ '/' +_.str(ano_ident_basica))">
+   <dtml-call expr="REQUEST.set('dat_apresentacao', _.str(dat_apresentacao))">
+</dtml-in>
+
+<dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao=cod_comissao,data=pysc.data_converter_pysc(data=dat_apresentacao), ind_excluido=0)">
+    <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', _.int(cod_periodo_comp))">
+</dtml-in>
+
+<h1 class="firstHeading"><dtml-var nom_comissao></h1>
+
+<form name="relatoria_form" method="post" action="relatoria_salvar_proc" enctype="multipart/form-data">
+  <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia>" />
+  <input type="hidden" name="hdn_cod_relatoria" value="<dtml-var cod_relatoria missing>" />
+  <input type="hidden" name="hdn_cod_comissao" value="<dtml-var cod_comissao missing>" />
+  <input type="hidden" name="hdn_url" value="index_html?cod_comissao=<dtml-var cod_comissao>" />
+  <input type="hidden" name="hdn_alterou" value="0" />
+
+<fieldset>
+ <legend>Cadastro de Relatoria - <dtml-var id_materia></legend>
+ <table>
+      <tr>
+         <td class="texto">
+            <label for="lst_relator">Relator </label><span class="campoObrigatorio"></span><br />
+            <select name="lst_relator">
+             <option value="0">Selecione um Parlamentar</option>
+<dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao=cod_comissao,data=pysc.data_converter_pysc(data=dat_apresentacao), ind_excluido=0)">
+    <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', _.int(cod_periodo_comp))">
+</dtml-in>
+                <dtml-in expr="zsql.composicao_comissao_obter_zsql(cod_comissao=cod_comissao,cod_periodo_comp=cod_periodo_comp_sel)">
+	           <option
+	              <dtml-if expr="REQUEST.has_key('cod_parlamentar') and (cod_parlamentar==REQUEST['cod_parlamentar'])">
+                        selected
+                      </dtml-if>
+			value="<dtml-var cod_parlamentar>"> <dtml-var nom_completo> 
+                   </option>
+	        </dtml-in> 
+            </select>
+         </td>
+         <td class="texto">
+            <label for="txt_dat_desig_relator">Data Designação </label><span class="campoObrigatorio"></span><br />
+            <input type="text" name="txt_dat_desig_relator" id="txt_dat_desig_relator" value="<dtml-var dat_desig_relator missing>" size="10" maxlength="10" onkeyup="formata_data(this,event)" />
+            </td>
+         </tr>
+ </table>
+</fieldset>
+
+<fieldset>
+ <legend>Parecer</legend>
+  <table>
+      <tr>
+        <td class="texto" width="33%">
+         <label for="txt_dat_destit_relator">Data Apresentação</label><br />
+          <input type="text" name="txt_dat_destit_relator" id="txt_dat_destit_relator" value="<dtml-var dat_destit_relator missing null="">" size="10" maxlength="10" onkeyup="formata_data(this,event)" />
+        </td>
+        <td class="texto" width="33%">
+          <label for="rad_tip_apresentacao">Forma Apresentação</label><br />
+            <dtml-in expr="['Oral', 'Escrita']">
+              <input type="radio" id="rad_tip_apresentacao" name="rad_tip_apresentacao" value="<dtml-var expr="_['sequence-item'][0]">"
+               <dtml-if expr="_.has_key('cod_relatoria') and tip_apresentacao==_['sequence-item'][0]">
+                   checked=1
+               </dtml-if> />
+              <dtml-var expr="_['sequence-item']">
+            </dtml-in>
+        </td>
+        <td class="texto" width="33%">
+          <label for="rad_tip_conclusao">Tipo Conclusão</label><br />
+            <dtml-in expr="['Favorável', 'Contrário']">
+              <input type="radio" id="rad_tip_conclusao" name="rad_tip_conclusao" value="<dtml-var expr="_['sequence-item'][0]">"
+               <dtml-if expr="_.has_key('cod_relatoria') and tip_conclusao==_['sequence-item'][0]">
+                   checked=1
+               </dtml-if> />
+              <dtml-var expr="_['sequence-item']">
+            </dtml-in>
+        </td>
+      </tr>
+      <tr>
+          <td class="texto" colspan="2">
+                        <dtml-if expr="_.has_key('cod_relatoria')">
+                          <label for="radTipTxtIntegral">Texto editável (ODT)</label><br />
+                          <dtml-let id_documento_odt="_.str(cod_relatoria)+'_parecer.odt'">
+                           <dtml-if "_.hasattr(sapl_documentos.parecer_comissao,id_documento_odt)">
+                             <dtml-let documento_odt="_.getattr(sapl_documentos.parecer_comissao,id_documento_odt).absolute_url">
+                               <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_relatoria)+'_parecer.odt')">
+                                 <a target="_blank" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento_odt>">
+                                   <img align="absmiddle" src="sapl/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
+                                 <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/parecer_comissao/externalEdit_/<dtml-var nome_arquivo_odt>">Editar</a>
+                               <a class="botao-link" href="javascript:texto_integral_odt_excluir()">Excluir</a>
+                             </dtml-let>
+                           <dtml-else>
+                               <img class="img-disabled" align="absmiddle" src="sapl/imagens/icon-odt.png" alt="Arquivo ODT" title="Não disponível"></a>
+                               <a class="botao-link" href="javascript:texto_odt_gerar();">Gerar ODT</a>
+                           </dtml-if>
+                          </dtml-let>
+                        </dtml-if>
+          </td>
+         <td class="texto">
+          <label for="lst_tip_fim_relatoria">Resultado Comissão</label><br />  
+            <select name="lst_tip_fim_relatoria">
+             <option value="">Selecione</option>
+             <dtml-in expr="zsql.tipo_fim_relatoria_obter_zsql(tip_fim_relatoria='')">
+              <option
+              <dtml-if expr="(_.has_key('tip_fim_relatoria_sel') and tip_fim_relatoria_sel is not None) and (_.int(tip_fim_relatoria)==_.int(REQUEST['tip_fim_relatoria_sel']))">
+                selected</dtml-if>
+               value="<dtml-var tip_fim_relatoria>"> 
+               <dtml-var des_fim_relatoria></option>
+             </dtml-in>    
+            </select>
+         </td>
+      </tr>
+      <tr>
+           <td class="texto" colspan="3"><label>Texto final (PDF)</label><br/>
+            <input type="hidden" name="hdn_file_parecer" value="0"/>
+            <dtml-if cod_relatoria>
+             <dtml-call expr="REQUEST.set('id_parecer', _.str(cod_relatoria)+'_parecer.pdf')">
+             <dtml-if "_.hasattr(sapl_documentos.parecer_comissao,id_parecer)">
+              <dtml-let parecer="_.getattr(sapl_documentos.parecer_comissao,id_parecer).absolute_url">
+               <a href="&dtml-portal_url;/javascript/Viewer.js#<dtml-var parecer>" target="_blank"><img align="middle" src="sapl/imagens/archiv.gif" alt="Texto Integral"></a>
+              </dtml-let>
+               <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field_parecer(document.relatoria_form)"/><span class="texto">Manter</span>
+               <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field_parecer(document.relatoria_form)"/><span class="texto">Excluir</span>
+               <input type="radio" name="radTI" value="S" onClick="ativa_desativa_file_field_parecer(document.relatoria_form)"/><span class="texto">Substituir</span>
+               <input type="file" id="file_nom_arquivo_parecer" name="file_nom_arquivo_parecer" accept="application/pdf" size="40" maxlength="100" disabled="1" />
+             <dtml-else>
+               <input type="file" id="file_nom_arquivo_parecer" name="file_nom_arquivo_parecer" accept="application/pdf" size="40" maxlength="100" />
+               <input type="hidden" name="radTI" value="I"/>
+             </dtml-if>
+            <dtml-else>
+              <input type="file" id="file_nom_arquivo_parecer" name="file_nom_arquivo_parecer" accept="application/pdf" size="40" maxlength="100" />
+              <input type="hidden" name="radTI" value="I"/>
+            </dtml-if>
+          </td>
+      </tr>
+      <tr>
+         <td class="texto" colspan="3">
+          <label for="txa_txt_parecer">Observação </label>
+            <textarea id="txa_txt_parecer" name="txa_txt_parecer" rows="4" cols="75"><dtml-var txt_parecer missing null=""></textarea>
+         </td>
+      </tr>
+   </table>
+</fieldset>
+
+<p align="center">
+  <input type="button" class="botao" name="btn_relatoria_salvar" value="Salvar" onClick="campos_criticar(document.relatoria_form)" />
+<dtml-if cod_relatoria>
+  <input type="button" class="botao" name="btn_relatoria_excluir" value="Excluir" onClick="relatoria_excluir()" />
+</dtml-if>
+<input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="javascript:parent.jQuery.fancybox.close();" />
+</p>
+
+</form>
+
+</html>

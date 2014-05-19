@@ -1,0 +1,37 @@
+﻿
+<dtml-if hdn_cod_documento_acessorio>
+  <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento_acessorio)+'.pdf')">
+  <dtml-call expr="REQUEST.set('metodo', zsql.documento_acessorio_administrativo_atualizar_zsql)">   
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.documento_acessorio_administrativo_incluir_zsql)">
+</dtml-if>
+
+
+  <dtml-call expr="metodo(cod_documento_acessorio = hdn_cod_documento_acessorio,
+                          tip_documento = hdn_tip_documento,
+                          nom_documento = txt_nom_documento,
+                          nom_autor_documento = txt_nom_autor_documento,
+                          cod_documento = hdn_cod_documento,
+                          txt_indexacao = txa_txt_indexacao,
+                          txt_assunto = txa_txt_assunto, 
+                          dat_documento = pysc.data_converter_pysc(data=txt_dat_documento),
+                          ind_excluido = 0)">
+
+   <dtml-in expr="zsql.documento_acessorio_administrativo_incluido_codigo_obter_zsql()">
+        <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento_acessorio)+'.pdf')">
+
+     <dtml-unless hdn_cod_documento_acessorio>
+          <dtml-call expr="sapl_documentos.administrativo.manage_addProduct['ExtFile'].manage_addExtFile(id=id_documento,file=file_nom_arquivo,permission_check=0)">
+     </dtml-unless>
+
+  </dtml-in>
+
+<dtml-if erro>
+<dtml-let mensagem="'Não foi possível salvar o Documento Acessório. Tente novamente.'">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+<dtml-else>
+    <dtml-let mensagem="'Documento Acessório salvo com sucesso!'" sucesso="1" url=hdn_url>
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+</dtml-if>

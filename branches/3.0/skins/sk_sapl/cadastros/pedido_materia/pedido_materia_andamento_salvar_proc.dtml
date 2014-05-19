@@ -1,0 +1,26 @@
+<dtml-if expr="lst_tip_id_basica!=''">
+    <dtml-in expr="zsql.materia_obter_zsql(tip_id_basica=lst_tip_id_basica, num_ident_basica=txt_num_ident_basica, ano_ident_basica=txt_ano_ident_basica)">
+        <dtml-call expr="REQUEST.set('hdn_cod_materia', _.int(cod_materia))">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+        <dtml-let mensagem="'A matéria legislativa não existe no cadastro do sistema!'">
+            <dtml-var mensagem_emitir>
+        </dtml-let>         
+    </dtml-in>
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="zsql.pedido_materia_andamento_atualizar_zsql(
+          cod_pedido         = hdn_cod_pedido,
+          cod_materia        = hdn_cod_materia,
+          txt_observacao     = txa_txt_observacao)">
+  <dtml-except>
+        <dtml-let mensagem="'Não foi possível atualizar o pedido.'">
+            <dtml-var mensagem_popup_emitir>
+        </dtml-let>
+  </dtml-try>
+<dtml-let mensagem="'Pedido atualizado com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close();'">
+    <dtml-var mensagem_popup_emitir>
+</dtml-let>
+</dtml-unless>

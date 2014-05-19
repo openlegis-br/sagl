@@ -1,0 +1,27 @@
+<dtml-call expr="REQUEST.set('id_substitutivo', _.str(cod_substitutivo)+'_substitutivo.pdf')">
+<dtml-call expr="REQUEST.set('status','D')">
+<dtml-if expr="_.hasattr(sapl_documentos.substitutivo,id_substitutivo)">
+    <dtml-try>
+	  <dtml-call expr="sapl_documentos.substitutivo.manage_delObjects(id_substitutivo)">
+	  <dtml-except>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-try>
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="zsql.substitutivo_excluir_zsql(cod_substitutivo=cod_substitutivo)">
+  <dtml-except>  
+    <dtml-call expr="REQUEST.set('erro', 1)">   
+  <dtml-else>
+    <dtml-let mensagem="'Substitutivo excluído com sucesso.'" sucesso="1" url="'index_html?cod_materia='+cod_materia">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+</dtml-unless>
+
+<dtml-if erro>
+  <dtml-let mensagem="'Não foi possível excluir o substitutivo. Tente novamente!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-if>
