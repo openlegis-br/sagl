@@ -46,7 +46,7 @@ from SAPLTool import SAPLTool
 
 def initialize(context):
 
-    # inicializa a instalacao e estrutura do SAPL
+    # inicializa a instalacao e estrutura do OpenLegis
 
     tools = [SAPLTool]
     ToolInit('SAPL Tool',
