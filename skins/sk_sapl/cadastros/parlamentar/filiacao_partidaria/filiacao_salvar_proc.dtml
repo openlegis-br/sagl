@@ -1,0 +1,50 @@
+﻿<dtml-try>
+  <dtml-in expr="zsql.filiacao_obter_zsql(ind_excluido=1,
+                                          cod_parlamentar = hdn_cod_parlamentar,
+                                          cod_partido     = lst_cod_partido,
+                                          dat_filiacao    = pysc.data_converter_pysc(txt_dat_filiacao))">
+
+    <dtml-call expr="REQUEST.set('metodo', zsql.filiacao_estado_alterar_zsql)">
+  <dtml-else>
+    <dtml-if expr="hdn_boolean_incluir_filiacao == '1'">
+      <dtml-call expr="REQUEST.set('metodo', zsql.filiacao_incluir_zsql)">
+    <dtml-else> 
+      <dtml-call expr="REQUEST.set('metodo', zsql.filiacao_atualizar_zsql)">
+    </dtml-if>
+  </dtml-in>
+
+<dtml-except>
+  <dtml-let mensagem="'Ocorreu um erro ao tentar salvar a filia&ccedil;&atilde;o partid&aacute;ria'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+
+</dtml-try>
+
+<dtml-if expr="_.has_key('metodo')">
+  <dtml-try>
+    <dtml-call expr="metodo( 
+           cod_partido_ant  = hdn_cod_partido,           
+           dat_filiacao_ant = pysc.data_converter_pysc(hdn_dat_filiacao),
+           cod_parlamentar  = hdn_cod_parlamentar,           
+           cod_partido      = lst_cod_partido,
+           dat_filiacao     = pysc.data_converter_pysc(txt_dat_filiacao),
+           dat_desfiliacao  = pysc.data_converter_pysc(txt_dat_desfiliacao),
+           ind_excluido     = 0
+           )">
+  <dtml-except IntegrityError>
+    <dtml-let mensagem="'Essa filia&ccedil;&atilde;o j&aacute; existe'">
+     <dtml-var mensagem_emitir>
+    </dtml-let>
+
+  <dtml-except>
+    <dtml-let mensagem="'Ocorreu um erro ao tentar salvar a filia&ccedil;&atilde;o partid&aacute;ria'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+
+  <dtml-else>
+    <dtml-let mensagem="'Filia&ccedil;&atilde;o Partid&aacute;ria salva com sucesso'" sucesso="1" url=hdn_url>
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+
+  </dtml-try>
+</dtml-if>

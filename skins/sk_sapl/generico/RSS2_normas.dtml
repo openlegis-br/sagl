@@ -1,0 +1,49 @@
+<dtml-call expr="RESPONSE.setHeader('content-type', 'text/xml; charset=utf-8')">
+<?xml version="1.0" encoding="utf-8" ?>
+<?xml-stylesheet type="text/css" href="&dtml-portal_url;/generico/rss2feed.css" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+     <title>Normas Juridicas - <dtml-var "sapl_documentos.props_sapl.nom_casa" missing></title>
+     <link>&dtml-portal_url;/generico/norma_juridica_pesquisar_proc?incluir=0</link>
+     <description>Sistema de Apoio ao Processo Legislativo</description>
+     <image>
+      <dtml-call expr="REQUEST.set('existe_logo', 0)">
+      <dtml-call expr="REQUEST.set('id_logo', sapl_documentos.props_sapl.id_logo)">
+        <dtml-in expr="sapl_documentos.props_sapl.objectValues('ExtImage')">
+          <dtml-if expr="id == id_logo">
+            <dtml-call expr="REQUEST.set('existe_logo', 1)">
+          </dtml-if>
+        </dtml-in>
+        <dtml-if "not existe_logo">
+<url>&dtml-portal_url;/imagens/brasao.gif</url>
+       <dtml-else>
+<url>&dtml-portal_url;/sapl_documentos/props_sapl/logo_casa.gif</url>
+       </dtml-if>
+<title>Normas Juridicas - <dtml-var "sapl_documentos.props_sapl.nom_casa" missing></title>
+     <link>&dtml-portal_url;/generico/norma_juridica_pesquisar_proc?incluir=0</link>
+     </image>
+     <dc:language>pt-BR</dc:language>
+     <ttl>10</ttl>
+     <dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=lst_tip_norma, num_norma=pysc.extrai_id_pysc(id=txt_numero), ano_norma=txt_ano, des_assunto=txt_assunto, cod_assunto=lst_assunto_norma, dat_norma=dt_norma, dat_norma2=dt_norma2, dat_publicacao=dt_public, dat_publicacao2=dt_public2, rd_ordem=rd_ordenacao)">
+    <item>
+     <title>
+      <dtml-var des_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma>
+     </title>
+     <description><dtml-var txt_ementa missing></description>
+     <link>&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma></link>
+     <guid>&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma></guid>
+   <dtml-let id_documento="_.str(cod_norma)+'_texto_integral'">
+     <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento)">
+        <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento).absolute_url">
+     <enclosure url="<dtml-var documento>" length="1" type="application/pdf" />
+        </dtml-let>
+     <dtml-else>
+     </dtml-if>
+   </dtml-let>
+<category><dtml-var des_tipo_norma></category>
+     <pubDate><dtml-var expr="DateTime(dat_norma).rfc822()" missing null=""></pubDate>
+     </item>
+
+  </dtml-in>
+</channel>
+</rss>

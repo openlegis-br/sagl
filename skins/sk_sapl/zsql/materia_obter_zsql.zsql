@@ -1,0 +1,136 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_materia="" ncod_materia="" tip_id_basica="" num_ident_basica="" ano_ident_basica="" num_protocolo="" ind_tramitacao="" cod_regime_tramitacao="" txt_ementa="" txt_busca="" ind_excluido=0
+max_rows : 5000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT 
+       REPLACE(materia.cod_materia, 'L', '') as cod_materia,
+       tipo_materia.sgl_tipo_materia,
+       tipo_materia.des_tipo_materia,
+       origem.sgl_origem,
+       origem.nom_origem,
+       REPLACE(materia.tip_id_basica, 'L', '') as tip_id_basica,
+       REPLACE(materia.cod_local_origem_externa, 'L', '') as cod_local_origem_externa,
+       REPLACE(materia.tip_origem_externa, 'L', '') as tip_origem_externa,
+       materia.num_ident_basica,
+       materia.ano_ident_basica,
+       materia.tip_apresentacao,
+       materia.num_protocolo,
+       materia.num_origem_externa,
+       materia.ano_origem_externa,
+       materia.nom_apelido,
+       materia.num_dias_prazo,
+       materia.ind_tramitacao,
+       materia.ind_polemica,
+       materia.des_objeto,
+       materia.ind_complementar,
+       materia.cod_regime_tramitacao,
+       materia.txt_ementa,
+       materia.txt_indexacao, 
+       materia.txt_observacao,       
+       DATE_FORMAT(materia.dat_apresentacao, '%d/%m/%Y') as dat_apresentacao,
+       DATE_FORMAT(materia.dat_publicacao, '%d/%m/%Y') as dat_publicacao,
+       DATE_FORMAT(materia.dat_origem_externa, '%d/%m/%Y') as dat_origem_externa,
+       DATE_FORMAT(materia.dat_fim_prazo, '%d/%m/%Y') as dat_fim_prazo,
+       materia.cod_situacao
+
+FROM   
+       materia_legislativa as materia LEFT JOIN origem ON 
+          materia.cod_local_origem_externa=origem.cod_origem,
+       tipo_materia_legislativa as tipo_materia,
+       regime_tramitacao
+       
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_materia           column="materia.cod_materia" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest ncod_materia          column="materia.cod_materia" op="!=" type="int" optional> <dtml-and>
+    <dtml-sqltest tip_id_basica         column="materia.tip_id_basica" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest num_ident_basica      column="materia.num_ident_basica" op="="  type="nb" optional> <dtml-and>
+    <dtml-sqltest ano_ident_basica      column="materia.ano_ident_basica" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest num_protocolo         column="materia.num_protocolo" op="="  type="nb" optional> <dtml-and>
+    <dtml-sqltest ind_tramitacao        column="materia.ind_tramitacao" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest cod_regime_tramitacao column="materia.cod_regime_tramitacao" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest txt_ementa            column="materia.txt_ementa" op="="  type="nb" optional> <dtml-and>
+    <dtml-sqltest ind_excluido          column="materia.ind_excluido"    op="="  type="int" optional> <dtml-and>
+
+    <dtml-if txt_busca>
+      match(materia.txt_ementa,materia.txt_indexacao,materia.txt_observacao)
+       against (<dtml-sqlvar txt_busca type="string"> IN BOOLEAN MODE) and
+    </dtml-if>
+
+    materia.tip_id_basica = tipo_materia.tip_materia and
+    materia.cod_regime_tramitacao = regime_tramitacao.cod_regime_tramitacao    
+  </dtml-sqlgroup>
+
+ORDER BY tipo_materia.sgl_tipo_materia, materia.ano_ident_basica DESC, LPAD(materia.num_ident_basica, 5, '0') DESC
+
+<dtml-comment>
+ORDER BY tipo_materia.sgl_tipo_materia, LPAD(materia.num_ident_basica, 5, '0'), materia.ano_ident_basica
+</dtml-comment>
+
+<dtml-else>
+
+SELECT 
+       materia.cod_materia as cod_materia,
+       tipo_materia.sgl_tipo_materia,
+       tipo_materia.des_tipo_materia,
+       origem.sgl_origem,
+       origem.nom_origem,
+       materia.tip_id_basica as tip_id_basica,
+       materia.cod_local_origem_externa as cod_local_origem_externa,
+       materia.tip_origem_externa as tip_origem_externa,
+       materia.num_ident_basica,
+       materia.ano_ident_basica,
+       materia.tip_apresentacao,
+       materia.num_origem_externa,
+       materia.ano_origem_externa,
+       materia.nom_apelido,
+       materia.num_dias_prazo,
+       materia.ind_tramitacao,
+       materia.ind_polemica,
+       materia.des_objeto,
+       materia.ind_complementar,
+       materia.cod_regime_tramitacao,
+       materia.txt_ementa,
+       materia.txt_indexacao, 
+       materia.txt_observacao,       
+       TO_CHAR(materia.dat_apresentacao, 'DD/MM/YYYY') as dat_apresentacao,
+       TO_CHAR(materia.dat_publicacao, 'DD/MM/YYYY') as dat_publicacao,
+       TO_CHAR(materia.dat_origem_externa, 'DD/MM/YYYY') as dat_origem_externa,
+       TO_CHAR(materia.dat_fim_prazo, 'DD/MM/YYYY') as dat_fim_prazo,
+       materia.cod_situacao
+
+FROM   
+       materia_legislativa as materia LEFT JOIN origem ON 
+          materia.cod_local_origem_externa=origem.cod_origem,
+       tipo_materia_legislativa as tipo_materia,
+       regime_tramitacao
+       
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_materia           column="materia.cod_materia" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest ncod_materia          column="materia.cod_materia" op="!=" type="int" optional> <dtml-and>
+    <dtml-sqltest tip_id_basica         column="materia.tip_id_basica" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest num_ident_basica      column="materia.num_ident_basica" op="="  type="nb" optional> <dtml-and>
+    <dtml-sqltest ano_ident_basica      column="materia.ano_ident_basica" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest ind_tramitacao        column="materia.ind_tramitacao" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest cod_regime_tramitacao column="materia.cod_regime_tramitacao" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest txt_ementa            column="materia.txt_ementa" op="="  type="nb" optional> <dtml-and>
+    <dtml-sqltest ind_excluido          column="materia.ind_excluido"    op="="  type="int" optional> <dtml-and>
+
+    <dtml-if txt_busca>
+      (match(txt_ementa)    against (<dtml-sqlvar txt_busca type="string">) or
+       match(txt_indexacao) against (<dtml-sqlvar txt_busca type="string">)) and
+    </dtml-if>
+
+    materia.tip_id_basica = tipo_materia.tip_materia and
+    materia.cod_regime_tramitacao = regime_tramitacao.cod_regime_tramitacao    
+  </dtml-sqlgroup>
+
+ORDER BY tipo_materia.sgl_tipo_materia, materia.ano_ident_basica DESC, LPAD(materia.num_ident_basica, 5, '0') DESC
+
+<dtml-comment>
+ORDER BY tipo_materia.sgl_tipo_materia, LPAD(materia.num_ident_basica, 5, '0'), materia.ano_ident_basica
+</dtml-comment>
+
+</dtml-if>

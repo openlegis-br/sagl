@@ -1,0 +1,74 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : tip_id_basica="" dat_tramitacao="" data_inicial="" data_final=""
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT
+       REPLACE(materia_legislativa.cod_materia, 'L', '') as cod_materia,
+       REPLACE(materia_legislativa.tip_id_basica, 'L', '') as tip_id_basica,
+       materia_legislativa.num_ident_basica,
+       materia_legislativa.ano_ident_basica,
+       materia_legislativa.dat_apresentacao,
+       tipo_materia_legislativa.sgl_tipo_materia,
+       tipo_materia_legislativa.des_tipo_materia
+
+FROM   materia_legislativa, tipo_materia_legislativa
+
+<dtml-sqlgroup where>
+    materia_legislativa.ind_excluido = 0
+  and
+    tipo_materia_legislativa.ind_excluido = 0
+  and
+    materia_legislativa.tip_id_basica = tipo_materia_legislativa.tip_materia
+
+<dtml-and>
+  <dtml-sqltest tip_id_basica column="materia_legislativa.tip_id_basica" op="=" type="int" optional>
+
+<dtml-and>
+  <dtml-sqltest data_inicial column="materia_legislativa.dat_apresentacao" op=">=" type="nb" optional>
+
+<dtml-and>
+  <dtml-sqltest data_final column="materia_legislativa.dat_apresentacao" op="<=" type="nb" optional>
+
+</dtml-sqlgroup>
+
+  and
+    materia_legislativa.dat_apresentacao <= <dtml-sqlvar dat_tramitacao type="nb">
+
+<dtml-else>
+
+SELECT
+       materia_legislativa.cod_materia as cod_materia,
+       materia_legislativa.tip_id_basica as tip_id_basica,
+       materia_legislativa.num_ident_basica,
+       materia_legislativa.ano_ident_basica,
+       materia_legislativa.dat_apresentacao,
+       tipo_materia_legislativa.sgl_tipo_materia,
+       tipo_materia_legislativa.des_tipo_materia
+
+FROM   materia_legislativa, tipo_materia_legislativa
+
+<dtml-sqlgroup where>
+    materia_legislativa.ind_excluido = 0
+  and
+    tipo_materia_legislativa.ind_excluido = 0
+  and
+    materia_legislativa.tip_id_basica = tipo_materia_legislativa.tip_materia
+
+<dtml-and>
+  <dtml-sqltest tip_id_basica column="materia_legislativa.tip_id_basica" op="=" type="int" optional>
+
+<dtml-and>
+  <dtml-sqltest data_inicial column="materia_legislativa.dat_apresentacao" op=">=" type="nb" optional>
+
+<dtml-and>
+  <dtml-sqltest data_final column="materia_legislativa.dat_apresentacao" op="<=" type="nb" optional>
+
+</dtml-sqlgroup>
+
+  and
+    materia_legislativa.dat_apresentacao <= <dtml-sqlvar dat_tramitacao type="nb">
+
+</dtml-if>

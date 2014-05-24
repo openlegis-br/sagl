@@ -1,0 +1,84 @@
+<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/norma_juridica">Ajuda</a>
+<h1 class="firstHeading">Norma Jurídica</h1>
+
+<ul>
+ <li><a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
+    Retornar à Norma Jurídica</a>
+ </li>
+</ul>
+
+<form action=vinculo_norma_juridica_form method=post>
+<fieldset>
+
+<dtml-var norma_header missing>
+
+   <fieldset><legend>Normas Relacionadas</legend>                   
+
+    <table>
+      <tr>  
+         <th class="form-label">Relacionamento</th>
+         <th class="form-label">Norma</th>
+         <th class="form-label">Data Norma </th>
+      </tr>
+   <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+      <tr> 
+         <td class="texto">
+          <a href="&dtml-portal_url;/cadastros/norma_juridica/vinculo_norma_juridica/vinculo_norma_juridica_mostrar_proc?cod_vinculo=<dtml-var cod_vinculo>"><b>
+            <dtml-if "tip_vinculo=='A'">Alterada pela
+            <dtml-elif "tip_vinculo=='R'">Revogada pelo(a)
+            <dtml-elif "tip_vinculo=='P'">Revogada parcialmente pelo(a)
+            <dtml-elif "tip_vinculo=='T'">Revogada por consolidação
+            <dtml-elif "tip_vinculo=='C'">Norma correlata
+            <dtml-elif "tip_vinculo=='I'">Execução suspensa pelo(a)
+            <dtml-elif "tip_vinculo=='G'">Regulamentada pelo(a)
+            </dtml-if></b></a>
+         </td>
+         <td class="texto">
+            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
+            <dtml-var des_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma></a>
+         </td>
+         <td class="texto">
+            <dtml-var dat_norma null="">
+         </td> 
+      </tr>
+  </dtml-in>
+  <dtml-in expr="zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)">
+      <tr> 
+         <td class="texto">
+            <a href="&dtml-portal_url;/cadastros/norma_juridica/vinculo_norma_juridica/vinculo_norma_juridica_mostrar_proc?cod_vinculo=<dtml-var cod_vinculo>"><b>
+            <dtml-if "tip_vinculo=='A'">Altera o(a)
+            <dtml-elif "tip_vinculo=='R'">Revoga o(a)
+            <dtml-elif "tip_vinculo=='P'">Revoga parcialmente o(a)
+            <dtml-elif "tip_vinculo=='T'">Revoga por consolidação o(a)
+            <dtml-elif "tip_vinculo=='C'">Norma correlata
+            <dtml-elif "tip_vinculo=='I'">Suspende a execução do(a)
+            <dtml-elif "tip_vinculo=='G'">Regulamenta o(a)
+            </dtml-if> </b></a>
+         </td>
+         <td class="texto">
+            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
+            <dtml-var des_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma></a>
+         </td>
+         <td class="texto">
+            <dtml-var dat_norma null="">
+         </td> 
+      </tr>
+
+  </dtml-in>
+  <dtml-unless "zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)
+                or zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+       <tr><td class="texto" colspan="5">Nenhum vínculo encontrado para esta norma.</td></tr>
+  </dtml-unless>
+      </table> 
+</fieldset>
+      <p align="center">
+          <input type="submit" class="botao" name="btn_incluir" value="Incluir Vínculo" />
+      </p></center><br />
+    </td>
+  </tr>
+<input type="hidden" name="cod_norma" value="<dtml-var cod_norma>">
+  </fieldset>
+</form>
+<dtml-var standard_html_footer>
