@@ -1,7 +1,7 @@
 ### Script a ser rodado com "zopectl run" durante o processo de instalacao do SAPL.
 ### Criado por Ciciliati, em 26/10/2005
-### Versao do SAPL: 2.6
-### Versao deste script: 1.8 - Luciano De Fazio - 17/11/2013
+### Versao do SAPL: 2.7
+### Versao deste script: 1.9 - Luciano De Fazio - 24/05/2014
 
 import App.version_txt
 
@@ -13,7 +13,7 @@ else:
   import transaction
   t=transaction.get()
 
-### Criar "sapl"
+### Criar "openlegis"
 ##### 1 - Configurar ambiente de seguranca
 ####### 1.1 - Identificar um usuario com perfil 'Manager"
 i=0
@@ -25,14 +25,14 @@ while i < len(l_users):
         break
     i=i+1
 if not t_username:
-    print "*** ERRO! Na foi encontrado um usuário administrador do Zope.Contacte o Interlegis. ***"
+    print "*** ERRO! Na foi encontrado um usuário administrador do Zope. ***"
 ######## 1.2 - Registrar esse usuario nesta sessao
 from AccessControl.SecurityManagement import newSecurityManager
 adminuser=app.acl_users.getUser(t_username).__of__(app.acl_users)
 newSecurityManager (None, adminuser)
 
 ### Adicionar o SAPL ###
-app.manage_addProduct['ILSAPL'].manage_addSAPL(id='sapl',title='SAPL-Sistema de Apoio ao Processo Legislativo', database='MySQL')
+app.manage_addProduct['ILSAPL'].manage_addSAPL(id='sapl',title='Sistema Aberto de Gestão Legislativa', database='MySQL')
   
 ### Criar "sapl_documentos"  
 

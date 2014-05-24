@@ -15,7 +15,7 @@ from ComputedAttribute import ComputedAttribute
 
 class SAPL(CMFSite):
     """
-    Inicia um novo OpenLegis-SAPL baseado em um CMFSite.
+    Inicia um novo OpenLegis baseado em um CMFSite.
     """
     security=ClassSecurityInfo()
     meta_type = portal_type = 'SAPL'
@@ -51,17 +51,17 @@ class SAPLGenerator(Portal.PortalGenerator):
         except:
             p.manage_addProduct['OFSP'].manage_addFolder(id='sapl_documentos')
 
-    # Metodo para a importacao do SAPL
+    # Metodo para a importacao do OpenLegis
     def setupConteudo(self, p):        
-        # estrutura do diretorio das materias legislativas
+        # estrutura do diretorio de armazenamento de documentos
         for o in ['props_sapl.zexp','administrativo.zexp','ata_sessao.zexp','modelo.zexp','proposicao.zexp','parlamentar.zexp','materia.zexp','materia_odt.zexp','norma_juridica.zexp','pauta_sessao.zexp','reuniao_comissao.zexp','parecer_comissao.zexp','oradores_expediente.zexp','oradores.zexp','emenda.zexp', 'substitutivo.zexp']:
             p.sapl_documentos.manage_importObject(o)
 
-        # importar conteudos na raiz do Openlegis-SAPL
+        # importar conteudos na raiz do sistema
         for o in ['modelo_proposicao.zexp','pdflabels.zexp','gerar_etiquetas_pdf.zexp']:
             p.manage_importObject(o)
 
-    # Metodo para configurar a skin do OpenLegis-SAPL
+    # Metodo para configurar a skin
     def setupSAPLSkins(self, p):
         sk_tool = getToolByName(p, 'portal_skins')
 
@@ -88,7 +88,7 @@ class SAPLGenerator(Portal.PortalGenerator):
             if layer in existing_layers and remove:
                 sk_tool.manage_delObjects(ids=[layer])
 
-        # adiciona a layer do Openlegis-ILSAPL
+        # adiciona a layer do Openlegis
         sapldir = 'sk_sapl'
         if sapldir not in path:
             try:
@@ -113,7 +113,7 @@ class SAPLGenerator(Portal.PortalGenerator):
 
     # Metodo para inserir as novas roles.
     def setupRoles(self, p):
-        p.__ac_roles__ = ('Administrador','Autor','Operador Lexml','Operador Sessao Plenaria','Operador','Operador Parlamentar','Operador Ordem Dia','Operador Norma','Operador Tabela Auxiliar','Operador Mesa Diretora','Operador Comissao','Operador Materia',"Operador Protocolo", "Operador Modulo Administrativo",)
+        p.__ac_roles__ = ('Administrador','Autor','Operador Lexml','Operador Sessao Plenaria','Operador','Operador Parlamentar','Operador Ordem Dia','Operador Norma','Operador Tabela Auxiliar','Operador Mesa Diretora','Operador Comissao','Operador Materia',"Operador Protocolo","Operador Modulo Administrativo","Assessor Parlamentar")
 
     # Metodo para criar usuario padrao
     def setupAdicionarUsuarios(self, p):
@@ -125,9 +125,9 @@ class SAPLGenerator(Portal.PortalGenerator):
     # Metodo para criacao da conexao do banco de dados
     def setupDatabase(self, p, database):
         if database == 'MySQL':
-            p.manage_addProduct['ZMySQLDA'].manage_addZMySQLConnection(id='dbcon_interlegis',title='Banco de Dados do SAPL (MySQL)',connection_string='interlegis sapl sapl',check=True,use_unicode=True,auto_create_db=False)
+            p.manage_addProduct['ZMySQLDA'].manage_addZMySQLConnection(id='dbcon_interlegis',title='Banco de Dados OpenLegis (MySQL)',connection_string='interlegis sapl sapl',check=True,use_unicode=True,auto_create_db=False)
         else:
-            p.manage_addProduct['ZPsycopgDA'].manage_addZPsycopgConnection(id='dbcon_interlegis',title='Banco de Dados do SAPL (PostgreSQL)',connection_string='dbname=interlegis user=sapl password=sapl host=localhost')
+            p.manage_addProduct['ZPsycopgDA'].manage_addZPsycopgConnection(id='dbcon_interlegis',title='Banco de Dados OpenLegis (PostgreSQL)',connection_string='dbname=interlegis user=sapl password=sapl host=localhost')
     
     # Metodo para adicao da tool
     def setupTool(self, p):
@@ -155,10 +155,10 @@ from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 manage_addSAPLForm = PageTemplateFile('www/addSAPL', globals())
 manage_addSAPLForm.__name__ = 'addSAPL'
 
-def manage_addSAPL(self, id, title='OpenLegis-Automação do Processo Legislativo', description='',
+def manage_addSAPL(self, id, title='Sistema Aberto de Gestão Legislativa', description='',
                    create_userfolder=1, database='MySQL',
                    RESPONSE=None):
-    """ Adicionar uma instancia do OpenLegis-SAPL.
+    """ Adicionar uma instancia OpenLegis.
     """
     gen = SAPLGenerator()
     id = id.strip()
