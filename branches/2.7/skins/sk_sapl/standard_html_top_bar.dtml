@@ -1,0 +1,233 @@
+<div id="topo">
+  <dtml-call expr="REQUEST.set('existe_logo', 0)">
+  <dtml-call expr="REQUEST.set('id_logo', sapl_documentos.props_sapl.id_logo)">
+  <dtml-in expr="sapl_documentos.props_sapl.objectValues('ExtImage')">
+    <dtml-if expr="id == id_logo">
+      <dtml-call expr="REQUEST.set('existe_logo', 1)">
+    </dtml-if>
+  </dtml-in>
+  <a href="&dtml-portal_url;">
+  <div id="logo">
+    <dtml-if "not existe_logo">
+      <img src="&dtml-portal_url;/imagens/brasao.gif" alt="Logotipo da Casa Legislativa" />
+    <dtml-else>
+      <img src="sapl_documentos/props_sapl/<dtml-var id_logo>" alt="Logotipo da Casa Legislativa" />
+    </dtml-if>
+  </div>
+  <div id="identidade">
+    <h2><dtml-var "sapl_documentos.props_sapl.nom_casa">
+        <dtml-call expr="REQUEST.set('cod_localidade', sapl_documentos.props_sapl.cod_localidade)">
+        <dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade)">
+          - <dtml-var sgl_uf>
+         </dtml-in>
+    </h2>
+    <h3>OpenLegis - Sistema Aberto de Gestão Legislativa</h3>
+  </div>
+</a>
+
+<div id="busca">
+
+<div id='search_box'>
+  <form action='&dtml-portal_url;/generico/palavra_chave_buscar_proc' name='search_form' id='search_form'>
+    <input id='search_text' name='txt_palavra_chave' placeholder='palavra-chave' type='text'/>
+    <button type="button" name="search_button" id='search_button' onclick="javascript:palavra_chave_buscar()"><span>Buscar</span>
+  </form>
+</div>
+
+</div>
+  <br />
+</div>
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+<div id="funcoes">
+  <dtml-if isAnon>
+    <dtml-call expr="REQUEST.set('diretorio', portal_url() + '/consultas/')">
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('diretorio', portal_url() + '/cadastros/')">
+  </dtml-if>
+  <dtml-unless senha>
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Alterar Senha'])">
+	<dtml-call expr="REQUEST.RESPONSE.redirect(portal_url() +'/generico/senha_trocar_form?senha=1')">
+    </dtml-if>
+  </dtml-unless>
+
+  <select id="select-nav" onchange="changeUrl();"> 
+    <option value="" selected="selected">Navegação</option>
+ 
+    <option value=" ">INSTITUCIONAL</option> 
+      <option value="<dtml-var diretorio>mesa_diretora">-- Mesa Diretora</option>
+      <option value="<dtml-var diretorio>comissao">-- Comissões</option> 
+      <option value="<dtml-var diretorio>bancada">-- Bancadas</option>         
+      <option value="<dtml-var diretorio>parlamentar">-- Parlamentares</option> 
+
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Protocolo'])">
+    <option value=" ">PROTOCOLO</option> 
+      <option value="&dtml-portal_url;/consultas/protocolo/protocolo_pesquisar_form?incluir=1">-- Pesquisar</option>
+      <option value="&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form">-- Protocolo Legislativo</option>
+      <option value="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form">-- Protocolo Administrativo</option>
+      <option value="&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form">-- Anular Protocolo</option>
+      <option value="<dtml-var diretorio>recebimento_proposicao">-- Receber Proposições</option>
+    </dtml-if>
+
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Modulo Administrativo'])">
+    <option value=" ">ADMINISTRATIVO</option> 
+      <option value="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_pesquisar_form?incluir=1">-- Documentos Administrativos</option>
+      <option value="&dtml-portal_url;/consultas/instituicao/instituicao_pesquisar_form?incluir=1">-- Entidades / Instituições</option>
+    </dtml-if>
+ 
+    <option value=" ">ATIVIDADE LEGISLATIVA</option> 
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Autor'])">
+      <option value="<dtml-var diretorio>proposicao">-- Elaboração deProposições</option>
+    </dtml-if>
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia'])">
+      <option value="&dtml-portal_url;/generico/materia_pesquisar_form?incluir=1">-- Matérias Legislativas</option>
+    <dtml-else>
+      <option value="&dtml-portal_url;/generico/materia_pesquisar_form?incluir=0">-- Matérias Legislativas</option>
+    </dtml-if>
+      <option value="&dtml-portal_url;/consultas/sessao_plenaria">-- Sessões Plenárias</option>
+      <option value="&dtml-portal_url;/consultas/pauta_sessao">-- Pautas das Sessões</option>
+      <option value="&dtml-portal_url;/consultas/ata_sessao">-- Atas das Sessões</option>
+      <option value="&dtml-portal_url;/consultas/reuniao_comissao">-- Reuniões das Comissões</option>
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia'])">
+      <option value="<dtml-var diretorio>materia/tramitacao/tramitacao_lote_form">-- Tramitação em Lote</option>
+      <option value="&dtml-portal_url;/generico/impressos/materia_impresso_form">-- Impressos</option>
+    </dtml-if>
+      <option value="&dtml-portal_url;/relatorios_administrativos">-- Relatórios</option>
+
+    <option value=" ">NORMAS JURÍDICAS</option>
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Norma'])">
+      <option value="&dtml-portal_url;/generico/norma_juridica_pesquisar_form?incluir=1">-- Pesquisar</option>
+    <dtml-else>
+      <option value="&dtml-portal_url;/generico/norma_juridica_pesquisar_form?incluir=0">-- Pesquisar</option>
+    </dtml-if>
+      <option value="&dtml-portal_url;/generico/norma_juridica_indice_assunto?incluir=0">-- Índice de Assuntos</option> 
+
+
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador', 'Autor', 'Operador', 'Operador Mesa Diretora', 'Operador Comissao', 'Operador Ordem Dia', 'Operador Parlamentar', 'Operador Materia', 'Operador Norma', 'Operador Tabela Auxiliar', 'Operador Protocolo', 'Operador Modulo Administrativo','Operador Lexml'])">
+    <option value=" ">SISTEMA</option> 
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Tabela Auxiliar'])">
+      <option value="<dtml-var diretorio>auxiliares">-- Tabelas Auxiliares</option>
+    </dtml-if>
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador Lexml'])">
+      <option value="<dtml-var diretorio>auxiliares/lexml/lexml_provedor">-- Provedor LeXML</option>
+      <option value="<dtml-var diretorio>auxiliares/lexml/lexml_publicador">-- Publicador LeXML</option>
+    </dtml-if>
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador'])">
+      <option value="<dtml-var diretorio>usuario">-- Gerenciar Usuários</option>
+      <option value="&dtml-portal_url;/generico/painel_controle">-- Sobre</option>
+    </dtml-if>
+      <option value="&dtml-portal_url;/generico/zopeedit-win32-1.0.0.exe">-- ZopeEdit Windows</option>
+      <option value="&dtml-portal_url;/generico/collective.zopeedit_1.0.0_all.deb">-- ZopeEdit Linux</option>
+      <option value="&dtml-portal_url;/generico/senha_trocar_form">-- Troca de Senha</option>
+     </dtml-if>
+  </select> 
+
+<ul id="nav">
+            <li class="sub"><a href="#">Institucional</a>
+                <ul>
+               <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Mesa Diretora'])">
+	          <li><a href='<dtml-var diretorio>mesa_diretora'>Mesa Diretora</a></li>
+               <dtml-else>
+	          <li><a href='&dtml-portal_url;/consultas/mesa_diretora'>Mesa Diretora</a></li>
+               </dtml-if>
+               <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Comissao'])">
+	          <li><a href='<dtml-var diretorio>comissao'>Comissões</a></li>
+               <dtml-else>
+	          <li><a href='&dtml-portal_url;/consultas/comissao'>Comissões</a></li>
+               </dtml-if>
+               <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Parlamentar'])">
+                  <li><a href='<dtml-var diretorio>bancada'>Bancadas</a></li>
+	          <li><a href='<dtml-var diretorio>parlamentar'>Parlamentares</a></li>
+               <dtml-else>
+	          <li><a href='&dtml-portal_url;/consultas/bancada'>Bancadas</a></li>
+	          <li><a href='&dtml-portal_url;/consultas/parlamentar'>Parlamentares</a></li>
+               </dtml-if>
+               </ul>
+            </li>
+
+           <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Protocolo'])">
+            <li class="sub"><a href="#">Protocolo</a>
+                <ul>
+	          <li><a href='&dtml-portal_url;/consultas/protocolo/protocolo_pesquisar_form?incluir=1'>Pesquisar</a></li>
+	          <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form'>Protocolo Legislativo</a></li>
+	          <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form'>Protocolo Administrativo</a></li>
+	          <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form'>Anular Protocolo</a></li>
+	          <li><a href='<dtml-var diretorio>recebimento_proposicao'>Receber Proposições</a></li>
+               </ul>
+            </li>
+           </dtml-if>
+
+           <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Modulo Administrativo'])">
+            <li class="sub"><a href="#">Administrativo</a>
+                <ul>
+	          <li><a href='&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_pesquisar_form?incluir=1'>Documentos</a></li>
+	          <li><a href='&dtml-portal_url;/consultas/instituicao/instituicao_pesquisar_form?incluir=1'>Entidades / Instituições</a></li>
+               </ul>
+            </li>
+           </dtml-if>
+
+            <li class="sub"><a href="#">Atividade Legislativa</a>
+                <ul>
+                  <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Autor'])">
+                     <li><a href="<dtml-var diretorio>proposicao">Proposições</a></li>
+                  </dtml-if>
+                  <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia'])">
+	             <li><a href='&dtml-portal_url;/generico/materia_pesquisar_form?incluir=1'>Matérias Legislativas</a></li>
+                  <dtml-else>
+	             <li><a href='&dtml-portal_url;/generico/materia_pesquisar_form?incluir=0'>Matérias Legislativas</a></li>
+                  </dtml-if>
+                  <li><a href='&dtml-portal_url;/consultas/sessao_plenaria'>Sessões Plenárias</a></li>
+	          <li><a href='&dtml-portal_url;/consultas/pauta_sessao'>Pautas das Sessões</a></li>
+	          <li><a href='&dtml-portal_url;/consultas/ata_sessao'>Atas das Sessões</a></li>
+	          <li><a href='&dtml-portal_url;/consultas/reuniao_comissao'>Reuniões das Comissões</a></li>
+                  <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia'])">
+	             <li><a href='<dtml-var diretorio>materia/tramitacao/tramitacao_lote_form'>Tramitação em Lote</a></li>
+	             <li><a href='&dtml-portal_url;/generico/impressos/materia_impresso_form'>Impressos</a></li>
+                  </dtml-if>
+	          <li><a href='&dtml-portal_url;/relatorios_administrativos'>Relatórios</a></li>
+               </ul>
+            </li>
+
+
+            <li class="sub"><a href="#">Normas Jurídicas</a>
+                <ul>
+                  <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Norma'])">
+	             <li><a href='&dtml-portal_url;/generico/norma_juridica_pesquisar_form?incluir=1'>Pesquisar</a></li>
+                  <dtml-else>
+	             <li><a href='&dtml-portal_url;/generico/norma_juridica_pesquisar_form?incluir=0'>Pesquisar</a></li>
+                  </dtml-if>
+	          <li><a href='&dtml-portal_url;/generico/norma_juridica_indice_assunto?incluir=0'>Índice de Assuntos</a></li>
+               </ul>
+            </li>
+
+
+            <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador', 'Autor', 'Operador', 'Operador Mesa Diretora', 'Operador Comissao', 'Operador Ordem Dia', 'Operador Parlamentar', 'Operador Materia', 'Operador Norma', 'Operador Tabela Auxiliar', 'Operador Protocolo', 'Operador Modulo Administrativo','Operador Lexml'])">
+            <li class="sub"><a href="#">Sistema</a>
+                <ul>
+                  <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Tabela Auxiliar'])">
+	            <li><a href='<dtml-var diretorio>auxiliares'>Tabelas Auxiliares</a></li>
+                  </dtml-if>
+                  <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador Lexml'])">
+                    <li><a href="<dtml-var diretorio>auxiliares/lexml/lexml_provedor">Provedor LexML</a></li>
+                    <li><a href="<dtml-var diretorio>auxiliares/lexml/lexml_publicador">Publicador LexML</a></li>
+                  </dtml-if>
+                  <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador'])">
+                    <li><a href="<dtml-var diretorio>usuario">Gerenciar Usuários</a></li>
+                  <dtml-comment>
+                    <li><a href="&dtml-portal_url;/backup/backup_sapl">Backup e Restauração</a></li>
+                  </dtml-comment>
+                    <li><a href="&dtml-portal_url;/backup/migracao">Migração de Dados</a></li>
+                    <li><a href="&dtml-portal_url;/generico/painel_controle">Sobre</a></li>
+                  </dtml-if>
+                  <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Autor','Operador', 'Operador Materia'])">
+	          <li><a href='&dtml-portal_url;/generico/zopeedit-win32-1.0.0.exe'>ZopeEdit Windows</a></li>
+	          <li><a href='&dtml-portal_url;/generico/collective.zopeedit_1.0.0_all.deb'>ZopeEdit Linux</a></li>
+                  </dtml-if>
+	          <li><a href='&dtml-portal_url;/generico/senha_trocar_form'>Troca de Senha</a></li>
+               </ul>
+            </li>
+          </dtml-if>
+</ul>
+  <br />
+</div>
+</dtml-let>

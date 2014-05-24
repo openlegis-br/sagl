@@ -1,0 +1,42 @@
+﻿<dtml-comment>
+*********************************************************************
+*   Função: Salvar os dados do protocolo vindos do formulário,      *
+*   Retorno: Mensagem de sucesso ou erro.                           *
+*   Luciano De Fazio - 16/12/2013                                   *
+*********************************************************************
+</dtml-comment>
+
+<dtml-if expr="int(sapl.sapl_documentos.props_sapl.numero_protocolo_anual)==1">
+   <dtml-in expr="zsql.protocolo_numero_obter_zsql(ano_protocolo = _.DateTime().strftime('%Y'))">
+     <dtml-call expr="REQUEST.set('hdn_num_protocolo', novo_numero)">
+   </dtml-in>
+<dtml-else>
+   <dtml-in expr="zsql.protocolo_codigo_obter_zsql()">
+     <dtml-call expr="REQUEST.set('hdn_num_protocolo', novo_codigo)">
+   </dtml-in>
+</dtml-if>
+
+<dtml-call expr="REQUEST.set('metodo', zsql.protocolo_legislativo_incluir_zsql)">
+
+  <dtml-try>
+    <dtml-call expr="metodo(
+        cod_protocolo            = hdn_cod_protocolo,
+        num_protocolo            = hdn_num_protocolo,
+        tip_protocolo		 = hdn_tip_protocolo,
+        tip_processo		 = hdn_tip_processo,
+        tip_materia              = lst_tip_materia,
+        num_paginas              = txt_num_paginas,
+        txt_assunto_ementa       = txa_txt_ementa,
+        cod_autor                = lst_cod_autor,
+        txt_observacao           = txa_txt_observacao)">
+
+        <dtml-in expr="zsql.protocolo_incluido_codigo_obter_zsql()">
+
+	  <dtml-call expr="REQUEST.set('codigo', cod_protocolo)">
+
+          <dtml-let mensagem="'Matéria protocolada com sucesso!'" sucesso="1" url="hdn_url" codigo="cod_protocolo">
+                      <dtml-var mensagem_prot_emitir>
+          </dtml-let>
+        </dtml-in>
+
+</dtml-try>
