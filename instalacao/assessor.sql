@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `assessor_parlamentar` (
   `cod_assessor` int(11) NOT NULL AUTO_INCREMENT,
-  `cod_parlamentar` tinyint(4) NOT NULL,
+  `cod_parlamentar` int(11) NOT NULL,
   `nom_assessor` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `dat_nascimento` date DEFAULT NULL,
   `num_cpf` varchar(14) COLLATE utf8_unicode_ci DEFAULT NULL,
