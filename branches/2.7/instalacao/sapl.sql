@@ -1,6 +1,6 @@
 -- Servidor: localhost
 -- Tempo de Geração: 24/05/2014 às 13h04min
--- Versão do Servidor: 5.5.34
+-- Versão do Servidor: 5.6.17
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `acomp_materia` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_cadastro`),
   UNIQUE KEY `fk_{CCECA63D-5992-437B-BCD3-D7C98DA3E926}` (`cod_materia`,`end_email`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `afastamento` (
   KEY `idx_afastamento_datas` (`cod_parlamentar`,`dat_inicio_afastamento`,`dat_fim_afastamento`),
   KEY `idx_tip_afastamento` (`tip_afastamento`),
   KEY `idx__parlamentar_suplente` (`cod_parlamentar_suplente`,`num_legislatura`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `anexada` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_materia_principal`,`cod_materia_anexada`),
   KEY `fk_{FD808F7A-0315-44A3-840C-C1FF58629458}` (`cod_materia_anexada`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `assessor_parlamentar` (
   `cod_assessor` int(11) NOT NULL AUTO_INCREMENT,
   `cod_parlamentar` int(11) NOT NULL,
   `nom_assessor` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  'des_cargo' varchar(80) COLLATE utf8_unicode_ci NOT NULL,
+  `des_cargo` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
   `dat_nascimento` date DEFAULT NULL,
   `num_cpf` varchar(14) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_rg` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `assessor_parlamentar` (
   PRIMARY KEY (`cod_assessor`),
   UNIQUE KEY `assessor_parlamentar` (`cod_assessor`,`cod_parlamentar`,`ind_excluido`),
   KEY `cod_parlamentar` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `assunto_norma` (
   `des_estendida` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_assunto`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=32 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=32 ;
 
 --
 -- Extraindo dados da tabela `assunto_norma`
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `autor` (
   KEY `fk_{68B1E5EA-F216-4197-8A5F-C59497C048A3}` (`cod_comissao`),
   KEY `fk_{A53C2D2C-9AA1-4B5C-90F3-E07953AC519A}` (`cod_partido`),
   FULLTEXT KEY `nom_autor` (`nom_autor`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=4 ;
 
 --
 -- Extraindo dados da tabela `autor`
@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `autoria` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_autor`,`cod_materia`),
   KEY `fk_{C9106F4C-7B01-4BD0-98EF-743B5F9ED8C4}` (`cod_materia`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS `bancada` (
   KEY `idt_nom_bancada` (`nom_bancada`),
   KEY `idx_cod_bancada` (`ind_excluido`),
   FULLTEXT KEY `nom_bancada` (`nom_bancada`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -228,7 +228,7 @@ CREATE TABLE IF NOT EXISTS `cargo_bancada` (
   `ind_unico` tinyint(4) NOT NULL DEFAULT '0',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_cargo`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=4 ;
 
 --
 -- Extraindo dados da tabela `cargo_bancada`
@@ -251,7 +251,7 @@ CREATE TABLE IF NOT EXISTS `cargo_comissao` (
   `ind_unico` tinyint(4) NOT NULL DEFAULT '0',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_cargo`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=4 ;
 
 --
 -- Extraindo dados da tabela `cargo_comissao`
@@ -274,7 +274,7 @@ CREATE TABLE IF NOT EXISTS `cargo_mesa` (
   `ind_unico` tinyint(4) NOT NULL DEFAULT '0',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_cargo`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=6 ;
 
 --
 -- Extraindo dados da tabela `cargo_mesa`
@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS `coligacao` (
   PRIMARY KEY (`cod_coligacao`),
   KEY `idx_coligacao_legislatura` (`ind_excluido`,`num_legislatura`),
   KEY `fk_{4115EE35-A318-4551-B19B-2C9789D5A186}` (`num_legislatura`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -337,7 +337,7 @@ CREATE TABLE IF NOT EXISTS `comissao` (
   KEY `idt_comissao_nome` (`nom_comissao`),
   KEY `fk_{356BF991-4D23-4B93-93BF-2DFA60A2582E}` (`tip_comissao`),
   FULLTEXT KEY `nom_comissao` (`nom_comissao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -360,7 +360,7 @@ CREATE TABLE IF NOT EXISTS `composicao_bancada` (
   KEY `fk_{F8A64E72-257D-4ABB-B921-85593A247FA9}` (`cod_cargo`),
   KEY `fk_{CC19A3D1-42B2-4156-A6F6-D51A7FED9BCA}` (`cod_bancada`),
   KEY `fk_{C52EA9E4-0190-4559-909D-336460F6F448}` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -374,7 +374,7 @@ CREATE TABLE IF NOT EXISTS `composicao_coligacao` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_partido`,`cod_coligacao`),
   KEY `fk_{8A03037D-09B2-4219-A1AB-660BB5FB3324}` (`cod_coligacao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -399,7 +399,7 @@ CREATE TABLE IF NOT EXISTS `composicao_comissao` (
   KEY `fk_{BCEF3616-DB8D-4F2A-ACC0-056F3DE2440B}` (`cod_periodo_comp`),
   KEY `fk_{CC19A3D1-42B2-4156-A6F6-D51A7FED9BCA}` (`cod_comissao`),
   KEY `fk_{C52EA9E4-0190-4559-909D-336460F6F448}` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -416,7 +416,7 @@ CREATE TABLE IF NOT EXISTS `composicao_mesa` (
   PRIMARY KEY (`cod_parlamentar`,`cod_periodo_comp`,`cod_cargo`),
   KEY `fk_{B15DAF29-A146-4581-A1DF-96856DDDA6B0}` (`cod_periodo_comp`),
   KEY `fk_{7AAD6A7F-70B0-43D2-9FD9-906B3C09E9CF}` (`cod_cargo`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -439,7 +439,7 @@ CREATE TABLE IF NOT EXISTS `dependente` (
   KEY `idx_dep_parlam` (`ind_excluido`,`cod_parlamentar`,`tip_dependente`),
   KEY `fk_{D4B97881-CA68-4CC7-8E3E-258E55797AB3}` (`cod_parlamentar`),
   KEY `fk_{5C850E68-A133-4741-B900-FC48FC469A7B}` (`tip_dependente`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -455,7 +455,7 @@ CREATE TABLE IF NOT EXISTS `despacho_inicial` (
   PRIMARY KEY (`cod_materia`,`num_ordem`),
   KEY `idx_despinic_comissao` (`ind_excluido`,`cod_comissao`),
   KEY `fk_{24ED266E-2C4B-4C6C-84F0-57AFC228FACE}` (`cod_comissao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -480,7 +480,7 @@ CREATE TABLE IF NOT EXISTS `documento_acessorio` (
   KEY `fk_{F4F80AA5-442B-49CF-95C6-A5D400BFA666}` (`tip_documento`),
   KEY `fk_{E56B7D01-44A5-4AF1-8D14-EF5BA538BD00}` (`cod_materia`),
   FULLTEXT KEY `txt_indexacao` (`txt_indexacao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -501,7 +501,7 @@ CREATE TABLE IF NOT EXISTS `documento_acessorio_administrativo` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_documento_acessorio`),
   FULLTEXT KEY `txt_indexacao` (`txt_indexacao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -528,7 +528,7 @@ CREATE TABLE IF NOT EXISTS `documento_administrativo` (
   KEY `documento_administrativo_ind1` (`num_documento`,`ano_documento`),
   FULLTEXT KEY `txt_assunto` (`txt_assunto`),
   FULLTEXT KEY `txt_autoria` (`txt_interessado`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -538,7 +538,7 @@ CREATE TABLE IF NOT EXISTS `documento_administrativo` (
 
 CREATE TABLE IF NOT EXISTS `emenda` (
   `cod_emenda` int(11) NOT NULL AUTO_INCREMENT,
-  `tip_emenda` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `tip_emenda` int(11) NOT NULL,
   `num_emenda` int(11) NOT NULL,
   `cod_materia` int(11) NOT NULL,
   `num_protocolo` int(11) DEFAULT NULL,
@@ -548,11 +548,11 @@ CREATE TABLE IF NOT EXISTS `emenda` (
   `cod_autor` int(11) NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_emenda`),
-  UNIQUE KEY `idx_numemen_materia` (`num_emenda`,`cod_materia`,`ind_excluido`),
+  UNIQUE KEY `idx_numemen_materia` (`num_emenda`,`tip_emenda`,`cod_materia`,`ind_excluido`),
   KEY `idx_cod_materia` (`cod_materia`),
   KEY `idx_cod_autor` (`cod_autor`),
   FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -569,7 +569,7 @@ CREATE TABLE IF NOT EXISTS `encerramento_presenca` (
   PRIMARY KEY (`cod_presenca_encerramento`),
   UNIQUE KEY `idx_encpres_sessao_plenaria` (`cod_sessao_plen`,`cod_parlamentar`),
   KEY `fk_cod_parlamentar` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -590,7 +590,7 @@ CREATE TABLE IF NOT EXISTS `expediente_materia` (
   PRIMARY KEY (`cod_ordem`),
   KEY `fk_{64030C9E-B34B-43F0-BF6E-8905767BA707}` (`cod_materia`),
   KEY `idx_exped_datord` (`dat_ordem`,`ind_excluido`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -607,7 +607,7 @@ CREATE TABLE IF NOT EXISTS `expediente_presenca` (
   PRIMARY KEY (`cod_presenca_expediente`),
   UNIQUE KEY `idx_exppres_sessao_plenaria` (`cod_sessao_plen`,`cod_parlamentar`),
   KEY `fk_cod_parlamentar` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -622,7 +622,7 @@ CREATE TABLE IF NOT EXISTS `expediente_sessao_plenaria` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_sessao_plen`,`cod_expediente`),
   KEY `fk_{7E6BF2B4-164F-4DD9-8AB5-5D78B3767037}` (`cod_expediente`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -639,7 +639,7 @@ CREATE TABLE IF NOT EXISTS `filiacao` (
   PRIMARY KEY (`dat_filiacao`,`cod_parlamentar`,`cod_partido`),
   KEY `fk_{E373439A-B5ED-4AAF-AF68-21EB9DFA16D7}` (`cod_partido`),
   KEY `fk_{ABE13037-AD71-4040-A2D3-16FCBABEB27E}` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -673,7 +673,7 @@ CREATE TABLE IF NOT EXISTS `instituicao` (
   PRIMARY KEY (`cod_instituicao`),
   FULLTEXT KEY `idx_nom_instituicao` (`nom_instituicao`),
   FULLTEXT KEY `idx_nom_responsavel` (`nom_responsavel`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -699,7 +699,7 @@ CREATE TABLE IF NOT EXISTS `legislacao_citada` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_materia`,`cod_norma`),
   KEY `fk_{7C4DDF94-DF67-4F33-90A0-06A770185844}` (`cod_norma`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -715,7 +715,7 @@ CREATE TABLE IF NOT EXISTS `legislatura` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`num_legislatura`),
   KEY `idx_legislatura_datas` (`dat_inicio`,`ind_excluido`,`dat_fim`,`dat_eleicao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -734,7 +734,7 @@ CREATE TABLE IF NOT EXISTS `lexml_registro_provedor` (
   `id_responsavel` int(11) DEFAULT NULL,
   `xml_provedor` longtext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`cod_provedor`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -752,7 +752,7 @@ CREATE TABLE IF NOT EXISTS `lexml_registro_publicador` (
   `tipo` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `id_responsavel` int(11) NOT NULL,
   PRIMARY KEY (`cod_publicador`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -769,7 +769,7 @@ CREATE TABLE IF NOT EXISTS `localidade` (
   `sgl_regiao` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_localidade`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
 --
 -- Extraindo dados da tabela `localidade`
@@ -6403,7 +6403,7 @@ CREATE TABLE IF NOT EXISTS `mandato` (
   KEY `fk_{EBAC53D4-E181-46D5-AEEB-CF13E42A85CA}` (`cod_coligacao`),
   KEY `fk_{69C8875B-81DD-46AD-9FBE-66F3643D2434}` (`tip_afastamento`),
   KEY `fk_{23A13602-2883-425B-BBF2-829D8DD61C1A}` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6422,7 +6422,7 @@ CREATE TABLE IF NOT EXISTS `materia_apresentada_sessao` (
   PRIMARY KEY (`cod_ordem`),
   KEY `fk_cod_materia` (`cod_materia`),
   KEY `idx_apres_datord` (`dat_ordem`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6467,7 +6467,7 @@ CREATE TABLE IF NOT EXISTS `materia_legislativa` (
   KEY `fk_{527325DF-C597-41FB-8067-05A63C9719CF}` (`cod_regime_tramitacao`),
   FULLTEXT KEY `txt_indexacao` (`txt_indexacao`),
   FULLTEXT KEY `txt_ementa` (`txt_ementa`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6485,7 +6485,7 @@ CREATE TABLE IF NOT EXISTS `mesa_sessao_plenaria` (
   KEY `fk_{8515F0EE-645A-4173-9644-21EB4BAA0A5F}` (`cod_sessao_leg`),
   KEY `fk_{1A054080-B309-48F8-AA71-74223C0DDC4B}` (`cod_parlamentar`),
   KEY `fk_{66082FB0-63C1-4AE5-9674-4EEBAFE9C8A8}` (`cod_sessao_plen`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -6498,7 +6498,7 @@ CREATE TABLE IF NOT EXISTS `nivel_instrucao` (
   `des_nivel_instrucao` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_nivel_instrucao`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=6 ;
 
 --
 -- Extraindo dados da tabela `nivel_instrucao`
@@ -6546,7 +6546,7 @@ CREATE TABLE IF NOT EXISTS `norma_juridica` (
   KEY `idx_nj_assnorm` (`cod_assunto`),
   FULLTEXT KEY `txt_ementa` (`txt_ementa`),
   FULLTEXT KEY `txt_indexacao` (`txt_indexacao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6565,7 +6565,7 @@ CREATE TABLE IF NOT EXISTS `numeracao` (
   PRIMARY KEY (`cod_materia`,`num_ordem`),
   KEY `idx_numer_identificacao` (`ind_excluido`,`ano_materia`,`num_materia`,`tip_materia`),
   KEY `fk_{134EAD00-7226-4690-8752-9C0D548799CE}` (`tip_materia`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -6581,7 +6581,7 @@ CREATE TABLE IF NOT EXISTS `oradores` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_sessao_plen`,`cod_parlamentar`),
   KEY `fk_{A63E6611-A33C-4831-976E-64D1DCF51F7D}` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -6597,7 +6597,7 @@ CREATE TABLE IF NOT EXISTS `oradores_expediente` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_sessao_plen`,`cod_parlamentar`),
   KEY `fk_{A63E6611-A33C-4831-976E-64D1DCF51F7D}` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -6619,7 +6619,7 @@ CREATE TABLE IF NOT EXISTS `ordem_dia` (
   PRIMARY KEY (`cod_ordem`),
   KEY `idx_orddia_datord` (`dat_ordem`,`ind_excluido`),
   KEY `fk_{64030C9E-B34B-43F0-BF6E-8905767BA707}` (`cod_materia`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6636,7 +6636,7 @@ CREATE TABLE IF NOT EXISTS `ordem_dia_presenca` (
   PRIMARY KEY (`cod_presenca_ordem_dia`),
   KEY `fk_{0E3901A6-6BD1-4409-B003-C7D7E60539E1}` (`cod_parlamentar`),
   KEY `idx_orddiapres_sessao_plenaria` (`cod_sessao_plen`,`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6653,7 +6653,7 @@ CREATE TABLE IF NOT EXISTS `orgao` (
   `num_tel_orgao` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_orgao`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=8 ;
 
 --
 -- Extraindo dados da tabela `orgao`
@@ -6680,7 +6680,7 @@ CREATE TABLE IF NOT EXISTS `origem` (
   `nom_origem` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_origem`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6698,7 +6698,7 @@ CREATE TABLE IF NOT EXISTS `parecer` (
   PRIMARY KEY (`cod_relatoria`,`cod_materia`),
   KEY `idx_parecer_materia` (`ind_excluido`,`cod_materia`),
   KEY `fk_{AFF28198-95BD-4AC4-AE37-E02F46C6EEF7}` (`cod_materia`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -6742,7 +6742,7 @@ CREATE TABLE IF NOT EXISTS `parlamentar` (
   KEY `fk_{AB9764AE-53C6-4D60-BA78-64A53A2D96E0}` (`cod_nivel_instrucao`),
   FULLTEXT KEY `nom_completo` (`nom_completo`),
   FULLTEXT KEY `nom_parlamentar` (`nom_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6758,7 +6758,7 @@ CREATE TABLE IF NOT EXISTS `partido` (
   `dat_extincao` date DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_partido`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=44 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=44 ;
 
 --
 -- Extraindo dados da tabela `partido`
@@ -6822,7 +6822,7 @@ CREATE TABLE IF NOT EXISTS `periodo_comp_comissao` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_periodo_comp`),
   KEY `ind_percompcom_datas` (`dat_inicio_periodo`,`dat_fim_periodo`,`ind_excluido`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6838,7 +6838,7 @@ CREATE TABLE IF NOT EXISTS `periodo_comp_mesa` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_periodo_comp`),
   KEY `ind_percompmesa_datas` (`dat_inicio_periodo`,`dat_fim_periodo`,`ind_excluido`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6864,7 +6864,7 @@ CREATE TABLE IF NOT EXISTS `proposicao` (
   KEY `fk_{D39DD456-C780-43C2-A7FA-3DD7446D2E95}` (`tip_proposicao`),
   KEY `fk_{C0D47C05-5531-45DC-A73F-0E8BDE53E654}` (`cod_autor`),
   KEY `fk_{30C6320C-F250-4420-AA14-CAFA39FE099D}` (`cod_materia`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6897,7 +6897,7 @@ CREATE TABLE IF NOT EXISTS `protocolo` (
   KEY `idx_num_protocolo` (`cod_protocolo`,`ano_protocolo`),
   FULLTEXT KEY `txt_assunto_ementa` (`txt_assunto_ementa`),
   FULLTEXT KEY `txt_interessado` (`txt_interessado`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6910,7 +6910,7 @@ CREATE TABLE IF NOT EXISTS `regime_tramitacao` (
   `des_regime_tramitacao` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_regime_tramitacao`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=6 ;
 
 --
 -- Extraindo dados da tabela `regime_tramitacao`
@@ -6946,7 +6946,7 @@ CREATE TABLE IF NOT EXISTS `registro_votacao` (
   KEY `fk_{70A39BB5-1A1F-4A39-A420-60F127A58F27}` (`cod_ordem`),
   KEY `fk_{32117E29-146C-4C59-A7DA-23DE5E48C69D}` (`cod_materia`),
   KEY `fk_{5BE62220-4750-4C6B-91FC-F1007F222354}` (`tip_resultado_votacao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -6961,7 +6961,7 @@ CREATE TABLE IF NOT EXISTS `registro_votacao_parlamentar` (
   `vot_parlamentar` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`cod_votacao`,`cod_parlamentar`),
   KEY `fk_{3522BEA8-E908-455C-A2DF-EE3AB2E9527F}` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
@@ -6987,7 +6987,7 @@ CREATE TABLE IF NOT EXISTS `relatoria` (
   KEY `fk_{2663F1EB-C0C4-4BA3-9653-0A5EF5679F90}` (`tip_fim_relatoria`),
   KEY `fk_{FE49AA7B-8152-4FEC-9E7D-584756D0B3F4}` (`cod_parlamentar`),
   KEY `fk_{600D5A3E-C3BF-4501-8763-C4C6D11635F0}` (`cod_materia`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -7005,7 +7005,7 @@ CREATE TABLE IF NOT EXISTS `reuniao_comissao` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_reuniao`),
   KEY `fk_cod_comissao` (`cod_comissao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -7027,7 +7027,7 @@ CREATE TABLE IF NOT EXISTS `sessao_legislativa` (
   KEY `idx_sessleg_datas` (`dat_inicio`,`ind_excluido`,`dat_fim`,`dat_inicio_intervalo`,`dat_fim_intervalo`),
   KEY `idx_sessleg_legislatura` (`ind_excluido`,`num_legislatura`),
   KEY `fk_{95492094-75C0-4662-8E8C-C6A42DED04D6}` (`num_legislatura`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -7055,7 +7055,7 @@ CREATE TABLE IF NOT EXISTS `sessao_plenaria` (
   KEY `fk_{B66AB9CE-C220-4D54-A8FF-9CA3E3DDB740}` (`cod_sessao_leg`),
   KEY `fk_{039D36D8-2672-497E-9DA8-0CD4C69B678E}` (`tip_sessao`),
   KEY `fk_{6729818C-6E9B-4F54-8AFD-D43E610D2345}` (`cod_andamento_sessao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -7072,7 +7072,7 @@ CREATE TABLE IF NOT EXISTS `sessao_plenaria_presenca` (
   PRIMARY KEY (`cod_presenca_sessao`),
   KEY `fk_{DC33E098-6E15-45BD-B505-78B0A05562F8}` (`cod_parlamentar`),
   KEY `idx_pres_sessao_plenaria` (`cod_sessao_plen`,`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -7088,7 +7088,7 @@ CREATE TABLE IF NOT EXISTS `status_tramitacao` (
   `ind_retorno_tramitacao` tinyint(4) NOT NULL DEFAULT '0',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_status`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=52 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=52 ;
 
 --
 -- Extraindo dados da tabela `status_tramitacao`
@@ -7145,7 +7145,7 @@ INSERT INTO `status_tramitacao` (`cod_status`, `sgl_status`, `des_status`, `ind_
 (48, 'ADIADA', 'Adiada discussão e votação', 0, 1, 0),
 (49, 'RETORDIA', 'Proposição retirada da Ordem do Dia.', 0, 1, 0),
 (50, 'PAREUCONJ', 'Parecer em reunião conjunta das Comissões pertinentes', 0, 1, 0),
-(51, 'INCLEXP', 'Incluído na pauta do expediente', 0, 1, 0);
+(51, 'INCLEXP', 'Incluído na pauta do expediente', 0, 1, 0),
 (52, 'DESPACHADA', 'Indicação despachada ao Executivo', 1, 0, 0);
 
 -- --------------------------------------------------------
@@ -7162,7 +7162,7 @@ CREATE TABLE IF NOT EXISTS `status_tramitacao_administrativo` (
   `ind_retorno_tramitacao` tinyint(4) NOT NULL DEFAULT '0',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_status`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=4 ;
 
 --
 -- Extraindo dados da tabela `status_tramitacao_administrativo`
@@ -7181,7 +7181,7 @@ INSERT INTO `status_tramitacao_administrativo` (`cod_status`, `sgl_status`, `des
 
 CREATE TABLE IF NOT EXISTS `subemenda` (
   `cod_subemenda` int(11) NOT NULL AUTO_INCREMENT,
-  `tip_subemenda` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+  `tip_subemenda` int(11) NOT NULL,
   `num_subemenda` int(11) NOT NULL,
   `cod_emenda` int(11) NOT NULL,
   `num_protocolo` int(11) DEFAULT NULL,
@@ -7191,11 +7191,11 @@ CREATE TABLE IF NOT EXISTS `subemenda` (
   `cod_autor` int(11) NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_subemenda`),
-  UNIQUE KEY `idx_numsub_emenda` (`num_subemenda`,`cod_emenda`,`ind_excluido`),
+  UNIQUE KEY `idx_numsub_emenda` (`num_subemenda`,`tip_subemenda`,`cod_emenda`,`ind_excluido`),
   KEY `idx_cod_autor` (`cod_autor`),
   KEY `idx_cod_emenda` (`cod_emenda`),
   FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -7218,7 +7218,7 @@ CREATE TABLE IF NOT EXISTS `substitutivo` (
   KEY `idx_cod_autor` (`cod_autor`),
   KEY `idx_cod_materia` (`cod_materia`),
   FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -7234,7 +7234,7 @@ CREATE TABLE IF NOT EXISTS `tipo_afastamento` (
   `des_dispositivo` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_afastamento`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=5 ;
 
 --
 -- Extraindo dados da tabela `tipo_afastamento`
@@ -7257,7 +7257,7 @@ CREATE TABLE IF NOT EXISTS `tipo_autor` (
   `des_tipo_autor` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_autor`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Extraindo dados da tabela `tipo_autor`
@@ -7285,7 +7285,7 @@ CREATE TABLE IF NOT EXISTS `tipo_comissao` (
   `des_dispositivo_regimental` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_comissao`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=4 ;
 
 --
 -- Extraindo dados da tabela `tipo_comissao`
@@ -7307,7 +7307,7 @@ CREATE TABLE IF NOT EXISTS `tipo_dependente` (
   `des_tipo_dependente` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_dependente`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=3 ;
 
 --
 -- Extraindo dados da tabela `tipo_dependente`
@@ -7328,7 +7328,7 @@ CREATE TABLE IF NOT EXISTS `tipo_documento` (
   `des_tipo_documento` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_documento`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=8 ;
 
 --
 -- Extraindo dados da tabela `tipo_documento`
@@ -7355,7 +7355,7 @@ CREATE TABLE IF NOT EXISTS `tipo_documento_administrativo` (
   `des_tipo_documento` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`tip_documento`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=4 ;
 
 --
 -- Extraindo dados da tabela `tipo_documento_administrativo`
@@ -7377,7 +7377,7 @@ CREATE TABLE IF NOT EXISTS `tipo_emenda` (
   `des_tipo_emenda` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_emenda`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=6 ;
 
 --
 -- Extraindo dados da tabela `tipo_emenda`
@@ -7402,7 +7402,7 @@ CREATE TABLE IF NOT EXISTS `tipo_expediente` (
   `nom_expediente` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) unsigned NOT NULL,
   PRIMARY KEY (`cod_expediente`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=5 ;
 
 --
 -- Extraindo dados da tabela `tipo_expediente`
@@ -7425,7 +7425,7 @@ CREATE TABLE IF NOT EXISTS `tipo_fim_relatoria` (
   `des_fim_relatoria` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_fim_relatoria`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=3 ;
 
 --
 -- Extraindo dados da tabela `tipo_fim_relatoria`
@@ -7446,7 +7446,7 @@ CREATE TABLE IF NOT EXISTS `tipo_instituicao` (
   `nom_tipo_instituicao` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`tip_instituicao`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=6 ;
 
 --
 -- Extraindo dados da tabela `tipo_instituicao`
@@ -7473,7 +7473,7 @@ CREATE TABLE IF NOT EXISTS `tipo_materia_legislativa` (
   `quorum_minimo_votacao` tinyint(4) NOT NULL DEFAULT '1',
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_materia`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=11 ;
 
 --
 -- Extraindo dados da tabela `tipo_materia_legislativa`
@@ -7504,7 +7504,7 @@ CREATE TABLE IF NOT EXISTS `tipo_norma_juridica` (
   `des_tipo_norma` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_norma`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=9 ;
 
 --
 -- Extraindo dados da tabela `tipo_norma_juridica`
@@ -7534,7 +7534,7 @@ CREATE TABLE IF NOT EXISTS `tipo_proposicao` (
   `nom_modelo` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_proposicao`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=12 ;
 
 --
 -- Extraindo dados da tabela `tipo_proposicao`
@@ -7564,7 +7564,7 @@ CREATE TABLE IF NOT EXISTS `tipo_resultado_votacao` (
   `nom_resultado` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) unsigned NOT NULL,
   PRIMARY KEY (`tip_resultado_votacao`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=7 ;
 
 --
 -- Extraindo dados da tabela `tipo_resultado_votacao`
@@ -7590,7 +7590,7 @@ CREATE TABLE IF NOT EXISTS `tipo_sessao_plenaria` (
   `ind_excluido` tinyint(4) NOT NULL,
   `num_minimo` int(11) NOT NULL,
   PRIMARY KEY (`tip_sessao`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=5 ;
 
 --
 -- Extraindo dados da tabela `tipo_sessao_plenaria`
@@ -7600,7 +7600,7 @@ INSERT INTO `tipo_sessao_plenaria` (`tip_sessao`, `nom_sessao`, `ind_excluido`, 
 (1, 'Ordinária', 0, 6),
 (2, 'Extraordinária', 0, 6),
 (3, 'Solene', 0, 6),
-(4, 'Especial', 0, 6);
+(4, 'Especial', 0, 6),
 (5, 'Audiência Púbica', 0, 2);
 
 -- --------------------------------------------------------
@@ -7614,7 +7614,7 @@ CREATE TABLE IF NOT EXISTS `tipo_situacao_materia` (
   `des_tipo_situacao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`tip_situacao_materia`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=111 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=111 ;
 
 --
 -- Extraindo dados da tabela `tipo_situacao_materia`
@@ -7715,7 +7715,7 @@ CREATE TABLE IF NOT EXISTS `tipo_situacao_militar` (
   `des_tipo_situacao` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_situacao_militar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Extraindo dados da tabela `tipo_situacao_militar`
@@ -7736,7 +7736,7 @@ CREATE TABLE IF NOT EXISTS `tipo_situacao_norma` (
   `des_tipo_situacao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`tip_situacao_norma`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=21 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=21 ;
 
 --
 -- Extraindo dados da tabela `tipo_situacao_norma`
@@ -7790,7 +7790,7 @@ CREATE TABLE IF NOT EXISTS `tramitacao` (
   KEY `fk_{31E2B1CA-1382-42D0-895C-3DA1D638C381}` (`cod_unid_tram_dest`),
   KEY `fk_{5435E2E4-A74E-4162-BDE6-59274FC44EE4}` (`cod_materia`),
   KEY `fk_{E7ED48B8-D1B6-4776-B464-CD1E379B1AA1}` (`cod_status`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -7812,7 +7812,7 @@ CREATE TABLE IF NOT EXISTS `tramitacao_administrativo` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_tramitacao`),
   KEY `tramitacao_ind1` (`ind_ult_tramitacao`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -7832,7 +7832,7 @@ CREATE TABLE IF NOT EXISTS `unidade_tramitacao` (
   KEY `idx_unidtramit_parlamentar` (`ind_excluido`,`cod_parlamentar`),
   KEY `fk_{1B76CB09-36AB-4486-BCC2-135089FF327A}` (`cod_orgao`),
   KEY `fk_{DC1969CD-6502-4AB8-959F-707C05F438D4}` (`cod_comissao`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=8 ;
 
 --
 -- Extraindo dados da tabela `unidade_tramitacao`
@@ -7862,7 +7862,7 @@ CREATE TABLE IF NOT EXISTS `vinculo_norma_juridica` (
   PRIMARY KEY (`cod_vinculo`),
   KEY `idx_vnj_norma_referente` (`cod_norma_referente`,`ind_excluido`,`cod_norma_referida`),
   KEY `idx_vnj_norma_referida` (`cod_norma_referida`,`ind_excluido`,`cod_norma_referente`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

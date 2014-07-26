@@ -20,14 +20,14 @@ CREATE TABLE IF NOT EXISTS `assessor_parlamentar` (
   PRIMARY KEY (`cod_assessor`),
   UNIQUE KEY `assessor_parlamentar` (`cod_assessor`,`cod_parlamentar`,`ind_excluido`),
   KEY `cod_parlamentar` (`cod_parlamentar`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `tipo_emenda` (
   `tip_emenda` int(11) NOT NULL AUTO_INCREMENT,
   `des_tipo_emenda` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_emenda`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 INSERT INTO `tipo_emenda` (`tip_emenda`, `des_tipo_emenda`, `ind_excluido`) VALUES
 (1, 'Aditiva', 0),
@@ -35,5 +35,29 @@ INSERT INTO `tipo_emenda` (`tip_emenda`, `des_tipo_emenda`, `ind_excluido`) VALU
 (3, 'Substitutiva', 0),
 (4, 'Supressiva', 0),
 (5, 'Mensagem Aditiva', 0);
+
+UPDATE emenda SET tip_emenda = 1 WHERE tip_emenda="Aditiva";
+
+UPDATE emenda SET tip_emenda = 2 WHERE tip_emenda="Modificativa";
+
+UPDATE emenda SET tip_emenda = 3 WHERE tip_emenda="Substitutiva";
+
+UPDATE emenda SET tip_emenda = 4 WHERE tip_emenda="Supressiva";
+
+UPDATE emenda SET tip_emenda = 5 WHERE tip_emenda="Mens. Aditiva";
+
+ALTER TABLE `emenda`
+   CHANGE  `tip_emenda`  `tip_emenda` INT( 11 ) NOT NULL, 
+   DROP INDEX `idx_numemen_materia`, 
+   ADD UNIQUE KEY `idx_numemen_materia` (`num_emenda`,`tip_emenda`,`cod_materia`,`ind_excluido`),
+   DROP INDEX `idx_tip_emenda`, 
+   ADD KEY `idx_tip_emenda` (`tip_emenda`);
+
+ALTER TABLE `subemenda` 
+   CHANGE  `tip_subemenda`  `tip_subemenda` INT( 11 ) NOT NULL,
+   DROP INDEX `idx_numsub_emenda`, 
+   ADD UNIQUE KEY `idx_numsub_emenda` (`num_subemenda`,`tip_subemenda`,`cod_emenda`,`ind_excluido`),
+   DROP INDEX `idx_tip_subemenda`, 
+   ADD KEY `idx_tip_subemenda` (`tip_subemenda`);
 
 
