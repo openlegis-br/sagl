@@ -1,7 +1,7 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
 arguments : cod_materia
-max_rows : 1000
+max_rows : 10
 max_cache : 100
 </dtml-comment>
 SELECT DISTINCT
@@ -13,10 +13,10 @@ SELECT DISTINCT
    rv.tip_resultado_votacao,
    rv.txt_observacao as observacao_votacao
 FROM
-   sessao_plenaria sp,  
-   ordem_dia od, 
-   expediente_materia em, 
-   registro_votacao rv
+   sessao_plenaria sp 
+   left outer join ordem_dia od on (sp.cod_sessao_plen=od.cod_sessao_plen) 
+   left outer join expediente_materia em on (sp.cod_sessao_plen=em.cod_sessao_plen) 
+   inner join registro_votacao rv on (od.cod_materia=rv.cod_materia or em.cod_materia=rv.cod_materia) 
 WHERE
    sp.ind_excluido=0
    and od.ind_excluido=0
