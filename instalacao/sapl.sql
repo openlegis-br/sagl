@@ -594,6 +594,9 @@ CREATE TABLE IF NOT EXISTS `expediente_materia` (
 
 -- --------------------------------------------------------
 
+CREATE INDEX `idx1_expediente_materia` on `expediente_materia` (`cod_sessao_plen`);
+CREATE INDEX `idx2_expediente_materia` on `expediente_materia` (`cod_materia`);
+
 --
 -- Estrutura da tabela `expediente_presenca`
 --
@@ -6623,6 +6626,9 @@ CREATE TABLE IF NOT EXISTS `ordem_dia` (
 
 -- --------------------------------------------------------
 
+CREATE INDEX `idx1_ordem_dia` on `ordem_dia` (`cod_sessao_plen`);
+CREATE INDEX `idx2_ordem_dia` on `ordem_dia` (`cod_materia`);
+
 --
 -- Estrutura da tabela `ordem_dia_presenca`
 --
@@ -7058,6 +7064,8 @@ CREATE TABLE IF NOT EXISTS `sessao_plenaria` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
+
+CREATE INDEX `idx1_sessao_plenaria` on `sessao_plenaria` (`cod_sessao_plen`);
 
 --
 -- Estrutura da tabela `sessao_plenaria_presenca`

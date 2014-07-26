@@ -1,3 +1,11 @@
+CREATE INDEX `idx1_expediente_materia` on `expediente_materia` (`cod_sessao_plen`);
+CREATE INDEX `idx2_expediente_materia` on `expediente_materia` (`cod_materia`);
+
+CREATE INDEX `idx1_ordem_dia` on `ordem_dia` (`cod_sessao_plen`);
+CREATE INDEX `idx2_ordem_dia` on `ordem_dia` (`cod_materia`);
+
+CREATE INDEX `idx1_sessao_plenaria` on `sessao_plenaria` (`cod_sessao_plen`);
+
 CREATE TABLE IF NOT EXISTS `assessor_parlamentar` (
   `cod_assessor` int(11) NOT NULL AUTO_INCREMENT,
   `cod_parlamentar` int(11) NOT NULL,
