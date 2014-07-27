@@ -58,14 +58,12 @@ ALTER TABLE `emenda`
    CHANGE  `tip_emenda`  `tip_emenda` INT( 11 ) NOT NULL, 
    DROP INDEX `idx_numemen_materia`, 
    ADD UNIQUE KEY `idx_numemen_materia` (`num_emenda`,`tip_emenda`,`cod_materia`,`ind_excluido`),
-   DROP INDEX `idx_tip_emenda`, 
    ADD KEY `idx_tip_emenda` (`tip_emenda`);
 
 ALTER TABLE `subemenda` 
    CHANGE  `tip_subemenda`  `tip_subemenda` INT( 11 ) NOT NULL,
    DROP INDEX `idx_numsub_emenda`, 
    ADD UNIQUE KEY `idx_numsub_emenda` (`num_subemenda`,`tip_subemenda`,`cod_emenda`,`ind_excluido`),
-   DROP INDEX `idx_tip_subemenda`, 
    ADD KEY `idx_tip_subemenda` (`tip_subemenda`);
 
 
