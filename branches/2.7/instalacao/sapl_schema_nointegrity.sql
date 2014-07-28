@@ -1,4 +1,4 @@
--- Tempo de Geração: 28/07/2014 às 11:48
+-- Tempo de Geração: 28/07/2014 às 12:39
 -- Versão do servidor: 5.6.17-0ubuntu0.14.04.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -31,12 +31,6 @@ CREATE TABLE IF NOT EXISTS `acomp_materia` (
   KEY `cod_materia` (`cod_materia`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `acomp_materia`:
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---
-
 -- --------------------------------------------------------
 
 --
@@ -65,20 +59,6 @@ CREATE TABLE IF NOT EXISTS `afastamento` (
   KEY `cod_parlamentar_suplente` (`cod_parlamentar_suplente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `afastamento`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `tip_afastamento`
---       `tipo_afastamento` -> `tip_afastamento`
---   `cod_mandato`
---       `mandato` -> `cod_mandato`
---   `num_legislatura`
---       `legislatura` -> `num_legislatura`
---   `cod_parlamentar_suplente`
---       `parlamentar` -> `cod_parlamentar`
---
-
 -- --------------------------------------------------------
 
 --
@@ -95,14 +75,6 @@ CREATE TABLE IF NOT EXISTS `anexada` (
   KEY `idx_materia_anexada` (`cod_materia_anexada`),
   KEY `idx_materia_principal` (`cod_materia_principal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
-
---
--- RELACIONAMENTOS PARA TABELAS `anexada`:
---   `cod_materia_anexada`
---       `materia_legislativa` -> `cod_materia`
---   `cod_materia_principal`
---       `materia_legislativa` -> `cod_materia`
---
 
 -- --------------------------------------------------------
 
@@ -133,12 +105,6 @@ CREATE TABLE IF NOT EXISTS `assessor_parlamentar` (
   UNIQUE KEY `assessor_parlamentar` (`cod_assessor`,`cod_parlamentar`,`ind_excluido`),
   KEY `cod_parlamentar` (`cod_parlamentar`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `assessor_parlamentar`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---
 
 -- --------------------------------------------------------
 
@@ -180,20 +146,6 @@ CREATE TABLE IF NOT EXISTS `autor` (
   FULLTEXT KEY `nom_autor` (`nom_autor`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=4 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `autor`:
---   `tip_autor`
---       `tipo_autor` -> `tip_autor`
---   `cod_partido`
---       `partido` -> `cod_partido`
---   `cod_comissao`
---       `comissao` -> `cod_comissao`
---   `cod_bancada`
---       `bancada` -> `cod_bancada`
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---
-
 -- --------------------------------------------------------
 
 --
@@ -209,14 +161,6 @@ CREATE TABLE IF NOT EXISTS `autoria` (
   KEY `idx_materia` (`cod_materia`),
   KEY `idx_autor` (`cod_autor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- RELACIONAMENTOS PARA TABELAS `autoria`:
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---   `cod_autor`
---       `autor` -> `cod_autor`
---
 
 -- --------------------------------------------------------
 
@@ -235,7 +179,8 @@ CREATE TABLE IF NOT EXISTS `bancada` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_bancada`),
   KEY `idt_nom_bancada` (`nom_bancada`),
-  KEY `idx_cod_bancada` (`ind_excluido`),
+  KEY `num_legislatura` (`num_legislatura`),
+  KEY `cod_partido` (`cod_partido`),
   FULLTEXT KEY `nom_bancada` (`nom_bancada`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
@@ -298,12 +243,6 @@ CREATE TABLE IF NOT EXISTS `coligacao` (
   KEY `idx_coligacao_legislatura` (`num_legislatura`,`ind_excluido`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `coligacao`:
---   `num_legislatura`
---       `legislatura` -> `num_legislatura`
---
-
 -- --------------------------------------------------------
 
 --
@@ -339,12 +278,6 @@ CREATE TABLE IF NOT EXISTS `comissao` (
   FULLTEXT KEY `nom_comissao` (`nom_comissao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `comissao`:
---   `tip_comissao`
---       `tipo_comissao` -> `tip_comissao`
---
-
 -- --------------------------------------------------------
 
 --
@@ -368,16 +301,6 @@ CREATE TABLE IF NOT EXISTS `composicao_bancada` (
   KEY `idx_parlamentar` (`cod_parlamentar`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `composicao_bancada`:
---   `cod_cargo`
---       `cargo_bancada` -> `cod_cargo`
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_bancada`
---       `bancada` -> `cod_bancada`
---
-
 -- --------------------------------------------------------
 
 --
@@ -392,14 +315,6 @@ CREATE TABLE IF NOT EXISTS `composicao_coligacao` (
   KEY `idx_coligacao` (`cod_coligacao`),
   KEY `idx_partido` (`cod_partido`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- RELACIONAMENTOS PARA TABELAS `composicao_coligacao`:
---   `cod_coligacao`
---       `coligacao` -> `cod_coligacao`
---   `cod_partido`
---       `partido` -> `cod_partido`
---
 
 -- --------------------------------------------------------
 
@@ -426,18 +341,6 @@ CREATE TABLE IF NOT EXISTS `composicao_comissao` (
   KEY `idx_parlamentar` (`cod_parlamentar`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `composicao_comissao`:
---   `cod_cargo`
---       `cargo_comissao` -> `cod_cargo`
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_comissao`
---       `comissao` -> `cod_comissao`
---   `cod_periodo_comp`
---       `periodo_comp_comissao` -> `cod_periodo_comp`
---
-
 -- --------------------------------------------------------
 
 --
@@ -456,18 +359,6 @@ CREATE TABLE IF NOT EXISTS `composicao_mesa` (
   KEY `idx_parlamentar` (`cod_parlamentar`),
   KEY `cod_sessao_leg` (`cod_sessao_leg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
-
---
--- RELACIONAMENTOS PARA TABELAS `composicao_mesa`:
---   `cod_sessao_leg`
---       `sessao_legislativa` -> `cod_sessao_leg`
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_cargo`
---       `cargo_mesa` -> `cod_cargo`
---   `cod_periodo_comp`
---       `periodo_comp_mesa` -> `cod_periodo_comp`
---
 
 -- --------------------------------------------------------
 
@@ -492,14 +383,6 @@ CREATE TABLE IF NOT EXISTS `dependente` (
   KEY `idx_parlamentar` (`cod_parlamentar`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `dependente`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `tip_dependente`
---       `tipo_dependente` -> `tip_dependente`
---
-
 -- --------------------------------------------------------
 
 --
@@ -516,14 +399,6 @@ CREATE TABLE IF NOT EXISTS `despacho_inicial` (
   KEY `idx_despinic_comissao` (`cod_comissao`,`ind_excluido`),
   KEY `idx_materia` (`cod_materia`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
-
---
--- RELACIONAMENTOS PARA TABELAS `despacho_inicial`:
---   `cod_comissao`
---       `comissao` -> `cod_comissao`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---
 
 -- --------------------------------------------------------
 
@@ -547,14 +422,6 @@ CREATE TABLE IF NOT EXISTS `documento_acessorio` (
   KEY `idx_materia` (`cod_materia`),
   FULLTEXT KEY `idx_ementa` (`txt_ementa`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `documento_acessorio`:
---   `tip_documento`
---       `tipo_documento` -> `tip_documento`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---
 
 -- --------------------------------------------------------
 
@@ -580,12 +447,6 @@ CREATE TABLE IF NOT EXISTS `documento_acessorio_administrativo` (
   KEY `idx_dat_documento` (`dat_documento`),
   FULLTEXT KEY `idx_assunto` (`txt_assunto`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `documento_acessorio_administrativo`:
---   `cod_documento`
---       `documento_administrativo` -> `cod_documento`
---
 
 -- --------------------------------------------------------
 
@@ -618,14 +479,6 @@ CREATE TABLE IF NOT EXISTS `documento_administrativo` (
   FULLTEXT KEY `txt_observacao` (`txt_observacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `documento_administrativo`:
---   `cod_autor`
---       `autor` -> `cod_autor`
---   `tip_documento`
---       `tipo_documento_administrativo` -> `tip_documento`
---
-
 -- --------------------------------------------------------
 
 --
@@ -651,16 +504,6 @@ CREATE TABLE IF NOT EXISTS `emenda` (
   FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `emenda`:
---   `cod_autor`
---       `autor` -> `cod_autor`
---   `tip_emenda`
---       `tipo_emenda` -> `tip_emenda`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---
-
 -- --------------------------------------------------------
 
 --
@@ -679,14 +522,6 @@ CREATE TABLE IF NOT EXISTS `encerramento_presenca` (
   KEY `dat_ordem` (`dat_ordem`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `encerramento_presenca`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_sessao_plen`
---       `sessao_plenaria` -> `cod_sessao_plen`
---
 
 -- --------------------------------------------------------
 
@@ -711,14 +546,6 @@ CREATE TABLE IF NOT EXISTS `expediente_materia` (
   KEY `tip_votacao` (`tip_votacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `expediente_materia`:
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---   `cod_sessao_plen`
---       `sessao_plenaria` -> `cod_sessao_plen`
---
-
 -- --------------------------------------------------------
 
 --
@@ -738,14 +565,6 @@ CREATE TABLE IF NOT EXISTS `expediente_presenca` (
   KEY `dat_ordem` (`dat_ordem`,`ind_excluido`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `expediente_presenca`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_sessao_plen`
---       `sessao_plenaria` -> `cod_sessao_plen`
---
-
 -- --------------------------------------------------------
 
 --
@@ -760,12 +579,6 @@ CREATE TABLE IF NOT EXISTS `expediente_sessao_plenaria` (
   PRIMARY KEY (`cod_sessao_plen`,`cod_expediente`),
   KEY `cod_expediente` (`cod_expediente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
-
---
--- RELACIONAMENTOS PARA TABELAS `expediente_sessao_plenaria`:
---   `cod_expediente`
---       `tipo_expediente` -> `cod_expediente`
---
 
 -- --------------------------------------------------------
 
@@ -783,14 +596,6 @@ CREATE TABLE IF NOT EXISTS `filiacao` (
   KEY `idx_partido` (`cod_partido`),
   KEY `idx_parlamentar` (`cod_parlamentar`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
-
---
--- RELACIONAMENTOS PARA TABELAS `filiacao`:
---   `cod_partido`
---       `partido` -> `cod_partido`
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---
 
 -- --------------------------------------------------------
 
@@ -828,14 +633,6 @@ CREATE TABLE IF NOT EXISTS `instituicao` (
   FULLTEXT KEY `idx_nom_responsavel` (`nom_responsavel`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `instituicao`:
---   `cod_localidade`
---       `localidade` -> `cod_localidade`
---   `tip_instituicao`
---       `tipo_instituicao` -> `tip_instituicao`
---
-
 -- --------------------------------------------------------
 
 --
@@ -862,14 +659,6 @@ CREATE TABLE IF NOT EXISTS `legislacao_citada` (
   KEY `cod_norma` (`cod_norma`),
   KEY `cod_materia` (`cod_materia`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
-
---
--- RELACIONAMENTOS PARA TABELAS `legislacao_citada`:
---   `cod_norma`
---       `norma_juridica` -> `cod_norma`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---
 
 -- --------------------------------------------------------
 
@@ -974,18 +763,6 @@ CREATE TABLE IF NOT EXISTS `mandato` (
   KEY `tip_causa_fim_mandato` (`tip_causa_fim_mandato`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `mandato`:
---   `cod_coligacao`
---       `coligacao` -> `cod_coligacao`
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `tip_afastamento`
---       `tipo_afastamento` -> `tip_afastamento`
---   `num_legislatura`
---       `legislatura` -> `num_legislatura`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1005,14 +782,6 @@ CREATE TABLE IF NOT EXISTS `materia_apresentada_sessao` (
   KEY `idx_apres_datord` (`dat_ordem`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `materia_apresentada_sessao`:
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---   `cod_sessao_plen`
---       `sessao_plenaria` -> `cod_sessao_plen`
---
 
 -- --------------------------------------------------------
 
@@ -1061,18 +830,6 @@ CREATE TABLE IF NOT EXISTS `materia_legislativa` (
   FULLTEXT KEY `txt_observacao` (`txt_observacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `materia_legislativa`:
---   `cod_situacao`
---       `tipo_situacao_materia` -> `tip_situacao_materia`
---   `tip_id_basica`
---       `tipo_materia_legislativa` -> `tip_materia`
---   `cod_regime_tramitacao`
---       `regime_tramitacao` -> `cod_regime_tramitacao`
---   `cod_local_origem_externa`
---       `origem` -> `cod_origem`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1090,16 +847,6 @@ CREATE TABLE IF NOT EXISTS `mesa_sessao_plenaria` (
   KEY `cod_sessao_plen` (`cod_sessao_plen`),
   KEY `cod_parlamentar` (`cod_parlamentar`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
-
---
--- RELACIONAMENTOS PARA TABELAS `mesa_sessao_plenaria`:
---   `cod_sessao_plen`
---       `sessao_plenaria` -> `cod_sessao_plen`
---   `cod_sessao_leg`
---       `sessao_legislativa` -> `cod_sessao_leg`
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---
 
 -- --------------------------------------------------------
 
@@ -1153,16 +900,6 @@ CREATE TABLE IF NOT EXISTS `norma_juridica` (
   FULLTEXT KEY `txt_observacao` (`txt_observacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `norma_juridica`:
---   `cod_situacao`
---       `tipo_situacao_norma` -> `tip_situacao_norma`
---   `tip_norma`
---       `tipo_norma_juridica` -> `tip_norma`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1183,14 +920,6 @@ CREATE TABLE IF NOT EXISTS `numeracao` (
   KEY `idx_numer_identificacao` (`tip_materia`,`num_materia`,`ano_materia`,`ind_excluido`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
---
--- RELACIONAMENTOS PARA TABELAS `numeracao`:
---   `tip_materia`
---       `tipo_materia_legislativa` -> `tip_materia`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1208,14 +937,6 @@ CREATE TABLE IF NOT EXISTS `oradores` (
   KEY `cod_sessao_plen` (`cod_sessao_plen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
---
--- RELACIONAMENTOS PARA TABELAS `oradores`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_sessao_plen`
---       `sessao_plenaria` -> `cod_sessao_plen`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1232,14 +953,6 @@ CREATE TABLE IF NOT EXISTS `oradores_expediente` (
   KEY `cod_parlamentar` (`cod_parlamentar`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
-
---
--- RELACIONAMENTOS PARA TABELAS `oradores_expediente`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_sessao_plen`
---       `sessao_plenaria` -> `cod_sessao_plen`
---
 
 -- --------------------------------------------------------
 
@@ -1266,14 +979,6 @@ CREATE TABLE IF NOT EXISTS `ordem_dia` (
   KEY `tip_quorum` (`tip_quorum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `ordem_dia`:
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---   `cod_sessao_plen`
---       `sessao_plenaria` -> `cod_sessao_plen`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1292,14 +997,6 @@ CREATE TABLE IF NOT EXISTS `ordem_dia_presenca` (
   KEY `cod_sessao_plen` (`cod_sessao_plen`),
   KEY `dat_ordem` (`dat_ordem`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `ordem_dia_presenca`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_sessao_plen`
---       `sessao_plenaria` -> `cod_sessao_plen`
---
 
 -- --------------------------------------------------------
 
@@ -1350,12 +1047,6 @@ CREATE TABLE IF NOT EXISTS `parecer` (
   KEY `cod_materia` (`cod_materia`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
---
--- RELACIONAMENTOS PARA TABELAS `parecer`:
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1399,16 +1090,6 @@ CREATE TABLE IF NOT EXISTS `parlamentar` (
   FULLTEXT KEY `nom_completo` (`nom_completo`),
   FULLTEXT KEY `nom_parlamentar` (`nom_parlamentar`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `parlamentar`:
---   `cod_localidade_resid`
---       `localidade` -> `cod_localidade`
---   `cod_nivel_instrucao`
---       `nivel_instrucao` -> `cod_nivel_instrucao`
---   `tip_situacao_militar`
---       `tipo_situacao_militar` -> `tip_situacao_militar`
---
 
 -- --------------------------------------------------------
 
@@ -1458,12 +1139,6 @@ CREATE TABLE IF NOT EXISTS `periodo_comp_mesa` (
   KEY `idx_legislatura` (`num_legislatura`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `periodo_comp_mesa`:
---   `num_legislatura`
---       `legislatura` -> `num_legislatura`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1489,16 +1164,6 @@ CREATE TABLE IF NOT EXISTS `proposicao` (
   KEY `cod_autor` (`cod_autor`),
   KEY `idx_prop_autor` (`dat_envio`,`dat_recebimento`,`ind_excluido`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `proposicao`:
---   `tip_proposicao`
---       `tipo_proposicao` -> `tip_proposicao`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---   `cod_autor`
---       `autor` -> `cod_autor`
---
 
 -- --------------------------------------------------------
 
@@ -1538,16 +1203,6 @@ CREATE TABLE IF NOT EXISTS `protocolo` (
   FULLTEXT KEY `txt_interessado` (`txt_interessado`),
   FULLTEXT KEY `txt_observacao` (`txt_observacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `protocolo`:
---   `tip_materia`
---       `tipo_materia_legislativa` -> `tip_materia`
---   `cod_autor`
---       `autor` -> `cod_autor`
---   `tip_documento`
---       `tipo_documento_administrativo` -> `tip_documento`
---
 
 -- --------------------------------------------------------
 
@@ -1590,20 +1245,6 @@ CREATE TABLE IF NOT EXISTS `registro_votacao` (
   KEY `cod_substitutivo` (`cod_substitutivo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `registro_votacao`:
---   `cod_substitutivo`
---       `substitutivo` -> `cod_substitutivo`
---   `tip_resultado_votacao`
---       `tipo_resultado_votacao` -> `tip_resultado_votacao`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---   `cod_emenda`
---       `emenda` -> `cod_emenda`
---   `cod_subemenda`
---       `subemenda` -> `cod_subemenda`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1619,14 +1260,6 @@ CREATE TABLE IF NOT EXISTS `registro_votacao_parlamentar` (
   KEY `cod_parlamentar` (`cod_parlamentar`),
   KEY `cod_votacao` (`cod_votacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
-
---
--- RELACIONAMENTOS PARA TABELAS `registro_votacao_parlamentar`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_votacao`
---       `registro_votacao` -> `cod_votacao`
---
 
 -- --------------------------------------------------------
 
@@ -1654,18 +1287,6 @@ CREATE TABLE IF NOT EXISTS `relatoria` (
   KEY `idx_relat_materia` (`cod_materia`,`cod_parlamentar`,`ind_excluido`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `relatoria`:
---   `cod_comissao`
---       `comissao` -> `cod_comissao`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `tip_fim_relatoria`
---       `tipo_fim_relatoria` -> `tip_fim_relatoria`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1683,12 +1304,6 @@ CREATE TABLE IF NOT EXISTS `reuniao_comissao` (
   PRIMARY KEY (`cod_reuniao`),
   KEY `cod_comissao` (`cod_comissao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `reuniao_comissao`:
---   `cod_comissao`
---       `comissao` -> `cod_comissao`
---
 
 -- --------------------------------------------------------
 
@@ -1711,12 +1326,6 @@ CREATE TABLE IF NOT EXISTS `sessao_legislativa` (
   KEY `idx_sessleg_legislatura` (`num_legislatura`,`ind_excluido`),
   KEY `idx_legislatura` (`num_legislatura`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `sessao_legislativa`:
---   `num_legislatura`
---       `legislatura` -> `num_legislatura`
---
 
 -- --------------------------------------------------------
 
@@ -1748,16 +1357,6 @@ CREATE TABLE IF NOT EXISTS `sessao_plenaria` (
   KEY `num_sessao_plen` (`num_sessao_plen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `sessao_plenaria`:
---   `num_legislatura`
---       `legislatura` -> `num_legislatura`
---   `tip_sessao`
---       `tipo_sessao_plenaria` -> `tip_sessao`
---   `cod_sessao_leg`
---       `sessao_legislativa` -> `cod_sessao_leg`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1776,14 +1375,6 @@ CREATE TABLE IF NOT EXISTS `sessao_plenaria_presenca` (
   KEY `cod_sessao_plen` (`cod_sessao_plen`),
   KEY `dat_sessao` (`dat_sessao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `sessao_plenaria_presenca`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_sessao_plen`
---       `sessao_plenaria` -> `cod_sessao_plen`
---
 
 -- --------------------------------------------------------
 
@@ -1846,16 +1437,6 @@ CREATE TABLE IF NOT EXISTS `subemenda` (
   FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `subemenda`:
---   `cod_autor`
---       `autor` -> `cod_autor`
---   `tip_subemenda`
---       `tipo_emenda` -> `tip_emenda`
---   `cod_emenda`
---       `emenda` -> `cod_emenda`
---
-
 -- --------------------------------------------------------
 
 --
@@ -1879,14 +1460,6 @@ CREATE TABLE IF NOT EXISTS `substitutivo` (
   FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`),
   FULLTEXT KEY `txt_observacao` (`txt_observacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
---
--- RELACIONAMENTOS PARA TABELAS `substitutivo`:
---   `cod_autor`
---       `autor` -> `cod_autor`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---
 
 -- --------------------------------------------------------
 
@@ -2182,18 +1755,6 @@ CREATE TABLE IF NOT EXISTS `tramitacao` (
   KEY `sgl_turno` (`sgl_turno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `tramitacao`:
---   `cod_unid_tram_dest`
---       `unidade_tramitacao` -> `cod_unid_tramitacao`
---   `cod_status`
---       `status_tramitacao` -> `cod_status`
---   `cod_materia`
---       `materia_legislativa` -> `cod_materia`
---   `cod_unid_tram_local`
---       `unidade_tramitacao` -> `cod_unid_tramitacao`
---
-
 -- --------------------------------------------------------
 
 --
@@ -2220,18 +1781,6 @@ CREATE TABLE IF NOT EXISTS `tramitacao_administrativo` (
   KEY `cod_documento` (`cod_documento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `tramitacao_administrativo`:
---   `cod_status`
---       `status_tramitacao_administrativo` -> `cod_status`
---   `cod_documento`
---       `documento_administrativo` -> `cod_documento`
---   `cod_unid_tram_local`
---       `unidade_tramitacao` -> `cod_unid_tramitacao`
---   `cod_unid_tram_dest`
---       `unidade_tramitacao` -> `cod_unid_tramitacao`
---
-
 -- --------------------------------------------------------
 
 --
@@ -2253,16 +1802,6 @@ CREATE TABLE IF NOT EXISTS `unidade_tramitacao` (
   KEY `cod_parlamentar` (`cod_parlamentar`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=8 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `unidade_tramitacao`:
---   `cod_parlamentar`
---       `parlamentar` -> `cod_parlamentar`
---   `cod_comissao`
---       `comissao` -> `cod_comissao`
---   `cod_orgao`
---       `orgao` -> `cod_orgao`
---
-
 -- --------------------------------------------------------
 
 --
@@ -2282,13 +1821,6 @@ CREATE TABLE IF NOT EXISTS `vinculo_norma_juridica` (
   KEY `cod_norma_referida` (`cod_norma_referida`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0 AUTO_INCREMENT=1 ;
 
---
--- RELACIONAMENTOS PARA TABELAS `vinculo_norma_juridica`:
---   `cod_norma_referida`
---       `norma_juridica` -> `cod_norma`
---   `cod_norma_referente`
---       `norma_juridica` -> `cod_norma`
---
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
