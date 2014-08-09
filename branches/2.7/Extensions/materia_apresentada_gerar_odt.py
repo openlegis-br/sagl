@@ -7,7 +7,7 @@ def createReport(self, inf_basicas_dic, lst_materia_apresentada):
     url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/materia_apresentada.odt"
     template_file = cStringIO.StringIO(urllib.urlopen(url).read())
     output_file_odt = "materia_apresentada.odt"
-    renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python',forceOoCall=True)
+    renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
     renderer.run()                                                                              
     data = open(output_file_odt, "rb").read()                 
     for file in [output_file_odt]:

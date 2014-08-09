@@ -7,7 +7,7 @@ def createReport(self, inf_basicas_dic, num_ident_basica, nom_autor):
     url = self.sapl_documentos.modelo.documento_administrativo.absolute_url() + "/oficio_mocao.odt"
     template_file = cStringIO.StringIO(urllib.urlopen(url).read())
     output_file_odt = "oficio_mocao.odt"
-    renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python',forceOoCall=True)
+    renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
     renderer.run()                          
     data = open(output_file_odt, "rb").read()                 
     for file in [output_file_odt]:
