@@ -7,7 +7,7 @@ def createReport(self,inf_basicas_dic,nom_arquivo,des_tipo_documento,nom_documen
     url = self.sapl_documentos.modelo.materia.documento_acessorio.absolute_url() + "/%s"%modelo_proposicao
     template_file = cStringIO.StringIO(urllib.urlopen(url).read())
     output_file_odt = "%s"%nom_arquivo
-    renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python',forceOoCall=True)
+    renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
     renderer.run()                                                                             
     data = open(output_file_odt, "rb").read()                 
     for file in [output_file_odt]:

@@ -10,13 +10,13 @@
        </dtml-in>
       <dtml-if expr="not(dat_norma and dat_norma_referente)">
            <dtml-call expr="REQUEST.set('erro', 1)">
-           <dtml-let mensagem="'Data da norma referida ou data da norma referente não informada'">
+           <dtml-let mensagem="'Data da norma referida ou data da norma referente não informada'" sucesso="1" url="'index_html?cod_norma='+cod_norma_referente">
              <dtml-var mensagem_emitir>
            </dtml-let>
       <dtml-else>
-         <dtml-if expr="pysc.port_to_iso_pysc(dat_norma_referente) < pysc.port_to_iso_pysc(dat_norma)">
+         <dtml-if expr="dat_norma_referida > dat_norma_referente">
           <dtml-call expr="REQUEST.set('erro', 1)">
-          <dtml-let mensagem="'Data da norma referente é menor que a data da norma referida!'">
+          <dtml-let mensagem="'Vínculo nnválido! A data da norma referente é menor que a data da norma referida.'" sucesso="1" url="'index_html?cod_norma='+cod_norma_referente">
              <dtml-var mensagem_emitir>   
          </dtml-let>
          <dtml-else>
@@ -25,14 +25,14 @@
       </dtml-if>
     <dtml-else>
         <dtml-call expr="REQUEST.set('erro', 1)">
-        <dtml-let mensagem="'A norma referida informada não se encontra cadastrada!'">
+        <dtml-let mensagem="'A norma referida informada não se encontra cadastrada!'" sucesso="1" url="'index_html?cod_norma='+cod_norma_referente">
             <dtml-var mensagem_emitir>
        </dtml-let>         
     </dtml-in>
 <dtml-unless erro>
         <dtml-if expr="cod_norma_referente == cod_norma_referida">
            <dtml-call expr="REQUEST.set('erro', 1)">
-           <dtml-let mensagem="'Uma norma não pode referenciar a si própria!'">
+           <dtml-let mensagem="'Uma norma não pode referenciar a si própria!'" sucesso="1" url="'index_html?cod_norma='+cod_norma_referente">
               <dtml-var mensagem_emitir>
            </dtml-let>         
 <dtml-else>
@@ -44,7 +44,7 @@
                       ind_excluido       = 0
                       )">
 <dtml-except>
-            <dtml-let mensagem="'Não foi possível salvar.<br>Tipo do erro: '+_.str(_['error_type'])+'<br>Valor do erro: '+_.str(_['error_value'])">
+            <dtml-let mensagem="'Não foi possível salvar.<br>Tipo do erro: '+_.str(_['error_type'])+'<br>Valor do erro: '+_.str(_['error_value'])" sucesso="1" url="'index_html?cod_norma='+cod_norma_referente">
                 <dtml-var mensagem_emitir>
             </dtml-let>
 <dtml-else>
