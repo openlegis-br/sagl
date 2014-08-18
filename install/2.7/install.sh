@@ -931,11 +931,15 @@ fi
 # Import sql script to database
 echo -e "\033[32mCriando o banco de dados MySQL e importando estrutura de tabelas\033[m"
 if [ -z $senha ]; then
-    mysql -h 127.0.0.1 -u $usuario < $PRODUCTS_HOME/$SAPL_DIR/instalacao/sapl_create.sql
-    mysql -h 127.0.0.1 -u $usuario interlegis < $PRODUCTS_HOME/$SAPL_DIR/instalacao/sapl.sql
+    mysql -h 127.0.0.1 -u $usuario < $PRODUCTS_HOME/$SAPL_DIR/instalacao/db_create.sql
+    mysql -h 127.0.0.1 -u $usuario interlegis < $PRODUCTS_HOME/$SAPL_DIR/instalacao/db_schema.sql
+    mysql -h 127.0.0.1 -u $usuario interlegis < $PRODUCTS_HOME/$SAPL_DIR/instalacao/db_initial_data.sql
+    mysql -h 127.0.0.1 -u $usuario interlegis < $PRODUCTS_HOME/$SAPL_DIR/instalacao/db_constraints.sql
 else
-    mysql -h 127.0.0.1 -u $usuario --password=$senha < $PRODUCTS_HOME/$SAPL_DIR/instalacao/sapl_create.sql
-    mysql -h 127.0.0.1 -u $usuario interlegis --password=$senha < $PRODUCTS_HOME/$SAPL_DIR/instalacao/sapl.sql
+    mysql -h 127.0.0.1 -u $usuario --password=$senha < $PRODUCTS_HOME/$SAPL_DIR/instalacao/db_create.sql
+    mysql -h 127.0.0.1 -u $usuario interlegis --password=$senha < $PRODUCTS_HOME/$SAPL_DIR/instalacao/db_schema.sql
+    mysql -h 127.0.0.1 -u $usuario interlegis --password=$senha < $PRODUCTS_HOME/$SAPL_DIR/instalacao/db_initial_data.sql
+    mysql -h 127.0.0.1 -u $usuario interlegis --password=$senha < $PRODUCTS_HOME/$SAPL_DIR/instalacao/db_constraints.sql
 fi
 if [ $? -gt 0 ]; then
     echo ""
