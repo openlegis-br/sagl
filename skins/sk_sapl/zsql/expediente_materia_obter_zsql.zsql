@@ -5,7 +5,6 @@ max_rows : 1000
 max_cache : 100
 </dtml-comment>
 
-<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
 SELECT 
        REPLACE(expediente_materia.cod_ordem,  'L', '') as cod_ordem,
        REPLACE(expediente_materia.cod_sessao_plen,  'L', '') as cod_sessao_plen,
@@ -15,6 +14,7 @@ SELECT
        expediente_materia.txt_observacao,
        expediente_materia.txt_resultado,
        expediente_materia.tip_votacao,
+       expediente_materia.tip_quorum,
        expediente_materia.ind_excluido,
        sessao_plenaria.tip_sessao as tip_sessao,
        sessao_plenaria.cod_sessao_plen as cod_sessao
@@ -36,36 +36,3 @@ FROM
 
 ORDER BY dat_ordem, num_ordem
 
-<dtml-else>
-
-SELECT 
-       expediente_materia.cod_ordem as cod_ordem,
-       expediente_materia.cod_sessao_plen as cod_sessao_plen,
-       expediente_materia.cod_materia as cod_materia,
-       TO_CHAR(expediente_materia.dat_ordem, 'DD/MM/YYYY') as dat_ordem,
-       expediente_materia.num_ordem,
-       expediente_materia.txt_observacao,
-       expediente_materia.txt_resultado,
-       expediente_materia.tip_votacao,
-       expediente_materia.ind_excluido,
-       sessao_plenaria.tip_sessao as tip_sessao,
-       sessao_plenaria.cod_sessao_plen
-      
-FROM   
-   expediente_materia, sessao_plenaria, materia_legislativa
-  
-  <dtml-sqlgroup where>
-    <dtml-sqltest cod_materia 	  column="expediente_materia.cod_materia"     op="=" type="int" optional><dtml-and>
-    <dtml-sqltest cod_sessao_plen column="expediente_materia.cod_sessao_plen" op="=" type="int" optional><dtml-and>
-    <dtml-sqltest cod_ordem       column="expediente_materia.cod_ordem"       op="=" type="int" optional><dtml-and>  
-    <dtml-sqltest ind_excluido    column="expediente_materia.ind_excluido"    op="=" type="int" optional><dtml-and>
-    <dtml-sqltest num_ordem     					      op="=" type="int" optional><dtml-and>
-    <dtml-sqltest dat_ordem 						      op="=" type="nb"  optional><dtml-and>
-    expediente_materia.cod_sessao_plen = sessao_plenaria.cod_sessao_plen and
-    expediente_materia.cod_materia     = materia_legislativa.cod_materia and
-    materia_legislativa.ind_excluido   = 0
-  </dtml-sqlgroup>
-
-ORDER BY dat_ordem, num_ordem
-
-</dtml-if>

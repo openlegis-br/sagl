@@ -60,8 +60,14 @@
       }
 
      if (form.lst_tip_quorum.selectedIndex==0){
-         alert("O quorum de votação deve ser informado");
+         alert("O quórum de votação deve ser informado");
          form.lst_tip_quorum.focus();
+         return false;
+      }
+
+     if (form.lst_tip_turno.selectedIndex==0){
+         alert("O turno de votação deve ser informado");
+         form.lst_tip_turno.focus();
          return false;
       }
 
@@ -132,7 +138,7 @@ function reloadParentAndClose()
                     </select>
                 </td>
 	            <td>
-                    <label for="txt_num_ordem">Núm. Ordem <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <label for="txt_num_ordem">Nº Ordem <span class="campoObrigatorio">&nbsp;</span></label><br />
                         <dtml-unless cod_ordem>
                           <dtml-in expr="zsql.ordem_dia_numero_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
                             <dtml-call expr="REQUEST.set('num_ordem', _.int(novo_item))">
@@ -164,7 +170,7 @@ function reloadParentAndClose()
                     </select>
                 </td>
                 <td>
-                    <label for="txt_num_ident_basica" >Núm. Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <label for="txt_num_ident_basica" >Nº Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
                     <input type="text" name="txt_num_ident_basica" size="4" maxlength="5" onChange="ementa_buscar(document.ordem_dia_form)"
                         <dtml-if cod_materia>
                             <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
@@ -189,36 +195,34 @@ function reloadParentAndClose()
                </tr>
                <tr>
                 <td>
-                    <label for="rad_tip_votacao">Tipo de votação <span class="campoObrigatorio">&nbsp;</span></label><br />
-                    <dtml-in expr="[(1,'Simbólica'),(2,'Nominal'),(3,'Secreta')]">
-                      <input class="texto" type="radio" id="rad_tip_votacao" name="rad_tip_votacao" value="<dtml-var expr="_['sequence-key']">"
-                        <dtml-if expr="_.has_key('tip_votacao')">
-                        <dtml-if expr="_.has_key('cod_ordem') and tip_votacao==_['sequence-key']">
+                    <label for="rad_tip_votacao">Tipo de Votação <span class="campoObrigatorio">&nbsp;</span></label><br />
+                     <dtml-in expr="zsql.tipo_votacao_obter_zsql(tip_votacao='')">
+                      <input class="texto" type="radio" id="rad_tip_votacao" name="rad_tip_votacao" value="<dtml-var tip_votacao_sel>"
+                        <dtml-if expr="(_.has_key('cod_ordem') and cod_ordem!='')">
+                        <dtml-if expr="_.int(ordem_dia_form.tip_votacao)==_.int(tip_votacao_sel)">
                                     checked=1
                         </dtml-if>
-                        </dtml-if>
-                                    onChange="javascript:form.hdn_alterou.value=1" />
-                                    <span class="texto"><dtml-var expr="_['sequence-item']"></span>
-                    </dtml-in>
+                        </dtml-if>>
+                            <span class="texto"><dtml-var des_tipo_votacao></span>
+                      </dtml-in>
                 </td>
                 <td>
-                    <label for="lst_tip_quorum">Quorum de votação<span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <label for="lst_tip_quorum">Quórum de Votação<span class="campoObrigatorio">&nbsp;</span></label><br />
                       <select name="lst_tip_quorum">
                         <option value="0"></option>
-                        <dtml-in expr="[(1,'Maioria simples'),
-                                        (2,'Maioria absoluta'),
-                                        (3,'Maioria qualificada (1/3)'),
-                                        (4,'Maioria qualificada (2/3)'),
-                                        (5,'Maioria qualificada (3/5)')]">
-                          <option <dtml-if expr="_.has_key('tip_quorum') and tip_quorum==_['sequence-key']"> selected</dtml-if> value="<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></option>
+                        <dtml-in expr="zsql.quorum_votacao_obter_zsql()">
+                          <option <dtml-if expr="_.has_key('tip_quorum') and tip_quorum==cod_quorum"> selected</dtml-if> value="<dtml-var cod_quorum>"><dtml-var des_quorum></option>
                         </dtml-in>
                       </select>
                 </td>
-                <td valign="middle">
-                    <dtml-if cod_materia>
-                    <a class="botao-link" target="_blank" href="<dtml-var sapl url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" >
-                        Ver Matéria</a>
-                    </dtml-if>
+                <td>
+                    <label for="lst_tip_turno">Turno de Discussão<span class="campoObrigatorio">&nbsp;</span></label><br />
+                      <select name="lst_tip_turno">
+                        <option value="0"></option>
+                        <dtml-in expr="zsql.turno_discussao_obter_zsql()">
+                          <option <dtml-if expr="_.has_key('tip_turno') and _.int(cod_turno)==_.int(ordem_dia_form.tip_turno)"> selected</dtml-if> value="<dtml-var cod_turno>"><dtml-var des_turno></option>
+                        </dtml-in>
+                      </select>
                 </td>
             </tr>
             <tr>
@@ -237,6 +241,9 @@ function reloadParentAndClose()
                 <input type="button" class="botaoExtra" name="btn_excluir" value="Excluir" onClick="ordem_dia_excluir()" />
             </dtml-if>
             <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+        <dtml-if cod_materia>
+          <a class="botao-link" target="_blank" href="<dtml-var sapl url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">Ver Matéria</a>
+         </dtml-if>
         </p>
         <input type="hidden" name="cod_ordem" value="<dtml-var cod_ordem missing>" />
         <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
@@ -244,6 +251,5 @@ function reloadParentAndClose()
             <input type="hidden" name="txa_txt_resultado" value="" />
         </dtml-unless>
 </form>
-
 </body>
 </html>
