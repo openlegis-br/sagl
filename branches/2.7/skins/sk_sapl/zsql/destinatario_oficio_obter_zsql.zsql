@@ -1,0 +1,28 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_documento
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT
+  d.cod_destinatario,
+  d.cod_documento,
+  d.cod_instituicao,
+  i.nom_instituicao,
+  i.nom_responsavel,
+  t.nom_tipo_instituicao
+
+FROM 
+  destinatario_oficio d
+  LEFT JOIN instituicao i ON i.cod_instituicao = d.cod_instituicao
+  LEFT JOIN tipo_instituicao t ON i.tip_instituicao = t.tip_instituicao
+
+
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_documento op="=" type="int"><dtml-and>
+  d.ind_excluido = 0 and
+  i.ind_excluido = 0
+</dtml-sqlgroup>
+
+ORDER BY
+      t.nom_tipo_instituicao, i.nom_instituicao

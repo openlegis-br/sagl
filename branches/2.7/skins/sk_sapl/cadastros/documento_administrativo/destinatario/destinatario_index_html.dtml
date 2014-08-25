@@ -1,0 +1,123 @@
+﻿<dtml-var standard_html_header>
+<script type="text/javascript">
+
+    function lista_destinatarios_excluir(){
+        if (confirm("Deseja realmente excluir a lista de destinatários?")) {
+            location.href="lista_destinatarios_excluir_proc?cod_documento=<dtml-var cod_documento>";
+        }
+       return;
+    }
+
+    function excluir(cod_destinatario,cod_documento) {
+       location.href = "<dtml-var absolute_url>/destinatario_excluir_proc?cod_documento="+cod_documento+"&cod_destinatario="+cod_destinatario;
+    }
+</script>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 700,
+		maxHeight	: 600,
+		fitToView	: false,
+		width		: '70%',
+		height		: '77%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+                afterClose      : function() {
+                window.location.href = "&dtml-portal_url;/cadastros/documento_administrativo/destinatario/destinatario_index_html?<dtml-var "REQUEST.get('QUERY_STRING','')">";
+                },
+		closeEffect	: 'fade'
+	});
+});
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_materias_expediente">Ajuda</a>
+
+<h1 class="firstHeading">Destinatários</h1>
+
+<h3 align="center"><dtml-var documento_header></h3>
+
+<form name="destinatario_form" method="post">
+  <dtml-var documento_menu>
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 20)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+    <dtml-in expr="zsql.destinatario_oficio_obter_zsql(cod_documento = cod_documento, ind_excluido=0)" size="step" start="start" orphan=0>
+
+        <dtml-if sequence-start>
+        <fieldset>
+       <legend>Lista de Destinatários (<dtml-var sequence-length> registros)</legend>
+        <table>
+            <tr>
+                <th width="40%" class="form-label">Nome</th>
+                <th width="20%" class="form-label">Tipo</th>
+                <th width="30%" class="form-label">Responsável</th>
+                <th width="10%" class="form-label">Ação</th>
+            </tr>
+        <dtml-if previous-sequence>
+          <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+        </dtml-if previous-sequence>
+        </dtml-if sequence-start>
+        <tr <dtml-if sequence-odd>class="even"</dtml-if>>
+                <td class="texto" valign="top">
+                   <b><dtml-var nom_instituicao></b>
+                </td>
+                <td class="texto" valign="top">
+                   <dtml-var nom_tipo_instituicao>
+                </td>
+               <td class="texto" valign="top">
+                   <dtml-var nom_responsavel>
+               </td>
+            <td class="texto">
+             <a href="javascript:excluir(<dtml-var cod_destinatario>,<dtml-var cod_documento>)">Excluir</a>
+            </td>
+        </tr>
+    <dtml-if sequence-end>
+  </table>
+</fieldset>
+     <dtml-if next-sequence>
+      <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+    </dtml-if next-sequence>
+    <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+     <p align="center" class="texto">
+        <b><dtml-var "sapl.pysc.PageListOutput_pysc('destinatario_index_html', page, step, _['sequence-length'], cod_documento=cod_documento)">
+      </b></p>
+    </dtml-if>
+  </dtml-if sequence-end>
+  <dtml-else>
+      <fieldset>
+       <legend>Lista de Destinatários</legend>
+        <p class="texto">Nenhum destinatário cadastrado</p>
+      </fieldset>
+</dtml-in>
+
+<p align="center">
+  <a href="destinatario_form?cod_documento=<dtml-var cod_documento>"class="botao-link popup" data-fancybox-type="iframe">Gerar lista</a>
+  <a href="destinatario_incluir_form?cod_documento=<dtml-var cod_documento>"class="botao-link popup" data-fancybox-type="iframe">Incluir Destinatários</a>
+  <dtml-if expr="zsql.destinatario_oficio_obter_zsql(cod_documento = cod_documento, ind_excluido=0) and AUTHENTICATED_USER.hasRole(this(), ['Operador','Operador Modulo Administrativo'])">
+    <input type="button" class="botao" name="btn_excluir" value="Excluir lista" onClick="lista_destinatarios_excluir()" />
+  </dtml-if>
+
+  <input class="botao" type="button" value="Atualizar" onClick="window.location.reload()">
+</p>
+
+</form>
+
+<dtml-var standard_html_footer>
