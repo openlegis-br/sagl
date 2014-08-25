@@ -430,6 +430,8 @@ $(document).ready(function() {
                         </tr>
               </table>
           </fieldset>
+
+      <dtml-if expr="_.has_key('cod_materia') or temProposicao">       
           <fieldset>
              <legend>Proposição Eletrônica</legend>
               <table>   
@@ -466,19 +468,22 @@ $(document).ready(function() {
                         </tr>
               </table>
           </fieldset>
+      </dtml-if>       
 
          <dtml-if cod_materia>
           <dtml-in "zsql.materia_buscar_norma_juridica_zsql(cod_materia)" mapping>
-          <dtml-if cod_norma>
+          <dtml-if sequence-start>
            <fieldset>
              <legend>Norma Derivada</legend>
               <table>
+          </dtml-if>
                         <tr>
                           <td class="texto"> 
                             <a href="<dtml-var "sapl" url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
                             <b><dtml-var des_norma> <dtml-var num_norma>/<dtml-var ano_norma></b></a>
                           </td>
                         </tr>
+          <dtml-if sequence-end>
                  </table>
             </fieldset>
           </dtml-if>
@@ -489,11 +494,32 @@ $(document).ready(function() {
               <legend>Outras Informações</legend>
                 <table>
                         <tr>
-                          <td colspan="2"><label for="txt_nom_apelido">Apelido </label><br />
-                            <input type="text" id="txt_nom_apelido" name="txt_nom_apelido" size="30" maxlength="50" value="<dtml-var nom_apelido missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
+                          <td><label for="lst_tip_quorum">Quórum de Votação </label><br />
+                            <select id="lst_tip_quorum" name="lst_tip_quorum">
+                              <option></option>
+                             <dtml-in expr="zsql.quorum_votacao_obter_zsql()">
+                              <option <dtml-if tip_quorum>
+                               <dtml-if expr="(tip_quorum!=None) and _.int(tip_quorum) == _.int(cod_quorum)"> 
+                                selected </dtml-if></dtml-if>
+                               <dtml-if expr="not _.has_key('cod_materia') and _.int(cod_quorum) == 1">
+                                selected
+                               </dtml-if>
+                                value="<dtml-var cod_quorum>"> <dtml-var des_quorum>
+                              </option>
+                             </dtml-in>
+                            </select>
                           </td>
-                          <td><label for="txt_num_dias_prazo">Dias Prazo </label><br />
-                            <input type="text" id="txt_num_dias_prazo" name="txt_num_dias_prazo" size="3" maxlength="3" value="<dtml-var num_dias_prazo missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
+                          <td><label for="lst_tip_situacao">Situação </label><br />
+                            <select id="lst_tip_situacao" name="lst_tip_situacao">
+                              <option></option>
+                             <dtml-in expr="zsql.tipo_situacao_materia_obter_zsql(ind_excluido=0)">
+                              <option 
+                               <dtml-if expr="_.has_key('cod_situacao') and _.int(tip_situacao_materia) == cod_situacao">
+                                 selected </dtml-if>
+                                value="<dtml-var tip_situacao_materia>"> <dtml-var des_tipo_situacao>
+                              </option>
+                             </dtml-in>
+                            </select>
                           </td>
                           <td class="texto"><label for="rad_ind_polemica">Matéria Polêmica?</label><br />
 <dtml-in expr="[(1,'Sim'),(0,'Não')]">
@@ -507,7 +533,7 @@ $(document).ready(function() {
                           </td>
                         </tr>
                         <tr>
-                          <td colspan="2"><label for="txt_des_objeto">Objeto </label><br />
+                          <td><label for="txt_des_objeto">Objeto </label><br />
                             <input type="text" id="txt_des_objeto" name="txt_des_objeto" size="30" maxlength="150" value="<dtml-var des_objeto missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
                           </td>
                           <td><label for="lst_cod_regime_tramitacao">Regime Tramitação <span class="campoObrigatorio">&nbsp;</span></label><br />
@@ -517,7 +543,7 @@ $(document).ready(function() {
 <dtml-in expr="zsql.regime_tramitacao_obter_zsql()">
                               <option
   <dtml-if expr="_.has_key('cod_materia') and cod_regime_tramitacao==materia_form.cod_regime_tramitacao">selected</dtml-if>
-  <dtml-if expr="not _.has_key('cod_materia') and _.int(cod_regime_tramitacao) == 1">selected</dtml-if>
+  <dtml-if expr="not _.has_key('cod_materia') and des_regime_tramitacao == 'Ordinário'">selected</dtml-if>
 
                                 value="<dtml-var cod_regime_tramitacao>"><dtml-var des_regime_tramitacao>
                               </option>
@@ -534,7 +560,7 @@ $(document).ready(function() {
                           </td>
                         </tr>
                         <tr>
-                          <td colspan="2"><label for="txt_dat_fim_prazo">Data Fim Prazo </label><br />
+                          <td><label for="txt_dat_fim_prazo">Data Fim Prazo </label><br />
                             <input type="text" id="txt_dat_fim_prazo" name="txt_dat_fim_prazo" size="10" maxlength="10" value="<dtml-var dat_fim_prazo missing null="">" onBlur="formata_data(form.txt_dat_fim_prazo)" onChange="javascript:form.hdn_alterou.value=1" />
                           </td>
                           <td><label for="txt_dat_publicacao">Data Publicação </label><br />
@@ -549,6 +575,14 @@ $(document).ready(function() {
                               onChange="javascript:form.hdn_alterou.value=1" />
                               <dtml-var expr="_['sequence-item']">
 </dtml-in>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><label for="txt_nom_apelido">Apelido </label><br />
+                            <input type="text" id="txt_nom_apelido" name="txt_nom_apelido" size="30" maxlength="50" value="<dtml-var nom_apelido missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
+                          </td>
+                          <td colspan="2"><label for="txt_num_dias_prazo">Dias Prazo </label><br />
+                            <input type="text" id="txt_num_dias_prazo" name="txt_num_dias_prazo" size="3" maxlength="3" value="<dtml-var num_dias_prazo missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
                           </td>
                         </tr>
                  </table>
@@ -607,12 +641,12 @@ $(document).ready(function() {
                         </tr>
                         <tr>
                           <td colspan="4"><label for="txa_txt_indexacao">Indexação </label>
-                            <textarea id="txa_txt_indexacao" name="txa_txt_indexacao" rows="4" cols="75"  onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_indexacao missing></textarea>
+                            <textarea id="txa_txt_indexacao" name="txa_txt_indexacao" rows="4" cols="75"  onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_indexacao missing null></textarea>
                           </td>
                         </tr>  
                         <tr>
                           <td colspan="4"><label for="txa_txt_observacao">Observação</label> 
-                            <textarea id="txa_txt_observacao" name="txa_txt_observacao" rows="4" cols="75" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing></textarea>
+                            <textarea id="txa_txt_observacao" name="txa_txt_observacao" rows="4" cols="75" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null></textarea>
                           </td>
                         </tr>
                     </table>
