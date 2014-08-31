@@ -113,13 +113,13 @@ class SAPLGenerator(Portal.PortalGenerator):
 
     # Metodo para inserir as novas roles.
     def setupRoles(self, p):
-        p.__ac_roles__ = ('Administrador','Autor','Operador Lexml','Operador Sessao Plenaria','Operador','Operador Parlamentar','Operador Ordem Dia','Operador Norma','Operador Tabela Auxiliar','Operador Mesa Diretora','Operador Comissao','Operador Materia',"Operador Protocolo","Operador Modulo Administrativo","Assessor Parlamentar")
+        p.__ac_roles__ = ('Administrador','Autor','Operador Lexml','Operador Sessao Plenaria','Operador','Operador Parlamentar','Operador Norma','Operador Tabela Auxiliar','Operador Mesa Diretora','Operador Comissao','Operador Materia','Operador Protocolo','Operador Modulo Administrativo','Assessor Parlamentar','Operador Arquivo')
 
     # Metodo para criar usuario padrao
     def setupAdicionarUsuarios(self, p):
-        p.acl_users._addUser(name='saploper',password='saploper',confirm='saploper',roles=['Operador'],domains=[])
-        p.acl_users._addUser(name='sapllexml',password='sapllexml',confirm='sapllexml',roles=['Operador Lexml'],domains=[])
-        p.acl_users._addUser(name='sapladm',password='sapladm',confirm='sapladm',roles=['Administrador'],domains=[])
+        p.acl_users._addUser(name='operador',password='operador',confirm='operador',roles=['Operador'],domains=[])
+        p.acl_users._addUser(name='lexml',password='lexml',confirm='lexml',roles=['Operador Lexml'],domains=[])
+        p.acl_users._addUser(name='administrador',password='administrador',confirm='administrador',roles=['Administrador'],domains=[])
 
         
     # Metodo para criacao da conexao do banco de dados
