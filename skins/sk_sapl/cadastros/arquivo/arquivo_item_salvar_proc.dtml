@@ -52,5 +52,32 @@
    </dtml-try>
  </dtml-unless>
 
+<dtml-elif hdn_cod_norma>
+  <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_recipiente = hdn_cod_recipiente,
+                                                              cod_norma = hdn_cod_norma)">
+    <dtml-call expr="REQUEST.set('erro', 1)">
+    <dtml-let mensagem="'A norma informada já está contida neste recipiente!'">
+      <dtml-var mensagem_popup_emitir>
+    </dtml-let>
+  </dtml-in>
+ <dtml-unless erro>
+   <dtml-try>
+     <dtml-call expr="zsql.arquivo_item_incluir_zsql(
+         cod_recipiente            = hdn_cod_recipiente,
+         tip_suporte               = lst_tip_suporte,
+         cod_norma                 = hdn_cod_norma,
+         dat_arquivamento          = pysc.data_converter_pysc(data=txt_dat_arquivamento),
+         txt_observacao            = txa_txt_observacao)">
+   <dtml-except>
+     <dtml-let mensagem="'Não foi possível incluir a norma!'" url="'javascript:parent.jQuery.fancybox.close();'">
+         <dtml-var mensagem_popup_emitir>
+      </dtml-let>
+   <dtml-else>
+      <dtml-let mensagem="'Norma incluída com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close();'" >
+        <dtml-var mensagem_popup_emitir>
+      </dtml-let>
+   </dtml-try>
+ </dtml-unless>
+
 </dtml-if>
 
