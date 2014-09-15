@@ -78,7 +78,7 @@ for dic in destinatarios:
   mMsg = mMsg + "Texto da Ação: " + str(texto_acao) + "\n\n"
   mMsg = mMsg + "Cordialmente,\n\n"
   mMsg = mMsg + "" + str(casa_legislativa) +"\n"
-  mMsg = mMsg + "Sistema de Apoio ao Processo Legislativo\n\n\n"
+  mMsg = mMsg + "Sistema Aberto de Gestão Legislativa\n\n\n"
   mMsg = mMsg + "Clique no link abaixo para excluir seu E-mail da lista de envio:\n" 
   mMsg = mMsg + "" + context.consultas.absolute_url() + "/materia/acompanhamento/acomp_materia_excluir_proc?txt_hash=" + str(hash) +"\n"
 

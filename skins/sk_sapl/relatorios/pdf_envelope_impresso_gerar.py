@@ -89,7 +89,7 @@ def principal(sessao,linha1,linha2,lst_destinatarios):
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="envelopes.pdf">\n'
-    tmp_data+='\t<template pageSize="(21cm, 29.7cm)" title="Envelopes" author="Luciano De Fazio" allowSplitting="20" rightMargin="3mm" showBoundary="0">\n'
+    tmp_data+='\t<template pageSize="(21cm, 29.7cm)" title="Envelopes" author="OpenLegis" allowSplitting="20" rightMargin="3mm" showBoundary="0">\n'
     tmp_data+='\t\t<pageTemplate id="main">\n'
     tmp_data+='\t\t<pageGraphics>\n'
     tmp_data+='\t\t</pageGraphics>\n'

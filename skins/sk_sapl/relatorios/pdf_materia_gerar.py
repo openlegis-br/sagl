@@ -2,8 +2,8 @@
 
 """relatorio_materia.py
    External method para gerar o arquivo rml do resultado de uma pesquisa de matérias
-   Autor: Leandro Gasparotto Valladares
-   Empresa: Interlegis
+   Autor: Luciano De Fázio
+   Empresa: OpenLegis
    versão: 1.0
 """
 from trml2pdf import parseString
@@ -94,7 +94,7 @@ def principal(sessao,imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtr
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="relatorio.pdf">\n'
-    tmp_data+='\t<template pageSize="(21cm, 29.7cm)" title="Relatorio de Matérias" author="Interlegis" allowSplitting="20">\n'
+    tmp_data+='\t<template pageSize="(21cm, 29.7cm)" title="Relatorio de Matérias" author="OpenLegis" allowSplitting="20">\n'
     tmp_data+='\t\t<pageTemplate id="first">\n'
     tmp_data+='\t\t\t<pageGraphics>\n'
     tmp_data+=cabecalho(dic_cabecalho,imagem)

@@ -3,7 +3,7 @@
 """relatorio_protocolo.py
    External method para gerar o arquivo rml da etiqueta de protocolo
    Autor: Luciano De Fazio
-   Empresa: OpenLegis Consultoria
+   Empresa: OpenLegis
    versão: 1.0
 """
 from trml2pdf import parseString
@@ -65,7 +65,7 @@ def principal(sessao,imagem,data,lst_protocolos,dic_cabecalho,lst_rodape,dic_fil
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="etiquetas.pdf">\n'
-    tmp_data+='\t<template pageSize="(10cm, 6.2cm)" title="Etiquetas de capas de processos" author="Luciano De Fazio" allowSplitting="20" rightMargin="3mm" showBoundary="0">\n'
+    tmp_data+='\t<template pageSize="(10cm, 6.2cm)" title="Capas de processos" author="OpenLegis" allowSplitting="20" rightMargin="3mm" showBoundary="0">\n'
     tmp_data+='\t\t<pageTemplate id="main">\n'
     tmp_data+='\t\t<pageGraphics>\n'
     tmp_data+='\t\t</pageGraphics>\n'
