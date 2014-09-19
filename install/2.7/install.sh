@@ -638,6 +638,11 @@ echo -e "\033[32mBaixando e instalando uuid ...\033[m"
 $PIP install uuid
 
 ###################
+# install simplejson
+echo -e "\033[32mBaixando a instalando simplejson via easy_install ...\033[m"
+$PY $EASY_INSTALL simplejson==2.1.0
+
+###################
 # build Zope 2.9.12
 echo -e "\033[32mCompilando e instalando Zope 2.9.12 ...\033[m"
 cd $PKG
