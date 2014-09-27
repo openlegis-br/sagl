@@ -2,9 +2,8 @@
 
 """relatorio_materia.py
    External method para gerar o arquivo rml do resultado de uma pesquisa de matérias
-   Autor: Leandro Gasparotto Valladares
-   Empresa: Interlegis
-   versão: 1.0
+   Autor: Luciano De Fázio
+   Empresa: OpenLegis
 """
 from trml2pdf import parseString
 from cStringIO import StringIO
@@ -20,7 +19,7 @@ def cabecalho(dic_cabecalho,imagem):
     tmp_data+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
     tmp_data+='\t\t\t\t<drawString x="10.5cm" y="27.6cm">' + dic_cabecalho['nom_estado'] + '</drawString>\n'
     tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="12"/>\n'
-    tmp_data+='\t\t\t\t<drawCentredString x="11.5cm" y="25.2cm">Relatório de Matérias Legislativas</drawCentredString>\n'
+    tmp_data+='\t\t\t\t<drawCentredString x="11.5cm" y="25.2cm">Relatório de Matérias</drawCentredString>\n'
 
     return tmp_data
 
@@ -78,7 +77,7 @@ def materias(lst_materias):
             txt_ementa = dic['txt_ementa'].replace('&','&amp;')
             tmp_data+='\t\t<para style="P2"> '+ txt_ementa +' </para>\n'
         if dic['des_situacao'] !=None and dic['des_situacao'] !=" ":
-            tmp_data+='\t\t<para style="P2"><b>Situção: </b>' + dic['des_situacao'] + '</para>'
+            tmp_data+='\t\t<para style="P2"><b>Situação: </b>' + dic['des_situacao'] + '</para>'
         if dic['norma_vinculada'] != None and dic['norma_vinculada'] != " ":
             tmp_data+='\t\t<para style="P2"><b>Norma derivada: </b>'+ dic['norma_vinculada'] + '</para>\n'
 
@@ -94,7 +93,7 @@ def principal(sessao,imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtr
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="relatorio.pdf">\n'
-    tmp_data+='\t<template pageSize="(21cm, 29.7cm)" title="Relatorio de Matérias" author="Interlegis" allowSplitting="20">\n'
+    tmp_data+='\t<template pageSize="(21cm, 29.7cm)" title="Relatorio de Matérias" author="OpenLegis" allowSplitting="20">\n'
     tmp_data+='\t\t<pageTemplate id="first">\n'
     tmp_data+='\t\t\t<pageGraphics>\n'
     tmp_data+=cabecalho(dic_cabecalho,imagem)
