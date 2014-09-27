@@ -6,7 +6,7 @@ session= request.SESSION
 
 data=DateTime().strftime('%d/%m/%Y')
 
-#Abaixo é gerada a string para o rodapé da página
+# string para o rodapé da página
 casa={}
 aux=context.sapl_documentos.props_sapl.propertyItems()
 for item in aux:
@@ -36,7 +36,7 @@ if casa["end_email_casa"]!="" and casa["end_email_casa"]!=None:
 data_emissao=DateTime().strftime("%d/%m/%Y")
 rodape=[linha1,linha2,data_emissao]
 
-#Por fim, gera-se as entradas para o cabeçalho
+# gera as entradas para o cabeçalho
 estados=context.zsql.localidade_obter_zsql(tip_localidade="u")
 for uf in estados:
  if localidade[0].sgl_uf==uf.sgl_uf:
@@ -52,18 +52,18 @@ if hasattr(context.sapl_documentos.props_sapl,'logo_casa.gif'):
 else:
   imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
 
-#Por fim, utiliza o PythonScript para pesquisar as matérias e gerar os dados
+# PythonScript para pesquisar as matérias e gerar os dados
 
 materias=[]
 REQUEST=context.REQUEST
 for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=REQUEST['lst_tip_materia'], num_ident_basica=REQUEST['txt_numero'],
-                                           ano_ident_basica=REQUEST['txt_ano'], ind_tramitacao=REQUEST['rad_tramitando'],                                             
-                                           des_assunto=REQUEST['txt_assunto'], nom_relator=REQUEST['txt_relator'],
-                                           cod_status=REQUEST['lst_status'], des_tipo_autor=REQUEST['lst_tip_autor'],
-                                           dat_apresentacao=REQUEST['dt_apres'], dat_apresentacao2=REQUEST['dt_apres2'],
-                                           dat_publicacao=REQUEST['dt_public'], dat_publicacao2=REQUEST['dt_public2'],
-                                           cod_partido=REQUEST['lst_cod_partido'],cod_autor=REQUEST['hdn_cod_autor'],
-                                           rd_ordem=REQUEST['rd_ordenacao']):
+                                                   ano_ident_basica=REQUEST['txt_ano'], ind_tramitacao=REQUEST['rad_tramitando'],
+                                                   des_assunto=REQUEST['txt_assunto'], nom_relator=REQUEST['txt_relator'],
+                                                   cod_status=REQUEST['lst_status'], des_tipo_autor=REQUEST['lst_tip_autor'],
+                                                   dat_apresentacao=REQUEST['dt_apres'], dat_apresentacao2=REQUEST['dt_apres2'],
+                                                   dat_publicacao=REQUEST['dt_public'], dat_publicacao2=REQUEST['dt_public2'],
+                                                   cod_partido=REQUEST['lst_cod_partido'],cod_autor=REQUEST['hdn_cod_autor'],
+                                                   cod_unid_tramitacao=REQUEST['lst_localizacao'], rd_ordem=REQUEST['rd_ordenacao']):
 
         dic={}
 
@@ -124,7 +124,7 @@ filtro['relator']=REQUEST.txt_relator
 filtro['assunto']=REQUEST.txt_assunto
 
 # Atribuição do restante dos dados que precisam de processamento
-if REQUEST.hdn_txt_autor=='  ': # Corrige bug do Netscape
+if REQUEST.hdn_txt_autor=='  ':
     filtro['autor']=''
 
 filtro['tipo_materia']=''
@@ -145,8 +145,16 @@ elif REQUEST['rad_tramitando']=='0':
 
 filtro['situacao_atual']=''
 if REQUEST.lst_status!='':
-    for status in context.zsql.status_tramitacao_obter_zsql(ind_exluido=0,cod_status=REQUEST.lst_status):
+    for status in context.zsql.status_tramitacao_obter_zsql(ind_excluido=0,cod_status=REQUEST.lst_status):
         filtro['situacao_atual']=status.sgl_status + ' - ' + status.des_status
+
+filtro['localizacao']=''
+if REQUEST.lst_localizacao!='':          
+    for unidade_tramitacao in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = REQUEST.lst_localizacao):
+        if unidade_tramitacao.cod_orgao:
+           filtro['localizacao']=unidade_tramitacao.nom_orgao
+        else:
+           filtro['localizacao']=unidade_tramitacao.nom_comissao
 
 sessao=session.id
 caminho = context.pdf_materia_gerar(sessao,imagem,data,materias,cabecalho,rodape,filtro)
