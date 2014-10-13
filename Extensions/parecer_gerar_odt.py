@@ -2,9 +2,9 @@
 import os, urllib, cStringIO
 from appy.pod.renderer import Renderer   
  
-def createReport(self,inf_basicas_dic,nom_arquivo,nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao):
+def createReport(self,inf_basicas_dic,nom_arquivo,nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao,modelo_proposicao):
     # Criacao ODT
-    url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/parecer.odt"
+    url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/%s"%modelo_proposicao
     template_file = cStringIO.StringIO(urllib.urlopen(url).read())
     output_file_odt = "%s"%nom_arquivo
     renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
