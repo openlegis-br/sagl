@@ -1,0 +1,49 @@
+<dtml-call expr="REQUEST.set('erro',1)">
+<dtml-if expr="pysc.verifica_string_pysc(lst_cod_autor)">
+    <dtml-try>
+     <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor=lst_cod_autor, cod_materia=cod_materia, ind_primeiro_autor=0, ind_excluido=0)">
+   <dtml-except>
+     <dtml-call expr="zsql.autoria_atualizar_zsql(cod_autor=lst_cod_autor, cod_materia=cod_materia, ind_primeiro_autor=0, ind_excluido=0)">
+   </dtml-try>
+   <dtml-call expr="REQUEST.set('erro',0)">
+<dtml-else>
+     <dtml-call expr="REQUEST.set('ind',0)">
+     <dtml-in expr="lst_cod_autor"> 
+        <dtml-try>
+           <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor=lst_cod_autor[ind], cod_materia=cod_materia, ind_primeiro_autor=0, ind_excluido=0)">
+        <dtml-except>
+           <dtml-call expr="zsql.autoria_atualizar_zsql(cod_autor=lst_cod_autor[ind], cod_materia=cod_materia, ind_primeiro_autor=0, ind_excluido=0)">
+        </dtml-try>
+         <dtml-call expr="REQUEST.set('ind',ind+1)">
+     </dtml-in>
+     <dtml-call expr="REQUEST.set('erro',0)">
+</dtml-if>
+<dtml-call expr="REQUEST.set('ind_primeiro_autor',REQUEST.get('rad_ind_primeiro_autor',''))">
+<dtml-if expr="ind_primeiro_autor">
+     <dtml-try>
+      <dtml-if expr="lst_tip_autor=='1'">
+          <dtml-call expr="pysc.atualiza_primeiro_autor_pysc(cod_materia=cod_materia, cod_parlamentar=ind_primeiro_autor)">
+      <dtml-elif expr="lst_tip_autor=='2'">
+          <dtml-call expr="pysc.atualiza_primeiro_autor_pysc(cod_materia=cod_materia, cod_comissao=ind_primeiro_autor)">
+      <dtml-elif expr="lst_tip_autor=='3'">
+          <dtml-call expr="pysc.atualiza_primeiro_autor_pysc(cod_materia=cod_materia, cod_bancada=ind_primeiro_autor)">
+      <dtml-else>
+           <dtml-call expr="pysc.atualiza_primeiro_autor_pysc(cod_materia=cod_materia, nom_autor=ind_primeiro_autor)">
+      </dtml-if>
+      <dtml-let mensagem="'Lista de autorias incluída com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close();'">
+         <dtml-var mensagem_popup_emitir>
+      </dtml-let>
+    <dtml-except>
+      <dtml-let mensagem="'Lista de autorias incluída com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close();'">
+         <dtml-var mensagem_popup_emitir>
+      </dtml-let>
+    </dtml-try>
+<dtml-elif expr="erro">
+     <dtml-let mensagem="'Ocorreu problema na atualização 2. Contate o suporte ou tente refazer esta operação mais tarde!'" url="'javascript:history.go(-1)'">
+          <dtml-var mensagem_popup_emitir>
+      </dtml-let>
+<dtml-else>
+      <dtml-let mensagem="'Lista de autorias incluída com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close();'">
+         <dtml-var mensagem_popup_emitir>
+      </dtml-let>
+</dtml-if>
