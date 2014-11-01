@@ -12,4 +12,6 @@ def createReport(self,inf_basicas_dic,nom_arquivo,nom_comissao, materia, nom_aut
     data = open(output_file_odt, "rb").read()                 
     for file in [output_file_odt]:
         os.unlink(file)
-        self.sapl_documentos.parecer_comissao.manage_addFile(id=nom_arquivo,file=data)
+    self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
+    self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
+    return data 

@@ -56,10 +56,6 @@ function campos_criticar(){
          return false;
     }
 
-    if (form.file_nom_arquivo_pauta.value != "") {
-    form.hdn_file_pauta.value = 1;
-    }
-
     if (form.file_nom_arquivo_ata.value != "") {
     form.hdn_file_ata.value = 1;
     }
@@ -93,12 +89,72 @@ function campos_criticar(){
        location.href="sessao_plenaria_index_html"
     }  
 
-    function ativa_desativa_file_field_pauta(form) {
-       form.file_nom_arquivo_pauta.disabled = !(form.radTI[2].checked);
-    }
-
     function ativa_desativa_file_field_ata(form) {
        form.file_nom_arquivo_ata.disabled = !(form.radTI2[2].checked);
+    }
+
+    function pauta_odt_gerar(){
+        if (confirm("Confirma a geração da pauta em formato ODT?")) {
+           location.href="&dtml-portal_url;/modelo_proposicao/ordem_dia?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           setTimeout(function(){window.location.reload(true)},2500);
+           return true;
+         }
+    return;
+    }
+
+    function pauta_odt_excluir(){
+        if (confirm("Deseja realmente excluir o arquivo da pauta em ODT?")) {
+           location.href="pauta_odt_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+        }
+    return;
+    }
+
+    function pauta_pdf_gerar(){
+        if (confirm("Confirma a geração da pauta em formato PDF?")) {
+           location.href="&dtml-portal_url;/modelo_proposicao/ordem_dia_pdf?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           setTimeout(function(){window.location.reload(true)},2500);
+           return true;
+         }
+    return;
+    }
+
+    function pauta_pdf_excluir(){
+        if (confirm("Deseja realmente excluir o arquivo da pauta em PDF?")) {
+           location.href="pauta_pdf_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+        }
+    return;
+    }
+
+    function oradores_odt_gerar(){
+        if (confirm("Confirma a geração da lista de oradores em formato ODT?")) {
+           location.href="&dtml-portal_url;/modelo_proposicao/oradores?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           setTimeout(function(){window.location.reload(true)},2500);
+           return true;
+         }
+    return;
+    }
+
+    function oradores_odt_excluir(){
+        if (confirm("Deseja realmente excluir o arquivo da lista de oradores em ODT?")) {
+           location.href="oradores_odt_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+        }
+    return;
+    }
+
+    function oradores_pdf_gerar(){
+        if (confirm("Confirma a geração da lista de oradores em formato PDF?")) {
+           location.href="&dtml-portal_url;/modelo_proposicao/oradores_pdf?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           setTimeout(function(){window.location.reload(true)},2500);
+           return true;
+         }
+    return;
+    }
+
+    function oradores_pdf_excluir(){
+        if (confirm("Deseja realmente excluir o arquivo da lista de oradores em PDF?")) {
+           location.href="oradores_pdf_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+        }
+    return;
     }
 
 //-->
@@ -108,6 +164,24 @@ function campos_criticar(){
 $(function() {
         $('#txt_dat_inicio_sessao').datepick();
         $('#txt_dat_fim_sessao').datepick();
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup1").fancybox({
+		maxWidth	: 1024,
+		maxHeight	: 800,
+		fitToView	: false,
+		width		: '95%',
+		height		: '93%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
 });
 </script>
 
@@ -247,29 +321,85 @@ $(function() {
                     &nbsp;<span class="texto">Horário:</span> <input type="text" id="txt_hr_fim_sessao" name="txt_hr_fim_sessao" size="5" maxlength="5" value="<dtml-var hr_fim_sessao missing null="">" onChange="javascript:form.hdn_alterou.value=1" /> <span class="texto">(hh:mm)</span>
                 </td>
             </tr>
-        <tr>
-           <td colspan="2"><label>Pauta da Sessão</label><br/>
+
+         <tr>
+          <td colspan="2"><label for="txt_texto_odt">Pauta da Sessão (ODT)</label><br />
+               <dtml-let id_documento_odt="_.str(cod_sessao_plen)+'_pauta_sessao.odt'">
+               <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_documento_odt)">
+                  <dtml-let documento_odt="_.getattr(sapl_documentos.pauta_sessao,id_documento_odt).absolute_url">
+                  <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_sessao_plen)+'_pauta_sessao.odt')">
+                  <a class="popup1" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento_odt>" data-fancybox-type="iframe">
+                    <img align="top" border="0" src="sapl/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
+                    <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/pauta_sessao/externalEdit_/<dtml-var nome_arquivo_odt>">Editar</a>
+                    <a class="botao-link" href="javascript:pauta_odt_excluir()">Excluir</a>
+                  </dtml-let>
+               <dtml-else>
+                  <a class="botao-link" href="javascript:pauta_odt_gerar();">Gerar ODT</a>
+               </dtml-if>
+               </dtml-let>
+          </td>
+          <td colspan="2"><label>Pauta da Sessão (PDF)</label><br/>
+            <dtml-let documento_odt="_.str(cod_sessao_plen)+'_pauta_sessao.odt'">
+              <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,documento_odt)">
+                 <dtml-call expr="REQUEST.set('temODT', 1)">
+              </dtml-if>
+            </dtml-let>
+
             <input type="hidden" name="hdn_file_pauta" value="0"/>
-            <dtml-if cod_sessao_plen>
              <dtml-call expr="REQUEST.set('id_pauta', _.str(cod_sessao_plen)+'_pauta_sessao.pdf')">
              <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
               <dtml-let pauta="_.getattr(sapl_documentos.pauta_sessao,id_pauta).absolute_url">
-               <a href="<dtml-var pauta>" target="_blank"><img align="middle" src="sapl/imagens/archiv.gif" alt="Texto Integral"></a>
+               <a href="<dtml-var pauta>" target="_blank"><img align="top" src="sapl/imagens/archiv.gif" alt="Texto Integral"></a>
+                    <a class="botao-link" href="javascript:pauta_pdf_excluir()">Excluir</a>
               </dtml-let>
-               <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field_pauta(document.sessao_plenaria_form)"/><span class="texto">Manter</span>
-               <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field_pauta(document.sessao_plenaria_form)"/><span class="texto">Excluir</span>
-               <input type="radio" name="radTI" value="S" onClick="ativa_desativa_file_field_pauta(document.sessao_plenaria_form)"/><span class="texto">Substituir</span>
-               <input type="file" id="file_nom_arquivo_pauta" name="file_nom_arquivo_pauta" accept="application/pdf" size="40" maxlength="100" disabled="1" />
              <dtml-else>
-               <input type="file" id="file_nom_arquivo_pauta" name="file_nom_arquivo_pauta" accept="application/pdf" size="40" maxlength="100" />
-               <input type="hidden" name="radTI" value="I"/>
+                  <dtml-if expr="_.has_key('temODT')">
+                    <a class="botao-link" href="javascript:pauta_pdf_gerar()">Gerar PDF</a>
+                  <dtml-else>
+                    <span class="texto"><i>Geração vinculada à existência do arquivo ODT</i></span>
+                  </dtml-if>
              </dtml-if>
+          </td>
+         </tr>
+
+          <td colspan="2"><label for="txt_texto_odt">Lista de Oradores (ODT)</label><br />
+               <dtml-let id_documento_odt="_.str(cod_sessao_plen)+'_oradores_expediente.odt'">
+               <dtml-if "_.hasattr(sapl_documentos.oradores_expediente,id_documento_odt)">
+                  <dtml-let documento_odt="_.getattr(sapl_documentos.oradores_expediente,id_documento_odt).absolute_url">
+                  <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_sessao_plen)+'_oradores_expediente.odt')">
+                  <a class="popup1" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento_odt>" data-fancybox-type="iframe">
+                    <img align="top" border="0" src="sapl/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
+                    <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/oradores_expediente/externalEdit_/<dtml-var nome_arquivo_odt>">Editar</a>
+                    <a class="botao-link" href="javascript:oradores_odt_excluir()">Excluir</a>
+                  </dtml-let>
+               <dtml-else>
+                  <a class="botao-link" href="javascript:oradores_odt_gerar();">Gerar ODT</a>
+               </dtml-if>
+               </dtml-let>
+          </td>
+          <td colspan="2"><label>Lista de Oradores (PDF)</label><br/>
+             <dtml-let documento_odt="_.str(cod_sessao_plen)+'_oradores_expediente.odt'">
+              <dtml-if "_.hasattr(sapl_documentos.oradores_expediente,documento_odt)">
+                 <dtml-call expr="REQUEST.set('temODTorador', 1)">
+              </dtml-if>
+             </dtml-let>
+             <dtml-call expr="REQUEST.set('id_oradores', _.str(cod_sessao_plen)+'_oradores_expediente.pdf')">
+             <dtml-if "_.hasattr(sapl_documentos.oradores_expediente,id_oradores)">
+              <dtml-let oradores="_.getattr(sapl_documentos.oradores_expediente,id_oradores).absolute_url">
+               <a href="<dtml-var oradores>" target="_blank"><img align="top" src="sapl/imagens/archiv.gif" alt="Texto Integral"></a>
+                  <a class="botao-link" href="javascript:oradores_pdf_excluir()">Excluir</a>
+              </dtml-let>
             <dtml-else>
-              <input type="file" id="file_nom_arquivo_pauta" name="file_nom_arquivo_pauta" accept="application/pdf" size="40" maxlength="100" />
-              <input type="hidden" name="radTI" value="I"/>
+                  <dtml-if expr="_.has_key('temODTorador')">
+                    <a class="botao-link" href="javascript:oradores_pdf_gerar()">Gerar PDF</a>
+                  <dtml-else>
+                    <span class="texto"><i>Geração vinculada à existência do arquivo ODT</i></span>
+                  </dtml-if>
             </dtml-if>
           </td>
-           <td colspan="2"><label>Ata da Sessão</label><br/>
+         </tr>
+         <tr>
+           <td colspan="4"><label>Ata da Sessão</label><br/>
             <input type="hidden" name="hdn_file_ata" value="0"/>
             <dtml-if cod_sessao_plen>
              <dtml-call expr="REQUEST.set('id_ata', _.str(cod_sessao_plen)+'_ata_sessao.pdf')">
