@@ -52,41 +52,33 @@
     </dtml-if>
 
     <dtml-call expr="REQUEST.set('erro', 0)">              
-    <dtml-if expr="radTI=='I' or radTI=='S'">                
-        <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
-        <dtml-if expr="(_.int(hdn_file_emenda)==1)">
-            <dtml-if hdn_cod_emenda>
-                <dtml-call expr="REQUEST.set('id_emenda', hdn_cod_emenda+'_emenda.pdf')">
-                <dtml-if "_.hasattr(sapl_documentos.emenda,id_emenda)">
-                    <dtml-let documento="_.getattr(sapl_documentos.emenda,id_emenda) ">
-                        <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
-                        <dtml-try>
-                            <dtml-call "documento.manage_upload(file=file_nom_arquivo_emenda)">
-                        <dtml-except>
-                            <dtml-call expr="REQUEST.set('erro', 1)">              
-                        </dtml-try>
-                    </dtml-let>
-                </dtml-if>
-            <dtml-else>
-                <dtml-in expr="zsql.emenda_incluida_codigo_obter_zsql()">
-                 <dtml-call "REQUEST.set('ult_emenda_incluida',cod_emenda)">
-                </dtml-in>
-               <dtml-call expr="REQUEST.set('id_emenda',_.str(ult_emenda_incluida)+'_emenda.pdf')">
-             </dtml-if>
-             <dtml-if "not existe_arquivo">
-          <dtml-try>            
-                  <dtml-call expr="sapl_documentos.emenda.manage_addProduct['ExtFile'].manage_addExtFile(id=id_emenda,file=file_nom_arquivo_emenda,permission_check=0)">
-                 <dtml-except> 
-                     <dtml-call expr="REQUEST.set('erro', 1)">              
-                 </dtml-try>      
-             </dtml-if>
-         </dtml-if>
-     <dtml-elif expr="radTI=='E'">
-         <dtml-if hdn_cod_emenda>
-             <dtml-call expr="REQUEST.set('id_emenda', hdn_cod_emenda+'_emenda.pdf')">
-             <dtml-call "sapl_documentos.emenda.manage_delObjects(id_emenda)">
-         </dtml-if>
-     </dtml-if>
+
+    <dtml-call expr="REQUEST.set('existe_arquivo', 0)">
+      <dtml-if file_nom_arquivo_emenda>
+        <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_emenda)+'_emenda.pdf')">
+        <dtml-if expr="_.hasattr(sapl_documentos.emenda,id_documento)">
+          <dtml-let documento="_.getattr(sapl_documentos.emenda,id_documento) ">
+            <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
+            <dtml-try>
+                <dtml-call "documento.manage_upload(file=file_nom_arquivo_emenda)">
+            <dtml-except>
+              <dtml-call expr="REQUEST.set('erro', 1)">
+              <dtml-let mensagem="'Ocorreu erro ao tentar salvar o texto integral'+hdn_cod_emenda">
+                 <dtml-var mensagem_emitir>
+              </dtml-let>
+            </dtml-try>
+          </dtml-let>
+        </dtml-if>
+      </dtml-if>
+
+      <dtml-if expr="not existe_arquivo">
+        <dtml-call expr="REQUEST.set('erro',0)">
+        <dtml-try>
+            <dtml-call expr="sapl_documentos.emenda.manage_addProduct['ExtFile'].manage_addExtFile(id=id_documento,file=file_nom_arquivo_emenda,permission_check=0)">
+        <dtml-except> 
+        </dtml-try>
+      </dtml-if>
+
     <dtml-if erro>
        
     </dtml-if>
