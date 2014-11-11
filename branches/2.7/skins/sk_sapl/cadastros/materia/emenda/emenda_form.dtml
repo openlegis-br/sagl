@@ -68,10 +68,6 @@
          return false;
       }
 
-      if (form.file_nom_arquivo_emenda.value != "") {
-         form.hdn_file_emenda.value = 1;
-      }
-
       form.submit();   
    }
 
@@ -116,6 +112,23 @@
        return;
   }
 
+  function texto_pdf_gerar(){
+      if (confirm("Confirma a geração do arquivo PDF?")) {
+         location.href="&dtml-portal_url;/modelo_proposicao/emenda_gerar_pdf?cod_emenda=<dtml-var cod_emenda missing>";
+         setTimeout(function(){window.location.reload(true)},2500);
+         return true;
+       }
+  return;
+  }
+
+  function texto_pdf_excluir(){
+
+       if (confirm("Deseja realmente excluir o arquivo PDF?")) {
+          location.href="texto_pdf_emenda_excluir_proc?cod_emenda=<dtml-var cod_emenda missing>&cod_materia=<dtml-var cod_materia missing>";
+       }
+       return;
+  }
+
    function emenda_excluir(form){
 
        var URL = 'emenda_excluir_proc?cod_emenda=' + form.hdn_cod_emenda.value+
@@ -126,10 +139,6 @@
           location.href=URL;
        }
    }   
-
-    function ativa_desativa_file_field_emenda(form) {
-       form.file_nom_arquivo_emenda.disabled = !(form.radTI[2].checked);
-    }
 
 -->
 </script>
@@ -306,27 +315,46 @@ $(function() {
              </td>
            </tr>
            <tr>
-              <td colspan="2"><label>Texto original (PDF)</label>
-           </tr>
-           <tr>
-              <td colspan="2">
-               <input type="hidden" name="hdn_file_emenda" value="0"/>
-               <dtml-if cod_emenda>
-                <dtml-call expr="REQUEST.set('id_emenda', _.str(cod_emenda)+'_emenda.pdf')">
-                <dtml-if "_.hasattr(sapl_documentos.emenda,id_emenda)">
-                 <dtml-let emenda="_.getattr(sapl_documentos.emenda,id_emenda).absolute_url">
-                  <a href="<dtml-var emenda>" target="_blank"><img align="middle" src="sapl/imagens/archiv.gif" alt="Texto Integral"></a>
-                 </dtml-let>
-                  <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field_emenda(document.emenda_form)"/><span class="texto">Manter</span>
-                  <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field_emenda(document.emenda_form)"/><span class="texto">Excluir</span>
-                  <input type="radio" name="radTI" value="S" onClick="ativa_desativa_file_field_emenda(document.emenda_form)"/><span class="texto">Substituir</span>
-                  <input type="file" id="file_nom_arquivo_emenda" name="file_nom_arquivo_emenda" accept="application/pdf" size="40" maxlength="100" disabled="1" />
+              <td><label>Texto original (PDF)</label><br />
+                <dtml-if expr="_.has_key('cod_emenda')">
+                   <dtml-call expr="REQUEST.set('id_documento', _.str(cod_emenda)+'_emenda.pdf')">
+                   <dtml-if "_.hasattr(sapl_documentos.emenda,id_documento)">
+                     <dtml-let documento="_.getattr(sapl_documentos.emenda,id_documento).absolute_url">
+                       <a target="_blank" href="<dtml-var documento>"><img align="top" src="sapl/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" /></a>
+                       <a class="botao-link" href="javascript:texto_pdf_excluir()">
+                         Excluir
+                       </a>
+                     </dtml-let>
+                   <dtml-else>
+                     <input type="file" id="file_nom_arquivo_emenda" name="file_nom_arquivo_emenda" accept="application/pdf" size="15" maxlength="100" />
+                     <dtml-let id_documento_odt="_.str(cod_emenda)+'_emenda.odt'">
+                       <dtml-if "_.hasattr(sapl_documentos.emenda,id_documento_odt)">
+                         <dtml-call expr="REQUEST.set('temODT', 1)">
+                       </dtml-if>
+                     </dtml-let>
+                     <dtml-if expr="_.has_key('temODT')">
+                       <a class="botao-link" href="javascript:texto_pdf_gerar()">
+                         Gerar PDF
+                       </a>
+                     </dtml-if>
+                   </dtml-if>
                 <dtml-else>
-                  <input type="file" id="file_nom_arquivo_emenda" name="file_nom_arquivo_emenda" accept="application/pdf" size="40" maxlength="100" />
-            </td>
-            </tr>
-            <tr>
-              <td colspan="2" valign="top">
+                   <input type="file" id="file_nom_arquivo_emenda" name="file_nom_arquivo_emenda" accept="application/pdf" size="15" maxlength="100" />
+                   <dtml-if expr="_.has_key('cod_emenda')">
+                     <dtml-let id_documento_odt="_.str(cod_emenda)+'_emenda.odt'">
+                       <dtml-if "_.hasattr(sapl_documentos.emenda,id_documento_odt)">
+                         <dtml-call expr="REQUEST.set('temODT', 1)">
+                       </dtml-if>
+                     </dtml-let>
+                     <dtml-if expr="_.has_key('temODT')">
+                       <a class="botao-link" href="javascript:texto_pdf_gerar()">
+                          Gerar PDF
+                       </a>
+                     </dtml-if>
+                   </dtml-if>
+                </dtml-if>
+             </td>
+              <td valign="top">
                   <input type="hidden" name="radTI" value="I"/>
                         <dtml-if expr="_.has_key('cod_emenda')">
                           <label for="radTipTxtIntegral">Texto editável (ODT)</label><br />
@@ -353,13 +381,6 @@ $(function() {
                           </dtml-let>
                         </dtml-if>
               </td>
-           </tr>
-                </dtml-if>
-               <dtml-else>
-                 <input type="file" id="file_nom_arquivo_emenda" name="file_nom_arquivo_emenda" accept="application/pdf" size="40" maxlength="100" />
-                 <input type="hidden" name="radTI" value="I"/>
-               </dtml-if>
-             </td>
            </tr>
            <tr>
              <td colspan="2"><label for="txa_txt_ementa">Ementa </label> <span class="campoObrigatorio">&nbsp;</span>
