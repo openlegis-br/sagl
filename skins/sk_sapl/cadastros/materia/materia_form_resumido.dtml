@@ -123,20 +123,21 @@
   function numero_materia_buscar(form){
      if ((form.lst_tip_id_basica.selectedIndex != 0) &&
 	 (form.txt_ano_ident_basica.value!="")){
-	 location.href="numero_materia_resumido_buscar_proc?tip_id_basica_sel="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value
-             +"&ano_ident_basica="+form.txt_ano_ident_basica.value;
+	 location.href="numero_materia_resumido_buscar_proc?tip_id_basica_sel="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+"&ano_ident_basica="+form.txt_ano_ident_basica.value;
      }
   }
 
    function tipo_autor_mudou(form){
       var valor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;      
       var separador = valor.indexOf("&");
-      var URL = 'numero_materia_resumido_buscar_proc?tip_autor=' + valor.substring(0,separador)
+      var URL = 'materia_form_resumido?tip_autor=' + valor.substring(0,separador)
               + '&des_tipo_autor=' + valor.substring(separador+1,valor.length)
               + '&tip_id_basica_sel=' + form.lst_tip_id_basica.options[form.lst_tip_id_basica.selectedIndex].value 
               + '&dat_apresentacao=' + form.txt_dat_apresentacao.value
+              + '&num_ident_basica=' + form.txt_num_ident_basica.value
               + '&ano_ident_basica=' + form.txt_ano_ident_basica.value
               + '&num_protocolo=' + form.txt_num_protocolo.value 
+              + '&cod_regime_tramitacao_sel=' + form.lst_cod_regime_tramitacao.options[form.lst_cod_regime_tramitacao.selectedIndex].value 
               + '&txt_ementa=' + form.txa_txt_ementa.value;
       location.href= URL;
    }
@@ -176,6 +177,7 @@ $(function() {
   <input type="hidden" name="rad_ind_polemica" value="0" />
   <input type="hidden" name="rad_ind_complementar" value="0" />
   <input type="hidden" name="txt_dat_publicacao" value="" />
+  <input type="hidden" name="lst_tip_situacao" value="" />
   <input type="hidden" name="lst_tip_origem_externa" value="" />
   <input type="hidden" name="txt_num_origem_externa" value="" />
   <input type="hidden" name="txt_ano_origem_externa" value="" />
@@ -190,7 +192,7 @@ $(function() {
 
                   <table>
                         <tr>
-                          <td width="50%"><label for="lst_tip_id_basica">Tipo </label><span class="campoObrigatorio">&nbsp;</span><br />
+                          <td width="40%"><label for="lst_tip_id_basica">Tipo </label><span class="campoObrigatorio">&nbsp;</span><br />
                             <select id="lst_tip_id_basica" name="lst_tip_id_basica" onChange="numero_materia_buscar(document.materia_form)">
 				<option value="0"> 
                               	</option>
@@ -199,6 +201,11 @@ $(function() {
                                <dtml-if expr="_.has_key('tip_id_basica') and tip_materia==tip_id_basica">
                                 selected
                                </dtml-if>
+                                  <dtml-if expr="REQUEST.has_key('tip_id_basica_sel')">
+                                    <dtml-if expr="_.int(tip_materia) == _.int(tip_id_basica_sel)">
+                                       selected
+                                     </dtml-if>
+                                   </dtml-if>
                                   <dtml-if expr="REQUEST.has_key('tip_id_basica_novo')">
                                     <dtml-if expr="_.int(tip_materia) == _.int(tip_id_basica_novo)">
                                        selected
@@ -239,13 +246,19 @@ $(function() {
                               </option>
                               <dtml-in expr="zsql.regime_tramitacao_obter_zsql()">
                               <option
-                              <dtml-if expr="_.int(cod_regime_tramitacao) == 1">selected</dtml-if>
+                                  <dtml-if expr="REQUEST.has_key('cod_regime_tramitacao_sel')">
+                                    <dtml-if expr="_.int(cod_regime_tramitacao) == _.int(cod_regime_tramitacao_sel)">
+                                       selected
+                                     </dtml-if>
+                                  <dtml-elif expr="des_regime_tramitacao == 'Ordinário'">
+                                     selected
+                                  </dtml-if>
                                value="<dtml-var cod_regime_tramitacao>"><dtml-var des_regime_tramitacao>
                               </option>
                               </dtml-in>
                             </select>
                           </td>
-                          <td colspan="2"><label for="rad_ind_tramitacao">Em Tramitação?</label><span class="campoObrigatorio">&nbsp;</span><br />
+                          <td><label for="rad_ind_tramitacao">Em Tramitação?</label><span class="campoObrigatorio">&nbsp;</span><br />
                            <dtml-in expr="[(1,'Sim'),(0,'Não')]">
                             <input type="radio" id="rad_ind_tramitacao" name="rad_ind_tramitacao" value="<dtml-var expr="_['sequence-key']">"
                             <dtml-if expr="_['sequence-item']=='Sim'">checked=1</dtml-if>
@@ -322,7 +335,7 @@ $(function() {
            </tr>
                         <tr>
                           <td colspan="3"><label for="txa_txt_ementa">Ementa </label><span class="campoObrigatorio">&nbsp;</span><br />
-                            <textarea id="txa_txt_ementa" name="txa_txt_ementa" cols="65" rows="4" onBlur="form.txa_txt_ementa.value = form.txa_txt_ementa.value.toUpperCase()" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_ementa missing></textarea>
+                            <textarea id="txa_txt_ementa" name="txa_txt_ementa" cols="65" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_ementa missing></textarea>
                           </td>
                         </tr>
                         <tr><td colspan="3"><label for="radTipTxtIntegral">Texto Integral (PDF)</label><br />
