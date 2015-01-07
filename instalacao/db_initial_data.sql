@@ -1,4 +1,4 @@
--- Tempo de Geração: 28/07/2014 às 11:58
+-- Tempo de Geração: 07/01/2015 às 18:08
 -- Versão do servidor: 5.6.17-0ubuntu0.14.04.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -5761,6 +5761,17 @@ INSERT INTO `partido` (`cod_partido`, `sgl_partido`, `nom_partido`, `dat_criacao
 (43, 'SDD', 'Solidariedade', '2013-09-24', NULL, 0);
 
 --
+-- Fazendo dump de dados para tabela `quorum_votacao`
+--
+
+INSERT INTO `quorum_votacao` (`cod_quorum`, `des_quorum`, `txt_formula`, `ind_excluido`) VALUES
+(1, 'Maioria simples', '(NP/2)+1', 0),
+(2, 'Maioria absoluta', '(NT/2)+1', 0),
+(3, 'Maioria qualificada - 1/3', '(NT/3)+1', 0),
+(4, 'Maioria qualificada - 2/3', '{(NT/3)x2}+1', 0),
+(5, 'Maioria qualificada - 3/5', '{(NT/5)x3}+1', 0);
+
+--
 -- Fazendo dump de dados para tabela `regime_tramitacao`
 --
 
@@ -6130,6 +6141,25 @@ INSERT INTO `tipo_situacao_norma` (`tip_situacao_norma`, `des_tipo_situacao`, `i
 (18, 'Em vigor 45 dias após a publicação', 0),
 (19, 'Sem efeito', 0),
 (20, 'Em vigor, com alterações posteriores', 0);
+
+--
+-- Fazendo dump de dados para tabela `tipo_votacao`
+--
+
+INSERT INTO `tipo_votacao` (`tip_votacao`, `des_tipo_votacao`, `ind_excluido`) VALUES
+(1, 'Simbólica', 0),
+(2, 'Nominal', 0),
+(3, 'Secreta', 1);
+
+--
+-- Fazendo dump de dados para tabela `turno_discussao`
+--
+
+INSERT INTO `turno_discussao` (`cod_turno`, `sgl_turno`, `des_turno`, `ind_excluido`) VALUES
+(1, 'P', '1ª Discussão', 0),
+(2, 'S', '2ª Discussão', 0),
+(3, 'U', 'Único', 0),
+(4, 'R', 'Redação Final', 0);
 
 --
 -- Fazendo dump de dados para tabela `unidade_tramitacao`
