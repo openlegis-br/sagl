@@ -10,13 +10,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Banco de dados: `interlegis`
+-- Base de Dados: `interlegis`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `acomp_materia`
+-- Estrutura da tabela `acomp_materia`
 --
 
 CREATE TABLE `acomp_materia` (
@@ -31,7 +31,7 @@ CREATE TABLE `acomp_materia` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `acomp_materia`:
+-- RELACIONAMENTOS PARA A TABELA `acomp_materia`:
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
 --
@@ -39,7 +39,7 @@ CREATE TABLE `acomp_materia` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `afastamento`
+-- Estrutura da tabela `afastamento`
 --
 
 CREATE TABLE `afastamento` (
@@ -62,10 +62,10 @@ CREATE TABLE `afastamento` (
   KEY `cod_parlamentar` (`cod_parlamentar`),
   KEY `num_legislatura` (`num_legislatura`),
   KEY `cod_parlamentar_suplente` (`cod_parlamentar_suplente`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `afastamento`:
+-- RELACIONAMENTOS PARA A TABELA `afastamento`:
 --   `cod_parlamentar`
 --       `parlamentar` -> `cod_parlamentar`
 --   `cod_mandato`
@@ -81,7 +81,7 @@ CREATE TABLE `afastamento` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `anexada`
+-- Estrutura da tabela `anexada`
 --
 
 CREATE TABLE `anexada` (
@@ -96,7 +96,7 @@ CREATE TABLE `anexada` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `anexada`:
+-- RELACIONAMENTOS PARA A TABELA `anexada`:
 --   `cod_materia_principal`
 --       `materia_legislativa` -> `cod_materia`
 --   `cod_materia_anexada`
@@ -106,7 +106,7 @@ CREATE TABLE `anexada` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `arquivo_armario`
+-- Estrutura da tabela `arquivo_armario`
 --
 
 CREATE TABLE `arquivo_armario` (
@@ -122,7 +122,7 @@ CREATE TABLE `arquivo_armario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `arquivo_armario`:
+-- RELACIONAMENTOS PARA A TABELA `arquivo_armario`:
 --   `cod_corredor`
 --       `arquivo_corredor` -> `cod_corredor`
 --   `cod_unidade`
@@ -132,7 +132,7 @@ CREATE TABLE `arquivo_armario` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `arquivo_corredor`
+-- Estrutura da tabela `arquivo_corredor`
 --
 
 CREATE TABLE `arquivo_corredor` (
@@ -146,7 +146,7 @@ CREATE TABLE `arquivo_corredor` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `arquivo_corredor`:
+-- RELACIONAMENTOS PARA A TABELA `arquivo_corredor`:
 --   `cod_unidade`
 --       `arquivo_unidade` -> `cod_unidade`
 --
@@ -154,7 +154,7 @@ CREATE TABLE `arquivo_corredor` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `arquivo_item`
+-- Estrutura da tabela `arquivo_item`
 --
 
 CREATE TABLE `arquivo_item` (
@@ -170,16 +170,16 @@ CREATE TABLE `arquivo_item` (
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_item`),
-  UNIQUE KEY `tip_suporte` (`tip_suporte`),
   KEY `cod_recipiente` (`cod_recipiente`),
   KEY `cod_materia` (`cod_materia`),
   KEY `cod_norma` (`cod_norma`),
   KEY `cod_documento` (`cod_documento`),
-  KEY `cod_protocolo` (`cod_protocolo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  KEY `cod_protocolo` (`cod_protocolo`),
+  KEY `tip_suporte` (`tip_suporte`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `arquivo_item`:
+-- RELACIONAMENTOS PARA A TABELA `arquivo_item`:
 --   `cod_recipiente`
 --       `arquivo_recipiente` -> `cod_recipiente`
 --   `tip_suporte`
@@ -197,7 +197,7 @@ CREATE TABLE `arquivo_item` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `arquivo_prateleira`
+-- Estrutura da tabela `arquivo_prateleira`
 --
 
 CREATE TABLE `arquivo_prateleira` (
@@ -215,7 +215,7 @@ CREATE TABLE `arquivo_prateleira` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `arquivo_prateleira`:
+-- RELACIONAMENTOS PARA A TABELA `arquivo_prateleira`:
 --   `cod_armario`
 --       `arquivo_armario` -> `cod_armario`
 --   `cod_corredor`
@@ -227,13 +227,13 @@ CREATE TABLE `arquivo_prateleira` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `arquivo_recipiente`
+-- Estrutura da tabela `arquivo_recipiente`
 --
 
 CREATE TABLE `arquivo_recipiente` (
   `cod_recipiente` int(11) NOT NULL AUTO_INCREMENT,
   `tip_recipiente` int(11) NOT NULL,
-  `num_recipiente` int(11) NOT NULL,
+  `num_recipiente` varchar(11) COLLATE utf8_unicode_ci NOT NULL,
   `tip_tit_documental` int(11) NOT NULL,
   `ano_recipiente` smallint(6) NOT NULL,
   `dat_recipiente` date NOT NULL,
@@ -243,32 +243,23 @@ CREATE TABLE `arquivo_recipiente` (
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_recipiente`),
-  UNIQUE KEY `num_tipo_recipiente` (`num_recipiente`,`tip_recipiente`,`ind_excluido`),
+  UNIQUE KEY `num_tipo_recipiente` (`num_recipiente`,`tip_recipiente`,`ano_recipiente`,`ind_excluido`),
   KEY `tip_recipiente` (`tip_recipiente`),
-  KEY `tip_tit_documental` (`tip_tit_documental`),
-  KEY `cod_corredor` (`cod_corredor`),
-  KEY `cod_armario` (`cod_armario`),
-  KEY `cod_prateleira` (`cod_prateleira`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  KEY `tip_tit_documental` (`tip_tit_documental`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `arquivo_recipiente`:
+-- RELACIONAMENTOS PARA A TABELA `arquivo_recipiente`:
 --   `tip_recipiente`
 --       `arquivo_tipo_recipiente` -> `tip_recipiente`
 --   `tip_tit_documental`
 --       `arquivo_tipo_tit_documental` -> `tip_tit_documental`
---   `cod_corredor`
---       `arquivo_corredor` -> `cod_corredor`
---   `cod_armario`
---       `arquivo_armario` -> `cod_armario`
---   `cod_prateleira`
---       `arquivo_prateleira` -> `cod_prateleira`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `arquivo_tipo_recipiente`
+-- Estrutura da tabela `arquivo_tipo_recipiente`
 --
 
 CREATE TABLE `arquivo_tipo_recipiente` (
@@ -276,12 +267,12 @@ CREATE TABLE `arquivo_tipo_recipiente` (
   `des_tipo_recipiente` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_recipiente`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `arquivo_tipo_suporte`
+-- Estrutura da tabela `arquivo_tipo_suporte`
 --
 
 CREATE TABLE `arquivo_tipo_suporte` (
@@ -289,12 +280,12 @@ CREATE TABLE `arquivo_tipo_suporte` (
   `des_tipo_suporte` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_suporte`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `arquivo_tipo_tit_documental`
+-- Estrutura da tabela `arquivo_tipo_tit_documental`
 --
 
 CREATE TABLE `arquivo_tipo_tit_documental` (
@@ -303,12 +294,12 @@ CREATE TABLE `arquivo_tipo_tit_documental` (
   `des_tipo_tit_documental` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_tit_documental`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `arquivo_unidade`
+-- Estrutura da tabela `arquivo_unidade`
 --
 
 CREATE TABLE `arquivo_unidade` (
@@ -325,7 +316,7 @@ CREATE TABLE `arquivo_unidade` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `assessor_parlamentar`
+-- Estrutura da tabela `assessor_parlamentar`
 --
 
 CREATE TABLE `assessor_parlamentar` (
@@ -353,7 +344,7 @@ CREATE TABLE `assessor_parlamentar` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `assessor_parlamentar`:
+-- RELACIONAMENTOS PARA A TABELA `assessor_parlamentar`:
 --   `cod_parlamentar`
 --       `parlamentar` -> `cod_parlamentar`
 --
@@ -361,7 +352,7 @@ CREATE TABLE `assessor_parlamentar` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `assunto_norma`
+-- Estrutura da tabela `assunto_norma`
 --
 
 CREATE TABLE `assunto_norma` (
@@ -375,7 +366,7 @@ CREATE TABLE `assunto_norma` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `autor`
+-- Estrutura da tabela `autor`
 --
 
 CREATE TABLE `autor` (
@@ -399,7 +390,7 @@ CREATE TABLE `autor` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `autor`:
+-- RELACIONAMENTOS PARA A TABELA `autor`:
 --   `cod_partido`
 --       `partido` -> `cod_partido`
 --   `cod_comissao`
@@ -415,7 +406,7 @@ CREATE TABLE `autor` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `autoria`
+-- Estrutura da tabela `autoria`
 --
 
 CREATE TABLE `autoria` (
@@ -429,7 +420,7 @@ CREATE TABLE `autoria` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `autoria`:
+-- RELACIONAMENTOS PARA A TABELA `autoria`:
 --   `cod_autor`
 --       `autor` -> `cod_autor`
 --   `cod_materia`
@@ -439,7 +430,7 @@ CREATE TABLE `autoria` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `bancada`
+-- Estrutura da tabela `bancada`
 --
 
 CREATE TABLE `bancada` (
@@ -459,7 +450,7 @@ CREATE TABLE `bancada` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `bancada`:
+-- RELACIONAMENTOS PARA A TABELA `bancada`:
 --   `num_legislatura`
 --       `legislatura` -> `num_legislatura`
 --   `cod_partido`
@@ -469,7 +460,7 @@ CREATE TABLE `bancada` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `cargo_bancada`
+-- Estrutura da tabela `cargo_bancada`
 --
 
 CREATE TABLE `cargo_bancada` (
@@ -483,7 +474,7 @@ CREATE TABLE `cargo_bancada` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `cargo_comissao`
+-- Estrutura da tabela `cargo_comissao`
 --
 
 CREATE TABLE `cargo_comissao` (
@@ -497,7 +488,7 @@ CREATE TABLE `cargo_comissao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `cargo_mesa`
+-- Estrutura da tabela `cargo_mesa`
 --
 
 CREATE TABLE `cargo_mesa` (
@@ -511,7 +502,7 @@ CREATE TABLE `cargo_mesa` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `coligacao`
+-- Estrutura da tabela `coligacao`
 --
 
 CREATE TABLE `coligacao` (
@@ -526,7 +517,7 @@ CREATE TABLE `coligacao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `coligacao`:
+-- RELACIONAMENTOS PARA A TABELA `coligacao`:
 --   `num_legislatura`
 --       `legislatura` -> `num_legislatura`
 --
@@ -534,13 +525,13 @@ CREATE TABLE `coligacao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `comissao`
+-- Estrutura da tabela `comissao`
 --
 
 CREATE TABLE `comissao` (
   `cod_comissao` int(11) NOT NULL AUTO_INCREMENT,
   `tip_comissao` tinyint(4) NOT NULL,
-  `nom_comissao` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nom_comissao` varchar(120) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sgl_comissao` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dat_criacao` date NOT NULL,
   `dat_extincao` date DEFAULT NULL,
@@ -567,7 +558,7 @@ CREATE TABLE `comissao` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `comissao`:
+-- RELACIONAMENTOS PARA A TABELA `comissao`:
 --   `tip_comissao`
 --       `tipo_comissao` -> `tip_comissao`
 --
@@ -575,7 +566,7 @@ CREATE TABLE `comissao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `composicao_bancada`
+-- Estrutura da tabela `composicao_bancada`
 --
 
 CREATE TABLE `composicao_bancada` (
@@ -596,7 +587,7 @@ CREATE TABLE `composicao_bancada` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `composicao_bancada`:
+-- RELACIONAMENTOS PARA A TABELA `composicao_bancada`:
 --   `cod_parlamentar`
 --       `parlamentar` -> `cod_parlamentar`
 --   `cod_bancada`
@@ -608,7 +599,7 @@ CREATE TABLE `composicao_bancada` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `composicao_coligacao`
+-- Estrutura da tabela `composicao_coligacao`
 --
 
 CREATE TABLE `composicao_coligacao` (
@@ -621,7 +612,7 @@ CREATE TABLE `composicao_coligacao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `composicao_coligacao`:
+-- RELACIONAMENTOS PARA A TABELA `composicao_coligacao`:
 --   `cod_partido`
 --       `partido` -> `cod_partido`
 --   `cod_coligacao`
@@ -631,7 +622,7 @@ CREATE TABLE `composicao_coligacao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `composicao_comissao`
+-- Estrutura da tabela `composicao_comissao`
 --
 
 CREATE TABLE `composicao_comissao` (
@@ -654,7 +645,7 @@ CREATE TABLE `composicao_comissao` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `composicao_comissao`:
+-- RELACIONAMENTOS PARA A TABELA `composicao_comissao`:
 --   `cod_parlamentar`
 --       `parlamentar` -> `cod_parlamentar`
 --   `cod_comissao`
@@ -668,7 +659,7 @@ CREATE TABLE `composicao_comissao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `composicao_mesa`
+-- Estrutura da tabela `composicao_mesa`
 --
 
 CREATE TABLE `composicao_mesa` (
@@ -685,7 +676,7 @@ CREATE TABLE `composicao_mesa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `composicao_mesa`:
+-- RELACIONAMENTOS PARA A TABELA `composicao_mesa`:
 --   `cod_parlamentar`
 --       `parlamentar` -> `cod_parlamentar`
 --   `cod_cargo`
@@ -699,7 +690,7 @@ CREATE TABLE `composicao_mesa` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `dependente`
+-- Estrutura da tabela `dependente`
 --
 
 CREATE TABLE `dependente` (
@@ -720,7 +711,7 @@ CREATE TABLE `dependente` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `dependente`:
+-- RELACIONAMENTOS PARA A TABELA `dependente`:
 --   `tip_dependente`
 --       `tipo_dependente` -> `tip_dependente`
 --   `cod_parlamentar`
@@ -730,7 +721,7 @@ CREATE TABLE `dependente` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `despacho_inicial`
+-- Estrutura da tabela `despacho_inicial`
 --
 
 CREATE TABLE `despacho_inicial` (
@@ -740,12 +731,12 @@ CREATE TABLE `despacho_inicial` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_materia`,`num_ordem`),
   KEY `idx_comissao` (`cod_comissao`),
-  KEY `idx_despinic_comissao` (`cod_comissao`,`ind_excluido`),
-  KEY `idx_materia` (`cod_materia`)
+  KEY `idx_materia` (`cod_materia`),
+  KEY `idx_despinic_comissao` (`cod_materia`,`num_ordem`,`cod_comissao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `despacho_inicial`:
+-- RELACIONAMENTOS PARA A TABELA `despacho_inicial`:
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
 --   `cod_comissao`
@@ -755,7 +746,31 @@ CREATE TABLE `despacho_inicial` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `documento_acessorio`
+-- Estrutura da tabela `destinatario_oficio`
+--
+
+CREATE TABLE `destinatario_oficio` (
+  `cod_destinatario` int(11) NOT NULL AUTO_INCREMENT,
+  `cod_documento` int(11) NOT NULL,
+  `cod_instituicao` int(11) NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_destinatario`),
+  KEY `cod_documento` (`cod_documento`),
+  KEY `cod_instituicao` (`cod_instituicao`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- RELACIONAMENTOS PARA A TABELA `destinatario_oficio`:
+--   `cod_documento`
+--       `documento_administrativo` -> `cod_documento`
+--   `cod_instituicao`
+--       `instituicao` -> `cod_instituicao`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `documento_acessorio`
 --
 
 CREATE TABLE `documento_acessorio` (
@@ -773,10 +788,10 @@ CREATE TABLE `documento_acessorio` (
   KEY `idx_tip_documento` (`tip_documento`),
   KEY `idx_materia` (`cod_materia`),
   FULLTEXT KEY `idx_ementa` (`txt_ementa`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `documento_acessorio`:
+-- RELACIONAMENTOS PARA A TABELA `documento_acessorio`:
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
 --   `tip_documento`
@@ -786,7 +801,7 @@ CREATE TABLE `documento_acessorio` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `documento_acessorio_administrativo`
+-- Estrutura da tabela `documento_acessorio_administrativo`
 --
 
 CREATE TABLE `documento_acessorio_administrativo` (
@@ -809,7 +824,7 @@ CREATE TABLE `documento_acessorio_administrativo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `documento_acessorio_administrativo`:
+-- RELACIONAMENTOS PARA A TABELA `documento_acessorio_administrativo`:
 --   `cod_documento`
 --       `documento_administrativo` -> `cod_documento`
 --
@@ -817,7 +832,7 @@ CREATE TABLE `documento_acessorio_administrativo` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `documento_administrativo`
+-- Estrutura da tabela `documento_administrativo`
 --
 
 CREATE TABLE `documento_administrativo` (
@@ -847,7 +862,7 @@ CREATE TABLE `documento_administrativo` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `documento_administrativo`:
+-- RELACIONAMENTOS PARA A TABELA `documento_administrativo`:
 --   `tip_documento`
 --       `tipo_documento_administrativo` -> `tip_documento`
 --   `cod_autor`
@@ -857,7 +872,7 @@ CREATE TABLE `documento_administrativo` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `emenda`
+-- Estrutura da tabela `emenda`
 --
 
 CREATE TABLE `emenda` (
@@ -870,6 +885,7 @@ CREATE TABLE `emenda` (
   `txt_ementa` varchar(400) COLLATE utf8_unicode_ci DEFAULT NULL,
   `txt_observacao` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cod_autor` int(11) NOT NULL,
+  `exc_pauta` tinyint(4) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_emenda`),
   UNIQUE KEY `idx_numemen_materia` (`num_emenda`,`tip_emenda`,`cod_materia`,`ind_excluido`),
@@ -880,7 +896,7 @@ CREATE TABLE `emenda` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `emenda`:
+-- RELACIONAMENTOS PARA A TABELA `emenda`:
 --   `tip_emenda`
 --       `tipo_emenda` -> `tip_emenda`
 --   `cod_materia`
@@ -892,7 +908,7 @@ CREATE TABLE `emenda` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `encerramento_presenca`
+-- Estrutura da tabela `encerramento_presenca`
 --
 
 CREATE TABLE `encerramento_presenca` (
@@ -909,7 +925,7 @@ CREATE TABLE `encerramento_presenca` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `encerramento_presenca`:
+-- RELACIONAMENTOS PARA A TABELA `encerramento_presenca`:
 --   `cod_sessao_plen`
 --       `sessao_plenaria` -> `cod_sessao_plen`
 --   `cod_parlamentar`
@@ -919,7 +935,7 @@ CREATE TABLE `encerramento_presenca` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `expediente_materia`
+-- Estrutura da tabela `expediente_materia`
 --
 
 CREATE TABLE `expediente_materia` (
@@ -931,26 +947,32 @@ CREATE TABLE `expediente_materia` (
   `ind_excluido` tinyint(4) NOT NULL,
   `num_ordem` int(10) unsigned NOT NULL,
   `txt_resultado` text COLLATE utf8_unicode_ci,
-  `tip_votacao` int(11) unsigned NOT NULL,
+  `tip_votacao` int(11) NOT NULL,
+  `tip_quorum` int(11) NOT NULL,
   PRIMARY KEY (`cod_ordem`),
   KEY `idx_exped_datord` (`dat_ordem`,`ind_excluido`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`),
   KEY `cod_materia` (`cod_materia`),
-  KEY `tip_votacao` (`tip_votacao`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+  KEY `tip_votacao` (`tip_votacao`),
+  KEY `tip_quorum` (`tip_quorum`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `expediente_materia`:
+-- RELACIONAMENTOS PARA A TABELA `expediente_materia`:
 --   `cod_sessao_plen`
 --       `sessao_plenaria` -> `cod_sessao_plen`
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
+--   `tip_votacao`
+--       `tipo_votacao` -> `tip_votacao`
+--   `tip_quorum`
+--       `quorum_votacao` -> `cod_quorum`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `expediente_presenca`
+-- Estrutura da tabela `expediente_presenca`
 --
 
 CREATE TABLE `expediente_presenca` (
@@ -967,7 +989,7 @@ CREATE TABLE `expediente_presenca` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `expediente_presenca`:
+-- RELACIONAMENTOS PARA A TABELA `expediente_presenca`:
 --   `cod_sessao_plen`
 --       `sessao_plenaria` -> `cod_sessao_plen`
 --   `cod_parlamentar`
@@ -977,7 +999,7 @@ CREATE TABLE `expediente_presenca` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `expediente_sessao_plenaria`
+-- Estrutura da tabela `expediente_sessao_plenaria`
 --
 
 CREATE TABLE `expediente_sessao_plenaria` (
@@ -990,7 +1012,7 @@ CREATE TABLE `expediente_sessao_plenaria` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `expediente_sessao_plenaria`:
+-- RELACIONAMENTOS PARA A TABELA `expediente_sessao_plenaria`:
 --   `cod_expediente`
 --       `tipo_expediente` -> `cod_expediente`
 --
@@ -998,7 +1020,7 @@ CREATE TABLE `expediente_sessao_plenaria` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `filiacao`
+-- Estrutura da tabela `filiacao`
 --
 
 CREATE TABLE `filiacao` (
@@ -1013,7 +1035,7 @@ CREATE TABLE `filiacao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `filiacao`:
+-- RELACIONAMENTOS PARA A TABELA `filiacao`:
 --   `cod_partido`
 --       `partido` -> `cod_partido`
 --   `cod_parlamentar`
@@ -1023,7 +1045,7 @@ CREATE TABLE `filiacao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `instituicao`
+-- Estrutura da tabela `instituicao`
 --
 
 CREATE TABLE `instituicao` (
@@ -1057,7 +1079,7 @@ CREATE TABLE `instituicao` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `instituicao`:
+-- RELACIONAMENTOS PARA A TABELA `instituicao`:
 --   `tip_instituicao`
 --       `tipo_instituicao` -> `tip_instituicao`
 --   `cod_localidade`
@@ -1067,7 +1089,7 @@ CREATE TABLE `instituicao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `legislacao_citada`
+-- Estrutura da tabela `legislacao_citada`
 --
 
 CREATE TABLE `legislacao_citada` (
@@ -1092,7 +1114,7 @@ CREATE TABLE `legislacao_citada` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `legislacao_citada`:
+-- RELACIONAMENTOS PARA A TABELA `legislacao_citada`:
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
 --   `cod_norma`
@@ -1102,7 +1124,7 @@ CREATE TABLE `legislacao_citada` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `legislatura`
+-- Estrutura da tabela `legislatura`
 --
 
 CREATE TABLE `legislatura` (
@@ -1118,7 +1140,7 @@ CREATE TABLE `legislatura` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `lexml_registro_provedor`
+-- Estrutura da tabela `lexml_registro_provedor`
 --
 
 CREATE TABLE `lexml_registro_provedor` (
@@ -1137,7 +1159,7 @@ CREATE TABLE `lexml_registro_provedor` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `lexml_registro_publicador`
+-- Estrutura da tabela `lexml_registro_publicador`
 --
 
 CREATE TABLE `lexml_registro_publicador` (
@@ -1155,7 +1177,7 @@ CREATE TABLE `lexml_registro_publicador` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `localidade`
+-- Estrutura da tabela `localidade`
 --
 
 CREATE TABLE `localidade` (
@@ -1176,7 +1198,7 @@ CREATE TABLE `localidade` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `mandato`
+-- Estrutura da tabela `mandato`
 --
 
 CREATE TABLE `mandato` (
@@ -1203,7 +1225,7 @@ CREATE TABLE `mandato` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `mandato`:
+-- RELACIONAMENTOS PARA A TABELA `mandato`:
 --   `tip_afastamento`
 --       `tipo_afastamento` -> `tip_afastamento`
 --   `num_legislatura`
@@ -1217,7 +1239,7 @@ CREATE TABLE `mandato` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `materia_apresentada_sessao`
+-- Estrutura da tabela `materia_apresentada_sessao`
 --
 
 CREATE TABLE `materia_apresentada_sessao` (
@@ -1232,10 +1254,10 @@ CREATE TABLE `materia_apresentada_sessao` (
   KEY `fk_cod_materia` (`cod_materia`),
   KEY `idx_apres_datord` (`dat_ordem`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `materia_apresentada_sessao`:
+-- RELACIONAMENTOS PARA A TABELA `materia_apresentada_sessao`:
 --   `cod_sessao_plen`
 --       `sessao_plenaria` -> `cod_sessao_plen`
 --   `cod_materia`
@@ -1245,7 +1267,7 @@ CREATE TABLE `materia_apresentada_sessao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `materia_legislativa`
+-- Estrutura da tabela `materia_legislativa`
 --
 
 CREATE TABLE `materia_legislativa` (
@@ -1273,6 +1295,7 @@ CREATE TABLE `materia_legislativa` (
   `txt_ementa` text COLLATE utf8_unicode_ci,
   `txt_indexacao` text COLLATE utf8_unicode_ci,
   `txt_observacao` text COLLATE utf8_unicode_ci,
+  `tip_quorum` int(11) DEFAULT NULL,
   `cod_situacao` int(11) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_materia`),
@@ -1288,7 +1311,7 @@ CREATE TABLE `materia_legislativa` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `materia_legislativa`:
+-- RELACIONAMENTOS PARA A TABELA `materia_legislativa`:
 --   `tip_id_basica`
 --       `tipo_materia_legislativa` -> `tip_materia`
 --   `cod_regime_tramitacao`
@@ -1302,7 +1325,7 @@ CREATE TABLE `materia_legislativa` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `mesa_sessao_plenaria`
+-- Estrutura da tabela `mesa_sessao_plenaria`
 --
 
 CREATE TABLE `mesa_sessao_plenaria` (
@@ -1318,7 +1341,7 @@ CREATE TABLE `mesa_sessao_plenaria` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `mesa_sessao_plenaria`:
+-- RELACIONAMENTOS PARA A TABELA `mesa_sessao_plenaria`:
 --   `cod_sessao_leg`
 --       `sessao_legislativa` -> `cod_sessao_leg`
 --   `cod_parlamentar`
@@ -1330,7 +1353,7 @@ CREATE TABLE `mesa_sessao_plenaria` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `nivel_instrucao`
+-- Estrutura da tabela `nivel_instrucao`
 --
 
 CREATE TABLE `nivel_instrucao` (
@@ -1343,7 +1366,7 @@ CREATE TABLE `nivel_instrucao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `norma_juridica`
+-- Estrutura da tabela `norma_juridica`
 --
 
 CREATE TABLE `norma_juridica` (
@@ -1378,7 +1401,7 @@ CREATE TABLE `norma_juridica` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `norma_juridica`:
+-- RELACIONAMENTOS PARA A TABELA `norma_juridica`:
 --   `cod_assunto`
 --       `assunto_norma` -> `cod_assunto`
 --   `tip_norma`
@@ -1392,7 +1415,7 @@ CREATE TABLE `norma_juridica` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `numeracao`
+-- Estrutura da tabela `numeracao`
 --
 
 CREATE TABLE `numeracao` (
@@ -1410,7 +1433,7 @@ CREATE TABLE `numeracao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `numeracao`:
+-- RELACIONAMENTOS PARA A TABELA `numeracao`:
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
 --   `tip_materia`
@@ -1420,7 +1443,7 @@ CREATE TABLE `numeracao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `oradores`
+-- Estrutura da tabela `oradores`
 --
 
 CREATE TABLE `oradores` (
@@ -1435,7 +1458,7 @@ CREATE TABLE `oradores` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `oradores`:
+-- RELACIONAMENTOS PARA A TABELA `oradores`:
 --   `cod_sessao_plen`
 --       `sessao_plenaria` -> `cod_sessao_plen`
 --   `cod_parlamentar`
@@ -1445,7 +1468,7 @@ CREATE TABLE `oradores` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `oradores_expediente`
+-- Estrutura da tabela `oradores_expediente`
 --
 
 CREATE TABLE `oradores_expediente` (
@@ -1460,7 +1483,7 @@ CREATE TABLE `oradores_expediente` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `oradores_expediente`:
+-- RELACIONAMENTOS PARA A TABELA `oradores_expediente`:
 --   `cod_sessao_plen`
 --       `sessao_plenaria` -> `cod_sessao_plen`
 --   `cod_parlamentar`
@@ -1470,7 +1493,7 @@ CREATE TABLE `oradores_expediente` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `ordem_dia`
+-- Estrutura da tabela `ordem_dia`
 --
 
 CREATE TABLE `ordem_dia` (
@@ -1479,31 +1502,39 @@ CREATE TABLE `ordem_dia` (
   `cod_materia` int(11) NOT NULL,
   `dat_ordem` date NOT NULL,
   `txt_observacao` text COLLATE utf8_unicode_ci,
-  `ind_excluido` tinyint(4) NOT NULL,
   `num_ordem` int(10) unsigned NOT NULL,
   `txt_resultado` text COLLATE utf8_unicode_ci,
-  `tip_votacao` int(11) unsigned NOT NULL,
+  `tip_turno` int(11) DEFAULT NULL,
+  `tip_votacao` int(11) NOT NULL,
   `tip_quorum` int(11) DEFAULT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_ordem`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`),
   KEY `cod_materia` (`cod_materia`),
-  KEY `idx_dat_ordem` (`dat_ordem`,`ind_excluido`),
+  KEY `idx_dat_ordem` (`dat_ordem`),
   KEY `tip_votacao` (`tip_votacao`),
-  KEY `tip_quorum` (`tip_quorum`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+  KEY `tip_quorum` (`tip_quorum`),
+  KEY `tip_turno` (`tip_turno`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `ordem_dia`:
+-- RELACIONAMENTOS PARA A TABELA `ordem_dia`:
 --   `cod_sessao_plen`
 --       `sessao_plenaria` -> `cod_sessao_plen`
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
+--   `tip_turno`
+--       `turno_discussao` -> `cod_turno`
+--   `tip_quorum`
+--       `quorum_votacao` -> `cod_quorum`
+--   `tip_votacao`
+--       `tipo_votacao` -> `tip_votacao`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `ordem_dia_presenca`
+-- Estrutura da tabela `ordem_dia_presenca`
 --
 
 CREATE TABLE `ordem_dia_presenca` (
@@ -1520,7 +1551,7 @@ CREATE TABLE `ordem_dia_presenca` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `ordem_dia_presenca`:
+-- RELACIONAMENTOS PARA A TABELA `ordem_dia_presenca`:
 --   `cod_sessao_plen`
 --       `sessao_plenaria` -> `cod_sessao_plen`
 --   `cod_parlamentar`
@@ -1530,7 +1561,7 @@ CREATE TABLE `ordem_dia_presenca` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `orgao`
+-- Estrutura da tabela `orgao`
 --
 
 CREATE TABLE `orgao` (
@@ -1547,7 +1578,7 @@ CREATE TABLE `orgao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `origem`
+-- Estrutura da tabela `origem`
 --
 
 CREATE TABLE `origem` (
@@ -1556,12 +1587,12 @@ CREATE TABLE `origem` (
   `nom_origem` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_origem`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `parecer`
+-- Estrutura da tabela `parecer`
 --
 
 CREATE TABLE `parecer` (
@@ -1577,7 +1608,7 @@ CREATE TABLE `parecer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `parecer`:
+-- RELACIONAMENTOS PARA A TABELA `parecer`:
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
 --
@@ -1585,7 +1616,7 @@ CREATE TABLE `parecer` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `parlamentar`
+-- Estrutura da tabela `parlamentar`
 --
 
 CREATE TABLE `parlamentar` (
@@ -1627,7 +1658,7 @@ CREATE TABLE `parlamentar` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `parlamentar`:
+-- RELACIONAMENTOS PARA A TABELA `parlamentar`:
 --   `cod_nivel_instrucao`
 --       `nivel_instrucao` -> `cod_nivel_instrucao`
 --   `tip_situacao_militar`
@@ -1639,7 +1670,7 @@ CREATE TABLE `parlamentar` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `partido`
+-- Estrutura da tabela `partido`
 --
 
 CREATE TABLE `partido` (
@@ -1655,7 +1686,7 @@ CREATE TABLE `partido` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `periodo_comp_comissao`
+-- Estrutura da tabela `periodo_comp_comissao`
 --
 
 CREATE TABLE `periodo_comp_comissao` (
@@ -1670,7 +1701,7 @@ CREATE TABLE `periodo_comp_comissao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `periodo_comp_mesa`
+-- Estrutura da tabela `periodo_comp_mesa`
 --
 
 CREATE TABLE `periodo_comp_mesa` (
@@ -1685,7 +1716,7 @@ CREATE TABLE `periodo_comp_mesa` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `periodo_comp_mesa`:
+-- RELACIONAMENTOS PARA A TABELA `periodo_comp_mesa`:
 --   `num_legislatura`
 --       `legislatura` -> `num_legislatura`
 --
@@ -1693,7 +1724,7 @@ CREATE TABLE `periodo_comp_mesa` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `proposicao`
+-- Estrutura da tabela `proposicao`
 --
 
 CREATE TABLE `proposicao` (
@@ -1714,10 +1745,10 @@ CREATE TABLE `proposicao` (
   KEY `cod_materia` (`cod_materia`),
   KEY `cod_autor` (`cod_autor`),
   KEY `idx_prop_autor` (`dat_envio`,`dat_recebimento`,`ind_excluido`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `proposicao`:
+-- RELACIONAMENTOS PARA A TABELA `proposicao`:
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
 --   `cod_autor`
@@ -1729,7 +1760,7 @@ CREATE TABLE `proposicao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `protocolo`
+-- Estrutura da tabela `protocolo`
 --
 
 CREATE TABLE `protocolo` (
@@ -1764,7 +1795,7 @@ CREATE TABLE `protocolo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
 --
--- RELACIONAMENTOS PARA TABELAS `protocolo`:
+-- RELACIONAMENTOS PARA A TABELA `protocolo`:
 --   `cod_autor`
 --       `autor` -> `cod_autor`
 --   `tip_documento`
@@ -1776,7 +1807,21 @@ CREATE TABLE `protocolo` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `regime_tramitacao`
+-- Estrutura da tabela `quorum_votacao`
+--
+
+CREATE TABLE `quorum_votacao` (
+  `cod_quorum` int(11) NOT NULL AUTO_INCREMENT,
+  `des_quorum` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `txt_formula` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_quorum`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `regime_tramitacao`
 --
 
 CREATE TABLE `regime_tramitacao` (
@@ -1789,7 +1834,7 @@ CREATE TABLE `regime_tramitacao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `registro_votacao`
+-- Estrutura da tabela `registro_votacao`
 --
 
 CREATE TABLE `registro_votacao` (
@@ -1815,7 +1860,7 @@ CREATE TABLE `registro_votacao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `registro_votacao`:
+-- RELACIONAMENTOS PARA A TABELA `registro_votacao`:
 --   `tip_resultado_votacao`
 --       `tipo_resultado_votacao` -> `tip_resultado_votacao`
 --   `cod_materia`
@@ -1831,7 +1876,7 @@ CREATE TABLE `registro_votacao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `registro_votacao_parlamentar`
+-- Estrutura da tabela `registro_votacao_parlamentar`
 --
 
 CREATE TABLE `registro_votacao_parlamentar` (
@@ -1845,7 +1890,7 @@ CREATE TABLE `registro_votacao_parlamentar` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `registro_votacao_parlamentar`:
+-- RELACIONAMENTOS PARA A TABELA `registro_votacao_parlamentar`:
 --   `cod_votacao`
 --       `registro_votacao` -> `cod_votacao`
 --   `cod_parlamentar`
@@ -1855,7 +1900,7 @@ CREATE TABLE `registro_votacao_parlamentar` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `relatoria`
+-- Estrutura da tabela `relatoria`
 --
 
 CREATE TABLE `relatoria` (
@@ -1864,6 +1909,7 @@ CREATE TABLE `relatoria` (
   `cod_parlamentar` int(11) NOT NULL,
   `tip_fim_relatoria` tinyint(11) DEFAULT NULL,
   `cod_comissao` int(11) DEFAULT NULL,
+  `num_ordem` tinyint(4) NOT NULL,
   `dat_desig_relator` date NOT NULL,
   `dat_destit_relator` date DEFAULT NULL,
   `tip_apresentacao` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1876,10 +1922,10 @@ CREATE TABLE `relatoria` (
   KEY `cod_parlamentar` (`cod_parlamentar`),
   KEY `tip_fim_relatoria` (`tip_fim_relatoria`),
   KEY `idx_relat_materia` (`cod_materia`,`cod_parlamentar`,`ind_excluido`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `relatoria`:
+-- RELACIONAMENTOS PARA A TABELA `relatoria`:
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
 --   `cod_parlamentar`
@@ -1893,7 +1939,7 @@ CREATE TABLE `relatoria` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `reuniao_comissao`
+-- Estrutura da tabela `reuniao_comissao`
 --
 
 CREATE TABLE `reuniao_comissao` (
@@ -1909,7 +1955,7 @@ CREATE TABLE `reuniao_comissao` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `reuniao_comissao`:
+-- RELACIONAMENTOS PARA A TABELA `reuniao_comissao`:
 --   `cod_comissao`
 --       `comissao` -> `cod_comissao`
 --
@@ -1917,7 +1963,7 @@ CREATE TABLE `reuniao_comissao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `sessao_legislativa`
+-- Estrutura da tabela `sessao_legislativa`
 --
 
 CREATE TABLE `sessao_legislativa` (
@@ -1937,7 +1983,7 @@ CREATE TABLE `sessao_legislativa` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `sessao_legislativa`:
+-- RELACIONAMENTOS PARA A TABELA `sessao_legislativa`:
 --   `num_legislatura`
 --       `legislatura` -> `num_legislatura`
 --
@@ -1945,7 +1991,7 @@ CREATE TABLE `sessao_legislativa` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `sessao_plenaria`
+-- Estrutura da tabela `sessao_plenaria`
 --
 
 CREATE TABLE `sessao_plenaria` (
@@ -1973,7 +2019,7 @@ CREATE TABLE `sessao_plenaria` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `sessao_plenaria`:
+-- RELACIONAMENTOS PARA A TABELA `sessao_plenaria`:
 --   `tip_sessao`
 --       `tipo_sessao_plenaria` -> `tip_sessao`
 --   `cod_sessao_leg`
@@ -1985,7 +2031,7 @@ CREATE TABLE `sessao_plenaria` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `sessao_plenaria_presenca`
+-- Estrutura da tabela `sessao_plenaria_presenca`
 --
 
 CREATE TABLE `sessao_plenaria_presenca` (
@@ -1993,16 +2039,18 @@ CREATE TABLE `sessao_plenaria_presenca` (
   `cod_sessao_plen` int(11) NOT NULL,
   `cod_parlamentar` int(11) NOT NULL,
   `dat_sessao` date DEFAULT NULL,
+  `ind_ausencia` tinyint(4) NOT NULL DEFAULT '0',
+  `txt_justif_ausencia` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_presenca_sessao`),
   KEY `cod_parlamentar` (`cod_parlamentar`),
   KEY `idx_sessao_parlamentar` (`cod_sessao_plen`,`cod_parlamentar`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`),
   KEY `dat_sessao` (`dat_sessao`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `sessao_plenaria_presenca`:
+-- RELACIONAMENTOS PARA A TABELA `sessao_plenaria_presenca`:
 --   `cod_sessao_plen`
 --       `sessao_plenaria` -> `cod_sessao_plen`
 --   `cod_parlamentar`
@@ -2012,7 +2060,7 @@ CREATE TABLE `sessao_plenaria_presenca` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `status_tramitacao`
+-- Estrutura da tabela `status_tramitacao`
 --
 
 CREATE TABLE `status_tramitacao` (
@@ -2030,7 +2078,7 @@ CREATE TABLE `status_tramitacao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `status_tramitacao_administrativo`
+-- Estrutura da tabela `status_tramitacao_administrativo`
 --
 
 CREATE TABLE `status_tramitacao_administrativo` (
@@ -2048,7 +2096,7 @@ CREATE TABLE `status_tramitacao_administrativo` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `subemenda`
+-- Estrutura da tabela `subemenda`
 --
 
 CREATE TABLE `subemenda` (
@@ -2071,7 +2119,7 @@ CREATE TABLE `subemenda` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `subemenda`:
+-- RELACIONAMENTOS PARA A TABELA `subemenda`:
 --   `tip_subemenda`
 --       `tipo_emenda` -> `tip_emenda`
 --   `cod_emenda`
@@ -2083,7 +2131,7 @@ CREATE TABLE `subemenda` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `substitutivo`
+-- Estrutura da tabela `substitutivo`
 --
 
 CREATE TABLE `substitutivo` (
@@ -2105,7 +2153,7 @@ CREATE TABLE `substitutivo` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- RELACIONAMENTOS PARA TABELAS `substitutivo`:
+-- RELACIONAMENTOS PARA A TABELA `substitutivo`:
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
 --   `cod_autor`
@@ -2115,7 +2163,7 @@ CREATE TABLE `substitutivo` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_afastamento`
+-- Estrutura da tabela `tipo_afastamento`
 --
 
 CREATE TABLE `tipo_afastamento` (
@@ -2131,7 +2179,7 @@ CREATE TABLE `tipo_afastamento` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_autor`
+-- Estrutura da tabela `tipo_autor`
 --
 
 CREATE TABLE `tipo_autor` (
@@ -2145,7 +2193,7 @@ CREATE TABLE `tipo_autor` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_comissao`
+-- Estrutura da tabela `tipo_comissao`
 --
 
 CREATE TABLE `tipo_comissao` (
@@ -2163,7 +2211,7 @@ CREATE TABLE `tipo_comissao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_dependente`
+-- Estrutura da tabela `tipo_dependente`
 --
 
 CREATE TABLE `tipo_dependente` (
@@ -2177,7 +2225,7 @@ CREATE TABLE `tipo_dependente` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_documento`
+-- Estrutura da tabela `tipo_documento`
 --
 
 CREATE TABLE `tipo_documento` (
@@ -2191,7 +2239,7 @@ CREATE TABLE `tipo_documento` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_documento_administrativo`
+-- Estrutura da tabela `tipo_documento_administrativo`
 --
 
 CREATE TABLE `tipo_documento_administrativo` (
@@ -2206,7 +2254,7 @@ CREATE TABLE `tipo_documento_administrativo` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_emenda`
+-- Estrutura da tabela `tipo_emenda`
 --
 
 CREATE TABLE `tipo_emenda` (
@@ -2220,7 +2268,7 @@ CREATE TABLE `tipo_emenda` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_expediente`
+-- Estrutura da tabela `tipo_expediente`
 --
 
 CREATE TABLE `tipo_expediente` (
@@ -2234,7 +2282,7 @@ CREATE TABLE `tipo_expediente` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_fim_relatoria`
+-- Estrutura da tabela `tipo_fim_relatoria`
 --
 
 CREATE TABLE `tipo_fim_relatoria` (
@@ -2247,7 +2295,7 @@ CREATE TABLE `tipo_fim_relatoria` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_instituicao`
+-- Estrutura da tabela `tipo_instituicao`
 --
 
 CREATE TABLE `tipo_instituicao` (
@@ -2260,7 +2308,7 @@ CREATE TABLE `tipo_instituicao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_materia_legislativa`
+-- Estrutura da tabela `tipo_materia_legislativa`
 --
 
 CREATE TABLE `tipo_materia_legislativa` (
@@ -2277,7 +2325,7 @@ CREATE TABLE `tipo_materia_legislativa` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_norma_juridica`
+-- Estrutura da tabela `tipo_norma_juridica`
 --
 
 CREATE TABLE `tipo_norma_juridica` (
@@ -2293,7 +2341,7 @@ CREATE TABLE `tipo_norma_juridica` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_proposicao`
+-- Estrutura da tabela `tipo_proposicao`
 --
 
 CREATE TABLE `tipo_proposicao` (
@@ -2310,7 +2358,7 @@ CREATE TABLE `tipo_proposicao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_resultado_votacao`
+-- Estrutura da tabela `tipo_resultado_votacao`
 --
 
 CREATE TABLE `tipo_resultado_votacao` (
@@ -2324,7 +2372,7 @@ CREATE TABLE `tipo_resultado_votacao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_sessao_plenaria`
+-- Estrutura da tabela `tipo_sessao_plenaria`
 --
 
 CREATE TABLE `tipo_sessao_plenaria` (
@@ -2339,7 +2387,7 @@ CREATE TABLE `tipo_sessao_plenaria` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_situacao_materia`
+-- Estrutura da tabela `tipo_situacao_materia`
 --
 
 CREATE TABLE `tipo_situacao_materia` (
@@ -2353,7 +2401,7 @@ CREATE TABLE `tipo_situacao_materia` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_situacao_militar`
+-- Estrutura da tabela `tipo_situacao_militar`
 --
 
 CREATE TABLE `tipo_situacao_militar` (
@@ -2366,7 +2414,7 @@ CREATE TABLE `tipo_situacao_militar` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tipo_situacao_norma`
+-- Estrutura da tabela `tipo_situacao_norma`
 --
 
 CREATE TABLE `tipo_situacao_norma` (
@@ -2380,7 +2428,20 @@ CREATE TABLE `tipo_situacao_norma` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tramitacao`
+-- Estrutura da tabela `tipo_votacao`
+--
+
+CREATE TABLE `tipo_votacao` (
+  `tip_votacao` int(11) NOT NULL AUTO_INCREMENT,
+  `des_tipo_votacao` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`tip_votacao`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tramitacao`
 --
 
 CREATE TABLE `tramitacao` (
@@ -2404,10 +2465,10 @@ CREATE TABLE `tramitacao` (
   KEY `cod_materia` (`cod_materia`),
   KEY `idx_tramit_ultmat` (`ind_ult_tramitacao`,`dat_tramitacao`,`cod_materia`,`ind_excluido`),
   KEY `sgl_turno` (`sgl_turno`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `tramitacao`:
+-- RELACIONAMENTOS PARA A TABELA `tramitacao`:
 --   `cod_status`
 --       `status_tramitacao` -> `cod_status`
 --   `cod_materia`
@@ -2421,7 +2482,7 @@ CREATE TABLE `tramitacao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `tramitacao_administrativo`
+-- Estrutura da tabela `tramitacao_administrativo`
 --
 
 CREATE TABLE `tramitacao_administrativo` (
@@ -2442,10 +2503,10 @@ CREATE TABLE `tramitacao_administrativo` (
   KEY `cod_unid_tram_local` (`cod_unid_tram_local`),
   KEY `cod_status` (`cod_status`),
   KEY `cod_documento` (`cod_documento`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
 --
--- RELACIONAMENTOS PARA TABELAS `tramitacao_administrativo`:
+-- RELACIONAMENTOS PARA A TABELA `tramitacao_administrativo`:
 --   `cod_documento`
 --       `documento_administrativo` -> `cod_documento`
 --   `cod_unid_tram_local`
@@ -2459,7 +2520,22 @@ CREATE TABLE `tramitacao_administrativo` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `unidade_tramitacao`
+-- Estrutura da tabela `turno_discussao`
+--
+
+CREATE TABLE `turno_discussao` (
+  `cod_turno` int(11) NOT NULL AUTO_INCREMENT,
+  `sgl_turno` char(1) COLLATE utf8_unicode_ci NOT NULL,
+  `des_turno` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_turno`),
+  UNIQUE KEY `idx_unique_key` (`cod_turno`,`sgl_turno`,`ind_excluido`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `unidade_tramitacao`
 --
 
 CREATE TABLE `unidade_tramitacao` (
@@ -2478,7 +2554,7 @@ CREATE TABLE `unidade_tramitacao` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `unidade_tramitacao`:
+-- RELACIONAMENTOS PARA A TABELA `unidade_tramitacao`:
 --   `cod_comissao`
 --       `comissao` -> `cod_comissao`
 --   `cod_orgao`
@@ -2490,7 +2566,7 @@ CREATE TABLE `unidade_tramitacao` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `vinculo_norma_juridica`
+-- Estrutura da tabela `vinculo_norma_juridica`
 --
 
 CREATE TABLE `vinculo_norma_juridica` (
@@ -2507,7 +2583,7 @@ CREATE TABLE `vinculo_norma_juridica` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
--- RELACIONAMENTOS PARA TABELAS `vinculo_norma_juridica`:
+-- RELACIONAMENTOS PARA A TABELA `vinculo_norma_juridica`:
 --   `cod_norma_referente`
 --       `norma_juridica` -> `cod_norma`
 --   `cod_norma_referida`
