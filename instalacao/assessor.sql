@@ -58,4 +58,13 @@ ALTER TABLE `subemenda`
    ADD UNIQUE KEY `idx_numsub_emenda` (`num_subemenda`,`tip_subemenda`,`cod_emenda`,`ind_excluido`),
    ADD KEY `idx_tip_subemenda` (`tip_subemenda`);
 
+ALTER TABLE  `ordem_dia_presenca` ADD  `tip_frequencia` CHAR( 1 ) NOT NULL DEFAULT  'P' AFTER  `cod_parlamentar` ,
+ADD INDEX (  `tip_frequencia` ) ;
+
+ALTER TABLE  `ordem_dia_presenca` ADD  `txt_justif_ausencia` VARCHAR( 200 ) NULL AFTER  `tip_frequencia` ;
+
+ALTER TABLE  `sessao_plenaria_presenca` ADD  `tip_frequencia` CHAR( 1 ) NOT NULL DEFAULT  'P' AFTER  `cod_parlamentar` ,
+ADD INDEX (  `tip_frequencia` ) ;
+
+ALTER TABLE  `sessao_plenaria_presenca` ADD  `txt_justif_ausencia` VARCHAR( 200 ) NULL AFTER  `tip_frequencia` ;
 

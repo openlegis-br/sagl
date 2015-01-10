@@ -38,7 +38,7 @@ if context.REQUEST['data']!='':
 
         # Lista de presença na sessão
         lst_presenca_sessao = []
-        for presenca in context.zsql.presenca_sessao_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):
+        for presenca in context.zsql.presenca_sessao_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, tip_frequencia='P', ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca.cod_parlamentar,ind_excluido=0):
                 dic_presenca = {}
                 dic_presenca["nom_completo"] = parlamentar.nom_completo.encode('utf-8')
@@ -164,7 +164,7 @@ if context.REQUEST['data']!='':
 
         # Lista presença na ordem do dia
         lst_presenca_ordem_dia = []
-        for presenca_ordem_dia in context.zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen,ind_excluido=0):
+        for presenca_ordem_dia in context.zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, tip_frequencia='P', ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca_ordem_dia.cod_parlamentar,ind_excluido=0):
                 dic_presenca_ordem_dia = {}
                 dic_presenca_ordem_dia['nom_completo'] = parlamentar.nom_completo.encode('utf-8')
