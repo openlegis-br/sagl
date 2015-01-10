@@ -1,31 +1,30 @@
-## Script (Python) "retorna_perfil_pysc"
+## Script (Python) "presenca_ordem_dia_pysc"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_sessao_plen,cod_parlamentar,dat_ordem
+##parameters=cod_sessao_plen,cod_parlamentar,tip_frequencia="",txt_justif_ausencia=""
 ##title=
 ##
 
-lista_presenca=context.zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen,dat_ordem=dat_ordem,ind_excluido=0)
+dic={}
+dic = dict(zip(cod_parlamentar, tip_frequencia))
+
+dic2={}
+dic2 = dict(zip(cod_parlamentar, txt_justif_ausencia))
+
 parlamentares=[]
-for parlamentar in lista_presenca:
+
+lista=context.zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0)
+
+for parlamentar in lista:
     parlamentares.append(str(parlamentar.cod_parlamentar))
 
-lista_presenca_excl=context.zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen,dat_ordem=dat_ordem,ind_excluido=1)
-parlamentares_excl=[]
-for parlamentar in lista_presenca_excl:
-    parlamentares_excl.append(str(parlamentar.cod_parlamentar))
-
-for i in cod_parlamentar:
-    if i not in parlamentares and i not in parlamentares_excl:
-        context.zsql.presenca_ordem_dia_incluir_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=i,dat_ordem=dat_ordem)
+for p in cod_parlamentar:
+    if p not in parlamentares:
+        context.zsql.presenca_ordem_dia_incluir_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=p,tip_frequencia=dic.get(p),txt_justif_ausencia=dic2.get(p))
     else:
-        context.zsql.presenca_ordem_dia_alterar_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=i,dat_ordem=dat_ordem,ind_excluido=0)
-
-for i in parlamentares:
-    if i not in cod_parlamentar:
-        context.zsql.presenca_ordem_dia_alterar_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=i,dat_ordem=dat_ordem,ind_excluido=1)
+        context.zsql.presenca_ordem_dia_alterar_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=p,tip_frequencia=dic.get(p),txt_justif_ausencia=dic2.get(p))
 
 return 1
