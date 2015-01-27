@@ -170,12 +170,22 @@ CREATE TABLE `arquivo_tipo_recipiente` (
   PRIMARY KEY (`tip_recipiente`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+INSERT INTO `arquivo_tipo_recipiente` (`tip_recipiente`, `des_tipo_recipiente`, `ind_excluido`) VALUES
+(1, 'Caixa Arquivo', 0),
+(2, 'Pasta Suspensa', 0),
+(3, 'Pasta A-Z', 0);
+
 CREATE TABLE `arquivo_tipo_suporte` (
   `tip_suporte` int(11) NOT NULL AUTO_INCREMENT,
   `des_tipo_suporte` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_suporte`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+INSERT INTO `arquivo_tipo_suporte` (`tip_suporte`, `des_tipo_suporte`, `ind_excluido`) VALUES
+(1, 'Papel', 0),
+(2, 'Fita Magnética', 0),
+(3, 'CD / DVD', 0);
 
 CREATE TABLE `arquivo_tipo_tit_documental` (
   `tip_tit_documental` int(11) NOT NULL AUTO_INCREMENT,
@@ -184,6 +194,16 @@ CREATE TABLE `arquivo_tipo_tit_documental` (
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_tit_documental`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+INSERT INTO `arquivo_tipo_tit_documental` (`tip_tit_documental`, `sgl_tip_tit_documental`, `des_tipo_tit_documental`, `ind_excluido`) VALUES
+(1, 'PL', 'LEI', 0),
+(2, 'DL', 'DECRETO LEGISLATIVO', 0),
+(3, 'A', 'PROCESSOS ARQUIVADOS', 0),
+(4, 'RES', 'RESOLUÇÃO', 0),
+(5, 'DIV', 'DIVERSOS', 0),
+(6, 'AM', 'ATO DA MESA', 0),
+(7, 'EM', 'EMENDA LOM', 0),
+(8, 'SEP', 'CEI', 0);
 
 CREATE TABLE `arquivo_unidade` (
   `cod_unidade` int(11) NOT NULL AUTO_INCREMENT,
