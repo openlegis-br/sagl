@@ -1,6 +1,8 @@
+DROP TABLE IF EXISTS andamento_sessao;
+DROP TABLE IF EXISTS partido_old;
+
 ALTER TABLE acomp_materia ENGINE=INNODB;
 ALTER TABLE afastamento ENGINE=INNODB;
-ALTER TABLE andamento_sessao ENGINE=INNODB;
 ALTER TABLE anexada ENGINE=INNODB;
 ALTER TABLE assunto_norma ENGINE=INNODB;
 ALTER TABLE autor ENGINE=INNODB;
@@ -48,7 +50,6 @@ ALTER TABLE origem ENGINE=INNODB;
 ALTER TABLE parecer ENGINE=INNODB;
 ALTER TABLE parlamentar ENGINE=INNODB;
 ALTER TABLE partido ENGINE=INNODB;
-ALTER TABLE partido_old ENGINE=INNODB;
 ALTER TABLE periodo_comp_comissao ENGINE=INNODB;
 ALTER TABLE periodo_comp_mesa ENGINE=INNODB;
 ALTER TABLE proposicao ENGINE=INNODB;
@@ -257,14 +258,12 @@ ALTER TABLE `emenda` ADD `exc_pauta` tinyint(4) DEFAULT NULL AFTER `cod_autor`;
 
 ALTER TABLE `emenda`
    CHANGE `tip_emenda` `tip_emenda` INT(11) NOT NULL, 
-   DROP INDEX `idx_numemen_materia`, 
-   ADD UNIQUE KEY `idx_numemen_materia` (`num_emenda`,`tip_emenda`,`cod_materia`,`ind_excluido`),
+   ADD UNIQUE KEY `idx_emen_materia` (`num_emenda`,`tip_emenda`,`cod_materia`,`ind_excluido`),
    ADD KEY `idx_tip_emenda` (`tip_emenda`);
 
 ALTER TABLE `subemenda` 
    CHANGE `tip_subemenda` `tip_subemenda` INT(11) NOT NULL,
-   DROP INDEX `idx_numsub_emenda`, 
-   ADD UNIQUE KEY `idx_numsub_emenda` (`num_subemenda`,`tip_subemenda`,`cod_emenda`,`ind_excluido`),
+   ADD UNIQUE KEY `idx_sub_emenda` (`num_subemenda`,`tip_subemenda`,`cod_emenda`,`ind_excluido`),
    ADD KEY `idx_tip_subemenda` (`tip_subemenda`);
 
 CREATE TABLE IF NOT EXISTS `quorum_votacao` (
@@ -365,10 +364,11 @@ INSERT INTO `tipo_vinculo_norma` (`tip_vinculo`, `des_vinculo`, `des_vinculo_pas
 
 ALTER TABLE `vinculo_norma_juridica` ADD INDEX (`tip_vinculo`);
 
+DELETE FROM `tramitacao` WHERE ind_excluido=1;
+
 ALTER TABLE `materia_legislativa` DROP `txt_resultado`;"
 
-ALTER TABLE `protocolo` DROP `cod_documento`;"
+ALTER TABLE `protocolo` DROP `cod_documento`;
 
-ALTER TABLE `protocolo` DROP `cod_materia`;"
+ALTER TABLE `protocolo` DROP `cod_materia`;
 
-DELETE FROM `tramitacao` WHERE ind_excluido=1;
