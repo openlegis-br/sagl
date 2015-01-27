@@ -1541,14 +1541,17 @@ CREATE TABLE `ordem_dia_presenca` (
   `cod_presenca_ordem_dia` int(11) NOT NULL AUTO_INCREMENT,
   `cod_sessao_plen` int(11) NOT NULL DEFAULT '0',
   `cod_parlamentar` int(11) NOT NULL,
+  `tip_frequencia` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'P',
+  `txt_justif_ausencia` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dat_ordem` date NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_presenca_ordem_dia`),
   KEY `cod_parlamentar` (`cod_parlamentar`),
   KEY `idx_sessao_parlamentar` (`cod_sessao_plen`,`cod_parlamentar`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`),
-  KEY `dat_ordem` (`dat_ordem`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+  KEY `dat_ordem` (`dat_ordem`),
+  KEY `tip_frequencia` (`tip_frequencia`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
 -- RELACIONAMENTOS PARA A TABELA `ordem_dia_presenca`:
@@ -2038,15 +2041,16 @@ CREATE TABLE `sessao_plenaria_presenca` (
   `cod_presenca_sessao` int(11) NOT NULL AUTO_INCREMENT,
   `cod_sessao_plen` int(11) NOT NULL,
   `cod_parlamentar` int(11) NOT NULL,
+  `tip_frequencia` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'P',
+  `txt_justif_ausencia` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dat_sessao` date DEFAULT NULL,
-  `ind_ausencia` tinyint(4) NOT NULL DEFAULT '0',
-  `txt_justif_ausencia` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_presenca_sessao`),
   KEY `cod_parlamentar` (`cod_parlamentar`),
   KEY `idx_sessao_parlamentar` (`cod_sessao_plen`,`cod_parlamentar`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`),
-  KEY `dat_sessao` (`dat_sessao`)
+  KEY `dat_sessao` (`dat_sessao`),
+  KEY `tip_frequencia` (`tip_frequencia`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
@@ -2428,6 +2432,23 @@ CREATE TABLE `tipo_situacao_norma` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `tipo_vinculo_norma`
+--
+
+CREATE TABLE `tipo_vinculo_norma` (
+  `cod_tip_vinculo` int(11) NOT NULL AUTO_INCREMENT,
+  `tip_vinculo` char(1) COLLATE utf8_unicode_ci NOT NULL,
+  `des_vinculo` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `des_vinculo_passivo` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_tip_vinculo`),
+  UNIQUE KEY `tip_vinculo` (`tip_vinculo`),
+  UNIQUE KEY `idx_vinculo` (`tip_vinculo`,`des_vinculo`,`des_vinculo_passivo`,`ind_excluido`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `tipo_votacao`
 --
 
@@ -2576,6 +2597,7 @@ CREATE TABLE `vinculo_norma_juridica` (
   `tip_vinculo` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`cod_vinculo`),
+  KEY `tip_vinculo` (`tip_vinculo`),
   KEY `idx_vnj_norma_referente` (`cod_norma_referente`,`cod_norma_referida`,`ind_excluido`),
   KEY `idx_vnj_norma_referida` (`cod_norma_referida`,`cod_norma_referente`,`ind_excluido`),
   KEY `cod_norma_referente` (`cod_norma_referente`),
@@ -3044,7 +3066,8 @@ ALTER TABLE `unidade_tramitacao`
 --
 ALTER TABLE `vinculo_norma_juridica`
   ADD CONSTRAINT `vinculo_norma_juridica_ibfk_1` FOREIGN KEY (`cod_norma_referente`) REFERENCES `norma_juridica` (`cod_norma`) ON UPDATE NO ACTION,
-  ADD CONSTRAINT `vinculo_norma_juridica_ibfk_2` FOREIGN KEY (`cod_norma_referida`) REFERENCES `norma_juridica` (`cod_norma`) ON UPDATE NO ACTION;
+  ADD CONSTRAINT `vinculo_norma_juridica_ibfk_2` FOREIGN KEY (`cod_norma_referida`) REFERENCES `norma_juridica` (`cod_norma`) ON UPDATE NO ACTION,
+  ADD CONSTRAINT `vinculo_norma_juridica_ibfk_3` FOREIGN KEY (`tip_vinculo`) REFERENCES `tipo_vinculo_norma` (`tip_vinculo`) ON UPDATE NO ACTION;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
