@@ -6143,6 +6143,19 @@ INSERT INTO `tipo_situacao_norma` (`tip_situacao_norma`, `des_tipo_situacao`, `i
 (20, 'Em vigor, com alterações posteriores', 0);
 
 --
+-- Fazendo dump de dados para tabela `tipo_vinculo_norma`
+--
+
+INSERT INTO `tipo_vinculo_norma` (`tip_vinculo`, `des_vinculo`, `des_vinculo_passivo`, `ind_excluido`) VALUES 
+('A', 'Altera', 'Alteração', '0'),
+('C', 'Norma correlata', 'Norma correlata', '0'),
+('G', 'Regulamenta', 'Regulamentação', '0'),
+('I', 'Suspende a execução', 'Suspensão de execução', '0'),
+('P', 'Revoga parcialmente', 'Revogação parcial', '0'),
+('R', 'Revoga', 'Revogação', '0'),
+('T', 'Revoga por consolidação', 'Revogação por consolidação', '0');
+
+--
 -- Fazendo dump de dados para tabela `tipo_votacao`
 --
 
