@@ -5810,7 +5810,7 @@ INSERT INTO `quorum_votacao` (`cod_quorum`, `des_quorum`, `txt_formula`, `ind_ex
 --
 
 INSERT INTO `regime_tramitacao` (`cod_regime_tramitacao`, `des_regime_tramitacao`, `ind_excluido`) VALUES
-(1, 'Ordinária', 0),
+(1, 'Ordinário', 0),
 (2, 'Urgência', 0),
 (3, 'Prioridade', 0),
 (4, 'Especial - Veto', 0),
