@@ -392,3 +392,5 @@ ALTER TABLE `protocolo` DROP `cod_documento`;
 
 ALTER TABLE `protocolo` DROP `cod_materia`;
 
+ALTER TABLE  `relatoria` ADD  `num_ordem` TINYINT( 4 ) NOT NULL AFTER  `cod_comissao` ;
+
