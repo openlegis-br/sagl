@@ -173,7 +173,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             elif consulta.voc_lexml == 'constituicao':
                 epigrafe = '%s do Estado de %s, de %s' % (consulta.des_tipo_norma, localidade, consulta.ano_norma)
             else:
-                epigrafe = '%s nº %s,  de %s' % (consulta.des_tipo_norma, consulta.num_norma, self.pysc.data_converter_por_extenso_pysc(consulta.dat_norma))
+                epigrafe = '%s No. %s,  de %s' % (consulta.des_tipo_norma, consulta.num_norma, self.pysc.data_converter_por_extenso_pysc(consulta.dat_norma))
            
             ementa = consulta.txt_ementa
            
@@ -201,10 +201,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            
             documento_individual = E.DocumentoIndividual(urn)
             oai_lexml.append(documento_individual)
-            oai_lexml.append(E.Epigrafe(epigrafe.decode('iso-8859-1')))
-            oai_lexml.append(E.Ementa(ementa.decode('iso-8859-1')))
+            oai_lexml.append(E.Epigrafe(epigrafe))
+            oai_lexml.append(E.Ementa(ementa))
             if indexacao:
-                oai_lexml.append(E.Indexacao(indexacao.decode('iso-8859-1')))
+                oai_lexml.append(E.Indexacao(indexacao.))
             return etree.tostring(oai_lexml)
         else:
             return None
