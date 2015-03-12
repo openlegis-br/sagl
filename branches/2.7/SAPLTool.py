@@ -204,7 +204,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             oai_lexml.append(E.Epigrafe(epigrafe))
             oai_lexml.append(E.Ementa(ementa))
             if indexacao:
-                oai_lexml.append(E.Indexacao(indexacao.))
+                oai_lexml.append(E.Indexacao(indexacao))
             return etree.tostring(oai_lexml)
         else:
             return None
