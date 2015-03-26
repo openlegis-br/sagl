@@ -1,0 +1,74 @@
+﻿<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_parlamentares">Ajuda</a>
+
+<dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+  <dtml-call expr="REQUEST.set('nom_parlamentar', nom_parlamentar)">
+  <input type="hidden" name="nom_parlamentar" value="<dtml-var nom_parlamentar>" />
+</dtml-in>
+
+<h1 class="firstHeading"><dtml-var nom_parlamentar></h1> 
+
+<form method="post" action="mandato_form">
+  <input type="hidden" name="cod_parlamentar" value="<dtml-var cod_parlamentar missing>" /> 
+
+<dtml-var parlamentar_menu>
+
+<dtml-in expr="zsql.mandato_obter_zsql(cod_parlamentar=cod_parlamentar, nom_parlamentar=nom_parlamentar)" size=12 start=query_start orphan=2>  
+ <dtml-if sequence-start>
+  <fieldset><legend>Mandatos</legend>
+     <table class="table" >
+       <tr> 
+         <th width="30%" class="form-label">Legislatura</th>
+         <th width="18%" class="form-label">Titular?</th>
+         <th width="16%" class="form-label">Votos</th>
+         <th width="18%" class="form-label">Início Mandato</th>
+         <th width="18%" class="form-label">Fim Mandato</th>
+       </tr>
+    <dtml-if previous-sequence>
+       <tr><td class="form-element">
+         <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>"><b>
+          Página Anterior (<dtml-var previous-sequence-size> resultados)</a></td>
+       </tr>
+    </dtml-if previous-sequence>
+ </dtml-if sequence-start>
+       <tr>     
+         <td >
+           <a href="<dtml-var URL1>/mandato_mostrar_proc?cod_mandato=<dtml-var cod_mandato>&cod_parlamentar=<dtml-var cod_parlamentar>"><b><dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura, dat_inicio, dat_fim)"></b></a></td>
+         <td >
+            <dtml-if expr="ind_titular==0">Não
+            <dtml-else>Sim
+            </dtml-if>
+         </td>
+         <td >
+            <dtml-if num_votos_recebidos><dtml-var num_votos_recebidos></dtml-if>
+         </td>
+         <td >
+            <dtml-if dat_inicio_mandato><dtml-var dat_inicio_mandato></dtml-if>
+         </td>
+         <td >
+            <dtml-if dat_fim_mandato><dtml-var dat_fim_mandato></dtml-if>
+         </td>
+       </tr>
+ <dtml-if sequence-end>
+     <dtml-if next-sequence>
+        <tr>
+          <td class="form-element"><a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
+           Próxima Página (<dtml-var next-sequence-size> resultados)</a></td>
+        <tr>
+     </dtml-if next-sequence>
+    </table>
+   </fieldset>
+ </dtml-if sequence-end>
+<dtml-else>
+   <fieldset><legend>Mandatos</legend>
+    <table class="table" >
+        <tr><td class="form-element">Não há nenhum mandato cadastrado para esse parlamentar.</td></tr>
+    </table>
+   </fieldset>
+</dtml-in>
+    <p >
+           <input type="submit" name="btn_incluir_mandato" class="botao" value="Incluir Mandato" />
+    </p>
+</form>
+<dtml-var standard_html_footer>

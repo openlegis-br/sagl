@@ -1,0 +1,58 @@
+﻿<dtml-var standard_html_header>
+
+<div class="helpsagl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/tipo_autor">Ajuda</a> </div>
+<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+
+<table class="table" >
+  <tr class="fundo"> 
+    <td width="34%" class="form-label"> 
+      | <a href="tipo_autor_form">Incluir Tipo Autor</a> |</td>
+   </tr>
+</table>
+
+<fieldset><legend>Tipo Autor</legend>
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 8)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+  <dtml-in expr="zsql.tipo_autor_obter_zsql(ind_excluido=0)" size="step" start="start" orphan=0>
+    <dtml-if sequence-start>
+  <table class="table" >
+    <tr>
+      <th class="form-element">Descrição</th>
+    </tr>
+      <dtml-if previous-sequence>
+	<dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+      </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+     <tr> 
+        <td height="17" class="form-element">
+           <a href="tipo_autor_mostrar_proc?tip_autor=<dtml-var tip_autor>"><dtml-var des_tipo_autor missing></a></td>
+      </tr>
+    <dtml-if sequence-end>
+      <dtml-if next-sequence>
+	<dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+      </dtml-if next-sequence>
+<dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+      <tr> <td  class="form-text"><b>          
+          <dtml-var "sagl.pysc.PageListOutput_pysc('tipo_autor_index_html', page, step, _['sequence-length'])">
+      </b></td> </tr>
+    </dtml-if>
+       </table>
+    </dtml-if sequence-end>
+ <dtml-else>
+       <table class="table" >
+          <tr><td class="form-text">Nenhum tipo de autor cadastrado.</td></tr>
+       </table>
+   </dtml-in>
+</fieldset>
+<dtml-var standard_html_footer>

@@ -1,0 +1,33 @@
+﻿<dtml-call expr="REQUEST.set('cod_ult_tramitacao', '')">
+
+<dtml-if expr="ind_ult_tramitacao=='1'">
+  <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento, ind_ult_tramitacao=0)">
+    <dtml-if sequence-start>
+      <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
+    </dtml-if>
+  </dtml-in>
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="zsql.trans_begin_zsql()">
+
+  <dtml-call expr="zsql.tramitacao_administrativo_excluir_zsql(cod_tramitacao = cod_tramitacao)">
+
+  <dtml-if cod_ult_tramitacao>
+    <dtml-call expr="zsql.tramitacao_administrativo_ind_ultima_atualizar_zsql(cod_tramitacao=cod_ult_tramitacao,ind_ult_tramitacao=1)">
+   
+  </dtml-if> 
+
+  <dtml-call expr="zsql.trans_commit_zsql()">
+
+<dtml-except>
+  <dtml-call expr="zsql.trans_rollback_zsql()">
+
+  <dtml-let mensagem="'Houve um erro! Tramitação não excluída!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>   
+    <dtml-let mensagem="'Tramitação excluída com sucesso!'" sucesso="1" url="'index_html?cod_documento=' + cod_documento">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+</dtml-try>

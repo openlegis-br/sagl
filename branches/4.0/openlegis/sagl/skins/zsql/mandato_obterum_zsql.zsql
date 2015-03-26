@@ -1,0 +1,33 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+max_rows : 1000
+max_cache : 100
+arguments : cod_mandato=0 cod_parlamentar=0
+</dtml-comment>
+SELECT DISTINCT(m.cod_mandato)                          as codm,
+       REPLACE(m.cod_mandato,                  'L', '') as cod_mandato,
+       REPLACE(m.cod_parlamentar,              'L', '') as cod_parlamentar,
+       REPLACE(m.num_legislatura,              'L', '') as num_legislatura,
+       REPLACE(m.cod_coligacao,                'L', '') as cod_coligacao,
+       DATE_FORMAT(m.dat_inicio_mandato,    '%d/%m/%Y') as dat_inicio_mandato, 
+       DATE_FORMAT(m.dat_fim_mandato,       '%d/%m/%Y') as dat_fim_mandato,
+       DATE_FORMAT(m.dat_expedicao_diploma, '%d/%m/%Y') as dat_expedicao_diploma,
+       m.tip_causa_fim_mandato,
+       REPLACE(m.num_votos_recebidos,          'L', '') as num_votos_recebidos,
+       m.tip_afastamento,
+       m.txt_observacao,
+       m.ind_titular,
+       c.nom_coligacao,
+       l.dat_inicio,
+       l.dat_fim
+FROM
+     legislatura l,
+     mandato m LEFT JOIN coligacao c ON
+     m.cod_coligacao = c.cod_coligacao
+WHERE
+ m.ind_excluido = 0  and
+ m.num_legislatura = l.num_legislatura and
+ m.cod_mandato = <dtml-sqlvar cod_mandato type="int">
+<dtml-if cod_parlamentar>
+and m.cod_parlamentar = <dtml-sqlvar cod_parlamentar type="int" optional>
+</dtml-if>

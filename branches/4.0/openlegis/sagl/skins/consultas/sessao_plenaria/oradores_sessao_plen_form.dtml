@@ -1,0 +1,38 @@
+<dtml-var standard_html_header>
+
+<div><a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_agenda">Ajuda</a>
+<h1 class="firstHeading">Sess&atilde;o Plen&aacute;ria</h1>
+<h3 ><dtml-var sessao_plenaria_header></h3><br />
+<dtml-var sessao_plenaria_menu>
+<br />
+<fieldset>
+   <legend>Oradores Inscritos nas Explica&ccedil;&otilde;es Pessoais</legend>
+    <table class="table"  class="table" width="100%">
+        <tr class="fundo">
+            <td width="5%" >Ordem de pronunciamento</td>
+            <td width="25%" >Parlamentar</td>
+            <td width="55%" colspan="2" >Discurso</td>
+        </tr>
+        <dtml-in expr="zsql.oradores_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
+        <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+        <tr><td width="5%"  ><dtml-var num_ordem></td>
+            <td width="25%"><dtml-var nom_parlamentar>/<dtml-var sgl_partido></td>
+            <td width="55%"  colspan="2">
+               <dtml-if expr="(_.has_key('cod_sessao_plen')) and (_.has_key('cod_parlamentar'))">
+                   <dtml-call expr="REQUEST.set('id_documento', _.str(cod_sessao_plen)+ '_' + _.str(cod_parlamentar) +
+                             '_discurso')">
+                   <dtml-if "_.hasattr(sagl_documentos.oradores, id_documento)">
+                        <dtml-let documento="_.getattr (sagl_documentos.oradores,id_documento).absolute_url">
+                          <a target="_blank" href="<dtml-var documento>">
+                              <img align="bottom" border="0" src="sagl/imagens/archiv.gif" alt="Discurso" /></a>
+                        </dtml-let>
+                   <dtml-else> Orador sem discurso cadastrado
+                   </dtml-if>
+               </dtml-if>
+             </td>
+         </tr>
+        </dtml-in>
+        </dtml-in>
+    </table>
+</fieldset>
+<dtml-var standard_html_footer>

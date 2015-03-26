@@ -1,0 +1,29 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : 
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+SELECT 
+   tr.cod_materia,
+   t.sgl_tipo_materia,
+   t.des_tipo_materia,
+   m.num_ident_basica,
+   m.ano_ident_basica,
+   m.txt_ementa,
+   tr.cod_unid_tram_dest,
+   st.des_status,
+   DATE_FORMAT(tr.dat_fim_prazo,'%d/%m/%Y' ) AS dat_fim_prazo
+FROM 
+   tramitacao tr
+   LEFT JOIN status_tramitacao st ON tr.cod_status = st.cod_status
+   LEFT JOIN materia_legislativa m ON m.cod_materia = tr.cod_materia
+   left JOIN tipo_materia_legislativa t ON t.tip_materia = m.tip_id_basica 
+WHERE 
+   DATE(tr.dat_fim_prazo) = CURDATE() and 
+   tr.ind_ult_tramitacao = 1 and
+   tr.ind_excluido = 0 and
+   m.ind_excluido = 0
+ORDER BY
+   tr.dat_fim_prazo desc, m.cod_materia asc

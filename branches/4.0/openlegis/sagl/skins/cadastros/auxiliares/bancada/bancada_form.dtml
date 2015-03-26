@@ -1,0 +1,137 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+
+<script type="text/javascript">
+
+function campos_criticar(form){  
+
+  if (form.lst_num_legislatura.selectedIndex==0){
+      alert("A Legislatura deve ser selecionada!");
+      form.lst_num_legislatura.focus();
+      return false;
+  }
+
+  if (form.txt_nom_bancada.value == "") {
+      alert("O nome ser preenchido!");
+      form.txt_nom_bancada.focus();
+      return false;
+  }
+
+  if (form.txt_dat_criacao.value != "" && 
+      !IsValidDate(form.txt_dat_criacao.value)) {
+      alert("Digite uma data de criação válida!");
+      form.txt_dat_criacao.focus();
+      return false;
+  }
+
+  if (form.txt_dat_extincao.value != "" && 
+      !IsValidDate(form.txt_dat_extincao.value)) {
+      alert("Digite uma data de extinção válida!");
+      form.txt_dat_extincao.focus();
+      return false;
+  }
+
+  form.submit();
+}
+
+function bancada_excluir() {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "bancada_excluir_proc?cod_bancada=<dtml-var cod_bancada missing>";
+  }
+  
+}
+
+</script>
+
+<script type="text/javascript">
+$(function() {
+        $('#txt_dat_criacao').datepick();
+        $('#txt_dat_extincao').datepick();
+});
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/assunto_norma_juridica">Ajuda</a>
+
+<h1 class="firstHeading">Tabelas Auxiliares</h1> 
+
+<table class="table" >
+  <tr> 
+    <td align="right" class="form-label">| <a href="index_html">Voltar</a> |</td>
+   </tr>
+</table>  
+
+<form name="bancada_form" method="post" action="bancada_salvar_proc">
+
+<input type="hidden" name="hdn_cod_bancada" value="<dtml-var cod_bancada missing>" />
+
+<fieldset>
+ <legend>Cadastro de Bancada, Bloco, Frente ou Grupo</legend>
+       <table class="table" >
+        <tr>
+           <td colspan="2"><label for="lst_num_legislatura">Legislatura</label><span class="campoObrigatorio"> </span> <br />
+              <select class="form-control"  name="lst_num_legislatura">
+               <option value="0">Selecione</option>
+                <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
+                <option 
+                 <dtml-if num_legislatura_sel>
+                  <dtml-if expr="_.int(num_legislatura) == _.int(num_legislatura_sel)">
+                   selected
+                 </dtml-if>
+                </dtml-if>
+                 value="<dtml-var num_legislatura>">
+                  <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">
+                    </option>
+                </dtml-in>
+              </select>
+            </td>
+         </tr>
+         <tr>
+           <td width="60%"><label for="txt_nom_bancada">Nome da Bancada, Bloco, Frente ou Grupo</label><span class="campoObrigatorio"> </span><br />
+             <input type="text" class="form-control"  name="txt_nom_bancada" value="<dtml-var nom_bancada missing>" size="60" maxlength="60" />
+           </td>
+           <td><label for="lst_cod_partido">Partido</label><br />
+              <select class="form-control"  name="lst_cod_partido">
+               <option value="0">Selecione</option>
+                <dtml-in expr="zsql.partido_obter_zsql(ind_excluido=0)">
+                <option 
+                 <dtml-if cod_partido_sel>
+                  <dtml-if expr="_.int(cod_partido) == _.int(cod_partido_sel)">
+                   selected
+                 </dtml-if>
+                </dtml-if>
+                 value="<dtml-var cod_partido>">
+                  <dtml-var sgl_partido>
+                    </option>
+                </dtml-in>
+              </select>
+            </td>
+         </tr>
+         <tr>
+           <td><label for="txt_dat_criacao">Data Criação</label><br />
+             <input type="text" class="form-control"  name="txt_dat_criacao" id="txt_dat_criacao" size="10"
+              value="<dtml-var dat_criacao missing null="">" maxlength="10" onBlur="formata_data(form.txt_dat_criacao)" />
+           </td>
+           <td><label for="txt_dat_criacao">Data Extinção</label><br />
+             <input type="text" class="form-control"  name="txt_dat_extincao" id="txt_dat_extincao" size="10"
+              value="<dtml-var dat_extincao missing null="">" maxlength="10" onBlur="formata_data(form.txt_dat_extincao)" />
+           </td>
+         </tr>
+         <tr>
+           <td colspan="2"><label for="txt_descricao">Descrição</label><br />
+             <textarea class="form-control"  name="txt_descricao" rows="3"><dtml-var descricao missing></textarea> 
+           </td>
+         </tr>
+       </table>
+
+<p >
+ <input type="button" class="botao" name="btn_bancada_salvar" value="Salvar" onClick="campos_criticar(document.bancada_form)" />
+  <dtml-if cod_bancada>
+    <input type="button" class="botao" name="btn_bancada_excluir" value="Excluir" onClick="bancada_excluir(document.bancada_form)" />
+  </dtml-if>
+</p>
+
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

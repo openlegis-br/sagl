@@ -1,0 +1,149 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>SAPL Maps</title>
+    <dtml-var standard_css_slot>
+    <style type="text/css">
+        #map-canvas { height: 100% }
+    </style>
+    <script type='text/javascript' src='&dtml-portal_url;/javascript/jquery.min.js'></script>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js">
+    </script>
+
+    <script type="text/javascript">
+
+        function initialize() {
+
+            var lat = <dtml-var expr="pysc.get_geolocation_pysc(sagl_documentos.props_sagl.num_cep)[0]">;
+            var lng = <dtml-var expr="pysc.get_geolocation_pysc(sagl_documentos.props_sagl.num_cep)[1]">;
+            var myLatlng = new google.maps.LatLng(lat, lng);
+
+            var mapOptions = {
+                zoom: 13,
+                center: myLatlng
+            };
+
+            var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+            var marcador = null;
+
+            var materias = $('.materia');
+
+            $.each( materias , function( index, value ) {
+
+                var infowindow = null;
+                var marker = null;
+
+                infowindow = new google.maps.InfoWindow({
+                    content: value
+                });
+                myLatlng = new google.maps.LatLng($(value).attr("txt_latitude"), $(value).attr('txt_longitude'));
+
+                shape = {
+                    coord: [1, 1, 1, 20, 18, 20, 18 , 1],
+                    type: 'poly'
+                };
+                marker = new google.maps.Marker({
+                    position: myLatlng,
+                    map: map,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 5,
+                        strokeColor: 'red',
+                        strokeOpacity: 0.8
+                    },
+                    title:  $(value).attr("title")
+                });
+
+
+                if (marcador == null) {
+                    marcador = [{infowindow: infowindow, marker: marker}];
+                }
+                else {
+                    marcador.push({infowindow: infowindow, marker: marker});
+                }
+
+                google.maps.event.addListener(marker, 'click', function() {
+                    var infw;
+                    var item;
+                    for (item in marcador) {
+                        if (marcador[item].marker == this)
+                            infw = marcador[item].infowindow;
+                    }
+                    infw.open(map,marker);
+                    setTimeout(function(){
+                        infw.close(map,marker);
+                    },15000);
+                });
+            });
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+</head>
+
+<body>
+
+<div id="mapsTitle">SAPL Maps - <dtml-var "sagl_documentos.props_sagl.nom_casa"> - <dtml-var hdn_txt_autor missing></div>
+
+<dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(des_tipo_materia='requerimento', ind_excluido=0)">
+    <dtml-if des_tipo_materia>
+        <dtml-call expr="REQUEST.set('requerimento', tip_materia)">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('requerimento', 0)">
+    </dtml-if>
+</dtml-in>
+
+<dtml-if requerimento>
+    <div id="mapsLinkVereadores">
+        <div id="menu">
+            <ul>
+                <li>
+                    <a href="&dtml-portal_url;/generico/materia_pesquisar_maps?incluir=0&existe_ocorrencia=0&lst_tip_materia=<dtml-var requerimento>&txt_numero=&txt_ano=&txt_npc=&txt_num_protocolo=&dt_apres=&dt_apres2=&dt_public=&dt_public2=&hdn_txt_autor=&hdn_cod_autor=&lst_tip_autor=&lst_cod_partido=&txt_relator=&txt_assunto=&rad_tramitando=&lst_localizacao=&lst_status=&rd_ordenacao=1&chk_coautor=&btn_materia_pesquisar=Pesquisar">Todos</a></li>
+                <dtml-in expr="zsql.autor_obter_zsql(parlamentar='1', ind_col_username='1')">
+                    <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                        <dtml-if expr="nom_parlamentar != 'Todos Parlamentares'">
+                            <li>
+                                <a href="&dtml-portal_url;/generico/materia_pesquisar_maps?incluir=0&existe_ocorrencia=0&lst_tip_materia=<dtml-var requerimento>&txt_numero=&txt_ano=&txt_npc=&txt_num_protocolo=&dt_apres=&dt_apres2=&dt_public=&dt_public2=&hdn_txt_autor=<dtml-var nom_parlamentar>&hdn_cod_autor=<dtml-var cod_parlamentar>&lst_tip_autor=Parlamentar&lst_cod_partido=&txt_relator=&txt_assunto=&rad_tramitando=&lst_localizacao=&lst_status=&rd_ordenacao=1&chk_coautor=&btn_materia_pesquisar=Pesquisar"><dtml-var nom_parlamentar></a>
+                            </li>
+                        </dtml-if>
+                    </dtml-in>
+                </dtml-in>
+            </ul>
+        </div>
+    </div>
+</dtml-if>
+
+<dtml-if isAnon>
+
+
+    <dtml-if expr="REQUEST.get('lst_tip_materia') == 'all'">
+        <dtml-call "REQUEST.set('lst_tip_materia', '')">
+    </dtml-if>
+
+</dtml-if>
+
+
+    <div style="display: none">
+        <dtml-in expr="zsql.materia_pesquisar_zsql(tip_id_basica=lst_tip_materia, num_ident_basica=pysc.extrai_id_pysc(id=txt_numero), ano_ident_basica=txt_ano, ind_tramitacao=rad_tramitando, des_assunto=txt_assunto, nom_relator=txt_relator, cod_status=lst_status, des_tipo_autor=lst_tip_autor, cod_partido=lst_cod_partido, cod_autor=hdn_cod_autor, ind_coautor=chk_coautor, num_protocolo=txt_num_protocolo, npc=txt_npc, dat_apresentacao=dt_apres, cod_unid_tramitacao=lst_localizacao, dat_apresentacao2=dt_apres2, dat_publicacao=dt_public, dat_publicacao2=dt_public2, rd_ordem=rd_ordenacao)">
+            <dtml-if txt_cep>
+                <div class="materia"
+                     id="materia<dtml-var num_ident_basica><dtml-var ano_ident_basica>"
+                     txt_latitude='<dtml-var expr="pysc.get_geolocation_pysc(txt_cep)[0]">'
+                     txt_longitude='<dtml-var expr="pysc.get_geolocation_pysc(txt_cep)[1]">' title="<dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var des_tipo_materia>">
+                    <a target="_blank" href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                        <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var des_tipo_materia></b>
+                    </a><br>
+                    <dtml-var txt_ementa missing><br><br><br>
+                </div>
+            </dtml-if>
+        </dtml-in>
+    </div>
+
+<div id="map-canvas" />
+
+</body>
+</html>

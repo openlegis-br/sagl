@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Pedido de Proposição</title>
+<dtml-var standard_css_slot>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+
+<script type="text/javascript">
+<!--
+   function campos_criticar(form){
+
+
+     if (form.txa_txt_pedido.value==""){
+        alert('O texto do pedido deve ser preenchido!');
+        form.txa_txt_pedido.focus();
+        form.txa_txt_dat_pedido.select();
+        return false;
+     }
+
+     form.submit();   
+  }
+-->
+</script>
+<script type="text/javascript">
+     //<![CDATA[
+         function printFrame() {
+             $('#print_button').hide();
+             window.print();
+             $('#print_button').show();
+         }
+     //]]>
+</script>
+</head>
+
+<dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+  <dtml-call expr="REQUEST.set('nom_autor_join', nom_autor_join)">
+  <dtml-call expr="REQUEST.set('cod_autor', cod_autor)">
+</dtml-in>
+
+<h1 class="firstHeading">Pedido de Proposição</h1>
+
+<form name="pedido_form" method="post" action="pedido_materia_andamento_salvar_proc">
+ <dtml-if hdn_cod_pedido>
+  <input type="hidden" name="hdn_cod_pedido" value="<dtml-var hdn_cod_pedido missing>" />
+  <input type="hidden" name="hdn_cod_autor" value="<dtml-var cod_autor>" />
+ </dtml-if>
+  <input type="hidden" name="hdn_url" value="pedido_materia_listar_html" />
+
+<fieldset>
+ <legend>PARLAMENTAR: <dtml-var nom_autor_join></legend>
+ <table class="table" >
+      <tr>
+         <th>
+            <label for="txt_num_pedido">Controle </label>
+            </th>
+         <th>
+            <label for="lst_tip_materia">Detalhes do Pedido </label>
+         </th>
+           <th valign="middle"><label>Anexo </label>
+          </th>
+      </tr>
+      <tr>
+         <td>
+              <input type="text" class="form-control"  name="txt_num_pedido" id="txt_num_pedido" value="<dtml-var hdn_num_pedido>/<dtml-var expr="DateTime(dat_pedido).strftime('%Y')">" disabled size="11" maxlength="11" />
+              <input type="hidden" name="txt_num_pedido" value="<dtml-var hdn_num_pedido>" />
+         </td>
+         <td >
+             <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia = tip_materia_sel)">
+             <b>Tipo:</b>  <input type="text" class="form-control"  name="lst_tip_materia" id="lst_tip_materia" value="<dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>" disabled size="40">  
+              <b>Envio: <input type="text" class="form-control"  value="<dtml-var dat_envio> - <dtml-var dat_hor_envio>" disabled size="18" />
+              <input type="hidden" name="lst_tip_materia" value="<dtml-var tip_materia>" />
+             </dtml-in>
+         </td>
+         <td valign="middle" width="10%">
+                   <dtml-let id_pedido="_.str(cod_pedido)+'_pedido.pdf'">
+                     <dtml-if "_.hasattr(sagl_documentos.pedido_materia,id_pedido)">
+                       <dtml-let pedido="_.getattr(sagl_documentos.pedido_materia,id_pedido).absolute_url">
+                         <a target="_blank" href="<dtml-var pedido>"><img align="middle" border="0" src="sagl/imagens/archiv.gif" alt="Anexo" title="Anexo"></a>
+                       </dtml-let>
+                     <dtml-else>
+                     <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Não há anexo" title="Não há anexo">
+                     </dtml-if>
+                   </dtml-let>
+          </td>
+         </tr>
+ </table>
+</fieldset>
+
+<fieldset>
+  <table class="table" >
+      <tr>
+         <th colspan="3">
+          <label for="txa_txt_pedido">Descrição</label>
+         </th>
+      </tr>
+      <tr>
+         <td colspan="3">
+           <p >
+             <dtml-var txt_pedido missing null="">
+            </p>
+              <input type="hidden" name="txa_txt_pedido" value="<dtml-var txt_pedido>" />
+         </td>
+      </tr>
+      <tr>
+      <tr>
+         <th colspan="3">
+          <label for="txa_txt_observacao">Observações </label>
+         </th>
+      </tr>
+      <tr>
+         <td colspan="3">
+            <textarea class="form-control"  id="txa_txt_observacao" name="txa_txt_observacao" rows="4" cols="75">
+             <dtml-var txt_observacao missing null="">
+            </textarea>
+         </td>
+      </tr>
+      <tr> 
+         <th colspan="3">
+           <label for="lst_tip_id_basica">Matéria Legislativa:</label><br>
+         </th>
+      </tr>
+      <tr>
+         <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia'])">
+         <td>
+           <label for="lst_tip_id_basica">Tipo:</label><br>
+               <select class="form-control"  name="lst_tip_id_basica">
+                <option>
+                <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+                   <option
+                     <dtml-if tip_id_basica_sel>
+                       <dtml-if expr="_.int(tip_materia) == _.int(tip_id_basica_sel)">
+                         selected
+                       </dtml-if>
+                     </dtml-if>
+                      value="<dtml-var tip_materia missing>"> 
+                    <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia></option>
+                </dtml-in>
+                </select>
+         </td>
+         <td>
+            <label for="txt_num_ident_basica">Número</label><br>
+              <input type="text" class="form-control"  name="txt_num_ident_basica" size="5" value="<dtml-var num_ident_basica_sel missing>" maxlength="5">
+         </td>
+         <td><label for="txt_ano_ident_basica">Ano</label><br>
+              <input type="text" class="form-control"  name="txt_ano_ident_basica" size="4" value="<dtml-var ano_ident_basica_sel missing>" maxlength="4">
+         </td>
+         <dtml-else>
+         <td >
+                  <dtml-if expr="cod_materia">
+                   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+                     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                      <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                     </a>
+                   <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia>" />
+                   <input type="hidden" name="lst_tip_id_basica" value="" />
+                   </dtml-in>
+                  <dtml-else>
+                   Não há nenhuma matéria vinculada / resultante deste pedido.
+                  </dtml-if> 
+          </td>
+         </dtml-if>       
+      </tr>
+   </table>
+</fieldset>
+
+<p >
+  <input type="button" class="botao" name="btn_pedido_salvar" value="Salvar" onClick="campos_criticar(document.pedido_form)" />
+  <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="javascript:parent.jQuery.fancybox.close();" />
+  <input type="button" class="botao" name="print_button" value="Imprimir" onClick="printFrame();return false;" />
+</p>
+
+</form>
+
+</html>

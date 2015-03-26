@@ -1,0 +1,35 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : ind_excluido=0 cod_sessao_plen="" 
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT 
+       REPLACE(expediente_materia.cod_ordem,  'L', '') as cod_ordem,
+       REPLACE(expediente_materia.cod_sessao_plen,  'L', '') as cod_sessao_plen,
+       REPLACE(expediente_materia.cod_materia,    'L', '') as cod_materia,
+       expediente_materia.num_ordem,
+       tipo_materia_legislativa.sgl_tipo_materia              as sgl_tipo_materia,
+       REPLACE(materia_legislativa.num_ident_basica, 'L', '') as num_ident_basica,
+       REPLACE(materia_legislativa.ano_ident_basica, 'L', '') as ano_ident_basica
+FROM   
+   expediente_materia, sessao_plenaria, materia_legislativa, tipo_materia_legislativa
+  
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_sessao_plen column="expediente_materia.cod_sessao_plen" op="=" type="int" optional><dtml-and>  
+    <dtml-sqltest ind_excluido 	  column="expediente_materia.ind_excluido"    op="=" type="int" optional><dtml-and>
+    expediente_materia.cod_sessao_plen = sessao_plenaria.cod_sessao_plen and
+    expediente_materia.cod_materia     = materia_legislativa.cod_materia and
+    materia_legislativa.ind_excluido   = 0 and
+    materia_legislativa.tip_id_basica  = tipo_materia_legislativa.tip_materia and
+    tipo_materia_legislativa.ind_excluido=0
+  </dtml-sqlgroup>
+  ORDER BY sgl_tipo_materia, ano_ident_basica, num_ident_basica
+
+<dtml-else>
+
+<dtml-comment> escrever para postgresql ... </dtml-comment>
+
+</dtml-if>

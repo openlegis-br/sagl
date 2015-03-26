@@ -1,0 +1,77 @@
+﻿<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/unidade_tramitacao">Ajuda</a>
+
+<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+
+<table class="table" >
+  <tr> 
+    <td align="left" class="form-label">
+      | <a href="unidade_tramitacao_form">Incluir Unidade Tramitação</a> |</td>
+   </tr>
+</table>
+
+<fieldset><legend>Unidade Tramitação</legend>
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 16)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+<dtml-in expr="zsql.unidade_tramitacao_obter_zsql()" size="step" start="start" orphan=0>
+ <dtml-if sequence-start>
+       <table class="table" >
+          <tr> 
+            <th width="70%" class="form-label">Unidade de Tramitação</th>
+            <th width="10%" class="form-label">Sigla</th>
+            <th width="20%" class="form-label">Unidade Deliberativa</th>
+          </tr>
+  <dtml-if previous-sequence>
+	<dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+      </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+          <tr>
+            <dtml-if cod_orgao>
+              <td width="60%" class="form-element"><a href="unidade_tramitacao_mostrar_proc?cod_unid_tramitacao=<dtml-var cod_unid_tramitacao>">
+                <dtml-var nom_orgao></a></td>
+                <td class="form-text"><dtml-var sgl_orgao></td>
+                <td class="form-text">
+                  <dtml-if expr="ind_unid_deliberativa_orgao==1">Sim<dtml-else>Não</dtml-if></td>
+            <dtml-elif cod_comissao>
+                <td class="form-element"><a href="unidade_tramitacao_mostrar_proc?cod_unid_tramitacao=<dtml-var cod_unid_tramitacao>"> <dtml-var nom_comissao> </a> </td>
+                <td class="form-text"><dtml-var sgl_comissao></td>
+                <td class="form-text">
+                  <dtml-if expr="ind_unid_deliberativa_comissao==1">Sim<dtml-else>Não</dtml-if></td>
+            <dtml-else> 
+                <td class="form-element"><a href="unidade_tramitacao_mostrar_proc?cod_unid_tramitacao=<dtml-var cod_unid_tramitacao>"><dtml-var nom_parlamentar></a> </td>
+                <td class="form-text"></td>
+                <td class="form-text">
+                  <dtml-if expr="ind_unid_deliberativa_parlamentar==1">Sim<dtml-else>Não</dtml-if></td>
+            </dtml-if>     
+          </tr>
+    <dtml-if sequence-end>
+       </table>
+      <dtml-if next-sequence>
+	<dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+      </dtml-if next-sequence>
+<dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+      <p  ><b>          
+          <dtml-var "sagl.pysc.PageListOutput_pysc('unidade_tramitacao_index_html', page, step, _['sequence-length'])">
+      </b></p>
+    </dtml-if>
+    </dtml-if sequence-end>
+ <dtml-else>
+   <table class="table"  class="table" >
+    <tr>
+        <td class="form-text">Não há nenhuma unidade de tramitação cadastrada.</td></tr> 
+   </table>
+  </dtml-in>
+</fieldset>
+<dtml-var standard_html_footer>

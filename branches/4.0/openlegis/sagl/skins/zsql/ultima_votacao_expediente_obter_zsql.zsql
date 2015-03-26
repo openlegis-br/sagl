@@ -1,0 +1,34 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_ordem="" ind_excluido=0 cod_sessao_plen="" ind_votacao_iniciada
+max_rows : 1
+max_cache : 100
+</dtml-comment>
+
+SELECT
+       REPLACE(expediente_materia.cod_ordem,  'L', '') as cod_ordem,
+       REPLACE(expediente_materia.cod_sessao_plen,  'L', '') as cod_sessao_plen,
+       REPLACE(expediente_materia.cod_materia,    'L', '') as cod_materia,
+       DATE_FORMAT(expediente_materia.dat_ordem, '%d/%m/%Y') as dat_ordem,
+       expediente_materia.num_ordem,
+       expediente_materia.txt_observacao,
+       expediente_materia.txt_resultado,
+       expediente_materia.tip_votacao,
+       expediente_materia.ind_excluido,
+       expediente_materia.ind_votacao_iniciada,
+       expediente_materia.dat_ultima_votacao,
+       sessao_plenaria.tip_sessao as tip_sessao,
+       sessao_plenaria.cod_sessao_plen as cod_sessao
+
+FROM
+   expediente_materia, sessao_plenaria
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_sessao_plen      column="expediente_materia.cod_sessao_plen"      op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ind_votacao_iniciada column="expediente_materia.ind_votacao_iniciada" op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_ordem            column="expediente_materia.cod_ordem"            op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ind_excluido 	       column="expediente_materia.ind_excluido"         op="=" type="int" optional><dtml-and>
+    sessao_plenaria.cod_sessao_plen = expediente_materia.cod_sessao_plen
+  </dtml-sqlgroup>
+
+ORDER BY expediente_materia.dat_ultima_votacao DESC

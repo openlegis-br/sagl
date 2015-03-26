@@ -1,0 +1,75 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+
+   function campos_criticar(){
+      var form = document.password_form;
+
+      if (form.password.value == "") {
+          alert("Nova Senha deve ser preenchida!");
+          form.password.focus();
+          return false;
+      };  
+ 
+      if (form.password.value != form.confirm.value) {
+          alert("Nova Senha e Confirmação devem ser iguais!");
+          form.password.value="";
+          form.confirm.value="";
+          form.password.focus();
+          form.password.select();
+          return false;
+      };
+
+      if ((form.password.value == "<dtml-var expr="sagl_documentos.props_sagl.txt_senha_inicial">") || (form.password.value == "<dtml-var expr="AUTHENTICATED_USER.getUserName()">")) {
+          alert("A senha deve ser diferente do Login e da Senha Padrão!");
+          form.password.value="";
+          form.confirm.value="";
+          form.password.focus();
+          form.password.select();
+          return false;
+      };
+      
+      return true;
+   }
+//-->
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/troca_senha">Ajuda</a>
+
+<h1 class="firstHeading">Troca de Senha</h1> 
+
+<fieldset>
+  <legend>Identificação</legend>
+
+<form name="password_form" action="senha_trocar_proc" method="post" onSubmit="return campos_criticar()">
+
+<table class="table" >
+<dtml-let member="portal_membership.getAuthenticatedMember()">
+ <dtml-if error>
+   <div class="error">
+    <dtml-var error>
+   </div>
+ </dtml-if>
+  <tr>
+     <th width="20%" >Usuário:</th>
+     <td><b>&dtml-member;</b></td>
+  </tr>
+  <tr>
+     <th >Nova Senha:</th>
+     <td><input type="password" name="password" size="12" maxlength="12" /></td>
+  </tr>
+  <tr>
+     <th >Confirmação:</th>
+     <td><input type="password" name="confirm" size="12" maxlength="12" /></td>
+  </tr>
+  </table>
+  <tr>
+  <p align="center">
+  <input class="botao" value="trocar senha" type="submit">
+  </p>
+</dtml-let>
+</form>
+</fieldset>
+
+<dtml-var standard_html_footer>

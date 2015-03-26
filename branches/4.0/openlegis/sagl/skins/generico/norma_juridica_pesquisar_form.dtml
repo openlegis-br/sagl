@@ -1,0 +1,183 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript">
+$(function() {
+	$('#dt_norma').datepick();
+	$('#dt_norma2').datepick();
+        $('#dt_public').datepick();
+        $('#dt_public2').datepick();
+});
+</script>
+
+<script type="text/javascript" src="javascript/poshytips.js"></script>
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+
+<script type="text/javascript">
+  function ordem() {
+    if(document.norma_pesquisar.txt_assunto.value == '') {
+       document.norma_pesquisar.rd_ordenacao[1].disabled = true;
+       document.norma_pesquisar.rd_ordenacao[0].checked = true; }
+    else {	
+       document.norma_pesquisar.rd_ordenacao[1].disabled = false; }
+    if(document.norma_pesquisar.rd_ordenacao[0].checked && document.norma_pesquisar.rd_ordenacao[1].checked) {
+       document.norma_pesquisar.rd_ordenacao[0].checked = false; }
+  }
+  function relevancia() {
+    if(document.norma_pesquisar.txt_assunto.value != '') {
+      document.norma_pesquisar.rd_ordenacao[1].checked = false;
+      document.norma_pesquisar.rd_ordenacao[0].checked = true;
+    }
+  }
+  function textual(form) {
+    if(form.chk_textual.checked == true) {
+      form.action = "norma_juridica_texto_pesquisar_proc";
+      if (form.txt_assunto.value == "") {
+         alert("É necessário informar um termo para a pesquisa textual!");
+         form.txt_assunto.focus();
+         return false;
+      }
+    }
+    else {
+      form.action = "norma_juridica_pesquisar_proc";
+    }
+    form.submit();
+  }
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+$(function(){
+  $('#txt_assunto').poshytip({
+	className: 'tip-twitter',
+	showOn: 'focus',
+	alignTo: 'target',
+	alignX: 'right',
+	alignY: 'center',
+	offsetX: 5,
+	showTimeout: 100
+  });
+  $('#lst_tip_norma').poshytip({
+	className: 'tip-twitter',
+	showOn: 'focus',
+	alignTo: 'target',
+	alignX: 'right',
+	alignY: 'center',
+	offsetX: 5,
+	showTimeout: 100
+  });
+});
+//]]>
+</script>
+
+<div class="helpsagl"><a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_norma">Ajuda</a></div>
+<h1 class="firstHeading">Normas Jurídicas</h1>
+
+<div id="barra-conteudo">
+<ul>
+<dtml-if expr="incluir=='1'">
+        <li>
+           <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_form">Incluir Norma Jurídica</a>
+        </li>
+</dtml-if>
+        <li>
+            <a class="selecionado" href="&dtml-portal_url;/generico/norma_juridica_pesquisar_form?incluir=<dtml-var incluir>">Pesquisa de Normas</a>
+        </li>
+        <li>
+            <a href="&dtml-portal_url;/generico/norma_juridica_indice_assunto?incluir=<dtml-var incluir>">Legislação por Assunto</a>
+        </li>
+   </ul>
+</div>
+
+<form  name="norma_pesquisar" action="norma_juridica_pesquisar_proc" onChange="ordem()">
+<fieldset>
+   <input type="hidden" name="incluir" value="<dtml-var incluir>"/>
+    <div >
+      <label for="lst_tip_norma"><span >Tipo de Norma</span></label>
+       <select class="form-control" id="lst_tip_norma" name="lst_tip_norma" style="max-width: 224px; width: 100%;" title="Selecione um tipo de norma ou mantenha a opção 'Todos' pesquisar qualquer tipo"> 
+          <option value="">Todos</option>
+          <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
+            <option value="<dtml-var tip_norma missing>">
+              <dtml-var sgl_tipo_norma> - <dtml-var des_tipo_norma>
+            </option>
+          </dtml-in>
+        </select>
+    </div>
+    <div >
+     <label for="txt_numero"><span >Número</span></label>
+    <div >
+        <input class="form-control" id="txt_numero" type="text" name="txt_numero" null="" missing="" style="min-width: 94px; max-width: 94px; width: 20%;"  maxlength="6"/>
+      <label for="txt_ano">Ano
+        <input class="form-control" id="txt_ano" type="text" name="txt_ano" null="" style="min-width: 85px; max-width: 85px; width: 20%;"  maxlength="4"/></label>
+    </div>
+    </div>
+    <div >
+      <label><span >Período da Norma:</span></label>
+       <div >
+          <label for="dt_norma">
+          <input class="form-control" type="text" id="dt_norma" name="dt_norma" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength=10 onblur="formata_data(form.dt_norma)" /></label>
+          <label for="dt_norma2">a
+            <input class="form-control" type="text" id="dt_norma2" name="dt_norma2" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_norma2)" /></label>
+       </div>
+    </div>
+    <div >
+        <label><span >Período de Publicação:</span></label>
+       <div >
+          <label for="dt_public">
+          <input class="form-control" ype="text" id="dt_public" name="dt_public" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_public)" /></label>
+          <label for="dt_public2">a
+          <input class="form-control" type="text" id="dt_public2" name="dt_public2" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_public2)" /></label>
+       </div>
+    </div>
+    <div >
+      <label for="lst_assunto_norma"><span >Assunto / Classificação</span></label>
+        <select class="form-control" id="lst_assunto_norma" name="lst_assunto_norma" style="max-width: 224px; width: 100%;">
+         <option value="">Todos</option>
+           <dtml-in expr="zsql.assunto_norma_juridica_obter_zsql(ind_excluido=0)">
+             <option value="<dtml-var cod_assunto missing>">
+               <dtml-var des_assunto>
+             </option>
+           </dtml-in>
+        </select>
+     </div>
+    <div >
+        <label for="txt_assunto"><span >Termos da Pesquisa</span></label>
+          <input class="form-control" id="txt_assunto" type="text" name="txt_assunto" title="DICA: A frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no texto. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do texto." null="" style="min-width: 224px; max-width: 224px; width: 85%;" onKeyUp="ordem()" onBlur="relevancia()" />
+    </div>
+    <div >
+        <label for="chk_textual"><span >Pesquisa Textual?</span>
+          <input class="form-control" type="checkbox" name="chk_textual" value="1" id="chk_textual">
+          <span style="vertical-align: top;">Pesquisar no conteúdo das Normas</span></label>
+    </div>
+    <div >
+      <label for="lst_tip_situacao_norma"><span >Situação</span></label>
+        <select class="form-control" id="lst_tip_situacao_norma" name="lst_tip_situacao_norma" style="max-width: 224px; width: 100%;">
+         <option value="">Todas</option>
+           <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(ind_excluido=0)">
+             <option value="<dtml-var tip_situacao_norma missing>">
+               <dtml-var des_tipo_situacao>
+             </option>
+           </dtml-in>
+        </select>
+     </div>
+    <div >
+        <label><span >Ordenação do Resultado</span></label>
+        <div >
+          <dtml-in expr="[('Tipo/Ano/Número', '1'), ('Relevância', '2')]">     
+           <input class="form-control" type="radio" name="rd_ordenacao" 
+                  value="<dtml-var expr="_['sequence-item']">"
+                  id="rd_ordenacao<dtml-var expr="_['sequence-item']">"
+                <dtml-if expr="_['sequence-item']=='1'">checked="1"</dtml-if> 
+                <dtml-if expr="_['sequence-item']=='2'">disabled</dtml-if> />
+             <label style="vertical-align: top;" for="rd_ordenacao<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"></label>
+          </dtml-in>
+        </div>
+    </div>
+        <div >
+           <input class="btn botao" type="button" id="btn_norma_pesquisar" name="btn_norma_pesquisar" value="Pesquisar" onClick="textual(document.norma_pesquisar)" />
+          <input class="btn botao" type="reset" name="btn_norma_limpar" value="Limpar" />
+        </div>
+</fieldset>
+</form>
+
+<dtml-var standard_html_footer>

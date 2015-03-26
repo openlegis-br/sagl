@@ -1,0 +1,330 @@
+﻿<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/tramitacao_lote">Ajuda</a>
+
+<h1 class="firstHeading">Tramitação em Lote</h1>
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+
+<script type="text/javascript">
+<!--
+  function campos_criticar(form){
+      
+          if (form.txt_dat_encaminha.value != ""){ 
+             if (!IsValidDate(form.txt_dat_encaminha.value)){
+               alert("Digite uma data de encaminhamento válida!");
+               form.txt_dat_encaminha.focus();
+               form.txt_dat_encaminha.select();
+               return false;
+             }
+
+             var dat_encaminha = form.txt_dat_encaminha.value.substring(6,10) + form.txt_dat_encaminha.value.substring(3,5) + form.txt_dat_encaminha.value.substring(0,2);
+             var dat_tramitacao = form.hdn_dat_tramitacao.value.substring(6,10) + form.hdn_dat_tramitacao.value.substring(3,5) + form.hdn_dat_tramitacao.value.substring(0,2);
+             
+             if (dat_encaminha < dat_tramitacao) {
+               alert("A data de encaminhamento deve ser maior ou igual à data de tramitação!");
+               form.txt_dat_encaminha.focus();
+               form.txt_dat_encaminha.select();
+               return false;
+             }
+          }
+
+      if (form.lst_cod_status.selectedIndex == 0){
+          alert("O status da matéria deve ser preenchido!");
+          form.lst_cod_status.focus();
+          return false;
+      }
+
+     if (!(form.rad_ind_urgencia[0].checked || form.rad_ind_urgencia[1].checked)){
+         alert("O índice de urgência deve ser preenchido!");
+         form.rad_ind_urgencia[0].focus();
+         return false;
+      }
+
+      if (form.lst_cod_unid_tram_dest.selectedIndex == 0){
+          alert("A unidade destino deve ser preenchida!");
+          form.lst_cod_unid_tram_dest.focus();
+          return false;
+      }
+
+      if (form.txt_dat_fim_prazo.value!="") {
+         if (!IsValidDate(form.txt_dat_fim_prazo.value)){
+           alert("Digite uma data de fim de prazo válida!");
+           form.txt_dat_fim_prazo.focus();
+           form.txt_dat_fim_prazo.select();
+           return false;
+         }
+
+         var dat_fim_prazo = form.txt_dat_fim_prazo.value.substring(6,10) + form.txt_dat_fim_prazo.value.substring(3,5) + form.txt_dat_fim_prazo.value.substring(0,2);
+
+         if (dat_fim_prazo < dat_tramitacao) {
+           alert("A data de fim de prazo tem que ser maior ou igual à data de tramitação!");
+           form.txt_dat_fim_prazo.focus();
+           form.txt_dat_fim_prazo.select();
+           return false;
+         }
+      }
+
+      var check = 0;
+
+    form.submit();
+  }
+
+  function Limpa(form) {
+
+     var check = 0;
+     for (var i = 0; i < form.txt_tamanho.value; i++) {
+        form.check_tram[i].checked = false;
+     }
+     form.reset();
+  }
+
+  function selecao(form) {
+     if (form.select_all.value == 'Selecionar todas') {
+        form.select_all.value = 'Desmarcar todas';
+        if (form.txt_tamanho.value != 1) {
+          for (var i = 0; i < form.txt_tamanho.value; i++) {
+            form.check_tram[i].checked = true;
+          }
+        }
+        else form.check_tram.checked = true;
+      }
+      else {
+        form.select_all.value = 'Selecionar todas';
+        if (form.txt_tamanho.value != 1) {
+          for (var i = 0; i < form.txt_tamanho.value; i++) {
+            form.check_tram[i].checked = false;
+          }
+        }
+        else form.check_tram.checked = false;
+      }
+  }
+
+//-->
+</script>
+
+<script type="text/javascript">
+$(function() {
+        $('#tram_dat_tramitacao').datepick();
+        $('#txt_data_inicial').datepick();
+        $('#txt_data_final').datepick();
+        $('#txt_dat_encaminha').datepick();
+        $('#txt_dat_fim_prazo').datepick();
+});
+</script>
+
+<ul>
+    <li>
+        <a href="&dtml-portal_url;/cadastros/materia/tramitacao/primeira_tramitacao_lote_form">Primeira Tramitação</a>
+    </li>
+    <li>
+     <a class="selecionado">Tramitação em Lote</a>
+    </li>
+</ul>
+
+<fieldset><legend>Tramitação em Lote</legend>
+
+ <dtml-call expr="REQUEST.set('check_ocorrencia', 0)">
+ <dtml-call expr="REQUEST.set('contador', 0)">
+
+ <dtml-if check_numeracao>
+  <dtml-call expr="REQUEST.set('npc', 1)">
+ <dtml-else>
+  <dtml-call expr="REQUEST.set('npc', '')">
+ </dtml-if>
+
+ <dtml-in expr="zsql.materia_pesquisar_tram_zsql(tip_id_basica=tram_tip_materia,cod_unid_tram_local=tram_cod_unid_tram_local,
+                                                 data_inicial=pysc.data_converter_pysc(txt_data_inicial),
+                                                 data_final=pysc.data_converter_pysc(txt_data_final),
+                                                 cod_status=tram_cod_status,
+                                                 dat_tramitacao=pysc.data_converter_pysc(data=tram_dat_tramitacao),
+                                                 ind_ult_tramitacao=1)">
+
+<dtml-if sequence-start>
+  
+<form name="tramitacao_lote_tramitar_proc" method="post" action="tramitacao_lote_salvar_proc">
+  <input type="hidden" name="txt_tamanho" value="<dtml-var sequence-length>">
+  <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao missing>">
+  <input type="hidden" name="hdn_dat_tramitacao" value="<dtml-var tram_dat_tramitacao missing>">
+  <input type="hidden" name="hdn_cod_unid_tram_local" value="<dtml-var tram_cod_unid_tram_local missing>">
+
+ <table class="table" >
+   <tr>
+     <th colspan="2" >1. Data da nova tramitação e tipo de matéria a tramitar</th>
+   </tr>
+   <tr>
+     <td>
+       <label for="tram_dat_tramitacao">Data Ação</label> <span class="campoObrigatorio"></span><br />
+       <input type="text" class="form-control"  name="txt_dat_tramitacao" size="10" maxlength="10" value="<dtml-var tram_dat_tramitacao>" disabled>
+       <span class="nota" style="font-size:10px">(dd/mm/aaaa)</span>
+     </td>
+     <td>
+      <label for="tram_tip_materia">Tipo Matéria</label> <span class="campoObrigatorio"></span><br />
+      <select class="form-control"  name="tram_tip_materia" disabled>
+      <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tram_tip_materia,ind_excluido=0)">
+      <option value="<dtml-var tip_materia>">
+      <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+      </option>
+      </dtml-in>
+      </select>
+     </td>
+   </tr>
+    <tr><th colspan="2" >2. Localização e status atuais</th></tr>
+   <tr>
+     <td>
+      <label>Unidade Local</label> <span class="campoObrigatorio"></span><br />
+      <select class="form-control"  name="tram_cod_unid_local" disabled>
+      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tram_cod_unid_tram_local,ind_excluido=0)">
+      <option value="<dtml-var cod_unid_tramitacao>">
+      <dtml-if cod_orgao>
+      <dtml-var nom_orgao>
+      <dtml-elif cod_comissao>
+      <dtml-var nom_comissao> 
+      <dtml-else>
+      <dtml-var nom_parlamentar> 
+      </dtml-if>
+      </option>
+      </dtml-in>
+      </select>
+     </td>
+     <td>
+       <label>Status Atual</label> <span class="campoObrigatorio"></span><br />
+	<select class="form-control"  name="tram_cod_status" disabled>
+        <dtml-in expr="zsql.status_tramitacao_obter_zsql(cod_status=tram_cod_status,ind_excluido=0)">
+        <option value="<dtml-var cod_status>">
+        <dtml-var sgl_status> - <dtml-var des_status>
+        </option>
+        </dtml-in>
+        </select>
+      </td>
+     </tr>
+    <tr><th colspan="2" >3. Período para localização das matérias pela data de tramitação atual</th>
+     <tr>
+      <td>
+       <label>Data Inicial</label><br />
+       <input type="text" class="form-control"  name="txt_data_inicial" size="10" maxlength="10" value="<dtml-var txt_data_inicial>" disabled>
+       <span class="nota" style="font-size:10px">(dd/mm/aaaa)</span>
+      </td>
+      <td>
+       <label>Data Final</label><br />
+       <input type="text" class="form-control"  name="txt_data_final" size="10" maxlength="10" value="<dtml-var txt_data_final>" disabled>
+       <span class="nota" style="font-size:10px">(dd/mm/aaaa)</span>
+      </td>
+     </tr>
+    <tr><th colspan="2" >4. Informe os detalhes da nova tramitação</th></tr>
+     <tr>
+      <td>
+        <label>Data Encaminhamento</label> <span class="campoObrigatorio"></span><br />
+        <input type="text" class="form-control"  name="txt_dat_encaminha" id="txt_dat_encaminha" size="10" maxlength="10" value="" onBlur="formata_data(form.txt_dat_encaminha)">
+       <span class="nota" style="font-size:10px">(dd/mm/aaaa)</span>
+      </td>
+      <td>
+       <label>Data Fim do Prazo</label> <br />
+       <input type="text" class="form-control"  name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" valign="top" size="10" maxlength="10" value="<dtml-var dat_fim_prazo missing null="">" onBlur="formata_data(form.txt_dat_fim_prazo)" onChange="javascript:form.hdn_alterou.value=1">
+       <span class="nota" style="font-size:10px">(dd/mm/aaaa)</span>
+      </td>
+     </tr>
+     <tr>          
+      <td>
+       <label>Status</label> <span class="campoObrigatorio"></span><br />
+       <select class="form-control"  name="lst_cod_status" onChange="javascript:form.hdn_alterou.value=1">
+       <option></option>
+       <dtml-in expr="zsql.status_tramitacao_obter_zsql()">
+       <option <dtml-if expr="_.has_key('cod_tramitacao') and cod_status==tramitacao_form.cod_status">
+       selected </dtml-if> value="<dtml-var cod_status>">
+       <dtml-var sgl_status> - <dtml-var des_status>
+       </option>
+       </dtml-in>
+       </select>
+      </td>
+      <td>
+        Urgente? <span class="campoObrigatorio"></span><br />
+                <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+                 <input type="radio" name="rad_ind_urgencia" value="<dtml-var sequence-key>" 
+                        onChange="javascript:form.hdn_alterou.value=1">
+                  <dtml-var sequence-item>
+                </dtml-in>
+       </td>
+      </tr>
+      <tr>
+       <td>
+	<label>Unidade Destino</label> <span class="campoObrigatorio"></span><br />
+        <select class="form-control"  name="lst_cod_unid_tram_dest">
+        <option></option>
+        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
+        <option value="<dtml-var cod_unid_tramitacao>">
+        <dtml-if cod_orgao>
+         <dtml-var nom_orgao>
+        <dtml-elif cod_comissao>
+         <dtml-var nom_comissao> 
+        <dtml-else>
+         <dtml-var nom_parlamentar> 
+        </dtml-if>
+        </option>
+        </dtml-in>
+        </select>
+       </td>
+       <td>
+         <label>Turno</label><br />
+	 <select class="form-control"  name="lst_sgl_turno" onChange="javascript:form.hdn_alterou.value=1">
+         <option></option>
+         <dtml-in expr="[('P','Primeiro'),('S','Segundo'),('U','Único'),('L','Suplementar'),('F','Final'),('A','Votação Única em Regime de Urgência'),('B','1ª Votação'),('C','2ª e 3ª Votação')]">
+          <option <dtml-if expr="_.has_key('cod_tramitacao') and sgl_turno==_['sequence-key']"> 
+          selected </dtml-if> value="<dtml-var expr="_['sequence-key']">">
+          <dtml-var sequence-item>
+          </option>
+          </dtml-in>
+          </select>
+         </td>
+        </tr>
+        <tr> 
+         <td colspan="2">
+           <label>Texto da Ação</label><br />
+           <textarea class="form-control"  name="txa_txt_tramitacao" cols="65" rows="4"></textarea>
+          </td>
+         </tr>
+    <tr><th colspan="2" >5. Marque as matérias para nova tramitação</th></tr>
+         <tr>
+          <td  colspan="2">
+	     Existem <dtml-var sequence-length> matérias correspondentes ao critério de pesquisa informado.
+           </td>
+          </tr>
+</table>
+<table class="table" >
+  </dtml-if sequence-start>
+
+  <dtml-in expr="zsql.numeracao_pesquisar_zsql(cod_materia=cod_materia, ind_excluido=0)">
+    <dtml-call expr="REQUEST.set('num_materia', _['sequence-item'][0])">
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('num_materia', '')">
+  </dtml-in>
+
+    <tr>
+     <td  width="7%">
+      <input type="checkbox" name="check_tram" value="<dtml-var cod_materia>">
+     <td >
+       <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var des_tipo_materia></b><br />
+       <dtml-var txt_ementa>      
+      </td>
+     </tr>
+
+  <dtml-if sequence-end>
+  </table>
+   </fieldset>
+       <p >
+        <input class="botao" type="button" name="btn_tramitacao_lote_tramitar" value="Tramitar" 
+          onClick="campos_criticar(document.tramitacao_lote_tramitar_proc)">
+        <input class="botao" type="button" name="btn_limpar" value="Limpar" onClick="Limpa(document.tramitacao_lote_tramitar_proc)">
+        <input class="botao" type="button" name="select_all" value="Selecionar todas" onClick="selecao(this.form)">
+       </p>
+  </form>
+  </dtml-if sequence-end>
+<dtml-else>
+</fieldset>
+<span >Não foram encontradas matérias correspondentes ao critério informado.</span>
+<p >
+  <input type="button" class="botao" name="btn-retornar" value="Retornar" onClick="history.go(-1)" />
+</p>
+</dtml-in>
+
+<dtml-var standard_html_footer>

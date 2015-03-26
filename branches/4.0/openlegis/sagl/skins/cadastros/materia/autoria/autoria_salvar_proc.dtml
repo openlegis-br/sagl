@@ -1,0 +1,49 @@
+<dtml-if expr="hdn_cod_autor!=lst_cod_autor and zsql.autoria_obter_zsql(cod_materia=hdn_cod_materia, cod_autor=lst_cod_autor)">
+   <dtml-let mensagem="'Já existe esta autoria.'">
+      <dtml-var mensagem_emitir>
+   </dtml-let>
+   <dtml-call expr="REQUEST.set('erro', 1)">
+<dtml-elif expr="(rad_ind_primeiro_autor=='1') and (zsql.autoria_obter_zsql(cod_materia=hdn_cod_materia, ind_primeiro_autor=1, cod_autor=hdn_cod_autor,ind_excluido=0))">
+   <dtml-let mensagem="'Não foi possível salvar esta autoria. Já existe um primeiro autor para essa matéria.'">
+      <dtml-var mensagem_emitir>
+   </dtml-let>
+   <dtml-call expr="REQUEST.set('erro', 1)">
+<dtml-elif expr="zsql.autoria_obter_zsql(cod_materia=hdn_cod_materia, cod_autor=lst_cod_autor, ind_excluido=1)">
+   <dtml-comment>O caso do autor que está sendo incluído estar com ind_exluido=1.</dtml-comment>   
+   <dtml-call expr="REQUEST.set('metodo', zsql.autoria_atualizar_zsql)">
+   <dtml-if expr="hdn_cod_autor!='' and hdn_cod_autor!=lst_cod_autor">
+       <dtml-comment>O caso acima só que sendo uma atualização.</dtml-comment>
+       <dtml-call expr="REQUEST.set('apaga', 1)">
+   </dtml-if>
+<dtml-elif expr="hdn_cod_autor!='' and hdn_cod_autor!=lst_cod_autor">
+   <dtml-comment>O caso de ser uma atualização de um autor.</dtml-comment>
+   <dtml-call expr="REQUEST.set('apaga', 1)">
+   <dtml-call expr="REQUEST.set('metodo', zsql.autoria_incluir_zsql)">
+<dtml-elif expr="hdn_cod_autor!=''">
+   <dtml-comment>O caso de ser uma atualização de um autor.</dtml-comment>
+   <dtml-call expr="REQUEST.set('metodo', zsql.autoria_atualizar_zsql)">
+<dtml-else>
+   <dtml-comment></dtml-comment>
+      <dtml-call expr="REQUEST.set('metodo', zsql.autoria_incluir_zsql)">
+</dtml-if>
+
+<dtml-unless erro>
+<dtml-try>
+  <dtml-if expr="REQUEST.has_key('apaga')">
+      <dtml-call expr="zsql.autoria_excluir_zsql(cod_autor=hdn_cod_autor, cod_materia=hdn_cod_materia)">
+  </dtml-if>
+  <dtml-call expr="metodo(cod_autor          = lst_cod_autor,
+                          cod_materia        = hdn_cod_materia,
+                          ind_primeiro_autor = rad_ind_primeiro_autor)">
+
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar os dados da autoria. Tente novamente!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>   
+    <dtml-let mensagem="'Autoria salva com sucesso!'" sucesso="1" url=hdn_url>
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+</dtml-try>
+</dtml-unless>

@@ -1,0 +1,79 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+
+function campos_criticar(form){  
+
+  if (form.txt_des_afastamento.value == "") {
+    alert("Digite a descrição do afastamento!");
+    form.txt_des_afastamento.focus();
+    return false;
+  }
+
+  if (!(form.rad_indicador[0].checked ||
+        form.rad_indicador[1].checked)) {
+    alert("Escolha um indicador!");
+    form.rad_indicador[0].focus();
+    return false;
+  }
+
+
+  form.submit();
+}
+
+function tipo_afastamento_excluir(form) {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "tipo_afastamento_excluir_proc?tip_afastamento=" + form.hdn_tip_afastamento.value;
+  }
+  
+}
+
+//-->
+</script>
+
+<form name="tipo_afastamento_form" method="post" action="tipo_afastamento_salvar_proc">
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/tipo_afastamento">Ajuda</a>
+
+<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+
+<table class="table" >
+  <tr> 
+    <td class="form-label">| <a href="index_html">Iní­cio</a> |</td>
+   </tr>
+</table>  
+
+<input type="hidden" name="hdn_tip_afastamento" value="<dtml-var tip_afastamento missing>" />
+
+<fieldset><legend>Tipo Afastamento</legend>
+       <table class="table" >
+          <tr>
+           <td class="form-element">Descrição <span class="campoObrigatorio"></span><br />
+             <input type="text" class="form-control"  name="txt_des_afastamento" value="<dtml-var des_afastamento missing>" size="40" maxlength="50" /></td>
+          <td width="40%" class="form-text"><b>Indicador <span class="campoObrigatorio"></span></b>
+          <dtml-in expr="['Afastamento', 'Fim de Mandato']"><br>
+              <input type="radio" name="rad_indicador" value="<dtml-var expr="_['sequence-index']">" 
+                <dtml-if expr="_.has_key('tip_afastamento')">
+                  <dtml-if expr="(_['sequence-index']==0) and (ind_afastamento=='1')"> checked=1
+                  <dtml-elif expr="(_['sequence-index']==1) and (ind_fim_mandato=='1')"> checked=1
+                  </dtml-if>
+                </dtml-if> />
+                <dtml-var expr="_['sequence-item']">
+            </dtml-in></td>
+         </tr>
+         <tr> 
+            <td colspan="2" class="form-element">Dispositivo<br />
+            <input type="text" class="form-control"  name="txt_des_dispositivo" value="<dtml-var des_dispositivo missing null="">" size="40" maxlength="50" /></td>
+         </tr>
+    </table>
+</fieldset>
+  <center><p>
+  <input type="button" class="botao" name="btn_tipo_afastamento_salvar" value="Salvar" onClick="campos_criticar(document.tipo_afastamento_form)" />
+  <dtml-if tip_afastamento>
+    <input type="button" class="botao" name="btn_tipo_afastamento_excluir" value="Excluir" onClick="tipo_afastamento_excluir(document.tipo_afastamento_form)" />
+  </dtml-if>
+  </p></center>
+</form>
+<dtml-var standard_html_footer>

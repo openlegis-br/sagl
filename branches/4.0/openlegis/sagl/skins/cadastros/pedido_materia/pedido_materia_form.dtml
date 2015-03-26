@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Pedido de Proposição</title>
+<dtml-var standard_css_slot>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.xhtml.min.js"></script>
+
+<script type="text/javascript">
+<!--
+   function campos_criticar(form){
+
+     if (form.lst_tip_materia[form.lst_tip_materia.selectedIndex].value=="0"){
+        alert('O tipo de proposição deve ser selecionado!');
+        form.lst_tip_materia.focus();
+        return false;
+     }
+
+     if (form.txa_txt_pedido.value==""){
+        alert('O texto do pedido deve ser preenchido!');
+        form.txa_txt_pedido.focus();
+        form.txa_txt_dat_pedido.select();
+        return false;
+     }
+
+    if (form.file_nom_arquivo_pedido.value != "") {
+    form.hdn_file_pedido.value = 1;
+    }    
+
+     form.submit();   
+  }
+
+ function ativa_desativa_file_field_pedido(form) {
+ form.file_nom_arquivo_pedido.disabled = !(form.radTI[2].checked);
+ }
+
+-->
+</script>
+
+<script type="text/javascript">
+     //<![CDATA[
+         function printFrame() {
+             $('#print_button').hide();
+             window.print();
+             $('#print_button').show();
+         }
+     //]]>
+</script>
+
+</head>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
+$("#txa_txt_pedido").cleditor({width:"99%", height:"150px"})[0].focus();
+});
+</script>
+
+
+<dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+  <dtml-call expr="REQUEST.set('nom_autor_join', nom_autor_join)">
+  <dtml-call expr="REQUEST.set('cod_autor', cod_autor)">
+</dtml-in>
+
+<h1 class="firstHeading">Pedido de Proposição</h1>
+
+<form name="pedido_form" method="post" action="pedido_materia_salvar_proc" enctype="multipart/form-data">
+ <dtml-if hdn_cod_pedido>
+  <input type="hidden" name="hdn_cod_pedido" value="<dtml-var hdn_cod_pedido missing>" />
+  <input type="hidden" name="hdn_cod_autor" value="<dtml-var cod_autor>" />
+ </dtml-if>
+  <input type="hidden" name="hdn_url" value="index_html" />
+
+<fieldset>
+ <legend>PARLAMENTAR: <dtml-var nom_autor_join></legend>
+ <table class="table" >
+      <tr>
+         <td>
+            <label for="txt_num_pedido">Controle </label><br />
+            <dtml-if hdn_cod_pedido>
+              <input type="text" class="form-control"  name="txt_num_pedido" id="txt_num_pedido" value="<dtml-var hdn_num_pedido>/<dtml-var expr="DateTime(dat_pedido).strftime('%Y')">" disabled size="11" maxlength="11" />
+              <input type="hidden" name="txt_num_pedido" value="<dtml-var hdn_num_pedido>" />
+            <dtml-else>
+              <input type="text" class="form-control"  name="txt_num_pedido" id="txt_num_pedido" value="AUTO" disabled=disabled  size="11" maxlength="11" />
+            </dtml-if>
+            </td>
+         <td>
+            <label for="lst_tip_materia">Tipo Proposição </label><span class="campoObrigatorio"></span><br />
+            <select class="form-control"  name="lst_tip_materia">
+             <option value="0">Selecione</option>
+                <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql()">
+	           <option
+	              <dtml-if expr="REQUEST.has_key('tip_materia_sel') and _.int(tip_materia_sel)==tip_materia">
+                        selected
+                      </dtml-if>
+			value="<dtml-var tip_materia>"> <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia> 
+                   </option>
+	        </dtml-in> 
+            </select>
+         </td>
+         </tr>
+ </table>
+</fieldset>
+
+<fieldset>
+  <table class="table" >
+      <tr>
+         <td colspan="2">
+          <label for="txa_txt_pedido">Texto do Pedido</label><span class="campoObrigatorio"></span><br />
+            <textarea class="form-control"  id="txa_txt_pedido" name="txa_txt_pedido" rows="4" cols="65"><dtml-var txt_pedido missing></textarea>
+         </td>
+      </tr>
+      <tr>
+           <td colspan="2" valign="middle"><label>Anexo </label><br/>
+            <input type="hidden" name="hdn_file_pedido" value="0"/>
+            <dtml-if hdn_cod_pedido>
+             <dtml-call expr="REQUEST.set('id_pedido', _.str(hdn_cod_pedido)+'_pedido.pdf')">
+             <dtml-if "_.hasattr(sagl_documentos.pedido_materia,id_pedido)">
+              <dtml-let pedido="_.getattr(sagl_documentos.pedido_materia,id_pedido).absolute_url">
+               <a href="<dtml-var pedido>" target="_blank"><img align="middle" src="sagl/imagens/archiv.gif" alt="Texto Integral"></a>
+              </dtml-let>
+               <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field_pedido(document.pedido_form)"/><span >Manter</span>
+               <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field_pedido(document.pedido_form)"/><span >Excluir</span>
+               <input type="radio" name="radTI" value="S" onClick="ativa_desativa_file_field_pedido(document.pedido_form)"/><span >Substituir</span>
+               <input type="file" class="form-control"  id="file_nom_arquivo_pedido" name="file_nom_arquivo_pedido" accept="application/pdf" size="40" maxlength="100" disabled="1" />
+             <dtml-else>
+               <input type="file" class="form-control"  id="file_nom_arquivo_pedido" name="file_nom_arquivo_pedido" accept="application/pdf" size="40" maxlength="100" />
+               <input type="hidden" name="radTI" value="I"/>
+             </dtml-if>
+            <dtml-else>
+              <input type="file" class="form-control"  id="file_nom_arquivo_pedido" name="file_nom_arquivo_pedido" accept="application/pdf" size="40" maxlength="100" />
+              <input type="hidden" name="radTI" value="I"/>
+            </dtml-if>
+          </td>
+      <tr>
+         <td>
+          <label for="txa_txt_observacao">Observações </label><br />
+            <textarea class="form-control"  id="txa_txt_observacao" name="txa_txt_observacao" rows="4" cols="75"><dtml-var txt_observacao missing null=""></textarea>
+         </td>
+      </tr>
+   </table>
+</fieldset>
+
+<p >
+  <input type="button" class="botao" name="btn_pedido_salvar" value="Salvar" onClick="campos_criticar(document.pedido_form)" />
+  <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="javascript:parent.jQuery.fancybox.close();" />
+  <input type="button" class="botao" name="print_button" value="Imprimir" onClick="printFrame();return false;" />
+</a>
+</p>
+
+</form>
+
+</html>

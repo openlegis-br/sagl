@@ -1,0 +1,21 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments :  dat_apresentacao="99/99/9999"
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="dat_apresentacao=='99/99/9999'">
+   select  c.cod_comissao from tipo_autor ta left join autor    a on (ta.tip_autor=a.tip_autor)
+                                             left join comissao c on (a.cod_comissao=c.cod_comissao)
+   where ta.tip_autor=2
+     and c.ind_excluido=0
+     and (c.dat_extincao is null)
+<dtml-else>
+   select c.cod_comissao from tipo_autor ta left join    autor a on (ta.tip_autor=a.tip_autor)
+                                            left join comissao c on (a.cod_comissao=c.cod_comissao)
+   where ta.tip_autor=2
+     and c.ind_excluido=0
+     and (c.dat_extincao is null or c.dat_extincao > <dtml-sqlvar "pysc.data_converter_pysc(dat_apresentacao)" type="nb">)
+</dtml-if>
+   
+order by 1 asc

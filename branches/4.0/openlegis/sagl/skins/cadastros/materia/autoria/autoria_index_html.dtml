@@ -1,0 +1,103 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript">
+    function autores_excluir(){
+        if (confirm("Deseja realmente excluir todas as autorias?")) {
+            location.href="autores_excluir_proc?<dtml-var "REQUEST.get('QUERY_STRING','')">";
+        }
+       return;
+    }
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 700,
+		maxHeight	: 600,
+		fitToView	: false,
+		width		: '70%',
+		height		: '77%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+                afterClose      : function() {
+                window.location.href = "&dtml-portal_url;/cadastros/materia/autoria/autoria_index_html?<dtml-var "REQUEST.get('QUERY_STRING','')">";
+                },
+		closeEffect	: 'fade'
+	});
+});
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/despacho_autoria#autoria">Ajuda</a>
+
+<h1 class="firstHeading">Matéria Legislativa</h1>
+
+<form name="index_form" action="autoria_form">
+  <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia missing>">
+  <input type="hidden" name="cod_materia" value="<dtml-var cod_materia missing>">
+  <input type="hidden" name="dat_apresentacao" value="<dtml-var dat_apresentacao missing>">
+    <dtml-var materia_menu>
+    <dtml-var materia_header>
+
+<fieldset><legend>Autoria</legend>  
+<dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+   <dtml-if sequence-start>
+    <table class="table" >
+      <tr> 
+         <th class="form-label">Nome Autor</th>
+         <th class="form-label">Tipo Autor</th>
+         <th class="form-label">Primeiro Autor</th>
+      </tr>  
+   </dtml-if sequence-start>
+   <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor, ind_autor_materia='1')">
+      <tr> 
+         <td >
+             <a href="autoria_mostrar_proc?cod_autor=<dtml-var cod_autor>&ind_primeiro_autor=<dtml-var ind_primeiro_autor>&hdn_cod_materia=<dtml-var cod_materia>&cod_materia=<dtml-var cod_materia>&dat_apresentacao=<dtml-var dat_apresentacao>">
+             <dtml-if expr="des_tipo_autor=='Parlamentar'">
+                <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                     <b><dtml-var nom_completo></b>
+                 </dtml-in>
+             <dtml-elif expr="des_tipo_autor=='Comissao'">
+                 <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                     <b><dtml-var nom_comissao></b>
+                 </dtml-in>
+             <dtml-elif expr="des_tipo_autor=='Bancada'">
+                 <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
+                     <b><dtml-var nom_bancada></b>
+                 </dtml-in>
+             <dtml-else>
+                 <b><dtml-var nom_autor></b>
+             </dtml-if></a>
+         </td>
+         <td ><dtml-var des_tipo_autor></td>
+         <td >
+            <dtml-if expr="ind_primeiro_autor==0">Não 
+            <dtml-else>Sim
+            </dtml-if></td>
+      </tr>
+   </dtml-in>
+   <dtml-if sequence-end>
+      </table>
+   </dtml-if sequence-end>
+<dtml-else>   
+   <span >Nenhuma autoria cadastrada para essa matéria.</span>
+</dtml-in>
+
+</fieldset>
+
+<p >
+  <input type="submit" class="botao" name="btn_incluir" value="Incluir Autoria">
+
+<dtml-if expr="zsql.autoria_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+  <input type="button" class="botao" name="btn_excluir" value="Excluir Todas as Autorias" onClick="autores_excluir()" />
+<dtml-else>
+  <a href="autorias_multiplas_form?cod_materia=<dtml-var cod_materia>&dat_apresentacao=<dtml-var dat_apresentacao>" class="botao-link popup" data-fancybox-type="iframe">Incluir Múltiplas Autorias</a>
+</dtml-if>  
+</p>
+
+</form>
+
+<dtml-var standard_html_footer>

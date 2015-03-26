@@ -1,0 +1,94 @@
+<dtml-var standard_html_header>
+    <script type="text/javascript" language="Javascript">
+        function submeter(endereco){
+
+        var form = document.recomposicao_presencas_ordem_form;
+        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
+        endereco += '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value;
+        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
+        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
+        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
+
+        if (form.hdn_cod_sessao_plen.value!=""){
+        location.href = endereco;
+        }
+        return;
+        }
+
+        function checkAll(field)
+        {
+        for (i = 0; i < field.length; i++)
+        field[i].checked = true ;
+        }
+
+        function uncheckAll(field)
+        {
+        for (i = 0; i < field.length; i++)
+        field[i].checked = false ;
+        }
+
+    </script>
+
+    <a id="ajuda" href="&dtml-portal_url;/ajuda/recomposicao_presenca_sessao">Ajuda</a>
+    <h1 class="firstHeading">Recomposi&ccedil;&atilde;o das Presen&ccedil;as da Ordem do Dia</h1>
+    <h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+    <form name="recomposicao_presencas_ordem_form" method="post" action="recomposicao_presencas_ordem_salvar_proc">
+        <dtml-var sessao_plenaria_menu>
+            <input type="hidden" name="hdn_dat_sessao" value="<dtml-var dat_sessao>" />
+            <dtml-in expr="zsql.recomposicao_presencas_ordem_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
+                <dtml-if sequence-start>
+                    <fieldset>
+                    <legend>Lista de Presen&ccedil;a da Ordem do Dia</legend>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="form-label">&nbsp;Status</th>
+                            <th class="form-label">&nbsp;Data e Hora da Abertura</th>
+                            <th class="form-label">&nbsp;Data e Hora do Fechamento</th>
+                        </tr>
+
+                        </thead>
+                        <tbody>
+
+
+                </dtml-if sequence-start>
+
+                        <tr>
+                            <td>
+                                <dtml-if expr="ind_status_pre == 1">
+                                    Aberta
+                                <dtml-else>
+                                    Fechada
+                                </dtml-if>
+                            </td>
+                            <td>
+                                <dtml-var dat_abre_pre>
+                            </td>
+                            <td>
+                                <dtml-var dat_fecha_pre missing="">
+                            </td>
+                        </tr>
+
+                <dtml-if sequence-end>
+                        </tbody>
+                    </table>
+                    <dtml-if expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_iniciada=1)">
+                    <dtml-in expr="zsql.recomposicao_presencas_ordem_verificar_ultima_aberta_zsql(cod_sessao_plen = cod_sessao_plen)">
+                        <dtml-if expr="cod_registro_pre == None">
+                            <input style="text-align: center;"  class="botao" type="submit" name="abrir" value="Abrir Recomposição de Presenças da Ordem do Dia" />
+                        <dtml-else>
+                            <input style="text-align: center;" class="botao" type="submit" name="fechar" value="Encerrar Recomposição de Presenças da Ordem do Dia" />
+                        </dtml-if>
+                    </dtml-in>
+                    </dtml-if>
+                </dtml-if sequence-end>
+                <dtml-else>
+
+                <p class="form-text">Nenhuma recomposição para esta ordem do dia registrada.</p>
+                <dtml-if expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_iniciada=1)">
+                    <input style="text-align: center;" class="botao" type="submit" name="abrir" value="Abrir Registro de Presenças da Ordem do Dia" />
+                </dtml-if>
+</dtml-in>
+</form>
+<dtml-var standard_html_footer>

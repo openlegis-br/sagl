@@ -1,0 +1,169 @@
+$(document).ready(function() {
+
+    startTime();
+
+    function startTime() {
+        var today=new Date();
+        var h=today.getHours();
+        var m=today.getMinutes();
+    // add a zero in front of numbers<10
+        m=checkTime(m);
+        document.getElementById('relogio').innerHTML=h+":"+m;
+        t=setTimeout(function(){startTime()},500);
+    };
+
+    function checkTime(i) {
+        if (i<10) {
+            i="0" + i;
+        }
+
+        return i;
+    };
+});
+
+$(document).ready(function(){
+    function reloadParlamentares(){
+        $('.coluna1').load('painel_eletronico_parlamentares #painel-parlamentares');
+
+    }
+//        $.ajax({
+//            url: "painel_eletronico_parlamentares",
+//            dataType: "html"}).done(function(data){
+//                $('.coluna1').html($(data).find('table').html());
+//            })
+//    }
+    reloadParlamentares();
+    setInterval(reloadParlamentares, 5000);
+})
+
+$(document).ready(function(){
+    function reloadVotacao(){
+        $('.votacao').load('painel_eletronico_votacao #painel-votacao');
+    }
+//        $.ajax({
+//            url: "painel_eletronico_votacao",
+//            dataType: "html"}).done(function(data){
+//                $('.votacao').html(data);
+//            })
+//    }
+    reloadVotacao();
+    setInterval(reloadVotacao, 5000);
+})
+
+$(document).ready(function(){
+    function reloadMensagem(){
+        $('.painel-quadro').load('painel_eletronico_mensagem #painel-mensagem');
+    }
+//        $.ajax({
+//            url: "painel_eletronico_mensagem",
+//            dataType: "html"}).done(function(data){
+//                $('.painel-quadro').html(data);
+//            })
+//    }
+    reloadMensagem();
+    setInterval(reloadMensagem, 5000);
+})
+
+$(document).ready(function(){
+    $('#tempo-decorrido').countdown({since: new Date(<dtml-var expr="pysc.tempo_sessao_pysc()">), format: 'HMS', compact: true});
+});
+
+$(document).ready(function(){
+    var audioElement = document.createElement('audio');
+    audioElement.setAttribute('src', '&dtml-portal_url;/sagl_documentos/painel/ring.mp3');
+    $.get();
+
+    var start_discurso = <dtml-var expr="pysc.cronometro_tempo_pysc(tipo='discurso')">;
+    var start_aparte = <dtml-var expr="pysc.cronometro_tempo_pysc(tipo='aparte')">;
+    var start_ordem = <dtml-var expr="pysc.cronometro_tempo_pysc(tipo='ordem')">;
+
+    $('#cronometro-discurso').runner({
+        countdown: true,
+        startAt: start_discurso,
+        stopAt: 0,
+        milliseconds: false
+        }).on('runnerFinish', function(eventObject, info) {
+            $.post("pysc/cronometro_salvar_pysc", { tipo: 'discurso', int_stop: 'parar' }),
+            audioElement.play()
+            });
+
+    $('#cronometro-aparte').runner({
+        countdown: true,
+        startAt: start_aparte,
+        stopAt: 0,
+        milliseconds: false
+        }).on('runnerFinish', function(eventObject, info) {
+            $.post("pysc/cronometro_salvar_pysc", { tipo: 'aparte', int_stop: 'parar' }),
+            audioElement.play()
+            });
+
+    $('#cronometro-ordem').runner({
+        countdown: true,
+        startAt: start_ordem,
+        stopAt: 0,
+        milliseconds: false
+    }).on('runnerFinish', function(eventObject, info) {
+            $.post("pysc/cronometro_salvar_pysc", { tipo: 'ordem', int_stop: 'parar' }),
+            audioElement.play()
+        });
+
+    function reloadJSONDiscurso(){
+        $.ajax({
+            url: "&dtml-portal_url;/pysc/cronometro_json_pysc?tipo=discurso",
+            dataType: "json"}).done(function(data) {
+                var json = data;
+                var start = json.start;
+                var stop = json.stop;
+                var reset = json.reset;
+
+                if (start == true) {
+                    $('#cronometro-discurso').runner('start');
+                } else if (stop == true) {
+                    $('#cronometro-discurso').runner('stop');
+                } else if (reset == true) {
+                    $('#cronometro-discurso').runner('reset');
+                };
+            });
+    };
+
+    function reloadJSONAparte(){
+        $.ajax({
+            url: "&dtml-portal_url;/pysc/cronometro_json_pysc?tipo=aparte",
+            dataType: "json"}).done(function(data) {
+                var json = data;
+                var start = json.start;
+                var stop = json.stop;
+                var reset = json.reset;
+
+                if (start == true) {
+                    $('#cronometro-aparte').runner('start');
+                } else if (stop == true) {
+                    $('#cronometro-aparte').runner('stop');
+                } else if (reset == true) {
+                    $('#cronometro-aparte').runner('reset');
+                };
+            });
+    };
+
+    function reloadJSONOrdem(){
+        $.ajax({
+            url: "&dtml-portal_url;/pysc/cronometro_json_pysc?tipo=ordem",
+            dataType: "json"}).done(function(data) {
+                var json = data;
+                var start = json.start;
+                var stop = json.stop;
+                var reset = json.reset;
+
+                if (start == true) {
+                    $('#cronometro-ordem').runner('start');
+                } else if (stop == true) {
+                    $('#cronometro-ordem').runner('stop');
+                } else if (reset == true) {
+                    $('#cronometro-ordem').runner('reset');
+                };
+            });
+    };
+    setInterval(reloadJSONDiscurso, 1000);
+    setInterval(reloadJSONAparte, 1000);
+    setInterval(reloadJSONOrdem, 1000);
+});

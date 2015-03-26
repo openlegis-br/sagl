@@ -1,0 +1,22 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_parlamentar="" cod_sessao_leg="" cod_periodo_comp="" cod_cargo="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT 
+  REPLACE(cod_parlamentar, 'L', '') as cod_parlamentar,
+  REPLACE(cod_sessao_leg, 'L', '') as cod_sessao_leg,
+  REPLACE(cod_periodo_comp, 'L', '') as cod_periodo_comp,
+  cod_cargo,
+  ind_excluido
+FROM 
+  composicao_mesa 
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_parlamentar op="=" type="int" optional> <dtml-and>
+  <dtml-sqltest cod_sessao_leg  op="=" type="int"  optional> <dtml-and>
+  <dtml-sqltest cod_periodo_comp  op="=" type="int"  optional> <dtml-and>
+  <dtml-sqltest cod_cargo       op="=" type="int"  optional> <dtml-and>
+  <dtml-sqltest ind_excluido    op="=" type="int" >
+</dtml-sqlgroup>
+order by cod_cargo

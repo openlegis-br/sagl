@@ -1,0 +1,49 @@
+
+<dtml-var standard_html_header>
+    <script type="text/javascript" language="Javascript">
+        function submeter(endereco){
+
+            endereco += '?cod_sessao_plen=' + <dtml-var cod_sessao_plen>;
+            endereco += '&cod_sessao_leg='+ <dtml-var cod_sessao_leg>;
+            endereco += '&cod_num_legislatura=' + <dtml-var cod_num_legislatura>;
+            endereco += '&dat_sessao=' + <dtml-var dat_sessao missing>;
+            endereco += '&tip_sessao=' + <dtml-var tip_sessao>;
+
+            location.href = endereco;
+
+            return;
+        }
+
+    </script>
+    <dtml-if expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0, ind_votacao_iniciada=1)">
+        <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0, ind_votacao_iniciada=1)">
+           <dtml-call expr="REQUEST.set('tip_votacao', tip_votacao)">
+        </dtml-in>
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('tip_votacao', 0)">
+    </dtml-if>
+
+    <a id="ajuda" href="&dtml-portal_url;/ajuda/gerar_token">Ajuda</a>
+    <h1 class="firstHeading">Gera&ccedil;&atilde;o de Tokens</h1>
+    <h3 align="center"><dtml-var sessao_plenaria_header></h3>
+    <dtml-var sessao_plenaria_menu>
+    <fieldset>
+        <legend>Gerar Tokens</legend>
+        <dtml-if expr="pysc.tokens_verificar_existe_pysc()">
+            <p class="texto"><b>J&aacute; existem tokens gerados. Caso queira gerar novos tokens siga o procedimento abaixo.</b></p>
+        </dtml-if>
+        <dtml-if expr="tip_votacao == 3">
+        <p class="texto">Para gerar os token para a vota&ccedil;&atilde;o secreta, clique no link:
+            <a href="&dtml-portal_url;/pysc/tokens_gerar_pysc?criar=1&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_num_legislatura=<dtml-var cod_num_legislatura>&tip_sessao=<dtml-var tip_sessao>">
+                <b>Gerar Tokens</b></a>
+        </p>
+        <p class="texto">Os tokens terão validade enquanto durar a vota&ccedil;&atilde;o secreta </p>
+        <dtml-if token_quantidade>
+            <p class="texto"><b>Foram gerados <dtml-var token_quantidade> tokens</b></p>
+        </dtml-if>
+        <dtml-else>
+            <p class="texto">N&atilde;o existe vota&ccedil;&atilde;o secreta iniciada</p>
+        </dtml-if>
+    </fieldset>
+
+    <dtml-var standard_html_footer>

@@ -1,0 +1,42 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_materia cod_assunto="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT 
+       REPLACE(materia_assunto.cod_materia,  'L', '') as cod_materia,
+       REPLACE(materia_assunto.cod_assunto, 'L', '') as cod_assunto_sel,
+       materia_assunto.ind_excluido,
+       assunto_materia.des_assunto as des_assunto_index
+
+FROM   
+       materia_assunto, assunto_materia
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_assunto  column="materia_assunto.cod_assunto"  op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_materia  column="materia_assunto.cod_materia"  op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ind_excluido column="materia_assunto.ind_excluido" op="=" type="int" optional><dtml-and>
+    materia_assunto.cod_assunto=assunto_materia.cod_assunto
+  </dtml-sqlgroup>
+
+<dtml-else>
+
+SELECT 
+       materia_assunto.cod_materia as cod_materia,
+       materia_assunto.cod_assunto as cod_assunto_sel,
+       materia_assunto.ind_excluido,
+       assunto_materia.des_assunto as des_assunto_index
+
+FROM   
+       materia_assunto, assunto_materia
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_assunto  column="materia_assunto.cod_assunto"  op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_materia  column="materia_assunto.cod_materia"  op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ind_excluido column="materia_assunto.ind_excluido" op="=" type="int" optional><dtml-and>
+    materia_assunto.cod_assunto=assunto_materia.cod_assunto
+  </dtml-sqlgroup>
+
+</dtml-if>

@@ -1,0 +1,16 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_materia
+max_rows : 1
+max_cache : 100
+</dtml-comment>
+
+select max(dat_inicio_sessao) as dat_inicio_sessao 
+  from  sessao_plenaria sp left outer join ordem_dia od          on (sp.cod_sessao_plen=od.cod_sessao_plen) 
+                           left outer join expediente_materia em on (sp.cod_sessao_plen=em.cod_sessao_plen) 
+                                inner join registro_votacao rv   on (od.cod_materia=rv.cod_materia or em.cod_materia=rv.cod_materia) 
+ where sp.ind_excluido=0 
+   and (od.ind_excluido=0 or em.ind_excluido=0)
+   and rv.ind_excluido=0
+   and rv.cod_materia = <dtml-sqlvar cod_materia type="int">
+

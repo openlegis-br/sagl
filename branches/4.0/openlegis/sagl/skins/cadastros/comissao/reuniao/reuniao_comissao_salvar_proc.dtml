@@ -1,0 +1,116 @@
+<dtml-call expr="REQUEST.set('cod_comissao', hdn_cod_comissao)">
+<dtml-if hdn_cod_reuniao>
+    <dtml-call expr="REQUEST.set('metodo', zsql.reuniao_comissao_atualizar_zsql)">
+<dtml-else> 
+    <dtml-call expr="REQUEST.set('metodo', zsql.reuniao_comissao_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_reuniao            = hdn_cod_reuniao,
+                          cod_comissao           = hdn_cod_comissao,
+                          num_reuniao            = txt_num_reuniao,
+                          dat_inicio_reuniao     = pysc.data_converter_pysc(data=txt_dat_inicio_reuniao),
+                          hr_inicio_reuniao      = txt_hr_inicio_reuniao,
+                          txt_observacao         = txa_txt_observacao)">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar a Reunião da Comissão. Tente novamente!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+<dtml-in expr="zsql.reuniao_comissao_incluida_codigo_obter_zsql()">
+    <dtml-call "REQUEST.set('ult_reuniao_incluida',cod_reuniao)">
+</dtml-in>
+
+<dtml-else>      
+    <dtml-call expr="REQUEST.set('erro', 0)">              
+    <dtml-if expr="radTI=='I' or radTI=='S'">                
+        <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
+        <dtml-if expr="(_.int(hdn_file_pauta)==1)">
+            <dtml-if hdn_cod_reuniao>
+                <dtml-call expr="REQUEST.set('id_pauta', _.str(hdn_cod_reuniao)+'_pauta.pdf')">
+                <dtml-if "_.hasattr(sagl_documentos.reuniao_comissao,id_pauta)">
+                    <dtml-let documento="_.getattr(sagl_documentos.reuniao_comissao,id_pauta) ">
+                        <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
+                        <dtml-try>
+                            <dtml-call "documento.manage_upload(file=file_nom_arquivo_pauta)">
+                        <dtml-except>
+                            <dtml-call expr="REQUEST.set('erro', 1)">              
+                        </dtml-try>
+                    </dtml-let>
+                </dtml-if>
+            <dtml-else>
+                <dtml-in expr="zsql.reuniao_comissao_incluida_codigo_obter_zsql()">
+                 <dtml-call "REQUEST.set('ult_reuniao_incluida',cod_reuniao)">
+                </dtml-in>
+               <dtml-call expr="REQUEST.set('id_pauta',_.str(ult_reuniao_incluida)+'_pauta.pdf')">
+             </dtml-if>
+             <dtml-if "not existe_arquivo">
+          <dtml-try>            
+                  <dtml-call expr="sagl_documentos.reuniao_comissao.manage_addProduct['ExtFile'].manage_addExtFile(id=id_pauta,file=file_nom_arquivo_pauta,permission_check=0)">
+                 <dtml-except> 
+                     <dtml-call expr="REQUEST.set('erro', 1)">              
+                 </dtml-try>      
+             </dtml-if>
+         </dtml-if>
+     <dtml-elif expr="radTI=='E'">
+         <dtml-if hdn_cod_reuniao>
+             <dtml-call expr="REQUEST.set('id_pauta', _.str(hdn_cod_reuniao)+'_pauta.pdf')">
+             <dtml-call "sagl_documentos.reuniao_comissao.manage_delObjects(id_pauta)">
+         </dtml-if>
+     </dtml-if>
+    <dtml-if erro>
+        <dtml-let mensagem="'Não foi possível salvar o texto integral da Pauta da Reunião. Tente atualizar este campo novamente.'">
+            <dtml-var mensagem_emitir>
+        </dtml-let>        
+    </dtml-if>
+
+    <dtml-call expr="REQUEST.set('erro', 0)">              
+    <dtml-if expr="radTI2=='I' or radTI2=='S'">                
+        <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
+        <dtml-if expr="(_.int(hdn_file_ata)==1)">
+            <dtml-if hdn_cod_reuniao>
+                <dtml-call expr="REQUEST.set('id_ata', _.str(hdn_cod_reuniao)+'_ata.pdf')">
+                <dtml-if "_.hasattr(sagl_documentos.reuniao_comissao,id_ata)">
+                    <dtml-let documento="_.getattr(sagl_documentos.reuniao_comissao,id_ata) ">
+                        <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
+                        <dtml-try>
+                            <dtml-call "documento.manage_upload(file=file_nom_arquivo_ata)">
+                        <dtml-except>
+                            <dtml-call expr="REQUEST.set('erro', 1)">              
+                        </dtml-try>
+                    </dtml-let>
+                </dtml-if>
+            <dtml-else>
+                <dtml-in expr="zsql.reuniao_comissao_incluida_codigo_obter_zsql()">
+                 <dtml-call "REQUEST.set('ult_reuniao_incluida',cod_reuniao)">
+                </dtml-in>
+               <dtml-call expr="REQUEST.set('id_ata',_.str(ult_reuniao_incluida)+'_ata.pdf')">
+             </dtml-if>
+             <dtml-if "not existe_arquivo">
+          <dtml-try>            
+                  <dtml-call expr="sagl_documentos.reuniao_comissao.manage_addProduct['ExtFile'].manage_addExtFile(id=id_ata,file=file_nom_arquivo_ata,permission_check=0)">
+                 <dtml-except> 
+                     <dtml-call expr="REQUEST.set('erro', 1)">              
+                 </dtml-try>      
+             </dtml-if>
+         </dtml-if>
+     <dtml-elif expr="radTI2=='E'">
+         <dtml-if hdn_cod_reuniao>
+             <dtml-call expr="REQUEST.set('id_ata', _.str(hdn_cod_reuniao)+'_ata.pdf')">
+             <dtml-call "sagl_documentos.reuniao_comissao.manage_delObjects(id_ata)">
+         </dtml-if>
+     </dtml-if>
+    <dtml-if erro>
+        <dtml-let mensagem="'Não foi possível salvar o texto integral da Ata da Reunião. Tente atualizar este campo novamente.'">
+            <dtml-var mensagem_emitir>
+        </dtml-let>        
+    </dtml-if>
+
+
+    <dtml-let mensagem="'Reunião salva com sucesso!'" sucesso="1" url="hdn_url">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+
+</dtml-try>
+

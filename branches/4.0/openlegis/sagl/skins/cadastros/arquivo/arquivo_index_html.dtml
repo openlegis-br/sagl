@@ -1,0 +1,119 @@
+﻿<dtml-var standard_html_header>
+
+<link rel="stylesheet" href="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
+
+<script type="text/javascript">
+<!--
+   $(document).ready(function() { 
+       $("#recipientes")
+    .tablesorter({theme: 'blue', widgets: ['filter']})
+    .tablesorterPager({container: $("#pager")}); 
+    }); 
+-->
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 700,
+		maxHeight	: 600,
+		fitToView	: false,
+		width		: '70%',
+		height		: '77%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+                afterClose      : function() {
+                window.location.href = "&dtml-portal_url;/cadastros/arquivo/arquivo_index_html">";
+                },
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/arquivo">Ajuda</a>
+
+<h1 class="firstHeading">Arquivo Permanente</h1>
+
+<div id="barra-conteudo">
+<ul>
+    <li>
+        <a href="arquivo_recipiente_form">Incluir Recipiente</a>
+    </li>
+</ul>
+</div>
+
+<fieldset>
+
+<legend>Recipientes de Arquivamento</legend>
+
+<form name="recipiente_form" method="post">
+
+<dtml-in expr="zsql.arquivo_recipiente_obter_zsql()">
+  <dtml-if sequence-start>
+        <table class="table"  class="table" id="recipientes" class="tablesorter">
+          <thead>
+            <tr>
+                <th width="15%" class="form-label">Identificador</th>
+                <th width="10%" class="form-label">Ano</th>
+                <th width="20%" class="form-label">Tipo</th>
+                <th width="25%" class="form-label">Título Documental</th>
+                <th width="15%" class="form-label">Itens Contidos</th>
+            </tr>
+          </thead>
+  </dtml-if sequence-start>
+            <tr>
+                <td  valign="top">
+                   <a href="arquivo_recipiente_mostrar_proc?cod_recipiente=<dtml-var cod_recipiente>"><b><dtml-var num_recipiente></b></a>
+                </td>
+                <td  valign="top">
+                   <dtml-var ano_recipiente>
+                </td>
+               <td  valign="top">
+                   <dtml-var des_tipo_recipiente_sel>
+               </td>
+               <td  valign="top">
+                   <dtml-var des_tipo_tit_documental_sel>
+               </td>
+               <td  valign="top">
+                 <p >
+                   <dtml-in expr="zsql.arquivo_recipiente_contar_itens_zsql(cod_recipiente=cod_recipiente)">
+                      <a href="arquivo_recipiente_listar_conteudo_form?cod_recipiente=<dtml-var cod_recipiente>" class="botao-link"><b><dtml-var total></b></a>
+                   </dtml-in>
+                 </p>
+               </td>
+  <dtml-comment>
+            <td >
+             <a href="javascript:excluir(<dtml-var cod_destinatario>,<dtml-var cod_documento>)">Excluir</a>
+            </td>
+  </dtml-comment>
+        </tr>
+  <dtml-if sequence-end>
+        </table>
+<div id="pager" class="pager">
+	<form>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
+		<input type="text" class="form-control"  class="pagedisplay"/>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
+		<select class="form-control"  class="pagesize">
+			<option selected="selected"  value="10">10</option>
+			<option value="20">20</option>
+			<option value="30">30</option>
+			<option  value="40">40</option>
+		</select>
+	</form>
+</div>
+  </dtml-if sequence-end>
+<dtml-else>
+      <p >Nenhum recipiente cadastrado</p>
+</dtml-in>
+</form>
+
+<dtml-var standard_html_footer>

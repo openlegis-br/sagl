@@ -1,0 +1,238 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+   function submeter(endereco){
+
+      var form = document.instituicao_form;
+
+      endereco += '?cod_instituicao=' + form.hdn_cod_instituicao.value;
+
+      if (form.hdn_alterou.value=="1"){
+         if (confirm("Deseja salvar os dados?")){
+            form.hdn_url.value = endereco;
+            campos_criticar(form);
+         }
+      }
+
+      if (form.hdn_cod_instituicao.value!=""){
+          location.href = endereco;
+      }
+      return;
+   }
+
+  function campos_criticar(){
+
+      var form = document.instituicao_form;
+      var regexp_digitos = /\D+/;
+
+      if (form.lst_tip_instituicao.selectedIndex==0){
+          alert("Escolha um tipo de instituição!");
+          form.lst_tip_instituicao.focus();
+          return false;
+      }
+
+      if (form.txa_txt_nom_instituicao.value == "") {
+         alert("O nome da instituição deve ser preenchido!");
+         form.txa_txt_nom_instituicao.focus();
+         return false;
+      }
+
+      if (form.txt_municipio.value == "") {
+         alert("O nome do Município deve ser informado!");
+         form.txt_municipio.focus();
+         return false;
+      }
+
+      if (form.txt_municipio.value == "" && form.lst_sgl_uf.selectedIndex != 0) {
+         alert("O campo Município deve ser preenchido uma vez que UF está preenchido!");
+         form.txt_municipio.focus();
+         return false;
+      } 
+
+      if (form.txt_municipio.value != "" && form.lst_sgl_uf.selectedIndex == 0) {
+         alert("O campo UF deve ser preenchido uma vez que Município está preenchido!");
+         form.lst_sgl_uf.focus();
+         return false;
+      } 
+
+      form.submit();
+    }
+
+  function instituicao_excluir(){
+
+       if (confirm("Deseja realmente excluir?")) {
+          location.href="instituicao_excluir_proc?cod_instituicao=<dtml-var cod_instituicao missing>&hdn_txt_user=<dtml-var "AUTHENTICATED_USER.getUserName()">&hdn_txt_ip=<dtml-var REMOTE_ADDR>&url=&dtml-portal_url;/consultas/instituicao/instituicao_pesquisar_form?incluir=1";
+       }
+       return;
+  }
+
+  function localidade_mostrar(form) {
+
+     if (form.txt_municipio.value=="") {
+        alert("Preencha parte do município!");
+        form.txt_municipio.focus();
+        return false;
+     }
+
+     if (form.lst_sgl_uf.selectedIndex==0) {
+        alert("Selecione uma UF!");
+        form.lst_sgl_uf.focus();
+        return false;
+     }
+     
+     var municipio = form.txt_municipio.value;
+     var sgl_uf = form.lst_sgl_uf[form.lst_sgl_uf.selectedIndex].value;
+
+     var municipio_pesq = municipio.toUpperCase();
+     municipio_pesq = municipio_pesq.replace(/Ã|Â|Á|À/g, 'A');
+     municipio_pesq = municipio_pesq.replace(/É|Ê|È/g,'E');   
+     municipio_pesq = municipio_pesq.replace(/Í|Ì|Î|Ï/g, 'I');
+     municipio_pesq = municipio_pesq.replace(/Õ|Ô|Ó|Ò/g, 'O');
+     municipio_pesq = municipio_pesq.replace(/Ú|Ù|Û|Ü/g, 'U');
+
+     var url="municipio_listar_form?municipio=" + municipio +
+              "&municipio_pesq=" + municipio_pesq + "&sgl_uf=" + sgl_uf;
+     MunicipioWin = window.open(url , "MunicipioWin", "width=350,height=280,resizable=0");
+     return;
+  } 
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/cadastro_instituicao">Ajuda</a>
+
+<h1 class="firstHeading">Cadastro de Entidade</h1> 
+
+<form action="instituicao_salvar_proc" name="instituicao_form" method="post" enctype="multipart/form-data">
+
+  <input type="hidden" name="hdn_cod_instituicao" value="<dtml-var cod_instituicao missing>" />
+  <input type="hidden" name="hdn_url" value="instituicao_mostrar_proc?cod_instituicao=<dtml-var cod_instituicao missing>" />
+  <input type="hidden" name="hdn_txt_user" value="<dtml-var "AUTHENTICATED_USER.getUserName()">" />
+  <input type="hidden" name="hdn_txt_ip" value="<dtml-var REMOTE_ADDR>" />
+  <input type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('mudou')">1<dtml-else>0</dtml-if>" />                
+
+        <fieldset>
+         <legend>Indentificação Básica</legend>
+                <table class="table" >
+                        <tr>
+                         <td colspan="2"><label for="lst_tip_instituicao">Tipo Instituição</label> <span class="campoObrigatorio"></span><br />
+                              <select class="form-control"  id="lst_tip_instituicao" name="lst_tip_instituicao">
+                                 <option>Selecione</option>
+                           <dtml-if cod_instituicao>
+                             <dtml-call expr="REQUEST.set('tip_instituicao_sel', tip_instituicao)">
+                           </dtml-if>
+                             <dtml-in expr="zsql.tipo_instituicao_obter_zsql(ind_excluido=0)">
+                                 <option
+                                   <dtml-if tip_instituicao>
+                                    <dtml-if expr="_.has_key('cod_instituicao') and _.int(tip_instituicao_sel) == _.int(tip_instituicao)">
+                                        selected
+                                    </dtml-if>     
+                                   </dtml-if>                                                                                        
+                                       value="<dtml-var tip_instituicao>">
+                                       <dtml-var nom_tipo_instituicao>
+                                 </option>
+                             </dtml-in>
+                                 </select>
+                           </td>
+                        </tr>
+
+                        <tr>
+                          <td colspan="2"><label for="txa_txt_nom_instituicao">Nome </label> <span class="campoObrigatorio"></span><br />
+                            <input type="text" class="form-control"  id="txa_txt_nom_instituicao" name="txa_txt_nom_instituicao" size="60" maxlength="200" onBlur="form.txa_txt_nom_instituicao.value = form.txa_txt_nom_instituicao.value.toUpperCase()" onChange="javascript:form.hdn_alterou.value=1" value="<dtml-var nom_instituicao missing>" />
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td colspan="2"><label for="txt_end_instituicao">Endereço </label><br />
+                            <input type="text" class="form-control"  id="txt_end_instituicao" name="txt_end_instituicao" size="60" maxlength="80" value="<dtml-var end_instituicao missing>" />
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td><label for="txt_end_instituicao">Bairro </label><br />
+                            <input type="text" class="form-control"  id="txt_nom_bairro" name="txt_nom_bairro" size="45" maxlength="80" value="<dtml-var nom_bairro missing>" />
+                          </td>
+                          <td><label for="txt_num_cep">CEP </label><br />
+                            <input type="text" class="form-control"  id="txt_num_cep" name="txt_num_cep" size="15" maxlength="15" value="<dtml-var num_cep missing>" />
+                          </td>
+                        </tr>
+        		<tr> 
+          		  <td><label for="txt_municipio">Município </label><span class="campoObrigatorio"></span><br />
+            	           <input type="text" class="form-control"  name="txt_municipio" value="<dtml-if cod_localidade><dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade)"><dtml-var nom_localidade missing
+	    null=""></dtml-in></dtml-if>" size="50" maxlength="50" onChange="javascript:form.hdn_alterou.value=1" />
+            <input type="button" name="btn_localidade" value=" ? "
+	    onClick="localidade_mostrar(document.instituicao_form)" /></td>
+          		  <td><label for="lst_sgl_uf">UF </label> <span class="campoObrigatorio"></span><br />
+                           <select class="form-control"  name="lst_sgl_uf" size="1" onChange="javascript:form.hdn_alterou.value=1">
+                            <option>Selecione</option>
+                           <dtml-if cod_instituicao>
+                             <dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade)">
+                               <dtml-call expr="REQUEST.set('sgl_uf_sel', sgl_uf)">
+                             </dtml-in>
+                           </dtml-if>
+                            <dtml-in expr="zsql.localidade_obter_zsql(tip_localidade='U')">
+                             <option 
+                             <dtml-if expr="_.has_key('cod_instituicao') and sgl_uf_sel==sgl_uf">
+                               selected 
+                             </dtml-if>
+                            value="<dtml-var sgl_uf>"><dtml-var sgl_uf>
+                            </option>
+                            </dtml-in>
+                           </select>
+                         </td>
+                       </tr>
+                        <tr>
+                          <td><label for="txt_num_telefone">Telefone </label><br />
+                            <input type="text" class="form-control"  id="txt_num_telefone" name="txt_num_telefone" size="20" maxlength="50" value="<dtml-var num_telefone missing>" />
+                          </td>
+                          <td><label for="txt_num_fax">Fax </label><br />
+                            <input type="text" class="form-control"  id="txt_num_fax" name="txt_num_fax" size="20" maxlength="50" value="<dtml-var num_fax missing>" />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><label for="txt_end_email">Email </label><br />
+                            <input type="text" class="form-control"  id="txt_end_email" name="txt_end_email" size="45" maxlength="50" value="<dtml-var end_email missing>" />
+                          </td>
+                          <td><label for="txt_end_web">Website </label><br />
+                            <input type="text" class="form-control"  id="txt_end_web" name="txt_end_web" size="45" maxlength="50" value="<dtml-var end_web missing null="">" />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colspan="2"><label for="txt_nom_responsavel">Nome Resposável / Contato </label><br />
+                            <input type="text" class="form-control"  id="txt_nom_responsavel" name="txt_nom_responsavel" size="45" maxlength="50" value="<dtml-var nom_responsavel missing>" />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><label for="txt_des_cargo">Cargo </label><br />
+                            <input type="text" class="form-control"  id="txt_des_cargo" name="txt_des_cargo" size="45" maxlength="50" value="<dtml-var des_cargo missing>" />
+                          </td>
+                          <td><label for="txa_txt_forma_tratamento">Forma Tratamento </label><br />
+                            <input type="text" class="form-control"  id="txa_txt_forma_tratamento" name="txa_txt_forma_tratamento" size="15" maxlength="30" value="<dtml-var txt_forma_tratamento missing null="">" />
+                          </td>
+                        </tr>
+                          <td colspan="3"><label for="txa_txt_observacao">Observação</label> 
+                            <textarea class="form-control"  id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
+                          </td>
+                        </tr>
+                      <dtml-if cod_instituicao>
+                        <tr>
+                          <th colspan="2" >
+                            <b>Registro atualizado em:</b> <input type="text" class="form-control"  id="txt_timestamp_alteracao" name="txt_timestamp_alteracao" size="16" value="<dtml-var timestamp_alteracao>" disabled=disabled />  
+                            <b>por:<b> <input type="text" class="form-control"  id="txt_user_alteracao" name="txt_user_alteracao" size="12" value="<dtml-var txt_user_alteracao missing null="">" disabled=disabled />
+                            <b>IP:</b> <input type="text" class="form-control"  id="txt_ip_alteracao" name="txt_ip_alteracao" size="15" value="<dtml-var txt_ip_alteracao missing null="">" disabled=disabled />
+                          </th>
+                        </tr>
+                      </dtml-if>
+                      </table>
+      </fieldset>
+      </table>
+</fieldset>
+ <p >
+  <input type="button" class="botao" name="button" value="Salvar" onClick="campos_criticar()" />
+  <dtml-if cod_instituicao>
+   <input type="button" class="botao" name="btn_excluir" value="Excluir" onClick="instituicao_excluir()" />
+  </dtml-if>
+</p>
+</form>
+
+<dtml-var standard_html_footer>

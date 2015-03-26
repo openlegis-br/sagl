@@ -1,0 +1,246 @@
+<dtml-var standard_html_header>
+<script>
+//    $(document).ready(function(){
+//        var $container = $("#votacao-parlamentar");
+//        $container.load("votacao_parlamentar_index_html #votacao-parlamentar");
+//        var refreshId = setInterval(function(e) {
+//            $container.load('votacao_parlamentar_index_html #votacao-parlamentar'); }, 10000)
+
+//    });
+</script>
+<div id="votacao-parlamentar">
+    <script>
+        $(document).ready(function(e){
+            $(document).on('click', '.vote-button > input:radio', function() {
+                $('label:has(input:radio:checked)').removeClass('inativo').addClass('ativo');
+                $('label:has(input:radio:not(:checked))').addClass('inativo').removeClass('ativo');
+                $('form[name="votacao_form"]').submit();
+            });
+        });
+    </script>
+<dtml-call expr="REQUEST.set('txt_login', AUTHENTICATED_USER.getUserName())">
+<dtml-in expr="zsql.sessao_plenaria_obter_zsql(ind_iniciada=1)">
+    <dtml-call expr="REQUEST.set('cod_sessao_plen', cod_sessao_plen)">
+    <dtml-call expr="REQUEST.set('cod_num_legislatura', num_legislatura)">
+    <dtml-call expr="REQUEST.set('cod_sessao_leg', cod_sessao_leg)">
+    <dtml-call expr="REQUEST.set('dat_sessao', dat_inicio_sessao)">
+    <dtml-call expr="REQUEST.set('iniciada', 1)">
+</dtml-in>
+<dtml-if cod_sessao_plen>
+    <dtml-in expr="zsql.parlamentar_obter_zsql(txt_login = txt_login, num_legislatura = cod_num_legislatura, ind_ativo=1, ind_excluido=0)">
+        <dtml-if expr="zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+            <dtml-call expr="REQUEST.set('presente', 1)">
+        <dtml-else>
+            <dtml-call expr="REQUEST.set('presente', 0)">
+            <dtml-in expr="zsql.recomposicao_presencas_ordem_verificar_ultima_aberta_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
+                <dtml-call expr="REQUEST.set('ind_status_pre', cod_registro_pre)">
+            </dtml-in>
+        </dtml-if>
+    </dtml-in>
+    <dtml-if expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0, ind_votacao_iniciada=1)">
+    <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0, ind_votacao_iniciada=1)">
+        <dtml-call expr="REQUEST.set('cod_ordem', cod_ordem)">
+        <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+        <dtml-call expr="REQUEST.set('tip_votacao', tip_votacao)">
+        <dtml-call expr="REQUEST.set('tip_sessao', tip_sessao)">
+        <dtml-call expr="REQUEST.set('expediente', 0)">
+    </dtml-in>
+    <dtml-in expr="zsql.votacao_obter_zsql(cod_ordem=cod_ordem, cod_materia=cod_materia, ind_excluido=0)">
+        <dtml-call expr="REQUEST.set('cod_votacao', cod_votacao)">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('cod_votacao', None)">
+    </dtml-in>
+    <dtml-elif expr="zsql.expediente_materia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0, ind_votacao_iniciada=1)">
+    <dtml-in expr="zsql.expediente_materia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0, ind_votacao_iniciada=1)">
+        <dtml-call expr="REQUEST.set('cod_ordem', cod_ordem)">
+        <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+        <dtml-call expr="REQUEST.set('tip_votacao', tip_votacao)">
+        <dtml-call expr="REQUEST.set('tip_sessao', tip_sessao)">
+        <dtml-call expr="REQUEST.set('expediente', 1)">
+    </dtml-in>
+    <dtml-in expr="zsql.votacao_obter_zsql(cod_ordem=cod_ordem, cod_materia=cod_materia, ind_excluido=0)">
+        <dtml-call expr="REQUEST.set('cod_votacao', cod_votacao)">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('cod_votacao', None)">
+    </dtml-in>
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('iniciada', 0)">
+    </dtml-if>
+<dtml-else>
+    <dtml-call expr="REQUEST.set('iniciada', 0)">
+</dtml-if>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_votacao">Ajuda</a>
+<h1 class="firstHeading">Vota&ccedil;&atilde;o do Parlamentar</h1>
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+<dtml-if expr="presente == 1">
+<dtml-if expr="iniciada == 1">
+<form action="votacao_parlamentar_salvar_proc" name="votacao_form" method="get" enctype="multipart/form-data">
+    <input type="hidden" id="hdn_url" name="hdn_url" value="votacao_parlamentar_index_html" />
+    <input type="hidden" id="hdn_cod_materia" name="hdn_cod_materia" value="<dtml-var cod_materia>" />
+    <input type="hidden" id="hdn_cod_ordem" name="hdn_cod_ordem" value="<dtml-var cod_ordem>" />
+    <input type="hidden" id="hdn_tip_votacao" name="hdn_tip_votacao" value="<dtml-var tip_votacao>" />
+    <input type="hidden" id="hdn_txt_login" name="hdn_txt_login" value="<dtml-var txt_login>" />
+    <dtml-if expr="expediente == 0">
+    <dtml-in expr="zsql.presenca_ordem_dia_contar_zsql(cod_sessao_plen=cod_sessao_plen)">
+        <input type="hidden" name="hdn_nro_presentes" value="<dtml-var presenca>" />
+        <dtml-in expr="zsql.parlamentar_obter_zsql(txt_login = txt_login, num_legislatura = cod_num_legislatura, ind_ativo=1, ind_excluido=0)">
+            <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>" />
+            <dtml-call expr="REQUEST.set('cod_parlamentar', cod_parlamentar)">
+            <dtml-if expr="cod_votacao is not None">
+                <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao=cod_votacao, cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                    <dtml-call expr="REQUEST.set('votou', vot_parlamentar)">
+                </dtml-in>
+            <dtml-else>
+                <dtml-call expr="REQUEST.set('votou', 0)">
+            </dtml-if>
+        </dtml-in>
+    </dtml-in>
+    <dtml-else>
+        <dtml-in expr="zsql.presenca_sessao_contar_zsql(cod_sessao_plen=cod_sessao_plen)">
+            <input type="hidden" name="hdn_nro_presentes" value="<dtml-var presenca>" />
+            <dtml-in expr="zsql.parlamentar_obter_zsql(txt_login = txt_login, num_legislatura = cod_num_legislatura, ind_ativo=1, ind_excluido=0)">
+                <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>" />
+                <dtml-call expr="REQUEST.set('cod_parlamentar', cod_parlamentar)">
+                <dtml-if expr="cod_votacao is not None">
+                    <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao=cod_votacao, cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                        <dtml-call expr="REQUEST.set('votou', vot_parlamentar)">
+                    </dtml-in>
+                <dtml-else>
+                    <dtml-call expr="REQUEST.set('votou', 0)">
+                </dtml-if>
+            </dtml-in>
+        </dtml-in>
+    </dtml-if>
+
+    <dtml-if expr="tip_votacao==2">
+        <fieldset>
+            <legend>Vota&ccedil;&atilde;o Nominal</legend>
+            <table width="100%">
+                <tr>
+                    <td class="texto" colspan="3">
+                        <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                            Mat&eacute;ria: <b><dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing> <dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></b><br />
+                            Ementa: <b><dtml-var txt_ementa><b>
+                        </dtml-in>
+                    </td>
+                </tr>
+                <dtml-if votou>
+                    <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao=cod_votacao, cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                        <tr>
+                            <td>
+                                <label
+                                    <dtml-if expr="vot_parlamentar == 'Sim'">class="vote-button green ativo"
+                                    <dtml-else>class="vote-button green inativo"
+                                    </dtml-if>>
+                                    <input type="radio" name="rad_voto_parlamentar" value="Sim"
+                                    <dtml-if expr="vot_parlamentar == 'Sim'">checked=1</dtml-if>>Sim
+                                </label>
+                            </td>
+                            <td>
+                                <label
+                                        <dtml-if expr="vot_parlamentar == 'Não'">class="vote-button red ativo"
+                                        <dtml-else>class="vote-button red inativo"
+                                        </dtml-if>>
+                                    <input type="radio" name="rad_voto_parlamentar" value="Não"
+                                    <dtml-if expr="vot_parlamentar == 'Não'">checked=1</dtml-if> />Não
+                                </label>
+                            </td>
+                            <td>
+                                <label <dtml-if expr="vot_parlamentar == 'Abstenção'">class="vote-button yellow ativo"
+                                        <dtml-else>class="vote-button yellow inativo"
+                                        </dtml-if>><input type="radio" name="rad_voto_parlamentar" value="Abstenção"
+                                    <dtml-if expr="vot_parlamentar == 'Abstenção'">checked=1</dtml-if>>Abstenção
+                                </label>
+                            </td>
+                        </tr>
+                    </dtml-in>
+                    <dtml-else>
+                    <tr>
+                        <td>
+                            <label class="vote-button green">
+                                <input type="radio" name="rad_voto_parlamentar" value="Sim">Sim
+                            </label>
+                        </td>
+                        <td>
+                            <label class="vote-button red">
+                                <input type="radio" name="rad_voto_parlamentar" value="Não">Não
+                            </label>
+                        </td>
+                        <td>
+                            <label class="vote-button yellow">
+                                <input type="radio" name="rad_voto_parlamentar" value="Abstenção">Abstenção
+                            </label>
+                        </td>
+                    </tr>
+                </dtml-if>
+                </table>
+        </fieldset>
+    </dtml-if>
+    <dtml-if expr="tip_votacao==3">
+        <dtml-call expr="pysc.tokens_atribuir_pysc(atribuir=True)">
+        <dtml-if expr="not pysc.tokens_atribuido_pysc(verificar=True)">
+            <p class="texto"><b>Não lhe foi atribuído nenhum token para esta votação secreta</b></p>
+        </dtml-if>
+        <dtml-if expr="pysc.tokens_atribuido_pysc(votou=True, cod_votacao=cod_votacao)">
+            <dtml-call expr="REQUEST.set('votou', 1)">
+        <dtml-else>
+            <dtml-call expr="REQUEST.set('votou', 0)">
+        </dtml-if>
+        <dtml-if expr="pysc.tokens_atribuido_pysc(verificar=True, cod_votacao=cod_votacao) and votou == 0">
+            <fieldset>
+                <legend>Vota&ccedil;&atilde;o Secreta</legend>
+                <table width="100%">
+                    <tr>
+                        <td class="texto" colspan="3">
+                            <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                                Mat&eacute;ria: <b><dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing> <dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></b><br />
+                                Ementa: <b><dtml-var txt_ementa><b>
+                            </dtml-in>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label class="vote-button green">
+                                <input type="radio" name="rad_voto_parlamentar" value="Sim">Sim
+                            </label>
+                        </td>
+                        <td>
+                            <label class="vote-button red">
+                                <input type="radio" name="rad_voto_parlamentar" value="Não">Não
+                            </label>
+                        </td>
+                        <td>
+                            <label class="vote-button yellow">
+                                <input type="radio" name="rad_voto_parlamentar" value="Abstenção">Abstenção
+                            </label>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </dtml-if>
+        <dtml-if expr="votou == 1">
+            <p class="texto">
+            Matéria em votação: <br />
+            <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                Mat&eacute;ria: <b><dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing> <dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></b><br />
+                Ementa: <b><dtml-var txt_ementa><b>
+            </dtml-in>
+            </p>
+            <p class="texto">Obrigado por ter registrado o seu voto!</p>
+        </dtml-if>
+    </dtml-if>
+</form>
+<dtml-else>
+    <p class="texto">Nenhuma mat&eacute;ria em vota&ccedil;&atilde;o</p>
+</dtml-if>
+<dtml-else>
+    <dtml-if ind_status_pre>
+        <p class="texto">A sua presença não foi registrada. Clique <a href="parlamentar_presenca?hdn_url=votacao_parlamentar_index_html">aqui</a> para contabilizar a sua presença</p>
+    <dtml-else>
+        <p class="texto">A sua presença não foi registrada. Porém, não será possível contabilizá-la, pois não existe nenhuma recomposição de presenças em aberto.</p>
+    </dtml-if>
+</dtml-if>
+</div>
+<dtml-var standard_html_footer>

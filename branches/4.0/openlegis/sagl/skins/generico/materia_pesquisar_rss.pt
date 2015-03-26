@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:syn="http://purl.org/rss/1.0/modules/syndication/"
+         xmlns="http://purl.org/rss/1.0/"
+         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+         xmlns:tal="http://xml.zope.org/namespaces/tal"
+         xmlns:metal="http://xml.zope.org/namespaces/metal"
+         tal:define="lst_tip_materia request/lst_tip_materia;
+                     txt_ano request/txt_ano;
+                     txt_numero request/txt_numero;
+                     rad_tramitando request/rad_tramitando;
+                     txt_assunto request/txt_assunto;
+                     txt_relator request/txt_relator;
+                     lst_status request/lst_status;
+                     lst_tip_autor request/lst_tip_autor;
+                     lst_cod_partido request/lst_cod_partido;
+                     hdn_cod_autor request/hdn_cod_autor;
+                     chk_coautor request/chk_coautor;
+                     txt_num_protocolo request/txt_num_protocolo;
+                     txt_npc request/txt_npc;
+                     dt_apres request/dt_apres;
+                     lst_localizacao request/lst_localizacao;
+                     dt_apres2 request/dt_apres2;
+                     dt_public request/dt_public;
+                     dt_public2 request/dt_public2;
+                     rd_ordenacao request/rd_ordenacao;">
+<tal:block define="num_ident_basica python:context.pysc.extrai_id_pysc(id=txt_numero);
+                   results python:context.zsql.materia_pesquisar_zsql(tip_id_basica=lst_tip_materia, num_ident_basica=num_ident_basica, ano_ident_basica=txt_ano, ind_tramitacao=rad_tramitando, des_assunto=txt_assunto, nom_relator=txt_relator, cod_status=lst_status, des_tipo_autor=lst_tip_autor, cod_partido=lst_cod_partido, cod_autor=hdn_cod_autor, ind_coautor=chk_coautor, num_protocolo=txt_num_protocolo, npc=txt_npc, dat_apresentacao=dt_apres, cod_unid_tramitacao=lst_localizacao, dat_apresentacao2=dt_apres2, dat_publicacao=dt_public, dat_publicacao2=dt_public2, rd_ordem=rd_ordenacao);">
+<tal:dummy define="dummy python:request.RESPONSE.setHeader('Content-Type', 'text/xml;;charset=utf-8')" />
+<channel tal:attributes="rdf:about request/URL">
+    <title>
+        MatÃ©rias Legislativas - SAPL (Sistema de Apoio ao Processo Legislativo) - 
+        <span tal:replace="context/sagl_documentos/props_sagl/nom_casa" />
+    </title>
+    <link tal:content="context/portal_url"></link>
+    <description>
+        These are the search results for the query, showing results 1 to
+        <span tal:replace="python:len(results)" />.
+    </description>
+    <image tal:attributes="rdf:resource string:${context/portal_url}/sagl_documentos/props_sagl/${context/sagl_documentos/props_sagl/id_logo}" />
+    <items>
+        <rdf:Seq>
+            <tal:loop repeat="result results">
+                <rdf:li tal:attributes="rdf:resource string:${context/portal_url}/consultas/materia/materia_mostrar_proc?cod_materia=${result/cod_materia}" />
+            </tal:loop>
+        </rdf:Seq>
+    </items>
+</channel>
+<tal:loop repeat="result results">
+    <item tal:attributes="rdf:about string:${context/portal_url}/consultas/materia/materia_mostrar_proc?cod_materia=${result/cod_materia}">
+        <title>
+            <span tal:replace="result/sgl_tipo_materia" /> <span tal:replace="result/num_ident_basica" />/<span tal:replace="result/ano_ident_basica" /> - <span tal:replace="result/des_tipo_materia" />
+        </title>
+        <link tal:content="string:${context/portal_url}/consultas/materia/materia_mostrar_proc?cod_materia=${result/cod_materia}"></link>
+        <description tal:content="result/txt_ementa"></description>
+        <dc:publisher>No publisher</dc:publisher>
+        <dc:creator></dc:creator>
+        <dc:rights></dc:rights>
+        <dc:date></dc:date>
+        <dc:type></dc:type>
+    </item>
+</tal:loop>
+</tal:block>
+</rdf:RDF>

@@ -1,0 +1,74 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript">
+    function submeter(cod_cargo, campo , campo1, form) {
+ 
+    if (campo.value == "") {
+      alert("O campo deve ser preenchido!");
+      campo.focus();
+      return;
+    }
+
+    form.hdn_cod_cargo.value = cod_cargo;
+    form.hdn_des_cargo.value = campo.value;
+    form.hdn_ind_unico.value = campo1.checked; 
+
+    form.submit();
+}
+
+  function excluir(cod_cargo) {
+    location.href = "<dtml-var absolute_url>/cargo_bancada_excluir_proc?cod_cargo=" + cod_cargo;
+  }
+</script>
+
+<form name="cargo_bancada_form" method="post" action="cargo_bancada_salvar_proc"> 
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/cargo_bancada">Ajuda</a>
+<h1 class="firstHeading">Tabelas Auxiliares</h1> 
+
+<input type="hidden" name="hdn_cod_cargo" value=0 /> 
+<input type="hidden" name="hdn_des_cargo" />
+<input type="hidden" name="hdn_ind_unico" />  
+
+<fieldset><legend>Cargos de Bancada</legend>
+
+<dtml-in expr="zsql.cargo_bancada_obter_zsql(ind_excluido=0)">
+    <dtml-if sequence-start>
+       <table class="table" >
+         <tr> 
+           <th width="10%" class="form-label">Código</th>
+           <th width="55%" class="form-label">Cargo de Bancada</th>
+           <th width="15%" class="form-label">Cargo Único</th>
+           <th width="20%" class="form-label">Ação</th>
+         </tr>
+      </dtml-if sequence-start>
+         <tr> 
+           <td width="10%" > <dtml-var cod_cargo></td>
+           <td width="55%" > <input type="text" class="form-control"  name="txt_des_cargo_<dtml-var cod_cargo>" value="<dtml-var des_cargo missing>" size="40" /></td>                 
+           <td width="15%" > <input type="checkbox" name="chk_ind_unico_<dtml-var cod_cargo>" 
+            <dtml-if expr="ind_unico==1">checked</dtml-if> /></td>
+           <td width="20%" >
+           <a href="javascript:submeter(<dtml-var cod_cargo>,document.cargo_bancada_form.txt_des_cargo_<dtml-var cod_cargo>,document.cargo_bancada_form.chk_ind_unico_<dtml-var cod_cargo>,document.cargo_bancada_form)">
+            Atualizar</a> / <a href="javascript:excluir(<dtml-var cod_cargo>)">Excluir</a></td>
+         </tr>
+    <dtml-if sequence-end>
+      </table>        
+    </dtml-if sequence-end>
+<dtml-else>
+       <table class="table" >
+         <tr><td >Nenhum Cargo cadastrado.</td></tr>
+       </table>
+</dtml-in>
+<table class="table" >
+  <tr>
+     <td  ><input type="text" class="form-control"  name="txt_des_cargo" value="<dtml-var des_cargo missing>" size="40" />
+         <input type="checkbox" name="chk_ind_unico" /> Cargo Único
+     <br /> <input type="button" class="botao" name="btn_cargo_bancada_incluir" value="Incluir Cargo" 
+                onClick="submeter(0,document.cargo_bancada_form.txt_des_cargo,document.cargo_bancada_form.chk_ind_unico,document.cargo_bancada_form)" />
+     </td>
+   </tr>
+  </table>
+</fieldset>
+</form>
+
+<dtml-var standard_html_footer>

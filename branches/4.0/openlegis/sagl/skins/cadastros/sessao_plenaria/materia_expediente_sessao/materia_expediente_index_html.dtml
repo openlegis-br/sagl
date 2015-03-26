@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Sistema de Apoio ao Processo Legislativo</title>
+  <style type="text/css"><!-- @import url(&dtml-portal_url;/generico/estilos.css); --></style>
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Economica:400,700,400italic,700italic" type="text/css" media="all"/>
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic" type="text/css"/>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
+</head>
+
+<script type="text/javascript">
+
+function reloadParentAndClose()
+{
+    // reload the opener or the parent window
+    window.opener.location.reload();
+    // then close this pop-up window
+    window.close();
+}
+</script>
+
+<dtml-call expr="REQUEST.set('ind_pdf_ordem', 'mostrar')">
+<table class="table"  class="table" width="98%">
+      <tr>
+         <td>
+<div class="helpsagl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/materias_expediente">Ajuda</a> </div>
+<h1 class="firstHeading"> Matérias do Expediente </h1> 
+
+<h3 ><dtml-var sessao_plenaria_header></h3>
+
+<form name="index_form" method="post" action="materia_expediente_form">
+    <table class="table" >
+        <tr>
+            <td >
+                 <a href="materia_expediente_form?cod_sessao_plen=<dtml-var cod_sessao_plen>">Incluir Matéria no Expediente</a></td>
+        </tr>
+    </table>
+
+    <dtml-in expr="zsql.expediente_materia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)" size=30 start=query_start orphan=2>
+        <dtml-if sequence-start>
+
+        <fieldset>
+        <legend>Matérias do Expediente</legend>
+        <table class="table" >
+            <tr class="fundo">
+                <td width="25%" >Matéria</td>
+                <td width="60%" >Ementa</td>
+                <td width="15%" >Açãoo</td>
+            </tr>
+            <dtml-if previous-sequence>
+            <tr>
+                <td class="form-element" colspan="2">
+                    <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
+                        Página Anterior (<dtml-var previous-sequence-size>)</a>
+                </td>
+            </tr>
+            </dtml-if previous-sequence>
+        </dtml-if sequence-start>
+        <tr>
+                <td  valign="top">
+                    <b><dtml-var num_ordem></b> - 
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                    <a href="#" onClick="javascript:window.open('materia_expediente_mostrar_proc?cod_ordem=<dtml-var cod_ordem>','ItemOrdemWin','width=770,height=350,top=200,left=200,scrollbars=yes');">
+                        <dtml-var sgl_tipo_materia missing> - <dtml-var des_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></a><br />
+
+               <dtml-if num_protocolo>
+                  <b>Protocolo:</b> <dtml-var num_protocolo>/<dtml-var ano_ident_basica>
+                  <br />
+               </dtml-if>
+
+              </dtml-in>
+
+                <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia, ind_primeiro_autor=1)">
+                <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+                    <dtml-if cod_parlamentar>
+                        <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                            <b>Autor</b>: <dtml-var nom_parlamentar>
+                        </dtml-in>
+                    <dtml-elif cod_comissao>
+                        <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                             <b>Autor</b>: <dtml-var nom_comissao>
+                        </dtml-in>
+                    <dtml-elif cod_bancada>
+                        <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
+                             <b>Autor</b>: <dtml-var nom_bancada>
+                        </dtml-in>
+                    <dtml-else>
+                             <b>Autor</b>: <dtml-var nom_autor>
+                    </dtml-if>
+                </dtml-in>
+                </dtml-in>
+            </td>
+            <td  valign="top">
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                    <dtml-var txt_ementa>
+                </dtml-in>
+
+            <td  valign="top">
+
+
+<script type="text/javascript" language="Javascript">
+
+  function materia_expediente_excluir(){
+
+       if (confirm("Deseja realmente excluir?")) {
+          location.href="materia_expediente_excluir_proc?cod_ordem=<dtml-var cod_ordem>&cod_sessao_plen=<dtml-var cod_sessao_plen>";
+       }
+  }
+</script>
+            <input type="button" class="botaoExtra" name="btn_excluir" value="Excluir" onClick="materia_expediente_excluir()" />
+             <br />
+
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <hr>
+            </td>
+        </tr>
+    <dtml-if sequence-end>
+    <dtml-if next-sequence>
+        <tr>
+            <td class="form-element" colspan="2">
+                <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
+                    Próxima Página (<dtml-var next-sequence-size>)</a>
+            </td>
+        </tr>
+    </dtml-if next-sequence>
+    </table>
+    </td>
+  </tr>
+</table>
+  </dtml-if sequence-end>
+  <dtml-else>
+        <table class="table"  class="table" width="90%">
+            <tr><td></td></tr>
+            <tr>
+                <td class="form-text">Não há matérias no expediente.</td>
+            </tr>
+       </table>
+</dtml-in>
+</fieldset>
+
+<p >
+<input class="botao" type=button onClick="parent.location='materia_expediente_form?cod_sessao_plen=<dtml-var cod_sessao_plen>'" value="Incluir matéria no Expediente">
+<input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+</p>
+
+</form>
+
+</td>
+</tr>
+</table>
+

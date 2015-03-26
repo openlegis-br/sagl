@@ -1,0 +1,104 @@
+ <!DOCTYPE html>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Pesquisa de autor</title>
+  <dtml-var standard_css_slot>
+  <script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+
+<script type="text/javascript" >
+ <!--  
+    function campos_criticar(form) {
+
+      if (form.txt_autor.value == ""){
+         alert("O nome do autor deve ser preenchido!");
+         form.txt_autor.focus();
+         return false;        
+     }    
+     return true;
+    }
+
+    function voltar(form) {             
+
+     if (form.lst_autor.length == 0){
+         window.close();
+         return;
+     }
+
+     if (form.lst_autor.selectedIndex == -1) {
+       alert("Selecione um autor!!");
+       return false;
+     }      
+
+     var autor;
+     autor = window.parent.document.materia_form;
+     valor=form.lst_autor[form.lst_autor.selectedIndex].value;
+     index=valor.indexOf('-');
+     
+     cod_autor=valor.substring(0,index);
+     des_tipo_autor=valor.substring(index+1,valor.length);
+     
+     autor.txt_autor.value = form.lst_autor[form.lst_autor.selectedIndex].text;
+     autor.hdn_txt_autor.value = form.lst_autor[form.lst_autor.selectedIndex].text;
+     for (i=0; i<autor.lst_tip_autor.length; i++) {
+         if (autor.lst_tip_autor.options[i].text==des_tipo_autor) {
+             autor.lst_tip_autor.options[i].selected=true;
+             break;
+         }
+     }
+     autor.hdn_cod_autor.value=cod_autor;
+     parent.jQuery.fancybox.close();
+     return;
+    }
+
+ //-->
+</script>
+</head>
+<body class="fadeIn">
+
+<h1 class="firstHeading">Pesquisar por Autores</h1> 
+
+<form name="autor_pesquisar_form" action="autor_pesquisar_form" onsubmit="return false;">
+<table class="table" >
+   <tr>
+      <td class="tela-popup" width="85%">Nome do Autor: <input type="text" class="form-control"  name="txt_autor" value="<dtml-var txt_autor missing="">" size="30"></td>
+      <td class="tela-popup" width="15%">
+        <a href="javascript:if (campos_criticar(document.autor_pesquisar_form)) {document.autor_pesquisar_form.submit()}" class="botao-link">Buscar</a>
+      </td>
+   </tr>
+   <dtml-if expr="REQUEST.has_key('txt_autor')">
+     <tr><td class="tela-popup" colspan="2">Selecione o autor desejado:<br>
+       <select class="form-control"  name="lst_autor" size="10" style="max-width: 350px !important;">
+       <dtml-in expr="zsql.parlamentar_obter_zsql(nom_parlamentar_match=txt_autor)">
+         <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+            <option value=<dtml-var cod_autor>-Parlamentar> <dtml-var nom_completo> </option>
+         </dtml-in>
+       </dtml-in>
+ 
+       <dtml-in expr="zsql.comissao_obter_zsql(nom_comissao_match=txt_autor)">
+         <dtml-in expr="zsql.autor_obter_zsql(cod_comissao=cod_comissao)">
+           <option value=<dtml-var cod_autor>-Comissao> <dtml-var nom_comissao> </option>
+         </dtml-in>
+       </dtml-in>
+
+       <dtml-in expr="zsql.bancada_obter_zsql(nom_bancada_match=txt_autor)">
+         <dtml-in expr="zsql.autor_obter_zsql(cod_bancada=cod_bancada)">
+           <option value=<dtml-var cod_autor>-Bancada> <dtml-var nom_bancada> 
+             <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=num_legislatura_sel,ind_excluido=0)">
+               - <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">
+             </dtml-in>
+       </option>
+         </dtml-in>
+       </dtml-in>
+ 
+       <dtml-in expr="zsql.autor_obter_zsql(nom_autor_match=txt_autor)">
+       <option value="<dtml-var cod_autor>-<dtml-var des_tipo_autor>"> <dtml-var nom_autor> </option>
+       </dtml-in> 
+       </select>
+       <input class="botao" type="button" name="btn_OK" value=" OK " onClick="voltar(document.autor_pesquisar_form)"></td>
+     </tr>
+   </dtml-if>
+</table>
+</form>
+</body>
+</html>

@@ -1,0 +1,163 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+
+<script type ="text/javascript">
+<!--
+  function submeter(endereco){
+     
+     var form = document.anexada_form;
+
+     endereco += '?cod_materia=' + form.cod_materia_principal.value;
+
+      if (form.hdn_alterou.value=="1"){
+         if (confirm("Deseja salvar os dados?")){
+            form.hdn_url.value = endereco;
+            campos_criticar(form);
+         }else {location.href = endereco}
+      }else
+          location.href = endereco;
+
+  }
+
+  function campos_criticar(form){
+       
+      if (form.txt_num_ident_basica.value==""){
+          alert("O numero da materia deve ser preenchido");
+          form.txt_num_ident_basica.focus();
+          return false;
+      }
+      if (form.txt_ano_ident_basica.value==""){
+          alert("O ano da materia deve ser preenchida");
+          form.txt_ano_ident_basica.focus();
+          return false;
+      }
+      if (form.txt_dat_anexacao.value==""){
+         alert("A data de anexação deve ser preenchida");
+         form.txt_dat_anexacao.focus();
+         return false;
+      }  
+      if (form.txt_dat_anexacao.value!="" && !IsValidDate(form.txt_dat_anexacao.value)){
+         alert("Digite uma data de anexacao válida!");
+         form.txt_dat_anexacao.focus();
+         form.txt_dat_anexacao.select();
+         return false;
+      }
+          
+      if (form.txt_dat_desanexacao.value!=""){
+         if (!IsValidDate(form.txt_dat_desanexacao.value)){          
+           alert("Digite uma data de desanexaçao válida!");
+           form.txt_dat_desanexacao.focus();
+           form.txt_dat_desanexacao.select();
+           return false;
+         }
+         var dat_anexacao = form.txt_dat_anexacao.value.substring(6,10) + form.txt_dat_anexacao.value.substring(3,5) + form.txt_dat_anexacao.value.substring(0,2);             
+         var dat_desanexacao = form.txt_dat_desanexacao.value.substring(6,10) + form.txt_dat_desanexacao.value.substring(3,5) + form.txt_dat_desanexacao.value.substring(0,2); 
+         if(dat_desanexacao < dat_anexacao){
+           alert("A data de desanexação deve ser maior ou igual a data de anexação");
+           form.txt_dat_desanexacao.focus();
+           form.txt_dat_desanexacao.select();
+           return false;
+        }  
+      }  
+
+      if (form.lst_tip_id_basica.value == ""){
+          alert("O tipo de materia deve ser selecionado!");
+          form.lst_tip_id_basica.focus();
+          return false;
+      }
+      form.submit();
+  }
+    
+  
+  function anexada_excluir(){
+       
+       if (confirm("Deseja realmente excluir?")) {
+          location.href="anexada_excluir_proc?cod_materia_anexada=<dtml-var cod_materia_anexada missing>&cod_materia_principal=<dtml-var cod_materia>&dat_anexacao=<dtml-var dat_anexacao missing>";
+       }
+  } 
+
+//-->
+</script>
+
+<script type="text/javascript">
+$(function() {
+        $('#txt_dat_anexacao').datepick();
+        $('#txt_dat_desanexacao').datepick();
+});
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/materia_anexada">Ajuda</a>
+<h1 class="firstHeading">Matéria Legislativa</h1>
+
+<form name="anexada_form" method="post" action="anexada_salvar_proc">
+<input type="hidden" name="incluir_anexada" value="<dtml-var incluir_anexada missing>" />
+<input type="hidden" name="hdn_url" value="index_html?cod_materia=<dtml-var cod_materia>" />
+    <dtml-var materia_menu>
+    <dtml-var materia_header>
+
+<fieldset>
+      <fieldset><legend>Matéria Anexada</legend>
+      <table class="table" >
+        <tr>
+          <td colspan="2">
+            <label for="lst_tip_id_basica">Tipo </label> <span class="campoObrigatorio"></span><br />
+            <select class="form-control"  name="lst_tip_id_basica" size="1" onChange="javascript:form.hdn_alterou.value=1">
+            <option value="">Selecione</option>
+             <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+            <option
+              <dtml-if cod_materia_anexada> 
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia_anexada)">
+                   <dtml-if expr="_.int(tip_id_basica) == _.int(tip_materia)">
+                     selected 
+                   </dtml-if>  
+                </dtml-in>
+              </dtml-if>  
+             value="<dtml-var tip_materia>">
+             <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia missing></option>
+            </dtml-in>           
+           </select>
+          </td>      
+          <td>
+           <label for="txt_num_ident_basica">Número </label> <span class="campoObrigatorio"></span><br />
+           <input type="text" class="form-control"  name="txt_num_ident_basica" size="5" maxlength="5" onChange="javascript:form.hdn_alterou.value=1"
+             <dtml-if cod_materia_anexada> 
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia_anexada, )">
+                   value="<dtml-var num_ident_basica missing>"
+                </dtml-in>
+             </dtml-if> />   
+           </td>
+          <td>
+           <label for="txt_ano_ident_basica">Ano </label> <span class="campoObrigatorio"></span><br/>
+           <input type="text" class="form-control"  name="txt_ano_ident_basica" size="4" maxlength="4" onChange="javascript:form.hdn_alterou.value=1"
+             <dtml-if cod_materia_anexada> 
+               <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia_anexada, )">
+                  value="<dtml-var ano_ident_basica missing>"
+               </dtml-in>
+            </dtml-if> />  
+           </td>
+        </tr>
+        <tr> 
+           <td colspan="2">
+           <label for="txt_dat_anexacao">Data Anexação </label> <span class="campoObrigatorio"></span><br />
+           <input type="text" class="form-control"  name="txt_dat_anexacao" id="txt_dat_anexacao" value="<dtml-var dat_anexacao missing>" size="10" maxlength="10" onChange="javascript:form.hdn_alterou.value=1" onBlur="formata_data(form.txt_dat_anexacao)" />
+           </td>
+           <td colspan="2">
+           <label for="txt_dat_desanexacao">Data Desanexação </label><br />
+           <input type="text" class="form-control"  name="txt_dat_desanexacao" id="txt_dat_desanexacao" value="<dtml-var dat_desanexacao missing null="">" size="10" maxlength="10" onChange="javascript:form.hdn_alterou.value=1" onBlur="formata_data(form.txt_dat_desanexacao)" />
+            </td>
+        </tr>
+      </table>
+    </fieldset>
+     <p ><input type="button" class="botao" name="btn_anexada_salvar" value="Salvar" onClick="campos_criticar(document.anexada_form)" />
+      
+     <dtml-unless incluir_anexada>  
+        <input type="hidden" name="flag_atualizar" value="<dtml-var cod_materia>" /> 
+        <input type="button" class="botao" name="btn_anexada_excluir" value="Excluir" onClick="anexada_excluir()" />
+      </dtml-unless>
+     </p>
+     <input type="hidden" name="cod_materia_principal" value="<dtml-var cod_materia>" />
+     <input type="hidden" name="hdn_alterou" value="0" />
+</form>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.datepick.js"></script>
+
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+
+<script type="text/javascript">
+
+  function campos_criticar(form){
+
+     if ((form.lst_tip_documento.selectedIndex==0) ||
+         (form.txt_num_documento.value=="") || 
+         (form.txt_ano_documento.value=="")){
+         alert("Os campos de identificação do documento devem ser preenchidos!");
+         form.txt_num_documento.focus();
+         return false;
+     }
+
+     if (form.txt_dat_arquivamento.value==""){
+         alert("A data de arquivamento deve ser preenchida");
+         form.txt_dat_arquivamento.focus();
+         return false;
+      }
+
+     if (form.txt_dat_arquivamento.value!="" && !IsValidDate(form.txt_dat_arquivamento.value)){
+         alert("Digite uma data de arquivamento válida!");
+         form.txt_dat_arquivamento.focus();
+         form.txt_dat_arquivamento.select();
+         return false;
+      }
+
+      if (form.txa_txt_assunto.value == "") {
+         alert("O assunto deve estar preenchido!");
+         form.txa_txt_assunto.focus();
+         return false;
+      }
+
+      if (form.lst_tip_suporte.selectedIndex==0){
+          alert("Selecione um tipo de suporte!");
+          form.lst_tip_suporte.focus();
+          return false;
+      }
+
+      form.submit();
+  }
+
+  function ementa_buscar(form){
+   if ((form.lst_tip_documento.selectedIndex != 0) &&
+      (form.txt_num_documento.value!="") && 
+      (form.txt_ano_documento.value!="")){
+      location.href="ementa_documento_buscar_proc?tip_ident_basica="+form.lst_tip_documento[form.lst_tip_documento.selectedIndex].value+"&num_ident_basica="+form.txt_num_documento.value+"&ano_ident_basica="+form.txt_ano_documento.value+"&cod_recipiente="+form.hdn_cod_recipiente.value;
+    }
+  }
+
+  function reloadParentAndClose(){
+   parent.jQuery.fancybox.close();
+  }
+ 
+</script>
+
+<script type="text/javascript">
+  $(function() {
+      $('#txt_dat_arquivamento').datepick();
+  });
+</script>
+
+</head>
+
+<body>
+
+<h1 class="firstHeading">Arquivo Permanente</h1>
+
+<h3><dtml-var arquivo_recipiente_header></h3>
+
+<form name="arquivo_item_documento_form" method="post" action="arquivo_item_salvar_proc">
+<fieldset>
+  <legend>Inclusão de Documento no Recipiente</legend>
+    <table class="table" >
+      <tr> 
+        <td width="50%"><label for="lst_tip_documento">Documento Administrativo</label><span class="campoObrigatorio"></span><br>
+           <select class="form-control"  name="lst_tip_documento" id="lst_tip_documento" onChange="ementa_buscar(document.arquivo_item_documento_form)">
+            <option>
+              <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
+                 <option
+                    <dtml-if tip_documento_sel>
+                      <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_sel)">
+                         selected
+                      </dtml-if>
+                   </dtml-if>
+                    value="<dtml-var tip_documento missing>"> <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+                   </option>
+              </dtml-in>
+           </select></td>
+        <td>
+           <label for="txt_num_documento">Número</label><span class="campoObrigatorio"></span><br>
+            <input type="text" class="form-control"  name="txt_num_documento" id="txt_num_documento" size="5" value="<dtml-var num_documento_sel missing>" maxlength="5" onChange="ementa_buscar(document.arquivo_item_documento_form)">
+        </td>
+        <td>
+           <label for="txt_ano_documento">Ano</label><span class="campoObrigatorio"></span><br>
+            <input type="text" class="form-control"  name="txt_ano_documento" id="txt_ano_documento" size="4" value="<dtml-var ano_documento_sel missing>" maxlength="4" onChange="ementa_buscar(document.arquivo_item_documento_form)">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3"><label for="txa_txt_assunto">Assunto</label> <span class="campoObrigatorio"></span><br/>
+          <textarea class="form-control"  name="txa_txt_assunto" id="txa_txt_assunto" cols="65" rows="4" readonly><dtml-var txt_assunto missing></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="txt_dat_arquivamento">Data Arquivamento<span class="campoObrigatorio"></span></label><br />
+            <dtml-unless dat_arquivamento>
+               <dtml-call expr="REQUEST.set('dat_arquivamento', _.DateTime().strftime('%d/%m/%Y'))">
+            </dtml-unless>
+            <input type="text" class="form-control"  id="txt_dat_arquivamento" name="txt_dat_arquivamento" size="10" maxlength="10" value="<dtml-var dat_arquivamento missing null="">" onBlur="formata_data(form.txt_dat_arquivamento)" onChange="javascript:form.hdn_alterou.value=1" />
+        </td>
+        <td colspan="2"><label for="lst_tip_suporte">Tipo Suporte <span class="campoObrigatorio"></span></label><br />
+           <select class="form-control"  id="lst_tip_suporte" name="lst_tip_suporte">
+             <option value="0">Selecione</option>
+             <dtml-in expr="zsql.arquivo_tipo_suporte_obter_zsql(ind_excluido=0)">
+             <option 
+               <dtml-if tip_suporte_sel>
+                 <dtml-if expr="_.int(tip_suporte) == _.int(tip_suporte_sel)">
+                    selected
+                 </dtml-if>
+               <dtml-else>
+                 <dtml-if expr="_.int(tip_suporte) == 1">
+                    selected
+                 </dtml-if> 
+               </dtml-if>
+                    value="<dtml-var tip_suporte>">
+                    <dtml-var des_tipo_suporte>
+             </option>
+             </dtml-in>
+           </select>
+        </td>
+      <tr>
+        <td colspan="3"><label for="txa_txt_observacao">Observação</label> 
+           <textarea class="form-control"  id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
+        </td>
+      </tr>
+    </table>
+</fieldset>
+
+<p >
+  <input type="button" class="botao" name="button" value="Salvar" onClick="campos_criticar(document.arquivo_item_documento_form)" />
+  <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+</p>
+  <input type="hidden" name="hdn_cod_recipiente" value="<dtml-var cod_recipiente>"/>
+  <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento_sel missing>"/>
+</form>
+
+</body>
+
+</html>
+
+
+

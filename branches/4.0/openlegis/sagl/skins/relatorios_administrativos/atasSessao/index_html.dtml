@@ -1,0 +1,101 @@
+<dtml-var standard_html_header>   
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></SCRIPT>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/prototype.min.js"></script>
+<style  type="text/css"><!-- @import url(&dtml-portal_url;/generico/datepicker.css); --></style>
+
+<script type="text/javascript">
+
+    function campos_criticar(form) {
+
+        if (form.chk_textual.checked == true) {
+            form.action = "ata_texto_sessao_pesquisa_proc";
+            form.submit();
+        }
+       
+        else {
+            if (form.txt_dat_inicio.value == "") {
+                alert("Datas início do período deve ser preenchida!");
+                form.txt_dat_inicio.focus();
+                return false;
+            }
+
+            if (!IsValidDate(form.txt_dat_inicio.value)) {
+                alert("Digite uma data válida!");
+                form.txt_dat_inicio.focus();
+                return false;
+            }
+
+            if (form.txt_dat_fim.value=="") {
+                alert("Data fim do período deve ser preenchida!");
+                form.txt_dat_fim.value.focus();
+                form.txt_dat_fim.select();
+            }
+
+            if (!IsValidDate(form.txt_dat_fim.value)) {
+                alert("Digite uma data válida!");
+                form.txt_dat_fim.focus();
+                form.txt_dat_fim.select();
+                return false;
+            }
+
+            var dat_inicio = form.txt_dat_inicio.value.substring(6,10) + form.txt_dat_inicio.value.substring(3,5) + form.txt_dat_inicio.value.substring(0,2);
+            var dat_fim = form.txt_dat_fim.value.substring(6,10) + form.txt_dat_fim.value.substring(3,5) + form.txt_dat_fim.value.substring(0,2);
+            if (dat_inicio > dat_fim) {
+                alert("Data fim do periodo deve ser maior ou igual a data de inicio!");
+                form.txt_dat_fim.focus();
+                form.txt_dat_fim.select();
+                return false;
+            }
+            form.submit();
+        }
+    }
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/relatorios#cons_atas">Ajuda</a>
+<h1 class="firstHeading"> Atas das Sess&otilde;es Plen&aacute;rias</h1>
+<form name="form" action="view">
+<fieldset>
+    <legend>Per&iacute;odo selecionado</legend>
+    <table width="35%">
+        <tr>
+            <td class="form-element">In&iacute;cio
+                <input type="text"
+                         name="txt_dat_inicio"
+                         id="txt_dat_inicio"
+                         value="<dtml-var dat_inicio_sessao missing>"
+                         size="10" maxlength="10"
+                         onBlur="formata_data(form.txt_dat_inicio)"
+                         onChange="javascript:form.hdn_alterou.value=1"/>
+            </td>
+            <td class="form-element">Fim
+                <input type="text"
+                         name="txt_dat_fim"
+                         id="txt_dat_fim"
+                         value="<dtml-var dat_fim_sessao missing>"
+                         size="10" maxlength="10"
+                         onBlur="formata_data(form.txt_dat_fim)"
+                         onChange="javascript:form.hdn_alterou.value=1"/>
+            </td>
+         </tr>
+    </table>
+    </fieldset>
+    <fieldset>
+        <legend>Pesquisa Textual</legend>
+        <table witdh="35%">
+            <tr>
+                <th><label for="txt_assunto">Termos</label></th>
+                <td>
+                    <input id="txt_assunto" type="text" name="txt_assunto" null="" size="39" />
+                </td>
+                <th><label for="chk_textual">Assinale para pesquisa textual</label></th>
+                <td>
+                    <input type="checkbox" name="chk_textual" value="1" id="chk_textual" />
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+
+    <p> <input type="button" class="botao" value="Pesquisar" onClick="javascript:campos_criticar(document.form)" /> </p>
+<dtml-var standard_html_footer>

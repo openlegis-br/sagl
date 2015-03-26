@@ -1,0 +1,31 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : ind_excluido="0" cod_sessao_plen=""
+max_rows : 5000
+max_cache : 100
+</dtml-comment>
+<dtml-comment>
+#-------------------------------------------------------------------------------
+  Função: Pesquisar as matérias com status = INCLORDIA - incluir materia no expediente.
+#--------------------------------------------------------------------------------
+</dtml-comment>
+SELECT 
+       REPLACE(m.cod_materia, 'L',   '') as cod_materia,
+       REPLACE(m.tip_id_basica, 'L', '') as tip_id_basica,
+       m.num_ident_basica,
+       m.ano_ident_basica,
+       m.txt_ementa,
+       m.dat_apresentacao,
+       tm.sgl_tipo_materia
+from materia_legislativa m left join tramitacao t        on (m.cod_materia=t.cod_materia) 
+                           left join status_tramitacao s on (t.cod_status=s.cod_status) 
+                           left join tipo_materia_legislativa tm on (m.tip_id_basica=tm.tip_materia) 
+where m.ind_excluido=0         and 
+      t.ind_excluido=0         and 
+      t.ind_ult_tramitacao=1   and 
+      s.ind_excluido=0         and 
+      s.sgl_status='INCLORDIA' and
+      m.cod_materia not in (select cod_materia from expediente_materia where ind_excluido=0 and cod_sessao_plen=<dtml-sqlvar cod_sessao_plen type="int" optional>) 
+
+
+ORDER BY 4 DESC, 2, 3 DESC

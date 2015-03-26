@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+
+<script type="text/javascript">
+   function campos_criticar(form){
+      if (form.lst_status.selectedIndex == 0){
+          alert("O Status de Tramitação deve ser selecionado!");
+          form.lst_status.focus();
+          return false;
+      }
+
+      form.submit();
+  }
+
+function reloadParentAndClose()
+{
+    // then close this pop-up window
+    parent.jQuery.fancybox.close();
+}
+</script>
+</head>
+<body>
+
+<h1 class="firstHeading">Matérias do Expediente</h1>
+
+<h3 ><dtml-var sessao_plenaria_header></h3>
+
+<fieldset><legend>Gerar Pauta do Expediente</legend>
+   <table class="table" >
+     <form name="pauta_expediente_form" method="post" action="pauta_expediente_gerar_proc">
+	  <tr>
+	     <th colspan="2">
+		<label for="lst_status">Selecione a Situação Atual das Matérias</label><span class="campoObrigatorio"></span>
+	     </th>
+	  </tr>
+	  <tr>
+       <td>
+          <select class="form-control"  id="lst_status" name="lst_status">
+            <option value=""></option>
+            <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var cod_status missing>">
+                <dtml-var sgl_status> - <dtml-var des_status>
+              </option>
+            </dtml-in>
+          </select>
+        </td>
+          </tr>
+   </table>
+           <p >
+            <input type="button" name="btn_pauta_expediente_form" class="botao" value="Continuar" 
+                   onClick="campos_criticar(document.pauta_expediente_form)">
+            <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+            <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+            <input type="hidden" name="cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>" />
+            <input type="hidden" name="cod_num_legislatura" value="<dtml-var cod_num_legislatura missing>" />
+            <input type="hidden" name="tip_sessao" value="<dtml-var tip_sessao missing>" />
+            <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+              <input type="hidden" name="dat_ordem" value="<dtml-var dat_inicio_sessao>" />
+            </dtml-in>
+           </p>
+     </form>
+
+</fieldset>
+</body>
+</html>

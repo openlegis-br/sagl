@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Sistema de Apoio ao Processo Legislativo</title>
+    <dtml-var standard_css_slot>
+</head>
+
+<body>
+<script type="text/javascript" language="Javascript" src="javascript/data_validar_jvsc"></script>
+<script type="text/javascript">
+
+    function campos_criticar(form) {
+        /*-----------------------------------------------------------------
+         Função: Inclusão de matérias feita em lote.
+         Para salvar, pelo menos uma matéria deve ser selecionada.
+         ------------------------------------------------------------------- */
+        var selecionado = false;
+        if (form.chk_materia.length == undefined) {
+            if (form.chk_materia.checked) {
+                selecionado = true;
+                form.submit();
+            } else {
+                alert("Pelo menos uma matéria deve ser selecionada!");
+                form.chk_materia.focus();
+                return false;
+            }
+        } else {
+            for (i = 0; i < form.chk_materia.length; i++) {
+                if (form.chk_materia[i].checked) {
+                    selecionado = true;
+                }
+            }
+            if (selecionado == false) {
+                alert("Pelo menos uma matéria deve ser selecionada!");
+                form.chk_materia[0].focus();
+                return false;
+            }
+            form.submit();
+        }
+    }
+
+
+    function checkAll(checkbox, boleano){
+        var field = new Array() ;
+        if (checkbox.length == undefined) {
+            field = [checkbox];
+        } else {
+            field = checkbox;
+        }
+
+        for (i = 0; i < field.length; i++){
+            field[i].checked = boleano;
+        }
+    }
+
+    function reloadParentAndClose() {
+        parent.jQuery.fancybox.close();
+    }
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_materias_expediente_varias">Ajuda</a>
+<h1 class="firstHeading"> Matérias para inclusão em lote na Ordem do Dia </h1>
+
+<form name="ordem_dia_sessao_varias_form" method="post" action="ordem_dia_sessao_salvar_proc">
+    <fieldset>
+        <h3>Matérias disponíveis</h3><br />
+        <table widith="100%">
+            <dtml-call expr="REQUEST.set('listavazia', 1)">
+            <dtml-in expr="zsql.materia_inclordia_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
+                <dtml-if sequence-start>
+                    <tr>
+                        <td class="form-label">Seleção</td>
+                        <td class="form-label" width="15%">Indicar Tipo de Votação</td>
+                        <td class="form-label">Tipo Matéria</td>
+                        <td class="form-label">Número</td>
+                        <td class="form-label">Ano</td>
+                        <td class="form-label">Ementa</td>
+                        <td class="form-label">Texto Integral</td>
+                    </tr>
+                    <tr>
+                        <td><input type="button" class="botao"       value="Todos" onClick="checkAll(document.ordem_dia_sessao_varias_form.chk_materia, true)">
+                            <input type="button" class="botaoExtra"  value="Nenhum" onClick="checkAll(document.ordem_dia_sessao_varias_form.chk_materia, false)"></td>
+                        <td colspan="4"></td>
+                    </tr>
+                </dtml-if sequence-start>
+                <tr><td><input type="checkbox" id="chk_materia" name="chk_materia" value="<dtml-var cod_materia missing>"></td>
+
+                    <td><dtml-in expr="[(1,'Simbólica'),(2,'Nominal'),(3,'Secreta')]">
+                        <input class="texto" type="radio" id="rad_tip_votacao_<dtml-var cod_materia>" name="rad_tip_votacao_<dtml-var cod_materia>" value="<dtml-var expr="_['sequence-key']">"
+                        <dtml-if expr="_['sequence-key']==1">checked=1</dtml-if>  /> <span class="texto"><dtml-var expr="_['sequence-item']"></span><br>
+                    </dtml-in>
+                    </td>
+
+                    <td class="texto"><dtml-var sgl_tipo_materia></td>
+                    <td class="texto"><dtml-var num_ident_basica></td>
+                    <td class="texto"><dtml-var ano_ident_basica></td>
+                    <td class="texto"><dtml-var txt_ementa> </td>
+                    <dtml-call expr="REQUEST.set('id_documento', _.str(cod_materia)+'_texto_integral')">
+                    <td class="texto">
+                        <dtml-if "_.hasattr(sagl_documentos.materia,id_documento)">
+                        <dtml-let documento="_.getattr(sagl_documentos.materia,id_documento).absolute_url">
+                            <a target="_blank" href="<dtml-var documento>"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral"></a>
+                        </dtml-let>
+                        </dtml-if>
+                    </td>
+                </tr>
+                <dtml-call expr="REQUEST.set('vazio',0)">
+                <dtml-else>
+                <tr><td width="38%" class="exclama" align="right" valign="top" style="padding:0"> ! </td>
+                    <td class="texto" colspan="4" align="left" style="font-weight:bold">
+                        <dtml-if expr="listavazia">
+
+                            <dtml-let mensagem="'N&atilde;o h&aacute; mat&eacute;rias para inclus&atilde;o.'" url="'javascript:reloadParentAndClose();'">
+                                <dtml-var mensagem>
+                            </dtml-let>
+                        </dtml-if></td>
+                </tr>
+
+            </dtml-in>
+        </table>
+
+    </fieldset>
+    <p align="center">
+        <input type="button" class="botao" name="btn_salvar" value="Incluir em Mat&eacute;rias da Ordem do Dia" onClick="campos_criticar(document.ordem_dia_sessao_varias_form);" />
+        &nbsp;
+        <input type="button" class="botao" name="btn_fechar" value="Retornar" OnClick="reloadParentAndClose();" />
+    </p>
+    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
+        <dtml-in expr="zsql.ordem_dia_materia_numero_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
+            <input type="hidden" name="cod_sessao_plen"   value="<dtml-var cod_sessao_plen missing>" />
+            <input type="hidden" name="dat_inicio_sessao" value="<dtml-var dat_inicio_sessao missing>" />
+            <input type="hidden" name="txt_num_ordem"     value="<dtml-var txt_num_ordem missing>" />
+        </dtml-in>
+    </dtml-in>
+</form>
+</body>
+</html>

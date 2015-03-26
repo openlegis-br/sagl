@@ -1,0 +1,66 @@
+﻿<dtml-var standard_html_header>
+
+<div class="helpsagl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_parlamentares">Ajuda</a></div>
+
+<dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+  <dtml-call expr="REQUEST.set('nom_parlamentar', nom_parlamentar)">
+  <input type="hidden" name="nom_parlamentar" value="<dtml-var nom_parlamentar>"/>
+</dtml-in>
+
+<h1 class="firstHeading"><dtml-var nom_parlamentar></h1> 
+
+<form name="inclui_form" action="filiacao_form">
+  <input type="hidden" name="cod_parlamentar" value="<dtml-var cod_parlamentar>"/>
+
+<dtml-var parlamentar_menu>
+
+<dtml-in expr="zsql.filiacao_obter_zsql(ind_excluido=0, cod_parlamentar=cod_parlamentar)" size=8 start=query_start orphan=2>
+  <dtml-if sequence-start>
+       <fieldset><legend>Filiações Partidárias</legend>
+        <table class="table" >
+          <tr> 
+             <th class="form-label">Partido</th>
+             <th class="form-label">Data Filiação</th>
+             <th class="form-label">Data Desfiliação</th>
+             </tr>
+      <dtml-if previous-sequence>
+             <tr><td colspan="3" class="form-element">
+                <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
+                Página Anterior (<dtml-var previous-sequence-size> resultados)</a></td></tr>
+      </dtml-if previous-sequence>
+  </dtml-if sequence-start>
+             <tr>
+               <td >
+                  <a href="filiacao_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>&amp;cod_partido=<dtml-var cod_partido>&amp;dat_filiacao=<dtml-var expr="pysc.data_converter_pysc(dat_filiacao)">">
+                    <dtml-in expr="zsql.partido_obter_zsql(ind_excluido=0)">
+                    <dtml-if expr="cod_partido==filiacao_form.cod_partido"><b><dtml-var sgl_partido></b></dtml-if></dtml-in></a></td>
+               <td ><dtml-if dat_filiacao><dtml-var dat_filiacao></dtml-if></td>
+               <td ><dtml-if dat_desfiliacao><dtml-var dat_desfiliacao null=""></dtml-if></td>
+            </tr>            
+ <dtml-if sequence-end>
+    <dtml-if next-sequence>
+        <tr> 
+          <td colspan="3" class="form-element"><a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
+          Próxima Página (<dtml-var next-sequence-size> resultados)</a></td>
+        </tr>
+    </dtml-if next-sequence>
+    </table>
+    </fieldset>   
+  </dtml-if sequence-end>
+<dtml-else>
+      <fieldset><legend><dtml-var nom_parlamentar></legend>
+      <table class="table" >
+        <tr>
+         <td >
+           Nenhuma filiação cadastrada para esse parlamentar.
+         </td>
+        </tr>
+      </table>
+      </fieldset>
+</dtml-in>
+      <p >
+         <input type="submit" name="btn_incluir_filiacao" class="botao" value="Incluir Filiação Partidária"/>
+      </p>
+</form>
+
+<dtml-var standard_html_footer>

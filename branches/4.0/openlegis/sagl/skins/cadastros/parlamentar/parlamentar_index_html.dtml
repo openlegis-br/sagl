@@ -1,0 +1,196 @@
+﻿<dtml-var standard_html_header>
+
+<style type="text/css">.fancybox-wrap {top:30px !important;}</style>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 500,
+		maxHeight	: 340,
+		fitToView	: false,
+		width		: '70%',
+		height		: '72%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<script type="text/javascript">
+<!--
+   function parlamentar_legislatura_listar(form){
+      var URL = '<dtml-var absolute_url>?hdn_num_legislatura=' + 
+                form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value;
+      location.href = URL;
+   }
+
+   function parlamentar_form_mostrar(form){
+      if (form.lst_num_legislatura.length < 2)
+          alert ("Alguma legislatura deve ser cadastrada antes de incluir um parlamentar.");
+      else
+          if (form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value == -1)
+              alert("É necessário escolher uma legislatura para incluir um parlamentar!")
+          else 
+             if (confirm ("Ao incluir um parlamentar, também será incluído um mandato para ele na legislatura escolhida (" + form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value + "ª legislatura)."))
+             form.submit();
+    }
+//-->
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_parlamentares">Ajuda</a>
+
+<h1 class="firstHeading">Parlamentares</h1> 
+
+<ul>
+    <li>
+        <a href="javascript:parlamentar_form_mostrar(document.index_form)">Incluir Parlamentar</a>
+    </li>
+</ul>
+
+<form name="index_form" action="parlamentar_form">
+
+ <fieldset>
+         <div class="pesq_parlamentar">
+           <a href="parlamentar_pesquisar_form" class="botao-link popup" data-fancybox-type="iframe">Pesquisar</a>
+         </div>
+         <div><label for="lst_num_legislatura">Legislatura:</label>
+         <select class="form-control"  id="lst_num_legislatura" name="lst_num_legislatura" size="1" onChange="parlamentar_legislatura_listar(document.index_form)">    
+            <dtml-in expr="zsql.legislatura_obter_zsql()">
+               <option 
+                  <dtml-if expr="_.has_key('hdn_num_legislatura') and num_legislatura==_.int(hdn_num_legislatura)">
+                     selected
+                  <dtml-elif expr="not _.has_key('hdn_num_legislatura') and _.DateTime() >= dat_inicio and _.DateTime() <= dat_fim">
+                     <dtml-call expr="REQUEST.set('hdn_num_legislatura', num_legislatura)">
+                     selected
+                  </dtml-if>
+                  value="<dtml-var num_legislatura>">
+                  <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">
+                  <dtml-if expr="(_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim)">
+                     (Atual)
+                  </dtml-if>
+               </option>
+            </dtml-in>
+            <option 
+               <dtml-if expr="_.has_key('hdn_num_legislatura') and hdn_num_legislatura=='-1'">
+                  selected
+               </dtml-if>
+               value="-1">sem mandato cadastrado
+            </option>
+            <dtml-if expr="not _.has_key('hdn_num_legislatura')">
+               <dtml-call expr="REQUEST.set('hdn_num_legislatura', '-1')">
+            </dtml-if>
+         </select>
+      </div>
+</fieldset>
+<dtml-call expr="REQUEST.set('existe_ocorrencia', 0)">
+<dtml-call expr="REQUEST.set('listar', 1)">
+<dtml-call expr="REQUEST.set('primeiro_listado', 1)">
+
+<fieldset>
+<dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=hdn_num_legislatura)">
+  <dtml-if expr="hdn_num_legislatura == '-1'"> 
+    <dtml-in expr="zsql.mandato_obter_zsql(cod_parlamentar=cod_parlamentar, nom_parlamentar=nom_parlamentar)">
+      <dtml-call expr="REQUEST.set('listar', 0)">
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('listar', 1)">
+    </dtml-in>
+  </dtml-if>
+
+  <dtml-if listar>    
+    <dtml-call expr="REQUEST.set('existe_ocorrencia', 1)">
+
+    <dtml-if primeiro_listado>
+      <dtml-call expr="REQUEST.set('primeiro_listado', 0)">          
+     
+     <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=hdn_num_legislatura)">
+        <dtml-if expr="(_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim)">
+           <dtml-call expr="REQUEST.set('legislatura_atual', 1)">
+        </dtml-if>
+     </dtml-in>
+
+     <table class="table" >
+              <tr> 
+                <th class="form-label">Nome Completo</th>
+                <th width="15%" class="form-label">Partido </th>
+                <th width="20%" class="form-label">Natureza do Mandato</th>
+                <dtml-if legislatura_atual>
+                   <th width="15%" class="form-label">Em exercício?</th>
+                </dtml-if>
+              </tr>
+    </dtml-if primeiro_listado>
+    <tr> 
+      <td ><b><a href="<dtml-var URL1>/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>"><dtml-var nom_completo></b></a></td>
+        <dtml-if expr="hdn_num_legislatura!='-1'">
+          <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=hdn_num_legislatura, cod_parlamentar=cod_parlamentar)">
+            <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
+              <td ><dtml-var sgl_partido null=""></td>
+            <dtml-else>
+               <td >Sem Registro</td>
+            </dtml-in>
+          <dtml-else>
+             <td >Sem Registro</td>
+          </dtml-in>
+        <dtml-else>
+          <td ><dtml-var sgl_partido null=""></td>
+        </dtml-if>
+      <td  >
+        <dtml-if ind_titular>Titular
+        <dtml-else>Suplente
+        </dtml-if>
+      <dtml-if legislatura_atual>
+      </td>
+      <td  >
+       <dtml-if expr="ind_titular==0">
+         <dtml-in expr="zsql.mandato_obter_zsql(num_legislatura=hdn_num_legislatura,cod_parlamentar=cod_parlamentar)">
+            <dtml-if expr="((mdat_fim != None) and _.DateTime() >= mdat_fim)">
+              <dtml-call expr="REQUEST.set('em_exercicio', 0)">
+            <dtml-elif expr="((mdat_fim != None) and _.DateTime() <= mdat_fim)">
+               <dtml-call expr="REQUEST.set('em_exercicio', 1)">
+            <dtml-elif expr="((mdat_fim == None) and (_.DateTime() >= mdat_inicio))">
+              <dtml-call expr="REQUEST.set('em_exercicio', 1)">
+            </dtml-if>
+         </dtml-in>
+         <dtml-if expr="_.has_key('em_exercicio') and em_exercicio==1">
+           Sim
+         <dtml-else>
+           Não
+         </dtml-if>
+       <dtml-elif expr="ind_titular==1">
+         <dtml-in expr="zsql.afastamento_obter_zsql(num_legislatura=hdn_num_legislatura,cod_parlamentar=cod_parlamentar)" size="1">
+            <dtml-if expr="((adat_fim != None) and (_.DateTime() >= adat_inicio and _.DateTime() <= adat_fim))">
+              <dtml-call expr="REQUEST.set('em_afastamento', 1)">
+            <dtml-elif expr="((adat_fim != None) and (_.DateTime() >= adat_fim))">
+              <dtml-call expr="REQUEST.set('em_afastamento', 0)">
+            <dtml-elif expr="((adat_fim == None) and (_.DateTime() >= adat_inicio))">
+              <dtml-call expr="REQUEST.set('em_afastamento', 1)">
+            </dtml-if>
+         <dtml-if expr="_.has_key('cod_afastamento') and _.has_key('em_afastamento') and em_afastamento==1">
+           Não
+         <dtml-else>
+           Sim
+         </dtml-if>
+         <dtml-else>
+           Sim
+         </dtml-in>
+       </dtml-if>
+      </td>
+      </dtml-if>
+    </tr>
+  </dtml-if listar>
+</dtml-in>
+
+<dtml-if existe_ocorrencia>
+  </table>   
+
+<dtml-else>
+     <p >Não há nenhum parlamentar cadastrado na legislatura selecionada.</p>
+</dtml-if>
+
+</form>
+</fieldset>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,103 @@
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+<div class="col-sm-3 col-md-3 menu">
+  <dtml-if isAnon>
+    <dtml-call expr="REQUEST.set('diretorio', portal_url() + '/consultas/')">
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('diretorio', portal_url() + '/cadastros/')">
+  </dtml-if>
+  <dtml-unless senha>
+    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Alterar Senha'])">
+	<dtml-call expr="REQUEST.RESPONSE.redirect(portal_url() +'/generico/senha_trocar_form?senha=1')">
+    </dtml-if>
+  </dtml-unless>
+  <ul>
+    <dtml-if isAnon>
+      <a class="list-group-item" href="<dtml-var diretorio>mesa_diretora"><i class="fa fa-sitemap fa-fw"></i> Mesa Diretora</a>
+      <a class="list-group-item" href="<dtml-var diretorio>comissao"><i class="fa fa-list fa-fw"></i> Comissões</a>
+      <a class="list-group-item" href="<dtml-var diretorio>bancada"><i class="fa fa-th-large fa-fw"></i> Bancadas</a>
+      <a class="list-group-item" href="<dtml-var diretorio>parlamentar"><i class="fa fa-users fa-fw"></i> Parlamentares</a>
+      <a class="list-group-item" href="<dtml-var diretorio>sessao_plenaria"><i class="fa fa-calendar fa-fw"></i> Sessões Plenárias</a>
+      <a class="list-group-item" href="&dtml-portal_url;/generico/materia_pesquisar_form?incluir=0"><i class="fa fa-book fa-fw"></i> Matérias Legislativas</a>
+      <a class="list-group-item" href="&dtml-portal_url;/generico/norma_juridica_pesquisar_form?incluir=0"><i class="fa fa-legal fa-fw"></i> Normas Jurídicas</a>
+      <a class="list-group-item" href="&dtml-portal_url;/relatorios_administrativos"><i class="fa fa-pie-chart fa-fw"></i> Relatórios</a>
+    <dtml-else>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador'])">
+        <a class="list-group-item" href="<dtml-var diretorio>usuario"><i class="fa fa-lock fa-fw"></i> Usuários</a>
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador','Operador Mesa Diretora'])">
+        <a class="list-group-item" href="<dtml-var diretorio>mesa_diretora"><i class="fa fa-sitemap fa-fw"></i> Mesa Diretora</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      <dtml-else>
+        <a class="list-group-item" href="&dtml-portal_url;/consultas/mesa_diretora"><i class="fa fa-sitemap fa-fw"></i> Mesa Diretora</a>
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador','Operador Comissao'])">
+        <a class="list-group-item" href="<dtml-var diretorio>comissao"><i class="fa fa-list fa-fw"></i> Comissões</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      <dtml-else>
+        <a class="list-group-item" href="&dtml-portal_url;/consultas/comissao"><i class="fa fa-list fa-fw"></i> Comissões</a>
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador','Operador Parlamentar'])">
+        <a class="list-group-item" href="<dtml-var diretorio>bancada"><i class="fa fa-th-large fa-fw"></i> Bancadas</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      <dtml-else>
+        <a class="list-group-item" href="&dtml-portal_url;/consultas/bancada"><i class="fa fa-th-large fa-fw"></i> Bancadas</a>
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Parlamentar'])">
+        <a class="list-group-item" href="<dtml-var diretorio>parlamentar"><i class="fa fa-users fa-fw"></i> Parlamentares</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      <dtml-else>
+        <a class="list-group-item" href="&dtml-portal_url;/consultas/parlamentar"><i class="fa fa-users fa-fw"></i> Parlamentares</a>
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Sessao Plenaria', 'Operador Ordem Dia'])">
+        <a class="list-group-item" href="&dtml-portal_url;/consultas/sessao_plenaria"><i class="fa fa-calendar fa-fw"></i> Sessões Plenárias</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      <dtml-else>
+        <a class="list-group-item" href="&dtml-portal_url;/consultas/sessao_plenaria"><i class="fa fa-calendar fa-fw"></i> Sessões Plenárias</a>
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia'])">
+        <a class="list-group-item" href="<dtml-var diretorio>recebimento_proposicao"><i class="fa fa-pencil fa-fw"></i> Proposições</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Autor'])">
+        <a class="list-group-item" href="<dtml-var diretorio>proposicao"><i class="fa fa-pencil fa-fw"></i> Proposições</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia'])">
+        <a class="list-group-item" href="&dtml-portal_url;/generico/materia_pesquisar_form?incluir=1"><i class="fa fa-book fa-fw"></i> Matérias Legislativas</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      <dtml-else>
+        <a class="list-group-item" href="&dtml-portal_url;/generico/materia_pesquisar_form?incluir=0"><i class="fa fa-book fa-fw"></i> Matérias Legislativas</a>
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Norma'])">
+        <a class="list-group-item" href="&dtml-portal_url;/generico/norma_juridica_pesquisar_form?incluir=1"><i class="fa fa-legal fa-fw"></i> Normas Jurídicas</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      <dtml-else>
+        <a class="list-group-item" href="&dtml-portal_url;/generico/norma_juridica_pesquisar_form?incluir=0"><i class="fa fa-legal fa-fw"></i> Normas Jurídicas</a>
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Protocolo'])">
+        <a class="list-group-item" href="&dtml-portal_url;/consultas/protocolo/protocolo_pesquisar_form?incluir=1"><i class="fa fa-clock-o fa-fw"></i> Protocolo</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      </dtml-if>
+
+      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Modulo Administrativo'])">
+        <a class="list-group-item" href="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_pesquisar_form?incluir=1"><i class="fa fa-files-o fa-fw"></i> Documentos</a>
+      <dtml-elif expr="AUTHENTICATED_USER.hasRole(this(), ['Administrador','Operador Lexml'])">
+      </dtml-if>
+
+      <a class="list-group-item" href="&dtml-portal_url;/relatorios_administrativos"><i class="fa fa-pie-chart fa-fw"></i> Relatórios</a>
+
+   </dtml-if>
+  </ul>
+</div>
+</dtml-let>

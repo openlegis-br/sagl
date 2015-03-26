@@ -1,0 +1,137 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" language="Javascript">
+    <!--
+
+    function atualiza_sessao_plenaria(dat_inicio_sessao){
+        location.href = "sessao_plenaria/index_html?dat_sessao_sel="+dat_inicio_sessao;
+    }
+    //-->
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria">Ajuda</a>
+<h1 class="firstHeading">Sessão Plenária</h1>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role( ['Operador', 'Operador Sessao Plenaria'])">
+    <ul>
+        <li>
+            <a href="sessao_plenaria_form">Incluir Sessão Plenária</a>
+        </li>
+    </ul>
+</dtml-if>
+<fieldset>
+    <legend> Selecione a data </legend>
+    <table>
+        <tr>
+            <th>
+                <label for="lst_dat_sessao">Data da Sessão:</label>
+            </th>
+            <td colspan="2">
+                <select name="lst_dat_sessao" size="1" onChange="atualiza_sessao_plenaria(this.value)">
+                    <dtml-in expr="zsql.data_sessao_plenaria_obter_zsql(ind_excluido = 0)">
+                        <option <dtml-if expr="REQUEST.has_key('dat_sessao_sel') and dat_sessao_sel==dat_inicio_sessao"> selected
+                        <dtml-call expr="REQUEST.set('dat_inicio_sessao', dat_inicio_sessao)">
+                        <dtml-elif expr="_['sequence-start'] and not _.has_key('dat_sessao_sel')">
+                            selected
+                    </dtml-if>
+                        value="<dtml-var dat_inicio_sessao missing>"><dtml-var dat_inicio_sessao missing>
+                    </option>
+                    <dtml-if expr="_['sequence-start'] and not _.has_key('dat_sessao_sel')">
+                        <dtml-call expr="REQUEST.set('dat_inicio_sessao', dat_inicio_sessao)">
+                    </dtml-if>
+                    </dtml-in>
+                </select>
+            </td>
+        </tr>
+    </table>
+
+</fieldset>
+
+<dtml-if dat_inicio_sessao>
+    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(dat_inicio_sessao = pysc.data_converter_pysc(data=dat_inicio_sessao), ind_excluido=0)" size=8 start=query_start orphan=2>
+        <dtml-if sequence-start>
+            <fieldset>
+                <legend>Sessão Plenária</legend>
+                <table width="100%">
+                    <dtml-if previous-sequence>
+                        <tr>
+                            <td class="form-element" colspan="4">
+                                <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
+                                    Página Anterior (<dtml-var previous-sequence-size>)</a>
+                            </td>
+                        </tr>
+                    </dtml-if previous-sequence>
+        </dtml-if sequence-start>
+        <tr>
+            <td align="center" class="form-element" colspan="4"><h3>
+                <dtml-var num_sessao missing><br />
+                <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+                    <a href="sessao_plenaria_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>&dat_inicio_sessao=<dtml-var dat_inicio_sessao missing>&num_legislatura=<dtml-var num_legislatura missing>">
+                        <dtml-var num_sessao_plen>&ordf; Reunião <dtml-var nom_sessao> da <dtml-var num_sessao_leg>&ordf; Sessão Legislativa da <dtml-var num_legislatura>&ordf; Legislatura<br />
+                        Data: <dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_inicio_sessao)"> (<dtml-var dia_sessao>)&nbsp;-&nbsp;Abertura: <dtml-var expr="pysc.hora_formatar_pysc(hora=hr_inicio_sessao)">
+                    </a>
+                </dtml-in>
+            </h3></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="texto" align="center">
+                <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_audio.png">
+                <dtml-if url_audio>
+                    <a href="#" onClick="javascript:window.open('sessao_plenaria_player_audio?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_audio=<dtml-var url_audio>','PlayerAudio','width=530,height=425,top=200,left=200,scrollbars=no');"/>
+                    <b>Gravação em áudio</b></a>
+                    <dtml-else> áudio não disponível
+                </dtml-if>
+            </td>
+            <td class="texto" align="center">
+                <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_video.png">
+                <dtml-if url_video>
+                    <a href="#" onClick="javascript:window.open('sessao_plenaria_player_video?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_video=<dtml-var url_video>','PlayerVideo','width=530,height=425,top=200,left=200,scrollbars=no');"/>
+                    <b>Gravação em Vídeo</b></a>
+                    <dtml-else> Vídeo não disponível
+                </dtml-if>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="texto" align="center" width="25%"><b>Matérias do Expediente: </b> <br />
+                <dtml-var expr="pysc.quantidade_materias_expediente_pysc(cod_sessao_plen=cod_sessao_plen)"> matéria(s)
+            </td>
+
+            <td class="texto" align="center" width="25%"><b>Oradores do Expediente: </b> <br />
+                <dtml-var expr="pysc.quantidade_oradores_expediente_inscritos_pysc(cod_sessao_plen=cod_sessao_plen)"> orador(es)
+            </td>
+
+            <td class="texto" align="center" width="25%"><b>Matérias da Ordem do Dia: </b> <br />
+                <dtml-var expr="pysc.quantidade_materias_ordem_dia_pysc(cod_sessao_plen=cod_sessao_plen)"> matéria(s)
+            </td>
+
+            <td class="texto" align="center" width="25%"><b>Oradores inscritos: </b> <br />
+                <dtml-var expr="pysc.quantidade_oradores_inscritos_pysc(cod_sessao_plen=cod_sessao_plen)"> orador(es)
+            </td>
+        </tr>
+        <tr><td>&nbsp;<td></tr>
+        <dtml-if sequence-end>
+            <dtml-if next-sequence>
+                <tr>
+                    <td class="form-element" colspan="2">
+                        <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
+                            Próxima Página (<dtml-var next-sequence-size>)
+                        </a>
+                    </td>
+                </tr>
+            </dtml-if next-sequence>
+            </table>
+            </fieldset>
+        </dtml-if sequence-end>
+    </dtml-in>
+<dtml-else>
+    <table width="98%" border="0">
+        <tr>
+            <td colspan="4" class="form-label">&nbsp;Sessão Plenária</td>
+        </tr>
+        <tr><td class="texto">&nbsp;</td></tr>
+        <tr><td class="texto">Nenhuma sessão plenária cadastrada.</td></tr>
+    </table>
+</dtml-if dat_inicio_sessao>
+<dtml-var standard_html_footer>

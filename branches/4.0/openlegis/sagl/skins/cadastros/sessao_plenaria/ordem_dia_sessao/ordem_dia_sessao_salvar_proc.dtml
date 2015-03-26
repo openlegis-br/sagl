@@ -1,0 +1,34 @@
+<!-- dtml-return expr="REQUEST" -->
+<dtml-comment> --- inclusão em lote das matérias selecionadas para 'materia da Ordem do Dia' na sessão plenária -------- </dtml-comment>
+<!-- dtml-try -->
+<dtml-if expr="pysc.verifica_string_pysc(chk_materia)">
+   <dtml-call expr="zsql.ordem_dia_incluir_zsql(cod_sessao_plen=cod_sessao_plen,
+                                                cod_materia=chk_materia,
+                                                dat_ordem=pysc.data_converter_pysc(dat_inicio_sessao),
+                                                txt_observacao=pysc.materia_ementa_obter_pysc(chk_materia),
+                                                ind_excluido=0,
+                                                num_ordem=txt_num_ordem,
+                                                tip_votacao=REQUEST.get('rad_tip_votacao_'+chk_materia,1))">
+<dtml-else>               
+   <dtml-call expr="REQUEST.set('ind',0)">
+   <dtml-in expr="chk_materia">
+   <dtml-call expr="zsql.ordem_dia_incluir_zsql(cod_sessao_plen=cod_sessao_plen,
+                                                    cod_materia=chk_materia[ind],
+                                                    dat_ordem=pysc.data_converter_pysc(dat_inicio_sessao),
+                                                    txt_observacao=pysc.materia_ementa_obter_pysc(chk_materia[ind]),
+                                                    ind_excluido=0,
+                                                    num_ordem=txt_num_ordem,
+                                                    tip_votacao=REQUEST.get('rad_tip_votacao_'+chk_materia[ind],1))">
+       <dtml-call expr="REQUEST.set('ind',ind+1)">
+       <dtml-call expr="REQUEST.set('txt_num_ordem', int(txt_num_ordem)+1)">
+   </dtml-in>
+</dtml-if>
+<dtml-let mensagem="'Lista de mat&eacute;rias da  Ordem do Dia inclu&iacute;das com sucesso!'" sucesso="1" url="'javascript:history.go(-1)'">
+      <dtml-var mensagem_emitir>
+
+</dtml-let>
+<!-- dtml-except -->
+   <dtml-let mensagem="'Ocorreu problema na execu&ccedil;&atilde;o. Contate o suporte ou tente refazer esta opera&ccedil;&atilde;o mais tarde!'" url="'javascript:history.go(-1)'">
+      <dtml-var mensagem_emitir>
+  </dtml-let>
+<!-- /dtml-try -->

@@ -1,0 +1,43 @@
+﻿<dtml-in expr="zsql.pedido_materia_obter_zsql(cod_pedido=hdn_cod_pedido)">
+  <dtml-call expr="REQUEST.set('ped_enviado',(dat_envio!=None))">
+  <dtml-call expr="REQUEST.set('nao_existe_pedido',(cod_pedido!=hdn_cod_pedido))">
+  <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
+</dtml-in>
+
+<dtml-if expr="ped_enviado">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+</dtml-if>
+
+<dtml-if expr="nao_existe_pedido">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+</dtml-if>
+
+<dtml-if expr="not usr_eh_autor">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+</dtml-if>
+
+<dtml-if erro>
+    <dtml-let  mensagem="'Não foi possível enviar o pedido! <br />
+      Verifique se o pedido existe, se já foi enviado ou se usuário possui as permissões necessárias.'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="zsql.pedido_materia_enviar_zsql(cod_pedido=hdn_cod_pedido,dat_envio=pysc.data_atual_iso_pysc())">
+
+  <dtml-except>
+   <dtml-let mensagem="'Não foi possível enviar o pedido. Tente novamente.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+   <dtml-else>
+    <dtml-let  mensagem="'Pedido enviado com sucesso!'" sucesso="1">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+</dtml-unless>
+
+
+

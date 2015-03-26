@@ -1,0 +1,96 @@
+<dtml-var standard_html_header>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/prototype.min.js"></script>
+<style  type="text/css"><!-- @import url(&dtml-portal_url;/generico/datepicker.css); --></style>
+<SCRIPT LANGUAGE = "JavaScript">
+<!--
+  var form = document.ficha_form;
+
+  function campos_criticar(form){
+      /*-----------------------------
+         Função: Critica os campos obrigatórios do formulário. É chamada
+                pelo botão OK do formulário para validação dos campos.
+         Argumentos: form : formulário - é o formulário em si.
+         Retorno: Invoca o SUBMIT do formulário ou retorna valor booleano 
+                falso ,caso haja algum campo incorreto, juntamente com uma
+                uma mensagem de erro e o cursor no campo a ser corrigido.
+         Sérgio Damiati em 18/07/2006.
+
+	 Corrigida validação do campo txt_npc_final
+	 Por Sergio Damiati em 13/09/2006.
+
+      ------------------------------*/
+
+  if (form.tipo_propositura.selectedIndex == 0){
+         alert("O Tipo da Matéria deve ser preenchida!");
+         form.tipo_propositura.focus();
+         return false;
+      }
+
+  if (form.txt_data_inicial.value == ""){
+         alert("A data inicial deve ser preenchida!");
+         form.txt_data_inicial.focus();
+         return false;
+     }
+  
+  if (form.txt_data_final.value == ""){
+         alert("A data final deve ser preenchida!");
+         form.txt_data_final.focus();
+         return false;
+     }
+  
+  form.submit();
+  }
+
+//-->
+</SCRIPT>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/impressos">Ajuda</a>
+<h1 class="firstHeading"> Impressos </h1>
+<form name="ficha_form" action="materia_ficha_desp_mostrar" method="post">
+  <fieldset><legend>Formulário de Ficha - Selecionada</legend>
+  <table>
+    <tr>
+     <td valign="top"><label>Tipo da Mat&eacute;ria <span class="campoObrigatorio">&nbsp;</span></label><br />
+        <select name="tipo_propositura">
+         <option value=""></option>
+        <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+         <option value="<dtml-var tip_materia missing>">
+          <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+         </option>
+        </dtml-in>
+        </select>
+       </td>
+      <td><label>Data Inicial</label><br />
+	<input type="text" name="txt_data_inicial" id="txt_data_inicial" size="10" maxlength="10" value="" onBlur="formata_data(form.txt_data_inicial)">
+    <script type="text/javascript">
+                    /*<[CDATA[*/
+                        var dpck = new DatePicker({
+                            relative : 'txt_data_inicial',
+                            language : 'pt'
+                            });
+                    /*]]>*/
+                </script>
+    
+    <br> <span class="nota" style="font-size:10px">(dd/mm/aaaa)</span>
+      </td>
+      <td><label>Data Final</label><br />
+	<input type="text" name="txt_data_final" id="txt_data_final" size="10" maxlength="10" value="" onBlur="formata_data(form.txt_data_final)">
+    <script type="text/javascript">
+                    /*<[CDATA[*/
+                        var dpck = new DatePicker({
+                            relative : 'txt_data_final',
+                            language : 'pt'
+                            });
+                    /*]]>*/
+                </script>
+    
+    <br><span class="nota" style="font-size:10px">(dd/mm/aaaa)</span>
+      </td> 
+    </tr>
+  </table>
+</fieldset>
+  <p align="center">
+      <input type="button" class="botao" name="OK" value="Gerar" onClick="campos_criticar(document.ficha_form)">
+    </p>
+</form>
+<dtml-var standard_html_footer>

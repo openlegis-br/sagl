@@ -1,0 +1,86 @@
+﻿<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/substitutivo">Ajuda</a>
+
+<h1 class="firstHeading">Matéria Legislativa</h1>
+
+<dtml-var materia_menu>
+<dtml-var materia_header>
+
+<form name="index_form" action="substitutivo_form">
+<input type="hidden" name="cod_materia" value="<dtml-var cod_materia missing>">
+
+<fieldset><legend>Substitutivos</legend>  
+<dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, ind_excluido=0)" size=8 start=query_start orphan=2>
+       <dtml-if previous-sequence>
+       <span class="form-element">
+         <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
+         Página Anterior (<dtml-var previous-sequence-size> resultados)</a>
+       <span>
+       </dtml-if previous-sequence>
+    <dtml-if sequence-start>   
+    <table class="table" >
+       <tr> 
+         <th width="10%" class="form-label">Número</th>
+         <th width="45%" class="form-label">Ementa</th>
+         <th width="35%" class="form-label">Autoria</th>
+         <th width="10%" class="form-label">Arquivo</th>
+       </tr>  
+    </dtml-if sequence-start>
+       <tr> 
+          <td ><a href="substitutivo_mostrar_proc?cod_substitutivo=<dtml-var cod_substitutivo>&cod_materia=<dtml-var cod_materia>">
+           <b><dtml-var num_substitutivo></b></a></td>
+          <td ><dtml-var txt_ementa></td>
+          <td >
+           <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+           <dtml-if expr="des_tipo_autor=='Parlamentar'">
+             <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                <dtml-var nom_completo>
+             </dtml-in>
+           <dtml-elif expr="des_tipo_autor=='Comissao'">
+             <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                <dtml-var nom_comissao>
+             </dtml-in>
+           <dtml-elif expr="des_tipo_autor=='Bancada'">
+             <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
+                <dtml-var nom_bancada>
+             </dtml-in>
+           <dtml-else>
+             <dtml-var nom_autor><br>
+           </dtml-if>
+           </dtml-in>
+          </td>
+          <td >
+                <dtml-let id_substitutivo="_.str(cod_substitutivo)+'_substitutivo.pdf'">
+                  <dtml-if "_.hasattr(sagl_documentos.substitutivo,id_substitutivo)">
+                    <dtml-let substitutivo="_.getattr(sagl_documentos.substitutivo,id_substitutivo).absolute_url">
+                      <a target="_blank" href="<dtml-var substitutivo>"><img align="middle" src="sagl/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                    </dtml-let>
+                  <dtml-else>
+                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                  </dtml-if>
+                </dtml-let>
+          </td>
+       </tr>
+    <dtml-if sequence-end>
+       </table>
+    </dtml-if sequence-end>
+    <dtml-if next-sequence>
+       <span class="form-element">
+         <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
+         Próxima Página (<dtml-var next-sequence-size> resultados)</a>
+       </span>
+      </dtml-if next-sequence>
+  <dtml-else>
+      <span >Nenhum substitutivo cadastrado para esta matéria.</span>
+      </table>
+   </dtml-in>
+   </fieldset>
+    
+  <p >
+     <input type="submit" class="botao" name="btn_incluir" value="Incluir Substitutivo">
+  </p>
+
+</form>
+
+<dtml-var standard_html_footer>
