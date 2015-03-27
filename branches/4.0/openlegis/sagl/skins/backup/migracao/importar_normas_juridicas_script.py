@@ -18,7 +18,7 @@ if not file_upload_name.endswith('.csv'):
 file_content = context.processCSVFile(file_upload, as_dict=1)
 count = 0
 fail_list = []
-#return context.dbcon_interlegis.columns('norma_juridica')
+#return context.dbcon_openlegis.columns('norma_juridica')
 
 for row in file_content:
   try:
