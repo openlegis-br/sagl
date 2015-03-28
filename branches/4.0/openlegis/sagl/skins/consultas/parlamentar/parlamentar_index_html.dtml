@@ -31,13 +31,10 @@ $(document).ready(function() {
 </script>
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_dadosparl">Ajuda</a>
+
 <h1 class="firstHeading">Parlamentares</h1>
 
-<form name="index_form">
- <fieldset>
-         <div class="pesq_parlamentar">
-           <a role="button"href="parlamentar_pesquisar_form" class="btn btn-info popup" data-fancybox-type="iframe">Pesquisar</a>
-         </div>
+<form class="form-inline" name="index_form">
  <div class="row">
    <div class="col-sm-6">
      <label for="lst_num_legislatura">Legislatura:</label>
@@ -67,15 +64,17 @@ $(document).ready(function() {
                <dtml-call expr="REQUEST.set('hdn_num_legislatura', '-1')">
             </dtml-if>
          </select>
+         <buttom class="btn btn-default popup" role="button" href="parlamentar_pesquisar_form" class="btn btn-default popup" data-fancybox-type="iframe"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
       </div>
    </div>
+</form>
 
-</fieldset>
 <dtml-call expr="REQUEST.set('existe_ocorrencia', 0)">
 <dtml-call expr="REQUEST.set('listar', 1)">
 <dtml-call expr="REQUEST.set('primeiro_listado', 1)">
 
-<dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=hdn_num_legislatura,ind_titular=1)">
+<div class="row">
+<dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=hdn_num_legislatura,ind_titular='1')">
   <dtml-if expr="hdn_num_legislatura == '-1'"> 
     <dtml-in expr="zsql.mandato_obter_zsql(cod_parlamentar=cod_parlamentar)">
       <dtml-call expr="REQUEST.set('listar', 0)">
@@ -86,15 +85,13 @@ $(document).ready(function() {
 
   <dtml-if listar>    
     <dtml-call expr="REQUEST.set('existe_ocorrencia', 1)">
-     
     <dtml-if primeiro_listado>
       <dtml-call expr="REQUEST.set('primeiro_listado', 0)">          
     </dtml-if primeiro_listado>
  <dtml-if sequence-start>
- <fieldset>
-     <legend>Número de Titulares: <dtml-var sequence-length></legend>
- </fieldset>
- <div class="row">
+   <div class="col-sm-12 col-md-12">
+     <p><strong>Titulares: <dtml-var sequence-length></strong></p>
+  </div>
  </dtml-if>
   <div class="col-sm-6 col-md-6">
          <div class="thumbnail vereador">
@@ -121,38 +118,48 @@ $(document).ready(function() {
                 </p>
     </div>
    </div>
-</div>
+  </div>
   </dtml-if listar>
 </dtml-in>
-</div>
 <dtml-if existe_ocorrencia>
 <dtml-else>
-<div class="vereador">
-          <span >Nenhum Parlamentar cadastrado.</span>
-</div>
+  <div class="col-sm-12 col-md-12">
+     <p>Nenhum Parlamentar cadastrado.</p>
+  </div>
 </dtml-if>
-</form>
 
 
-<dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=hdn_num_legislatura,ind_titular=0)" prefix="suplentes">
-  <dtml-if suplentes_start>
-    <dtml-if expr="_.len(cod_parlamentar) > 0">
- <fieldset>
-     <legend>Suplentes em exercício na Legislatura</legend>
- </fieldset>
- <div class="row">
-    </dtml-if>
+<dtml-call expr="REQUEST.set('existe_suplente', 0)">
+<dtml-call expr="REQUEST.set('listar_suplente', 1)">
+<dtml-call expr="REQUEST.set('suplente_listado', 1)">
+
+<dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=hdn_num_legislatura,ind_titular='0')" >
+  <dtml-if expr="hdn_num_legislatura == '-1'"> 
+    <dtml-in expr="zsql.mandato_obter_zsql(cod_parlamentar=cod_parlamentar,num_legislatura=hdn_num_legislatura)">
+      <dtml-call expr="REQUEST.set('listar_suplente', 1)">
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('listar_suplente', 0)">
+    </dtml-in>
+   </dtml-if>
+
+  <dtml-if listar_suplente>    
+    <dtml-call expr="REQUEST.set('existe_suplente', 1)">
+    <dtml-if suplente_listado>
+        <dtml-call expr="REQUEST.set('suplente_listado', 0)">          
+    </dtml-if suplente_listado>
+    <dtml-if sequence-start>
+        <div class="col-sm-12 col-md-12">
+          <p><strong>Suplentes em exercício: <dtml-var sequence-length></strong></p>
+        </div>
   </dtml-if>
-  <dtml-if expr="ind_titular==0">
-
-<div class="col-sm-6 col-md-6">
+  <div class="col-sm-6 col-md-6">
    <div class="thumbnail vereador">
             <dtml-in expr="sagl_documentos.parlamentar.fotos.objectValues('Image')">
                <dtml-if expr=" _.str(cod_parlamentar)+'_'+sagl_documentos.parlamentar.fotos.nom_documento == id() ">
                  <img class="vereadorFoto" id="parlamentar" src="<dtml-var absolute_url>" alt="<dtml-var nom_completo>" title="<dtml-var nom_completo>">
                </dtml-if>
             </dtml-in>
-         <div class="caption">
+        <div class="caption">
          <h3>
             <a href="parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>">
                <dtml-var nom_completo>
@@ -169,18 +176,13 @@ $(document).ready(function() {
                 </p>
              <dtml-in expr="zsql.mandato_obter_zsql(cod_parlamentar=cod_parlamentar,nom_parlamentar=nom_parlamentar,num_legislatura=hdn_num_legislatura)">
                  <p>
-              <dtml-if expr="num_legislatura==hdn_num_legislatura">
-                 <b>Período:</b> <dtml-var dat_inicio_mandato null=""> - <dtml-var dat_fim_mandato null="">
-              </dtml-if>
+                 <strong>Período:</strong> <dtml-var dat_inicio_mandato null=""> - <dtml-var dat_fim_mandato null="">
                  </p>
              </dtml-in>
         </div>
    </div>
-</div>
-  <dtml-if suplentes_end>
   </div>
-  </dtml-if>
- </dtml-if>
+  </dtml-if listar_suplente>
 </dtml-in>
 </div>
 

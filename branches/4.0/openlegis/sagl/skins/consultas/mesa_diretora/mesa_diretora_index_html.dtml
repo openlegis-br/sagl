@@ -17,10 +17,10 @@
 
 <h1 class="firstHeading">Mesa Diretora</h1>
 
-<form name="composicao_mesa_form">
-<fieldset>
- <div class="row">
+<div class="row">
+  <form class="form-inline" name="composicao_mesa_form">
    <div class="col-sm-6">
+   <div class="form-group">
          <label for="lst_num_legislatura">Legislatura:</label>
            <select class="form-control"  id="lst_num_legislatura" name="lst_num_legislatura" size="1" onChange="atualiza_num_leg(form.lst_num_legislatura [form.lst_num_legislatura.selectedIndex].value)">
             <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
@@ -39,6 +39,8 @@
                <dtml-call expr="REQUEST.set('num_legislatura_sel', '-1')">
             </dtml-in>
            </select>
+    </div>
+    </div>
        <dtml-if expr="not _.has_key('num_legislatura_sel')">
         <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
             <dtml-if sequence-start>
@@ -46,8 +48,8 @@
             </dtml-if>
         </dtml-in>
        </dtml-if>
-   </div>
    <div class="col-sm-6">
+   <div class="form-group">
        <label for="lst_periodo_comp">Período:</label>
          <select class="form-control"  id="lst_periodo_comp" name="lst_periodo_comp" size="1" onChange="atualiza_periodo_comp(form.lst_periodo_comp[form.lst_periodo_comp.selectedIndex].value, form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value)">
       <dtml-in expr="zsql.periodo_comp_mesa_obter_zsql(num_legislatura=num_legislatura_sel)">
@@ -69,59 +71,57 @@
       </dtml-in>
      </select>
     </div>
-  </div>
-</fieldset>
+    </div>
+</form>
+</div>
 
-<fieldset>
+<br />
+
 <div class="row">
   <dtml-if cod_periodo_comp_sel>
       <dtml-in expr="zsql.composicao_mesa_obter_zsql(cod_periodo_comp=cod_periodo_comp_sel, ind_excluido=0)">
         <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
           <dtml-in expr="zsql.cargo_mesa_obter_zsql(cod_cargo=cod_cargo, ind_excluido=0)">  
-       
-  <div class="col-sm-6 col-md-6">
-         <div class="thumbnail vereador">
-
-            <dtml-in expr="sagl_documentos.parlamentar.fotos.objectValues('Image')">
-               <dtml-if expr=" _.str(cod_parlamentar)+'_'+sagl_documentos.parlamentar.fotos.nom_documento == id() ">
-                 <img class="vereadorFoto" id="parlamentar" src="<dtml-var absolute_url>" alt="<dtml-var nom_parlamentar>" title="<dtml-var nom_parlamentar>">
-               </dtml-if>
-            </dtml-in>
-         <div class="caption">
-         <h3>
-            <a href="<dtml-var URL1>/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>">
-               <dtml-var nom_completo>
-            </a>
-         </h3>
-
+           <div class="col-sm-6 col-md-6">
+           <div class="thumbnail vereador">
+              <dtml-in expr="sagl_documentos.parlamentar.fotos.objectValues('Image')">
+                <dtml-if expr=" _.str(cod_parlamentar)+'_'+sagl_documentos.parlamentar.fotos.nom_documento == id() ">
+                  <img class="vereadorFoto" id="parlamentar" src="<dtml-var absolute_url>" alt="<dtml-var nom_parlamentar>" title="<dtml-var nom_parlamentar>">
+                </dtml-if>
+              </dtml-in>
+            <div class="caption">
+             <h3>
+                <a href="<dtml-var URL1>/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>">
+                 <dtml-var nom_completo>
+                </a>
+             </h3>
              <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=num_legislatura_sel, cod_parlamentar=cod_parlamentar)">
-                 <p>
+              <p>
                <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
                  <dtml-var des_cargo> - <dtml-var sgl_partido null="">
                <dtml-else>
                    <dtml-var des_cargo> - Sem Partido
                </dtml-in>
              </dtml-in>
-             </p>
-             </div>
+              </p>
             </div>
            </div>
+          </div>
           </dtml-in> 
         </dtml-in>
       <dtml-else>
-<div class="vereador">
-          <span >Nenhum parlamentar cadastrado na Composição da Mesa Diretora.</span>
-   </div>
+        <div class="col-sm-12 col-md-12">
+          <p>Nenhum parlamentar cadastrado na Composição da Mesa Diretora.</p>
+       </div>
       </dtml-in> 
-    <dtml-else>
-  <div class="vereador">
-    <dtml-if expr="num_legislatura_sel=='-1'">
-          <span >Não há nenhum período de composição cadastrado.</span>
-    <dtml-else>
-          <span >Não há nenhuma Sessão Legislativa cadastrada para a Legislatura selecionada.</span>
-    </dtml-if>
-   </div>     
+  <dtml-else>
+    <div class="col-sm-12 col-md-12">
+      <dtml-if expr="num_legislatura_sel=='-1'">
+          <p>Não há nenhum período de composição cadastrado.</p>
+      <dtml-else>
+          <p>Não há nenhuma Sessão Legislativa cadastrada para a Legislatura selecionada.</p>
+      </dtml-if>
+   </div>   
 </dtml-if>
-  </fieldset>
- </form>
+</div>
 <dtml-var standard_html_footer>
