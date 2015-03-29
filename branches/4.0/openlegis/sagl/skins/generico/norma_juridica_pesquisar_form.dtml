@@ -46,31 +46,14 @@ $(function() {
 </script>
 
 <script type="text/javascript">
-//<![CDATA[
-$(function(){
-  $('#txt_assunto').poshytip({
-	className: 'tip-twitter',
-	showOn: 'focus',
-	alignTo: 'target',
-	alignX: 'right',
-	alignY: 'center',
-	offsetX: 5,
-	showTimeout: 100
-  });
-  $('#lst_tip_norma').poshytip({
-	className: 'tip-twitter',
-	showOn: 'focus',
-	alignTo: 'target',
-	alignX: 'right',
-	alignY: 'center',
-	offsetX: 5,
-	showTimeout: 100
-  });
+$(document).ready(function( ){
+  $('#lst_tip_norma').tooltip({'trigger':'focus', 'title': 'Selecione um tipo de norma ou mentenha "Todos" pesquisar quaisquer tipos disponíveis','placement' : 'top'});
+  $('#txt_assunto').tooltip({'trigger':'focus', 'title': 'Dica de pesquisa: a frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no registro. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do registro.','placement' : 'top'});
 });
-//]]>
 </script>
 
 <div class="helpsagl"><a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_norma">Ajuda</a></div>
+
 <h1 class="firstHeading">Normas Jurídicas</h1>
 
 <div id="barra-conteudo">
@@ -89,12 +72,15 @@ $(function(){
    </ul>
 </div>
 
-<form  name="norma_pesquisar" action="norma_juridica_pesquisar_proc" onChange="ordem()">
-<fieldset>
-   <input type="hidden" name="incluir" value="<dtml-var incluir>"/>
-    <div >
-      <label for="lst_tip_norma"><span >Tipo de Norma</span></label>
-       <select class="form-control" id="lst_tip_norma" name="lst_tip_norma" style="max-width: 224px; width: 100%;" title="Selecione um tipo de norma ou mantenha a opção 'Todos' pesquisar qualquer tipo"> 
+<br />
+
+<form name="norma_pesquisar" action="norma_juridica_pesquisar_proc" onChange="ordem()">
+   <input type="hidden" name="incluir" value="<dtml-var incluir>">
+
+    <div class="form-group">
+      <label for="lst_tip_norma" class="col-sm-3 control-label">Tipo de Norma</label>
+      <div class="col-sm-6">
+       <select class="form-control" id="lst_tip_norma" name="lst_tip_norma"> 
           <option value="">Todos</option>
           <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
             <option value="<dtml-var tip_norma missing>">
@@ -102,36 +88,59 @@ $(function(){
             </option>
           </dtml-in>
         </select>
+      </div>
+     </div>
+
+    <div class="form-group">
+      <label for="txt_numero" class="col-sm-3 control-label">Número</label>
+      <div class="col-sm-2">
+         <input class="form-control" id="txt_numero" type="text" name="txt_numero" null="" missing="" maxlength="6">
+      </div>
+      <label for="txt_ano" class="col-sm-1 control-label">Ano</label>
+      <div class="col-sm-3">
+          <div class="input-group date">
+          <input class="form-control" id="txt_ano" type="text" name="txt_ano" null="" maxlength="4">
+           <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+          </div>
+      </div>
+   </div>
+
+    <div class="form-group">
+      <label class="col-sm-3 control-label">Período da Norma:</label>
+        <div class="col-sm-3">
+          <div class="input-group date">
+           <input class="form-control" type="text" id="dt_norma" name="dt_norma" maxlength=10 placeholder="data inicial" onblur="formata_data(form.dt_norma)" />
+           <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group date">
+            <input class="form-control" type="text" id="dt_norma2" name="dt_norma2" maxlength="10" placeholder="data final" onblur="formata_data(form.dt_norma2)" />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+          </div>
+        </div>
     </div>
-    <div >
-     <label for="txt_numero"><span >Número</span></label>
-    <div >
-        <input class="form-control" id="txt_numero" type="text" name="txt_numero" null="" missing="" style="min-width: 94px; max-width: 94px; width: 20%;"  maxlength="6"/>
-      <label for="txt_ano">Ano
-        <input class="form-control" id="txt_ano" type="text" name="txt_ano" null="" style="min-width: 85px; max-width: 85px; width: 20%;"  maxlength="4"/></label>
-    </div>
-    </div>
-    <div >
-      <label><span >Período da Norma:</span></label>
-       <div >
-          <label for="dt_norma">
-          <input class="form-control" type="text" id="dt_norma" name="dt_norma" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength=10 onblur="formata_data(form.dt_norma)" /></label>
-          <label for="dt_norma2">a
-            <input class="form-control" type="text" id="dt_norma2" name="dt_norma2" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_norma2)" /></label>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Período de Publicação:</label>
+        <div class="col-sm-3">
+          <div class="input-group date">
+          <input class="form-control" ype="text" id="dt_public" name="dt_public" placeholder="data inicial" maxlength="10" onblur="formata_data(form.dt_public)" />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group date">
+          <input class="form-control" type="text" id="dt_public2" name="dt_public2" placeholder="data final" maxlength="10" onblur="formata_data(form.dt_public2)" />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
        </div>
     </div>
-    <div >
-        <label><span >Período de Publicação:</span></label>
-       <div >
-          <label for="dt_public">
-          <input class="form-control" ype="text" id="dt_public" name="dt_public" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_public)" /></label>
-          <label for="dt_public2">a
-          <input class="form-control" type="text" id="dt_public2" name="dt_public2" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_public2)" /></label>
-       </div>
-    </div>
-    <div >
-      <label for="lst_assunto_norma"><span >Assunto / Classificação</span></label>
-        <select class="form-control" id="lst_assunto_norma" name="lst_assunto_norma" style="max-width: 224px; width: 100%;">
+   </div>
+
+    <div class="form-group">
+      <label for="lst_assunto_norma" class="col-sm-3 control-label">Assunto / Classificação</label>
+      <div class="col-sm-6">
+        <select class="form-control" id="lst_assunto_norma" name="lst_assunto_norma">
          <option value="">Todos</option>
            <dtml-in expr="zsql.assunto_norma_juridica_obter_zsql(ind_excluido=0)">
              <option value="<dtml-var cod_assunto missing>">
@@ -139,19 +148,28 @@ $(function(){
              </option>
            </dtml-in>
         </select>
+      </div>
      </div>
-    <div >
-        <label for="txt_assunto"><span >Termos da Pesquisa</span></label>
-          <input class="form-control" id="txt_assunto" type="text" name="txt_assunto" title="DICA: A frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no texto. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do texto." null="" style="min-width: 224px; max-width: 224px; width: 85%;" onKeyUp="ordem()" onBlur="relevancia()" />
+
+    <div class="form-group">
+      <label for="txt_assunto" class="col-sm-3 control-label">Termos da Pesquisa</label>
+      <div class="col-sm-6">
+          <input class="form-control" id="txt_assunto" type="text" name="txt_assunto" null="" onKeyUp="ordem()" onBlur="relevancia()" />
+      </div>
     </div>
-    <div >
-        <label for="chk_textual"><span >Pesquisa Textual?</span>
-          <input class="form-control" type="checkbox" name="chk_textual" value="1" id="chk_textual">
-          <span style="vertical-align: top;">Pesquisar no conteúdo das Normas</span></label>
+
+    <div class="form-group">
+      <label for="chk_textual" class="col-sm-3 control-label">Pesquisa Textual?</label>
+      <div class="col-sm-6">
+          <input  type="checkbox" name="chk_textual" value="1" id="chk_textual">
+          <span style="vertical-align: top;">Pesquisar no texto integral das Normas</span>
     </div>
-    <div >
-      <label for="lst_tip_situacao_norma"><span >Situação</span></label>
-        <select class="form-control" id="lst_tip_situacao_norma" name="lst_tip_situacao_norma" style="max-width: 224px; width: 100%;">
+    </div>
+
+    <div class="form-group">
+      <label for="lst_tip_situacao_norma" class="col-sm-3 control-label">Situação</label>
+      <div class="col-sm-6">
+        <select class="form-control" id="lst_tip_situacao_norma" name="lst_tip_situacao_norma">
          <option value="">Todas</option>
            <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(ind_excluido=0)">
              <option value="<dtml-var tip_situacao_norma missing>">
@@ -159,25 +177,29 @@ $(function(){
              </option>
            </dtml-in>
         </select>
-     </div>
-    <div >
-        <label><span >Ordenação do Resultado</span></label>
-        <div >
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-3 control-label">Ordenação do Resultado</label>
+      <div class="col-sm-6">
           <dtml-in expr="[('Tipo/Ano/Número', '1'), ('Relevância', '2')]">     
-           <input class="form-control" type="radio" name="rd_ordenacao" 
+           <input type="radio" name="rd_ordenacao" 
                   value="<dtml-var expr="_['sequence-item']">"
                   id="rd_ordenacao<dtml-var expr="_['sequence-item']">"
                 <dtml-if expr="_['sequence-item']=='1'">checked="1"</dtml-if> 
                 <dtml-if expr="_['sequence-item']=='2'">disabled</dtml-if> />
-             <label style="vertical-align: top;" for="rd_ordenacao<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"></label>
+             <span style="vertical-align: top;" for="rd_ordenacao<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"></label>
           </dtml-in>
-        </div>
+      </div>
     </div>
-        <div >
-           <input class="btn botao" type="button" id="btn_norma_pesquisar" name="btn_norma_pesquisar" value="Pesquisar" onClick="textual(document.norma_pesquisar)" />
-          <input class="btn botao" type="reset" name="btn_norma_limpar" value="Limpar" />
-        </div>
-</fieldset>
-</form>
 
+  <div class="form-group">
+    <div class="col-sm-offset-3 col-sm-10">
+      <input class="btn btn-default" type="button" id="btn_norma_pesquisar" name="btn_norma_pesquisar" value="Pesquisar" onClick="textual(document.norma_pesquisar)" />
+      <input class="btn btn-default" type="reset" name="btn_norma_limpar" value="Limpar" />
+    </div>
+  </div>
+
+</form>
 <dtml-var standard_html_footer>
