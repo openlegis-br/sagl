@@ -2,10 +2,10 @@
 import os, urllib, cStringIO
 from appy.pod.renderer import Renderer
 
-def convertFile(self,cod_materia):
+def convertFile(self,cod_documento):
     # Conversao para PDF
-    nom_arquivo_odt = "%s"%cod_materia+'_texto_integral.odt'
-    nom_arquivo_pdf = "%s"%cod_materia+'_texto_integral.pdf'
+    nom_arquivo_odt = "%s"%cod_documento+'.odt'
+    nom_arquivo_pdf = "%s"%cod_documento+'.pdf'
     url = self.sagl_documentos.materia_odt.absolute_url() + "/%s"%nom_arquivo_odt
     odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
     output_file_pdf = os.path.normpath(nom_arquivo_pdf)
@@ -15,4 +15,3 @@ def convertFile(self,cod_materia):
     for file in [output_file_pdf]:
         self.sagl_documentos.materia.manage_addProduct['ExtFile'].manage_addExtFile(id=file,title=file,file=file)
         os.unlink(file)
-

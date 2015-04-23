@@ -8,8 +8,8 @@ def createReport(self,inf_basicas_dic, num_proposicao,nom_arquivo,des_tipo_mater
     template_file = cStringIO.StringIO(urllib.urlopen(url).read())
     output_file_odt = "%s"%nom_arquivo
     renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-    renderer.run()                                                                             
+    renderer.run()                                                                            
     data = open(output_file_odt, "rb").read()                 
     for file in [output_file_odt]:
         os.unlink(file)
-        self.sagl_documentos.materia_odt.manage_addFile(id=nom_arquivo,file=data)
+        self.sagl_documentos.proposicao.manage_addFile(id=nom_arquivo,file=data)
