@@ -2,7 +2,6 @@
 SAGL setup handlers.
 """
 
-
 def setupMountPoint(portal):
     # Metodo para adicionar o mount point do sagl_documentos
     path_sagl = portal.getId()
@@ -46,7 +45,7 @@ def setupConteudo(portal):
 def setupAdicionarUsuarios(portal):
     # Metodo para criar usuario padrao
     portal.acl_users._addUser(name='operador',password='operador',confirm='operador',roles=['Operador'],domains=[])
-    portal.acl_users._addUser(name='lexml',password='lexml',confirm='sapl',roles=['Operador Lexml'],domains=[])
+    portal.acl_users._addUser(name='lexml',password='lexml',confirm='lexml',roles=['Operador Lexml'],domains=[])
     portal.acl_users._addUser(name='administrador',password='administrador',confirm='administrador',roles=['Administrador'],domains=[])
 
 
