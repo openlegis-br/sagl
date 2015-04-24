@@ -1,0 +1,58 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : cod_sessao_plen="" cod_ordem="" dat_inicio_sessao="" ano_sessao="" mes_sessao="" dia_sessao="" num_sessao_plen="" tip_sessao="" hoje="" proximas="" anteriores="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT
+       REPLACE(sessao_plenaria.cod_sessao_plen,  'L', '') as cod_sessao_plen,
+       sessao_plenaria.cod_sessao_leg,
+       DATE_FORMAT(sessao_plenaria.dat_inicio_sessao, '%d/%m/%Y') as dat_inicio_sessao,
+       DATE_FORMAT(sessao_plenaria.dat_inicio_sessao, '%Y%m%d') as dat_inicio,
+       DATE_FORMAT(sessao_plenaria.dat_inicio_sessao, '%Y') as ano_sessao,
+       DATE_FORMAT(sessao_plenaria.dat_fim_sessao, '%d/%m/%Y') as dat_fim_sessao,
+       sessao_plenaria.dia_sessao,
+       sessao_plenaria.hr_inicio_sessao,
+       sessao_plenaria.hr_fim_sessao,
+       sessao_plenaria.num_legislatura,
+       sessao_plenaria.num_sessao_plen,
+       sessao_plenaria.tip_sessao,
+       sessao_plenaria.url_audio,
+       sessao_plenaria.url_video,
+       sessao_plenaria.ind_excluido,
+       sessao_legislativa.num_sessao_leg
+
+FROM
+   sessao_plenaria left join sessao_legislativa on (sessao_plenaria.cod_sessao_leg=sessao_legislativa.cod_sessao_leg)
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_sessao_plen   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_sessao_plen   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest dat_inicio_sessao op="=" type="nb" optional><dtml-and>
+    <dtml-if expr="tip_sessao and tip_sessao != '-1'">
+    tip_sessao = <dtml-sqlvar tip_sessao type="int" optional> and
+    </dtml-if>
+    <dtml-if ano_sessao>
+    YEAR(dat_inicio_sessao) = <dtml-sqlvar ano_sessao type="int"> and
+    </dtml-if>
+    <dtml-if expr="mes_sessao and mes_sessao != '-1'">
+    MONTH(dat_inicio_sessao) = <dtml-sqlvar mes_sessao type="int" optional> and
+    </dtml-if>
+    <dtml-if expr="dia_sessao and dia_sessao != '-1'">
+    DAY(dat_inicio_sessao) = <dtml-sqlvar dia_sessao type="nb"> and
+    </dtml-if>
+    <dtml-if expr="hoje and hoje == 1">
+    DATE(dat_inicio_sessao) = now() and
+    </dtml-if>
+    <dtml-if expr="proximas and proximas == 1">
+    DATE(dat_inicio_sessao) > now() and
+    </dtml-if>
+    <dtml-if expr="anteriores and anteriores == 1">
+    DATE(dat_inicio_sessao) < now() and
+    </dtml-if>
+    sessao_plenaria.cod_sessao_plen != 0 and
+    sessao_plenaria.ind_excluido = 0 
+  </dtml-sqlgroup>
+
+ORDER BY dat_inicio DESC, hr_inicio_sessao DESC, num_sessao_plen DESC
+

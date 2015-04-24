@@ -1,0 +1,179 @@
+<dtml-var standard_html_header>
+
+<style type="text/css">.fancybox-wrap {top:30px !important;}</style>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 500,
+		maxHeight	: 430,
+		fitToView	: false,
+		width		: '85%',
+		height		: '80%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<script type="text/javascript">
+<!--
+   function parlamentar_legislatura_listar(form){
+      var URL = '<dtml-var absolute_url>?hdn_num_legislatura=' + 
+                form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value;
+      location.href = URL;
+   }
+-->
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_dadosparl">Ajuda</a>
+<h1 class="firstHeading">Parlamentares</h1>
+
+<form name="index_form">
+ <fieldset>
+         <div class="pesq_parlamentar">
+           <a href="parlamentar_pesquisar_form" class="botao-link popup" data-fancybox-type="iframe">Pesquisar</a>
+         </div>
+         <div><label for="lst_num_legislatura">Legislatura:</label>
+         <select id="lst_num_legislatura" name="lst_num_legislatura" size="1" onChange="parlamentar_legislatura_listar(document.index_form)">    
+            <dtml-in expr="zsql.legislatura_obter_zsql()">
+               <option 
+                  <dtml-if expr="_.has_key('hdn_num_legislatura') and num_legislatura==_.int(hdn_num_legislatura)">
+                     selected
+                  <dtml-elif expr="not _.has_key('hdn_num_legislatura') and _.DateTime() >= dat_inicio and _.DateTime() <= dat_fim">
+                     <dtml-call expr="REQUEST.set('hdn_num_legislatura', num_legislatura)">
+                     selected
+                  </dtml-if>
+                  value="<dtml-var num_legislatura>">
+                  <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">
+                  <dtml-if expr="(_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim)">
+                     (Atual)
+                  </dtml-if>
+               </option>
+            </dtml-in>
+            <option 
+               <dtml-if expr="_.has_key('hdn_num_legislatura') and hdn_num_legislatura=='-1'">
+                  selected
+               </dtml-if>
+               value="-1">sem mandato cadastrado
+            </option>
+            <dtml-if expr="not _.has_key('hdn_num_legislatura')">
+               <dtml-call expr="REQUEST.set('hdn_num_legislatura', '-1')">
+            </dtml-if>
+         </select>
+      </div>
+
+</fieldset>
+<dtml-call expr="REQUEST.set('existe_ocorrencia', 0)">
+<dtml-call expr="REQUEST.set('listar', 1)">
+<dtml-call expr="REQUEST.set('primeiro_listado', 1)">
+
+<dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=hdn_num_legislatura,ind_titular=1)">
+  <dtml-if expr="hdn_num_legislatura == '-1'"> 
+    <dtml-in expr="zsql.mandato_obter_zsql(cod_parlamentar=cod_parlamentar)">
+      <dtml-call expr="REQUEST.set('listar', 0)">
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('listar', 1)">
+    </dtml-in>
+  </dtml-if>
+
+  <dtml-if listar>    
+    <dtml-call expr="REQUEST.set('existe_ocorrencia', 1)">
+     
+    <dtml-if primeiro_listado>
+      <dtml-call expr="REQUEST.set('primeiro_listado', 0)">          
+    </dtml-if primeiro_listado>
+ <dtml-if sequence-start>
+ <fieldset>
+     <legend>Número de Titulares: <dtml-var sequence-length></legend>
+ </fieldset>
+ </dtml-if>
+<div class="tileItem">
+
+   <div class="vereador">
+         <div class="vereadorImageContainer">
+            <dtml-in expr="sagl_documentos.parlamentar.fotos.objectValues('Image')">
+               <dtml-if expr=" _.str(cod_parlamentar)+'_'+sagl_documentos.parlamentar.fotos.nom_documento == id() ">
+                 <img class="vereadorFoto" id="parlamentar" src="<dtml-var absolute_url>">
+               </dtml-if>
+            </dtml-in>
+         </div>
+
+         <h4 class="tileHeadline">
+            <a href="parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>">
+               <dtml-var nom_completo>
+            </a>
+         </h4>
+
+             <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=hdn_num_legislatura, cod_parlamentar=cod_parlamentar)">
+                 <div class="parlamentar-partido">
+               <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
+                 <span class="texto"><dtml-var sgl_partido null=""></span>
+               <dtml-else>
+                   <span class="texto">Sem Partido</span>
+               </dtml-in>
+             </dtml-in>
+                 </div>
+   </div>
+</div>
+  </dtml-if listar>
+</dtml-in>
+<dtml-if existe_ocorrencia>
+<dtml-else>
+<div class="vereador">
+          <span class="texto">Nenhum Parlamentar cadastrado.</span>
+</div>
+</dtml-if>
+</form>
+
+
+<dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=hdn_num_legislatura,ind_titular=0)" prefix="suplentes">
+  <dtml-if suplentes_start>
+    <dtml-if expr="_.len(cod_parlamentar) > 0">
+ <fieldset>
+     <legend>Suplentes em exercício na Legislatura</legend>
+ </fieldset>
+    </dtml-if>
+  </dtml-if>
+  <dtml-if expr="ind_titular==0">
+
+<div class="tileItem">
+   <div class="vereador">
+         <div class="vereadorImageContainer">
+            <dtml-in expr="sagl_documentos.parlamentar.fotos.objectValues('Image')">
+               <dtml-if expr=" _.str(cod_parlamentar)+'_'+sagl_documentos.parlamentar.fotos.nom_documento == id() ">
+                 <img class="vereadorFoto" id="parlamentar" src="<dtml-var absolute_url>">
+               </dtml-if>
+            </dtml-in>
+         </div>
+         <h4 class="tileHeadline">
+            <a href="parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>">
+               <dtml-var nom_completo>
+            </a>
+         </h4>
+             <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=hdn_num_legislatura, cod_parlamentar=cod_parlamentar)">
+                <div class="parlamentar-partido">
+               <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
+                 <span class="texto"><dtml-var sgl_partido null=""></span>
+               <dtml-else>
+                   <span class="texto">Sem Partido</span>
+               </dtml-in>
+             </dtml-in><br />
+             <dtml-in expr="zsql.mandato_obter_zsql(cod_parlamentar=cod_parlamentar,nom_parlamentar=nom_parlamentar,num_legislatura=hdn_num_legislatura)">
+              <dtml-if expr="num_legislatura==hdn_num_legislatura">
+                 <span class="texto"><b>Período:</b> <dtml-var dat_inicio_mandato null=""> - <dtml-var dat_fim_mandato null=""></span>
+              </dtml-if>
+             </dtml-in>
+                </div>
+   </div>
+   </div>
+  <dtml-if suplentes_end>
+  </dtml-if>
+ </dtml-if>
+</dtml-in>
+   
+<dtml-var standard_html_footer>

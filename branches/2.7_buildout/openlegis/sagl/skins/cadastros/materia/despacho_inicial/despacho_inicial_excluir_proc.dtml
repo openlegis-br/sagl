@@ -1,0 +1,23 @@
+<dtml-in expr="zsql.relatoria_obter_zsql(cod_comissao=cod_comissao,cod_materia=cod_materia,ind_excluido=0)">
+  <dtml-if cod_relatoria>
+     <dtml-call expr="REQUEST.set('erro', 1)">
+     <dtml-let mensagem="'Existe um relator designado para esta matéria. Não é possível excluir o Depacho Inicial !'">
+        <dtml-var mensagem_emitir>
+     </dtml-let>
+  </dtml-if>
+</dtml-in>
+
+<dtml-unless erro>
+<dtml-try>
+  <dtml-call expr="zsql.despacho_inicial_excluir_zsql(num_ordem = num_ordem, cod_materia = cod_materia)">
+
+<dtml-except>
+  <dtml-let mensagem="'Ocorreu um erro ao tentar excluir esse despacho inicial!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
+  <dtml-let mensagem="'Despacho Inicial excluído com sucesso!'" sucesso="1" url="'index_html?cod_materia='+cod_materia">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>
+</dtml-unless>

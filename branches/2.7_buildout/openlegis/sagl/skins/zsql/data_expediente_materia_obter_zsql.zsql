@@ -1,0 +1,45 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : dat_ordem="" ind_excluido=0 ordenacao="D"
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT DISTINCT
+       DATE_FORMAT(expediente_materia.dat_ordem, '%d/%m/%Y') as dat_ordem,
+       expediente_materia.dat_ordem as dat_ordem_aaaammdd,
+       expediente_materia.ind_excluido       
+      
+FROM   
+   expediente_materia
+  
+  <dtml-sqlgroup where>
+    <dtml-sqltest ind_excluido op="=" type="int" optional><dtml-and>
+    <dtml-sqltest dat_ordem    op="=" type="nb" optional>
+  </dtml-sqlgroup>
+<dtml-if expr="ordenacao=='D'">
+order by 2 desc
+<dtml-else>
+order by 2 asc
+</dtml-if>
+
+<dtml-else>
+
+SELECT DISTINCT
+       TO_CHAR(expediente_materia.dat_ordem, 'DD/MM/YYYY') as dat_ordem,
+       expediente_materia.dat_ordem as dat_ordem_aaaammdd,
+       expediente_materia.ind_excluido       
+      
+FROM   
+   expediente_materia
+  
+  <dtml-sqlgroup where>
+    <dtml-sqltest ind_excluido op="=" type="int" optional><dtml-and>
+    <dtml-sqltest dat_ordem    op="=" type="nb" optional>
+  </dtml-sqlgroup>
+<dtml-if expr="ordenacao=='D'">
+order by 2 desc
+<dtml-else>
+order by 2 asc
+</dtml-if>
+</dtml-if>

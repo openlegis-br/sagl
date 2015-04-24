@@ -1,0 +1,49 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.form.min.js"></script>
+
+<script type="text/javascript">
+  function campos_criticar(){
+      var form = document.frequencia_form;
+      form.submit();
+    } 
+</script>
+
+<a id="ajuda" href="<dtml-var sagl url>/ajuda/relatorios#frequencia_parlamentar">Ajuda</a>
+
+<h1 class="firstHeading">Frequência nas Sessões</h1> 
+
+<dtml-if expr="not _.has_key('impressao') or (_.has_key('impressao') and not _.has_key('dt_inicio') and not _.has_key('dt_fim'))">
+<form class="pf-form" id="frequencia_form" method="POST" name="frequencia_form" action="frequencia_gerar_proc">
+ <fieldset>
+  <dtml-if impressao>
+    <input type="hidden" name="impressao" value="<dtml-var impressao>">
+  </dtml-if>
+
+    <div class="pf-element pf-full-width">
+       <label for="lst_ano_sessao"><span class="pf-label">Ano</span></label>
+             <select class="pf-field" id="lst_ano_sessao" name="lst_ano_sessao" size="1">
+                 <dtml-in expr="listar_ano_zsql()">
+                     <option value="<dtml-var ano_sessao missing>" 
+                        <option value="<dtml-var ano_sessao missing>" 
+                          <dtml-if expr="((not _.has_key('ano_sessao_sel') and (_.DateTime().year() == ano_sessao)))
+                                           or (not _.has_key('ano_sessao_sel') and (_.DateTime().year() > ano_sessao))
+                                           or (_.has_key('ano_sessao_sel') and ano_sessao == _.int(ano_sessao_sel))">
+                            selected
+                          <dtml-call expr="REQUEST.set('ano_sessao_sel', ano_sessao)">
+                         </dtml-if>>
+                        <dtml-var ano_sessao missing>
+                     </option>
+                 </dtml-in>
+             </select>
+    </div>
+
+    <div class="pf-element pf-buttons">
+       <input class="pf-button btn botao fancybox.ajax" type="submit" name="button" value="Gerar relatório" />
+    </div>
+
+ </fieldset>
+</form>
+</dtml-if>
+
+<dtml-var standard_html_footer>

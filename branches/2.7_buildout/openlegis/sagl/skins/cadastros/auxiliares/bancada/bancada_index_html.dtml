@@ -1,0 +1,70 @@
+﻿<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/bancada">Ajuda</a>
+
+<h1 class="firstHeading">Tabelas Auxiliares</h1> 
+
+<table>
+  <tr> 
+    <td class="form-label"> 
+      | <a href="bancada_form">Incluir Bancada</a> |</td>
+  </tr>
+</table>
+
+<fieldset><legend>Bancadas e Blocos Partidários, Frentes e Grupos Parlamentares</legend>
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 16)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+  <dtml-in expr="zsql.bancada_obter_zsql()" size="step" start="start" orphan=0>
+    <dtml-if sequence-start>
+   <table>
+          <tr>
+            <th width="60%" class="form-label">
+              Nome
+            </th>
+            <th width="40%" class="form-label">
+              Legislatura
+            </th>
+          </tr>
+      <dtml-if previous-sequence>
+	<dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+      </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+          <tr> 
+            <td class="texto">
+             <a href="bancada_mostrar_proc?cod_bancada=<dtml-var cod_bancada>"><b><dtml-var nom_bancada></b></a>
+            </td>
+            <td class="texto">
+             <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=num_legislatura_sel,ind_excluido=0)"> 
+              <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">
+             </dtml-in>
+            </td>
+           </tr>
+    <dtml-if sequence-end>
+        </table>
+      <dtml-if next-sequence>
+	<dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+      </dtml-if next-sequence>
+<dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+      <p align="center" class="form-text"><b>          
+          <dtml-var "sagl.pysc.PageListOutput_pysc('bancada_index_html', page, step, _['sequence-length'])">
+      </b></p>
+    </dtml-if>
+    </dtml-if sequence-end>
+ <dtml-else>
+       <table>
+          <tr><td class="texto">Nenhuma bancada, bloco, frente ou grupo cadastrado.</td></tr>
+       </table>
+   </dtml-in>
+</fieldset>
+<dtml-var standard_html_footer>

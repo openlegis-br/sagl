@@ -1,0 +1,189 @@
+﻿<dtml-var standard_html_header>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Lexml'])">
+<script type="text/javascript">
+function campos_criticar(form){  
+
+  if (form.txt_id_publicador.value == "") {
+    alert("O id do publicador deve ser preenchido.");
+    form.txt_id_publicador.focus();
+    return false;
+  }
+
+  form.submit();
+}
+
+</script>
+<dtml-else>
+<script type="text/javascript">
+function campos_criticar(form){
+
+  if (form.txt_nom_publicador.value == "") {
+    alert("O nome do publicador deve ser preenchido.");
+    form.txt_nom_publicador.focus();
+    return false;
+  }
+
+  if (form.txt_sgl_publicador.value == "") {
+    alert("A sigla do publicador deve ser preenchida.");
+    form.txt_sgl_publicador.focus();
+    return false;
+  }
+  
+ if (form.txt_id_responsavel.value == "") {
+    alert("O ID do responsavel deve ser preenchido.");
+    form.txt_id_responsavel.focus();
+    return false;
+  }
+
+  form.submit();
+}
+
+</script>
+
+</dtml-if>
+
+<form name="lexml_publicador_form" method="post" action="lexml_publicador_salvar_proc">
+
+<div class="helpsagl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/lexml_publicador">Ajuda</a> </div>
+<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+<dtml-try>
+    <dtml-in expr="zsql.lexml_publicador_obter_zsql()">
+    <input type="hidden" name="hdn_cod_publicador" value="<dtml-var cod_publicador missing>" />
+        <fieldset>
+            <legend>Publicador LexML</legend>
+            <table width="100%" align="center">
+                <tr style="height: 40">
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Lexml'])">
+                    <input type="hidden" name="txt_nom_publicador" value="<dtml-var nom_publicador missing>" />
+                    <input type="hidden" name="txt_adm_email" value="<dtml-var adm_email missing>" />
+                    <input type="hidden" name="txt_sgl_publicador" value="<dtml-var sigla missing>" />
+                    <input type="hidden" name="txt_nom_responsavel" value="<dtml-var nom_responsavel missing>" />
+                    <input type="hidden" name="txt_id_responsavel" value="<dtml-var id_responsavel missing>" />
+                    <td width="20%" class="form-element">Id do publicador <span class="campoObrigatorio">&nbsp;</span><br />
+                        <input type="text" name="txt_id_publicador" value="<dtml-var id_publicador missing>" size="5" maxlength="5" />
+                </td>
+                <dtml-else>
+                <td width="33%" class="form-element">Id do publicador<br />
+                        <input type="text" name="txt_id_publicador" value="<dtml-var id_publicador missing>" size="5" maxlength="5" disabled="disabled" />
+                </td>
+                </dtml-if>
+                <dtml-if expr="not(AUTHENTICATED_USER.has_role(['Operador Lexml']))">
+                    <input type="hidden" name="txt_id_publicador" value="<dtml-var id_publicador missing>" />
+                    <td width="33%" class="form-element">Nome do publicador<br />
+                        <input type="text" name="txt_nom_publicador" value="<dtml-var nom_publicador missing>" size="40" />
+                    </td>
+                    <td width="33%" class="form-element">Sigla do publicador<br />
+                        <input type="text" name="txt_sgl_publicador" value="<dtml-var sigla missing>" size="40" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="33%" class="form-element">Id do responsável<br />
+                        <input type="text" name="txt_id_responsavel" value="<dtml-var id_responsavel missing='0'>" size="5" maxlength="5" />
+                   </td>
+                   <td width="33%" class="form-element">Nome do responsável<br />
+                        <input type="text" name="txt_nom_responsavel" value="<dtml-var nom_responsavel missing>" size="40" />
+                   </td>
+                   <td width="33%" class="form-element">E-mail do respons&aacute;vel<br />
+                        <input type="text" name="txt_adm_email" value="<dtml-var adm_email missing>" size="40" />
+                   </td>
+                </tr>
+                <dtml-else>
+                    <td width="33%" class="form-element">Nome do publicador<br />
+                        <input type="text" name="txt_nom_publicador" value="<dtml-var nom_publicador missing>" size="40" disabled="disabled" />
+                    </td>
+                    <td width="33%" class="form-element">Sigla do publicador<br />
+                        <input type="text" name="txt_sgl_publicador" value="<dtml-var sigla missing>" size="40" disabled="disabled" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="33%" class="form-element">Id do responsável<br />
+                        <input type="text" name="txt_id_responsavel" value="<dtml-var id_responsavel missing='0'>" size="5" maxlength="5" disabled="disabled" />
+                   </td>
+                   <td width="33%" class="form-element">Nome do responsável<br />
+                        <input type="text" name="txt_nom_responsavel" value="<dtml-var nom_responsavel missing>" size="40" disabled="disabled" />
+                   </td>
+                   <td width="33%" class="form-element">E-mail do responsável<br />
+                        <input type="text" name="txt_adm_email" value="<dtml-var adm_email missing>" size="40" disabled="disabled" />
+                   </td>
+                </tr>                
+            </dtml-if>
+                <tr>
+                    <td align="center" colspan="0">
+                        <input type="button"
+                               class="botao"
+                               name="btn_lexml_ublicador_salvar"
+                               value="Salvar" onClick="campos_criticar(document.lexml_publicador_form)" />
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+        <dtml-else>
+        <fieldset>
+        <legend>Publicador LexML</legend>
+        <table>
+            <tr>
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Lexml'])">
+                    <td width="20%" class="form-element">Id do publicador <span class="campoObrigatorio">&nbsp;</span><br />
+                        <input type="text" name="txt_id_publicador" value="<dtml-var id_publicador missing>" size="5" maxlength="5" />
+                </td>
+                <dtml-else>
+                <td width="33%" class="form-element">Id do publicador<br />
+                    <input type="text" name="txt_id_publicador" value="<dtml-var id_publicador missing>" size="5" maxlength="5" disabled="disabled" />
+                </td>
+                </dtml-if>
+                <dtml-if expr="not(AUTHENTICATED_USER.has_role(['Operador Lexml']))">
+                    <td width="33%" class="form-element">Nome do publicador<br />
+                        <input type="text" name="txt_nom_publicador" value="<dtml-var nom_publicador missing>" size="40" />
+                    </td>
+                    <td width="33%" class="form-element">Sigla do publicador<br />
+                        <input type="text" name="txt_sgl_publicador" value="<dtml-var sigla missing>" size="40" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="33%" class="form-element">Id do responsável<br />
+                        <input type="text" name="txt_id_responsavel" value="<dtml-var id_responsavel missing>" size="5" maxlength="5" />
+                   </td>
+                   <td width="40%" class="form-element">Nome do responsável<br />
+                        <input type="text" name="txt_nom_responsavel" value="<dtml-var nom_responsavel missing>" size="40" />
+                   </td>
+                   <td width="33%" class="form-element">E-mail do responsável<br />
+                        <input type="text" name="txt_adm_email" value="<dtml-var adm_email missing>" size="40" />
+                   </td>
+                </tr>
+                <dtml-else>
+                    <td width="33%" class="form-element">Nome do publicador<br />
+                        <input type="text" name="txt_nom_publicador" value="<dtml-var nom_publicador missing>" size="40" disabled="disabled" />
+                    </td>
+                    <td width="33%" class="form-element">Sigla do publicador<br />
+                        <input type="text" name="txt_sgl_publicador" value="<dtml-var sigla missing>" size="40" disabled="disabled" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="20%" class="form-element">Id do responsável<br />
+                        <input type="text" name="txt_id_responsavel" value="<dtml-var id_responsavel missing>" size="5" maxlength="5" disabled="disabled" />
+                   </td>
+                   <td width="33%" class="form-element">Nome do responsável<br />
+                        <input type="text" name="txt_nom_responsavel" value="<dtml-var nom_responsavel missing>" size="40" disabled="disabled" />
+                   </td>
+                   <td width="33%" class="form-element">E-mail do responsável<br />
+                        <input type="text" name="txt_adm_email" value="<dtml-var adm_email missing>" size="40" disabled="disabled" />
+                   </td>
+                </tr>
+            </dtml-if>
+        </table>
+                <p align="center">
+                    <input type="button"
+                           class="botao"
+                           name="btn_lexml_provedor_salvar"
+                           value="Salvar" onClick="campos_criticar(document.lexml_publicador_form)" /></p>
+
+    </fieldset>
+  </dtml-in>
+<dtml-except>
+  <dtml-let mensagem="'Houve erro!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>
+</form>
+<dtml-var standard_html_footer>

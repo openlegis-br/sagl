@@ -1,0 +1,60 @@
+﻿<dtml-in expr="zsql.materia_obter_zsql(tip_id_basica=lst_tip_id_basica,
+                                       num_ident_basica=txt_num_ident_basica,
+                                       ano_ident_basica=txt_ano_ident_basica,
+                                       ind_excluido=0)">
+     <dtml-call expr="REQUEST.set('cod_materia_anexada',cod_materia)">
+     <dtml-call expr="REQUEST.set('marcador',cod_materia)">
+<dtml-else>  
+     <dtml-let mensagem="'A matéria a ser anexada não existe no cadastro de matérias legislativas.'">
+       <dtml-var mensagem_emitir>
+     </dtml-let>
+</dtml-in> 
+    
+<dtml-if cod_materia_anexada>   
+<dtml-try>
+  <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_anexada = cod_materia_anexada,
+                                         cod_materia_principal = cod_materia_principal,
+                                         ind_excluido=1)">
+    <dtml-call expr="REQUEST.set('metodo', zsql.anexada_estado_alterar_zsql)">
+  <dtml-else>
+    <dtml-if flag_atualizar>
+      <dtml-call expr="REQUEST.set('metodo', zsql.anexada_atualizar_zsql)">
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('metodo', zsql.anexada_incluir_zsql)">
+    </dtml-if>
+    <dtml-if cod_materia_anexada>
+      <dtml-if expr="cod_materia_anexada == cod_materia_principal">
+        <dtml-call expr="REQUEST.set('marcador',0)">
+          <dtml-let mensagem="'A matéria a ser anexada não pode ser igual a matéria principal.'">
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+      </dtml-if>
+     </dtml-if>
+</dtml-in>
+</dtml-try>
+
+<dtml-if expr="marcador == cod_materia_anexada">
+<dtml-try>
+<dtml-call expr="metodo(cod_materia_anexada    = cod_materia_anexada,
+                          cod_materia_principal  = cod_materia_principal,
+                          dat_anexacao = pysc.data_converter_pysc(data=txt_dat_anexacao),
+                          dat_desanexacao = pysc.data_converter_pysc(data=txt_dat_desanexacao),
+                          ind_excluido = 0)">
+<dtml-except IntegrityError>
+  <dtml-let mensagem="'Essa matéria já foi anexada.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+<dtml-except>
+    <dtml-let mensagem="'Não foi possivel anexar a matéria. Tente novamente!!!.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+<dtml-else>
+  <dtml-let mensagem="'Matéria anexada com sucesso!'" sucesso="1" url=hdn_url>
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+</dtml-try>
+</dtml-if>
+</dtml-if>

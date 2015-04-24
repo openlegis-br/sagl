@@ -1,0 +1,35 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : txt_dat_apresentacao="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT DISTINCT
+    REPLACE(p.cod_parlamentar, 'L', '') as cod_parlamentar
+FROM 
+   legislatura l,
+   mandato m 
+   LEFT JOIN parlamentar p on m.cod_parlamentar =p.cod_parlamentar
+   LEFT JOIN afastamento a on m.cod_mandato = a.cod_mandato
+WHERE
+    l.num_legislatura = m.num_legislatura and
+    l.dat_inicio is not null and
+    l.dat_fim is not null and
+    m.dat_inicio_mandato is not null and
+    <dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> BETWEEN DATE(l.dat_inicio) and DATE(l.dat_fim) and
+    m.dat_inicio_mandato >= l.dat_inicio and
+    (<dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> >= DATE(m.dat_inicio_mandato) and
+    IF(m.dat_fim_mandato is null, m.dat_fim_mandato is null, <dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> <= DATE(m.dat_fim_mandato)) and
+    IF(m.ind_titular=0, 
+       a.cod_afastamento is null, 
+       IF(a.cod_afastamento is null, cod_afastamento is null,
+          IF(a.dat_fim_afastamento is null,
+             (a.dat_inicio_afastamento >= <dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> and a.dat_fim_afastamento is null and a.ind_excluido=0),
+             <dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> NOT BETWEEN a.dat_inicio_afastamento and a.dat_fim_afastamento and a.ind_excluido=0)
+            )
+         )
+      ) and
+    p.ind_excluido = <dtml-sqlvar ind_excluido type="int"> and
+    l.ind_excluido = <dtml-sqlvar ind_excluido type="int"> and
+    m.ind_excluido = <dtml-sqlvar ind_excluido type="int">
+ORDER BY 1

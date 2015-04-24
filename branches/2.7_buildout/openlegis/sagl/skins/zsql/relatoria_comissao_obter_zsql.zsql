@@ -1,0 +1,42 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : cod_materia="" ind_ult_tramitacao=1 ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT
+       c.cod_comissao as cod_comissao, 
+       c.nom_comissao as nom_comissao
+FROM   
+     tramitacao t LEFT JOIN unidade_tramitacao ut ON ( t.cod_unid_tram_dest  = ut.cod_unid_tramitacao) 
+                  LEFT JOIN comissao c            ON (ut.cod_comissao = c.cod_comissao)
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_materia           op="=" column="t.cod_materia"        type="int"> <dtml-and>
+    <dtml-sqltest ind_ult_tramitacao    op="=" column="t.ind_ult_tramitacao" type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="t.ind_excluido"       type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="ut.ind_excluido"      type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="c.ind_excluido"       type="int"> and
+    ut.cod_comissao                     is not null
+  </dtml-sqlgroup>
+
+<dtml-else>
+
+SELECT 
+       c.cod_comissao as cod_comissao
+       c.nom_comissao as nom_comissao
+FROM   
+     tramitacao t LEFT JOIN unidade_tramitacao ut ON ( t.cod_unid_tram_dest  = ut.cod_unid_tramitacao) 
+                  LEFT JOIN comissao c            ON (ut.cod_unid_tramitacao = c.cod_comissao)
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_materia           op="=" column="t.cod_materia"        type="int"> <dtml-and>
+    <dtml-sqltest ind_ult_tramitacao    op="=" column="t.ind_ult_tramitacao" type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="t.ind_excluido"       type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="ut.ind_excluido"      type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="c.ind_excluido"       type="int"> and
+    ut.cod_comissao                     is not null
+  </dtml-sqlgroup>
+
+</dtml-if>

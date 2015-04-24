@@ -1,0 +1,131 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : tip_id_basica="" cod_unid_tram_local="" data_inicial="" data_final="" cod_status="" dat_tramitacao=""  ind_ult_tramitacao=1
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-comment>
+*----------------------------------------------------------------
+  Função: Selecionar as matérias conforme a query de pesquisa, a 
+          qual é montada dinamicamente de acordo com os parâmetros 
+          passados.
+  Argumentos: [tip_id_basica: int] - tipo da matéria
+              [cod_status: int] - código do status da tramitação
+              [cod_unid_tram_dest: int] - código da unidade de tramitação destino
+              [ind_ult_tramitacao: tinyint] - índice de última tramitação
+  Retorno: Matérias selecionadas   
+  Autor: Sérgio Damiati 
+  Última Alteração: 25/01/2005
+
+----------------------------------------------------------------*
+</dtml-comment>
+
+<dtml-comment>
+ MUDADA FORMA DE ORDENAÇÃO PARA ADEQUAR O USO DO NPC - Alterado por Sérgio Damiati em 07/03/2007
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT 
+       REPLACE(materia_legislativa.cod_materia, 'L', '') as cod_materia,
+       REPLACE(materia_legislativa.tip_id_basica, 'L', '') as tip_id_basica,
+       materia_legislativa.num_ident_basica,
+       materia_legislativa.ano_ident_basica,
+       materia_legislativa.txt_ementa,
+       materia_legislativa.dat_apresentacao,
+       tipo_materia_legislativa.sgl_tipo_materia,
+       tipo_materia_legislativa.des_tipo_materia,
+       REPLACE(tramitacao.cod_status, 'L', '') as cod_status,
+       tramitacao.dat_tramitacao
+       
+FROM   materia_legislativa, tipo_materia_legislativa, tramitacao
+
+<dtml-sqlgroup where>
+    materia_legislativa.ind_excluido = 0
+  and
+    tipo_materia_legislativa.ind_excluido = 0
+  and
+    materia_legislativa.tip_id_basica = tipo_materia_legislativa.tip_materia
+
+  
+<dtml-and>
+  <dtml-sqltest tip_id_basica column="materia_legislativa.tip_id_basica" op="=" type="int" optional>
+
+<dtml-and>
+  <dtml-sqltest data_inicial column="materia_legislativa.dat_apresentacao" op=">=" type="nb" optional>
+
+<dtml-and>
+  <dtml-sqltest data_final column="materia_legislativa.dat_apresentacao" op="<=" type="nb" optional>
+
+<dtml-and>
+  <dtml-sqltest cod_unid_tram_local column="tramitacao.cod_unid_tram_dest" op="=" type="int" optional>
+
+</dtml-sqlgroup>
+  
+  and
+    tramitacao.dat_tramitacao <= <dtml-sqlvar dat_tramitacao type="nb">
+  and
+    materia_legislativa.cod_materia = tramitacao.cod_materia
+  and
+    tramitacao.ind_ult_tramitacao = 1
+  and
+    tramitacao.ind_excluido = 0
+<dtml-if cod_status>
+  and
+    tramitacao.cod_status = <dtml-sqlvar cod_status type="int"> 
+</dtml-if>
+
+ORDER BY materia_legislativa.dat_apresentacao ASC, materia_legislativa.num_ident_basica ASC
+
+<dtml-else>
+
+SELECT 
+       materia_legislativa.cod_materia as cod_materia,
+       materia_legislativa.tip_id_basica as tip_id_basica,
+       materia_legislativa.num_ident_basica,
+       materia_legislativa.ano_ident_basica,
+       materia_legislativa.txt_ementa,
+       materia_legislativa.dat_apresentacao,
+       tipo_materia_legislativa.sgl_tipo_materia,
+       tipo_materia_legislativa.des_tipo_materia,
+       tramitacao.cod_status as cod_status,
+       tramitacao.dat_tramitacao
+       
+FROM   materia_legislativa, tipo_materia_legislativa, tramitacao
+
+<dtml-sqlgroup where>
+    materia_legislativa.ind_excluido = 0
+  and
+    tipo_materia_legislativa.ind_excluido = 0
+  and
+    materia_legislativa.tip_id_basica = tipo_materia_legislativa.tip_materia
+
+  
+<dtml-and>
+  <dtml-sqltest tip_id_basica column="materia_legislativa.tip_id_basica" op="=" type="int" optional>
+
+<dtml-and>
+  <dtml-sqltest data_inicial column="materia_legislativa.dat_apresentacao" op=">=" type="nb" optional>
+
+<dtml-and>
+  <dtml-sqltest data_final column="materia_legislativa.dat_apresentacao" op="<=" type="nb" optional>
+
+<dtml-and>
+  <dtml-sqltest cod_unid_tram_local column="tramitacao.cod_unid_tram_dest" op="=" type="int" optional>
+
+</dtml-sqlgroup>
+  
+  and
+    tramitacao.dat_tramitacao <= <dtml-sqlvar dat_tramitacao type="nb">
+  and
+    materia_legislativa.cod_materia = tramitacao.cod_materia
+  and
+    tramitacao.ind_ult_tramitacao = 1
+  and
+    tramitacao.ind_excluido = 0
+<dtml-if cod_status>
+  and
+    tramitacao.cod_status = <dtml-sqlvar cod_status type="int"> 
+</dtml-if>
+
+ORDER BY materia_legislativa.dat_apresentacao ASC, materia_legislativa.num_ident_basica ASC
+
+</dtml-if>

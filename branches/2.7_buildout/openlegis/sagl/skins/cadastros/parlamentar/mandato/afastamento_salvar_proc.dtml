@@ -1,0 +1,34 @@
+﻿<dtml-if hdn_cod_afastamento>
+   <dtml-call expr="REQUEST.set('metodo', zsql.afastamento_atualizar_zsql)">
+<dtml-else>
+   <dtml-call expr="REQUEST.set('metodo', zsql.afastamento_incluir_zsql)">
+</dtml-if>
+<dtml-try>
+    <dtml-call expr="metodo(
+               cod_afastamento          = hdn_cod_afastamento,
+               cod_parlamentar          = hdn_cod_parlamentar,
+               cod_mandato              = hdn_cod_mandato,
+               num_legislatura          = hdn_num_legislatura,
+               tip_afastamento          = lst_tip_afastamento,
+               dat_inicio_afastamento   = pysc.data_converter_pysc(txt_dat_inicio_afastamento),
+               dat_fim_afastamento      = pysc.data_converter_pysc(txt_dat_fim_afastamento),
+               txt_observacao           = txa_txt_observacao,
+               cod_parlamentar_suplente = lst_suplente)">
+
+
+<dtml-except>
+      <dtml-if expr="metodo==zsql.afastamento_incluir_zsql">
+              <dtml-let mensagem="'Ocorreu um erro ao tentar incluir o afastamento / Licença'">
+              <dtml-var mensagem_popup_emitir>
+              </dtml-let>
+      <dtml-else>             
+              <dtml-let mensagem="'Ocorreu um erro ao tentar atualizar o afastamento / Licença'">
+              <dtml-var mensagem_popup_emitir>
+              </dtml-let>
+      </dtml-if>
+
+<dtml-else>
+      <dtml-let mensagem="'Afastamento / Licença salvo com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close();'">
+      <dtml-var mensagem_popup_emitir>
+      </dtml-let>
+</dtml-try> 

@@ -1,0 +1,106 @@
+﻿<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_instituicao">Ajuda</a>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+<a id="ajuda" href="&dtml-portal_url;/gerar_etiquetas_pdf?<dtml-var "REQUEST.get('QUERY_STRING','')">" target="_blank">Mala Direta</a>
+</dtml-if>
+
+<h1 class="firstHeading">Entidades</h1>
+
+<dtml-if expr="incluir=='1'">
+    <ul>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/instituicao/instituicao_form">Incluir Entidade</a>
+        </li>
+    </ul>
+</dtml-if>
+
+<fieldset>
+<legend>Cadastro de Entidades</legend>
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 12)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+<dtml-if lst_localidade>
+  <dtml-call "REQUEST.set('lst_localidade', _.int(lst_localidade))">
+</dtml-if>
+</fieldset>
+<table>
+<dtml-in expr="zsql.instituicao_obter_zsql(tip_instituicao=lst_tip_instituicao, txt_nom_instituicao=txa_txt_nom_instituicao, txt_nom_responsavel=txa_txt_nom_responsavel, cod_localidade=lst_localidade, rd_ordem=rd_ordenacao)"
+                                           size="step" start="start" orphan=0>
+<dtml-if sequence-start>
+<tr>
+<th colspan="2" class="form-label">Resultado da Pesquisa: <dtml-var sequence-length> ocorrência(s) encontrada(s).</th>
+</tr>
+<dtml-if previous-sequence>
+<dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+</dtml-if>
+</dtml-if sequence-start>
+            <tr <dtml-if sequence-odd>class="even"</dtml-if>>            
+              <td class="texto">
+                <dtml-if expr="incluir=='1'">
+                  <a href="&dtml-portal_url;/cadastros/instituicao/instituicao_mostrar_proc?cod_instituicao=<dtml-var cod_instituicao>">
+                <dtml-else>
+                  <a href="#" >
+                </dtml-if>
+                 <b><dtml-var nom_instituicao upper></b> 
+               </a><br>
+
+               <dtml-if end_instituicao>
+                 <dtml-var end_instituicao> <dtml-if nom_bairro> - <dtml-var nom_bairro missing null=""></dtml-if><br />
+                 <dtml-if num_cep> CEP: <dtml-var num_cep missing null=""></dtml-if>
+                 <dtml-if cod_localidade><dtml-in expr="zsql.instituicao_localidade_obter_zsql(cod_instituicao=cod_instituicao)">
+                   <dtml-var nom_localidade></dtml-in></dtml-if>
+               </dtml-if>
+               
+               <dtml-if expr="num_telefone">
+                <dtml-if num_telefone><br />Fone: <dtml-var num_telefone missing null=""></dtml-if><dtml-if num_fax> - Fax: <dtml-var num_fax missing null=""></dtml-if>
+               </dtml-if>
+
+               <dtml-if end_email>
+                 <br /> Email: <a href="mailto:<dtml-var end_email>"><dtml-var end_email missing null=""></a>
+               </dtml-if>
+
+               <dtml-if end_web>
+                 <br />Website: <a href="<dtml-var end_web>" target="_blank"><dtml-var end_web missing null=""></a>
+               </dtml-if>
+
+               <dtml-if nom_responsavel>
+                 <br /> Responsável: <dtml-var nom_responsavel missing null=""><dtml-if des_cargo> - <dtml-var des_cargo null=""></dtml-if>
+               </dtml-if>
+
+  <dtml-if sequence-end>
+   </table>
+  <dtml-if next-sequence>
+    <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+  </dtml-if>
+    <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+      <p align="center" class="texto"><b>          
+          <dtml-var "sagl.pysc.PageListOutput_pysc('instituicao_pesquisar_proc', page, step, _['sequence-length'], incluir=incluir, existe_ocorrencia=existe_ocorrencia, lst_tip_instituicao=lst_tip_instituicao, txa_txt_nom_instituicao=txa_txt_nom_instituicao, txa_txt_nom_responsavel=txa_txt_nom_responsavel, lst_localidade=lst_localidade, rd_ordenacao=rd_ordenacao, btn_instituicao_pesquisar=btn_instituicao_pesquisar)">
+      </b></p>
+    </dtml-if>
+  </dtml-if sequence-end>
+
+<dtml-else>
+<tr>
+<th colspan="2" class="form-label">Resultado da Pesquisa: Nenhuma ocorrência encontrada.</th>
+</tr>
+</dtml-in>
+</table>
+
+<p align="center">
+    <input type="button" class="botao" name="retornar" value="retornar" onClick="javascript:history.go(-1)">
+</p>
+
+<dtml-var standard_html_footer>

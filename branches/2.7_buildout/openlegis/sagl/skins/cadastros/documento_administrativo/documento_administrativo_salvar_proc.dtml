@@ -1,0 +1,75 @@
+<dtml-in expr="zsql.documento_administrativo_obter_zsql(ncod_documento = hdn_cod_documento,
+                                       tip_documento = lst_tip_documento,
+                                       num_documento = hdn_num_documento,
+                                       ano_documento = txt_ano_documento)">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+  <dtml-let mensagem="'Já existe um documento administrativo idêntico.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-in>
+
+<dtml-unless erro>
+
+<dtml-if hdn_cod_documento>
+  <dtml-call expr="REQUEST.set('metodo', zsql.documento_administrativo_atualizar_zsql)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.documento_administrativo_incluir_zsql)">
+</dtml-if>
+
+  <dtml-try>
+    <dtml-call expr="metodo(
+        cod_documento            = hdn_cod_documento,
+        num_documento            = txt_num_documento,
+        ano_documento            = txt_ano_documento,
+        dat_documento            = pysc.data_converter_pysc(data=txt_dat_documento),
+        tip_documento            = lst_tip_documento,
+        num_protocolo            = txt_num_protocolo,
+        txt_interessado          = txa_txt_interessado,
+        num_dias_prazo           = txt_num_dias_prazo,
+        dat_fim_prazo            = pysc.data_converter_pysc(data=txt_dat_fim_prazo),
+        ind_tramitacao           = rad_ind_tramitacao,
+        txt_assunto              = txa_txt_assunto,
+        txt_observacao           = txa_txt_observacao)">
+
+  <dtml-else>
+
+    <dtml-if expr="hdn_url[-1:]=='='">
+        <dtml-in expr="zsql.documento_administrativo_incluido_codigo_obter_zsql()">
+          <dtml-call expr="REQUEST.set('hdn_url', hdn_url + _.str(cod_documento))">
+          <dtml-call expr="REQUEST.set('hdn_cod_documento', cod_documento)">
+        </dtml-in>
+    </dtml-if>
+
+    <dtml-call expr="REQUEST.set('erro', 0)">
+
+<dtml-call expr="REQUEST.set('existe_arquivo', 0)">
+<dtml-if file_nom_arquivo>
+    <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
+    <dtml-if expr="_.hasattr(sagl_documentos.administrativo,id_documento)">
+        <dtml-let documento="_.getattr(sagl_documentos.administrativo,id_documento) ">
+        <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
+        <dtml-try>
+            <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
+        <dtml-except>
+            <dtml-call expr="REQUEST.set('erro', 1)">
+              <dtml-let mensagem="'Ocorreu erro ao tentar salvar texto integral'+hdn_cod_documento">
+                 <dtml-var mensagem_emitir>
+              </dtml-let>
+        </dtml-try>
+        </dtml-let>
+    </dtml-if>
+    <dtml-if expr="not existe_arquivo">
+    <dtml-try>
+      <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
+      <dtml-call expr="sagl_documentos.administrativo.manage_addProduct['ExtFile'].manage_addExtFile(id=id_documento,file=file_nom_arquivo,permission_check=0)">
+     </dtml-try>
+    </dtml-if>
+</dtml-if>
+
+          <dtml-let mensagem="'Documento salvo com sucesso!'" sucesso="1" url="hdn_url" >
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+ 
+</dtml-try>
+
+</dtml-unless>

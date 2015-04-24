@@ -1,0 +1,54 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : cod_dependente="" cod_parlamentar="" nom_dependente="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT 
+  REPLACE(d.cod_dependente, 'L', '') as cod_dependente,
+  d.tip_dependente,       
+  d.nom_dependente,
+  d.sex_dependente,
+  DATE_FORMAT(d.dat_nascimento, '%d/%m/%Y') as dat_nascimento,
+  d.num_cpf,
+  d.num_rg,
+  d.num_tit_eleitor,
+  td.des_tipo_dependente 
+
+FROM 
+     dependente d, tipo_dependente td
+
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_dependente column="d.cod_dependente" op="=" type="nb" optional><dtml-and>
+  <dtml-sqltest cod_parlamentar column="d.cod_parlamentar" op="=" type="nb" optional><dtml-and>
+  <dtml-sqltest nom_dependente column="d.nom_dependente" op="=" type="nb" optional><dtml-and>
+  <dtml-sqltest ind_excluido column="d.ind_excluido" op="=" type="nb" optional><dtml-and>
+  d.tip_dependente = td.tip_dependente   
+</dtml-sqlgroup>  
+
+<dtml-else>
+
+SELECT 
+  d.cod_dependente as cod_dependente,
+  d.tip_dependente,       
+  d.nom_dependente,
+  d.sex_dependente,
+  TO_CHAR(d.dat_nascimento, 'DD/MM/YYYY') as dat_nascimento,
+  d.num_cpf,
+  d.num_rg,
+  d.num_tit_eleitor,
+  td.des_tipo_dependente 
+
+FROM 
+     dependente d, tipo_dependente td
+
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_dependente column="d.cod_dependente" op="=" type="nb" optional><dtml-and>
+  <dtml-sqltest cod_parlamentar column="d.cod_parlamentar" op="=" type="nb" optional><dtml-and>
+  <dtml-sqltest nom_dependente column="d.nom_dependente" op="=" type="nb" optional><dtml-and>
+  <dtml-sqltest ind_excluido column="d.ind_excluido" op="=" type="nb" optional><dtml-and>
+  d.tip_dependente = td.tip_dependente   
+</dtml-sqlgroup>  
+
+</dtml-if>

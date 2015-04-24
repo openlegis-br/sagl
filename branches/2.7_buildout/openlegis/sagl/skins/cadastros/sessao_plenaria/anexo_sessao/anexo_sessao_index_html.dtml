@@ -1,0 +1,60 @@
+<dtml-var standard_html_header>
+<script type="text/javascript">
+function submeter(endereco){
+        var form = document.anexo_sessao_form;
+        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
+        endereco += '&cod_sessao_leg=' + form.hdn_cod_sessao_leg.value;
+        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
+        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
+        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
+        if (form.hdn_cod_sessao_plen.value!=""){
+            location.href = endereco;
+        }
+        return;
+    }
+function anexo_excluir(){
+       if (confirm("Deseja realmente excluir o Arquivo Anexo da Sessão?")) {
+          location.href="anexo_sessao_excluir_proc?<dtml-var "REQUEST.get('QUERY_STRING','')">";
+       }
+       return;
+  }
+</script>
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_anexo">Ajuda</a>
+<h1 class="firstHeading">Roteiro da Sessão</h1>
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+<form name="anexo_sessao_form" method="post" action="anexo_sessao_salvar_proc" enctype="multipart/form-data">
+    <dtml-var sessao_plenaria_menu>
+    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
+    <fieldset>
+      <legend>Roteiro da Sessão</legend>
+       <table>
+        <tr>
+            <td><label for="nom_arquivo">Texto Integral em PDF:</label><br />
+                <dtml-if expr="(_.has_key('cod_sessao_plen'))">
+                    <dtml-call expr="REQUEST.set('id_documento', _.str(cod_sessao_plen)+ '_' + 'texto_anexado.pdf')">
+                    <dtml-if "_.hasattr(sagl_documentos.anexo_sessao,id_documento)">
+                       <dtml-let documento="_.getattr(sagl_documentos.anexo_sessao,id_documento).absolute_url">
+                            <a target="_blank" href="<dtml-var documento>">
+                                <img align="left" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Anexo" />
+                            </a>&nbsp;&nbsp;&nbsp;
+                            <input type="button" name="delAnexo" class="botao" value="Excluir Arquivo" onClick="javascript:anexo_excluir()" />
+            </td>
+        </tr>
+                     </dtml-let>
+                    <dtml-else>
+                      <input type="file" name="file_nom_arquivo" accept="application/pdf" size="30" maxlength="100" />
+               </td>   
+           <tr>
+             <td align="center">
+              <input class="botao" type="submit" size="10" name="btn_anexo_sessao" value="Salvar"/>
+             </td>
+           </tr>
+                </dtml-if>
+               </dtml-if>
+       </table>
+    </dtml-in>
+           
+</table>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

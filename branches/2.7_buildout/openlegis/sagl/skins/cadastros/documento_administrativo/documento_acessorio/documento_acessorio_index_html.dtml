@@ -1,0 +1,68 @@
+﻿<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/doc_acessorio">Ajuda</a>
+
+<h1 class="firstHeading">Documento Administrativo</h1>
+
+ <dtml-var documento_menu>
+ <dtml-var documento_header>
+
+<form name="index_form" action="documento_acessorio_form">
+<input type="hidden" name="cod_documento" value="<dtml-var cod_documento>" />
+ <fieldset><legend>Documentos Acessórios</legend>
+<dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)" size=20 start=query_start orphan=2>
+  <dtml-if sequence-start>   
+    <table>
+       <tr> 
+          <th width="10%" class="form-label">Doc.</th>
+          <th class="form-label">Nome</th>
+          <th class="form-label">Tipo</th>
+          <th width="15%" class="form-label">Data</th>
+          <th class="form-label">Autor</th>
+       </tr>
+     <dtml-if previous-sequence>
+       <tr><td class="form-element">
+           <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
+           Página Anterior (<dtml-var previous-sequence-size> resultados)</a>
+       </td></tr>
+     </dtml-if previous-sequence>  
+   </dtml-if sequence-start>
+       <tr> 
+          <td>
+             <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento_acessorio)+'.pdf')">
+             <dtml-if expr="_.hasattr(sagl_documentos.administrativo,id_documento)">
+               <dtml-let documento="_.getattr(sagl_documentos.administrativo,id_documento).absolute_url">
+                 <a href="<dtml-var documento>" target="_blank">
+                 <img src=sagl/imagens/archiv.gif alt="Texto Integral" title="Texto Integral"></a>
+               </dtml-let>
+             <dtml-else>
+                 <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+             </dtml-if>
+          </td>
+           <td class="texto"><a href="documento_acessorio_mostrar_proc?cod_documento_acessorio=<dtml-var cod_documento_acessorio missing>">
+             <b><dtml-var nom_documento missing null=""></b></a></td>
+           <td class="texto">
+              <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(tip_documento=tip_documento,ind_excluido=0)">
+                 <dtml-var des_tipo_documento missing null="">
+              </dtml-in></td>
+           <td class="texto"><dtml-var dat_documento missing null=""></td>
+           <td class="texto"><dtml-var nom_autor_documento missing null=""></td>
+       </tr>
+   <dtml-if sequence-end>
+     <dtml-if next-sequence>
+       <tr><td class="label">
+           <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
+           Próxima Página (<dtml-var next-sequence-size> resultados)</a>
+       </td></tr>
+     </dtml-if next-sequence>
+       </table>
+  </dtml-if sequence-end>
+<dtml-else>
+       <p class="texto">Nenhum documento acessório cadastrado.</p>
+</dtml-in>
+    </fieldset>
+     <p align="center">
+          <input type="submit" class="botao" name="btn_incluir" value="Incluir Documento Acessório" />
+     </p>
+</form>
+<dtml-var standard_html_footer>
