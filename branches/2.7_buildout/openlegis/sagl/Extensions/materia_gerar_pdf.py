@@ -13,6 +13,6 @@ def convertFile(self,cod_materia):
     renderer.run()
     data = open(output_file_pdf, "rb").read()                 
     for file in [output_file_pdf]:
-        self.sagl_documentos.materia.manage_addProduct['ExtFile'].manage_addExtFile(id=file,title=file,file=file)
+        self.sagl_documentos.materia.manage_addFile(id=file,file=file)
         os.unlink(file)
 

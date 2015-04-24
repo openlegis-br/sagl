@@ -13,5 +13,5 @@ def convertFile(self,cod_emenda):
     renderer.run()
     data = open(output_file_pdf, "rb").read()                 
     for file in [output_file_pdf]:
-        self.sagl_documentos.emenda.manage_addProduct['ExtFile'].manage_addExtFile(id=file,title=file,file=file)
+        self.sagl_documentos.emenda.manage_addFile(id=file,file=file)
         os.unlink(file)
