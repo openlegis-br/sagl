@@ -1,0 +1,78 @@
+﻿<dtml-comment>
+***************************************************************
+*   Função: Esse método apenas chama o Método SQL de exclusão *
+*      da comissão, isto é, o método que atribui a verdadeiro *
+*     (1) o campo ind_excluido da comissão cujo o cod_comissão*
+*      é recebido.                                            *
+*   Argumentos: cod_comissão : int - o código da comissao a   *
+*      ser excluída.                                          *
+*   Retorno: Atribuição do flag ind_excluido da comissão e re-*
+*      direcionamento para a página de comissões ou mensagem  *
+*      de erro.                                               *
+*   Michael S. Onishi / Daniel C. Azevedo em 12-03-2001.      *
+***************************************************************
+* UPDATE                                                      *
+*    Ao se excluir uma comissão, alteramos o índice da tabela *
+*  com o autor correspondente (ind_excluido=1) representado a *
+*  exclusão desse relacionamento, além da exclusão, se houver *
+*  do username cadastrado no acl_user                         *
+*  Rogério Ueda em 18-12-2003                                 *
+***************************************************************
+</dtml-comment>
+
+<dtml-try>
+   <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_comissao=cod_comissao)">
+      <dtml-in expr="zsql.tramitacao_obter_zsql(cod_unid_tram_origem=cod_unid_tramitacao)">
+         <dtml-call expr="REQUEST.set('erro', 1)"> 
+         <dtml-let mensagem="'Houve um erro! Esta comissão não pode ser excluída, pois constam na base de dados registros de tramitação de matérias que passaram por ela!'">
+            <dtml-var mensagem_emitir>
+         </dtml-let>
+      </dtml-in>
+      <dtml-unless erro>
+         <dtml-in expr="zsql.tramitacao_obter_zsql(cod_unid_tram_destino=cod_unid_tramitacao)">
+            <dtml-call expr="REQUEST.set('erro', 1)"> 
+            <dtml-let mensagem="'Houve um erro! Esta comissão não pode ser excluída, pois constam na base de dados registros de tramitação de matérias que passaram por ela!'">
+               <dtml-var mensagem_emitir>
+            </dtml-let>
+         </dtml-in>
+      </dtml-unless>
+      <dtml-unless erro>
+         <dtml-try>
+            <dtml-call expr="zsql.unidade_tramitacao_excluir_zsql(cod_unid_tramitacao=cod_unid_tramitacao)">
+         <dtml-except>
+            <dtml-call expr="REQUEST.set('erro', 1)">  
+            <dtml-let mensagem="'Houve um erro! Comissão não excluída, pois não foi possível excluir UNIDADE DE TRAMITAÇÃO associada!'">
+               <dtml-var mensagem_emitir>
+            </dtml-let>
+         </dtml-try>   
+      </dtml-unless>
+   </dtml-in>
+</dtml-try>
+
+<dtml-unless erro>
+   <dtml-try>
+      <dtml-call expr="zsql.comissao_excluir_zsql(cod_comissao=cod_comissao)">
+   <dtml-except>
+      <dtml-let mensagem="'Houve um erro! Comissão não excluída!'">
+         <dtml-var mensagem_emitir>
+      </dtml-let>
+      <dtml-call expr="REQUEST.set('erro', 1)">  
+   </dtml-try>
+</dtml-unless>
+
+<dtml-unless erro>
+  <dtml-try>
+     <dtml-in expr="zsql.autor_obter_zsql(cod_comissao=cod_comissao)">
+        <dtml-call expr="zsql.autor_excluir_zsql(cod_autor)">
+        <dtml-call expr="pysc.username_excluir_pysc(username=col_username)">
+     </dtml-in>
+  <dtml-except>
+     <dtml-let mensagem="'Comissão Excluída com Sucesso!<BR>Porém não foi possível excluir Autor associado à Comissão. Exclua-o manualmente.!'">
+        <dtml-var mensagem_emitir>
+     </dtml-let>  
+  <dtml-else>
+     <dtml-let mensagem="'Comissão Excluída com sucesso!'" sucesso="1">
+        <dtml-var mensagem_emitir>
+     </dtml-let>
+  </dtml-try>
+</dtml-unless>

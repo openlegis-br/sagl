@@ -1,0 +1,184 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 700,
+		maxHeight	: 600,
+		fitToView	: false,
+		width		: '70%',
+		height		: '72%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+                afterClose      : function() {
+                window.location.href = "&dtml-portal_url;/cadastros/comissao/materia/index_html?cod_comissao=<dtml-var cod_comissao>";
+                },
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup1").fancybox({
+		maxWidth	: 1024,
+		maxHeight	: 800,
+		fitToView	: false,
+		width		: '95%',
+		height		: '93%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+  <dtml-call expr="REQUEST.set('nom_comissao', nom_comissao)">
+</dtml-in>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_comissoes">Ajuda</a>
+<h1 class="firstHeading"><dtml-var nom_comissao></h1> 
+
+<dtml-if cod_comissao>
+<div id="barra-conteudo">
+<ul>
+    <li>
+        <a href="&dtml-portal_url;/cadastros/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>">Início</a>
+    </li>
+    <li>
+        <a href="&dtml-portal_url;/cadastros/comissao/composicao/index_html?cod_comissao=<dtml-var cod_comissao>">Composição</a>
+    </li>
+    <li>
+        <a class="selecionado">Matérias</a>
+    </li>
+    <li>
+        <a href="&dtml-portal_url;/cadastros/comissao/reuniao/index_html?cod_comissao=<dtml-var cod_comissao>"">Reuniões</a>
+    </li>
+</ul>
+</div>
+</dtml-if>
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+<dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+<dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+<dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+<dtml-call "REQUEST.set('step', 12)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+<dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)" size="step" start="start" orphan=0>
+    <dtml-if sequence-start>
+<fieldset><legend>Matérias na Comissão (<dtml-var sequence-length> registro<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>)</legend>
+ <table>
+  <tr <dtml-if sequence-odd>class="even"</dtml-if>>            
+     <th class="form-label" width="50%">Matéria</th>
+     <th class="form-label" width="35%">Relator</th>
+     <th class="form-label" width="15%">Parecer</th>
+  </tr>
+  <dtml-if previous-sequence>
+     <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+  </dtml-if previous-sequence>
+</dtml-if sequence-start>
+  <tr>
+     <td class="texto">
+      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+        <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia'])">
+           <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+        <dtml-else>
+           <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" >
+        </dtml-if>
+           <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var des_tipo_materia></b></a></br />
+           <dtml-var txt_ementa missing><br />
+
+           <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
+              <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
+                  <b>Autores:</b>
+              <dtml-else>
+                  <b>Autor:</b>
+              </dtml-if>
+           </dtml-if>  
+           <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+              <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+                <dtml-if expr="des_tipo_autor=='Parlamentar'">
+                  <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                           <dtml-var nom_completo><br>
+                  </dtml-in>
+                <dtml-elif expr="des_tipo_autor=='Comissao'">
+                  <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                           <dtml-var nom_comissao><br>
+                  </dtml-in>
+                <dtml-elif expr="des_tipo_autor=='Bancada'">
+                  <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
+                           <dtml-var nom_bancada><br>
+                  </dtml-in>
+                <dtml-else>
+                           <dtml-var nom_autor><br>
+                </dtml-if>
+              </dtml-in>
+           </dtml-in>
+     </td>
+     <td class="texto" valign="top">
+      <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao)">
+        <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+         <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Comissao'])">
+           <a href="relatoria_mostrar_proc?cod_relatoria=<dtml-var cod_relatoria>&cod_materia=<dtml-var cod_materia>&cod_comissao=<dtml-var cod_comissao>" class="popup" data-fancybox-type="iframe">
+           <b><dtml-var nom_completo></b></a>
+         <dtml-else>
+           <b><dtml-var nom_completo>
+         </dtml-if>
+        </dtml-in>
+      <dtml-else>
+        <b>Relator não designado.</b>
+        <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Comissao'])">
+          <br /><br /><a href="relatoria_form?cod_materia=<dtml-var cod_materia>&cod_comissao=<dtml-var cod_comissao>" class="botao-link popup" data-fancybox-type="iframe">
+               Designar Relator
+               </a> 
+        </dtml-if>
+      </dtml-in>
+     </td>
+ </dtml-in>
+     <td class="texto" valign="top">
+      <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao)">
+                <dtml-let id_parecer="_.str(cod_relatoria)+'_parecer.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.parecer_comissao,id_parecer)">
+                    <dtml-let parecer="_.getattr(sapl_documentos.parecer_comissao,id_parecer).absolute_url">
+                      <a class="popup1" href="&dtml-portal_url;/javascript/Viewer.js#<dtml-var parecer>" data-fancybox-type="iframe"><img align="absmiddle" src="sapl/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                    </dtml-let>
+                  <dtml-else>
+                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                  </dtml-if>
+                </dtml-let>
+      </dtml-in>
+     </td>
+  </tr>
+<dtml-if sequence-end>
+ </table>
+</fieldset>
+  <dtml-if next-sequence>
+    <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+ </dtml-if next-sequence>
+ <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+  <p align="center" class="form-text"><b> 
+   <dtml-var "pysc.PageListOutput_pysc('materia_index_html', page, step, _['sequence-length'], cod_comissao=cod_comissao)">
+  </p>
+  </dtml-if>
+  </dtml-if sequence-end>
+<dtml-else>
+ <fieldset><legend>Matérias na Comissão</legend>
+  <p class="texto">Nenhuma matéria foi enviada para parecer desta Comissão</p>
+ </fieldset>
+</dtml-in>
+<dtml-var standard_html_footer>

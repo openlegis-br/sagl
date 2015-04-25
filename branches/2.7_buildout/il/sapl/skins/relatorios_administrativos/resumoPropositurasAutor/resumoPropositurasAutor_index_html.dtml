@@ -1,0 +1,292 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+$(function() {
+	$('#dt_apres').datepick();
+	$('#dt_apres2').datepick();
+});
+</script>
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+
+<script type="text/javascript">
+<!--
+
+  function campos_criticar(){
+
+      var form = document.materia_autor_form;
+
+      if (form.dt_apres.value == "") {
+         alert("A data inicial deve ser preenchida!");
+         form.dt_apres.focus();
+         return false;
+      }
+
+      if (form.dt_apres2.value == "") {
+         alert("A data final deve ser preenchida!");
+         form.dt_apres2.focus();
+         return false;
+      }
+
+      if (form.dt_apres.value!="" && !IsValidDate(form.dt_apres.value)){
+         alert("Digite uma data inicial válida!");
+         form.dt_apres.focus();
+         form.dt_apres.select();
+         return false;
+      }
+
+      if (form.dt_apres2.value!="" && !IsValidDate(form.dt_apres2.value)){
+         alert("Digite uma data final válida!");
+         form.dt_apres2.focus();
+         form.dt_apres2.select();
+         return false;
+      }
+
+      var dt_apres = form.dt_apres.value.substring(6,10) + form.dt_apres.value.substring(3,5) + form.dt_apres.value.substring(0,2);
+      var dt_apres2 = form.dt_apres2.value.substring(6,10) + form.dt_apres2.value.substring(3,5) + form.dt_apres2.value.substring(0,2);
+
+      if (dt_apres2 < dt_apres) {
+           alert("A data final deve ser igual ou posterior à data inicial!");
+           form.dt_apres2.focus();
+           form.dt_apres2.select();
+           return false;
+      }
+
+      form.submit();
+    }
+
+//-->
+</script>
+
+<script type="text/javascript">
+<!--
+  function tipo_autor_trocar(form) {
+    form.txt_autor.value = "";
+    form.hdn_txt_autor.value = "";
+    form.hdn_cod_autor.value = "";
+    return;
+  }
+//-->
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 500,
+		maxHeight	: 430,
+		fitToView	: false,
+		width		: '85%',
+		height		: '80%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<script type="text/javascript">
+function clear_form_elements(ele) {
+
+    $(ele).find(':input').each(function() {
+        switch(this.type) {
+            case 'password':
+            case 'select-multiple':
+            case 'select-one':
+            case 'hidden':
+            case 'text':
+            case 'textarea':
+                $(this).val('');
+                break;
+            case 'checkbox':
+            case 'radio':
+                this.checked = false;
+        }
+    });
+
+}
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/relatorios#rel_autor">Ajuda</a>
+
+<h1 class="firstHeading">Matérias por Autor</h1>
+
+<dtml-if expr="not _.has_key('impressao') or (_.has_key('impressao') and not _.has_key('dt_apres') and not _.has_key('dt_apres2'))">
+<form class="pf-form" id="hideprint" method="post" name="materia_autor_form" action="resumoPropositurasAutor_index_html">
+ <fieldset>
+  <dtml-if impressao>
+    <input type="hidden" name="impressao" value="<dtml-var impressao>">
+  </dtml-if>
+    <div class="pf-element pf-full-width">
+      <label for="txt_autor"><span class="pf-label">Autor</span></label>
+       <div class="pf-group">
+      <input class="pf-field" id="txt_autor" type="text" name="txt_autor" value="<dtml-var hdn_txt_autor missing>" placeholder="Todos" null="" style="max-width: 224px; width: 60%;" maxlength="50" disabled onFocus="javascript:this.blur()" />
+      <input type="hidden" name="hdn_txt_autor" value="<dtml-var hdn_txt_autor missing>" />
+      <input type="hidden" name="hdn_cod_autor" value="<dtml-var hdn_cod_autor missing>" />
+      <a href="autor_pesquisar_form?hdn_tipo_pesquisa=pesq_basica" class="botao-link popup" data-fancybox-type="iframe">Selecionar</a>
+     </div>
+    </div>
+
+    <div class="pf-element pf-full-width">
+      <label for="lst_tip_materia"><span class="pf-label">Tipo de matéria</span></label>
+        <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia" style="max-width: 224px; width: 100%;">
+          <option value="0">Todos</option>
+          <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+            <option 
+             <dtml-if expr="_.has_key('lst_tip_materia') and _.int(tip_materia)==_.int(lst_tip_materia)">
+              selected</dtml-if>
+               value="<dtml-var tip_materia missing>">
+              <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+            </option>
+          </dtml-in>
+        </select>
+    </div>
+    <div class="pf-element pf-full-width">
+      <label><span class="pf-label">Período de apresentação:</span></label>
+       <div class="pf-group">
+        <label for="dt_apres">
+          <input class="pf-field" type="text" id="dt_apres" name="dt_apres" maxlength=10 style="min-width: 94px; max-width: 94px; width: 20%;" 
+            value="<dtml-var dt_apres missing>" onblur="formata_data(form.dt_apres)" />
+        </label>
+        <label for="dt_apres2">a
+          <input class="pf-field" type="text" id="dt_apres2" name="dt_apres2" maxlength="10" style="min-width: 94px; max-width: 94px; width: 20%;" 
+           value="<dtml-var dt_apres2 missing>" onblur="formata_data(form.dt_apres2)" />
+        </label>
+        </div>
+      </div>
+    <div class="pf-element pf-full-width">
+      <label><span class="pf-label">Modo de Exibição:</span></label>
+       <div class="pf-group">
+             <dtml-in expr="['Resumido', 'Detalhado']">
+              <input type="radio" id="mod_exibicao" name="rad_mod_exibicao" value="<dtml-var expr="_['sequence-item'][0]">"
+                <dtml-if expr="_.has_key('rad_mod_exibicao') and rad_mod_exibicao==_['sequence-item'][0]">
+                   checked=1
+                <dtml-elif expr="_['sequence-item']=='Resumido'">checked=1</dtml-if>>
+              <label style="vertical-align: top;" for="rad_mod_exibicao"><dtml-var expr="_['sequence-item']"></label>
+             </dtml-in>
+       </div>
+    </div>
+      <div class="pf-element pf-buttons">
+        <input class="pf-button btn botao" type="button" class="botao" name="button" value="Gerar relatório" onClick="campos_criticar()" />
+        <input class="pf-button btn botao" type="button" name="btn_materia_limpar" value="Limpar campos" onclick="clear_form_elements('#hideprint')" >
+      </div>
+ </fieldset>
+</form>
+</dtml-if>
+
+<dtml-if expr="_.has_key('dt_apres') or _.has_key('dt_apres2')">
+ <h3 align="center">Matérias apresentadas entre <dtml-var dt_apres> e <dtml-var dt_apres2></h3>
+ <br />
+
+<dtml-in expr="autorMateriaAno(cod_autor=hdn_cod_autor,tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
+ <table>
+  <tr>
+   <th colspan="3" class="form-label">
+     <h3 align="center">
+      <dtml-var nom_completo missing null=""> 
+      <dtml-var nom_comissao missing null="">
+      <dtml-var nom_bancada missing null="">
+      <dtml-var nom_autor missing null="">
+     </h3>
+   </th>
+  </tr>
+ <dtml-in expr="tipoQtdeAutor(autor=cod_autor,tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
+  <tr>
+   <td width="80%" class="texto">
+     <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+   </td>
+   <td width="20%" class="texto" align="center">
+     <dtml-var qtde>
+   </td>
+  </tr>
+ </dtml-in>
+ <dtml-in expr="qtdeAutor(autor=cod_autor,tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
+  <tr>
+   <td class="texto">
+     <b>TOTAL DO AUTOR</b>
+   </td>
+   <td class="texto" align="center">
+     <b><dtml-var qtde></b>
+   </td>
+  </tr>
+ </table>
+</dtml-in>
+
+<dtml-if expr="_.has_key('rad_mod_exibicao') and rad_mod_exibicao=='D'">
+ <dtml-in expr="materiaAutorAno(autor=cod_autor,tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
+ <dtml-if sequence-start>
+  <table>
+  <tr>
+   <th class="form-label">
+    Matéria
+   </th>
+   <th class="form-label">
+    Ementa
+   </th>
+   <th class="form-label">
+    Situação
+   </th>
+  </dtml-if>
+  </tr>
+  <tr>
+   <td class="texto" valign="top" width="15%">
+     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+     <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a></b>
+   </td>
+   <td class="texto" valign="top" width="65%">
+     <dtml-var txt_ementa>
+   </td>
+   <td class="texto" valign="top" width="20%">
+     <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+         <dtml-var des_status missing>
+     </dtml-in>
+     <dtml-in expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia=cod_materia)">
+       <dtml-if sequence-start>
+       </dtml-if>
+       <dtml-if expr="cod_norma and cod_norma!=''">
+          <br /><a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var sgl_norma> <dtml-var num_norma>/<dtml-var ano_norma></b></a>
+       </dtml-if>
+     </dtml-in>
+   </td>
+  </tr>
+ </dtml-in>
+  <tr>
+<dtml-if sequence-end>
+ </table>
+ <br />
+</dtml-if>
+</dtml-if>
+</dtml-in>
+
+<table>
+ <dtml-in expr="tipoQtdeGeral(tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
+  <dtml-if sequence-start>
+   <tr>
+     <th colspan="2" class="label"><h3 align="center">QUADRO GERAL</h3></th>
+   </tr>
+  </dtml-if>
+  <tr>
+   <td width="80%" class="texto">
+     <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+   </td>
+   <td width="20%" class="texto" align="center">
+     <dtml-var qtde>
+   </td>
+  </tr>
+ </dtml-in>
+ <dtml-in expr="qtdeGeral(tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
+  <tr>
+   <td class="texto">
+     <b>TOTAL</b>
+   </td>
+   <td class="texto" align="center">
+     <b><dtml-var qtde></b>
+   </td>
+  </tr>
+</table>
+</dtml-in>
+</dtml-if>
+
+<dtml-var standard_html_footer>

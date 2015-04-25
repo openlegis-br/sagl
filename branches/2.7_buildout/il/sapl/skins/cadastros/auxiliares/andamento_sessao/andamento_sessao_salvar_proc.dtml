@@ -1,0 +1,28 @@
+﻿<dtml-if hdn_cod_andamento_sessao>
+  <dtml-call expr="REQUEST.set('metodo', zsql.andamento_sessao_atualizar_zsql)">
+<dtml-elif expr="zsql.andamento_sessao_obter_zsql(nom_andamento=txt_nom_andamento)">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+  <dtml-let mensagem="'J&aacute; existe um Andamento de Sess&atilde;o Plen&aacute;ria com esse nome.'">    
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.andamento_sessao_incluir_zsql)">
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="metodo(cod_andamento_sessao = hdn_cod_andamento_sessao,
+                            nom_andamento = txt_nom_andamento,
+                            )">
+
+  <dtml-except>
+    <dtml-let mensagem="'N&atilde;o foi possível salvar Andamento de Sess&atilde;o Plen&aacute;ria. Tente novamente!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let> 
+
+  <dtml-else>
+    <dtml-let mensagem="'Andamento de Sess&atilde;o Plen&aacute;ria salvo com sucesso!'" sucesso="1">
+      <dtml-var mensagem_emitir>
+    </dtml-let> 
+  </dtml-try>
+</dtml-unless>

@@ -1,0 +1,55 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : data tipo_propositura status=""
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT
+    numeracao.num_materia,
+    materia_legislativa.cod_materia,
+    tipo_materia_legislativa.sgl_tipo_materia,
+    tipo_materia_legislativa.des_tipo_materia,
+    materia_legislativa.num_ident_basica, materia_legislativa.dat_apresentacao,
+    materia_legislativa.ano_ident_basica
+    <dtml-if expr="((tipo_propositura=='1') or (tipo_propositura=='4'))">
+        ,tramitacao.dat_tramitacao, tramitacao.cod_status, tramitacao.cod_unid_tram_dest
+    </dtml-if>
+
+FROM
+    materia_legislativa,
+    numeracao,
+    tipo_materia_legislativa
+    <dtml-if expr="((tipo_propositura=='1') or (tipo_propositura=='4'))">
+        , tramitacao
+    </dtml-if>
+
+<dtml-sqlgroup where>
+    materia_legislativa.cod_materia = numeracao.cod_materia and
+    materia_legislativa.ind_excluido=0 and
+    numeracao.ind_excluido=0
+    <dtml-if expr="tipo_propositura=='1'">
+        and materia_legislativa.tip_id_basica in (<dtml-var tipo_propositura>, 6)
+    <dtml-else>
+        and materia_legislativa.tip_id_basica = <dtml-var tipo_propositura>
+    </dtml-if>  and
+    tipo_materia_legislativa.ind_excluido = 0 and
+    materia_legislativa.tip_id_basica = tipo_materia_legislativa.tip_materia
+    <dtml-if expr="tipo_propositura=='1'">
+        and tramitacao.cod_unid_tram_dest = 7
+        and tramitacao.cod_materia = materia_legislativa.cod_materia
+        and tramitacao.dat_tramitacao = '<dtml-var data>'
+        and tramitacao.cod_status = <dtml-var status>
+        and tramitacao.ind_excluido=0
+        and (materia_legislativa.num_origem_externa = '' or materia_legislativa.num_origem_externa is null)
+    <dtml-else>
+        and materia_legislativa.dat_apresentacao = '<dtml-var data>'
+    <dtml-if expr="tipo_propositura=='4'">
+        and tramitacao.cod_unid_tram_dest = 7
+        and tramitacao.cod_materia = materia_legislativa.cod_materia
+        and (tramitacao.cod_status = 4 or tramitacao.cod_status = 30)
+        and tramitacao.ind_excluido=0
+    </dtml-if>
+    </dtml-if>
+</dtml-sqlgroup>
+
+ORDER BY numeracao.num_materia
