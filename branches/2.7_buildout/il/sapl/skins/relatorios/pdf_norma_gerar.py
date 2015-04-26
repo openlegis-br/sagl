@@ -3,8 +3,7 @@
 """relatorio_norma.py
    External method para gerar o arquivo rml do resultado de uma pesquisa de normas
    Autor: Luciano De Fazio
-   Empresa: OpenLegis Consultoria
-   versão: 1.1
+   Empresa: OpenLegis
 """
 from trml2pdf import parseString
 from cStringIO import StringIO
@@ -95,7 +94,7 @@ def principal(sessao,imagem,data,lst_normas,dic_cabecalho,lst_rodape,dic_filtro=
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="relatorio.pdf">\n'
-    tmp_data+='\t<template pageSize="(21cm, 29.7cm)" title="Relatório de Normas Jurídicas" author="Luciano De Fazio" allowSplitting="20">\n'
+    tmp_data+='\t<template pageSize="(21cm, 29.7cm)" title="Normas Jurídicas" author="OpenLegis" allowSplitting="20">\n'
     tmp_data+='\t\t<pageTemplate id="first">\n'
     tmp_data+='\t\t\t<pageGraphics>\n'
     tmp_data+=cabecalho(dic_cabecalho,imagem)

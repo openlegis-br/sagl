@@ -1,0 +1,169 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript">
+    function excluir(cod_item){
+       if (confirm("Deseja realmente excluir o item?")) {
+          location.href = "<dtml-var absolute_url>/arquivo_item_excluir_proc?cod_item="+cod_item+"&cod_recipiente=<dtml-var cod_recipiente missing>"
+       }
+       return;
+    }
+</script>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 700,
+		maxHeight	: 650,
+		fitToView	: false,
+		width		: '70%',
+		height		: '85%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+                afterClose      : function() {
+                window.location.href = "&dtml-portal_url;/cadastros/arquivo/arquivo_recipiente_listar_conteudo_form?<dtml-var "REQUEST.get('QUERY_STRING','')">";
+                },
+		closeEffect	: 'fade'
+	});
+});
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/arquivo">Ajuda</a>
+
+<h1 class="firstHeading">Arquivo Permanente</h1>
+
+<h3><dtml-var arquivo_recipiente_header></h3>
+
+<form name="arquivo_item_form" method="post">
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 10)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+    <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_recipiente = cod_recipiente)" size="step" start="start" orphan=2>
+        <dtml-if sequence-start>
+        <fieldset>
+       <legend>Conteúdo do recipiente: <dtml-var sequence-length> itens</legend>
+        <table>
+            <tr>
+                <th width="70%" class="form-label">Descrição do Item</th>
+                <th width="15%" class="form-label">Arquivamento</th>
+                <th width="15%" class="form-label">Ação</th>
+            </tr>
+        <dtml-if previous-sequence>
+          <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+        </dtml-if previous-sequence>
+        </dtml-if sequence-start>
+        <tr <dtml-if sequence-odd>class="even"</dtml-if>>
+                <td class="texto" valign="top">
+                  <dtml-if cod_materia>
+                   <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador'])">
+                     <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
+                   <dtml-else>
+                     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
+                   </dtml-if>
+                    <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
+                      <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></b></a><br />
+                      <dtml-var txt_ementa><br />
+                      <b>Autoria: </b>
+                      <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                        <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+             	          <dtml-if expr="des_tipo_autor=='Parlamentar'">
+             	           <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+               	            <dtml-var nom_completo>
+               	           </dtml-in>
+               	          <dtml-elif expr="des_tipo_autor=='Comissao'">
+               	           <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                	    <dtml-var nom_comissao>
+                	   </dtml-in>
+                	  <dtml-elif expr="des_tipo_autor=='Bancada'">
+                 	   <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
+                 	    <dtml-var nom_bancada>
+                	   </dtml-in>
+                	  <dtml-else>
+                	    <dtml-var nom_autor>
+                	  </dtml-if>
+                	</dtml-in>
+               	         <dtml-unless sequence-end>,&nbsp;</dtml-unless>
+               	      </dtml-in>
+                      <dtml-if txt_observacao_arquivo>
+                        <br/> <b>Observação:</b> <dtml-var txt_observacao_arquivo>
+                      </dtml-if>
+                    </dtml-in>
+                  <dtml-elif cod_norma>
+                    <dtml-in expr="zsql.norma_juridica_obter_zsql(cod_norma = cod_norma)">
+                     <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>" target="_blank">
+                       <b><dtml-var sgl_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma> - <dtml-var des_tipo_norma></b></a><br />
+                     <dtml-var txt_ementa>
+                    </dtml-in>
+                    <dtml-if txt_observacao_arquivo>
+                      <br/> <b>Observação:</b> <dtml-var txt_observacao_arquivo>
+                    </dtml-if>
+                  <dtml-elif cod_documento>
+                    <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento = cod_documento)">
+                      <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador'])">
+                        <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                        <b><dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento> - <dtml-var des_tipo_documento></b></a>
+                      <dtml-else>
+                        <b><dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento> - <dtml-var des_tipo_documento></b>
+                      </dtml-if><br />
+                      <dtml-var txt_assunto><br />
+                      <b>Autoria: </b><dtml-var txt_interessado>
+                    </dtml-in>
+                    <dtml-if txt_observacao_arquivo>
+                      <br/> <b>Observação:</b> <dtml-var txt_observacao_arquivo>
+                    </dtml-if>
+                  <dtml-elif cod_protocolo>
+                  <dtml-else>
+                   <dtml-var des_item>
+                 </dtml-if>
+                </td>
+               <td class="texto" valign="top">
+                   <dtml-var dat_arquivamento>
+               </td>
+            <td class="texto" valign="top">
+             <a href="javascript:excluir(<dtml-var cod_item>)">Excluir</a>
+            </td>
+        </tr>
+    <dtml-if sequence-end>
+  </table>
+</fieldset>
+     <dtml-if next-sequence>
+      <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+    </dtml-if next-sequence>
+    <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+     <p align="center" class="texto">
+        <b><dtml-var "sapl.pysc.PageListOutput_pysc('arquivo_recipiente_listar_conteudo_form', page, step, _['sequence-length'], cod_recipiente=cod_recipiente)">
+      </b></p>
+    </dtml-if>
+  </dtml-if sequence-end>
+  <dtml-else>
+      <fieldset>
+        <p class="texto">Nenhum item cadastrado</p>
+      </fieldset>
+</dtml-in>
+
+<p align="center">
+  <a href="arquivo_item_materia_form?cod_recipiente=<dtml-var cod_recipiente>" class="botao-link popup" data-fancybox-type="iframe">Incluir Matéria</a>
+  <a href="arquivo_item_norma_form?cod_recipiente=<dtml-var cod_recipiente>" class="botao-link popup" data-fancybox-type="iframe">Incluir Norma</a>
+  <a href="arquivo_item_documento_form?cod_recipiente=<dtml-var cod_recipiente>" class="botao-link popup" data-fancybox-type="iframe">Incluir Documento</a>
+  <input class="botao" type="button" value="Atualizar" onClick="window.location.reload()">
+  <a href="&dtml-portal_url;/cadastros/arquivo/arquivo_index_html" class="botao-link">Retornar</a>
+</p>
+
+</form>
+
+<dtml-var standard_html_footer>

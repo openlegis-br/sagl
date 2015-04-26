@@ -33,10 +33,10 @@ function submeter(endereco){
 $(document).ready(function() {
 	$(".popup").fancybox({
 		maxWidth	: 700,
-		maxHeight	: 500,
+		maxHeight	: 600,
 		fitToView	: false,
 		width		: '70%',
-		height		: '72%',
+		height		: '77%',
 		autoSize	: false,
 		closeClick	: false,
                 scrolling       : 'auto',
@@ -119,13 +119,9 @@ $(document).ready(function() {
                   <br />
               </dtml-if>
             </dtml-in>
-             <dtml-in expr="zsql.tramitacao_turno_obter_zsql(cod_materia=cod_materia)">
-	        <dtml-in expr="[('P','Primeiro'), ('S','Segundo'), ('U','Único'), ('L','Suplementar'), ('F','Final'), ('A','Votação Única em Regime de Urgência'), ('B','1ª Votação'), ('C','2ª e 3ª Votações')]">
-	               <dtml-if expr="sgl_turno==_['sequence-key']">
-	                   <b>Turno</b>: <dtml-var sequence-item> <br />
-	               </dtml-if>
-	        </dtml-in>
-              </dtml-in>
+             <dtml-in expr="zsql.turno_discussao_obter_zsql(cod_turno=tip_turno)">
+	                   <b>Turno</b>: <dtml-var des_turno> <br />
+             </dtml-in>
                 </dtml-in>
                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia, ind_primeiro_autor=1)">
                 <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
@@ -220,10 +216,12 @@ $(document).ready(function() {
         </tr>
    </dtml-in>
    <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+    <dtml-if expr="exc_pauta!=1">
         <tr class="<dtml-var class>">
             <td style="padding-left: 50px" valign="top" colspan="2" class="texto">
               <a target="_blank" href="&dtml-portal_url;/cadastros/materia/emenda/emenda_mostrar_proc?cod_emenda=<dtml-var cod_emenda>&cod_materia=<dtml-var cod_materia>">
-                <b>Emenda <dtml-var num_emenda> - <dtml-var tip_emenda></b>
+                <b>Emenda <dtml-in expr="zsql.tipo_emenda_obter_zsql(tip_emenda=tip_emenda)">
+<dtml-var des_tipo_emenda></dtml-in> nº <dtml-var num_emenda></b>
               </a><br />
               <b>Autor:</b> 
               <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
@@ -270,6 +268,7 @@ $(document).ready(function() {
               </dtml-in>
             </td>
         </tr>
+     </dtml-if>
    </dtml-in>
     <dtml-if sequence-end>
          <tbody>
@@ -287,11 +286,7 @@ $(document).ready(function() {
   <dtml-else>
       <fieldset>
        <legend>Matérias da Ordem do Dia</legend>
-        <table>
-            <tr>
-                <td class="form-text">Não constam matérias na Ordem do Dia.</td>
-            </tr>
-       </table>
+        <p class="texto">Não constam matérias na Ordem do Dia.</p>
       </fieldset>
 </dtml-in>
 

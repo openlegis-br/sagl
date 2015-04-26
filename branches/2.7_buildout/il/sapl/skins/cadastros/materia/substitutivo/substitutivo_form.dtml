@@ -62,10 +62,6 @@
          return false;
       }
 
-      if (form.file_nom_arquivo_substitutivo.value != "") {
-         form.hdn_file_substitutivo.value = 1;
-      }
-
       form.submit();   
    }
 
@@ -109,6 +105,23 @@
        return;
   }
 
+  function texto_pdf_gerar(){
+      if (confirm("Confirma a geração do arquivo PDF?")) {
+         location.href="&dtml-portal_url;/modelo_proposicao/substitutivo_gerar_pdf?cod_substitutivo=<dtml-var cod_substitutivo missing>";
+         setTimeout(function(){window.location.reload(true)},2500);
+         return true;
+       }
+  return;
+  }
+
+  function texto_pdf_excluir(){
+
+       if (confirm("Deseja realmente excluir o arquivo PDF?")) {
+          location.href="texto_pdf_substitutivo_excluir_proc?cod_substitutivo=<dtml-var cod_substitutivo missing>&cod_materia=<dtml-var cod_materia missing>";
+       }
+       return;
+  }
+
    function substitutivo_excluir(form){
 
        var URL = 'substitutivo_excluir_proc?cod_substitutivo=' + form.hdn_cod_substitutivo.value+
@@ -119,10 +132,6 @@
           location.href=URL;
        }
    }   
-
-    function ativa_desativa_file_field_substitutivo(form) {
-       form.file_nom_arquivo_substitutivo.disabled = !(form.radTI[2].checked);
-    }
 
 -->
 </script>
@@ -283,27 +292,35 @@ $(function() {
                 <dtml-else>
                  <input type="text" name="txt_nom_autor" size="30" value="<dtml-var nom_autor missing>" disabled>
               </dtml-if>
-             </td>
+              </td>
            </tr>
+        <dtml-if expr="_.has_key('cod_substitutivo')">
            <tr>
-              <td colspan="2"><label>Texto Integral</label><br/>
+              <td colspan="2"><label>Texto original (PDF)</label><br />
                <input type="hidden" name="hdn_file_substitutivo" value="0"/>
                <dtml-if cod_substitutivo>
-                <dtml-call expr="REQUEST.set('id_substitutivo', _.str(cod_substitutivo)+'_substitutivo.pdf')">
-                <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_substitutivo)">
-                 <dtml-let substitutivo="_.getattr(sapl_documentos.substitutivo,id_substitutivo).absolute_url">
-                  <a href="<dtml-var substitutivo>" target="_blank"><img align="middle" src="sapl/imagens/archiv.gif" alt="Texto Integral"></a>
-                 </dtml-let>
-                  <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field_substitutivo(document.substitutivo_form)"/><span class="texto">Manter</span>
-                  <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field_substitutivo(document.substitutivo_form)"/><span class="texto">Excluir</span>
-                  <input type="radio" name="radTI" value="S" onClick="ativa_desativa_file_field_substitutivo(document.substitutivo_form)"/><span class="texto">Substituir</span>
-                  <input type="file" id="file_nom_arquivo_substitutivo" name="file_nom_arquivo_substitutivo" accept="application/pdf" size="40" maxlength="100" disabled="1" />
-                <dtml-else>
-                  <input type="file" id="file_nom_arquivo_substitutivo" name="file_nom_arquivo_substitutivo" accept="application/pdf" size="40" maxlength="100" />
-                  <input type="hidden" name="radTI" value="I"/>
-            <td>
-                  <input type="hidden" name="radTI" value="I"/>
-                        <dtml-if expr="_.has_key('cod_substitutivo')">
+                  <dtml-call expr="REQUEST.set('id_substitutivo', _.str(cod_substitutivo)+'_substitutivo.pdf')">
+                  <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_substitutivo)">
+                    <dtml-let substitutivo="_.getattr(sapl_documentos.substitutivo,id_substitutivo).absolute_url">
+                      <a href="<dtml-var substitutivo>" target="_blank"><img align="middle" src="sapl/imagens/archiv.gif" alt="Texto Integral"></a>
+                      <a class="botao-link" href="javascript:texto_pdf_excluir()">Excluir</a>
+                    </dtml-let>
+                  <dtml-else>
+                    <input type="file" id="file_nom_arquivo_substitutivo" name="file_nom_arquivo_substitutivo" accept="application/pdf" size="40" maxlength="100" />
+                     <dtml-if expr="_.has_key('cod_substitutivo')">
+                       <dtml-let id_documento_odt="_.str(cod_substitutivo)+'_substitutivo.odt'">
+                         <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_documento_odt)">
+                           <dtml-call expr="REQUEST.set('temODT', 1)">
+                         </dtml-if>
+                       </dtml-let>
+                       <dtml-if expr="_.has_key('temODT')">
+                          <a class="botao-link" href="javascript:texto_pdf_gerar()">Gerar PDF</a>
+                       </dtml-if>
+                  </dtml-if>
+               </dtml-if>               
+            </td>
+            <td colspan="1">
+                       <dtml-if expr="_.has_key('cod_substitutivo')">
                           <label for="radTipTxtIntegral">Texto editável (ODT)</label><br />
                           <dtml-let id_documento_odt="_.str(cod_substitutivo)+'_substitutivo.odt'">
                            <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_documento_odt)">
@@ -327,18 +344,13 @@ $(function() {
                            </dtml-if>
                           </dtml-let>
                         </dtml-if>
-            </td>
-
                 </dtml-if>
-               <dtml-else>
-                 <input type="file" id="file_nom_arquivo_substitutivo" name="file_nom_arquivo_substitutivo" accept="application/pdf" size="40" maxlength="100" />
-                 <input type="hidden" name="radTI" value="I"/>
-               </dtml-if>
-             </td>
+            </td>
            </tr>
+       </dtml-if>
            <tr>
              <td colspan="3"><label for="txa_txt_ementa">Ementa </label> <span class="campoObrigatorio">&nbsp;</span>
-                 <textarea id="txa_txt_ementa" name="txa_txt_ementa" rows="4" cols="75" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_ementa missing></textarea>
+                 <textarea id="txa_txt_ementa" name="txa_txt_ementa" rows="4" cols="75" onBlur="form.txa_txt_ementa.value = form.txa_txt_ementa.value.toUpperCase()" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_ementa missing></textarea>
              </td>
            </tr>
            <tr>

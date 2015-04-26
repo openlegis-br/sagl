@@ -48,8 +48,8 @@
 
        var dat_tramitacao = form.txt_dat_tramitacao.value.substring(6,10) + form.txt_dat_tramitacao.value.substring(3,5) + form.txt_dat_tramitacao.value.substring(0,2);
       
-       if ((dat_tramitacao > <dtml-var expr="_.DateTime.strftime(_.DateTime(), '%Y%m%d')">) || (dat_tramitacao < <dtml-var dat_ultima>)) {
-           alert("Data de tramitação deve ser menor ou igual à  data corrente e maior ou igual à  data da última tramitação!");
+       if (dat_tramitacao < <dtml-var dat_ultima>) {
+           alert("Data de tramitação deve ser menor ou igual à data da última tramitação!");
            form.txt_dat_tramitacao.focus();
            form.txt_dat_tramitacao.select();
            return false;
@@ -189,20 +189,16 @@ $(function() {
             </dtml-in>
             </select>
               </td>
-	      <td>
-            <label for="lst_sgl_turno">Turno </label><br/>
-            <select name="lst_sgl_turno" onChange="javascript:form.hdn_alterou.value=1">
-            <option></option>
-            <dtml-in expr="[('P','Primeiro'), ('S','Segundo'), ('U','Único'), ('L','Suplementar'), ('F','Final'), ('A','Votação Única em Regime de Urgência'), ('B','1ª Votação'), ('C','2ª e 3ª Votação')]">
-              <option  
-                <dtml-if expr="_.has_key('cod_tramitacao') and sgl_turno==_['sequence-key']"> 
-                  selected
-                </dtml-if>    
-                value="<dtml-var expr="_['sequence-key']">">
-                <dtml-var sequence-item>
-              </option>
-            </dtml-in>
-            </select>
+	     <td>
+             <label for="lst_sgl_turno">Turno </label><br />
+                      <select name="lst_sgl_turno">
+                        <option></option>
+                        <dtml-in expr="zsql.turno_discussao_obter_zsql(sgl_turno='')">
+                          <option <dtml-if expr="_.has_key('cod_tramitacao') and sgl_turno==tramitacao_form.sgl_turno"> 
+                           selected</dtml-if> 
+                           value="<dtml-var sgl_turno>"><dtml-var des_turno></option>
+                        </dtml-in>
+                      </select>
             </td>
             <td>
              <label for="rad_ind_urgencia">Urgente ? </label><span class="campoObrigatorio">&nbsp;</span><br/>
@@ -258,7 +254,6 @@ $(function() {
         <input type="button" class="botao" name="btn_tramitacao_excluir" value="Excluir" onClick="tramitacao_excluir()" />
        </dtml-if>
         </p>
-
    </form>
 
 <dtml-var standard_html_footer>

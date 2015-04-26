@@ -13,9 +13,9 @@ quorum_busca = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessa
 for i in quorum_busca:
     quorum=i.num_minimo
 
-lista=context.zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0)
+lista=context.zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,tip_frequencia="P",ind_excluido=0)
 
 if len(lista) >= quorum:
-    return "Qu&oacute;rum atingido para a sess&atilde;o plen&aacute;ria"
+    return "Quórum atingido para a abertura da Sessão Plenária."
 else:
-    return "Qu&oacute;rum n&atilde;o atingido para a sess&atilde;o plen&aacute;ria"
+    return "Quórum não atingido para a abertura da Sessão Plenária!"

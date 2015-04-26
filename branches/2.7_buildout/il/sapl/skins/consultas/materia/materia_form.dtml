@@ -22,6 +22,13 @@ $(document).ready(function() {
 
 <h1 class="firstHeading"><dtml-var des_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></h1>
 
+<div class="social-likes" data-title="<dtml-var des_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>" data-counter="no">
+        <meta property="og:title" content="<dtml-var des_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>">
+	<div class="facebook" title="Compartilhar no Facebook">Compartilhar</div>
+	<div class="twitter" title="Compartilhar no Twitter">Tweetar</div>
+	<div class="plusone" title="Compartilhar no Google+">Recomendar</div>
+</div>
+
 <fieldset>
 <legend>Identificação Básica</legend>
  <table>
@@ -117,9 +124,9 @@ $(document).ready(function() {
   <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">
        <dtml-if num_materia>
           <tr>
-             <th class="form-label">Outras Numerações:</th>
+             <th class="form-label">Processo:</th>
              <td colspan="3" class="texto">
-               <dtml-var des_tipo_materia missing null=""> <dtml-var num_materia missing null="">/<dtml-var ano_materia missing null="">
+               <dtml-var num_materia missing null="">/<dtml-var ano_materia missing null="">
              </td>
            </tr>
        </dtml-if>
@@ -228,8 +235,11 @@ $(document).ready(function() {
    <dtml-in expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia)" mapping>
     <tr class="even">
        <td colspan="0" class="texto"> 
-          <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
-          <b><dtml-var des_norma missing> <dtml-var num_norma missing>/<dtml-var ano_norma missing></b></a>
+          <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia', 'Operador Norma'])">
+            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> <dtml-var num_norma>/<dtml-var ano_norma></b></a><br />
+          <dtml-else>
+            <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> <dtml-var num_norma>/<dtml-var ano_norma></b></a><br />
+          </dtml-if>
        </td>
     </tr>
    </dtml-in>
@@ -451,7 +461,9 @@ $(document).ready(function() {
        <tr> 
           <td class="texto">
            <b><dtml-var num_emenda></b></td>
-          <td class="texto"><dtml-var tip_emenda></td>
+           <dtml-in expr="zsql.tipo_emenda_obter_zsql(tip_emenda=tip_emenda)">
+             <td class="texto"><dtml-var des_tipo_emenda></td>
+           </dtml-in>
           <td class="texto"><dtml-var txt_ementa></td>
           <td class="texto">
            <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
@@ -518,7 +530,8 @@ $(document).ready(function() {
   </table>
 </fieldset>
 </dtml-in>
- 
+
+<dtml-if expr="portal_membership.isAnonymousUser() and substituiEmentaTitulo=='0'">   
 <dtml-if expr="zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
 <fieldset>
 <legend>Documentos Acessórios</legend>
@@ -546,6 +559,7 @@ $(document).ready(function() {
  </table>
 </fieldset>
 </dtml-if> 
+</dtml-if>
 
 <dtml-if expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia)">
  <fieldset>

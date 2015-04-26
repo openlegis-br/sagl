@@ -84,6 +84,15 @@
          return;
   }
 
+  function texto_pdf_gerar(){
+      if (confirm("Confirma a geração do arquivo PDF?")) {
+         location.href="&dtml-portal_url;/modelo_proposicao/doc_acessorio_gerar_pdf?cod_documento=<dtml-var cod_documento missing>";
+         setTimeout(function(){window.location.reload(true)},2500);
+         return true;
+       }
+  return;
+  }
+
   function texto_odt_documento_excluir(){
 
        if (confirm("Deseja realmente excluir o arquivo ODT?")) {
@@ -218,17 +227,26 @@ $(document).ready(function() {
           </tr>
           <tr> 
             <td>
-             <label for="radTipTxtDocumento">Texto digitalizado (PDF) </label><br />
+             <label>Texto digitalizado (PDF) </label><br />
               <dtml-if expr="_.has_key('cod_documento')"> 
                <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
                <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
                  <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-                   <a target="_blank" href="<dtml-var documento>">
-		     <img align="top" src="sapl/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" /></a>
+                   <a target="_blank" href="<dtml-var documento>"><img align="top" src="sapl/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" /></a>
                    <a class="botao-link" href="javascript:texto_integral_excluir()">Excluir</a>
                  </dtml-let>
-               <dtml-else>
-                <input type="file" name="file_nom_arquivo" accept="application/pdf" size="15" maxlength="100" />
+                <dtml-else>
+                  <input type="file" name="file_nom_arquivo" accept="application/pdf" size="15" maxlength="100" />
+                     <dtml-let id_documento_odt="_.str(cod_documento)+'.odt'">
+                       <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_documento_odt)">
+                         <dtml-call expr="REQUEST.set('temODT', 1)">
+                       </dtml-if>
+                     </dtml-let>
+                  <dtml-if expr="_.has_key('temODT')">
+                  <a class="botao-link" href="javascript:texto_pdf_gerar()">
+                     Gerar PDF
+                  </a>
+                </dtml-if>
                </dtml-if>
               <dtml-else>
                 <input type="file" name="file_nom_arquivo" accept="application/pdf" size="15" maxlength="100" />

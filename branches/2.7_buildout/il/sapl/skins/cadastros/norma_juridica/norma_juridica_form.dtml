@@ -296,7 +296,7 @@ $(document).ready(function() {
         </td>
       </tr>
       <tr>
-        <td colspan="2" width="55%"><label>Texto original (PDF)</label><br/>
+        <td colspan="2" width="55%"><label>Texto Original (PDF)</label><br/>
            <input type="hidden" name="hdn_file" value="0"/>
             <dtml-if cod_norma>
               <dtml-call expr="REQUEST.set('id_documento', _.str(cod_norma)+'_'+sapl_documentos.norma_juridica.nom_documento)">
@@ -320,10 +320,10 @@ $(document).ready(function() {
         <td colspan="2" valign="top">
           <label for="lst_tip_situacao_norma">Situação de Vigência</label><br/>
             <select name="lst_tip_situacao_norma">
-             <option value ="0">Selecione</option>
+             <option value ="">Selecione</option>
              <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(ind_excluido=0)">
               <option
-               <dtml-if expr="_.has_key('cod_situacao') and _.int(tip_situacao_norma) == _.int(cod_situacao)">
+               <dtml-if expr="_.has_key('cod_situacao') and _.int(tip_situacao_norma) == cod_situacao">
                 selected
                </dtml-if>
                value="<dtml-var tip_situacao_norma missing>">
@@ -334,7 +334,7 @@ $(document).ready(function() {
          </tr>
       <dtml-if expr="_.has_key('cod_norma')">
          <tr>
-          <td colspan="2"><label for="txt_texto_odt">Texto atualizado (ODT)</label><br />
+          <td colspan="2"><label for="txt_texto_odt">Texto Atualizado (ODT)</label><br />
                <dtml-let id_documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
                <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento_odt)">
                   <dtml-let documento_odt="_.getattr(sapl_documentos.norma_juridica,id_documento_odt).absolute_url">
@@ -357,7 +357,7 @@ $(document).ready(function() {
                </dtml-if>
                </dtml-let>
           </td>
-          <td colspan="2" valign="top"><label for="txt_texto_pdf">Texto compilado (PDF)</label><br />
+          <td colspan="2" valign="top"><label for="txt_texto_pdf">Texto Compilado (PDF)</label><br />
                <dtml-let documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
                <dtml-if "_.hasattr(sapl_documentos.norma_juridica,documento_odt)">
                   <dtml-call expr="REQUEST.set('temODT', 1)">
@@ -384,12 +384,12 @@ $(document).ready(function() {
       </dtml-if>
          <tr>
           <td colspan="4"><label for="txa_txt_ementa">Ementa</label> <span class="campoObrigatorio">&nbsp;</span><br/>
-            <textarea name="txa_txt_ementa" cols="65" rows="4" onBlur="form.txa_txt_ementa.value = form.txa_txt_ementa.value.toUpperCase()"><dtml-var txt_ementa missing></textarea>
+            <textarea name="txa_txt_ementa" cols="65" rows="4"><dtml-var txt_ementa missing></textarea>
           </td>
          </tr>
          <tr>
           <td colspan="4"><label for="txa_txt_indexacao">Indexação</label><br/>
-            <textarea name="txa_txt_indexacao" cols="65" rows="4" onBlur="form.txa_txt_indexacao.value = form.txa_txt_indexacao.value.toUpperCase()"><dtml-var txt_indexacao missing null=""></textarea>
+            <textarea name="txa_txt_indexacao" cols="65" rows="4"><dtml-var txt_indexacao missing null=""></textarea>
           </td>
          </tr>
          <tr>
@@ -399,6 +399,36 @@ $(document).ready(function() {
          </tr>
      </table>
   </fieldset>
+
+<dtml-if expr="_.has_key('cod_norma')">
+ <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)" mapping>
+   <dtml-if sequence-start>
+    <fieldset>
+    <legend>Arquivo Permanente</legend>
+     <table>
+         <tr>
+             <th width="40%" class="form-label">Identificador do Recipiente</th>
+             <th width="20%" class="form-label">Data Arquivamento</th>
+             <th width="40%" class="form-label">Observação</th>
+         </tr>
+   </dtml-if>
+         <tr>
+             <td class="texto"> 
+               <b><dtml-var num_recipiente></b>
+             </td>
+             <td class="texto"> 
+               <dtml-var dat_arquivamento>
+             </td>
+             <td class="texto"> 
+               <dtml-var txt_observacao_arquivo missing null="">
+             </td>
+         </tr>
+   <dtml-if sequence-end>
+     </table>
+    </fieldset>
+   </dtml-if>
+ </dtml-in>
+</dtml-if>
 
 <dtml-if expr="not _.has_key('cod_norma')">
 <div class="layer1">

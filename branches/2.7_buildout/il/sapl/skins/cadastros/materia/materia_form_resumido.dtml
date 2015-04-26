@@ -123,7 +123,8 @@
   function numero_materia_buscar(form){
      if ((form.lst_tip_id_basica.selectedIndex != 0) &&
 	 (form.txt_ano_ident_basica.value!="")){
-	 location.href="numero_materia_resumido_buscar_proc?tip_id_basica_sel="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+"&ano_ident_basica="+form.txt_ano_ident_basica.value;
+	 location.href="numero_materia_resumido_buscar_proc?tip_id_basica_sel="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value
+             +"&ano_ident_basica="+form.txt_ano_ident_basica.value;
      }
   }
 
@@ -137,7 +138,6 @@
               + '&num_ident_basica=' + form.txt_num_ident_basica.value
               + '&ano_ident_basica=' + form.txt_ano_ident_basica.value
               + '&num_protocolo=' + form.txt_num_protocolo.value 
-              + '&cod_regime_tramitacao_sel=' + form.lst_cod_regime_tramitacao.options[form.lst_cod_regime_tramitacao.selectedIndex].value 
               + '&txt_ementa=' + form.txa_txt_ementa.value;
       location.href= URL;
    }
@@ -246,19 +246,24 @@ $(function() {
                               </option>
                               <dtml-in expr="zsql.regime_tramitacao_obter_zsql()">
                               <option
-                                  <dtml-if expr="REQUEST.has_key('cod_regime_tramitacao_sel')">
-                                    <dtml-if expr="_.int(cod_regime_tramitacao) == _.int(cod_regime_tramitacao_sel)">
-                                       selected
-                                     </dtml-if>
-                                  <dtml-elif expr="des_regime_tramitacao == 'Ordinário'">
-                                     selected
-                                  </dtml-if>
+                              <dtml-if expr="des_regime_tramitacao == 'Ordinário'">selected</dtml-if>
                                value="<dtml-var cod_regime_tramitacao>"><dtml-var des_regime_tramitacao>
                               </option>
                               </dtml-in>
                             </select>
                           </td>
-                          <td colspan="2"><label for="rad_ind_tramitacao">Em Tramitação?</label><span class="campoObrigatorio">&nbsp;</span><br />
+                          <td><label for="lst_tip_quorum">Quórum de Votação </label><br />
+                            <select id="lst_tip_quorum" name="lst_tip_quorum">
+                              <option></option>
+                             <dtml-in expr="zsql.quorum_votacao_obter_zsql()">
+                              <option 
+                                <dtml-if expr="_.int(cod_quorum) == 1">selected </dtml-if>
+                                value="<dtml-var cod_quorum>"> <dtml-var des_quorum>
+                              </option>
+                             </dtml-in>
+                            </select>
+                          </td>
+                          <td><label for="rad_ind_tramitacao">Em Tramitação?</label><span class="campoObrigatorio">&nbsp;</span><br />
                            <dtml-in expr="[(1,'Sim'),(0,'Não')]">
                             <input type="radio" id="rad_ind_tramitacao" name="rad_ind_tramitacao" value="<dtml-var expr="_['sequence-key']">"
                             <dtml-if expr="_['sequence-item']=='Sim'">checked=1</dtml-if>

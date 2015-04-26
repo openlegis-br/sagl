@@ -16,7 +16,7 @@ def cabecalho(inf_basicas_dic,imagem):
     tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="14"/>\n'
     tmp+='\t\t\t\t<drawString x="5cm" y="27.2cm">' + str(inf_basicas_dic["nom_camara"]) + '</drawString>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="12"/>\n'
-    tmp+='\t\t\t\t<drawString x="5cm" y="26.6cm">Sistema de Apoio ao Processo Legislativo</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="5cm" y="26.6cm">Sistema Aberto de Gestão Legislativa</drawString>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="12"/>\n'
     tmp+='\t\t\t\t<drawString x="2.2cm" y="24.6cm">Pauta da ' + str(inf_basicas_dic['num_sessao_plen']) + 'ª Sessão ' + str(inf_basicas_dic['nom_sessao']) + ' da ' + str(inf_basicas_dic['num_sessao_leg']) + 'ª Sessão Legislativa da ' + str(inf_basicas_dic['num_legislatura']) + 'ª Legislatura </drawString>\n'
     return tmp
@@ -165,7 +165,7 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     tmp+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp+='<document filename="relatorio.pdf">\n'
-    tmp+='\t<template pageSize="(21cm, 29.7cm)" title="Pauta da Sessao Plenaria" author="OpenLegis" allowSplitting="20">\n'
+    tmp+='\t<template pageSize="(21cm, 29.7cm)" title="Pauta da Sessao" author="OpenLegis" allowSplitting="20">\n'
     tmp+='\t\t<pageTemplate id="first">\n'
     tmp+='\t\t\t<pageGraphics>\n'
     tmp+=cabecalho(inf_basicas_dic,imagem)

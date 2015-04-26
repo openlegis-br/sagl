@@ -1,6 +1,7 @@
 ﻿<dtml-var standard_html_header>
+
 <script type="text/javascript">
-function submeter(endereco){
+   function submeter(endereco){
 
         var form = document.presenca_sessao_form;
         endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
@@ -15,84 +16,84 @@ function submeter(endereco){
         return;
     }
 
-function checkAll(field)
-{
-for (i = 0; i < field.length; i++)
-	field[i].checked = true ;
-}
-
-function uncheckAll(field)
-{
-for (i = 0; i < field.length; i++)
-	field[i].checked = false ;
-}
-
 </script>
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_lista_presenca_sessao">Ajuda</a>
 
-<h1 class="firstHeading">Presença na Abertura Sessão</h1>
+<h1 class="firstHeading">Presença na Abertura da Sessão</h1>
 
 <h3 align="center"><dtml-var sessao_plenaria_header></h3>
 
 <form name="presenca_sessao_form" method="post" action="presenca_sessao_salvar_proc">
-    <dtml-var sessao_plenaria_menu>
-    <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura = cod_num_legislatura, ind_excluido=0)">
-        <dtml-if sequence-start>
-        <fieldset>
-        <legend>Parlamentares presentes</legend>
-        <table>
-            <tr>
-                <th width="25%" class="form-label">
-               <input type="button" class="botao" name="CheckAll" value="Todos" onClick="checkAll(document.presenca_sessao_form.chk_presen_parlamentar)">&nbsp;
-                <input type="button" class="botaoExtra" name="UnCheckAll" value="Nenhum" onClick="uncheckAll(document.presenca_sessao_form.chk_presen_parlamentar)">
-                </th>
-                <th class="form-label">Parlamentar</th>
-            </tr>
-
-        </dtml-if sequence-start>
-       <dtml-if  expr="pysc.autoria_parlamentar_validar_pysc(txt_dat_apresentacao=dat_sessao, cod_parlamentar=cod_parlamentar)">
-         <dtml-if sequence-even>
-          <tr>
-         <dtml-else>
-          <tr class="even">
+   <dtml-var sessao_plenaria_menu>
+<fieldset>
+  <legend>Lista de Frequência da Abertura da Sessão</legend>                                     
+  <table>
+             <tr>
+                  <th width="40%" class="label">
+                    Parlamentar
+                  </th>
+                  <th class="label">
+                    Registro
+                  </th>
+                  <th class="label">
+                   Observações
+                  </th>
+             </tr>
+       <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=cod_num_legislatura, ind_excluido=0)">
+         <dtml-if  expr="pysc.autoria_parlamentar_validar_pysc(txt_dat_apresentacao=dat_sessao, cod_parlamentar=cod_parlamentar)">
+              <tr>
+                  <td width="40%" class="texto">
+                    <b><dtml-var nom_completo> / <dtml-var sgl_partido missing null=""></b>
+                    <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
+                  </td>
+                  <td>
+                    <select id="lst_tip_frequencia" name="lst_tip_frequencia" size="1">
+                        <dtml-in expr="['Presente', 'Faltou', 'Ausência Justificada']">                 
+                         <option
+                           <dtml-in expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                             <dtml-if expr="_.has_key('tip_frequencia')">
+                                <dtml-call expr="REQUEST.set('tip_frequencia',_.str(tip_frequencia))">
+                             </dtml-if>
+                           </dtml-in>
+                             <dtml-if expr="_.has_key('tip_frequencia') and tip_frequencia==_['sequence-item'][0]">
+                                selected
+                             <dtml-elif expr="not _.has_key('tip_frequencia')">
+                                <dtml-if expr="_['sequence-item'][0]=='P'">selected</dtml-if>
+                             </dtml-if>
+                          value="<dtml-var expr="_['sequence-item'][0]">"><dtml-var expr="_['sequence-item']">
+                         </option>
+                        </dtml-in>
+                    </select>
+                  </td>
+                  <td>
+                    <dtml-in expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                      <dtml-if expr="_.has_key('txt_justif_ausencia') and txt_justif_ausencia!='None'">
+                        <dtml-call expr="REQUEST.set('txa_txt_justif_ausencia',txt_justif_ausencia)">
+                      </dtml-if>
+                    </dtml-in>
+                      <input type="text" id="txa_txt_justif_ausencia" name="txa_txt_justif_ausencia" value="<dtml-var txa_txt_justif_ausencia missing null>" size="30" maxlenght="200">
+                  </td>
+              </tr>
          </dtml-if>
-            <td>
-                <input type="checkbox" id="chk_presen_parlamentar" name="chk_presen_parlamentar" value="<dtml-var cod_parlamentar>" 
-                    <dtml-if expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=cod_parlamentar, ind_excluido=0)">
-                        checked=1
-                    </dtml-if> />
-            </td>
-            <td>
-                <label for="chk_presen_parlamentar">
-                    <dtml-var nom_completo>/<dtml-var sgl_partido missing null="">
-                </label>
-            </td>
-        </tr>
-       </dtml-if>
-    <dtml-if sequence-end>
-        <dtml-if tip_sessao>
-        <tr>
-            <td class="texto" colspan="2">
-                <dtml-var expr="pysc.quantidade_presentes_sessao_plenaria_pysc(cod_sessao_plen=cod_sessao_plen,tip_sessao=tip_sessao)">
-            </td>
-        </tr>
-        </dtml-if>
-    </table>
-<p align="center">
-   <input class="botao" type="submit" name="button" value="Salvar" />
-</p>
+       <dtml-else>
+              <tr>
+                  <td class="form-text">Não há nenhum parlamentar com mandato cadastrado na Legislatura.</td>
+              </tr>
+       </dtml-in>
+           <dtml-if tip_sessao>
+              <tr>
+                  <th class="text" colspan="3"><legend>
+                    <dtml-var expr="pysc.quantidade_presentes_sessao_plenaria_pysc(cod_sessao_plen=cod_sessao_plen,tip_sessao=tip_sessao)"></legend>
+                  </th>
+               </tr>
+           </dtml-if>
+  </table>
+  <p align="center">
+     <input class="botao" type="submit" name="button" value="Salvar" />
+  </p>
+  </form>
+</fieldset>
 
-  </dtml-if sequence-end>
-  <dtml-else>
-      <fieldset>
-       <legend>Presença na Sessão Plenária</legend>
-        <table>
-            <tr>
-                <td class="form-text">Não há nenhum parlamentar com mandato cadastrado na Legislatura.</td>
-            </tr>
-       </table>
-      </fieldset>
-</dtml-in>
-</form>
 <dtml-var standard_html_footer>
+

@@ -3,7 +3,7 @@
 """relatorio_protocolo.py
    External method para gerar o arquivo rml da etiqueta de protocolo
    Autor: Luciano De Fazio
-   Empresa: OpenLegis Consultoria
+   Empresa: OpenLegis
    versão: 1.0
 """
 from trml2pdf import parseString
@@ -18,7 +18,7 @@ def cabecalho(inf_basicas_dic,imagem):
     tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="15"/>\n'
     tmp_data+='\t\t\t\t<drawString x="5cm" y="27.2cm">' + dic_cabecalho['nom_casa'] + '</drawString>\n'
     tmp_data+='\t\t\t\t<setFont name="Helvetica" size="12"/>\n'
-    tmp_data+='\t\t\t\t<drawString x="5cm" y="26.6cm">Sistema de Apoio ao Processo Legislativo</drawString>\n'
+    tmp_data+='\t\t\t\t<drawString x="5cm" y="26.6cm">Sistema Aberto de Gestão Legislativa</drawString>\n'
     tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="13"/>\n'
     tmp_data+='\t\t\t\t<drawString x="2.2cm" y="24.6cm">Relatório de Controle do Protocolo</drawString>\n'
 
@@ -94,7 +94,7 @@ def principal(sessao,imagem,data,lst_protocolos,dic_cabecalho,lst_rodape,dic_fil
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="etiquetas.pdf">\n'
-    tmp_data+='\t<template pageSize="(62mm, 29mm)" title="Etiquetas de Protocolo" author="Luciano De Fazio" allowSplitting="20">\n'
+    tmp_data+='\t<template pageSize="(62mm, 29mm)" title="Etiquetas de Protocolo" author="OpenLegis" allowSplitting="20">\n'
     tmp_data+='\t\t<pageTemplate id="first">\n'
     tmp_data+='\t\t\t<pageGraphics>\n'
     tmp_data+='\t\t\t<frame id="first" x1="0.03cm" y1="0.1cm" width="61mm" height="29mm"/>\n'

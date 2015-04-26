@@ -120,7 +120,6 @@ $(document).ready(function() {
        <tr>
          <td class="form-element">Legislatura <span class="campoObrigatorio">&nbsp;</span> <br />
             <select name="lst_num_legislatura">
-             <option value="0">Selecione</option>
               <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
               <option 
                <dtml-if num_legislatura>
@@ -135,22 +134,23 @@ $(document).ready(function() {
             </select>
          </td>
          <td colspan="2" class="form-element">Coligação <br />
-             <select name="lst_cod_coligacao" style="value:<dtml-var cod_coligacao missing>" onChange="javascript:form.hdn_alterou.value=1"> 
-               <option value="<dtml-var cod_coligacao missing>"> 
-                <dtml-if cod_coligacao><dtml-var nom_coligacao missing></dtml-if>
-               </option>
-               <dtml-if cod_coligacao><option></option></dtml-if>
+             <select name="lst_cod_coligacao" onChange="javascript:form.hdn_alterou.value=1">
+               <option value="0"></option>
                <dtml-if num_legislatura>
                  <dtml-in expr="zsql.coligacao_obter_zsql(num_legislatura=num_legislatura)">
-                    <option value="<dtml-var cod_coligacao missing>">
-                     <dtml-if cod_coligacao>
-                        <dtml-var nom_coligacao>
+                   <dtml-if cod_coligacao>
+                    <option
+                     <dtml-if expr="_.int(cod_coligacao) == _.int(mandato_form.cod_coligacao)">
+                       selected
                      </dtml-if>
-                    </option>
+                       value="<dtml-var cod_coligacao missing>">
+                        <dtml-var nom_coligacao>
+                     </option>
+                    </dtml-if>
                    </dtml-in>
                 <dtml-else>
-                 <dtml-in expr="zsql.coligacao_obter_zsql()">
-                  <option  value="<dtml-var cod_coligacao>">
+                 <dtml-in expr="zsql.coligacao_obter_zsql(ind_excluido=0)">
+                  <option value="<dtml-var cod_coligacao missing>">
                     <dtml-var nom_coligacao>
                   </option>
                  </dtml-in>
@@ -247,6 +247,7 @@ $(document).ready(function() {
 </dtml-in>
 </fieldset>
 <p align="center">
+
   <a href="afastamento_form?cod_parlamentar=<dtml-var cod_parlamentar>&cod_mandato=<dtml-var cod_mandato missing>&num_legislatura=<dtml-var num_legislatura>" class="botao popup" data-fancybox-type="iframe">Incluir afastamento</a>
 </p>
 </dtml-if>

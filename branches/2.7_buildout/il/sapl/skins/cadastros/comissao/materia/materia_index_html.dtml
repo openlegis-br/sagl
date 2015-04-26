@@ -47,7 +47,6 @@ $(document).ready(function() {
 <h1 class="firstHeading"><dtml-var nom_comissao></h1> 
 
 <dtml-if cod_comissao>
-<div id="barra-conteudo">
 <ul>
     <li>
         <a href="&dtml-portal_url;/cadastros/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>">Início</a>
@@ -62,7 +61,6 @@ $(document).ready(function() {
         <a href="&dtml-portal_url;/cadastros/comissao/reuniao/index_html?cod_comissao=<dtml-var cod_comissao>"">Reuniões</a>
     </li>
 </ul>
-</div>
 </dtml-if>
 
 <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
@@ -95,7 +93,7 @@ $(document).ready(function() {
   <tr>
      <td class="texto">
       <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
-        <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+        <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia'])">
            <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
         <dtml-else>
            <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" >
@@ -131,9 +129,9 @@ $(document).ready(function() {
            </dtml-in>
      </td>
      <td class="texto" valign="top">
-      <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao)">
+      <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao,num_ordem=num_ordem)">
         <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
-         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
+         <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Comissao'])">
            <a href="relatoria_mostrar_proc?cod_relatoria=<dtml-var cod_relatoria>&cod_materia=<dtml-var cod_materia>&cod_comissao=<dtml-var cod_comissao>" class="popup" data-fancybox-type="iframe">
            <b><dtml-var nom_completo></b></a>
          <dtml-else>
@@ -142,8 +140,8 @@ $(document).ready(function() {
         </dtml-in>
       <dtml-else>
         <b>Relator não designado.</b>
-        <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
-          <br /><br /><a href="relatoria_form?cod_materia=<dtml-var cod_materia>&cod_comissao=<dtml-var cod_comissao>" class="botao-link popup" data-fancybox-type="iframe">
+        <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Comissao'])">
+          <br /><br /><a href="relatoria_form?cod_materia=<dtml-var cod_materia>&cod_comissao=<dtml-var cod_comissao>&num_ordem=<dtml-var num_ordem>" class="botao-link popup" data-fancybox-type="iframe">
                Designar Relator
                </a> 
         </dtml-if>
@@ -151,7 +149,7 @@ $(document).ready(function() {
      </td>
  </dtml-in>
      <td class="texto" valign="top">
-      <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao)">
+      <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao,num_ordem=num_ordem)">
                 <dtml-let id_parecer="_.str(cod_relatoria)+'_parecer.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.parecer_comissao,id_parecer)">
                     <dtml-let parecer="_.getattr(sapl_documentos.parecer_comissao,id_parecer).absolute_url">

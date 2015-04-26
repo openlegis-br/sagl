@@ -42,22 +42,22 @@ $(document).ready(function() {
 });
 </script>
 
-                             <script type="text/javascript">
-                               function ordem_dia_pdf_gerar(cod_sessao_plen){
-                                 if (confirm("Confirma a geração do arquivo ODT?")) {
-                                  window.open('&dtml-portal_url;/relatorios/pdf_ordem_dia_preparar_pysc?cod_sessao_plen='+cod_sessao_plen, '_newtab');
-                                  setTimeout(function(){window.location.reload(true)},2000);
-                                 return true;
-                                 }
-                               return;
-                               }
-                             </script>
+<script type="text/javascript">
+   function ordem_dia_pdf_gerar(cod_sessao_plen){
+     if (confirm("Confirma a geração do arquivo PDF da Ordem do Dia?")) {
+         window.open('&dtml-portal_url;/relatorios/pdf_ordem_dia_preparar_pysc?cod_sessao_plen='+cod_sessao_plen, '_newtab');
+         setTimeout(function(){window.location.reload(true)},2000);
+         return true;
+         }
+     return;
+   }
+</script>
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria">Ajuda</a>
 
 <h1 class="firstHeading">Sessões Plenárias</h1>
 
-<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria', 'Operador Ordem Dia'])">
+<dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Sessao Plenaria', 'Operador Ordem Dia'])">
    <ul>
       <li>
          <a href="&dtml-portal_url;/cadastros/sessao_plenaria/sessao_plenaria_form">Incluir Sessão Plenária</a> 
@@ -84,7 +84,7 @@ $(document).ready(function() {
                     </dtml-in>
                 </select>
 
-    <label for="lst_ano_sessao"> / Mês:</label>
+    <label for="lst_mes_sessao"> / Mês:</label>
                 <select id="lst_mes_sessao" name="lst_mes_sessao" size="1" onChange="atualiza_mes_sessao(document.sessao_plen_form.lst_ano_sessao[document.sessao_plen_form.lst_ano_sessao.selectedIndex].value, document.sessao_plen_form.lst_mes_sessao[document.sessao_plen_form.lst_mes_sessao.selectedIndex].value)">
                         <dtml-if expr="not _.has_key('ano_sessao_sel')">
                             <dtml-call expr="REQUEST.set('ano_sessao_sel', DateTime().year())">
@@ -101,7 +101,7 @@ $(document).ready(function() {
                     </dtml-in>
                 </select>
 
-    <label for="lst_ano_sessao"> / Dia:</label>
+    <label for="lst_dia_sessao"> / Dia:</label>
                 <select id="lst_dia_sessao" name="lst_dia_sessao" size="1" onChange="atualiza_dia_sessao(document.sessao_plen_form.lst_ano_sessao[document.sessao_plen_form.lst_ano_sessao.selectedIndex].value, document.sessao_plen_form.lst_mes_sessao[document.sessao_plen_form.lst_mes_sessao.selectedIndex].value,document.sessao_plen_form.lst_dia_sessao[document.sessao_plen_form.lst_dia_sessao.selectedIndex].value)">
                   <option value="-1"></option>
                   <dtml-if expr="_.has_key('mes_sessao_sel')">
@@ -172,16 +172,10 @@ $(document).ready(function() {
                     <th class="form-element" colspan="4"><h2 align="center">
                         <dtml-var num_sessao missing>
                         <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
-                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria', 'Operador Ordem Dia'])">
+                    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Sessao Plenaria', 'Operador Ordem Dia'])">
                       <a href="&dtml-portal_url;/cadastros/sessao_plenaria/sessao_plenaria_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_inicio_sessao=<dtml-var dat_inicio_sessao missing>&num_legislatura=<dtml-var num_legislatura missing>">
                     <dtml-else>
-                      <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">
-                         <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
-                           <a href="agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
-                         <dtml-else>
-                           <a href="#" style="color:#444;">
-                         </dtml-if>
-                      </dtml-let>
+                      <a href="agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
                     </dtml-if>
                             <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> da <dtml-var num_sessao_leg>ª Sessão Legislativa da <dtml-var num_legislatura>ª Legislatura<br /></h2></a>
                           <h4 align="center"><dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_inicio_sessao)"> (<dtml-var dia_sessao>) - <dtml-var expr="pysc.hora_formatar_pysc(hora=hr_inicio_sessao)">
@@ -194,13 +188,13 @@ $(document).ready(function() {
                       <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">
                          <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
                            <dtml-let pauta="_.getattr(sapl_documentos.pauta_sessao,id_pauta).absolute_url">
-                             <a target="_blank" href="<dtml-var pauta>"><img align="absmiddle" src="sapl/imagens/archiv.gif" alt="Arquivo PDF" title="Arquivo PDF" /></a>
+                             <a target="_blank" href="<dtml-var pauta>"><img align="absmiddle" src="sapl/imagens/archiv.gif" alt="Arquivo PDF" title="Pauta da Sessão" /></a>
                              <b>Ordem do Dia</b>
                            </dtml-let>
                          <dtml-else>
                           <img class="img-disabled" align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível" />
                           <b>Ordem do Dia</b>
-                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria'])">
+                            <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Sessao Plenaria'])">
                               &nbsp;&nbsp;<a class="botao-link" target="_blank" href="javascript:ordem_dia_pdf_gerar(<dtml-var cod_sessao_plen>)">Gerar PDF</a>
                             </dtml-if>
                          </dtml-if>
@@ -237,7 +231,8 @@ $(document).ready(function() {
                    <dtml-let id_ata="_.str(cod_sessao_plen)+'_ata_sessao.pdf'">
                      <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_ata)">
                        <dtml-let ata="_.getattr(sapl_documentos.ata_sessao,id_ata).absolute_url">
-                         <a class="popup" href="&dtml-portal_url;/javascript/Viewer.js#<dtml-var ata>" data-fancybox-type="iframe"><img align="absmiddle" border="0" src="sapl/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a> <b>Ata</b>
+                         <a target="_blank" href="<dtml-var ata>"><img align="absmiddle" src="sapl/imagens/archiv.gif" alt="Arquivo PDF" title="Ata da Sessão" /></a>
+                         <b>Ata</b>
                        </dtml-let>
                      <dtml-else>
                      <img class="img-disabled" align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível"> <b>Ata</b>

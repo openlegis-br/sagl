@@ -58,7 +58,7 @@ mMsg = mMsg + link + "\n\n"
 mMsg = mMsg + "Caso não tenha solicitado o acompanhamento dessa matéria em nosso sistema, favor desconsiderar esta mensagem.\n\n"
 mMsg = mMsg + "Cordialmente,\n\n"
 mMsg = mMsg + ""+ str(casa_legislativa) +"\n"
-mMsg = mMsg + "Sistema de Apoio ao Processo Legislativo\n"
+mMsg = mMsg + "Sistema Aberto de Gestão Legislativa\n"
 
 mSubj = projeto +" - Acompanhamento por E-mail"
 
