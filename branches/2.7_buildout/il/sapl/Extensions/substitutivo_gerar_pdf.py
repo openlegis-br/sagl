@@ -13,5 +13,5 @@ def convertFile(self,cod_substitutivo):
     renderer.run()
     data = open(output_file_pdf, "rb").read()                 
     for file in [output_file_pdf]:
-        self.sapl_documentos.substitutivo.manage_addFile(id=file,title=file,file=file)
+        self.sapl_documentos.substitutivo.manage_addProduct['ExtFile'].manage_addExtFile(id=file,title=file,file=file)
         os.unlink(file)
