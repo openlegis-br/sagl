@@ -1,7 +1,7 @@
-##parameters=rodape_dic, sessao='', imagem, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_expedientes, lst_expediente_materia, lst_oradores_expediente, lst_presenca_ordem_dia, lst_votacao, lst_oradores, lst_materia_apresentada, lst_presenca_expediente, lst_presenca_encerramento, lst_presidente
-
+##parameters=rodape_dic, imagem, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_expedientes, lst_expediente_materia, lst_oradores_expediente, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, sessao=''
 """Script para geração do PDF das sessoes plenarias
-   Luciano De Fázio - 24/09/2013
+   Autor: Gustavo Lepri
+   Atualizado por Luciano De Fázio - 22/03/2012
    versão: 1.0
 """
 from trml2pdf import parseString
@@ -40,10 +40,9 @@ def rodape(rodape_dic):
         linha2 = linha2 + " - E-mail: " + rodape_dic['end_email_casa']
     if rodape_dic['data_emissao']!="" and rodape_dic['data_emissao']!=None:
         data_emissao = rodape_dic['data_emissao']
-
-    tmp+='\t\t\t\t<lines>4.4cm 2.2cm 20cm 2.2cm</lines>\n'
+    tmp+='\t\t\t\t<lines>3.2cm 2.2cm 20cm 2.2cm</lines>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="8"/>\n'
-    tmp+='\t\t\t\t<drawString x="4.4cm" y="2.4cm">' + data_emissao + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="3.2cm" y="2.4cm">' + data_emissao + '</drawString>\n'
     tmp+='\t\t\t\t<drawString x="18.7cm" y="2.4cm">Página <pageNumber/></drawString>\n'
     tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="1.7cm">' + linha1 + '</drawCentredString>\n'
     tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="1.3cm">' + linha2 + '</drawCentredString>\n'
@@ -96,6 +95,8 @@ def paraStyle():
 
     return tmp
 
+
+
 def inf_basicas(inf_basicas_dic):
     """
     """
@@ -110,7 +111,6 @@ def inf_basicas(inf_basicas_dic):
     hr_fim_sessao = inf_basicas_dic["hr_fim_sessao"]
 
     tmp=""
-    tmp+='\t<story>\n'
     tmp+='\t\t<para style="P0"><u>' + str(inf_basicas_dic['num_sessao_plen']) + 'ª SESSÃO ' + str(inf_basicas_dic['nom_sessao']) + ' DA ' + str(inf_basicas_dic['num_legislatura']) + 'ª LEGISLATURA ' + '</u></para>\n'
     tmp+='\t\t<para style="P01">(Em '+ str(inf_basicas_dic["dia_sessao"])+')</para>\n'
     tmp+='\t\t<condPageBreak height="3cm"/>\n'     
@@ -121,6 +121,7 @@ def inf_basicas(inf_basicas_dic):
     tmp+='\t\t<para style="P2" spaceAfter="5"><b>Início: </b> ' + hr_inicio_sessao + ' horas</para>\n'
  
     return tmp
+
 
 def mesa(lst_mesa):
     """
@@ -147,7 +148,6 @@ def presenca(lst_presenca_sessao):
     for presenca in lst_presenca_sessao:
         tmp+='\t\t<para style="P2" spaceAfter="5">'+ str(presenca['nom_completo']) + '/' + str(presenca['sgl_partido']) +'</para>\n'
     return tmp
-
 
 def materia_apresentada(lst_materia_apresentada):
     """
@@ -242,8 +242,8 @@ def presenca_expediente(lst_presenca_expediente):
     tmp+='\t\t<para style="P2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
-    for presenca_encerramento in lst_presenca_encerramento:
-        tmp+='\t\t<para style="P2" spaceAfter="5">'+ str(presenca_encerramento['nom_completo']) + '/' + str(presenca_encerramento['sgl_partido']) +'</para>\n'
+    for presenca_expediente in lst_presenca_expediente:
+        tmp+='\t\t<para style="P2" spaceAfter="5">'+ str(presenca_expediente['nom_completo']) + '/' + str(presenca_expediente['sgl_partido']) +'</para>\n'
     return tmp
 
 def oradores(lst_oradores):
@@ -291,10 +291,9 @@ def presidente(lst_presidente):
     tmp+='\t\t</para>\n'
     tmp+='\t\t<para style="P6"><b>' + str(lst_presidente) + '</b></para>\n'
     tmp+='\t\t<para style="P5">Presidente </para>\n'
-    tmp+='\t</story>\n'
     return tmp
 
-def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic,lst_presidente):
+def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     """
     """
 
@@ -304,16 +303,17 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic,lst_presidente)
     tmp+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp+='<document filename="relatorio.pdf">\n'
-    tmp+='\t<template pageSize="(21cm, 29.7cm)" title="Sessao Plenaria" author="OpenLegis" allowSplitting="20">\n'
+    tmp+='\t<template pageSize="(21cm, 29.7cm)" title="Sessao Plenaria" author="Interlegis" allowSplitting="20">\n'
     tmp+='\t\t<pageTemplate id="first">\n'
     tmp+='\t\t\t<pageGraphics>\n'
     tmp+=cabecalho(inf_basicas_dic,imagem)
     tmp+=rodape(rodape_dic)
     tmp+='\t\t\t</pageGraphics>\n'
-    tmp+='\t\t\t<frame id="first" x1="4cm" y1="3cm" width="16cm" height="23cm"/>\n'
+    tmp+='\t\t\t<frame id="first" x1="3cm" y1="3cm" width="16cm" height="23cm"/>\n'
     tmp+='\t\t</pageTemplate>\n'
     tmp+='\t</template>\n'
     tmp+=paraStyle()
+    tmp+='\t<story>\n'
     tmp+=inf_basicas(inf_basicas_dic)
     tmp+=mesa(lst_mesa)
     tmp+=presenca(lst_presenca_sessao)
@@ -327,9 +327,10 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic,lst_presidente)
     tmp+=oradores(lst_oradores)
     tmp+=presenca_encerramento(lst_presenca_encerramento)
     tmp+=presidente(lst_presidente)
-    tmp+='\t</document>\n'
+    tmp+='\t</story>\n'
+    tmp+='</document>\n'
     tmp_pdf=parseString(tmp)
-    
+
     if hasattr(context.temp_folder,arquivoPdf):
         context.temp_folder.manage_delObjects(ids=arquivoPdf)
     context.temp_folder.manage_addFile(arquivoPdf)
@@ -338,4 +339,4 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic,lst_presidente)
 
     return "/temp_folder/"+arquivoPdf
 
-return principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic, lst_presidente)
+return principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic)

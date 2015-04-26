@@ -59,11 +59,11 @@ if context.REQUEST['data']!='':
 
         # Lista das matérias apresentadas
         lst_materia_apresentada=[]
+        dic_materia_apresentada = None
         for materia_apresentada in context.zsql.materia_apresentada_sessao_obter_zsql(dat_ordem=data,cod_sessao_plen=codigo,ind_excluido=0):
         
             # seleciona os detalhes de uma matéria
             materia = context.zsql.materia_obter_zsql(cod_materia=materia_apresentada.cod_materia)[0]
-
             dic_materia_apresentada = {}
             dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
             dic_materia_apresentada["id_materia"] = materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
@@ -106,7 +106,7 @@ if context.REQUEST['data']!='':
 
             dic_expediente_materia = {}
             dic_expediente_materia["num_ordem"] = expediente_materia.num_ordem
-            dic_expediente_materia["id_materia"] = materia.des_tipo_materia+"  "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+            dic_expediente_materia["id_materia"] = materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
        	    dic_expediente_materia["des_numeracao"]=""
             numeracao = context.zsql.numeracao_obter_zsql(cod_materia=expediente_materia.cod_materia)
             if len(numeracao):
@@ -244,7 +244,7 @@ if context.REQUEST['data']!='':
         for orador in context.zsql.oradores_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=orador.cod_parlamentar,ind_excluido=0):
                 dic_oradores = {}
-                dic_oradores["num_ordem"] = orador.num_ordem
+                dic_oradores["num_ordem"] = int(orador.num_ordem)
                 dic_oradores["nom_completo"] = parlamentar.nom_completo
                 dic_oradores['sgl_partido'] = parlamentar.sgl_partido
                 lst_oradores.append(dic_oradores)
@@ -300,7 +300,7 @@ if context.REQUEST['data']!='':
 
 #   return lst_votacao
     sessao=session.id
-    caminho = context.pdf_sessao_plenaria_gerar(rodape, sessao, imagem, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_expedientes, lst_expediente_materia, lst_oradores_expediente, lst_presenca_ordem_dia, lst_votacao, lst_oradores, lst_materia_apresentada, lst_presenca_expediente, lst_presenca_encerramento, lst_presidente)
+    caminho = context.pdf_sessao_plenaria_gerar(rodape, imagem, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_expedientes, lst_expediente_materia, lst_oradores_expediente, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, sessao)
     if caminho=='aviso':
         return response.redirect('mensagem_emitir_proc')
     else:
