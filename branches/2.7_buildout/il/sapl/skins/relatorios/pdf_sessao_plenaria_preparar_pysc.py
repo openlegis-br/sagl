@@ -31,7 +31,7 @@ if context.REQUEST['data']!='':
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=composicao.cod_parlamentar,ind_excluido=0):
                 for cargo in context.zsql.cargo_mesa_obter_zsql(cod_cargo=composicao.cod_cargo, ind_excluido=0):
                     dic_mesa = {}
-                    dic_mesa['nom_completo'] = parlamentar.nom_completo.encode('utf-8')
+                    dic_mesa['nom_completo'] = parlamentar.nom_completo
                     dic_mesa['sgl_partido'] = parlamentar.sgl_partido
                     dic_mesa['des_cargo'] = cargo.des_cargo
                     lst_mesa.append(dic_mesa)
@@ -41,7 +41,7 @@ if context.REQUEST['data']!='':
         for presenca in context.zsql.presenca_sessao_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, tip_frequencia='P', ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca.cod_parlamentar,ind_excluido=0):
                 dic_presenca = {}
-                dic_presenca["nom_completo"] = parlamentar.nom_completo.encode('utf-8')
+                dic_presenca["nom_completo"] = parlamentar.nom_completo
                 dic_presenca['sgl_partido'] = parlamentar.sgl_partido
                 lst_presenca_sessao.append(dic_presenca)
 
@@ -66,8 +66,8 @@ if context.REQUEST['data']!='':
 
             dic_materia_apresentada = {}
             dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
-            dic_materia_apresentada["id_materia"] = materia.des_tipo_materia.encode('utf-8')+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
-            dic_materia_apresentada["txt_ementa"] = materia.txt_ementa.encode('utf-8')
+            dic_materia_apresentada["id_materia"] = materia.des_tipo_materia+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+            dic_materia_apresentada["txt_ementa"] = materia.txt_ementa
 
        	    dic_materia_apresentada["des_numeracao"]=""
             numeracao = context.zsql.numeracao_obter_zsql(cod_materia=materia_apresentada.cod_materia)
@@ -85,15 +85,15 @@ if context.REQUEST['data']!='':
             
                 if autor.des_tipo_autor == "Parlamentar":
                     parlamentar = context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar)[0]     
-                    dic_materia_apresentada["nom_autor"] = parlamentar.nom_completo.encode('utf-8')
+                    dic_materia_apresentada["nom_autor"] = parlamentar.nom_completo
                 elif autor.des_tipo_autor == "Comissao":
                     comissao = context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao)[0]
-                    dic_materia_apresentada["nom_autor"] = comissao.nom_comissao.encode('utf-8')
+                    dic_materia_apresentada["nom_autor"] = comissao.nom_comissao
                 elif autor.des_tipo_autor == "Bancada":
                     bancada = context.zsql.bancada_obter_zsql(cod_bancada=autor.cod_bancada)[0]
-                    dic_materia_apresentada["nom_autor"] = bancada.nom_bancada.encode('utf-8')
+                    dic_materia_apresentada["nom_autor"] = bancada.nom_bancada
                 else:
-                    dic_materia_apresentada["nom_autor"] = autor.nom_autor.encode('utf-8')
+                    dic_materia_apresentada["nom_autor"] = autor.nom_autor
             
             lst_materia_apresentada.append(dic_materia_apresentada)
       
@@ -106,7 +106,7 @@ if context.REQUEST['data']!='':
 
             dic_expediente_materia = {}
             dic_expediente_materia["num_ordem"] = expediente_materia.num_ordem
-            dic_expediente_materia["id_materia"] = materia.des_tipo_materia.encode('utf-8')+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+            dic_expediente_materia["id_materia"] = materia.des_tipo_materia+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
        	    dic_expediente_materia["des_numeracao"]=""
             numeracao = context.zsql.numeracao_obter_zsql(cod_materia=expediente_materia.cod_materia)
             if len(numeracao):
@@ -119,8 +119,8 @@ if context.REQUEST['data']!='':
                   for turno in [("P","Primeiro"), ("S","Segundo"), ("U","Unico"), ("L","Suplementar"), ("A","Votacao Unica em Regime de Urgencia"), ("B","1ª Votacao"), ("C","2ª e 3ª Votacoes")]:
                     if tram_turno.sgl_turno == turno[0]:
                         dic_expediente_materia["des_turno"] = turno[1]
-            dic_expediente_materia["txt_ementa"] = materia.txt_ementa.encode('utf-8')
-            dic_expediente_materia["ordem_observacao"] = expediente_materia.ordem_observacao.encode('utf-8')
+            dic_expediente_materia["txt_ementa"] = materia.txt_ementa
+            dic_expediente_materia["ordem_observacao"] = expediente_materia.ordem_observacao
             dic_expediente_materia["nom_autor"] = ''
             autoria = context.zsql.autoria_obter_zsql(cod_materia=expediente_materia.cod_materia, ind_primeiro_autor=1)        
             if len(autoria) > 0: # se existe autor
@@ -131,22 +131,22 @@ if context.REQUEST['data']!='':
             
                 if autor.des_tipo_autor == "Parlamentar":
                     parlamentar = context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar)[0]     
-                    dic_expediente_materia["nom_autor"] = parlamentar.nom_completo.encode('utf-8')
+                    dic_expediente_materia["nom_autor"] = parlamentar.nom_completo
                 elif autor.des_tipo_autor == "Comissao":
                     comissao = context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao)[0]
-                    dic_expediente_materia["nom_autor"] = comissao.nom_comissao.encode('utf-8')
+                    dic_expediente_materia["nom_autor"] = comissao.nom_comissao
                 elif autor.des_tipo_autor == "Bancada":
                     bancada = context.zsql.bancada_obter_zsql(cod_bancada=autor.cod_bancada)[0]
-                    dic_expediente_materia["nom_autor"] = bancada.nom_bancada.encode('utf-8')
+                    dic_expediente_materia["nom_autor"] = bancada.nom_bancada
                 else:
-                    dic_expediente_materia["nom_autor"] = autor.nom_autor.encode('utf-8')
+                    dic_expediente_materia["nom_autor"] = autor.nom_autor
             
             if expediente_materia.tip_resultado_votacao:
                 resultado = context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=expediente_materia.tip_resultado_votacao, ind_excluido=0)
                 for i in resultado:
-                    dic_expediente_materia["nom_resultado"] = i.nom_resultado.encode('utf-8')
+                    dic_expediente_materia["nom_resultado"] = i.nom_resultado
                     if expediente_materia.votacao_observacao:
-                        dic_expediente_materia["votacao_observacao"] = expediente_materia.votacao_observacao.encode('utf-8')
+                        dic_expediente_materia["votacao_observacao"] = expediente_materia.votacao_observacao
             else:
                 dic_expediente_materia["nom_resultado"] = "Matéria não votada"
                 dic_expediente_materia["votacao_observacao"] = ""
@@ -158,7 +158,7 @@ if context.REQUEST['data']!='':
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=orador_expediente.cod_parlamentar,ind_excluido=0):
                 dic_oradores_expediente = {}
                 dic_oradores_expediente["num_ordem"] = orador_expediente.num_ordem
-                dic_oradores_expediente["nom_completo"] = parlamentar.nom_completo.encode('utf-8')
+                dic_oradores_expediente["nom_completo"] = parlamentar.nom_completo
                 dic_oradores_expediente['sgl_partido'] = parlamentar.sgl_partido
                 lst_oradores_expediente.append(dic_oradores_expediente)
 
@@ -167,7 +167,7 @@ if context.REQUEST['data']!='':
         for presenca_ordem_dia in context.zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, tip_frequencia='P', ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca_ordem_dia.cod_parlamentar,ind_excluido=0):
                 dic_presenca_ordem_dia = {}
-                dic_presenca_ordem_dia['nom_completo'] = parlamentar.nom_completo.encode('utf-8')
+                dic_presenca_ordem_dia['nom_completo'] = parlamentar.nom_completo
                 dic_presenca_ordem_dia['sgl_partido'] = parlamentar.sgl_partido
                 lst_presenca_ordem_dia.append(dic_presenca_ordem_dia)
         
@@ -180,7 +180,7 @@ if context.REQUEST['data']!='':
 
             dic_votacao = {}
             dic_votacao["num_ordem"] = votacao.num_ordem
-            dic_votacao["id_materia"] = materia.des_tipo_materia.encode('utf-8')+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+            dic_votacao["id_materia"] = materia.des_tipo_materia+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
        	    dic_votacao["des_numeracao"]=""
             numeracao = context.zsql.numeracao_obter_zsql(cod_materia=votacao.cod_materia)
             if len(numeracao):
@@ -197,8 +197,8 @@ if context.REQUEST['data']!='':
                   for turno in [("P","Primeiro"), ("S","Segundo"), ("U","Unico"), ("L","Suplementar"), ("A","Votacao Unica em Regime de Urgencia"), ("B","1ª Votacao"), ("C","2ª e 3ª Votacoes")]:
                     if tram_turno.sgl_turno == turno[0]:
                         dic_votacao["des_turno"] = turno[1]
-            dic_votacao["txt_ementa"] = materia.txt_ementa.encode('utf-8')
-            dic_votacao["ordem_observacao"] = votacao.ordem_observacao.encode('utf-8')
+            dic_votacao["txt_ementa"] = materia.txt_ementa
+            dic_votacao["ordem_observacao"] = votacao.ordem_observacao
             dic_votacao["nom_autor"] = ''
             autoria = context.zsql.autoria_obter_zsql(cod_materia=votacao.cod_materia, ind_primeiro_autor=1)        
             if len(autoria) > 0: # se existe autor
@@ -209,22 +209,22 @@ if context.REQUEST['data']!='':
             
                 if autor.des_tipo_autor == "Parlamentar":
                     parlamentar = context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar)[0]     
-                    dic_votacao["nom_autor"] = parlamentar.nom_completo.encode('utf-8')
+                    dic_votacao["nom_autor"] = parlamentar.nom_completo
                 elif autor.des_tipo_autor == "Comissao":
                     comissao = context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao)[0]
-                    dic_votacao["nom_autor"] = comissao.nom_comissao.encode('utf-8')
+                    dic_votacao["nom_autor"] = comissao.nom_comissao
                 elif autor.des_tipo_autor == "Bancada":
                     bancada = context.zsql.bancada_obter_zsql(cod_bancada=autor.cod_bancada)[0]
-                    dic_votacao["nom_autor"] = bancada.nom_bancada.encode('utf-8')
+                    dic_votacao["nom_autor"] = bancada.nom_bancada
                 else:
-                    dic_votacao["nom_autor"] = autor.nom_autor.encode('utf-8')
+                    dic_votacao["nom_autor"] = autor.nom_autor
             
             if votacao.tip_resultado_votacao:
                 resultado = context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=votacao.tip_resultado_votacao, ind_excluido=0)
                 for i in resultado:
-                    dic_votacao["nom_resultado"] = i.nom_resultado.encode('utf-8')
+                    dic_votacao["nom_resultado"] = i.nom_resultado
                     if votacao.votacao_observacao:
-                        dic_votacao["votacao_observacao"] = votacao.votacao_observacao.encode('utf-8')
+                        dic_votacao["votacao_observacao"] = votacao.votacao_observacao
             else:
                 dic_votacao["nom_resultado"] = "Matéria não votada"
                 dic_votacao["votacao_observacao"] = ""
@@ -235,7 +235,7 @@ if context.REQUEST['data']!='':
         for presenca_expediente in context.zsql.presenca_expediente_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen,ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca_expediente.cod_parlamentar,ind_excluido=0):
                 dic_presenca_expediente = {}
-                dic_presenca_expediente['nom_completo'] = parlamentar.nom_completo.encode('utf-8')
+                dic_presenca_expediente['nom_completo'] = parlamentar.nom_completo
                 dic_presenca_expediente['sgl_partido'] = parlamentar.sgl_partido
                 lst_presenca_expediente.append(dic_presenca_expediente)
 
@@ -245,7 +245,7 @@ if context.REQUEST['data']!='':
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=orador.cod_parlamentar,ind_excluido=0):
                 dic_oradores = {}
                 dic_oradores["num_ordem"] = orador.num_ordem
-                dic_oradores["nom_completo"] = parlamentar.nom_completo.encode('utf-8')
+                dic_oradores["nom_completo"] = parlamentar.nom_completo
                 dic_oradores['sgl_partido'] = parlamentar.sgl_partido
                 lst_oradores.append(dic_oradores)
 
@@ -254,7 +254,7 @@ if context.REQUEST['data']!='':
         for presenca_encerramento in context.zsql.presenca_encerramento_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen,ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca_encerramento.cod_parlamentar,ind_excluido=0):
                 dic_presenca_encerramento = {}
-                dic_presenca_encerramento['nom_completo'] = parlamentar.nom_completo.encode('utf-8')
+                dic_presenca_encerramento['nom_completo'] = parlamentar.nom_completo
                 dic_presenca_encerramento['sgl_partido'] = parlamentar.sgl_partido
                 lst_presenca_encerramento.append(dic_presenca_encerramento)
 
@@ -263,7 +263,7 @@ if context.REQUEST['data']!='':
     for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sessao.num_legislatura,data=data):
       for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
         for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-          lst_presidente = presidencia.nom_completo.encode('utf-8')
+          lst_presidente = presidencia.nom_completo
 
     # obtém as propriedades da casa legislativa para montar o cabeçalho e o rodapé da página
     cabecalho={}
@@ -283,7 +283,7 @@ if context.REQUEST['data']!='':
     estado = context.zsql.localidade_obter_zsql(tip_localidade="U")
     for uf in estado:
         if localidade[0].sgl_uf == uf.sgl_uf:
-            nom_estado = uf.nom_localidade.encode('utf-8')
+            nom_estado = uf.nom_localidade
             break
 
     inf_basicas_dic['nom_camara']= casa['nom_casa']
@@ -295,7 +295,7 @@ if context.REQUEST['data']!='':
 
     REQUEST=context.REQUEST
     for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_localidade']):
-        rodape['nom_localidade']= local.nom_localidade.encode('utf-8')
+        rodape['nom_localidade']= local.nom_localidade
         rodape['sgl_uf']= local.sgl_uf
 
 #   return lst_votacao
