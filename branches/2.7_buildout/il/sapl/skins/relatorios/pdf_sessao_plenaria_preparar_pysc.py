@@ -66,7 +66,7 @@ if context.REQUEST['data']!='':
 
             dic_materia_apresentada = {}
             dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
-            dic_materia_apresentada["id_materia"] = materia.des_tipo_materia+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+            dic_materia_apresentada["id_materia"] = materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
             dic_materia_apresentada["txt_ementa"] = materia.txt_ementa
 
        	    dic_materia_apresentada["des_numeracao"]=""
@@ -106,7 +106,7 @@ if context.REQUEST['data']!='':
 
             dic_expediente_materia = {}
             dic_expediente_materia["num_ordem"] = expediente_materia.num_ordem
-            dic_expediente_materia["id_materia"] = materia.des_tipo_materia+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+            dic_expediente_materia["id_materia"] = materia.des_tipo_materia+"  "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
        	    dic_expediente_materia["des_numeracao"]=""
             numeracao = context.zsql.numeracao_obter_zsql(cod_materia=expediente_materia.cod_materia)
             if len(numeracao):
@@ -148,7 +148,7 @@ if context.REQUEST['data']!='':
                     if expediente_materia.votacao_observacao:
                         dic_expediente_materia["votacao_observacao"] = expediente_materia.votacao_observacao
             else:
-                dic_expediente_materia["nom_resultado"] = "Matéria não votada"
+                dic_expediente_materia["nom_resultado"] = "Materia nao votada"
                 dic_expediente_materia["votacao_observacao"] = ""
             lst_expediente_materia.append(dic_expediente_materia)
 
@@ -180,7 +180,7 @@ if context.REQUEST['data']!='':
 
             dic_votacao = {}
             dic_votacao["num_ordem"] = votacao.num_ordem
-            dic_votacao["id_materia"] = materia.des_tipo_materia+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+            dic_votacao["id_materia"] = materia.des_tipo_materia+"  "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
        	    dic_votacao["des_numeracao"]=""
             numeracao = context.zsql.numeracao_obter_zsql(cod_materia=votacao.cod_materia)
             if len(numeracao):
@@ -226,7 +226,7 @@ if context.REQUEST['data']!='':
                     if votacao.votacao_observacao:
                         dic_votacao["votacao_observacao"] = votacao.votacao_observacao
             else:
-                dic_votacao["nom_resultado"] = "Matéria não votada"
+                dic_votacao["nom_resultado"] = "Materia nao votada"
                 dic_votacao["votacao_observacao"] = ""
             lst_votacao.append(dic_votacao)
 
