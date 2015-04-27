@@ -18,9 +18,10 @@ def setupConteudo(portal):
     # estrutura do diretorio das materias legislativas
     if hasattr(portal, 'sapl_documentos'):
         for o in [
-            'anexo_sessao.zexp',
             'administrativo.zexp',
+            'anexo_sessao.zexp',
             'ata_sessao.zexp',
+            'emenda.zexp',
             'materia.zexp',
             'materia_odt.zexp',
             'modelo.zexp',
@@ -34,6 +35,7 @@ def setupConteudo(portal):
             'proposicao.zexp',
             'props_sapl.zexp',
             'reuniao_comissao.zexp',
+            'substitutivo.zexp',
         ]:
             if o[:len(o)-5] not in portal.sapl_documentos.objectIds():
                 portal.sapl_documentos.manage_importObject(o)
@@ -63,6 +65,13 @@ def setupAdicionaSPDO(portal):
     except:
         pass
 
+def setupAdicionaAcomp(portal):
+    props = portal.sapl_documentos.props_sapl
+    try:
+        props.manage_addProperty('acompanhamento_materia', '1', 'int')
+    except:
+        pass
+
 
 def importar_estrutura(context):
     if context.readDataFile('sapl-final.txt') is None:
@@ -72,3 +81,4 @@ def importar_estrutura(context):
     setupConteudo(site)
     setupAdicionarUsuarios(site)
     setupAdicionaSPDO(site)
+    setupAdicionaAcomp(site)

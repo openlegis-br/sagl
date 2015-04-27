@@ -386,11 +386,26 @@ ALTER TABLE `vinculo_norma_juridica` ADD INDEX (`tip_vinculo`);
 
 DELETE FROM `tramitacao` WHERE ind_excluido=1;
 
+ALTER TABLE  `relatoria` ADD  `num_ordem` TINYINT( 4 ) NOT NULL AFTER  `cod_comissao` ;
+
+ALTER TABLE  `materia_legislativa` CHANGE  `cod_situacao`  `cod_situacao` INT( 11 ) NULL DEFAULT NULL ;
+
+ALTER TABLE materia_legislativa DROP INDEX txt_ementa;
+
+ALTER TABLE materia_legislativa DROP INDEX txt_indexacao;
+
+ALTER TABLE `materia_legislativa` ADD FULLTEXT KEY `idx_busca` (`txt_ementa`,`txt_observacao`,`txt_indexacao`);
+
+ALTER TABLE norma_juridica DROP INDEX txt_ementa;
+
+ALTER TABLE norma_juridica DROP INDEX txt_indexacao;
+
+ALTER TABLE `norma_juridica` ADD FULLTEXT KEY `idx_busca` (`txt_ementa`,`txt_observacao`,`txt_indexacao`);
+
 ALTER TABLE `materia_legislativa` DROP `txt_resultado`;"
 
 ALTER TABLE `protocolo` DROP `cod_documento`;
 
 ALTER TABLE `protocolo` DROP `cod_materia`;
 
-ALTER TABLE  `relatoria` ADD  `num_ordem` TINYINT( 4 ) NOT NULL AFTER  `cod_comissao` ;
 
