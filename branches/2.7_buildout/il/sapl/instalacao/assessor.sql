@@ -274,6 +274,10 @@ UPDATE emenda SET tip_emenda = 4 WHERE tip_emenda="Supressiva";
 
 UPDATE emenda SET tip_emenda = 5 WHERE tip_emenda="Mens. Aditiva";
 
+UPDATE emenda SET tip_emenda = 6 WHERE tip_emenda="De Redação";
+
+UPDATE emenda SET tip_emenda = 7 WHERE tip_emenda="Subemenda";
+
 ALTER TABLE `emenda` ADD `exc_pauta` tinyint(4) DEFAULT NULL AFTER `cod_autor`;
 
 ALTER TABLE `emenda`
