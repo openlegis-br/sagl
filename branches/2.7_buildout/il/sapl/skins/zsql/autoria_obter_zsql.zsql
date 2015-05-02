@@ -5,14 +5,36 @@ max_rows : 1000
 max_cache : 100
 </dtml-comment>
 SELECT 
-     REPLACE(cod_autor, 'L', '')   as cod_autor,
+     REPLACE(autoria.cod_autor, 'L', '')   as cod_autor,
      REPLACE(autoria.cod_materia, 'L', '') as cod_materia,
-     ind_primeiro_autor
+     if(tipo_autor.des_tipo_autor='Parlamentar',parlamentar.nom_completo, 
+     if(tipo_autor.des_tipo_autor='Bancada',bancada.nom_bancada,
+     if(tipo_autor.des_tipo_autor='Comissao', comissao.nom_comissao, autor.nom_autor))) as nom_autor_join,
+     tipo_autor.des_tipo_autor,
+     REPLACE(autor.cod_partido, 'L', '') as cod_partido,
+     autoria.ind_primeiro_autor
 
 FROM 
-    autoria, materia_legislativa
+    autoria
+    LEFT JOIN autor ON autoria.cod_autor=autor.cod_autor
+    LEFT JOIN tipo_autor ON autor.tip_autor = tipo_autor.tip_autor
+    LEFT JOIN parlamentar ON autor.cod_parlamentar = parlamentar.cod_parlamentar AND parlamentar.ind_excluido=0
+    LEFT JOIN comissao ON autor.cod_comissao=comissao.cod_comissao AND comissao.ind_excluido=0
+    LEFT JOIN bancada ON autor.cod_bancada=bancada.cod_bancada AND bancada.ind_excluido=0,
+    materia_legislativa
 
-<dtml-sqlgroup where>
+<dtml-sqlgroup where>  ((parlamentar.cod_parlamentar is not null and tipo_autor.des_tipo_autor='Parlamentar') or
+                        (bancada.cod_bancada         is not null and (tipo_autor.des_tipo_autor='Bancada')) or  
+                        (comissao.cod_comissao       is not null and (tipo_autor.des_tipo_autor='Comissao')) or 
+                        (tipo_autor.des_tipo_autor!='Parlamentar' and tipo_autor.des_tipo_autor!='Bancada' and tipo_autor.des_tipo_autor!='Comissao')) <dtml-and>
+  <dtml-sqltest cod_parlamentar    column="autor.cod_parlamentar"            op="=" type="int" optional><dtml-and>
+  <dtml-sqltest cod_comissao       column="autor.cod_comissao"               op="=" type="int" optional><dtml-and>
+  <dtml-sqltest cod_bancada        column="autor.cod_bancada"                op="=" type="int" optional><dtml-and>
+  <dtml-sqltest ncod_autor         column="autor.cod_autor"                  op="!=" type="int" optional><dtml-and>
+  <dtml-sqltest nom_autor          column="autor.nom_autor"                  op="=" type="nb"   optional><dtml-and>
+  <dtml-sqltest col_username       column="autor.col_username"               op="=" type="nb"   optional><dtml-and>
+  <dtml-sqltest cod_autor          column="autor.cod_autor"                  op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest des_tipo_autor     column="tipo_autor.des_tipo_autor"        op="=" type="nb"   optional><dtml-and>
   <dtml-sqltest cod_materia        column="autoria.cod_materia"              op="=" type="nb"  optional><dtml-and>
   <dtml-sqltest cod_autor          column="autoria.cod_autor"                op="=" type="nb"  optional><dtml-and>
   <dtml-sqltest ind_primeiro_autor column="autoria.ind_primeiro_autor"       op="=" type="nb"  optional><dtml-and>
@@ -20,4 +42,4 @@ FROM
   <dtml-sqltest cod_materia        column="materia_legislativa.cod_materia"  op="=" type="int"> <dtml-and>
   <dtml-sqltest ind_excluido2      column="materia_legislativa.ind_excluido" op="=" type="int">
 </dtml-sqlgroup>
-ORDER BY ind_primeiro_autor DESC
+ORDER BY nom_autor_join
