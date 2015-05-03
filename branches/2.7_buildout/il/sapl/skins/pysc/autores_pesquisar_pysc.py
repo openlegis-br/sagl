@@ -8,7 +8,6 @@
 ##title=
 ##
 import simplejson as json
-import collections
 
 context.REQUEST.RESPONSE.setHeader("Access-Control-Allow-Origin", "*")
 
