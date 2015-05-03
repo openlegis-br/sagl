@@ -1,4 +1,61 @@
-﻿<dtml-var standard_html_header>
+<!DOCTYPE html>
+<html lang="pt-br">
+<dtml-if expr="_.has_key('QUERY_STRING') and QUERY_STRING=='retry=1' and portal_membership.isAnonymousUser()">
+  <dtml-call expr="REQUEST['RESPONSE'].expireCookie('__ac', path='/')">
+  <dtml-call expr="REQUEST['RESPONSE'].redirect(portal_url() +'/index_html?retry=0')">
+</dtml-if>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
+<dtml-call "RESPONSE.setHeader('Expires', 'Sat, 1 Jan 2000 00:00:00 GMT')">
+<dtml-call "RESPONSE.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate, post-check=0, pre-check=0')">
+<head>
+  <meta charset="utf-8">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="author" content="OpenLegis">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.6, minimum-scale=0.4">
+  <link rel="shortcut icon" type="image/x-icon" href="&dtml-portal_url;/imagens/favicon.ico">
+  <dtml-var standard_css_slot>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.datepick.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.fancybox.pack.js"></script>
+  <script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/poshytips.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/data_validar_jvsc"></script>
+  <link href="&dtml-portal_url;/generico/dhtmlxcombo.css" media="all" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/dhtmlxcommon.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/dhtmlxcombo.js"></script>
+
+  <dtml-if expr="_.has_key('QUERY_STRING') and QUERY_STRING == 'retry=0'">
+    <script type="text/javascript">
+      <!--
+        alert("Nome de usuário e/ou senha não conferem!");
+      //-->
+    </script>
+  </dtml-if>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      document.title = $(".firstHeading").text() + ' — ' + document.title;
+    });
+
+   ( function( $ ) {
+   $( document ).ready(function() {
+   var menu = $('#funcoes');
+   var menuList = menu.find('ul:first');
+   var listItems = menu.find('li').not('#responsive-tab');
+
+   menuList.prepend('<li id="responsive-tab"><a href="#">Menu</a></li>');
+
+   menu.on('click', '#responsive-tab', function(){
+	listItems.slideToggle('fast');
+	listItems.addClass('collapsed');
+   });
+   });
+   } )( jQuery );
+  </script>
+
+  <title>
+    Sistema Aberto de Gestão Legislativa
+  </title>
 
 <script type="text/javascript">
 $(function() {
@@ -6,39 +63,6 @@ $(function() {
 	$('#dt_apres2').datepick();
         $('#dt_public').datepick();
         $('#dt_public2').datepick();
-});
-</script>
-
-<script type="text/javascript" src="javascript/poshytips.js"></script>
-
-<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
-
-<script type="text/javascript">
-<!--
-  function tipo_autor_trocar(form) {
-    form.txt_autor.value = "";
-    form.hdn_txt_autor.value = "";
-    form.hdn_cod_autor.value = "";
-    return;
-  }
-//-->
-</script>
-
-<script type="text/javascript">
-$(document).ready(function() {
-	$(".popup").fancybox({
-		maxWidth	: 500,
-		maxHeight	: 430,
-		fitToView	: false,
-		width		: '85%',
-		height		: '80%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-		closeEffect	: 'fade'
-	});
 });
 </script>
 
@@ -66,6 +90,54 @@ $(function(){
 });
 //]]>
 </script>
+
+<dtml-comment>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://186.195.159.20/analytics/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "3"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</dtml-comment>
+<script>
+var lista_autores;
+function doOnLoad() {
+	lista_autores = new dhtmlXCombo("combo_zone", "hdn_cod_autor", 233);
+	lista_autores.load("&dtml-portal_url;/pysc/autores_pesquisar_pysc");
+	lista_autores.enableFilteringMode(true);
+}
+function enableComplete(mode) {
+	lista_autores.enableAutocomplete(mode);
+}
+
+</script>
+</head>
+<body class="fadeIn" onload="doOnLoad();">
+<div id="visual-portal-wrapper-container">
+  <dtml-if expr="_.has_key('impressao')">
+    <dtml-var printable_html_top_bar>
+  <dtml-elif expr="_.has_key('iframe') or REQUEST.SESSION.get('iframe')">
+    <dtml-call expr="REQUEST.SESSION.set('iframe', 1)">
+  <dtml-else>
+    <dtml-var standard_html_superior>
+    <div id="pagina">
+      <dtml-var standard_html_top_bar>
+      <div id="corpo">
+       <dtml-var standard_html_lateral>
+       <div id="conteudo">
+  </dtml-if>
+<dtml-if expr="REQUEST.has_key('portal_status_message')">
+  <p id="system-message"><dtml-var portal_status_message></p>
+</dtml-if>
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_materia">Ajuda</a>
 
@@ -147,19 +219,8 @@ $(function(){
      <div class="pf-element pf-full-width">
        <label for="txt_autor"><span class="pf-label">Autor</span></label>
        <div class="pf-group">
-         <input class="pf-field" id="txt_autor" type="text" name="txt_autor" null="" placeholder="Todos" style="max-width: 224px; width: 60%;" maxlength="50" disabled onFocus="javascript:this.blur()" />
-          <input type="hidden" name="hdn_txt_autor" value="" />
-    <a href="autor_pesquisar_form?hdn_tipo_pesquisa=pesq_basica" class="botao-link popup" data-fancybox-type="iframe">Selecionar</a>
-          <input type="hidden" name="hdn_cod_autor" value="" />
-        </div>
-          <select class="pf-field" id="lst_tip_autor" name="lst_tip_autor" style="visibility:hidden; max-width: 224px; width: 100%;" onChange="tipo_autor_trocar(document.pesq_basica_form)">
-            <option value="">Todos</option>
-            <dtml-in expr="zsql.tipo_autor_obter_zsql(ind_excluido=0)">
-              <option value="<dtml-var des_tipo_autor missing>">
-                <dtml-var des_tipo_autor>
-              </option>
-            </dtml-in>
-          </select> 
+ 	<div id="combo_zone" style="width:235px;"></div>
+      </div>
      </div>    
    <dtml-comment>
      <div class="pf-element pf-full-width">
@@ -184,7 +245,7 @@ $(function(){
      </div>
      <div class="pf-element pf-full-width">
         <label for="lst_localizacao"><span class="pf-label">Localização Atual</span></label>
-          <select class="pf-field" id="lst_localizacao" name="lst_localizacao" style="max-width: 224px; width: 100%;">
+          <select class="pf-field" id="lst_localizacao" name="lst_localizacao" style="max-width: 230px; width: 100%;">
             <option value="">Todas</option>
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
               <option value="<dtml-var cod_unid_tramitacao missing>">                
