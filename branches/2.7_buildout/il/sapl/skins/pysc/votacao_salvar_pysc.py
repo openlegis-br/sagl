@@ -5,7 +5,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_parlamentar, txt_observacao="", vot_parlamentar="", cod_ordem, cod_materia, cod_emenda="", cod_subemenda="", cod_substitutivo="",tip_resultado_votacao
+##parameters=cod_parlamentar, cod_ordem, cod_materia, tip_resultado_votacao, txt_observacao="", vot_parlamentar="", cod_emenda="", cod_subemenda="", cod_substitutivo=""
 ##title=
 ##
 
@@ -13,7 +13,6 @@ dic={}
 votos_sim=[]
 votos_nao=[]
 votos_abstencao=[]
-#cod_vot=None
 
 for voto in vot_parlamentar:
     if voto=='Sim':
@@ -27,9 +26,9 @@ for voto in vot_parlamentar:
     if voto=='Abstencao':
         votos_abstencao.append(voto)
 
-#for n in range(len(cod_parlamentar)):
-#    dic[cod_parlamentar[n]]=vot_parlamentar[n]
-dic = dict(zip(cod_parlamentar, vot_parlamentar))
+for n in range(len(cod_parlamentar)):
+    dic[cod_parlamentar[n]]=vot_parlamentar[n]
+#dic = dict(zip(cod_parlamentar, vot_parlamentar))
 
 #votacao=context.zsql.votacao_obter_zsql(cod_votacao=cod_votacao,cod_ordem=cod_ordem,cod_materia=cod_materia,ind_excluido=0)
 votacao=context.zsql.votacao_obter_zsql(cod_ordem=cod_ordem,cod_materia=cod_materia,cod_emenda=cod_emenda,cod_subemenda=cod_subemenda, cod_substitutivo=cod_substitutivo,ind_excluido=0)
