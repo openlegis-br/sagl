@@ -9,11 +9,13 @@
 <h1 class="firstHeading">Normas Jurídicas</h1>
 
 <dtml-if expr="incluir=='1'">
+<div id="barra-conteudo">
 <ul>
     <li>
         <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_form">Incluir Norma Jurídica</a>
     </li>
 </ul>
+</div>
 </dtml-if>
 
 <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
@@ -55,12 +57,26 @@
             </dtml-if>
                <dtml-var sgl_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma> - <dtml-var des_tipo_norma upper></a></b><br>
                <dtml-var txt_ementa missing>
-             <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(tip_situacao_norma=cod_situacao)">
-              <dtml-if expr="des_tipo_situacao!=0">
+             <dtml-if cod_materia>
+                 <br /><b>Matéria Legislativa:</b>
+                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+                    <dtml-if expr="AUTHENTICATED_USER.hasRole(this(), ['Operador', 'Operador Materia'])">
+                       <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                    <dtml-else>
+                       <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                    </dtml-if>
+                          <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
+                       </a>
+                 </dtml-in>
+             </dtml-if>
+             <dtml-if cod_situacao>
+               <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(tip_situacao_norma=cod_situacao)">
+                <dtml-if expr="des_tipo_situacao!=0">
                       <br /><b>Situação:</b>
-               <dtml-var des_tipo_situacao missing null="0" upper>
-              </dtml-if>
-             </dtml-in> 
+                 <dtml-var des_tipo_situacao missing null="0" upper>
+                </dtml-if>
+               </dtml-in> 
+             </dtml-if>
      <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
        <dtml-if sequence-start>
          <br /><b>Relacionamentos:</b><br />
@@ -68,6 +84,8 @@
             <dtml-if "tip_vinculo=='A'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_altera.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Alterada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
             <dtml-elif "tip_vinculo=='R'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_integral.gif">&nbsp;<span style="color:#C72100;font-weight:normal;">Revogada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
+
+            <dtml-elif "tip_vinculo=='S'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_integral.gif">&nbsp;<span style="color:#C72100;font-weight:normal;">Declarada ineficaz pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
             <dtml-elif "tip_vinculo=='P'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Revogada parcialmente pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
 
@@ -81,7 +99,7 @@
             </dtml-if>
           </dtml-in>
          </td>   
-          <td width="10%"> 
+          <td width="10%" valign="top"> 
                 <dtml-call expr="REQUEST.set('texto_consolidado', _.str(cod_norma)+'_texto_consolidado.pdf')">
                 <dtml-call expr="REQUEST.set('texto_original', _.str(cod_norma)+'_texto_integral.pdf')">
                 <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
