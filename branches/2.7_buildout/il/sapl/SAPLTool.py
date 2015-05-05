@@ -15,6 +15,7 @@ from lxml import etree
 
 from datetime import datetime
 
+from Globals import DTMLFile
 from Globals import InitializeClass
 from OFS.SimpleItem import SimpleItem
 
@@ -24,14 +25,9 @@ from Products.CMFCore.utils import UniqueObject
 from zope.interface import Interface
 
 from Products.CMFCore.utils import getToolByName
-import urllib2
-
-# imports para o SPDO
-import urllib
-import MultipartPostHandler
-import sys
 
 #imports para a geracao dos documentos
+import urllib
 import cStringIO
 from appy.pod.renderer import Renderer
 
@@ -59,64 +55,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
     nome_arquivo = 'tmp_token_' + str(os.getpid())
     nome_arquivo_atribuido = 'tmp_atribuido_' + str(os.getpid())
     local_arquivo = '/tmp'
-
-    def get_listas_spdo(self, end):
-        req = urllib2.Request(end)
-        opener = urllib2.build_opener()
-        f = opener.open(req)
-        dados = json.load(f)
-        if dados:
-            return dados
-
-    def get_user_password(self, user):
-        return user._getPassword()
-
-    # metodos para incluir o protocolo no SPDO
-
-    def _getAuthCookie(self, url, usuario, senha):
-        values = {
-            '__ac_name': usuario,
-            '__ac_password': senha,
-            'form.submitted': '1'
-        }
-        data = urllib.urlencode(values)
-        req = urllib2.Request(url, data)
-        resp = urllib2.urlopen(req)
-        cookie = resp.headers['Set-Cookie']
-        return cookie
-
-    def call_ws_nofile(self, url, usuario, senha, dados):
-        url_login = url.split('@@ws-')[0] + 'login_form'
-        auth_cookie = self._getAuthCookie(url_login, usuario, senha)
-        opener = urllib2.build_opener(MultipartPostHandler.MultipartPostHandler)
-        opener.addheaders = [('Cookie', auth_cookie)]
-        params = {"dados": dados}
-        return opener.open(url, params).read()
-
-    def call_ws(self, url, usuario, senha, dados, anexos = []):
-        url_login = url.split('@@ws-')[0] + 'login_form'
-        auth_cookie = self._getAuthCookie(url_login, usuario, senha)
-        opener = urllib2.build_opener(MultipartPostHandler.MultipartPostHandler)
-        opener.addheaders = [('Cookie', auth_cookie)]
-        params = {"dados": dados}
-        cont = 1
-        for anexo in anexos:
-            params['anexo%d' % cont] = anexo
-            cont += 1
-        return opener.open(url, params).read()
-
-    def call_ws_search(self, url, dados):
-        opener = urllib2.build_opener(MultipartPostHandler.MultipartPostHandler)
-        params = {"dados": dados}
-        return opener.open(url, params).read()
-
-    def get_anexos(self, *anexos):
-        for anexo in anexos:
-            os.rename(anexo['src'], anexo['dst'])
-        arquivos = [open(a['dst'], 'rb') for a in anexos]
-        for anexo in anexos:
-            os.rename(anexo['dst'], anexo['src'])
-        return arquivos
 
     def get_geolocations(self, cidade, cep):
         cidade = cidade.encode('utf-8')
@@ -468,10 +406,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
             documento_individual = E.DocumentoIndividual(urn)
             oai_lexml.append(documento_individual)
-            oai_lexml.append(E.Epigrafe(epigrafe))
-            oai_lexml.append(E.Ementa(ementa))
+            oai_lexml.append(E.Epigrafe(epigrafe.decode('iso-8859-1')))
+            oai_lexml.append(E.Ementa(ementa.decode('iso-8859-1')))
             if indexacao:
-                oai_lexml.append(E.Indexacao(indexacao))
+                oai_lexml.append(E.Indexacao(indexacao.decode('iso-8859-1')))
             return etree.tostring(oai_lexml)
         else:
             return None
@@ -720,6 +658,20 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             self.sapl_documentos.materia.manage_addFile(id=nom_arquivo_pdf2, file=data)
             os.unlink(file)
 
+    def ordem_dia_gerar_pdf(self, cod_sessao_plen):
+        # Conversao para PDF
+        nom_arquivo_odt = "%s"%cod_sessao_plen+'_pauta_sessao.odt'
+    	nom_arquivo_pdf = "%s"%cod_sessao_plen+'_pauta_sessao.pdf'
+    	url = self.sapl_documentos.pauta_sessao.absolute_url() + "/%s"%nom_arquivo_odt
+    	odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+    	output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+    	renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3')
+    	renderer.run()
+    	data = open(output_file_pdf, "rb").read()
+    	for file in [output_file_pdf]:
+    	    self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
+    	    os.unlink(file)
+
     def gerar_proposicao_pdf(self, cod_proposicao):
         # Conversao para PDF
         nom_arquivo_odt = "%s" % cod_proposicao+'.odt'
@@ -732,7 +684,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         renderer.run()
         data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
-            self.sapl_documentos.proposicao.manage_addFile(id=nom_arquivo_pdf2, file=data)
+            self.sapl_documentos.proposicao.manage_addFile(id=nom_arquivo_pdf1, file=data)
             os.unlink(file)
 
     def gerar_norma_odt(self, inf_basicas_dic, nom_arquivo, des_tipo_norma, num_norma, ano_norma, dat_norma, data_norma, txt_ementa, modelo_norma):
@@ -764,7 +716,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         renderer.run()
         data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
-            self.sapl_documentos.norma_juridica.manage_addFile(id=nom_arquivo_pdf2, file=data)
+            self.sapl_documentos.norma_juridica.manage_addFile(id=nom_arquivo_pdf1, file=data)
             os.unlink(file)
 
     def gerar_oficio_odt(self, inf_basicas_dic, nom_arquivo, sgl_tipo_documento, num_documento, ano_documento, txt_ementa, dat_documento, dia_documento, nom_autor, modelo_documento):

@@ -9,7 +9,7 @@ def convertFile(self,cod_norma):
     url = self.sapl_documentos.norma_juridica.absolute_url() + "/%s"%nom_arquivo_odt
     odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
     output_file_pdf = os.path.normpath(nom_arquivo_pdf)
-    renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+    renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3')
     renderer.run()
     data = open(output_file_pdf, "rb").read()                 
     for file in [output_file_pdf]:
