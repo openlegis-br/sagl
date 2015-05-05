@@ -655,7 +655,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         renderer.run()
         data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
-            self.sapl_documentos.materia.manage_addFile(id=nom_arquivo_pdf2, file=data)
+            self.sapl_documentos.materia.manage_addFile(id=nom_arquivo_pdf1, file=data)
             os.unlink(file)
 
     def ordem_dia_gerar_pdf(self, cod_sessao_plen):
