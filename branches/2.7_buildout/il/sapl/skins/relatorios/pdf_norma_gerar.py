@@ -81,6 +81,9 @@ def normas(lst_normas):
             tmp_data+='\t\t<para style="P2"><b>Matéria originária: </b>' + dic['materia_vinculada'] + '</para>\n'
         if dic['situacao_norma']!=None and dic['situacao_norma']!= " ":
             tmp_data+='\t\t<para style="P2"><b>Situação: </b>' + dic['situacao_norma'] + '</para>\n'
+        tmp_data+='\t\t<para style="P2" spaceAfter="8">\n'
+        tmp_data+='\t\t\t<font color="white"> </font>\n'
+        tmp_data+='\t\t</para>\n'
 
     tmp_data+='\t</story>\n'
     return tmp_data

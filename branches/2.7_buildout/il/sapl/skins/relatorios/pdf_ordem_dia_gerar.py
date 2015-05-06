@@ -11,7 +11,7 @@ def cabecalho(dic_cabecalho,dat_ordem,imagem):
     """Gera o codigo rml do cabecalho"""
 
     tmp=''
-    tmp+='\t\t\t\t<image x="6.1cm" y="26.9cm" width="74" height="80" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<image x="5.6cm" y="26.9cm" width="70" height="75" file="' + imagem + '"/>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
     tmp+='\t\t\t\t<drawString x="10.5cm" y="27.6cm">Estado de ' + str(dic_cabecalho['nom_estado']) + '</drawString>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="14"/>\n'
@@ -66,7 +66,7 @@ def pauta(lst_splen, lst_pauta):
         tmp+='\t\t<para style="P1">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
-        tmp+='\t\t<para style="P1">\n'
+        tmp+='\t\t<para style="P1" spaceAfter="16">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
 
@@ -75,11 +75,11 @@ def pauta(lst_splen, lst_pauta):
         #sessao plenaria
         if dicsp['sessao']!=None:
            tmp+='\t\t<para style="P0"><u>' + dicsp['sessao'].replace('&','&amp;') +', EM ' + dicsp['datasessao'].replace('&','&amp;')+ '</u></para>\n'
-           tmp+='\t\t<para style="P2">\n'
+           tmp+='\t\t<para style="P2" spaceAfter="4">\n'
            tmp+='\t\t\t<font color="white"> </font>\n'
            tmp+='\t\t</para>\n'
-           tmp+='\t\t<para style="P1">(Ordem do Dia)</para>\n'
-           tmp+='\t\t<para style="P2">\n'
+           tmp+='\t\t<para style="P1">(Pauta da Ordem do Dia)</para>\n'
+           tmp+='\t\t<para style="P2" spaceAfter="12">\n'
            tmp+='\t\t\t<font color="white"> </font>\n'
            tmp+='\t\t</para>\n'
 
@@ -88,7 +88,7 @@ def pauta(lst_splen, lst_pauta):
     
     for dic in lst_pauta:
         #espaco inicial
-        tmp+='\t\t<para style="P2">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="6">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
 
@@ -98,17 +98,17 @@ def pauta(lst_splen, lst_pauta):
         #pauta
         if dic['num_ordem']!=None:
             tmp+='\t\t<para style="P4"><font color="#303030">Item nº ' + str(dic['num_ordem']) + '</font></para>\n'
-            tmp+='\t\t<para style="P2">\n'
+            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
         if dic['id_materia']!=None:
             tmp+='\t\t<para style="P1"><font color="#303030"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</para>\n'
-            tmp+='\t\t<para style="P2">\n'
+            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
         if dic['txt_ementa']!=None:
             tmp+='\t\t<para style="P3">' + dic['txt_ementa'].replace('&','&amp;') + '</para>\n'
-            tmp+='\t\t<para style="P2">\n'
+            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
 
@@ -123,7 +123,7 @@ def presidente(lst_presidente):
     tmp+='\t\t<para style="P3">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
-    tmp+='\t\t<para style="P3">\n'
+    tmp+='\t\t<para style="P3" spaceAfter="40">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     tmp+='\t\t<para style="P1"><b>' + str(lst_presidente) + '</b></para>\n'

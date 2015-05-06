@@ -80,6 +80,9 @@ def materias(lst_materias):
             tmp_data+='\t\t<para style="P2"><b>Situação: </b>' + dic['des_situacao'] + '</para>'
         if dic['norma_vinculada'] != None and dic['norma_vinculada'] != " ":
             tmp_data+='\t\t<para style="P2"><b>Norma derivada: </b>'+ dic['norma_vinculada'] + '</para>\n'
+        tmp_data+='\t\t<para style="P2" spaceAfter="8">\n'
+        tmp_data+='\t\t\t<font color="white"> </font>\n'
+        tmp_data+='\t\t</para>\n'
 
     tmp_data+='\t</story>\n'
     return tmp_data
