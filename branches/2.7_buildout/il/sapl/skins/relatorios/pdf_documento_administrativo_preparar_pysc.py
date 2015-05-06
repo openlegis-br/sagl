@@ -90,6 +90,16 @@ for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_docume
         dic['des_situacao']=des_status
         dic['ultima_acao']=txt_tramitacao
 
+        dic['protocolo']= " "
+        if documento.num_protocolo !=None:
+          for protocolo in context.zsql.protocolo_obter_zsql(num_protocolo=documento.num_protocolo,ano_protocolo=documento.ano_documento):
+            if len(protocolo.cod_protocolo)[0]>0:
+              dic['protocolo']= "Protocolo Geral: " + str(protocolo.num_protocolo) + "/" + str(documento.ano_documento) + " - Data de Entrada: " + pysc.iso_to_port_pysc(protocolo.dat_protocolo)
+            else:
+              dic['protocolo']= " "
+        else:
+          dic['protocolo']= " "
+
         documentos.append(dic)
 
 filtro={} # Dicionário que conterá os dados do filtro

@@ -78,6 +78,8 @@ def documentos(lst_documentos):
         if dic['txt_assunto']!=None:
             txt_assunto = dic['txt_assunto'].replace('&','&amp;')
             tmp_data+='\t\t<para style="P2">' + txt_assunto + '</para>\n'
+        if dic['protocolo']!=" " and dic['protocolo']!=None:
+            tmp_data+='\t\t<para style="P2">' + dic['protocolo'] + '</para>\n'
         if dic['txt_interessado']!=None:
             tmp_data+='\t\t<para style="P2"><b>Interessado:</b> ' + dic['txt_interessado'] + '</para>\n'
         if dic['des_situacao']!="":
