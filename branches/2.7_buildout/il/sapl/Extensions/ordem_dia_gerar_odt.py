@@ -2,7 +2,7 @@
 import os, urllib, cStringIO
 from appy.pod.renderer import Renderer
 
-def createReport(self, inf_basicas_dic, lst_pdiscussao, lst_sdiscussao, lst_discussao_unica, lst_presidente, nom_arquivo):
+def createReport(self, inf_basicas_dic, lst_votacao, lst_presidente, nom_arquivo):
     # Criacao ODT
     url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/ordem_dia.odt"
     template_file = cStringIO.StringIO(urllib.urlopen(url).read())
