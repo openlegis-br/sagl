@@ -5,12 +5,15 @@ max_rows : 1000
 max_cache : 100
 </dtml-comment>
 SELECT DISTINCT
-    REPLACE(p.cod_parlamentar, 'L', '') as cod_parlamentar
+    p.nom_completo as nom_completo,
+    REPLACE(p.cod_parlamentar, 'L', '') as cod_parlamentar,
+    REPLACE(au.cod_autor, 'L', '') as cod_autor
 FROM 
    legislatura l,
    mandato m 
    LEFT JOIN parlamentar p on m.cod_parlamentar =p.cod_parlamentar
-   LEFT JOIN afastamento a on m.cod_mandato = a.cod_mandato
+   LEFT JOIN afastamento a on m.cod_mandato = a.cod_mandato,
+   autor au
 WHERE
     l.num_legislatura = m.num_legislatura and
     l.dat_inicio is not null and
@@ -29,7 +32,8 @@ WHERE
             )
          )
       ) and
+    au.cod_parlamentar = p.cod_parlamentar and
     p.ind_excluido = <dtml-sqlvar ind_excluido type="int"> and
     l.ind_excluido = <dtml-sqlvar ind_excluido type="int"> and
     m.ind_excluido = <dtml-sqlvar ind_excluido type="int">
-ORDER BY 1
+ORDER BY p.nom_completo

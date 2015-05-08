@@ -79,10 +79,9 @@
          return false;
       }
 
-      var cod_autor = form.lst_cod_autor[form.lst_cod_autor.selectedIndex].value;
-      if (cod_autor=='0'){
-         alert("Um autor deve ser selecionado!");
-         form.lst_cod_autor.focus();
+      if ($(".chk_cod_autor:checked").length < 1) {
+         alert("Ao menos um autor deve ser selecionado!");
+         form.lst_tip_autor.focus();
          return false; 
       }
 
@@ -137,7 +136,9 @@
               + '&dat_apresentacao=' + form.txt_dat_apresentacao.value
               + '&num_ident_basica=' + form.txt_num_ident_basica.value
               + '&ano_ident_basica=' + form.txt_ano_ident_basica.value
-              + '&num_protocolo=' + form.txt_num_protocolo.value 
+              + '&num_protocolo=' + form.txt_num_protocolo.value
+              + '&cod_regime_tramitacao_sel=' + form.lst_cod_regime_tramitacao.options[form.lst_cod_regime_tramitacao.selectedIndex].value 
+              + '&cod_quorum_sel=' + form.lst_tip_quorum.options[form.lst_tip_quorum.selectedIndex].value 
               + '&txt_ementa=' + form.txa_txt_ementa.value;
       location.href= URL;
    }
@@ -148,6 +149,28 @@
 <script type="text/javascript">
 $(function() {
         $('#txt_dat_apresentacao').datepick();
+});
+jQuery.fn.multiselect = function() {
+    $(this).each(function() {
+        var checkboxes = $(this).find("input:checkbox");
+        checkboxes.each(function() {
+            var checkbox = $(this);
+            // Highlight pre-selected checkboxes
+            if (checkbox.prop("checked"))
+                checkbox.parent().addClass("multiselect-on");
+ 
+            // Highlight checkboxes that the user selects
+            checkbox.click(function() {
+                if (checkbox.prop("checked"))
+                    checkbox.parent().addClass("multiselect-on");
+                else
+                    checkbox.parent().removeClass("multiselect-on");
+            });
+        });
+    });
+};
+$(function() {
+     $(".multiselect").multiselect();
 });
 </script>
 
@@ -190,7 +213,7 @@ $(function() {
   <input type="hidden" name="txa_txt_indexacao" value="" />
   <input type="hidden" name="txa_txt_observacao" value="" />
 
-                  <table>
+<table>
                         <tr>
                           <td width="40%"><label for="lst_tip_id_basica">Tipo </label><span class="campoObrigatorio">&nbsp;</span><br />
                             <select id="lst_tip_id_basica" name="lst_tip_id_basica" onChange="numero_materia_buscar(document.materia_form)">
@@ -246,7 +269,12 @@ $(function() {
                               </option>
                               <dtml-in expr="zsql.regime_tramitacao_obter_zsql()">
                               <option
-                              <dtml-if expr="des_regime_tramitacao == 'Ordinário'">selected</dtml-if>
+                                  <dtml-if expr="REQUEST.has_key('cod_regime_tramitacao_sel')">
+                                    <dtml-if expr="_.int(cod_regime_tramitacao) == _.int(cod_regime_tramitacao_sel)">
+                                       selected
+                                     </dtml-if>
+                                   <dtml-elif expr="des_regime_tramitacao == 'Ordinário'">selected
+                                   </dtml-if>
                                value="<dtml-var cod_regime_tramitacao>"><dtml-var des_regime_tramitacao>
                               </option>
                               </dtml-in>
@@ -256,8 +284,13 @@ $(function() {
                             <select id="lst_tip_quorum" name="lst_tip_quorum">
                               <option></option>
                              <dtml-in expr="zsql.quorum_votacao_obter_zsql()">
-                              <option 
-                                <dtml-if expr="_.int(cod_quorum) == 1">selected </dtml-if>
+                              <option
+                                  <dtml-if expr="REQUEST.has_key('cod_quorum_sel')">
+                                    <dtml-if expr="_.int(cod_quorum) == _.int(cod_quorum_sel)">
+                                       selected
+                                     </dtml-if>
+                                   <dtml-elif expr="_.int(cod_quorum) == 1">selected
+                                   </dtml-if>
                                 value="<dtml-var cod_quorum>"> <dtml-var des_quorum>
                               </option>
                              </dtml-in>
@@ -273,7 +306,8 @@ $(function() {
                           </td>
 			</tr>
       <tr> 
-        <td><label for="lst_tip_autor">Tipo de Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
+        <td valign="top">
+           <label for="lst_tip_autor">Tipo de Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
               <select name="lst_tip_autor" size="1" onChange="tipo_autor_mudou(document.materia_form)">
               <dtml-unless tip_autor>
                <option value="0"></option>
@@ -287,66 +321,54 @@ $(function() {
              </select>
              </td>
              <td colspan="2"><label for="des_tip_autor">Nome Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
-              <dtml-if expr="_.has_key('des_tipo_autor')"> 
-              <select name="lst_cod_autor" size="1" onChange="javascript:form.hdn_alterou.value=1">
-               <option value=0>Selecione</option>
+              <dtml-if expr="_.has_key('des_tipo_autor')">
+                <div class="multiselect">
 
-               <dtml-if expr="des_tipo_autor=='Parlamentar'">
-                   <dtml-in expr="zsql.autor_obter_zsql(parlamentar='1')">
-                   <dtml-call expr="REQUEST.set('cod_autor_parlamentar', cod_autor)">
-                     <dtml-if  expr="pysc.autoria_parlamentar_validar_pysc(txt_dat_apresentacao=dat_apresentacao, cod_parlamentar=cod_parlamentar)">
-                         <option value="<dtml-var cod_autor_parlamentar>">
-                           <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
-                              <dtml-var nom_completo> - <dtml-var sgl_partido null=""> 
-                           </dtml-in></option>
-                      </dtml-if>                  
-                  </dtml-in>
-     
-               <dtml-elif expr="des_tipo_autor=='Comissao'">
-                  <dtml-in expr="zsql.autor_obter_zsql(comissao='1')">
-                   <dtml-call expr="REQUEST.set('cod_autor_comissao', cod_autor)">
-                   <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
-                    <dtml-if expr="dat_extincao is None">
-                      <option value="<dtml-var cod_autor_comissao>">
-                            <dtml-var nom_comissao>
-                      </option>
-                    </dtml-if> 
-                   </dtml-in>
-                  </dtml-in>
-
-               <dtml-elif expr="des_tipo_autor=='Bancada'">
-                 <dtml-in expr="zsql.autor_obter_zsql(bancada='1')">
-                   <dtml-call expr="REQUEST.set('cod_autor_bancada', cod_autor)">
-                  <dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=num_legislatura_sel,cod_bancada=cod_bancada,ind_excluido=0)">
-                      <option value="<dtml-var cod_autor_bancada>">
-                            <dtml-var nom_bancada>
-                         </option>
-                   </dtml-in>
-                  </dtml-in>
-
-                 <dtml-else>                                    
-                  <dtml-in expr="zsql.autor_obter_zsql(des_tipo_autor=des_tipo_autor)">
-                   <dtml-call expr="REQUEST.set('cod_autor_geral', cod_autor)">
-                      <option value="<dtml-var cod_autor_geral>">
-                         <dtml-var nom_autor> 
-                       </option>
+                  <dtml-if expr="des_tipo_autor=='Parlamentar'">
+                    <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_apresentacao)">
+                        <label><input type="checkbox" id="chk_cod_autor" class="chk_cod_autor" name="chk_cod_autor:list:int" value="<dtml-var cod_autor>" /><dtml-var nom_completo></label>
                     </dtml-in>
-                   </dtml-if>
-                </select>
-                <dtml-else>
+
+                  <dtml-elif expr="des_tipo_autor=='Comissao'">
+                    <dtml-in expr="zsql.autor_obter_zsql(comissao='1')">
+                     <dtml-call expr="REQUEST.set('cod_autor_comissao', cod_autor)">
+                     <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
+                       <dtml-if expr="dat_extincao is None">
+                        <label><input type="checkbox" id="chk_cod_autor" class="chk_cod_autor" name="chk_cod_autor:list:int" value="<dtml-var cod_autor_comissao>" /><dtml-var nom_comissao></label>
+                       </dtml-if>
+                     </dtml-in>
+                    </dtml-in>
+
+                  <dtml-elif expr="des_tipo_autor=='Bancada'">
+                    <dtml-in expr="zsql.autor_obter_zsql(bancada='1')">
+                     <dtml-call expr="REQUEST.set('cod_autor_bancada', cod_autor)">
+                     <dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=num_legislatura_sel,cod_bancada=cod_bancada,ind_excluido=0)">
+                      <label><input type="checkbox" id="chk_cod_autor" class="chk_cod_autor" name="chk_cod_autor:list:int" value="<dtml-var cod_autor_bancada>" /><dtml-var nom_bancada></label>
+                     </dtml-in>
+                    </dtml-in>
+
+                  <dtml-else>                                    
+                    <dtml-in expr="zsql.autor_obter_zsql(des_tipo_autor=des_tipo_autor)">
+                     <dtml-call expr="REQUEST.set('cod_autor_geral', cod_autor)">
+                      <label><input type="checkbox" id="chk_cod_autor" class="chk_cod_autor" name="chk_cod_autor:list:int" value="<dtml-var cod_autor_geral>" /><dtml-var nom_autor></label>
+                    </dtml-in>
+                  </dtml-if>
+                </div>
+              <dtml-else>
                  <input type="text" name="txt_nom_autor" size="30" value="<dtml-var nom_autor missing>" disabled>
               </dtml-if>
              </td>
            </tr>
-                        <tr>
-                          <td colspan="3"><label for="txa_txt_ementa">Ementa </label><span class="campoObrigatorio">&nbsp;</span><br />
-                            <textarea id="txa_txt_ementa" name="txa_txt_ementa" cols="65" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_ementa missing></textarea>
-                          </td>
-                        </tr>
-                        <tr><td colspan="3"><label for="radTipTxtIntegral">Texto Integral (PDF)</label><br />
-                            <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="20" maxlength="100" />
-                         </td>
-                        </tr>
+           <tr>
+             <td colspan="3"><label for="txa_txt_ementa">Ementa </label><span class="campoObrigatorio">&nbsp;</span><br />
+                 <textarea id="txa_txt_ementa" name="txa_txt_ementa" cols="65" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_ementa missing></textarea>
+             </td>
+           </tr>
+           <tr>
+             <td colspan="3"><label for="radTipTxtIntegral">Texto Integral (PDF)</label><br />
+                 <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="20" maxlength="100" />
+             </td>
+           </tr>
 </table>
 </fieldset>
 
