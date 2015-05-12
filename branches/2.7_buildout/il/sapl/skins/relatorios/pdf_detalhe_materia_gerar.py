@@ -177,8 +177,6 @@ def autoria(lst_autoria):
         if dic_autor['nom_autor'] != " " and dic_autor['nom_autor'] != None:
             tmp+='\t\t<para style="P2"><b>Nome:</b> ' + dic_autor['nom_autor'] + '</para>\n'
 
-        if dic_autor['nom_autor'] != " " and dic_autor['tipo'] != None:
-            tmp+='\t\t<para style="P2"><b>Tipo:</b> ' + dic_autor['tipo'] + '</para>\n'
     return tmp
 
 def despachos_iniciais(lst_des_iniciais):

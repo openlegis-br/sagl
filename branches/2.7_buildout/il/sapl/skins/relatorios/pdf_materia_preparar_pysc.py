@@ -70,7 +70,7 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=REQUEST['lst_ti
         dic['titulo']=materia.des_tipo_materia.upper()+" N° "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
         dic['txt_ementa']=materia.txt_ementa 
         dic['nom_autor'] = " " 
-        for autoria in context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia, ind_primeiro_autor=1):
+        for autoria in context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia):
             for autor in context.zsql.autor_obter_zsql(cod_autor=autoria.cod_autor):
                 if autor.des_tipo_autor=='Parlamentar':
                     for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar):

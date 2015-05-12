@@ -45,7 +45,7 @@ if context.REQUEST['data']!='':
                dic_expediente_materia["des_numeracao"] = str(numeracao.num_materia)+"/"+str(numeracao.ano_materia)
 
             dic_expediente_materia["nom_autor"] = ''
-            autoria = context.zsql.autoria_obter_zsql(cod_materia=expediente_materia.cod_materia, ind_primeiro_autor=1)        
+            autoria = context.zsql.autoria_obter_zsql(cod_materia=expediente_materia.cod_materia)        
             if len(autoria) > 0: # se existe autor
                 autoria = autoria[0]
                 autor = context.zsql.autor_obter_zsql(cod_autor=autoria.cod_autor)
@@ -100,7 +100,7 @@ if context.REQUEST['data']!='':
                dic_votacao["des_numeracao"] = str(numeracao.num_materia)+"/"+str(numeracao.ano_materia)
 
             dic_votacao["nom_autor"] = ''
-            autoria = context.zsql.autoria_obter_zsql(cod_materia=votacao.cod_materia, ind_primeiro_autor=1)        
+            autoria = context.zsql.autoria_obter_zsql(cod_materia=votacao.cod_materia)        
             if len(autoria) > 0: # se existe autor
                 autoria = autoria[0]
                 autor = context.zsql.autor_obter_zsql(cod_autor=autoria.cod_autor)

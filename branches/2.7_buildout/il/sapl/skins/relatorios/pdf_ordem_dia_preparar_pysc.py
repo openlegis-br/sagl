@@ -52,7 +52,7 @@ if context.REQUEST['cod_sessao_plen']!='':
                  dic["des_situacao"] = " "
 
         dic["nom_autor"] = ''
-        autoria = context.zsql.autoria_obter_zsql(cod_materia=ordem.cod_materia, ind_primeiro_autor=1)        
+        autoria = context.zsql.autoria_obter_zsql(cod_materia=ordem.cod_materia)        
         if len(autoria): # se existe autor
             autoria = autoria[0]
         try:
