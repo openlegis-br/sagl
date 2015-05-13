@@ -75,7 +75,11 @@
                 <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
                   <dtml-if tip_id_basica_sel>
                     <dtml-if expr="_.int(tip_materia) == _.int(tip_id_basica_sel)">
+                     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+		      <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                     <dtml-else>
 		      <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                     </dtml-if>
                         <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica_sel missing>/<dtml-var ano_ident_basica_sel missing></a>
                     </dtml-if>
                   </dtml-if> 
@@ -92,24 +96,8 @@
             </td>
             <td class="texto">
                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
-                  <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
-                    <dtml-if expr="des_tipo_autor=='Parlamentar'">
-                      <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
-                       <dtml-var nom_completo><br />
-                      </dtml-in>
-                    <dtml-elif expr="des_tipo_autor=='Comissao'">
-                      <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
-                        <dtml-var nom_comissao><br />
-                      </dtml-in>
-                    <dtml-elif expr="des_tipo_autor=='Bancada'">
-                      <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
-                        <dtml-var nom_bancada><br />
-                      </dtml-in>
-                    <dtml-else>
-                         <dtml-var nom_autor>
-                    </dtml-if>
-                  </dtml-in>
-                </dtml-in>
+                   <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                 </dtml-in>
             </td>
           </tr>
 	</dtml-if>
@@ -152,6 +140,7 @@
                   <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                 </dtml-if> 
               </td>
+           </tr>
            <dtml-if cod_situacao>
             <tr> 
               <th width="20%" class="texto"><b>Situação:</b></th>
