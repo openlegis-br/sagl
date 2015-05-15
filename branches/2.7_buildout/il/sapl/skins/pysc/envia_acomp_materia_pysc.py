@@ -27,30 +27,24 @@ email_casa = casa['end_email_casa']
 casa_legislativa = casa['nom_casa']
 
 for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
- ementa = materia.txt_ementa.encode('utf-8')
- projeto = materia.sgl_tipo_materia.encode('utf-8')+" "+materia.des_tipo_materia.encode('utf-8')+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+ ementa = materia.txt_ementa
+ projeto = materia.sgl_tipo_materia+" "+materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
 
- for autoria in context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia,ind_primeiro_autor=1):
-  dic_autor = {}
-  for autor in context.zsql.autor_obter_zsql(cod_autor = autoria.cod_autor):
-   nom_autor = " "
-   if autor.des_tipo_autor=='Parlamentar':
-    for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar):
-     nom_autor = parlamentar.nom_completo
-   elif autor.des_tipo_autor=='Comissao':
-    for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
-     nom_autor = comissao.nom_comissao
-   elif autor.des_tipo_autor=='Bancada':
-    for bancada in context.zsql.bancada_obter_zsql(cod_bancada=autor.cod_bancada):
-     nom_autor = bancada.nom_bancada
-   else:
-    nom_autor=autor.nom_autor
+ nom_autor = ""
+ autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
+ fields = autores.data_dictionary().keys()
+ lista_autor = []
+ for autor in autores:
+   for field in fields:
+     nome_autor = autor['nom_autor_join']
+   lista_autor.append(nome_autor)
+ nom_autor = ', '.join(['%s' % (value) for (value) in lista_autor])
 
  for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1):
    data = tramitacao.dat_tramitacao
-   status = tramitacao.des_status.encode('utf-8')
+   status = tramitacao.des_status
    if tramitacao.txt_tramitacao != None:
-     texto_acao = tramitacao.txt_tramitacao.encode('utf-8')
+     texto_acao = tramitacao.txt_tramitacao
    else:
      texto_acao = " "
 
@@ -61,7 +55,7 @@ linkMat = "" + context.consultas.absolute_url()+"/materia/materia_mostrar_proc?c
 destinatarios=[]
 for destinatario in context.zsql.acomp_materia_obter_inscritos_zsql(cod_materia=cod_materia):
   dic={}
-  dic['end_email']=destinatario.end_email.encode('utf-8')
+  dic['end_email']=destinatario.end_email
   dic['txt_hash']=destinatario.txt_hash
   destinatarios.append(dic)
 
