@@ -5,15 +5,15 @@ response=request.RESPONSE
 session= request.SESSION
 if context.REQUEST['cod_sessao_plen']!='':
     cod_sessao_plen = context.REQUEST['cod_sessao_plen']
-    splen = [] # lista contendo as sessões plenárias na data indicada
-    pauta = [] # lista contendo a pauta da ordem do dia a ser impressa 
+    splen = []
+    pauta = []
     data = ""
     for dat_sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
-     data = context.pysc.data_converter_pysc(dat_sessao.dat_inicio_sessao) # converte data para formato yyyy/mm/dd
-     dat_ordem = context.pysc.data_converter_pysc(dat_sessao.dat_inicio_sessao) # converte data para formato yyyy/mm/dd
+     data = context.pysc.data_converter_pysc(dat_sessao.dat_inicio_sessao)
+     dat_ordem = context.pysc.data_converter_pysc(dat_sessao.dat_inicio_sessao)
     # seleciona dados da sessão plenária
     for sp in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
-        dicsp = {} # dicionário que armazenará os dados a serem impressos de uma sessão plenária
+        dicsp = {}
         ts = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sp.tip_sessao)[0]
         dicsp["sessao"] = str(sp.num_sessao_plen)+"ª SESSÃO "+ts.nom_sessao.upper()+" DA "+str(sp.num_legislatura)+"ª LEGISLATURA"
         dia = context.pysc.data_converter_por_extenso_pysc(data=sp.dat_inicio_sessao)
@@ -24,12 +24,11 @@ if context.REQUEST['cod_sessao_plen']!='':
     for ordem in context.zsql.ordem_dia_obter_zsql(dat_ordem=data, cod_sessao_plen=cod_sessao_plen, ind_excluido=0):
         # seleciona os detalhes de uma matéria 
         materia = context.zsql.materia_obter_zsql(cod_materia=ordem.cod_materia)[0]
-        dic = {} # dicionário que armazenará os dados a serem impressos de uma matéria 
+        dic = {} 
         dic["num_ordem"] = ordem.num_ordem
         dic["cod_materia"] = ordem.cod_materia
         dic["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+ordem.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
         dic["id_materia"] = materia.des_tipo_materia.upper()+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica) 
-        # dic["id_materia"] = materia.sgl_tipo_materia+" - "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)+" - "+materia.des_tipo_materia
         dic["txt_ementa"] = ordem.txt_observacao
         # numeracao do processo 26/02/2011
         dic["des_numeracao"]=""
@@ -51,30 +50,16 @@ if context.REQUEST['cod_sessao_plen']!='':
             if dic["des_situacao"]==None:
                  dic["des_situacao"] = " "
 
-        dic["nom_autor"] = ''
-        autoria = context.zsql.autoria_obter_zsql(cod_materia=ordem.cod_materia)        
-        if len(autoria): # se existe autor
-            autoria = autoria[0]
-        try:
-          autor = context.zsql.autor_obter_zsql(cod_autor=autoria.cod_autor)
-          if len(autor):
-             autor = autor[0]
+        dic["nom_autor"] = ""
+        autores = context.zsql.autoria_obter_zsql(cod_materia=ordem.cod_materia)
+        fields = autores.data_dictionary().keys()
+        lista_autor = []
+        for autor in autores:
+	  for field in fields:
+                  nome_autor = autor['nom_autor_join']
+  	  lista_autor.append(nome_autor)
+        dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
 
-          if autor.des_tipo_autor == "Parlamentar":
-             parlamentar = context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar)[0]		
-             dic["nom_autor"] = parlamentar.nom_completo.upper()
-
-          elif autor.des_tipo_autor == "Comissao":
-               comissao = context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao)[0]
-               dic["nom_autor"] = comissao.nom_comissao.upper()
-
-          elif autor.des_tipo_autor == "Bancada":
-               bancada = context.zsql.bancada_obter_zsql(cod_bancada=autor.cod_bancada)[0]
-               dic["nom_autor"] = bancada.nom_bancada.upper()
-          else:
-               dic["nom_autor"] = autor.nom_autor.upper()
-        except:
-          pass
         lst_relator = [] # lista contendo os relatores da matéria
         for relatoria in context.zsql.relatoria_obter_zsql(cod_materia=ordem.cod_materia):
             parlamentar = context.zsql.parlamentar_obter_zsql(cod_parlamentar=relatoria.cod_parlamentar)[0]

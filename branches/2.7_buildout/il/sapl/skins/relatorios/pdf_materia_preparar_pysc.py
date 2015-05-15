@@ -69,21 +69,17 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=REQUEST['lst_ti
 
         dic['titulo']=materia.des_tipo_materia.upper()+" N° "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
         dic['txt_ementa']=materia.txt_ementa 
-        dic['nom_autor'] = " " 
-        for autoria in context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia):
-            for autor in context.zsql.autor_obter_zsql(cod_autor=autoria.cod_autor):
-                if autor.des_tipo_autor=='Parlamentar':
-                    for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar):
-                        dic['nom_autor']=parlamentar.nom_completo
-                elif autor.des_tipo_autor=='Comissao':
-                    for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
-                        dic['nom_autor']=comissao.nom_comissao
-                elif autor.des_tipo_autor=='Bancada':
-                    for bancada in context.zsql.bancada_obter_zsql(cod_bancada=autor.cod_bancada):
-                        dic['nom_autor']=bancada.nom_bancada
-                else:
-                    dic['nom_autor']=autor.nom_autor
-            
+
+        dic["nom_autor"] = ""
+        autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
+        fields = autores.data_dictionary().keys()
+        lista_autor = []
+        for autor in autores:
+	  for field in fields:
+                  nome_autor = autor['nom_autor_join']
+	  lista_autor.append(nome_autor)
+        dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+           
         des_status = " "
         txt_tramitacao= " "
 

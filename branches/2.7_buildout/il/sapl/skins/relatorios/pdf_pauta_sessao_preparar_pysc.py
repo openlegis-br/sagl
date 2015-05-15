@@ -44,25 +44,15 @@ if context.REQUEST['data']!='':
                numeracao = numeracao[0]
                dic_expediente_materia["des_numeracao"] = str(numeracao.num_materia)+"/"+str(numeracao.ano_materia)
 
-            dic_expediente_materia["nom_autor"] = ''
-            autoria = context.zsql.autoria_obter_zsql(cod_materia=expediente_materia.cod_materia)        
-            if len(autoria) > 0: # se existe autor
-                autoria = autoria[0]
-                autor = context.zsql.autor_obter_zsql(cod_autor=autoria.cod_autor)
-                if len(autor) > 0:
-                    autor = autor[0]
-            
-                if autor.des_tipo_autor == "Parlamentar":
-                    parlamentar = context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar)[0]     
-                    dic_expediente_materia["nom_autor"] = parlamentar.nom_parlamentar
-                elif autor.des_tipo_autor == "Comissao":
-                    comissao = context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao)[0]
-                    dic_expediente_materia["nom_autor"] = comissao.nom_comissao
-                elif autor.des_tipo_autor == "Bancada":
-                    bancada = context.zsql.bancada_obter_zsql(cod_bancada=autor.cod_bancada)[0]
-                    dic_expediente_materia["nom_autor"] = bancada.nom_bancada
-                else:
-                    dic_expediente_materia["nom_autor"] = autor.nom_autor
+            dic_expediente_materia["nom_autor"] = ""
+            autores = context.zsql.autoria_obter_zsql(cod_materia=expediente_materia.cod_materia)
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+	      for field in fields:
+                      nome_autor = autor['nom_autor_join']
+	      lista_autor.append(nome_autor)
+            dic_expediente_materia["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
             
             dic_expediente_materia["des_turno"]=""
             dic_expediente_materia["des_situacao"] = ""
@@ -99,25 +89,15 @@ if context.REQUEST['data']!='':
                numeracao = numeracao[0]
                dic_votacao["des_numeracao"] = str(numeracao.num_materia)+"/"+str(numeracao.ano_materia)
 
-            dic_votacao["nom_autor"] = ''
-            autoria = context.zsql.autoria_obter_zsql(cod_materia=votacao.cod_materia)        
-            if len(autoria) > 0: # se existe autor
-                autoria = autoria[0]
-                autor = context.zsql.autor_obter_zsql(cod_autor=autoria.cod_autor)
-                if len(autor) > 0:
-                    autor = autor[0]
-            
-                if autor.des_tipo_autor == "Parlamentar":
-                    parlamentar = context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar)[0]     
-                    dic_votacao["nom_autor"] = parlamentar.nom_parlamentar
-                elif autor.des_tipo_autor == "Comissao":
-                    comissao = context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao)[0]
-                    dic_votacao["nom_autor"] = comissao.nom_comissao
-                elif autor.des_tipo_autor == "Bancada":
-                    bancada = context.zsql.bancada_obter_zsql(cod_bancada=autor.cod_bancada)[0]
-                    dic_votacao["nom_autor"] = bancada.nom_bancada
-                else:
-                    dic_votacao["nom_autor"] = autor.nom_autor
+            dic_votacao["nom_autor"] = ""
+            autores = context.zsql.autoria_obter_zsql(cod_materia=votacao.cod_materia)
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+	      for field in fields:
+                      nome_autor = autor['nom_autor_join']
+	      lista_autor.append(nome_autor)
+            dic_votacao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
 
             dic_votacao["des_turno"]=""
             dic_votacao["des_situacao"] = ""

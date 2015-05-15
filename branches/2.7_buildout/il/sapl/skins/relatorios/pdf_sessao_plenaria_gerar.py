@@ -145,8 +145,7 @@ def presenca(lst_presenca_sessao):
     tmp+='\t\t<para style="P2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
-    for presenca in lst_presenca_sessao:
-        tmp+='\t\t<para style="P2" spaceAfter="5">'+ str(presenca['nom_completo']) + '/' + str(presenca['sgl_partido']) +'</para>\n'
+    tmp+='\t\t<para style="P2" spaceAfter="5">'+ lst_presenca_sessao +'</para>\n'
     return tmp
 
 def materia_apresentada(lst_materia_apresentada):
@@ -199,9 +198,9 @@ def expedientes(lst_expedientes):
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     for expediente in lst_expedientes:
-        tmp+='\t\t<para style="P2"><b>' + expediente['nom_expediente'] +': </b> <br />\n' + str(expediente['txt_expediente']) +'</para>\n'
-        tmp+='\t\t<para style="P2">\n'
-        tmp+='\t\t\t<font color="white"> </font>\n'
+        tmp+='\t\t<para style="P3"><b>' + expediente['nom_expediente'] +': </b> <br />\n' + str(expediente['txt_expediente']) +'</para>\n'
+        tmp+='\t\t<para style="P3">\n'
+        tmp+='\t\t\t<font color="white">\n</font>\n'
         tmp+='\t\t</para>\n'
     return tmp
 
@@ -215,8 +214,7 @@ def presenca_ordem_dia(lst_presenca_ordem_dia):
     tmp+='\t\t<para style="P2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
-    for presenca_ordem_dia in lst_presenca_ordem_dia:
-        tmp+='\t\t<para style="P2" spaceAfter="5">'+ str(presenca_ordem_dia['nom_completo']) + '/' + str(presenca_ordem_dia['sgl_partido']) +'</para>\n'
+    tmp+='\t\t<para style="P2" spaceAfter="5">'+ lst_presenca_ordem_dia +'</para>\n'
     return tmp
 
 def votacao(lst_votacao):
@@ -242,8 +240,7 @@ def presenca_expediente(lst_presenca_expediente):
     tmp+='\t\t<para style="P2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
-    for presenca_expediente in lst_presenca_expediente:
-        tmp+='\t\t<para style="P2" spaceAfter="5">'+ str(presenca_expediente['nom_completo']) + '/' + str(presenca_expediente['sgl_partido']) +'</para>\n'
+    tmp+='\t\t<para style="P2" spaceAfter="5">'+ lst_presenca_expediente +'</para>\n'
     return tmp
 
 def oradores(lst_oradores):
@@ -269,8 +266,7 @@ def presenca_encerramento(lst_presenca_encerramento):
     tmp+='\t\t<para style="P2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
-    for presenca_encerramento in lst_presenca_encerramento:
-        tmp+='\t\t<para style="P2" spaceAfter="5">'+ str(presenca_encerramento['nom_completo']) + '/' + str(presenca_encerramento['sgl_partido']) +'</para>\n'
+    tmp+='\t\t<para style="P2" spaceAfter="5">'+ lst_presenca_encerramento +'</para>\n'
     tmp+='\t\t<para style="P2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
