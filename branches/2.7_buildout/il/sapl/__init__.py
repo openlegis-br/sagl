@@ -53,6 +53,7 @@ def initialize(context):
     allow_module('simplejson')
     allow_module('tempfile.NamedTemporaryFile')
     allow_module('collections')
+    allow_module('base64')
     allow_module('socket')
     allow_module('fcntl')
     allow_module('struct')
