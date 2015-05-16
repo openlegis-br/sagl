@@ -406,6 +406,16 @@ ALTER TABLE norma_juridica DROP INDEX txt_indexacao;
 
 ALTER TABLE `norma_juridica` ADD FULLTEXT KEY `idx_busca` (`txt_ementa`,`txt_observacao`,`txt_indexacao`);
 
+alter table documento_administrativo drop index documento_administrativo_ind1;
+
+alter table documento_administrativo drop index txt_assunto;
+
+alter table documento_administrativo drop index txt_autoria;
+
+ALTER TABLE `documento_administrativo`   ADD KEY `idx_num_ano` (`num_documento`,`ano_documento`),   ADD KEY `idx_dat_documento` (`dat_documento`),   ADD KEY `idx_cod_autor` (`cod_autor`),   ADD KEY `idx_tip_documento` (`tip_documento`),   ADD FULLTEXT KEY `idx_busca_documento` (`txt_assunto`,`txt_observacao`);
+
+ALTER TABLE `documento_administrativo`   ADD FULLTEXT KEY `idx_txt_interessado` (`txt_interessado`);
+
 ALTER TABLE `materia_legislativa` DROP `txt_resultado`;"
 
 ALTER TABLE `protocolo` DROP `cod_documento`;
