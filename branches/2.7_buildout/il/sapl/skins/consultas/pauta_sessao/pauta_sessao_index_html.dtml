@@ -2,9 +2,13 @@
 <script type="text/javascript">
 <!--
     function atualiza_ano_sessao(ano_sessao){
-            location.href = "&dtml-portal_url;/consultas/pauta_sessao/index_html?ano_sessao_sel="+ano_sessao;
-            }
-            //-->
+             location.href = "&dtml-portal_url;/consultas/pauta_sessao/index_html?ano_sessao_sel="+ano_sessao;
+             }
+
+    function atualiza_tip_sessao(ano_sessao, tip_sessao){    
+             location.href = "&dtml-portal_url;/consultas/pauta_sessao/index_html?ano_sessao_sel="+ano_sessao+"&tip_sessao_sel="+tip_sessao;
+             }
+
 </script>
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/pauta_sessao">Ajuda</a>
@@ -13,9 +17,9 @@
 
 <form name="pauta_form" method="post" action="pauta_mostrar">
 
-<fieldset>
-  <div>
-     <label for="lst_ano_sessao">Selecione o Ano:</label>
+<div class="section group">
+  <div class="col span_1_of_3">
+     <label for="lst_ano_sessao">Ano:</label>
                 <select id="lst_ano_sessao" name="lst_ano_sessao" size="1" onChange="atualiza_ano_sessao(document.pauta_form.lst_ano_sessao[document.pauta_form.lst_ano_sessao.selectedIndex].value)">
                     <dtml-in expr="zsql.sessao_plenaria_listar_ano_zsql()">
                         <option value="<dtml-var ano_sessao missing>" 
@@ -30,9 +34,28 @@
                     </dtml-in>
                 </select>
    </div>
-</fieldset>
 
-<dtml-if ano_sessao_sel>
+   <div class="col span_2_of_3">
+    <label for="lst_tip_sessao">Tipo:</label>
+                <select id="lst_tip_sessao" name="lst_tip_sessao" size="1" onChange="atualiza_tip_sessao(document.pauta_form.lst_ano_sessao[document.pauta_form.lst_ano_sessao.selectedIndex].value,document.pauta_form.lst_tip_sessao[document.pauta_form.lst_tip_sessao.selectedIndex].value)">
+                  <option value="-1"></option>
+                    <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql()">
+                        <option value="<dtml-var tip_sessao missing>"
+                          <dtml-if expr="(_.has_key('tip_sessao_sel') and tip_sessao == _.int(tip_sessao_sel))">
+                            selected
+                          <dtml-call expr="REQUEST.set('tip_sessao_sel', tip_sessao)">
+                         </dtml-if>>
+                           <dtml-var nom_sessao missing>
+                        </option>
+                    </dtml-in>
+                </select>
+   </div>
+</div>
+
+  <dtml-if expr="not _.has_key('tip_sessao_sel')">
+        <dtml-call "REQUEST.set('tip_sessao_sel', '-1')">
+  </dtml-if>
+
 <fieldset>
 <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
 <dtml-call "REQUEST.set('existe_seq_posterior', 0)">
@@ -47,7 +70,7 @@
   <dtml-call "REQUEST.set('step', 12)">
 </dtml-if>
 <dtml-call "REQUEST.set('start',(page-1) * step + 1)">
-  <dtml-in expr="zsql.sessao_plenaria_obter_zsql(ano_sessao=ano_sessao_sel, ind_excluido=0)" size="step" start="start" orphan=0>
+  <dtml-in expr="zsql.sessao_plenaria_obter_zsql(ano_sessao=ano_sessao_sel, tip_sessao=tip_sessao_sel, ind_excluido=0)" size="step" start="start" orphan=0>
     <dtml-if sequence-start>
     <table>
      <thead>
@@ -82,10 +105,11 @@
             <dtml-var num_sessao_plen>ª
           </td>
           <td class="texto">
-            SESSÃO <dtml-var nom_sessao upper>
+            <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao>
           </td>
           </td>
-              <td class="texto" width="10%">
+          <td class="texto" width="10%">
+           <div align="center">
                 <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
                     <dtml-let pauta="_.getattr(sapl_documentos.pauta_sessao,id_pauta).absolute_url">
@@ -99,7 +123,8 @@ target="_blank">Gerar PDF</a>
                     </dtml-if>
                   </dtml-if>
                 </dtml-let>
-              </td>
+           </div>
+          </td>
          </dtml-in>
         </tr>
  <dtml-if sequence-end>
@@ -110,15 +135,14 @@ target="_blank">Gerar PDF</a>
  </dtml-if next-sequence>
  <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
   <p align="center" class="form-text"><b> 
-   <dtml-var "pysc.PageListOutput_pysc('pauta_sessao_index_html', page, step, _['sequence-length'], ano_sessao_sel=ano_sessao_sel,ind_excluido=ind_excluido)">
+   <dtml-var "pysc.PageListOutput_pysc('pauta_sessao_index_html', page, step, _['sequence-length'], ano_sessao_sel=ano_sessao_sel, tip_sessao_sel=tip_sessao_sel, ind_excluido=ind_excluido)">
   </p>
   </dtml-if>
   </dtml-if sequence-end>
-</dtml-in>
 <dtml-else>
-       <span class="texto">Não há nenhuma sessão plenária cadastrada.</span>
+       <span class="texto">Nenhuma sessão plenária cadastrada.</span>
+</dtml-in>
 </fieldset>
-</dtml-if ano_sessao_sel>
 </form>
 <dtml-var standard_html_footer>
 
