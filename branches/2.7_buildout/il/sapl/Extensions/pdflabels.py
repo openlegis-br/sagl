@@ -84,7 +84,7 @@ LABELS = ({'cia':'test',
 	   'units': cm,
 	   },
 	  {'cia':'Pimaco',
-	   'models': ['6083'],
+	   'models': ['6183'],
 	   'paper': pagesizes.letter,
 	   'topMargin': 1.27,
 	   'bottomMargin': 1.27,
@@ -100,7 +100,7 @@ LABELS = ({'cia':'test',
 	  )
 
 class LabelGenerator:
-    smallestFont = 3
+    smallestFont = 5
     def __init__(self, spec):
         self.cia = spec['cia']
         self.models = spec['models']
@@ -121,8 +121,8 @@ class LabelGenerator:
         self.horizSpacing = spec.get('horizontalSpacing', 0) * self.un
         
         self.font = "Helvetica"
-        self.size = 8
-	self.leadingFactor = 1.1
+        self.size = 10
+	self.leadingFactor = 1.2
         
         try:
             self.vertPadding = spec['verticalPadding'] * self.un
@@ -177,7 +177,7 @@ class LabelGenerator:
             except Error2:
                 fontSize = fontSize - 1
         #falha :-(
-        raise Error, "O texto não coube na etiqueta. Reduza o texto ou use uma etiqueta maior \n" + `text` + " " + `self.smallestFont` + " " + `fontSize`
+        raise Exception(Error, "O texto não coube na etiqueta. Reduza o texto ou use uma etiqueta maior \n" + `text` + " " + `self.smallestFont` + " " + `fontSize`)
 
     def fitHorizontal(self, t, fontSize, debugFile=None):
         modifiedText = []
@@ -206,21 +206,21 @@ class LabelGenerator:
                 return ([string.join(words[:pos], ' ')] +
                         self.adaptHorizontal(string.join(words[pos:], ' '),
 					     fontSize, debugFile))
-        raise Error, "O texto não coube na etiqueta. Reduza o texto ou use uma etiqueta maior" 
+        raise Exception(Error, "O texto não coube nas etiquetas. Reduza o texto ou use uma etiqueta maior")
 
     def fitVertical(self, text, fontSize):
 	numLines = len(text)
         textHeight = (self.leadingFactor * fontSize  * numLines - 
 		      (self.leadingFactor - 1) * fontSize)
         if textHeight > self.maxTextHeight: 
-            raise Error2, "Etiqueta muita alta"
+            raise Exception(Error2, "Dados excedem a altura das etiquetas")
         return textHeight
             
     def getPageSize(self):
         try:
             return self.paper
         except KeyError:
-            raise Error, "Tamanho de página não reconhecido"
+            raise Exception(Error, "Tamanho de página não reconhecido")
         
     def getPageX(self):
         return self.paper[0] 
@@ -343,10 +343,10 @@ def factory(cia, model):
 	if string.lower(spec['cia']) == string.lower(cia):
             if model in spec['models']:
                 return LabelGenerator(spec)
-    raise Error, "Modelo de etiqueta não encontrado"
+    raise Exception(Error, "Modelo de etiqueta não encontrado")
 
 def gera_etiqueta(self, dados):
-    labels = factory("Pimaco", "6180")
+    labels = factory("Pimaco", "6183")
     filename=str(int(time.time()*100))+".pdf"
     labels.setGrid()
     labels.generate(dados, filename)
