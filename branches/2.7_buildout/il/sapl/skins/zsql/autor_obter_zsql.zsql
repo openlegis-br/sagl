@@ -17,14 +17,15 @@ SELECT DISTINCT
      tipo_autor.des_tipo_autor,
      autor.col_username,
      if(tipo_autor.des_tipo_autor='Parlamentar',parlamentar.nom_completo, 
-     if(tipo_autor.des_tipo_autor='Bancada',CONCAT(bancada.nom_bancada," (", DATE_FORMAT(bancada.dat_criacao, "%Y"),"-",DATE_FORMAT(bancada.dat_extincao, "%Y"),")"),
+     if(tipo_autor.des_tipo_autor='Bancada',CONCAT(bancada.nom_bancada," (", DATE_FORMAT(legislatura.dat_inicio, "%Y"),"-",DATE_FORMAT(legislatura.dat_fim, "%Y"),")"),
      if(tipo_autor.des_tipo_autor='Comissao', comissao.nom_comissao, autor.nom_autor))) as nom_autor_join
 
 FROM 
   tipo_autor, 
-  autor left join parlamentar on autor.cod_parlamentar=parlamentar.cod_parlamentar and parlamentar.ind_excluido=0,  
-  autor a left join comissao on a.cod_comissao=comissao.cod_comissao and comissao.ind_excluido=0, 
-  autor aut left join bancada on aut.cod_bancada=bancada.cod_bancada and bancada.ind_excluido=0
+  autor LEFT JOIN parlamentar on autor.cod_parlamentar=parlamentar.cod_parlamentar and parlamentar.ind_excluido=0  
+        LEFT JOIN comissao on autor.cod_comissao=comissao.cod_comissao and comissao.ind_excluido=0 
+        LEFT JOIN bancada on autor.cod_bancada=bancada.cod_bancada and bancada.ind_excluido=0 
+        LEFT JOIN legislatura on bancada.num_legislatura = legislatura.num_legislatura
 
 <dtml-sqlgroup where>  ((parlamentar.cod_parlamentar is not null and tipo_autor.des_tipo_autor='Parlamentar') or
                         (bancada.cod_bancada         is not null and (tipo_autor.des_tipo_autor='Bancada')) or  
@@ -40,7 +41,6 @@ FROM
   <dtml-sqltest des_tipo_autor  column="tipo_autor.des_tipo_autor" op="=" type="nb"   optional><dtml-and>
   <dtml-sqltest ind_excluido    column="autor.ind_excluido"        op="=" type="int"  optional><dtml-and>
   autor.tip_autor = tipo_autor.tip_autor <dtml-and>
-  autor.cod_autor = a.cod_autor          <dtml-and>
   <dtml-if expr="parlamentar!=''">
      autor.cod_parlamentar is not null 
      <dtml-if expr="ind_autor_materia=='1'"> 
@@ -65,5 +65,5 @@ FROM
      autor.nom_autor LIKE '%<dtml-var nom_autor_match>%')))
   </dtml-if>
 </dtml-sqlgroup>
-group by cod_autor
+
 order by nom_autor_join

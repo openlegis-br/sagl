@@ -8,8 +8,7 @@ max_cache : 100
 SELECT
        REPLACE(bancada.cod_bancada, 'L', '') as cod_bancada,
        bancada.nom_bancada as nome_bancada,
-       CONCAT (bancada.nom_bancada, ' (', DATE_FORMAT(bancada.dat_criacao, '%Y'),"-",DATE_FORMAT(bancada.dat_extincao, '%Y'),")") as nom_bancada,
-       bancada.descricao,
+       CONCAT (bancada.nom_bancada, ' (', DATE_FORMAT(legislatura.dat_inicio, '%Y'),"-",DATE_FORMAT(legislatura.dat_fim, '%Y'),")") as nom_bancada,
        bancada.num_legislatura as num_legislatura_sel,  
        bancada.cod_partido as cod_partido_sel,
        DATE_FORMAT(bancada.dat_criacao, '%d/%m/%Y') as dat_criacao,
@@ -17,6 +16,7 @@ SELECT
 
 FROM   
        bancada
+       LEFT JOIN legislatura on bancada.num_legislatura = legislatura.num_legislatura
  
 <dtml-sqlgroup where>
   <dtml-sqltest cod_bancada      column="bancada.cod_bancada"     op="="  type="int" optional> <dtml-and>
