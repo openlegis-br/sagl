@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html class="no-js" lang="pt-br">
 <dtml-if expr="_.has_key('QUERY_STRING') and QUERY_STRING=='retry=1' and portal_membership.isAnonymousUser()">
   <dtml-call expr="REQUEST['RESPONSE'].expireCookie('__ac', path='/')">
   <dtml-call expr="REQUEST['RESPONSE'].redirect(portal_url() +'/index_html?retry=0')">
@@ -15,11 +15,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.6, minimum-scale=0.4">
   <link rel="shortcut icon" type="image/x-icon" href="&dtml-portal_url;/imagens/favicon.ico">
   <dtml-var standard_css_slot>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/modernizr.js"></script>
   <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.loader.min.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.plugin.min.js"></script>
   <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.datepick.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.datepick-pt-BR.js"></script>
   <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.fancybox.pack.js"></script>
   <script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
-  <script type="text/javascript" src="&dtml-portal_url;/javascript/poshytips.js"></script>
   <script type="text/javascript" src="&dtml-portal_url;/javascript/data_validar_jvsc"></script>
   <link href="&dtml-portal_url;/generico/dhtmlxcombo.css" media="all" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="&dtml-portal_url;/javascript/dhtmlxcommon.js"></script>
@@ -66,52 +70,10 @@ $(function() {
 });
 </script>
 
-<script type="text/javascript">
-//<![CDATA[
-$(function(){
-  $('#txt_assunto').poshytip({
-	className: 'tip-twitter',
-	showOn: 'focus',
-	alignTo: 'target',
-	alignX: 'right',
-	alignY: 'center',
-	offsetX: 5,
-	showTimeout: 100
-  });
-  $('#lst_tip_materia').poshytip({
-	className: 'tip-twitter',
-	showOn: 'focus',
-	alignTo: 'target',
-	alignX: 'right',
-	alignY: 'center',
-	offsetX: 5,
-	showTimeout: 100
-  });
-});
-//]]>
-</script>
-
-<dtml-comment>
-<!-- Piwik -->
-<script type="text/javascript">
-  var _paq = _paq || [];
-  _paq.push(["trackPageView"]);
-  _paq.push(["enableLinkTracking"]);
-
-  (function() {
-    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://186.195.159.20/analytics/";
-    _paq.push(["setTrackerUrl", u+"piwik.php"]);
-    _paq.push(["setSiteId", "3"]);
-    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
-    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Piwik Code -->
-</dtml-comment>
 <script>
 var lista_autores;
 function doOnLoad() {
-	lista_autores = new dhtmlXCombo("combo_zone", "hdn_cod_autor", 233);
+	lista_autores = new dhtmlXCombo("combo_zone", "hdn_cod_autor", 238);
 	lista_autores.load("&dtml-portal_url;/pysc/autores_pesquisar_pysc");
 	lista_autores.enableFilteringMode(true);
 }
@@ -122,6 +84,9 @@ function enableComplete(mode) {
 </script>
 </head>
 <body class="fadeIn" onload="doOnLoad();">
+
+<div id="preloader"></div>
+
 <div id="visual-portal-wrapper-container">
   <dtml-if expr="_.has_key('impressao')">
     <dtml-var printable_html_top_bar>
@@ -132,6 +97,7 @@ function enableComplete(mode) {
     <div id="pagina">
       <dtml-var standard_html_top_bar>
       <div id="corpo">
+       <div class="linha">
        <dtml-var standard_html_lateral>
        <div id="conteudo">
   </dtml-if>
@@ -164,7 +130,7 @@ function enableComplete(mode) {
           <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia" title="Selecione um tipo de matéria ou mantenha a opção 'Todos' pesquisar qualquer tipo"
            <dtml-if expr="_.has_key('tip_materia_sel')">
              disabled
-           </dtml-if> style="max-width: 224px; width: 100%;">
+           </dtml-if> style="max-width: 240px; width: 100%;">
             <option value="">Todos</option>
             <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
               <option 
@@ -230,7 +196,7 @@ function enableComplete(mode) {
    </dtml-comment> 
      <div class="pf-element pf-full-width">
         <label for="txt_assunto"><span class="pf-label">Assunto / Ementa</span></label></th>
-          <input class="pf-field" id="txt_assunto" type="text" name="txt_assunto" null="" style="max-width: 224px; width: 85%;" title="DICA: A frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no texto. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do texto." />
+          <input class="pf-field" id="txt_assunto" type="text" name="txt_assunto" null="" style="max-width: 230px; width: 100%;" title="DICA: A frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no texto. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do texto." />
      </div>
      <div class="pf-element pf-full-width">
         <label><span class="pf-label">Tramitando?</span></label>
@@ -245,7 +211,7 @@ function enableComplete(mode) {
      </div>
      <div class="pf-element pf-full-width">
         <label for="lst_localizacao"><span class="pf-label">Localização Atual</span></label>
-          <select class="pf-field" id="lst_localizacao" name="lst_localizacao" style="max-width: 230px; width: 100%;">
+          <select class="pf-field" id="lst_localizacao" name="lst_localizacao" style="max-width: 240px; width: 100%;">
             <option value="">Todas</option>
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
               <option value="<dtml-var cod_unid_tramitacao missing>">                
@@ -256,7 +222,7 @@ function enableComplete(mode) {
      </div>
      <div class="pf-element pf-full-width">
         <label for="lst_status"><span class="pf-label">Situação</span></label>
-          <select class="pf-field" id="lst_status" name="lst_status" style="max-width: 224px; width: 100%;">
+          <select class="pf-field" id="lst_status" name="lst_status" style="max-width: 240px; width: 100%;">
             <option value="">Todas</option>
             <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
               <option value="<dtml-var cod_status missing>">

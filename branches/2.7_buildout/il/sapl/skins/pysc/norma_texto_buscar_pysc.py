@@ -5,27 +5,14 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=assunto, tipo, numero, ano
+##parameters=assunto, tipo,
 ##title=
 ##
 
 from Products.AdvancedQuery import And, Or, Eq, Ge, In
 
-if numero != '':
-  numero = int(numero)
-else:
-  numero = ''
-
-if ano != '':
-  ano = int(ano)
-else:
-  ano = ''
-
 if tipo != '' and numero =='' and ano =='':
- query = (Eq('tipo_norma', tipo) & ~ Eq('ano_norma', ano) & ~ Eq('num_norma', numero)) & (Eq('ementa', assunto) | Eq('PrincipiaSearchSource', assunto))
-
-if tipo == '' and numero =='' and ano !='':
- query = Eq('ano_norma', ano) & (Eq('ementa', assunto) | Eq('PrincipiaSearchSource', assunto))
+ query = (Eq('tipo_norma', tipo)) & (Eq('ementa', assunto) | Eq('PrincipiaSearchSource', assunto))
 
 else:
  query = Eq('ementa', assunto) | Eq('PrincipiaSearchSource', assunto)

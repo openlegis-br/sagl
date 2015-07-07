@@ -4,13 +4,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Cadastro de Relator</title>
 <dtml-var standard_css_slot>
-
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.datepick.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.fancybox.pack.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
-
-<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.plugin.min.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.datepick.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.datepick-pt-BR.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
+  <script type="text/javascript" src="javascript/data_validar_jvsc"></script>
 
 <script type="text/javascript">
 <!--
@@ -96,17 +96,20 @@
        
    }   
 
- function ativa_desativa_file_field_parecer(form) {
- form.file_nom_arquivo_parecer.disabled = !(form.radTI[2].checked);
- }
+  function ativa_desativa_file_field_parecer(form) {
+   form.file_nom_arquivo_parecer.disabled = !(form.radTI[2].checked);
+  }
+
+  function setar_data(data_desig) {
+    location.href='setar_data_desig_proc?dat_desig_relator='+data_desig+"&cod_materia=<dtml-var cod_materia missing>&cod_comissao=<dtml-var cod_comissao missing>&num_ordem=<dtml-var num_ordem missing>";
+  }
 
 -->
 </script>
 
 <script type="text/javascript">
 $(function() {
-        $('#txt_dat_desig_relator').datepick();
-        $('#txt_dat_destit_relator').datepick();
+        $('#txt_dat_destit_relator').datepick({dateFormat: 'dd/mm/yyyy'});
 });
 </script>
 
@@ -121,11 +124,16 @@ $(function() {
    <dtml-call expr="REQUEST.set('dat_apresentacao', _.str(dat_apresentacao))">
 </dtml-in>
 
-<dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao=cod_comissao,data=pysc.data_converter_pysc(data=dat_apresentacao), ind_excluido=0)">
+          <dtml-if data>
+             <dtml-call expr="REQUEST.set('dat_desig_relator', pysc.iso_to_port_pysc(data))">
+          <dtml-else>
+             <dtml-call expr="REQUEST.set('dat_desig_relator', _.DateTime().strftime('%d/%m/%Y'))">
+          </dtml-if>
+
+<dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao=cod_comissao,data=pysc.data_converter_pysc(data=dat_desig_relator), ind_excluido=0)">
       <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', _.int(cod_periodo_comp))">
 </dtml-in>
 
-<dtml-if expr="_.has_key('cod_periodo_comp_sel')">
 <h1 class="firstHeading"><dtml-var nom_comissao></h1>
 
 <form name="relatoria_form" method="post" action="relatoria_salvar_proc" enctype="multipart/form-data">
@@ -141,10 +149,16 @@ $(function() {
  <table>
       <tr>
          <td class="texto">
+            <label for="txt_dat_desig_relator">Data Designação </label><span class="campoObrigatorio"></span><br />
+            <input type="text" name="txt_dat_desig_relator" id="txt_dat_desig_relator" value="<dtml-var dat_desig_relator missing>" size="10" maxlength="10" onchange="setar_data(form.txt_dat_desig_relator.value);" onkeyup="formata_data(this,event)" />
+         </td>
+
+         <td class="texto">
+<dtml-if expr="_.has_key('cod_periodo_comp_sel')">
             <label for="lst_relator">Relator </label><span class="campoObrigatorio"></span><br />
             <select name="lst_relator">
              <option value="0">Selecione um Parlamentar</option>
-<dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao=cod_comissao,data=pysc.data_converter_pysc(data=dat_apresentacao), ind_excluido=0)">
+<dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao=cod_comissao,data=pysc.data_converter_pysc(data=dat_desig_relator), ind_excluido=0)">
     <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', _.int(cod_periodo_comp))">
 </dtml-in>
                 <dtml-in expr="zsql.composicao_comissao_obter_zsql(cod_comissao=cod_comissao,cod_periodo_comp=cod_periodo_comp_sel)">
@@ -156,18 +170,12 @@ $(function() {
                    </option>
 	        </dtml-in> 
             </select>
-         </td>
-         <td class="texto">
-            <label for="txt_dat_desig_relator">Data Designação </label><span class="campoObrigatorio"></span><br />
-          <dtml-unless txt_dat_desig_relator>
-             <dtml-call expr="REQUEST.set('dat_desig_relator', _.DateTime().strftime('%d/%m/%Y'))">
-          </dtml-unless>
-            <input type="text" name="txt_dat_desig_relator" id="txt_dat_desig_relator" value="<dtml-var dat_desig_relator missing>" size="10" maxlength="10" onkeyup="formata_data(this,event)" />
-            </td>
-         </tr>
- </table>
-</fieldset>
-
+<dtml-else>
+      Nenhum membro encontrado na data de designação informada! <br />
+      Verifique o período de composição desta comissão e tente novamente.
+</dtml-if>
+</td>
+</tr>
 <fieldset>
  <legend>Parecer</legend>
   <table>
@@ -281,21 +289,6 @@ $(function() {
 </dtml-if>
   <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="javascript:parent.jQuery.fancybox.close();" />
 </p>
-
-<dtml-else>
-<table>
-  <tr>
-    <td width="20%" class="exclama"> <p>!</p> </td>
-    <td width="80%" class="label">
-      A composição da <dtml-var nom_comissao>, no período coincidente com a data de apresentação desta Matéria, não foi cadastrada! <br /> <br />
-      Cadastre os membros da comissão e tente novamente.
-    <td>
-  </tr>
-</table>
-<p align="center">
-  <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="javascript:parent.jQuery.fancybox.close();" />
-</p>
-</dtml-if>
 
 </form>
 
