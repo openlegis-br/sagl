@@ -11,7 +11,7 @@
 
 from Products.AdvancedQuery import And, Or, Eq, Ge, In
 
-if tipo != '' and numero =='' and ano =='':
+if tipo != '':
  query = (Eq('tipo_norma', tipo)) & (Eq('ementa', assunto) | Eq('PrincipiaSearchSource', assunto))
 
 else:
