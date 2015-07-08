@@ -95,8 +95,13 @@ FROM
 </dtml-sqlgroup>
 
    <dtml-if des_assunto>
-     and MATCH(materia_legislativa.txt_ementa,materia_legislativa.txt_indexacao,materia_legislativa.txt_observacao)
+     and (MATCH(materia_legislativa.txt_ementa,materia_legislativa.txt_indexacao,materia_legislativa.txt_observacao)
       against (<dtml-sqlvar des_assunto type="string"> IN BOOLEAN MODE)
+      <dtml-let des_assunto="'%'+des_assunto+'%'">
+        OR <dtml-sqltest des_assunto column="materia_legislativa.txt_ementa" type="string" op="like">
+        OR <dtml-sqltest des_assunto column="materia_legislativa.txt_indexacao" type="string" op="like">
+        OR <dtml-sqltest des_assunto column="materia_legislativa.txt_observacao" type="string" op="like">)
+      </dtml-let>
    </dtml-if>
 
     <dtml-if npc>

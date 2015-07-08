@@ -32,7 +32,9 @@ max_cache : 100
        norma_juridica.cod_assunto as cod_assunto_sel,
        norma_juridica.cod_situacao
   FROM
-       norma_juridica, tipo_norma_juridica, assunto_norma
+       norma_juridica
+       LEFT JOIN tipo_norma_juridica ON norma_juridica.tip_norma = tipo_norma_juridica.tip_norma,
+       assunto_norma  
 
   <dtml-sqlgroup where>      
          norma_juridica.tip_norma = tipo_norma_juridica.tip_norma
@@ -73,8 +75,12 @@ max_cache : 100
    </dtml-if>
 
    <dtml-if des_assunto>
-      and match(norma_juridica.txt_ementa,norma_juridica.txt_observacao, norma_juridica.txt_indexacao)
+      and (match(norma_juridica.txt_ementa,norma_juridica.txt_observacao, norma_juridica.txt_indexacao)
           against (<dtml-sqlvar des_assunto type="string"> IN BOOLEAN MODE)
+      <dtml-let des_assunto="'%'+des_assunto+'%'">
+        OR <dtml-sqltest des_assunto column="norma_juridica.txt_ementa" type="string" op="like">
+        OR <dtml-sqltest des_assunto column="norma_juridica.txt_indexacao" type="string" op="like">)
+      </dtml-let>
    </dtml-if>
 
    <dtml-if cod_assunto>
