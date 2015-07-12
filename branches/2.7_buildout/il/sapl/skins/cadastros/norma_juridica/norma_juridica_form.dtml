@@ -2,17 +2,40 @@
 
 <script type="text/javascript" src="javascript/data_validar_jvsc"></script>
 
-<script type="text/javascript">
-jQuery(document).ready(function() {
-    jQuery(".content").hide();
-    jQuery(".heading1").click(function()
-    {
-        jQuery(this).next(".content").slideToggle(500);
+<script>
+  $(function() {
+    var icons = {
+      header: "ui-icon-circle-arrow-e",
+      activeHeader: "ui-icon-circle-arrow-s"
+    };
+    $( "#assuntos" ).accordion({
+      active: false,
+      collapsible: true,
     });
-});
+    $( "#indexacao" ).accordion({
+      active: false,
+      collapsible: true,
+    });
+    $( "#observacao" ).accordion({
+      active: false,
+      collapsible: true,
+    });
+  });
 </script>
 
 <script type="text/javascript">
+
+(function ($) {
+  $(function () {
+    document.onkeypress = function (event) {
+      var form = norma_juridica_form;
+      if (event.keyCode === 13) {
+        form.submit();
+      }
+    };
+  });
+}(jQuery));
+
 $(function() {
       $('#popupDatepicker').datepick();
       $('#popupDatepicker1').datepick();
@@ -167,22 +190,23 @@ function texto_consolidado_excluir(){
     }
 return;
 }
-
 </script>
 
 <script type="text/javascript">
 $(document).ready(function() {
 	$(".popup1").fancybox({
-		maxWidth	: 1024,
-		maxHeight	: 800,
+		maxWidth	: 550,
+		maxHeight	: 250,
 		fitToView	: false,
-		width		: '95%',
-		height		: '93%',
 		autoSize	: false,
 		closeClick	: false,
                 scrolling       : 'auto',
                 preload         : true,
 		openEffect	: 'fade',
+		closeEffect	: 'fade',
+                afterClose      : function() {
+                window.location.href = "&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma missing>";
+                },
 		closeEffect	: 'fade'
 	});
 });
@@ -190,22 +214,33 @@ $(document).ready(function() {
 
 <div class="helpsapl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/norma_juridica">Ajuda</a> </div>
 
-<h1 class="firstHeading"> Norma Jurídica </h1>
+<dtml-if expr="_.has_key('cod_norma')">
+  <h1 class="firstHeading"><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_norma)"></h1>
+<dtml-else>
+  <h1 class="firstHeading">Cadastro de Norma Jurídica</h1>
+</dtml-if>
 
 <dtml-if expr="_.has_key('cod_norma')">
-<ul>
-   <li><a href="&dtml-portal_url;/cadastros/norma_juridica/vinculo_norma_juridica/vinculo_norma_juridica_index_html?cod_norma=<dtml-var cod_norma>">Normas Relacionadas</a>
-   </li>
-</ul>
+ <dtml-if expr="_.has_key('mensagem')">
+  <div class="ui-state-highlight ui-corner-all" style="padding: 0.2em; margin-bottom: 10px">
+    <p>
+      <span class="ui-icon ui-icon-check" style="float: left; margin-right: .3em;"></span>
+      <strong><dtml-var mensagem></strong>
+      Clique <a style="text-decoration: underline" href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_form"> aqui</a>  para incluir outra Norma.
+    </p>
+  </div>
+ </dtml-if>
 </dtml-if>
 
 <form name="norma_juridica_form" method="post" action="norma_juridica_salvar_proc" enctype="multipart/form-data">
-   <fieldset>
-    <legend>Identificação Básica</legend>
+ <input type="hidden" name="hdn_tip_norma_ant" value="<dtml-var tip_norma_ant missing>"/>
+ <input type="hidden" name="hdn_num_norma_ant" value="<dtml-var num_norma_ant missing>"/>
+ <input type="hidden" name="hdn_ano_norma_ant" value="<dtml-var ano_norma_ant missing>"/>
+ <input type="hidden" name="hdn_cod_norma" value="<dtml-var cod_norma missing>"/>
       <table>
        <tr>
         <td colspan="2"><label for="lst_tip_norma">Tipo</label> <span class="campoObrigatorio">&nbsp;</span><br/>
-          <select name="lst_tip_norma">
+          <select name="lst_tip_norma" style="width:240px">
            <option value ="0">Selecione</option>
            <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
             <option
@@ -254,7 +289,7 @@ $(document).ready(function() {
        </td>
       </tr>
       <tr> 
-        <td colspan="2"><label for="lst_tip_id_basica">Matéria Legislativa</label><br>
+        <td colspan="2"><label for="lst_tip_id_basica">Matéria Originária</label><br>
            <select name="lst_tip_id_basica" <dtml-if expr="not _.has_key('cod_norma')">onChange="ementa_buscar(document.norma_juridica_form)"</dtml-if>>
             <option>
               <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
@@ -296,7 +331,7 @@ $(document).ready(function() {
         </td>
       </tr>
       <tr>
-        <td colspan="2" width="55%"><label>Texto Original (PDF)</label><br/>
+        <td colspan="2" width="55%"><label>Texto Digitalizado (PDF)</label><br/>
            <input type="hidden" name="hdn_file" value="0"/>
             <dtml-if cod_norma>
               <dtml-call expr="REQUEST.set('id_documento', _.str(cod_norma)+'_'+sapl_documentos.norma_juridica.nom_documento)">
@@ -335,15 +370,29 @@ $(document).ready(function() {
       <dtml-if expr="_.has_key('cod_norma')">
          <tr>
           <td colspan="2"><label for="txt_texto_odt">Texto Atualizado (ODT)</label><br />
+           <div id="toolbar" class="ui-widget-header ui-corner-all">
                <dtml-let id_documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
                <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento_odt)">
                   <dtml-let documento_odt="_.getattr(sapl_documentos.norma_juridica,id_documento_odt).absolute_url">
                   <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_norma)+'_texto_integral.odt')">
-                  <a class="popup1" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento_odt>" data-fancybox-type="iframe">
-                    <img align="top" border="0" src="sapl/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
-                    <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/norma_juridica/externalEdit_/<dtml-var nome_arquivo_odt>">Editar</a>
-                    <a class="botao-link" href="javascript:texto_integral_odt_excluir()">Excluir</a>
+                  <div id="menuitem" style="cursor: pointer; float:left; padding-right: 4px;">
+                    <a class="odt">Editar</a>
+                  </div>
+			<script type="text/javascript">
+			$('#menuitem').click(function () {
+    			$.fancybox({
+        			type: 'iframe',
+        			href: '&dtml-portal_url;/webeditor/editorNorma?<dtml-var documento_odt>',
+				width		: '90%',
+				height		: '95%',
+        			preload         : true
+    			});
+			});
+			</script>
+                    <a class="odt_ext" href="javascript:void(0)" onclick="location.href='&dtml-URL1;/sapl_documentos/norma_juridica/externalEdit_/<dtml-var nome_arquivo_odt>.zem'">Editor externo</a>
+                    <a class="botao_excluir" href="javascript:void(0)" onclick="javascript:texto_integral_odt_excluir()">Excluir</a>
                   </dtml-let>
+           </div>
                <dtml-else>
                   <select id="lst_modelo" name="lst_modelo">
                     <option value="0">Selecione um modelo</option>
@@ -353,11 +402,12 @@ $(document).ready(function() {
                       </dtml-in>
                       </dtml-with>
                   </select>
-                  <a class="botao-link" href="javascript:texto_odt_gerar();">Gerar ODT</a>
+                  <a class="botao_gerar" href="javascript:void(0)" onclick="javascript:texto_odt_gerar()">Gerar</a>
                </dtml-if>
                </dtml-let>
           </td>
           <td colspan="2" valign="top"><label for="txt_texto_pdf">Texto Compilado (PDF)</label><br />
+           <div id="toolbar" class="ui-widget-header ui-corner-all">
                <dtml-let documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
                <dtml-if "_.hasattr(sapl_documentos.norma_juridica,documento_odt)">
                   <dtml-call expr="REQUEST.set('temODT', 1)">
@@ -369,36 +419,141 @@ $(document).ready(function() {
                   <dtml-call expr="REQUEST.set('nome_arquivo_pdf',_.str(cod_norma)+'_texto_consolidado.pdf')">
                   <a href="&dtml-URL1;/sapl_documentos/norma_juridica/<dtml-var nome_arquivo_pdf>" target="_blank">
                     <img align="top" border="0" src="sapl/imagens/archiv.gif" alt="PDF consolidado" title="Visualizar PDF"></a>
-                    <a class="botao-link" href="javascript:texto_consolidado_excluir()">Excluir</a>
+                    <a class="botao_excluir" href="javascript:void(0)" onclick="javascript:texto_consolidado_excluir()">Excluir</a>
                   </dtml-let>
                <dtml-else>
                   <dtml-if expr="_.has_key('temODT')">
-                    <a class="botao-link" href="javascript:texto_consolidado_gerar()">Gerar</a>
+                    <a class="botao_gerar" href="javascript:void(0)" onclick="javascript:texto_consolidado_gerar()">Gerar</a>
                   <dtml-else>
                     <span class="texto"><i>Geração vinculada à existência do arquivo ODT</i></span>
                   </dtml-if>
                </dtml-if>
                </dtml-let>
+           </div>
           </td>
          </tr>
+	<script>
+  	$(function() {
+ 	   $( ".odt" )
+ 	     .button({
+ 	     icons: {
+ 	       primary: "ui-icon-newwin"
+	      }
+	    })
+	    $( ".odt_ext" )
+ 	     .button({
+ 	     icons: {
+  	      primary: "ui-icon-transfer-e-w"
+ 	    }
+ 	   })
+ 	   $( ".botao_excluir" )
+ 	     .button({
+ 	     icons: {
+  	      primary: "ui-icon-close"
+  	    }
+  	  })
+  	  $( ".botao_gerar" )
+  	    .button()
+  	    .click(function( event ) {
+  	      event.preventDefault();
+  	    });
+ 	 });
+	</script>
       </dtml-if>
          <tr>
-          <td colspan="4"><label for="txa_txt_ementa">Ementa</label> <span class="campoObrigatorio">&nbsp;</span><br/>
+          <td colspan="4"><label for="txa_txt_ementa">Ementa</label><span class="campoObrigatorio">&nbsp;</span><br/>
             <textarea name="txa_txt_ementa" cols="65" rows="4"><dtml-var txt_ementa missing></textarea>
           </td>
          </tr>
          <tr>
-          <td colspan="4"><label for="txa_txt_indexacao">Indexação</label><br/>
-            <textarea name="txa_txt_indexacao" cols="65" rows="4"><dtml-var txt_indexacao missing null=""></textarea>
+          <td colspan="4">
+          <div id="indexacao">
+           <h3 class="heading1">Indexação</h3>
+             <div class="content">
+                <textarea name="txa_txt_indexacao" cols="65" rows="4"><dtml-var txt_indexacao missing null=""></textarea>
+             </div>
+          </div>
           </td>
          </tr>
          <tr>
-          <td colspan="4"><label for="txa_txt_observacao">Observação</label><br/>
-            <textarea name="txa_txt_observacao" cols="65" rows="4"><dtml-var txt_observacao missing null=""></textarea>
+          <td colspan="4">
+          <div id="observacao">
+          <h3 class="heading1">Observação</h3>
+             <div class="content">
+                <textarea name="txa_txt_observacao" cols="65" rows="4"><dtml-var txt_observacao missing null=""></textarea>
+             </div>
+          </div>
           </td>
          </tr>
-     </table>
-  </fieldset>
+         <tr>
+          <td colspan="4">
+
+  <dtml-if expr="not _.has_key('cod_norma')">
+   <div id="assuntos">
+    <h3 class="heading1">Assuntos / Classificação</h3>
+     <div class="content">
+         <p style="display:none;">
+           <label for "check_hide">
+            <input type="checkbox" id="check_hide" name="chk_assunto_norma" value="1" checked="checked">
+           </label>
+         </p>
+        <dtml-in expr="zsql.assunto_norma_juridica_obter_zsql(ind_excluido=0)">
+         <p>
+           <label for="chk_assunto_norma-<dtml-var cod_assunto>">
+            <input type="checkbox" id="chk_assunto_norma-<dtml-var cod_assunto>" name="chk_assunto_norma" value="<dtml-var cod_assunto>">
+            <dtml-var des_assunto>
+           </label>
+         </p>
+        </dtml-in>
+     </div>
+   </div>
+  </dtml-if>
+
+  <dtml-if expr="_.has_key('cod_norma')">
+   <div id="assuntos">
+    <h3 class="heading1">Assuntos / Classificação</h3>
+     <div class="content">
+         <p style="display:none;">
+           <label for "check_hide">
+            <input type="checkbox" id="check_hide" name="chk_assunto_norma" value="1" checked="checked">
+           </label>
+         </p>
+         <dtml-in expr="zsql.assunto_norma_juridica_obter_zsql(ind_excluido=0)">
+          <p>
+            <label for="chk_assunto_norma-<dtml-var cod_assunto>">
+             <input type="checkbox" id="chk_assunto_norma-<dtml-var cod_assunto>" name="chk_assunto_norma" value="<dtml-var cod_assunto>"<dtml-if expr="_.str(cod_assunto) in _.string.split(_.str(cod_assunto_sel),',')"> checked="1"</dtml-if>>
+             <dtml-var des_assunto>
+            </label>
+          </p>
+         </dtml-in>
+     </div>
+   </div>
+  </dtml-if>
+
+    </td>
+   </tr>
+ </table>
+
+  <div align="center" id="toolbar" class="ui-widget-header ui-corner-all">
+    <input type="button" class="salvar" name="btn_norma_juridica_salvar" value="Salvar" onClick="campos_criticar(document.norma_juridica_form)"/>
+    <dtml-if expr="_.has_key('cod_norma')">
+     <input type="button" class="excluir" name="btn_norma_juridica_excluir" value="Excluir" onClick="norma_juridica_excluir(document.norma_juridica_form)"/>
+    </dtml-if>
+  </div>
+	<script>
+	  $(function() {
+	    $( ".salvar, .excluir" )
+ 	     .button({
+ 		     icons: {
+        primary: "ui-icon-newwin"
+ 	     }
+  	  })
+  	    .click(function( event ) {
+ 	       event.preventDefault();
+ 	     });
+ 	 });
+	</script>
+ </form>
 
 <dtml-if expr="_.has_key('cod_norma')">
  <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)" mapping>
@@ -430,77 +585,92 @@ $(document).ready(function() {
  </dtml-in>
 </dtml-if>
 
-<dtml-if expr="not _.has_key('cod_norma')">
-<div class="layer1">
-   <fieldset>
-    <legend class="heading1">Assuntos (Classificação) [+] </legend>
-     <div class="content">
-      <table>
-         <tr style="display:none;">
-          <td>
-           <label for "check_hide">
-            <input type="checkbox" id="check_hide" name="chk_assunto_norma" value="1" checked="checked">
-           </label>
-          </td>
-         </tr>
-        <dtml-in expr="zsql.assunto_norma_juridica_obter_zsql(ind_excluido=0)">
-         <tr>
-          <td>
-           <label for "chk_assunto_norma-<dtml-var cod_assunto>">
-            <input type="checkbox" id="chk_assunto_norma-<dtml-var cod_assunto>" name="chk_assunto_norma" value="<dtml-var cod_assunto>">
-            <dtml-var des_assunto>
-           </label>
-          </td>
-         </tr>
-        </dtml-in>
-      </table>
-     </div>
-  </fieldset>
-</div>
-</dtml-if>
-
 <dtml-if expr="_.has_key('cod_norma')">
-<div class="layer1">
-   <fieldset>
-    <legend class="heading1">Assuntos (Classificação) [+] </legend>
-     <div class="content">
-      <table>
-         <tr style="display:none;">
-          <td>
-           <label for "check_hide">
-            <input type="checkbox" id="check_hide" name="chk_assunto_norma" value="1" checked="checked">
-           </label>
-           </td>
-          </tr>
-         <dtml-in expr="zsql.assunto_norma_juridica_obter_zsql(ind_excluido=0)">
-          <tr>
-           <td>
-            <label for "chk_assunto_norma">
-             <input type="checkbox" id="chk_assunto_norma" name="chk_assunto_norma" value="<dtml-var cod_assunto>"<dtml-if expr="_.str(cod_assunto) in _.string.split(_.str(cod_assunto_sel),',')"> checked="1"</dtml-if>>
-             <dtml-var des_assunto>
-            </label>
-           </td>
-          </tr>
-         </dtml-in>
-      </table>
-     </div>
-   </fieldset>
-</div>
-</dtml-if>
+  <fieldset>
+   <h2>Normas Relacionadas</h2>                   
+   <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+   <dtml-if sequence-start>
+    <table>
+      <tr>  
+         <th width="20%" class="form-label">Vinculação Passiva</th>
+         <th class="form-label">Norma</th>
+      </tr>
+    </dtml-if>
+      <tr> 
+         <td class="texto" valign="top">
+            <dtml-if "tip_vinculo=='A'">Alteração
+            <dtml-elif "tip_vinculo=='R'">Revogação
+            <dtml-elif "tip_vinculo=='P'">Revogação parcial
+            <dtml-elif "tip_vinculo=='T'">Revogação por consolidação
+            <dtml-elif "tip_vinculo=='C'">Norma correlata
+            <dtml-elif "tip_vinculo=='I'">Suspensão de execução
+            <dtml-elif "tip_vinculo=='G'">Regulamentação
+            </dtml-if>
+         </td>
+         <td class="texto">
+            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
+            <b><dtml-var des_tipo_norma> nº <dtml-var num_norma>/<dtml-var ano_norma> de <dtml-var dat_norma null=""></a></b><br><dtml-var txt_ementa_referente>
+         </td>
+      </tr>
+   <dtml-if sequence-end>
+     </table>
+   </dtml-if>
+  </dtml-in>
 
-<p align="center">
-  <input type="button" class="botao" name="btn_norma_juridica_salvar" value="Salvar" onClick="campos_criticar(document.norma_juridica_form)"/>
+  <dtml-in expr="zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)">
+   <dtml-if sequence-start>
+    <table>
+      <tr>  
+         <th width="20%" class="form-label">Vinculação Ativa</th>
+         <th class="form-label">Norma</th>
+      </tr>
+    </dtml-if>
+      <tr> 
+         <td class="texto" valign="top">
+            <a class="popup1" data-fancybox-type="iframe" href="&dtml-portal_url;/cadastros/norma_juridica/vinculo_norma_juridica/vinculo_norma_juridica_mostrar_proc?cod_vinculo=<dtml-var cod_vinculo>"><b>
+            <dtml-if "tip_vinculo=='A'">Altera
+            <dtml-elif "tip_vinculo=='R'">Revoga
+            <dtml-elif "tip_vinculo=='P'">Revoga parcialmente
+            <dtml-elif "tip_vinculo=='T'">Revoga por consolidação
+            <dtml-elif "tip_vinculo=='C'">Norma correlata
+            <dtml-elif "tip_vinculo=='I'">Suspende a execução
+            <dtml-elif "tip_vinculo=='G'">Regulamenta
+            </dtml-if> </b></a>
+         </td>
+         <td class="texto">
+            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
+            <b><dtml-var des_tipo_norma> nº <dtml-var num_norma>/<dtml-var ano_norma> de <dtml-var dat_norma null=""></a></b><br><dtml-var txt_ementa_referida>
+         </td>
+      </tr>
+   <dtml-if sequence-end>
+     </table>
+   </dtml-if>
+  </dtml-in>
+  <dtml-unless "zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)
+                or zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+       <p class="texto">Nenhum relacionamento cadastrado.</p>
+  </dtml-unless>
+  </fieldset>
 
- <dtml-if cod_norma>
-  <input type="button" class="botao" name="btn_norma_juridica_excluir" value="Excluir" onClick="norma_juridica_excluir(document.norma_juridica_form)"/>
- </dtml-if>
-</p>
-
-<input type="hidden" name="hdn_tip_norma_ant" value="<dtml-var tip_norma_ant missing>"/>
-<input type="hidden" name="hdn_num_norma_ant" value="<dtml-var num_norma_ant missing>"/>
-<input type="hidden" name="hdn_ano_norma_ant" value="<dtml-var ano_norma_ant missing>"/>
-<input type="hidden" name="hdn_cod_norma" value="<dtml-var cod_norma missing>"/>
-
+<form id="vinculo" action="vinculo_norma_juridica/vinculo_norma_juridica_form" method=post>
+  <input type="hidden" name="cod_norma" value="<dtml-var cod_norma missing>"/>
+     <a class="popup popup1" data-fancybox-type="iframe" href="vinculo_norma_juridica/vinculo_norma_juridica_form?cod_norma=<dtml-var cod_norma missing>">
+        Incluir Vínculo
+     </a>
+  <script>
+  $(function() {
+    $( ".popup" )
+      .button({
+      icons: {
+        primary: "ui-icon-plus"
+      }
+    })
+      .click(function( event ) {
+        event.preventDefault();
+      });
+  });
+  </script>
 </form>
+</dtml-if>
 
 <dtml-var standard_html_footer>
