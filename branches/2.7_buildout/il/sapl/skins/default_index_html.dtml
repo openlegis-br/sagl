@@ -1,17 +1,25 @@
 ﻿<dtml-var standard_html_header>
 
 <dtml-if expr="(REQUEST['HTTP_REFERER'].split('/')[-1]=='login_form') and (str(REQUEST['AUTHENTICATED_USER']).strip()=='Anonymous User')">
-    <b>ATENÇÃO: Tentativa de login falhou !<br /><br />Usuário ou senha inválida.</b>
+  <div class="ui-state-error ui-corner-all" style="padding: 0.3em 1em; margin-bottom: 10px">
+    <p>
+      <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+      <strong>Login inválido!</strong>
+        Informe corretamente seu nome de usuário e senha.
+    </p>
+  </div>
 <dtml-else>
 
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador','Operador Materia'])">
  <dtml-with expr="_.namespace(materias=zsql.tramitacao_prazo_vincendo_obter_zsql())">
   <dtml-if expr="_.len(materias) > 0">
-    <div class="col span_2_of_2 aviso">
-        <p>
-           AVISO: há <a href="&dtml-portal_url;/generico/materia_listar_prazo"><dtml-var  expr="_.len(materias)"> matéria<dtml-if expr="_.len(materias) > 1">s</dtml-if></a> com prazo<dtml-if expr="_.len(materias) > 1">s</dtml-if> de tramitação vencendo nesta data (<dtml-var expr="ZopeTime().strftime('%d/%m/%Y')">) 
-        </p>
-    </div>
+  <div class="ui-state-highlight ui-corner-all" style="padding: 0.3em 1em; margin-bottom: 10px">
+    <p>
+      <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+      <strong>Aviso de vencimento:</strong>
+       há <a style="text-decoration: underline" href="&dtml-portal_url;/generico/materia_listar_prazo"><b><dtml-var  expr="_.len(materias)"> matéria<dtml-if expr="_.len(materias) > 1">s</dtml-if></b></a> com prazo<dtml-if expr="_.len(materias) > 1">s</dtml-if> de tramitação vencendo hoje (<dtml-var expr="ZopeTime().strftime('%d/%m/%Y')">). 
+    </p>
+  </div>
    </dtml-if>
   </dtml-with>
 </dtml-if>
@@ -30,7 +38,7 @@
 
 <dtml-let isAnon="portal_membership.isAnonymousUser()">
  <dtml-if expr="not isAnon">
-   <h2>Informações da conexão</h2>
+   <h2>Informações de login</h2>
    <p><b>Usuário autenticado:</b> <dtml-var "AUTHENTICATED_USER.getUserName()"></p>
    <p><b>IP de origem:</b> <dtml-if HTTP_X_FORWARDED_FOR><dtml-var HTTP_X_FORWARDED_FOR><dtml-else><dtml-var REMOTE_ADDR></dtml-if></p>
  </dtml-if>
