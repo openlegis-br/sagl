@@ -416,7 +416,7 @@ ALTER TABLE `documento_administrativo`   ADD KEY `idx_num_ano` (`num_documento`,
 
 ALTER TABLE `documento_administrativo`   ADD FULLTEXT KEY `idx_txt_interessado` (`txt_interessado`);
 
-ALTER TABLE `materia_legislativa` DROP `txt_resultado`;"
+ALTER TABLE `materia_legislativa` DROP `txt_resultado`;
 
 ALTER TABLE `protocolo` DROP `cod_documento`;
 
