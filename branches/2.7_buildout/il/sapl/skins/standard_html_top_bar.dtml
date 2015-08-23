@@ -29,7 +29,7 @@
 
 <div id='search_box'>
   <form action='&dtml-portal_url;/generico/palavra_chave_buscar_proc' name='search_form' id='search_form'>
-    <input id='search_text' name='txt_palavra_chave' placeholder='digite os termos da pesquisa' type='text'/>
+    <input id='search_text' name='txt_palavra_chave' placeholder='Pesquise aqui...' type='text'/>
     <button type="button" name="search_button" id='search_button' onclick="javascript:palavra_chave_buscar()"><span>Buscar</span>
   </form>
 </div>
@@ -49,8 +49,8 @@
 	<dtml-call expr="REQUEST.RESPONSE.redirect(portal_url() +'/generico/senha_trocar_form?senha=1')">
     </dtml-if>
   </dtml-unless>
-   <ul>
-            <li class='has-sub'><a href="#"><span>Institucional</span></a>
+   <ul id="menu-bar">
+            <li class='has-sub'><a href="#"><span>Institucional</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
                 <ul>
                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Mesa Diretora'])">
 	          <li><a href='<dtml-var diretorio>mesa_diretora'><span>Mesa Diretora</span></a></li>
@@ -73,7 +73,7 @@
             </li>
 
            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
-            <li class='has-sub'><a href="#"><span>Protocolo</span></a>
+            <li class='has-sub'><a href="#"><span>Protocolo</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
                 <ul>
 	          <li><a href='&dtml-portal_url;/consultas/protocolo/protocolo_pesquisar_form?incluir=1'><span>Pesquisar</span></a></li>
 	          <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form'><span>Protocolo Legislativo</span></a></li>
@@ -84,7 +84,7 @@
            </dtml-if>
 
            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Arquivo'])">
-            <li class='has-sub'><a href="#"><span>Administrativo</span></a>
+            <li class='has-sub'><a href="#"><span>Administrativo</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
                 <ul>
 	          <li><a href='&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_pesquisar_form?incluir=1'><span>Documentos</span></a></li>
 	          <li><a href='&dtml-portal_url;/consultas/instituicao/instituicao_pesquisar_form?incluir=1'><span>Cadastro de Entidades</span></a></li>
@@ -95,7 +95,7 @@
             </li>
            </dtml-if>
 
-            <li class='has-sub'><a href="#"><span>Atividade Legislativa</span></a>
+            <li class='has-sub'><a href="#"><span>Atividade Legislativa</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
                 <ul>
                   <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor','Assessor Parlamentar'])">
                      <li><a href="<dtml-var diretorio>proposicao"><span>Proposições</span></a></li>
@@ -116,7 +116,7 @@
             </li>
 
 
-            <li class='has-sub'><a href="#"><span>Normas Jurídicas</span></a>
+            <li class='has-sub'><a href="#"><span>Normas Jurídicas</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
                 <ul>
                   <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
 	             <li><a href='&dtml-portal_url;/generico/norma_juridica_pesquisar_form?incluir=1'><span>Pesquisa Avançada</span></a></li>
@@ -129,7 +129,7 @@
 
 
             <dtml-if expr="AUTHENTICATED_USER.has_role(['Administrador', 'Autor', 'Assessor Parlamentar', 'Operador', 'Operador Mesa Diretora', 'Operador Comissao', 'Operador Ordem Dia', 'Operador Parlamentar', 'Operador Materia', 'Operador Norma', 'Operador Tabela Auxiliar', 'Operador Protocolo', 'Operador Modulo Administrativo','Operador Lexml'])">
-            <li class='has-sub'><a href="#"><span>Sistema</span></a>
+            <li class='has-sub'><a href="#"><span>Sistema</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
                 <ul>
                   <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Tabela Auxiliar'])">
 	            <li><a href='<dtml-var diretorio>auxiliares'><span>Tabelas Auxiliares</span></a></li>
@@ -157,3 +157,52 @@
 </div>
 </div>
 </dtml-let>
+
+<script type="text/javascript">
+
+$(function () {
+    $(window).load(function () {
+        // Cache the elements we'll need
+        var menu = $('#funcoes');
+        var menuList = menu.find('ul:first');
+        var listItems = menu.find('li').not('#responsive-tab');
+
+        // Create responsive Menu Version
+        menuList.prepend('<li id="responsive-tab"><a href="#">Menu</a></li>');
+
+        // show the responsiv menu links
+        menu.on('click', '#responsive-tab', function () {
+            listItems.slideToggle();
+            listItems.addClass('collapsed');
+        });
+    });
+});
+
+$(function () {
+    if ($(window).width() > 651) {
+        $("ul#menu-bar li ul li:has(ul)").find("a:first").addClass("active");
+        $("ul#menu-bar li").click(function () {
+            $(this).next().slideToggle(); 
+            $(this).addClass("hover");
+            $('ul:first', this).css('visibility', 'visible');
+            $(this).children('ul').delay(20).slideDown(200); // speed of the slide
+
+        }, function () {
+            $(this).removeClass("hover");
+            $('ul:first', this).css('visibility', 'hidden');
+            $(this).children('ul').delay(20).slideUp(200); // speed of the slide
+        });
+    } else {
+        $("ul#menu-bar li ul li:has(ul)").find("a:first").addClass("subnav");
+        var $mobil = $("ul#menu-bar li ");
+        $mobil.children("ul").css("display", "none");
+        $mobil.filter(":has(ul)").children(":first-child").click(function () {
+            $(this).next().slideToggle(); 
+            $(this).parent().siblings().children("ul:visible").slideUp();  // activate this if you will sho only 1 activ Menupoint
+            $(this).parent().removeClass('closed');
+
+        });
+    }
+});
+
+</script>

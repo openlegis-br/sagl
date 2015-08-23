@@ -2437,13 +2437,15 @@ CREATE TABLE `tipo_situacao_norma` (
 
 CREATE TABLE `tipo_vinculo_norma` (
   `cod_tip_vinculo` int(11) NOT NULL AUTO_INCREMENT,
-  `tip_vinculo` char(1) COLLATE utf8_unicode_ci NOT NULL,
+  `tipo_vinculo` char(1) COLLATE utf8_unicode_ci NOT NULL,
   `des_vinculo` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `des_vinculo_passivo` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `tip_situacao` int(11) NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_tip_vinculo`),
-  UNIQUE KEY `tip_vinculo` (`tip_vinculo`),
-  UNIQUE KEY `idx_vinculo` (`tip_vinculo`,`des_vinculo`,`des_vinculo_passivo`,`ind_excluido`)
+  UNIQUE KEY `tipo_vinculo` (`tipo_vinculo`),
+  UNIQUE KEY `idx_vinculo` (`tipo_vinculo`,`des_vinculo`,`des_vinculo_passivo`,`ind_excluido`),
+  KEY `tip_situacao` (`tip_situacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2595,6 +2597,7 @@ CREATE TABLE `vinculo_norma_juridica` (
   `cod_norma_referente` int(11) NOT NULL,
   `cod_norma_referida` int(11) DEFAULT NULL,
   `tip_vinculo` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `txt_observacao_vinculo` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`cod_vinculo`),
   KEY `tip_vinculo` (`tip_vinculo`),

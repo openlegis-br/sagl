@@ -368,23 +368,25 @@ ALTER TABLE `sessao_plenaria_presenca` ADD `txt_justif_ausencia` VARCHAR(200) NU
 
 CREATE TABLE IF NOT EXISTS `tipo_vinculo_norma` (
   `cod_tip_vinculo` int(11) NOT NULL AUTO_INCREMENT,
-  `tip_vinculo` char(1) COLLATE utf8_unicode_ci NOT NULL,
+  `tipo_vinculo` char(1) COLLATE utf8_unicode_ci NOT NULL,
   `des_vinculo` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `des_vinculo_passivo` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `tip_situacao` int(11) NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_tip_vinculo`),
-  UNIQUE KEY `tip_vinculo` (`tip_vinculo`),
-  UNIQUE KEY `idx_vinculo` (`tip_vinculo`,`des_vinculo`,`des_vinculo_passivo`,`ind_excluido`)
+  UNIQUE KEY `tipo_vinculo` (`tipo_vinculo`),
+  UNIQUE KEY `idx_vinculo` (`tipo_vinculo`,`des_vinculo`,`des_vinculo_passivo`,`ind_excluido`),
+  KEY `tip_situacao` (`tip_situacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `tipo_vinculo_norma` (`tip_vinculo`, `des_vinculo`, `des_vinculo_passivo`, `ind_excluido`) VALUES 
-('A', 'Altera', 'Alteração', '0'),
-('C', 'Norma correlata', 'Norma correlata', '0'),
-('G', 'Regulamenta', 'Regulamentação', '0'),
-('I', 'Suspende a execução', 'Suspensão de execução', '0'),
-('P', 'Revoga parcialmente', 'Revogação parcial', '0'),
-('R', 'Revoga', 'Revogação', '0'),
-('T', 'Revoga por consolidação', 'Revogação por consolidação', '0');
+INSERT INTO `tipo_vinculo_norma` (`cod_tip_vinculo`, `tipo_vinculo`, `des_vinculo`, `des_vinculo_passivo`, `tip_situacao`, `ind_excluido`) VALUES
+(1, 'A', 'Altera a', 'Alterada pela', NULL, 0),
+(2, 'C', 'Norma correlata', 'Norma correlata', NULL, 0),
+(3, 'G', 'Regulamenta', 'Regulamentação', NULL, 0),
+(4, 'I', 'Suspende a execução', 'Suspensão de execução', NULL, 0),
+(5, 'P', 'Revoga parcialmente', 'Revogação parcial', 3, 0),
+(6, 'R', 'Revoga a', 'Revogada pela', 2, 0),
+(7, 'T', 'Revoga por consolidação', 'Revogação por consolidação', NULL, 0);
 
 ALTER TABLE `vinculo_norma_juridica` ADD INDEX (`tip_vinculo`);
 
@@ -416,10 +418,28 @@ ALTER TABLE `documento_administrativo`   ADD KEY `idx_num_ano` (`num_documento`,
 
 ALTER TABLE `documento_administrativo`   ADD FULLTEXT KEY `idx_txt_interessado` (`txt_interessado`);
 
+--
+-- Tipo vinculo (rodar somente nas versões 2.7)
+--
+
+--- ALTER TABLE  `tipo_vinculo_norma` CHANGE  `tip_vinculo`  `tipo_vinculo` CHAR( 1 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ;
+
+ALTER TABLE  `vinculo_norma_juridica` ADD  `txt_observacao_vinculo` VARCHAR( 250 ) NULL DEFAULT NULL AFTER  `tip_vinculo` ;
+
+--- ALTER TABLE  `tipo_vinculo_norma` ADD  `tip_situacao` INT( 11 ) NULL DEFAULT NULL AFTER  `des_vinculo_passivo` ;
+
+--- ALTER TABLE  `tipo_vinculo_norma` ADD INDEX (  `tip_situacao` ) ;
+
+--
+-- Fim Tipo vinculo
+--
+
 ALTER TABLE `materia_legislativa` DROP `txt_resultado`;
 
 ALTER TABLE `protocolo` DROP `cod_documento`;
 
 ALTER TABLE `protocolo` DROP `cod_materia`;
+
+
 
 

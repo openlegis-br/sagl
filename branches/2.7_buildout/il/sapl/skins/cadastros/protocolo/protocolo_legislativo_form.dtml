@@ -2,50 +2,51 @@
 
 <script type="text/javascript" src="javascript/data_validar_jvsc"></script>
 <script type="text/javascript">
+
 function campos_criticar(){
 
-var form = document.protocolo_legislativo_form;
-var regexp_digitos = /\D+/;
+  var form = document.protocolo_legislativo_form;
+  var regexp_digitos = /\D+/;
 
-if (form.lst_tip_materia.selectedIndex==0){
-alert("Selecione um tipo de matéria legislativa!");
-form.lst_tip_materia.focus();
-return false;
-}
+  if (form.lst_tip_materia.selectedIndex==0){
+     alert("Selecione um tipo de matéria legislativa!");
+     form.lst_tip_materia.focus();
+     return false;
+  }
 
-if (form.txt_num_paginas.value == "") {
-alert("O número de páginas deve ser preenchido!");
-form.txt_num_paginas.focus();
-return false;
-}
+  if (form.txt_num_paginas.value == "") {
+     alert("O número de páginas deve ser preenchido!");
+     form.txt_num_paginas.focus();
+     return false;
+  }
 
-if (form.txa_txt_ementa.value == "") {
-alert("A ementa deve ser preenchida!");
-form.txa_txt_ementa.focus();
-return false;
-}
+  if (regexp_digitos.test(form.txt_num_paginas.value)) {
+     alert("O número de páginas deve ser um numero natural!");
+     form.txt_num_paginas.focus();
+     return false;
+  }
 
-      var tipo_autor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;
-      if (tipo_autor=='0'){
-         alert("Um tipo de autor deve ser selecionado!");
-         form.lst_tip_autor.focus();
-         return false;
-      }
+  if (form.txa_txt_ementa.value == "") {
+     alert("A ementa deve ser preenchida!");
+     form.txa_txt_ementa.focus();
+     return false;
+  }
 
-      var cod_autor = form.lst_cod_autor[form.lst_cod_autor.selectedIndex].value;
-      if (cod_autor=='0'){
-         alert("Um autor deve ser selecionado!");
-         form.lst_cod_autor.focus();
-         return false; 
-      }
+  var tipo_autor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;
+  if (tipo_autor=='0'){
+     alert("Um tipo de autor deve ser selecionado!");
+     form.lst_tip_autor.focus();
+     return false;
+  }
 
-if (regexp_digitos.test(form.txt_num_paginas.value)) {
-alert("O número de páginas deve ser um numero natural!");
-form.txt_num_paginas.focus();
-return false;
-}
+  var cod_autor = form.lst_cod_autor[form.lst_cod_autor.selectedIndex].value;
+  if (cod_autor=='0'){
+     alert("Um autor deve ser selecionado!");
+     form.lst_cod_autor.focus();
+     return false; 
+  }
 
-form.submit();
+  form.submit();
 }
 
    function tipo_autor_mudou(form){
@@ -92,6 +93,7 @@ $(document).ready(function() {
   </dtml-if>
 </dtml-in>
 
+<div id="barra-conteudo">
     <ul>
         <li>
             <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form">Protocolar Documento</a>
@@ -103,6 +105,7 @@ $(document).ready(function() {
             <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form">Anular Protocolo</a>
         </li>
     </ul>
+</div>
 
 <form action="protocolo_legislativo_salvar_proc" name="protocolo_legislativo_form" method="post" enctype="multipart/form-data">
 
@@ -155,21 +158,17 @@ $(document).ready(function() {
               </dtml-in>
              </select>
              </td>
-             <td><label for="des_tip_autor">Nome Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
+             <td><label for="lst_cod_autor">Nome Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
               <dtml-if expr="_.has_key('des_tipo_autor')"> 
-              <select name="lst_cod_autor" size="1" onChange="javascript:form.hdn_alterou.value=1">
+              <select name="lst_cod_autor" size="1">
                <option value=0>Selecione</option>
 
                <dtml-if expr="des_tipo_autor=='Parlamentar'">
-                   <dtml-in expr="zsql.autor_obter_zsql(parlamentar='1')">
-                   <dtml-call expr="REQUEST.set('cod_autor_parlamentar', cod_autor)">
-                     <dtml-if  expr="pysc.autoria_parlamentar_validar_pysc(txt_dat_apresentacao=dat_atual, cod_parlamentar=cod_parlamentar)">
-                         <option value="<dtml-var cod_autor_parlamentar>">
-                           <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
-                              <dtml-var nom_completo> - <dtml-var sgl_partido null=""> 
-                           </dtml-in></option>
-                      </dtml-if>                  
-                  </dtml-in>
+                   <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_atual)">
+                         <option value="<dtml-var cod_autor>">
+                              <dtml-var nom_completo> 
+                         </option>
+                   </dtml-in>
      
                <dtml-elif expr="des_tipo_autor=='Comissao'">
                   <dtml-in expr="zsql.autor_obter_zsql(comissao='1')">

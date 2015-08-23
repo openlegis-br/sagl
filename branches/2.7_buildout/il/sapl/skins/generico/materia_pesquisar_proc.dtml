@@ -3,14 +3,14 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	$(".popup").fancybox({
-		maxWidth	: 500,
-		maxHeight	: 350,
-		fitToView	: false,
+		maxWidth	: 650,
+		maxHeight	: 450,
+		fitToView	: true,
 		width		: '70%',
-		height		: '72%',
+		height		: '75%',
 		autoSize	: false,
 		closeClick	: false,
-                scrolling       : 'auto',
+                scrolling       : false,
                 preload         : true,
 		openEffect	: 'fade',
 		closeEffect	: 'fade'
@@ -33,7 +33,7 @@ $(document).ready(function() {
 
 <h1 class="firstHeading">Matérias Legislativas</h1>
 
-<dtml-if expr="incluir=='1'">
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
     <ul>
         <li>
             <a href="&dtml-portal_url;/cadastros/materia/materia_form_resumido">Incluir Matéria</a>
@@ -83,12 +83,12 @@ $(document).ready(function() {
    </dtml-if sequence-start>
             <tr <dtml-if sequence-odd>class="even"</dtml-if>>            
               <td class="texto">
-                <dtml-if expr="incluir=='1'">
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
                   <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
                 <dtml-else>
                   <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" >
                 </dtml-if>
-                <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var des_tipo_materia upper></b></a></br>
+                <b><dtml-var des_tipo_materia upper> Nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></a></br>
 
           <dtml-comment>verifica se usuário é anônimo</dtml-comment>
           <dtml-if expr="portal_membership.isAnonymousUser()">
@@ -141,6 +141,8 @@ $(document).ready(function() {
                   <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=num_protocolo,ano_protocolo=ano_ident_basica)">
                      -<b> Data de Entrada:</b> <dtml-var "pysc.iso_to_port_pysc(dat_protocolo)">
                   </dtml-in> <br />
+               <dtml-else>
+                     <b> Data de apresentação:</b> <dtml-var "pysc.iso_to_port_pysc(dat_apresentacao)">
                </dtml-if>
 
                 <dtml-call expr="REQUEST.set('temSubstitutivo', '0')">
@@ -257,7 +259,11 @@ $(document).ready(function() {
                 <dtml-in expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia=cod_materia)">
                    <dtml-if expr="cod_norma and cod_norma!=''">
                      <b>Norma Derivada:</b>
-                     <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> <dtml-var num_norma>/<dtml-var ano_norma></b></a><br />
+                     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+                        <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> <dtml-var num_norma>/<dtml-var ano_norma></b></a><br />
+                     <dtml-else>
+                        <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> <dtml-var num_norma>/<dtml-var ano_norma></b></a><br />
+                     </dtml-if>
                    </dtml-if>
                 </dtml-in>
 
@@ -266,6 +272,7 @@ $(document).ready(function() {
                 </dtml-if>
               </td>
               <td width="10%" valign="top">
+               <div align="center">
                 <dtml-let id_documento="_.str(cod_materia)+'_texto_integral.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
                     <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
@@ -275,6 +282,7 @@ $(document).ready(function() {
                   <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                   </dtml-if>
                 </dtml-let>
+               </div>
               </td>
             </tr>
   <dtml-if sequence-end>
