@@ -43,7 +43,7 @@ $(document).ready(function() {
              </td>
           </tr>
           <tr>
-             <th class="form-label">Data:</th>
+             <th class="form-label">Data Apresentação:</th>
              <td class="texto">
                <dtml-var dat_apresentacao missing null="">
              </td>
@@ -220,9 +220,9 @@ $(document).ready(function() {
     <tr class="even">
        <td colspan="0" class="texto"> 
           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Operador Norma'])">
-            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> nº <dtml-var num_norma>/<dtml-var ano_norma></b></a><br />
+            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b></a><br />
           <dtml-else>
-            <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> nº <dtml-var num_norma>/<dtml-var ano_norma></b></a><br />
+            <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b></a><br />
           </dtml-if>
        </td>
     </tr>
@@ -321,16 +321,17 @@ $(document).ready(function() {
  </table>
 </fieldset>
 
-<dtml-if expr="zsql.votacao_materia_pesquisar_zsql(cod_materia=cod_materia)">
+<dtml-if expr="zsql.votacao_materia_pesquisar_zsql(cod_materia=cod_materia) or zsql.votacao_materia_expediente_pesquisar_zsql(cod_materia=cod_materia)">
  <fieldset>
   <legend>Deliberações em Plenário</legend>
    <table>
-    <dtml-in expr="zsql.votacao_materia_pesquisar_zsql(cod_materia=cod_materia)">
+    <dtml-in expr="zsql.votacao_materia_expediente_pesquisar_zsql(cod_materia=cod_materia)">
      <dtml-if sequence-start>
      <tr>
-       <th width="35%" class="form-label">Sessão</th>
-       <th width="15%" class="form-label">Data</th>
-       <th width="25%" class="form-label">Votação</th>
+       <th width="25%" class="form-label">Sessão</th>
+       <th width="13%" class="form-label">Data</th>
+       <th width="17%" class="form-label">Fase</th>
+       <th width="20%" class="form-label">Votação</th>
        <th width="25%" class="form-label">Resultado</th>
      </tr>
      </dtml-if>
@@ -341,6 +342,41 @@ $(document).ready(function() {
         <dtml-var num_sessao_plen>ª Sessão <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)"><dtml-var nom_sessao></dtml-in></a>
        </td>
        <td class="texto"><dtml-var dat_inicio_sessao></td>
+       <td class="texto">Expediente</td>
+       <td class="texto">
+          <dtml-if num_votos_sim> 
+            <b>Sim:</b> <dtml-var num_votos_sim>
+          </dtml-if>
+          <dtml-if num_votos_nao> 
+            | <b>Não:</b> <dtml-var num_votos_nao>
+          </dtml-if>
+          <dtml-if num_abstencao> 
+           | <b>Abstenções:</b> <dtml-var num_abstencao>
+          </dtml-if>
+       </td>
+       <td class="texto"><dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)"><b><dtml-var nom_resultado></b><dtml-if observacao_votacao><br /><dtml-var observacao_votacao missing null=""></dtml-if></dtml-in></td>
+     </tr>
+    </dtml-in>
+    </dtml-in>
+
+    <dtml-in expr="zsql.votacao_materia_ordem_dia_pesquisar_zsql(cod_materia=cod_materia)">
+     <dtml-if sequence-start>
+     <tr>
+       <th width="25%" class="form-label">Sessão</th>
+       <th width="13%" class="form-label">Data</th>
+       <th width="17%" class="form-label">Fase</th>
+       <th width="20%" class="form-label">Votação</th>
+       <th width="25%" class="form-label">Resultado</th>
+     </tr>
+     </dtml-if>
+    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
+     <tr>
+       <td class="texto">
+        <a href="&dtml-portal_url;/consultas/sessao_plenaria/agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
+        <dtml-var num_sessao_plen>ª Sessão <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)"><dtml-var nom_sessao></dtml-in></a>
+       </td>
+       <td class="texto"><dtml-var dat_inicio_sessao></td>
+       <td class="texto">Ordem do Dia</td>
        <td class="texto">
           <dtml-if num_votos_sim> 
             <b>Sim:</b> <dtml-var num_votos_sim>
@@ -398,6 +434,7 @@ $(document).ready(function() {
            </dtml-in>
           </td>
           <td class="texto">
+             <div align="center">
                 <dtml-let id_substitutivo="_.str(cod_substitutivo)+'_substitutivo.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_substitutivo)">
                     <dtml-let substitutivo="_.getattr(sapl_documentos.substitutivo,id_substitutivo).absolute_url">
@@ -407,6 +444,7 @@ $(document).ready(function() {
                   <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                   </dtml-if>
                 </dtml-let>
+             </div>
           </td>
           <td class="texto">
              <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
@@ -469,6 +507,7 @@ $(document).ready(function() {
            </dtml-in>
           </td>
           <td class="texto">
+             <div align="center">
                 <dtml-let id_emenda="_.str(cod_emenda)+'_emenda.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.emenda,id_emenda)">
                     <dtml-let emenda="_.getattr(sapl_documentos.emenda,id_emenda).absolute_url">
@@ -478,6 +517,7 @@ $(document).ready(function() {
                   <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                   </dtml-if>
                 </dtml-let>
+             </div>
           </td>
           <td class="texto">
              <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, ind_excluido=0)">
@@ -523,12 +563,15 @@ $(document).ready(function() {
    <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
     <tr> 
       <th width="20%">
+      <div align="center">
       <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
       <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
          <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
            <a target="_blank" href="<dtml-var documento>">
              <img align=middle border=0 src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral"></a>
          </dtml-let>
+       <dtml-else>
+         <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
       </dtml-if>
       </th>
       <td class="texto">
@@ -537,7 +580,7 @@ $(document).ready(function() {
        </dtml-in>
        &nbsp;&nbsp;-&nbsp;&nbsp;<b>Descrição:</b> <dtml-var nom_documento missing null=""><br />
        <b>Data:</b> <dtml-var dat_documento missing null="">
-       &nbsp;&nbsp;-&nbsp;&nbsp;<b>Autoria:</b> <dtml-var nom_autor_documento missing null=""></td>
+       &nbsp;&nbsp;-&nbsp;&nbsp;<b>Autoria:</b> <dtml-var nom_autor_documento missing null=""></div></td>
     </tr>
    </dtml-in>
  </table>
@@ -556,8 +599,8 @@ $(document).ready(function() {
       </tr>
     </dtml-if>
       <tr <dtml-if sequence-odd>class="even"</dtml-if>>
-       <th width="20%" class="form-label">
-        <dtml-var dat_tramitacao missing null="">
+       <th width="20%" class="texto">
+        <b>Data:</b> <dtml-var dat_tramitacao missing null="">
        </th>
        <td width="35%" valign="top" class="texto">
        <b>Origem:</b>
@@ -611,8 +654,8 @@ $(document).ready(function() {
       </tr>
     </dtml-if>
       <tr <dtml-if sequence-odd>class="even"</dtml-if>>
-       <th width="20%" class="form-label">
-        <dtml-var dat_tramitacao missing null="">
+       <th width="20%" class="texto">
+        <b>Data:</b> <dtml-var dat_tramitacao missing null="">
        </th>
        <td width="35%" valign="top" class="texto">
        <b>Origem:</b>
