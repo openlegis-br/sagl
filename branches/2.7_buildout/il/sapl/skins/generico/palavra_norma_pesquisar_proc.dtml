@@ -42,34 +42,44 @@
   </dtml-if sequence-start>
         <tr <dtml-if sequence-odd>class="even"</dtml-if>> 
           <td class="texto"><b>
-            <dtml-if expr="incluir=='1'">
+             <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
               <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
             <dtml-else>
               <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma missing>">
             </dtml-if>
-               <dtml-var sgl_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma> - <dtml-var des_tipo_norma upper></a></b><br>
+               <dtml-var des_tipo_norma upper> Nº <dtml-var num_norma> DE <dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_norma)" upper></span></a></b><br>
                <dtml-var txt_ementa missing>
-     <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
-       <dtml-if sequence-start>
-         <br /><b>Relacionamentos:</b><br />
-       </dtml-if>
-            <dtml-if "tip_vinculo=='A'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_altera.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Alterada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='R'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_integral.gif">&nbsp;<span style="color:#C72100;font-weight:normal;">Revogada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='P'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Revogada parcialmente pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='T'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_integral.gif">&nbsp;<span style="color:#C72100;font-weight:normal;"><span style="color:#C72100;font-weight:normal;">Revogada por consolidação pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='C'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_correlata.gif">&nbsp;<span style="color:#62682F;font-weight:normal;">Norma correlata:&nbsp;<a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='I'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Execução suspensa pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-
-            <dtml-elif "tip_vinculo=='G'"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/icon_status_revoga_parcial.gif">&nbsp;<span style="color:#32682F;font-weight:normal;">Regulamentada pelo(a) <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>"><dtml-var sgl_tipo_norma>&nbsp;<dtml-var num_norma>/<dtml-var ano_norma></a>.&nbsp;</span><br />
-            </dtml-if>
-          </dtml-in>
+     <dtml-if expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma) or zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)"> 
+       <dtml-in expr="zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)">
+         <dtml-if sequence-start>
+            <br /><b>Vinculação Ativa<dtml-if expr="_['sequence-length'] > 1"> (<dtml-var sequence-length>)</dtml-if>:</b><br />
+         </dtml-if> <dtml-var sequence-number> - <dtml-var des_vinculo>
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
+           <dtml-else>
+            <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
+           </dtml-if>
+              <b><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b>
+            </a>
+           <dtml-unless sequence-end><br /></dtml-unless>
+       </dtml-in>
+       <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+         <dtml-if sequence-start>
+            <br /><b>Vinculação Passiva<dtml-if expr="_['sequence-length'] > 1"> (<dtml-var sequence-length>)</dtml-if>:</b><br />
+         </dtml-if> <dtml-var sequence-number> - <dtml-var des_vinculo_passivo>
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
+           <dtml-else>
+            <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
+           </dtml-if>
+              <b><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b>
+            </a>
+           <dtml-unless sequence-end><br /></dtml-unless>
+       </dtml-in>
+     </dtml-if>
          </td>   
-          <td width="10%"> 
+          <td width="10%">
+            <div align="center">
                 <dtml-call expr="REQUEST.set('texto_consolidado', _.str(cod_norma)+'_texto_consolidado.pdf')">
                 <dtml-call expr="REQUEST.set('texto_original', _.str(cod_norma)+'_texto_integral.pdf')">
                 <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
@@ -85,6 +95,7 @@
                 <dtml-else>
                   <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                 </dtml-if> 
+            </div>
           </td>
        </tr>
  <dtml-if sequence-end>

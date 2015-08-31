@@ -434,6 +434,8 @@ ALTER TABLE  `vinculo_norma_juridica` ADD  `txt_observacao_vinculo` VARCHAR( 250
 -- Fim Tipo vinculo
 --
 
+ALTER TABLE  `ordem_dia` ADD INDEX (  `cod_sessao_plen` ) ;
+
 ALTER TABLE `materia_legislativa` DROP `txt_resultado`;
 
 ALTER TABLE `protocolo` DROP `cod_documento`;
