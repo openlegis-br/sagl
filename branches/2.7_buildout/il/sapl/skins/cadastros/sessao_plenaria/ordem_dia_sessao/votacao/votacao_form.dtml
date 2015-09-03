@@ -38,13 +38,14 @@
                 return false;
             }
 
-            if (tipo_votacao == 1) {
 <dtml-comment>                            
+            if (tipo_votacao == 1) {
               if (!(form.rad_ind_votacao_presidente[0].checked || form.rad_ind_votacao_presidente[1].checked)){
                   alert("Indique se o total de votos inclui o voto do Presidente!");
                   form.rad_ind_votacao_presidente[0].focus();
                   return false;
               }
+
               var qtv = 0;
               var qp  = 0;
               var qvs = parseInt(form.txt_votos_sim.value,10); 
@@ -64,9 +65,10 @@
               if (qp == quo) {
                  form.rad_ind_votacao_presidente[1].focus();
               }
-</dtml-comment>
              form.submit(); 
             }
+</dtml-comment>
+
             if (tipo_votacao == 3) {
                var qtv = 0
                var qvs = parseInt(form.txt_votos_sim.value,10);
@@ -160,7 +162,7 @@ function reloadParentAndClose()
 
 </script>
 </head>
-<body>
+<body class="modal">
 
 <h1 class="firstHeading">Votação de Matéria da Ordem do Dia</h1>
 
@@ -231,7 +233,7 @@ function reloadParentAndClose()
                 <td colspan="2">
                     <label for="lst_tip_resultado">Resultado da Votação </label><span class="campoObrigatorio">&nbsp;</span>
                     <select name="lst_tip_resultado" size="1">
-                        <option value="-1">Selecione </option>
+                        <option value="0">Selecione </option>
                         <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql()">
                             <option
                             <dtml-if expr="_.has_key('cod_votacao') and tip_resultado_votacao==votacao_form.tip_resultado_votacao">
@@ -290,12 +292,11 @@ function reloadParentAndClose()
                </th>
             </tr>
             <dtml-if cod_votacao>
-            <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=cod_num_legislatura, ind_excluido=0)">
-             <dtml-if  expr="pysc.autoria_parlamentar_validar_pysc(txt_dat_apresentacao=dat_sessao, cod_parlamentar=cod_parlamentar)">
+            <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
               <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao=cod_votacao,cod_parlamentar=cod_parlamentar,ind_excluido=0)">
             <tr>
                 <td width="45%" class="texto">
-                    <dtml-var nom_completo>/<dtml-var sgl_partido missing null="">
+                    <dtml-var nom_completo>
                     <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
                 </td>
                 <td>
@@ -313,14 +314,12 @@ function reloadParentAndClose()
                 </td>
             </tr>
               </dtml-in>
-             </dtml-if>
             </dtml-in>
             <dtml-else>
-            <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura = cod_num_legislatura, ind_excluido=0)">
-             <dtml-if  expr="pysc.autoria_parlamentar_validar_pysc(txt_dat_apresentacao=dat_sessao, cod_parlamentar=cod_parlamentar)">
+            <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
             <tr>
                 <td width="45%" class="texto">
-                    <dtml-var nom_completo>/<dtml-var sgl_partido missing null="">
+                    <dtml-var nom_completo>
                     <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
                 </td>
                 <td>
@@ -337,14 +336,13 @@ function reloadParentAndClose()
                     </select>
                 </td>
             </tr>
-             </dtml-if>
             </dtml-in>
             </dtml-if>
             <tr>
                 <td>
                     <label for="lst_tip_resultado">Resultado da Votação </label><span class="campoObrigatorio">&nbsp;</span>
                     <select name="lst_tip_resultado" size="1">
-                        <option value="-1">Selecione</option>
+                        <option value="0">Selecione</option>
                         <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql()">
                             <option
                             <dtml-if expr="_.has_key('cod_votacao') and tip_resultado_votacao==votacao_form.tip_resultado_votacao">
@@ -420,7 +418,7 @@ function reloadParentAndClose()
                 <td colspan="2">
                     <label for="lst_tip_resultado">Resultado da Votação </label><span class="campoObrigatorio">&nbsp;</span>
                     <select name="lst_tip_resultado" size="1">
-                        <option value="-1">Selecione</option>
+                        <option value="0">Selecione</option>
                         <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql()">
                             <option
                             <dtml-if expr="_.has_key('cod_votacao') and tip_resultado_votacao==votacao_form.tip_resultado_votacao">
