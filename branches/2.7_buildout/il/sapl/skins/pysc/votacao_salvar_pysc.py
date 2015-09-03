@@ -27,8 +27,8 @@ for voto in vot_parlamentar:
         votos_abstencao.append(voto)
 
 for n in range(len(cod_parlamentar)):
-    dic[cod_parlamentar[n]]=vot_parlamentar[n]
-#dic = dict(zip(cod_parlamentar, vot_parlamentar))
+    #dic[cod_parlamentar[n]]=vot_parlamentar[n]
+    dic = dict(zip(cod_parlamentar, vot_parlamentar))
 
 #votacao=context.zsql.votacao_obter_zsql(cod_votacao=cod_votacao,cod_ordem=cod_ordem,cod_materia=cod_materia,ind_excluido=0)
 votacao=context.zsql.votacao_obter_zsql(cod_ordem=cod_ordem,cod_materia=cod_materia,cod_emenda=cod_emenda,cod_subemenda=cod_subemenda, cod_substitutivo=cod_substitutivo,ind_excluido=0)
