@@ -72,7 +72,7 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
 
         dic['ano']=str(protocolo.ano_protocolo)
 
-        dic['data']=context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' - '+protocolo.hor_protocolo
+        dic['data']='Data: '+context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' - Horário: '+protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
 
         dic['txt_assunto']=protocolo.txt_assunto_ementa
 
@@ -94,14 +94,31 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
                     dic['nom_autor']=autor.nom_autor
         else:
             dic['nom_autor']=protocolo.txt_interessado
+        
+        dic['tipo_autor'] = " "
+        if protocolo.tip_processo==0:
+           dic['tipo_autor']='Interessado'
+        elif protocolo.tip_processo==1:
+           dic['tipo_autor']='Autor'
 
-        dic['natureza']=''
+
+        if protocolo.tip_processo==0:
+           dic['tipo_enunciado']='Assunto'
+        elif protocolo.tip_processo==1:
+           dic['tipo_enunciado']='Ementa'
+
+
         if protocolo.tip_processo==0:
            dic['natureza']='Administrativo'
-        if protocolo.tip_processo==1:
+        elif protocolo.tip_processo==1:
            dic['natureza']='Legislativo'
   
-        dic['ident_processo']=protocolo.des_tipo_materia or protocolo.des_tipo_documento
+
+        if protocolo.tip_processo==0:
+           dic['ident_processo']=protocolo.des_tipo_documento.upper()
+        elif protocolo.tip_processo==1:
+           dic['ident_processo']=protocolo.des_tipo_materia.upper()
+
 
         dic['sgl_processo']=protocolo.sgl_tipo_materia or protocolo.sgl_tipo_documento
 

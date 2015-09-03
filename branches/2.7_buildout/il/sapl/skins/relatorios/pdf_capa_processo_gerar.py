@@ -23,8 +23,9 @@ def paraStyle():
     tmp_data+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp_data+='\t\t</initialize>\n'
     tmp_data+='\t\t<paraStyle name="P1" fontName="Helvetica" fontSize="9" leading="11" alignment="justify"/>\n'
-    tmp_data+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="8" leading="9" alignment="right"/>\n'
+    tmp_data+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="8" leading="9" alignment="justify"/>\n'
     tmp_data+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="9" leading="9" alignment="justify"/>\n'
+    tmp_data+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10" leading="12" alignment="justify"/>\n'
     tmp_data+='\t</stylesheet>\n'
 
     return tmp_data
@@ -42,17 +43,20 @@ def protocolos(lst_protocolos):
         tmp_data+='\t\t<condPageBreak height="3cm"/>\n'
 
         #protocolos
-        tmp_data+='\t\t<barCode code="Code128" x="5.6cm" barHeight="0.3in" barWidth="0.012in">' +dic['codigo']+ '</barCode>\n'
-        tmp_data+='\t\t<para style="P2"><b>Protocolo:</b> '+dic['titulo']+'/'+dic['ano']+'</para>\n'
-        tmp_data+='\t\t<para style="P2">'+ dic['data']+ '</para>\n'
         tmp_data+='\t\t<para style="P1"><b>'+dic['numeracao']+'</b></para>\n'
-        tmp_data+='\t\t<para style="P1"><b>'+dic['sgl_processo']+' '+dic['ident_processo']+ ' '+dic['num_processo']+ '</b></para>\n'
-        tmp_data+='\t\t<para style="P1"><b>Autor:</b> <font size="8">' +dic['nom_autor']+ '</font></para>\n'
-        tmp_data+='\t\t<para style="P2">\n'
-        tmp_data+='\t\t\t<font color="white"> </font>\n'
-        tmp_data+='\t\t</para>\n'
-        tmp_data+='\t\t<para style="P3"><b>Ementa:</b> <font size="8">' +dic['txt_assunto']+ '</font></para>\n'
+        tmp_data+='\t\t<para style="P4"><b>'+dic['ident_processo']+ ' Nº '+dic['num_processo']+ '</b></para>\n'
+        tmp_data+='\t\t<para style="P1"><b>'+dic['tipo_autor']+': </b>' +dic['nom_autor']+ '</para>\n'
 
+        tmp_data+='\t\t<para style="P2"><b>'+dic['tipo_enunciado']+': </b>' +dic['txt_assunto']+ '</para>\n'
+        tmp_data+='\t\t<para style="P1">\n'
+        tmp_data+='\t\t\t<font color="white">-</font>\n'
+        tmp_data+='\t\t</para>\n'
+        tmp_data+='\t\t<para style="P2"><b>PROTOCOLO GERAL Nº '+dic['titulo']+'/'+dic['ano']+'</b></para>\n'
+        tmp_data+='\t\t<para style="P2">'+ dic['data']+ '</para>\n'
+        tmp_data+='\t\t<para style="P1">\n'
+        tmp_data+='\t\t\t<font color="white">-</font>\n'
+        tmp_data+='\t\t</para>\n'
+        tmp_data+='\t\t<barCode code="Code128" barHeight="0.35in" barWidth="0.013in">' +dic['titulo']+ '/' +dic['ano']+ '</barCode>\n'
     tmp_data+='\t</story>\n'
     return tmp_data
 
@@ -65,11 +69,11 @@ def principal(sessao,imagem,data,lst_protocolos,dic_cabecalho,lst_rodape,dic_fil
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="etiquetas.pdf">\n'
-    tmp_data+='\t<template pageSize="(10cm, 6.2cm)" title="Capas de processos" author="OpenLegis" allowSplitting="20" rightMargin="3mm" showBoundary="0">\n'
+    tmp_data+='\t<template pageSize="(10cm, 6.2cm)" title="Capas de processos" author="OpenLegis" allowSplitting="20" >\n'
     tmp_data+='\t\t<pageTemplate id="main">\n'
     tmp_data+='\t\t<pageGraphics>\n'
     tmp_data+='\t\t</pageGraphics>\n'
-    tmp_data+='\t\t\t<frame id="first" x1="4mm" y1="1mm" width="94mm" height="60mm"/>\n'
+    tmp_data+='\t\t\t<frame id="first" x1="4mm" y1="0mm" width="94mm" height="60mm"/>\n'
     tmp_data+='\t\t</pageTemplate>\n'
     tmp_data+='\t</template>\n'
     tmp_data+=paraStyle()
