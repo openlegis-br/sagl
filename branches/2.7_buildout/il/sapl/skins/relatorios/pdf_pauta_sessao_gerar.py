@@ -11,12 +11,12 @@ def cabecalho(inf_basicas_dic,imagem):
     """
     """
     tmp=''
-    tmp+='\t\t\t\t<image x="2.1cm" y="26cm" width="59" height="62" file="' + imagem + '"/>\n'
-    tmp+='\t\t\t\t<lines>2cm 25.4cm 19cm 25.4cm</lines>\n'
-    tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="14"/>\n'
-    tmp+='\t\t\t\t<drawString x="5cm" y="27.2cm">' + str(inf_basicas_dic["nom_camara"]) + '</drawString>\n'
-    tmp+='\t\t\t\t<setFont name="Helvetica" size="12"/>\n'
-    tmp+='\t\t\t\t<drawString x="5cm" y="26.6cm">Sistema Aberto de Gestão Legislativa</drawString>\n'
+    tmp+='\t\t\t\t<image x="4.1cm" y="26.9cm" width="74" height="60" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<lines>3.3cm 26.3cm 19.5cm 26.3cm</lines>\n'
+    tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="15"/>\n'
+    tmp+='\t\t\t\t<drawString x="6.7cm" y="28.1cm">' + dic_cabecalho['nom_casa'] + '</drawString>\n'
+    tmp+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
+    tmp+='\t\t\t\t<drawString x="6.7cm" y="27.6cm">' + 'Estado de ' + dic_cabecalho['nom_estado'] + '</drawString>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="12"/>\n'
     tmp+='\t\t\t\t<drawString x="2.2cm" y="24.6cm">Pauta da ' + str(inf_basicas_dic['num_sessao_plen']) + 'ª Sessão ' + str(inf_basicas_dic['nom_sessao']) + ' da ' + str(inf_basicas_dic['num_sessao_leg']) + 'ª Sessão Legislativa da ' + str(inf_basicas_dic['num_legislatura']) + 'ª Legislatura </drawString>\n'
     return tmp
@@ -43,12 +43,12 @@ def rodape(rodape_dic):
     if rodape_dic['data_emissao']!="" and rodape_dic['data_emissao']!=None:
         data_emissao = rodape_dic['data_emissao']
 
-    tmp+='\t\t\t\t<lines>2cm 3.2cm 19cm 3.2cm</lines>\n'
+    tmp+='\t\t\t\t<lines>3.3cm 2.2cm 19.5cm 2.2cm</lines>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="8"/>\n'
-    tmp+='\t\t\t\t<drawString x="2cm" y="3.3cm">' + data_emissao + '</drawString>\n'
-    tmp+='\t\t\t\t<drawString x="17.9cm" y="3.3cm">Página <pageNumber/></drawString>\n'
-    tmp+='\t\t\t\t<drawCentredString x="10.5cm" y="2.7cm">' + linha1 + '</drawCentredString>\n'
-    tmp+='\t\t\t\t<drawCentredString x="10.5cm" y="2.3cm">' + linha2 + '</drawCentredString>\n'
+    tmp+='\t\t\t\t<drawString x="3.3cm" y="2.4cm">' + data_emissao + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="18.4cm" y="2.4cm">Página <pageNumber/></drawString>\n'
+    tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="1.7cm">' + linha1 + '</drawCentredString>\n'
+    tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="1.3cm">' + linha2 + '</drawCentredString>\n'
 
     return tmp
 
@@ -171,7 +171,7 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     tmp+=cabecalho(inf_basicas_dic,imagem)
     tmp+=rodape(rodape_dic)
     tmp+='\t\t\t</pageGraphics>\n'
-    tmp+='\t\t\t<frame id="first" x1="2cm" y1="4cm" width="17cm" height="20.5cm"/>\n'
+    tmp+='\t\t\t<frame id="first" x1="3cm" y1="2cm" width="16cm" height="23cm"/>\n'
     tmp+='\t\t</pageTemplate>\n'
     tmp+='\t</template>\n'
     tmp+=paraStyle()
@@ -187,7 +187,7 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
         context.temp_folder.manage_delObjects(ids=arquivoPdf)
     context.temp_folder.manage_addFile(arquivoPdf)
     arq=context.temp_folder[arquivoPdf]
-    arq.manage_edit(title='Arquivo PDF temporario.',filedata=tmp_pdf,content_type='application/pdf')
+    arq.manage_edit(title='Arquivo PDF temporário.',filedata=tmp_pdf,content_type='application/pdf')
 
     return "/temp_folder/"+arquivoPdf
 

@@ -12,11 +12,12 @@ def cabecalho(inf_basicas_dic,imagem):
     """
     """
     tmp=''
-    tmp+='\t\t\t\t<image x="6.1cm" y="26.9cm" width="74" height="80" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<image x="4.1cm" y="26.9cm" width="74" height="60" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<lines>3.3cm 26.3cm 19.5cm 26.3cm</lines>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
-    tmp+='\t\t\t\t<drawString x="10.5cm" y="27.6cm">Estado de ' + str(inf_basicas_dic['nom_estado']) + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="6.7cm" y="27.6cm">Estado de ' + str(inf_basicas_dic['nom_estado']) + '</drawString>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="14"/>\n'
-    tmp+='\t\t\t\t<drawString x="9cm" y="28.1cm">' + str(inf_basicas_dic['nom_camara']) + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="6.7cm" y="28.1cm">' + str(inf_basicas_dic['nom_camara']) + '</drawString>\n'
     return tmp
 
 def rodape(rodape_dic):
@@ -40,10 +41,11 @@ def rodape(rodape_dic):
         linha2 = linha2 + " - E-mail: " + rodape_dic['end_email_casa']
     if rodape_dic['data_emissao']!="" and rodape_dic['data_emissao']!=None:
         data_emissao = rodape_dic['data_emissao']
-    tmp+='\t\t\t\t<lines>3.2cm 2.2cm 20cm 2.2cm</lines>\n'
+
+    tmp+='\t\t\t\t<lines>3.3cm 2.2cm 19.5cm 2.2cm</lines>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="8"/>\n'
-    tmp+='\t\t\t\t<drawString x="3.2cm" y="2.4cm">' + data_emissao + '</drawString>\n'
-    tmp+='\t\t\t\t<drawString x="18.7cm" y="2.4cm">Página <pageNumber/></drawString>\n'
+    tmp+='\t\t\t\t<drawString x="3.3cm" y="2.4cm">' + data_emissao + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="18.4cm" y="2.4cm">Página <pageNumber/></drawString>\n'
     tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="1.7cm">' + linha1 + '</drawCentredString>\n'
     tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="1.3cm">' + linha2 + '</drawCentredString>\n'
 
@@ -67,7 +69,6 @@ def paraStyle():
     tmp+='\t\t\t<blockAlignment value="LEFT" start="1,1" stop="-1,-1"/>\n'
     tmp+='\t\t\t<blockValign value="TOP"/>\n'
     tmp+='\t\t</blockTableStyle>\n'
-
     tmp+='\t\t<blockTableStyle id="votacao">\n'
     tmp+='\t\t\t<blockFont name="Helvetica" size="8" leading="9" start="0,0" stop="-1,0"/>\n'
     tmp+='\t\t\t<blockBackground colorName="silver" start="0,0" stop="3,0" />\n'
@@ -111,7 +112,7 @@ def inf_basicas(inf_basicas_dic):
     hr_fim_sessao = inf_basicas_dic["hr_fim_sessao"]
 
     tmp=""
-    tmp+='\t\t<para style="P0"><u>' + str(inf_basicas_dic['num_sessao_plen']) + 'ª SESSÃO ' + str(inf_basicas_dic['nom_sessao']) + ' DA ' + str(inf_basicas_dic['num_legislatura']) + 'ª LEGISLATURA ' + '</u></para>\n'
+    tmp+='\t\t<para style="P0">' + str(inf_basicas_dic['num_sessao_plen']) + 'ª SESSÃO ' + str(inf_basicas_dic['nom_sessao']) + ' DA ' + str(inf_basicas_dic['num_legislatura']) + 'ª LEGISLATURA ' + '</para>\n'
     tmp+='\t\t<para style="P01">(Em '+ str(inf_basicas_dic["dia_sessao"])+')</para>\n'
     tmp+='\t\t<condPageBreak height="3cm"/>\n'     
     tmp+='\t\t<para style="P1"><i><u>1) ABERTURA</u></i></para>\n'

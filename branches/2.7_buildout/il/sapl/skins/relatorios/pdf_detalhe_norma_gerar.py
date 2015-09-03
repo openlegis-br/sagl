@@ -13,12 +13,12 @@ def cabecalho(inf_basicas_dic,imagem):
     Função que gera o código rml do cabeçalho da página
     """
     tmp=''
-    tmp+='\t\t\t\t<image x="6.1cm" y="26.9cm" width="74" height="80" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<image x="4.1cm" y="26.9cm" width="74" height="60" file="' + imagem + '"/>\n'
     tmp+='\t\t\t\t<lines>3.3cm 26.3cm 19.5cm 26.3cm</lines>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="15"/>\n'
-    tmp+='\t\t\t\t<drawString x="9cm" y="28.1cm">' + inf_basicas_dic['nom_camara'] + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="6.7cm" y="28.1cm">' + inf_basicas_dic['nom_camara'] + '</drawString>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
-    tmp+='\t\t\t\t<drawString x="10.5cm" y="27.6cm">' + inf_basicas_dic['nom_estado'] + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="6.7cm" y="27.6cm">' + inf_basicas_dic['nom_estado'] + '</drawString>\n'
     if str(inf_basicas_dic['titulo']) != "" and str(inf_basicas_dic['titulo']) != None:
         tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="12"/>\n'
         tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="25.6cm">' + str(inf_basicas_dic['titulo']) + '</drawCentredString>\n'
@@ -110,8 +110,8 @@ def inf_basicas(inf_basicas_dic):
     data_publicacao = inf_basicas_dic['dat_publicacao']
 
     if veiculo != "" and veiculo != None or data_publicacao != "" and data_publicacao != None:
-        tmp+='\t\t<para style="P1">Publicidade</para>\n'
-        tmp+='\t\t<para style="P2"><b>Veículo de publicação: </b> ' + veiculo + '</para>\n'
+        tmp+='\t\t<para style="P1">Publicação</para>\n'
+        tmp+='\t\t<para style="P2"><b>Veículo: </b> ' + veiculo + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Data: </b> ' + data_publicacao + '</para>\n'
 
     #situacao
@@ -126,25 +126,27 @@ def assuntos(lst_assuntos):
     if assuntos != " " and assuntos != None:
         tmp+='\t\t<para style="P1">Assuntos / Classificação</para>\n'
     for assuntos_dic in lst_assuntos:
-        tmp+='\t\t<para style="P2"> - ' +  assuntos_dic['assunto'] + '</para>\n'
+        tmp+='\t\t<para style="P2">' +  assuntos_dic['assunto'] + '</para>\n'
 
     return tmp
 
 def vinculos_ativos(lst_vinculos_ativos):
     tmp=''
-    if vinculos_ativos != " " and vinculos_ativos != None:
-        tmp+='\t\t<para style="P1">Vinculação Ativa</para>\n'
+    if vinculos_ativos != " " or vinculos_ativos != None:
+       tmp+='\t\t<para style="P1">Vinculação Ativa</para>\n'
     for vinculos_ativos_dic in lst_vinculos_ativos:
-        tmp+='\t\t<para style="P2">' +  vinculos_ativos_dic['norma'] + ' (' + vinculos_ativos_dic['vinculo'] + ')' + '</para>\n'
+        if vinculos_ativos_dic['norma'] != " " or vinculos_ativos_dic['norma'] != None:
+            tmp+='\t\t<para style="P2">' + vinculos_ativos_dic['norma'] + '</para>\n'
 
     return tmp
 
 def vinculos_passivos(lst_vinculos_passivos):
     tmp=''
-    if vinculos_passivos != " " and vinculos_passivos != None:
-        tmp+='\t\t<para style="P1">Vinculação Passiva</para>\n'
+    if vinculos_passivos != " " or vinculos_passivos != None:
+       tmp+='\t\t<para style="P1">Vinculação Passiva</para>\n'
     for vinculos_passivos_dic in lst_vinculos_passivos:
-        tmp+='\t\t<para style="P2">' +  vinculos_passivos_dic['norma'] + ' (' + vinculos_passivos_dic['vinculo'] + ')' + '</para>\n'
+        if vinculos_passivos_dic['norma'] != " " or vinculos_passivos_dic['norma']  != None:
+           tmp+='\t\t<para style="P2">' +  vinculos_passivos_dic['norma'] + '</para>\n'
 
     return tmp
 

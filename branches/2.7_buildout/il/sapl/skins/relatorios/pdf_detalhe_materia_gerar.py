@@ -13,12 +13,12 @@ def cabecalho(dic_inf_basicas,imagem):
     Função que gera o código rml do cabeçalho da página
     """
     tmp=''
-    tmp+='\t\t\t\t<image x="6.1cm" y="26.9cm" width="74" height="80" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<image x="4.1cm" y="26.9cm" width="74" height="60" file="' + imagem + '"/>\n'
     tmp+='\t\t\t\t<lines>3.3cm 26.3cm 19.5cm 26.3cm</lines>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="15"/>\n'
-    tmp+='\t\t\t\t<drawString x="9cm" y="28.1cm">' + dic_inf_basicas['nom_camara'] + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="6.7cm" y="28.1cm">' + dic_inf_basicas['nom_camara'] + '</drawString>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
-    tmp+='\t\t\t\t<drawString x="10.5cm" y="27.6cm">' + dic_inf_basicas['nom_estado'] + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="6.7cm" y="27.6cm">' + dic_inf_basicas['nom_estado'] + '</drawString>\n'
     if str(dic_inf_basicas['cod_projeto']) != "" and str(dic_inf_basicas['cod_projeto']) != None:
         tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="12"/>\n'
         tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="25.6cm">' + str(dic_inf_basicas['cod_projeto']) + '</drawCentredString>\n'

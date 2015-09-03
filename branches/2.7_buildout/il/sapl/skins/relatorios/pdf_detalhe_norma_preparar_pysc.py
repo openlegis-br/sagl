@@ -68,58 +68,28 @@ for norma in context.zsql.norma_juridica_obter_zsql(cod_norma=REQUEST['cod_norma
  assuntos = norma.cod_assunto_sel.split(",")
  for assunto in assuntos:
    assuntos_dic = {}
-   assuntos_dic['assunto']= ' '
-   for des_assunto in context.zsql.assunto_norma_juridica_obter_zsql(cod_assunto = assunto):
-     assuntos_dic = {}
-     assuntos_dic['assunto']= des_assunto[2]
+   if assunto != '1':
+     aux = context.zsql.assunto_norma_juridica_obter_zsql(cod_assunto = assunto)
+     assuntos_dic['assunto']= aux[0].des_assunto
      lst_assuntos.append(assuntos_dic)
 
 #o bloco abaixo gera o dicionario de vinculos ativos
  lst_vinculos_ativos = []
  for norma_vinculada in context.zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=norma.cod_norma):
   vinculos_ativos_dic = {}
-  vinculos_ativos_dic['norma']= str(norma_vinculada.des_tipo_norma) +" n° "+ str(norma_vinculada.num_norma)+ " de " + norma_vinculada.dat_norma
-  if norma_vinculada.tip_vinculo=='R':
-      vinculos_ativos_dic['vinculo'] = 'Revogação'
-  elif norma_vinculada.tip_vinculo=='A':
-      vinculos_ativos_dic['vinculo'] = 'Alteração'
-  elif norma_vinculada.tip_vinculo=='S':
-     vinculos_ativos_dic['vinculo'] = 'Ineficácia'
-  elif norma_vinculada.tip_vinculo=='P':
-      vinculos_ativos_dic['vinculo'] = 'Revogação parcial'
-  elif norma_vinculada.tip_vinculo=='C':
-      vinculos_ativos_dic['vinculo'] = 'Norma Correlata'
-  elif norma_vinculada.tip_vinculo=='G':
-      vinculos_ativos_dic['vinculo'] = 'Regulamentação'
-  elif norma_vinculada.tip_vinculo=='I':
-      vinculos_ativos_dic['vinculo'] = 'Suspensão de Execução'
-  else:
-      vinculos_ativos_dic['vinculo']= norma_vinculada.tip_vinculo
+  aux = context.zsql.tipo_vinculo_norma_obter_zsql(tipo_vinculo=norma_vinculada.tip_vinculo)
+  vinculos_ativos_dic['norma']= str(aux[0].des_vinculo) + ' ' + str(norma_vinculada.des_tipo_norma) +" n° "+ str(norma_vinculada.num_norma)+ " de " + norma_vinculada.dat_norma
   lst_vinculos_ativos.append(vinculos_ativos_dic)
-  
+   
 
 #o bloco abaixo gera o dicionario de vinculos passivos
  lst_vinculos_passivos = []
  for norma_vinculada in context.zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=norma.cod_norma):
   vinculos_passivos_dic = {}
-  vinculos_passivos_dic['norma']= str(norma_vinculada.des_tipo_norma) +" n° "+ str(norma_vinculada.num_norma)+ " de " + norma_vinculada.dat_norma
-  if norma_vinculada.tip_vinculo=='R':
-      vinculos_passivos_dic['vinculo'] = 'Revogação'
-  elif norma_vinculada.tip_vinculo=='A':
-      vinculos_passivos_dic['vinculo'] = 'Alteração'
-  elif norma_vinculada.tip_vinculo=='S':
-      vinculos_passivos_dic['vinculo'] = 'Ineficácia'
-  elif norma_vinculada.tip_vinculo=='P':
-      vinculos_passivos_dic['vinculo'] = 'Revogação parcial'
-  elif norma_vinculada.tip_vinculo=='C':
-      vinculos_passivos_dic['vinculo'] = 'Norma Correlata'
-  elif norma_vinculada.tip_vinculo=='G':
-      vinculos_passivos_dic['vinculo'] = 'Regulamentação'
-  elif norma_vinculada.tip_vinculo=='I':
-      vinculos_passivos_dic['vinculo'] = 'Suspensão de Execução'
-  else:
-      vinculos_passivos_dic['vinculo']= norma_vinculada.tip_vinculo
+  aux = context.zsql.tipo_vinculo_norma_obter_zsql(tipo_vinculo=norma_vinculada.tip_vinculo)
+  vinculos_passivos_dic['norma']= str(aux[0].des_vinculo_passivo) + ' ' + str(norma_vinculada.des_tipo_norma) +" n° "+ str(norma_vinculada.num_norma)+ " de " + norma_vinculada.dat_norma
   lst_vinculos_passivos.append(vinculos_passivos_dic)
+
  
 caminho=context.pdf_detalhe_norma_gerar(imagem,rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativos,lst_vinculos_passivos,sessao=session.id)
 if caminho=='aviso':

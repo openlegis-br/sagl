@@ -11,21 +11,23 @@ def cabecalho(dic_cabecalho,dat_ordem,imagem):
     """Gera o codigo rml do cabecalho"""
 
     tmp=''
-    tmp+='\t\t\t\t<image x="5.6cm" y="26.9cm" width="70" height="75" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<image x="4.1cm" y="26.9cm" width="74" height="60" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<lines>3.3cm 26.3cm 19.5cm 26.3cm</lines>\n'
+    tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="15"/>\n'
+    tmp+='\t\t\t\t<drawString x="6.7cm" y="28.1cm">' + dic_cabecalho['nom_casa'] + '</drawString>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
-    tmp+='\t\t\t\t<drawString x="10.5cm" y="27.6cm">Estado de ' + str(dic_cabecalho['nom_estado']) + '</drawString>\n'
-    tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="14"/>\n'
-    tmp+='\t\t\t\t<drawString x="9cm" y="28.1cm">' + str(dic_cabecalho['nom_casa']) + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="6.7cm" y="27.6cm">' + 'Estado de ' + dic_cabecalho['nom_estado'] + '</drawString>\n'
     return tmp
 
 def rodape(lst_rodape):
     """ Gera o codigo rml do rodape"""
 
     tmp=''
-    tmp+='\t\t\t\t<lines>4.4cm 2.2cm 20cm 2.2cm</lines>\n'
+    tmp=''
+    tmp+='\t\t\t\t<lines>3.3cm 2.2cm 19.5cm 2.2cm</lines>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica" size="8"/>\n'
-    tmp+='\t\t\t\t<drawString x="4.4cm" y="2.4cm">' + lst_rodape[2] + '</drawString>\n'
-    tmp+='\t\t\t\t<drawString x="18.7cm" y="2.4cm">Página <pageNumber/></drawString>\n'
+    tmp+='\t\t\t\t<drawString x="3.3cm" y="2.4cm">' + lst_rodape[2] + '</drawString>\n'
+    tmp+='\t\t\t\t<drawString x="18.4cm" y="2.4cm">Página <pageNumber/></drawString>\n'
     tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="1.7cm">' + lst_rodape[0] + '</drawCentredString>\n'
     tmp+='\t\t\t\t<drawCentredString x="11.5cm" y="1.3cm">' + lst_rodape[1] + '</drawCentredString>\n'
 
@@ -44,7 +46,7 @@ def paraStyle():
     tmp+='\t\t<initialize>\n'
     tmp+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp+='\t\t</initialize>\n'
-    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="10.6" leading="12" alignment="CENTER"/>\n'
+    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="12" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="9" alignment="LEFT"/>\n'
     tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="9.0" leading="11" alignment="JUSTIFY"/>\n'
@@ -62,19 +64,10 @@ def pauta(lst_splen, lst_pauta):
     tmp+='\t<story>\n'
 
     for dicsp in lst_splen:
-        #espaço inicial
-        tmp+='\t\t<para style="P1">\n'
-        tmp+='\t\t\t<font color="white"> </font>\n'
-        tmp+='\t\t</para>\n'
-        tmp+='\t\t<para style="P1" spaceAfter="16">\n'
-        tmp+='\t\t\t<font color="white"> </font>\n'
-        tmp+='\t\t</para>\n'
-
-   
 
         #sessao plenaria
         if dicsp['sessao']!=None:
-           tmp+='\t\t<para style="P0"><u>' + dicsp['sessao'].replace('&','&amp;') +', EM ' + dicsp['datasessao'].replace('&','&amp;')+ '</u></para>\n'
+           tmp+='\t\t<para style="P0">' + dicsp['sessao'].replace('&','&amp;') +', EM ' + dicsp['datasessao'].replace('&','&amp;')+ '</para>\n'
            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
            tmp+='\t\t\t<font color="white"> </font>\n'
            tmp+='\t\t</para>\n'
@@ -88,7 +81,7 @@ def pauta(lst_splen, lst_pauta):
     
     for dic in lst_pauta:
         #espaco inicial
-        tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="10">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
 
@@ -97,12 +90,12 @@ def pauta(lst_splen, lst_pauta):
 
         #pauta
         if dic['num_ordem']!=None:
-            tmp+='\t\t<para style="P4"><font color="#303030">Item nº ' + str(dic['num_ordem']) + '</font></para>\n'
+            tmp+='\t\t<para style="P4"><font color="#222">Item nº ' + str(dic['num_ordem']) + '</font></para>\n'
             tmp+='\t\t<para style="P2" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
         if dic['id_materia']!=None:
-            tmp+='\t\t<para style="P1"><font color="#303030"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</para>\n'
+            tmp+='\t\t<para style="P1"><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</para>\n'
             tmp+='\t\t<para style="P2" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
@@ -156,7 +149,7 @@ def principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_roda
     tmp+=cabecalho(dic_cabecalho,dat_ordem,imagem)
     tmp+=rodape(lst_rodape)
     tmp+='\t\t\t</pageGraphics>\n'
-    tmp+='\t\t\t<frame id="first" x1="4cm" y1="3cm" width="16cm" height="24cm"/>\n'
+    tmp+='\t\t\t<frame id="first" x1="3cm" y1="3cm" width="16cm" height="23cm"/>\n'
     tmp+='\t\t</pageTemplate>\n'
     tmp+='\t</template>\n'
     tmp+=paraStyle()
