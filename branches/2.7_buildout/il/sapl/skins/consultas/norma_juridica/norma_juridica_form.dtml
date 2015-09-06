@@ -152,6 +152,42 @@
      </table>
 </fieldset>
 
+<dtml-if expr="zsql.anexo_norma_obter_zsql(cod_norma=cod_norma)">
+<fieldset>
+ <legend>Anexos</legend>
+   <table>
+    <dtml-in expr="zsql.anexo_norma_obter_zsql(cod_norma=cod_norma)">
+     <dtml-if sequence-start>
+       <table>
+         <tr>
+             <th width="20%"  class="form-label">Arquivo</th>
+             <th class="form-label">Descrição</th>
+         </tr>
+     </dtml-if>
+         <tr>
+             <td class="texto">
+              <div align="center">
+              <dtml-let id_anexo="_.str(cod_norma)+'_anexo_'+ _.str(cod_anexo)">
+               <dtml-if expr="_.hasattr(sapl_documentos.norma_juridica,id_anexo)">
+                  <dtml-let anexo="_.getattr(sapl_documentos.norma_juridica,id_anexo).absolute_url">
+                    <dtml-call expr="REQUEST.set('nome_anexo',_.str(cod_norma)+'_anexo_'+ _.str(cod_anexo))">
+                    <a href="&dtml-portal_url;/sapl_documentos/norma_juridica/<dtml-var nome_anexo>" target="_blank">
+                      <img src="&dtml-portal_url;/imagens/procurar.gif" alt="<dtml-var txt_descricao>" title="<dtml-var txt_descricao>">
+                    </a>
+                  </dtml-let>
+               </dtml-if>
+              </dtml-let>
+              </div>
+             </td>
+             <td class="texto"><dtml-var txt_descricao></td>
+         </tr>
+     <dtml-if sequence-end>
+       </table>
+     </dtml-if>
+    </dtml-in>
+</fieldset>
+</dtml-if>
+
 <dtml-if expr="cod_assunto_sel!='1'">
 <fieldset>
    <legend>Classificação</legend>
@@ -178,7 +214,7 @@
   <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
     <dtml-if sequence-start>
       <tr>  
-         <th class="form-label" width="20%">Vínculação Passiva</th>
+         <th class="form-label" width="20%">Vinculação Passiva</th>
          <th class="form-label">Norma</th>
          <th width="20%" class="form-label">Observação</th>
       </tr>
@@ -201,7 +237,7 @@
   <dtml-in expr="zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)">
     <dtml-if sequence-start>
       <tr>  
-         <th class="form-label" width="20%">Vínculação Ativa</th>
+         <th class="form-label" width="20%">Vinculação Ativa</th>
          <th class="form-label">Norma</th>
          <th width="20%" class="form-label">Observação</th>
       </tr>
@@ -225,8 +261,22 @@
 </fieldset>
 </dtml-if>
 
-<p align="center">
-  <input class="botao" type="button" value="Retornar" onClick="history.go(-1)">
-</p>
+<div align="center" id="toolbar" class="ui-widget ui-corner-all">
+  <button class="retornar" onClick="history.go(-1)"/>Retornar</button>
+</div>
+
+	<script>
+	  $(function() {
+	    $( ".retornar" )
+ 	     .button({
+ 		     icons: {
+        primary: "ui-icon-arrowreturnthick-1-w"
+ 	     }
+  	  })
+  	    .click(function( event ) {
+ 	       event.preventDefault();
+ 	     });
+ 	 });
+	</script>
 
 <dtml-var standard_html_footer>

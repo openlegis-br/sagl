@@ -205,26 +205,19 @@ $(document).ready(function() {
             <td class="texto" valign="top">
                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
                     <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-                        <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></a></b><br />
+                        <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></a></b><br />
                 </dtml-in>
+                <dtml-comment>obtém a autoria da matéria.</dtml-comment>
+                <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
+                  <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
+                      <b>Autores:</b>
+                  <dtml-else>
+                      <b>Autor:</b>
+                  </dtml-if>
+                </dtml-if>  
                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
-                <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
-                    <dtml-if cod_parlamentar>
-                        <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
-                            <b>Autor:</b> <dtml-var nom_completo>
-                        </dtml-in>
-                    <dtml-elif cod_comissao>
-                        <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
-                            <b>Autor:</b> <dtml-var nom_comissao>
-                        </dtml-in>
-                    <dtml-elif cod_bancada>
-                        <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
-                            <b>Autor:</b> <dtml-var nom_bancada>
-                        </dtml-in>
-                    <dtml-else>
-                        <b>Autor:</b> <dtml-var nom_autor>
-                    </dtml-if>
-                </dtml-in>
+                  <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                  <dtml-if sequence-end><br /></dtml-if>
                 </dtml-in>
             </td>
             <td class="texto" valign="top">
@@ -267,37 +260,23 @@ $(document).ready(function() {
             <td class="texto" valign="top">
                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
                     <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-                        <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></a></b><br />
+                        <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></a></b><br />
                <dtml-if num_protocolo>
                   <b>Protocolo:</b> <dtml-var num_protocolo>/<dtml-var ano_ident_basica>
                   <br />
                </dtml-if>
                 </dtml-in>
-                <dtml-in expr="zsql.tramitacao_turno_obter_zsql(cod_materia=cod_materia)">
-                    <dtml-in expr="[('P','Primeiro'), ('S','Segundo'), ('U','Único'), ('L','Suplementar'), ('F','Final'), ('A','Votação Única em Regime de Urgência'), ('B','1ª Votação'), ('C','2ª e 3ª Votações')]">
-                        <dtml-if expr="sgl_turno==_['sequence-key']">
-                              <b>Turno</b>: <dtml-var sequence-item> <br />
-                        </dtml-if>
-                    </dtml-in>
-                </dtml-in>
+                <dtml-comment>obtém a autoria da matéria.</dtml-comment>
+                <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
+                  <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
+                      <b>Autores:</b>
+                  <dtml-else>
+                      <b>Autor:</b>
+                  </dtml-if>
+                </dtml-if>  
                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
-                <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
-                    <dtml-if cod_parlamentar>
-                        <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
-                            <b>Autor:</b> <dtml-var nom_completo>
-                        </dtml-in>
-                    <dtml-elif cod_comissao>
-                        <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
-                            <b>Autor:</b> <dtml-var nom_comissao>
-                        </dtml-in>
-                    <dtml-elif cod_bancada>
-                        <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
-                            <b>Autor:</b> <dtml-var nom_bancada>
-                        </dtml-in>
-                    <dtml-else>
-                        <b>Autor:</b> <dtml-var nom_autor>
-                    </dtml-if>
-                </dtml-in>
+                  <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                  <dtml-if sequence-end><br /></dtml-if>
                 </dtml-in>
             </td>
             <td class="texto" valign="top">
@@ -306,20 +285,25 @@ $(document).ready(function() {
                 </dtml-in>
             </td>
             <td class="texto" valign="top">
-                <dtml-if tip_resultado_votacao>
-                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
-                    <dtml-if expr="tip_votacao == 2 ">
+             <dtml-in expr="zsql.votacao_expediente_materia_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_materia=cod_materia, cod_ordem=cod_ordem, ind_excluido=0)">     
+                <dtml-if expr="cod_votacao and tip_resultado_votacao!=0">
+                    <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                      <dtml-if expr="tip_votacao == 2 ">
                        <a href="sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tipo_materia=expediente" class="popup" data-fancybox-type="iframe">
                         <b><dtml-var nom_resultado></a></b><br />
-                    <dtml-else>
+                      <dtml-else>
                         <b><dtml-var nom_resultado></b><br />
-                    </dtml-if>
-                    <dtml-if votacao_observacao>
+                      </dtml-if>
+                      <dtml-if votacao_observacao>
                         <dtml-var votacao_observacao>
-                    </dtml-if>
-                </dtml-in>
-                <dtml-else><i>Matéria não votada</i>
+                      </dtml-if>
+                    </dtml-in>
+                <dtml-elif expr="cod_votacao and tip_resultado_votacao==0">
+                    <i>Matéria não votada</i>
                 </dtml-if>
+                <dtml-else>
+                  <i>Matéria não votada</i>
+             </dtml-in>
             </td>
         </tr>
         </dtml-in> 
@@ -359,6 +343,7 @@ $(document).ready(function() {
              <dtml-var nom_completo> / <dtml-var sgl_partido missing null="">
           </td>
           <td class="texto">
+           <div align="center">
             <dtml-if expr="(_.has_key('cod_sessao_plen')) and (_.has_key('cod_parlamentar'))">
                <dtml-call expr="REQUEST.set('id_documento', _.str(cod_sessao_plen)+ '_' + _.str(cod_parlamentar) + '_discurso.pdf')">
                <dtml-if "_.hasattr(sapl_documentos.oradores_expediente,id_documento)">
@@ -371,7 +356,8 @@ $(document).ready(function() {
                     <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" lt="Discurso" title="Discurso não disponível" />
                </dtml-if>
             </dtml-if>
-            </td>
+           </div>
+          </td>
         </tr>
         </dtml-in>
         </dtml-in>
@@ -467,7 +453,7 @@ $(document).ready(function() {
             <td class="texto" valign="top">
  	  <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
 	    <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-                        <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></b></a><br />
+                        <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a><br />
                <dtml-if num_protocolo>
                   <b>Protocolo:</b> <dtml-var num_protocolo>/<dtml-var ano_ident_basica>
                   <br />
@@ -478,32 +464,21 @@ $(document).ready(function() {
                   <br />
                </dtml-if>
             </dtml-in>
-	    <dtml-in expr="zsql.tramitacao_turno_obter_zsql(cod_materia=cod_materia)">
-	        <dtml-in expr="[('P','Primeiro'), ('S','Segundo'), ('U','Único'), ('L','Suplementar'), ('F','Final'), ('A','Votação Única em Regime de Urgência'), ('B','1ª Votação'), ('C','2ª e 3ª Votações')]">
-	                            <dtml-if expr="sgl_turno==_['sequence-key']">
-	                                <b>Turno</b>: <dtml-var sequence-item> <br />
-	                            </dtml-if>
-	                        </dtml-in>
-                                </dtml-in>
+             <dtml-in expr="zsql.turno_discussao_obter_zsql(cod_turno=tip_turno)">
+	                   <b>Turno</b>: <dtml-var des_turno> <br />
+             </dtml-in>
             </dtml-in>
-            <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
-              <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
-                    <dtml-if cod_parlamentar>
-                        <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
-                            <b>Autor:</b> <dtml-var nom_completo>
-                        </dtml-in>
-                    <dtml-elif cod_comissao>
-                        <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
-                            <b>Autor:</b> <dtml-var nom_comissao>
-                        </dtml-in>
-                    <dtml-elif cod_bancada>
-                        <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
-                            <b>Autor:</b> <dtml-var nom_bancada>
-                        </dtml-in>
-                    <dtml-else>
-                        <b>Autor:</b> <dtml-var nom_autor>
-                    </dtml-if>
-                </dtml-in>
+                <dtml-comment>obtém a autoria da matéria.</dtml-comment>
+                <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
+                  <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
+                      <b>Autores:</b>
+                  <dtml-else>
+                      <b>Autor:</b>
+                  </dtml-if>
+                </dtml-if>  
+                <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                  <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                  <dtml-if sequence-end><br /></dtml-if>
                 </dtml-in>
             </td>
             <td class="texto" valign="top">
@@ -511,20 +486,23 @@ $(document).ready(function() {
             </td>
             <td class="texto" valign="top">
              <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_materia=cod_materia, cod_ordem=cod_ordem, ind_excluido=0)">     
-                <dtml-if tip_resultado_votacao>
-                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
-                    <dtml-if expr="tip_votacao == 2 ">
+                <dtml-if expr="cod_votacao and tip_resultado_votacao!=0">
+                    <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                      <dtml-if expr="tip_votacao == 2 ">
                        <a href="sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tipo_materia=ordemdia" class="popup" data-fancybox-type="iframe">
                         <b><dtml-var nom_resultado></a></b><br />
-                    <dtml-else>
+                      <dtml-else>
                         <b><dtml-var nom_resultado></b><br />
-                    </dtml-if>
-                    <dtml-if votacao_observacao>
+                      </dtml-if>
+                      <dtml-if votacao_observacao>
                         <dtml-var votacao_observacao>
-                    </dtml-if>
-                </dtml-in>
-                <dtml-else><i>Matéria não votada</i>
+                      </dtml-if>
+                    </dtml-in>
+                <dtml-elif expr="cod_votacao and tip_resultado_votacao==0">
+                    <i>Matéria não votada</i>
                 </dtml-if>
+                <dtml-else>
+                  <i>Matéria não votada</i>
              </dtml-in> 
             </td>
         </tr>
@@ -685,6 +663,7 @@ $(document).ready(function() {
             <dtml-var nom_completo> / <dtml-var sgl_partido missing null="">
           </td>
           <td class="texto">
+           <div align="center">
             <dtml-if expr="(_.has_key('cod_sessao_plen')) and (_.has_key('cod_parlamentar'))">
                <dtml-call expr="REQUEST.set('id_documento', _.str(cod_sessao_plen)+ '_' + _.str(cod_parlamentar) + '_discurso.pdf')">
                <dtml-if "_.hasattr(sapl_documentos.oradores,id_documento)">
@@ -696,8 +675,9 @@ $(document).ready(function() {
                <dtml-else>
                     <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" lt="Discurso" title="Discurso não disponível" />
                </dtml-if>
-            </dtml-if>
-            </td>
+             </dtml-if>
+           </div>
+          </td>
         </tr>
         </dtml-in>
         </dtml-in>

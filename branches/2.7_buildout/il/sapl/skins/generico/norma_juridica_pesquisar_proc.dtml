@@ -1,7 +1,5 @@
 <dtml-var standard_html_header>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_norma">Ajuda</a>
-
 <a id="ajuda" href="<dtml-var portal_url>/relatorios/pdf_norma_preparar_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">" target="_blank">PDF</a>
 
 <a id="rss" href="&dtml-portal_url;/generico/RSS2_normas?<dtml-var "REQUEST.get('QUERY_STRING','')">" target="_blank">RSS</a>
@@ -9,13 +7,24 @@
 <h1 class="firstHeading">Normas Jurídicas</h1>
 
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
-<div id="barra-conteudo">
-<ul>
-    <li>
-        <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_form">Incluir Norma</a>
-    </li>
-</ul>
-</div>
+  <div id="toolbar" class="ui-widget ui-corner-all">
+    <button class="incluir" onclick="javasript:location.href='&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_form'">
+        Incluir Norma</a>
+    </button>
+  </div>
+	<script>
+	  $(function() {
+	    $( ".incluir" )
+ 	     .button({
+ 		     icons: {
+        primary: "ui-icon-plus"
+ 	     }
+  	  })
+  	    .click(function( event ) {
+ 	       event.preventDefault();
+ 	     });
+ 	 });
+	</script>
 </dtml-if>
 
 <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
@@ -68,7 +77,7 @@
                     </dtml-if>
                           <dtml-var sgl_tipo_materia> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
                        </a>
-                    - <b>Autoria:</b> <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                    / <b>Autor:</b> <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
                                  <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
                               </dtml-in>
                  </dtml-in>
@@ -136,10 +145,9 @@
        <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
     </dtml-if>
     <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
-       <p class="texto" align="center"><b><dtml-var "pysc.PageListOutput_pysc('norma_juridica_pesquisar_proc', page, step, _['sequence-length'], incluir=incluir, lst_tip_norma=lst_tip_norma,txt_numero=txt_numero,txt_ano=txt_ano,txt_assunto=txt_assunto,lst_assunto_norma=lst_assunto_norma, lst_tip_situacao_norma=lst_tip_situacao_norma, dt_norma=dt_norma,dt_norma2=dt_norma2,dt_public=dt_public,dt_public2=dt_public2,rd_ordenacao=rd_ordenacao)"></b></p>
+       <p class="texto"><b><dtml-var "pysc.PageListOutput_pysc('norma_juridica_pesquisar_proc', page, step, _['sequence-length'], incluir=incluir, lst_tip_norma=lst_tip_norma,txt_numero=txt_numero,txt_ano=txt_ano,txt_assunto=txt_assunto,lst_assunto_norma=lst_assunto_norma, lst_tip_situacao_norma=lst_tip_situacao_norma, dt_norma=dt_norma,dt_norma2=dt_norma2,dt_public=dt_public,dt_public2=dt_public2,rd_ordenacao=rd_ordenacao)"></b></p>
     </dtml-if>
 </dtml-if sequence-end>
-
 <dtml-else>
  <fieldset>
   <table> 

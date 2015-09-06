@@ -4,7 +4,6 @@ arguments : cod_ordem="" cod_materia="" cod_emenda="" cod_subemenda="" cod_subst
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
-<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
 SELECT DISTINCT
    REPLACE(ordem_dia.cod_ordem,  'L', '') as cod_ordem,
    REPLACE(ordem_dia.cod_materia,    'L', '') as cod_materia,
@@ -64,37 +63,3 @@ GROUP BY
 ORDER BY 
     dat_ordem, num_ordem
 
-<dtml-else>
-
-SELECT DISTINCT
-    ordem_dia.cod_ordem as cod_ordem,
-    ordem_dia.cod_materia as cod_materia,
-    registro_votacao.cod_votacao as cod_votacao,
-    TO_CHAR(ordem_dia.dat_ordem, 'DD/MM/YYYY') as dat_ordem,
-    ordem_dia.num_ordem,
-    ordem_dia.tip_votacao,
-    ordem_dia.txt_observacao as ordem_observacao,
-    registro_votacao.tip_resultado_votacao,
-    registro_votacao.txt_observacao as votacao_observacao
-FROM
-    ordem_dia
-    LEFT JOIN registro_votacao ON
-    registro_votacao.cod_ordem = ordem_dia.cod_ordem
-
-<dtml-sqlgroup where>
-    <dtml-sqltest cod_materia column="ordem_dia.cod_materia"   op="=" type="int" optional><dtml-and>
-    <dtml-sqltest cod_ordem    column="ordem_dia.cod_ordem"    op="=" type="int" optional ><dtml-and>
-    <dtml-sqltest cod_votacao column="registro_votacao.cod_votacao"   op="=" type="int" optional><dtml-and>
-    <dtml-sqltest ordem_dia.ind_excluido op="=" type="int" optional><dtml-and>
-    <dtml-sqltest num_ordem op="=" type="int" optional><dtml-and>
-    <dtml-sqltest dat_ordem op="=" type="nb" optional><dtml-and>
-    <dtml-sqltest ind_excluido column="ordem_dia.ind_excluido" op="=" type="int">
-</dtml-sqlgroup>
-
-GROUP BY 
-    cod_ordem
-
-ORDER BY 
-    dat_ordem, num_ordem
-
-</dtml-if>

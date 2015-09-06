@@ -434,6 +434,19 @@ ALTER TABLE  `vinculo_norma_juridica` ADD  `txt_observacao_vinculo` VARCHAR( 250
 -- Fim Tipo vinculo
 --
 
+-- Anexo Norma (rodar somente nas versões 2.7)
+
+CREATE TABLE IF NOT EXISTS `anexo_norma` (
+  `cod_anexo` int(11) NOT NULL AUTO_INCREMENT,
+  `cod_norma` int(11) NOT NULL,
+  `txt_descricao` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_anexo`),
+  KEY `cod_norma` (`cod_norma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+-- Fim Anexo Norma
+
 ALTER TABLE  `ordem_dia` ADD INDEX (  `cod_sessao_plen` ) ;
 
 ALTER TABLE `materia_legislativa` DROP `txt_resultado`;

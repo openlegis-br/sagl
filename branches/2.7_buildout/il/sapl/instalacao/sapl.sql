@@ -106,6 +106,27 @@ CREATE TABLE `anexada` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `anexo_norma`
+--
+
+CREATE TABLE `anexo_norma` (
+  `cod_anexo` int(11) NOT NULL AUTO_INCREMENT,
+  `cod_norma` int(11) NOT NULL,
+  `txt_descricao` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_anexo`),
+  KEY `cod_norma` (`cod_norma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+--
+-- RELACIONAMENTOS PARA A TABELA `anexo_norma`:
+--   `cod_norma`
+--       `norma_juridica` -> `cod_norma`
+--
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `arquivo_armario`
 --
 

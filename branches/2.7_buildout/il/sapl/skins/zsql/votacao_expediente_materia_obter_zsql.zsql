@@ -1,10 +1,9 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_ordem="" cod_materia="" cod_emenda="" cod_subemenda="" cod_substitutivo=""  num_ordem="" dat_ordem="" cod_sessao_plen="" ind_excluido=0 
+arguments : cod_ordem="" cod_materia="" cod_emenda="" cod_subemenda="" cod_substitutivo="" num_ordem="" dat_ordem="" cod_sessao_plen="" ind_excluido=0 
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
-<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
 SELECT DISTINCT
     REPLACE(expediente_materia.cod_ordem,  'L', '') as cod_ordem,
     REPLACE(expediente_materia.cod_materia,    'L', '') as cod_materia,
@@ -30,9 +29,9 @@ FROM
    expediente_materia.cod_materia = materia_legislativa.cod_materia and materia_legislativa.ind_excluido=0
 
 <dtml-sqlgroup where>
-    <dtml-sqltest cod_materia column="expediente_materia.cod_materia"   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_materia  column="expediente_materia.cod_materia"   op="=" type="int" optional><dtml-and>
     <dtml-sqltest cod_ordem    column="expediente_materia.cod_ordem"    op="=" type="int" optional ><dtml-and>
-    <dtml-sqltest cod_votacao column="registro_votacao.cod_votacao"   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_votacao  column="registro_votacao.cod_votacao"   op="=" type="int" optional><dtml-and>
     <dtml-sqltest expediente_materia.ind_excluido op="=" type="int" optional><dtml-and>
     <dtml-sqltest num_ordem op="=" type="int" optional><dtml-and>
     <dtml-sqltest dat_ordem op="=" type="nb" optional><dtml-and>
@@ -60,36 +59,3 @@ GROUP BY
 
 ORDER BY 
     dat_ordem, num_ordem
-
-<dtml-else>
-
-SELECT DISTINCT
-       expediente_materia.cod_ordem as cod_ordem,
-       expediente_materia.cod_materia as cod_materia,
-       registro_votacao.cod_votacao as cod_votacao,
-       TO_CHAR(expediente_materia.dat_ordem, 'DD/MM/YYYY') as dat_ordem,
-       expediente_materia.num_ordem,
-       expediente_materia.tip_votacao,
-       expediente_materia.txt_observacao as ordem_observacao,
-       registro_votacao.tip_resultado_votacao,
-       registro_votacao.txt_observacao as votacao_observacao
-
-FROM
-   expediente_materia
-
-LEFT JOIN registro_votacao ON
-        registro_votacao.cod_ordem = expediente_materia.cod_ordem and registro_votacao.cod_materia = expediente_materia.cod_materia
-
-  <dtml-sqlgroup where>
-    <dtml-sqltest cod_materia column="expediente_materia.cod_materia"   op="=" type="int" optional><dtml-and>
-    <dtml-sqltest cod_ordem    column="expediente_materia.cod_ordem"    op="=" type="int" optional ><dtml-and>
-    <dtml-sqltest cod_votacao column="registro_votacao.cod_votacao"   op="=" type="int" optional><dtml-and>
-    <dtml-sqltest expediente_materia.ind_excluido op="=" type="int" optional><dtml-and>
-    <dtml-sqltest num_ordem op="=" type="int" optional><dtml-and>
-    <dtml-sqltest dat_ordem op="=" type="nb" optional><dtml-and>
-    <dtml-sqltest ind_excluido column="expediente_materia.ind_excluido" op="=" type="int">
-  </dtml-sqlgroup>
-GROUP BY cod_materia
-ORDER BY dat_ordem, num_ordem
-
-</dtml-if>

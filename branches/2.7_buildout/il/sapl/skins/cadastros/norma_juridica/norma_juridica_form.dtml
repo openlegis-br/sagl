@@ -197,10 +197,10 @@ $(document).ready(function() {
 	$(".popup1").fancybox({
 		maxWidth	: 560,
 		maxHeight	: 310,
-		fitToView	: false,
+		fitToView	: true,
 		autoSize	: false,
 		closeClick	: false,
-                scrolling       : true,
+                scrolling       : 'auto',
                 preload         : true,
 		openEffect	: 'fade',
 		closeEffect	: 'fade',
@@ -212,9 +212,8 @@ $(document).ready(function() {
 });
 </script>
 
-<div class="helpsapl"><a id="ajuda" href="&dtml-portal_url;/ajuda/norma_juridica">Ajuda</a></div>
-
 <dtml-if expr="_.has_key('cod_norma')">
+  <a id="ajuda" target="_blank" href="&dtml-portal_url;/relatorios/pdf_detalhe_norma_preparar_pysc?cod_norma=<dtml-var cod_norma>">PDF</a>
   <h1 class="firstHeading"><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_norma)"></h1>
 <dtml-else>
   <h1 class="firstHeading">Cadastro de Norma Jurídica</h1>
@@ -408,7 +407,7 @@ $(document).ready(function() {
           </td>
           <td colspan="2" valign="top"><label for="txt_texto_pdf">Texto Compilado (PDF)</label><br />
            <div id="toolbar" class="ui-widget ui-corner-all">
-               <dtml-let documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
+              <dtml-let documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
                <dtml-if "_.hasattr(sapl_documentos.norma_juridica,documento_odt)">
                   <dtml-call expr="REQUEST.set('temODT', 1)">
                </dtml-if>
@@ -428,7 +427,7 @@ $(document).ready(function() {
                     <span class="texto"><i>Geração vinculada à existência do arquivo ODT</i></span>
                   </dtml-if>
                </dtml-if>
-               </dtml-let>
+              </dtml-let>
            </div>
           </td>
          </tr>
@@ -555,7 +554,67 @@ $(document).ready(function() {
 	</script>
  </form>
 
+
 <dtml-if expr="_.has_key('cod_norma')">
+ <fieldset>
+   <h2>Anexos</h2> 
+   <dtml-in expr="zsql.anexo_norma_obter_zsql(cod_norma=cod_norma)">
+     <dtml-if sequence-start>
+       <table>
+         <tr>
+             <th width="20%"  class="form-label">Arquivo</th>
+             <th class="form-label">Descrição</th>
+         </tr>
+     </dtml-if>
+         <tr>
+             <td class="texto">
+              <div align="center">
+              <dtml-let id_anexo="_.str(cod_norma)+'_anexo_'+ _.str(cod_anexo)">
+               <dtml-if expr="_.hasattr(sapl_documentos.norma_juridica,id_anexo)">
+                  <dtml-let anexo="_.getattr(sapl_documentos.norma_juridica,id_anexo).absolute_url">
+                    <dtml-call expr="REQUEST.set('nome_anexo',_.str(cod_norma)+'_anexo_'+ _.str(cod_anexo))">
+                    <a href="&dtml-portal_url;/sapl_documentos/norma_juridica/<dtml-var nome_anexo>" target="_blank">
+                      <img src="&dtml-portal_url;/imagens/procurar.gif" alt="<dtml-var txt_descricao>" title="<dtml-var txt_descricao>">
+                    </a>
+                  </dtml-let>
+               </dtml-if>
+              </dtml-let>
+              </div>
+             </td>
+             <td class="texto">
+               <a href="anexo/anexo_norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>&cod_anexo=<dtml-var cod_anexo>" class="popup1" data-fancybox-type="iframe">
+                  <dtml-var txt_descricao>
+               </a>
+             </td>
+         </tr>
+     <dtml-if sequence-end>
+       </table>
+     </dtml-if>
+   <dtml-else>
+       <p class="texto">Nenhum anexo cadastrado.</p>
+   </dtml-in> 
+  <form id="anexo" action="anexo/anexo_norma_juridica_form" method=post>
+   <input type="hidden" name="cod_norma" value="<dtml-var cod_norma missing>"/>
+     <button class="btn_anexo popup1" data-fancybox-type="iframe" href="anexo/anexo_norma_juridica_form?cod_norma=<dtml-var cod_norma missing>">
+        Anexar Arquivo
+     </button>
+   <script>
+   $(function() {
+     $( ".btn_anexo" )
+       .button({
+       icons: {
+         primary: "ui-icon-document"
+       }
+     })
+       .click(function( event ) {
+         event.preventDefault();
+       });
+   });
+   </script>
+  </form>
+  <br />
+ </fieldset>
+
  <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)" mapping>
    <dtml-if sequence-start>
     <fieldset>
@@ -583,9 +642,7 @@ $(document).ready(function() {
     </fieldset>
    </dtml-if>
  </dtml-in>
-</dtml-if>
 
-<dtml-if expr="_.has_key('cod_norma')">
   <fieldset>
    <h2>Normas Relacionadas</h2>                   
    <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
@@ -649,15 +706,15 @@ $(document).ready(function() {
 
 <form id="vinculo" action="vinculo_norma_juridica/vinculo_norma_juridica_form" method=post>
   <input type="hidden" name="cod_norma" value="<dtml-var cod_norma missing>"/>
-     <button class="popup popup1" data-fancybox-type="iframe" href="vinculo_norma_juridica/vinculo_norma_juridica_form?cod_norma=<dtml-var cod_norma missing>">
+     <button class="btn_vinculo popup1" data-fancybox-type="iframe" href="vinculo_norma_juridica/vinculo_norma_juridica_form?cod_norma=<dtml-var cod_norma missing>">
         Incluir Vínculo
      </button>
   <script>
   $(function() {
-    $( ".popup" )
+    $( ".btn_vinculo" )
       .button({
       icons: {
-        primary: "ui-icon-plus"
+        primary: "ui-icon-link"
       }
     })
       .click(function( event ) {
