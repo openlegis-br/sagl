@@ -3,8 +3,18 @@
 <head>
 <dtml-var standard_css_slot>
 <script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+function printFrame() {
+$('#print_button').hide();
+window.print();
+$('#print_button').show();
+}
+//]]>
+</script>
 </head>
-<body>
+<body class="modal">
 
 <dtml-if cod_emenda>
   <dtml-call expr="REQUEST.set('cod_emenda', cod_emenda)">
@@ -45,17 +55,18 @@
           <th class="texto">
              <dtml-if cod_subemenda>
                 <dtml-in expr="zsql.subemenda_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, cod_subemenda=cod_subemenda,ind_excluido=0)">
-                  <p><b>SUBEMENDA <dtml-var num_subemenda> - <dtml-var tip_subemenda upper></b></p>
+                  <p><b>SUBEMENDA Nº <dtml-var num_subemenda> - <dtml-var tip_subemenda upper></b></p>
                 </dtml-in>
              </dtml-if>
              <dtml-if cod_emenda>
                 <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, ind_excluido=0)">
-                  <p><b>EMENDA <dtml-var num_emenda> - <dtml-var tip_emenda upper></b></p>
+                  <p><b>EMENDA <dtml-in expr="zsql.tipo_emenda_obter_zsql(tip_emenda=tip_emenda)">
+<dtml-var des_tipo_emenda upper></dtml-in> Nº <dtml-var num_emenda></b></p>
                 </dtml-in>
              </dtml-if>
              <dtml-if cod_substitutivo>
                 <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
-                  <p><b>SUBSTITUTIVO <dtml-var num_substitutivo></b></p>
+                  <p><b>SUBSTITUTIVO Nº <dtml-var num_substitutivo></b></p>
                 </dtml-in>
            </dtml-if>
            <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
@@ -133,6 +144,7 @@
  </fieldset>
 
   <p align="center">
+   <input type="button" class="botao" id="hideprint" name="print_button" value="Imprimir" onClick="printFrame();return false;" />
    <input class="botao" type="button" value="Fechar" OnClick="javascript:parent.jQuery.fancybox.close();" />
   </p>
 </body>
