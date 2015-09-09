@@ -44,40 +44,19 @@
     </dtml-if>
  
     <dtml-call expr="REQUEST.set('erro', 0)">              
-    <dtml-if expr="radTI=='I' or radTI=='S'">                
         <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
-        <dtml-if expr="(_.int(hdn_file_substitutivo)==1)">
-            <dtml-if hdn_cod_substitutivo>
-                <dtml-call expr="REQUEST.set('id_substitutivo', hdn_cod_substitutivo+'_substitutivo.pdf')">
-                <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_substitutivo)">
-                    <dtml-let documento="_.getattr(sapl_documentos.substitutivo,id_substitutivo) ">
-                        <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
-                        <dtml-try>
-                            <dtml-call "documento.manage_upload(file=file_nom_arquivo_substitutivo)">
-                        <dtml-except>
-                            <dtml-call expr="REQUEST.set('erro', 1)">              
-                        </dtml-try>
-                    </dtml-let>
-                </dtml-if>
-            <dtml-else>
+          <dtml-if file_nom_arquivo_substitutivo>
                 <dtml-in expr="zsql.substitutivo_incluido_codigo_obter_zsql()">
                  <dtml-call "REQUEST.set('ult_substitutivo_incluido',cod_substitutivo)">
                 </dtml-in>
-               <dtml-call expr="REQUEST.set('id_substitutivo',_.str(ult_substitutivo_incluido)+'_substitutivo.pdf')">
-             </dtml-if>
+                <dtml-call expr="REQUEST.set('id_substitutivo',_.str(ult_substitutivo_incluido)+'_substitutivo.pdf')">
              <dtml-if "not existe_arquivo">
-          <dtml-try>            
+              <dtml-try>            
                   <dtml-call expr="sapl_documentos.substitutivo.manage_addFile(id=id_substitutivo,file=file_nom_arquivo_substitutivo)">
-                 <dtml-except> 
+              <dtml-except> 
                      <dtml-call expr="REQUEST.set('erro', 1)">              
-          </dtml-try>      
+              </dtml-try>      
              </dtml-if>
-         </dtml-if>
-     <dtml-elif expr="radTI=='E'">
-         <dtml-if hdn_cod_substitutivo>
-             <dtml-call expr="REQUEST.set('id_substitutivo', hdn_cod_substitutivo+'_substitutivo.pdf')">
-             <dtml-call "sapl_documentos.substitutivo.manage_delObjects(id_substitutivo)">
-         </dtml-if>
      </dtml-if>
 
     <dtml-let mensagem="'Substitutivo salvo com sucesso!'" sucesso="1" url="hdn_url">
