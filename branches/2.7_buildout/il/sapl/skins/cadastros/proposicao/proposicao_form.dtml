@@ -328,21 +328,32 @@ $(document).ready(function() {
                   <dtml-if expr="usr_eh_autor">
                     <tr>
                         <td colspan="3" class="form-text">
+                         <div id="toolbar" class="ui-widget ui-corner-all">
                          <dtml-let id_documento="_.str(cod_proposicao)+'.odt'">
                            <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento)">
                              <dtml-let documento="_.getattr(sapl_documentos.proposicao,id_documento).absolute_url">
-                               <b>Texto da Proposição (ODT)</b><br />  
+                               <b>Texto da Proposição</b><br />  
                                <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'.odt')">
-                               <a class="popup1" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento>" data-fancybox-type="iframe">
-                                 <img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Texto da Proposição" title="Visualizar Texto da Proposição">                   </a>
-                               <dtml-unless prop_enviada>
-                                 <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/proposicao/externalEdit_/<dtml-var nome_arquivo>">
-                                    Editar
-                                 </a>
-                               </dtml-unless>
-                           <dtml-unless prop_enviada>
-                             &nbsp;&nbsp;<a class="botao-link" href="javascript:texto_integral_excluir()">Excluir</a>
-                           </dtml-unless>
+                               <dtml-if prop_enviada>
+                               <a class="popup1 odt" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento>" data-fancybox-type="iframe">Visualizar</a>
+                               <dtml-else>
+                                <div id="menuitem" style="cursor: pointer; float:left; padding-right: 4px;">
+                                 <a class="odt">Visualizar e Editar</a>
+                                </div>
+			         <script type="text/javascript">
+			           $('#menuitem').click(function () {
+    			           $.fancybox({
+        			   type: 'iframe',
+        			   href: '&dtml-portal_url;/webeditor/editorProposicao?<dtml-var documento>',
+				   width		: '90%',
+				   height		: '95%',
+        			   preload         : true
+    			           });
+			           });
+			         </script>
+                                 <a class="odt_ext" href="javascript:void(0)" onclick="location.href='&dtml-URL1;/sapl_documentos/proposicao/externalEdit_/<dtml-var nome_arquivo>.zem'">Editor externo</a>
+                                                        <a class="botao_excluir" href="javascript:void(0)" onclick="javascript:texto_integral_excluir()">Excluir</a>
+                           </dtml-if>
                              </dtml-let>
                            <dtml-else>
                              <b>Modelo ODT</b> <span class="campoObrigatorio">&nbsp;</span><br />
@@ -355,31 +366,40 @@ $(document).ready(function() {
                                       </dtml-with> 
                                     </select>
                               <dtml-if expr="_.has_key('cod_proposicao')">
-                               <a class="botao-link" href="javascript:texto_odt_gerar();">Gerar</a> 
+                               <a class="botao_gerar" href="javascript:texto_odt_gerar();">Gerar</a> 
                               </dtml-if>
                            </dtml-if>
                          </dtml-let>
+                        </div>
                         </td>
                     <tr>
                   <dtml-else>
                     <tr>
                         <td colspan="1" class="form-text">
+                         <div id="toolbar" class="ui-widget ui-corner-all">
                          <dtml-let id_documento="_.str(cod_proposicao)+'.odt'">
                            <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento)">
                              <dtml-let documento="_.getattr(sapl_documentos.proposicao,id_documento).absolute_url">
-                               <b>Texto da Proposição (ODT)</b><br />  
+                               <b>Texto da Proposição</b><br />  
                                <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'.odt')">
-                               <a class="popup1" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento>" data-fancybox-type="iframe">
-                               <img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Texto da Proposição" title="Visualizar Texto da Proposição">
-                               </a>
                                <dtml-if expr="(prop_enviada and (dat_recebimento==None)) and (not dat_devolucao)">
-                                  <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/proposicao/externalEdit_/<dtml-var nome_arquivo>">
-                                    Editar
-                                  </a>
+                                <div id="menuitem" style="cursor: pointer; float:left; padding-right: 4px;">
+                                 <a class="odt">Visualizar e Editar</a>
+                                </div>
+			         <script type="text/javascript">
+			           $('#menuitem').click(function () {
+    			           $.fancybox({
+        			   type: 'iframe',
+        			   href: '&dtml-portal_url;/webeditor/editorProposicao?<dtml-var documento>',
+				   width		: '90%',
+				   height		: '95%',
+        			   preload         : true
+    			           });
+			           });
+			         </script>
+                               <dtml-comment><a class="popup1 odt" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento>" data-fancybox-type="iframe">Visualizar</a></dtml-comment>
+                                 <a class="odt_ext" href="javascript:void(0)" onclick="location.href='&dtml-URL1;/sapl_documentos/proposicao/externalEdit_/<dtml-var nome_arquivo>.zem'">Editor externo</a>
                                </dtml-if>
-                         <dtml-unless prop_enviada>
-                             &nbsp;&nbspp;<a class="botao-link" href="javascript:texto_integral_excluir()">Excluir</a>
-                         </dtml-unless>
                              </dtml-let>
                            <dtml-else>
                              <b>Modelo ODT</b> <span class="campoObrigatorio">&nbsp;</span><br />
@@ -392,10 +412,11 @@ $(document).ready(function() {
                                       </dtml-with> 
                                     </select>
                               <dtml-if expr="_.has_key('cod_proposicao')">
-                                 <a class="botao-link" href="javascript:texto_odt_gerar();">Gerar</a>
+                                 <a class="botao_gerar" href="javascript:texto_odt_gerar();">Gerar</a>
                               </dtml-if> 
                            </dtml-if>
                          </dtml-let>
+                        </div>
                         </td>
                         <td colspan="2" class="form-element" valign="top">
                           Autor <br /> 
@@ -551,5 +572,33 @@ $("#txa_txt_observacao").cleditor({width:"98%", height:"100%"})[0].focus();
      <dtml-var mensagem_popup_emitir>
   </dtml-let>
 </dtml-if>
+
+	<script>
+  	$(function() {
+ 	   $( ".odt" )
+ 	     .button({
+ 	     icons: {
+ 	       primary: "ui-icon-newwin"
+	      }
+	    })
+	    $( ".odt_ext" )
+ 	     .button({
+ 	     icons: {
+  	      primary: "ui-icon-transfer-e-w"
+ 	    }
+ 	   })
+ 	   $( ".botao_excluir" )
+ 	     .button({
+ 	     icons: {
+  	      primary: "ui-icon-close"
+  	    }
+  	  })
+  	  $( ".botao_gerar" )
+  	    .button()
+  	    .click(function( event ) {
+  	      event.preventDefault();
+  	    });
+ 	 });
+	</script>
 
 <dtml-var standard_html_footer>
