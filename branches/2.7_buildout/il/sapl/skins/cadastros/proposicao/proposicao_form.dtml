@@ -119,18 +119,14 @@ $(document).ready(function() {
 <dtml-if cod_proposicao>
  <dtml-let cod_doc="pysc.proposicao_calcular_checksum_pysc(cod_proposicao)">
  function proposicao_incorporar(){
-       
        location.href="proposicao_buscar_proc?txtCodDoc=<dtml-var cod_doc missing>";
   }
  </dtml-let>
 </dtml-if>
 
   function tipo_proposicao_mudou(){
-       
     var form = document.proposicao_form;
-    
     form.hdn_alterou.value=1;
-
     var tipo_proposicao = form.lst_tip_proposicao[form.lst_tip_proposicao.selectedIndex].value;
     var separador = tipo_proposicao.indexOf("&");
     var ind_mat_ou_doc = tipo_proposicao.split("&");
@@ -145,15 +141,11 @@ $(document).ready(function() {
       form.txt_ano_ident_basica.disabled = 1;
     }
     return;
-
   } 
-
 //-->
 </script>
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/proposicao">Ajuda</a>
-
-<h1 class="firstHeading">Proposição</h1> 
 
 <dtml-unless dat_envio>
     <dtml-call expr="REQUEST.set('dat_envio','00/00/0000 00:00:00')">
@@ -167,6 +159,12 @@ $(document).ready(function() {
 <dtml-else>
     <dtml-call expr="REQUEST.set('usr_eh_autor',(1==1))">
     <dtml-call expr="REQUEST.set('estah_alterando','0')">
+</dtml-if>
+
+<dtml-if usr_eh_autor>
+  <h1 class="firstHeading">Elaboração de Proposição</h1>
+<dtml-else>
+  <h1 class="firstHeading">Recebimento de Proposição</h1>
 </dtml-if>
 
 <dtml-if expr="usr_eh_autor or (AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']))"> 
@@ -195,7 +193,7 @@ $(document).ready(function() {
                 <dtml-else>
                    <input type="hidden" name="hdn_cod_proposicao" value="" />
                 </dtml-if>
-                <table>
+                <table id="proposicoes">
                   <dtml-if cod_proposicao>
                     <tr> 
                        <th colspan=3 class="form-element">
@@ -251,26 +249,8 @@ $(document).ready(function() {
                                  <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_mat)">
                                     <dtml-if expr="usr_eh_autor">
                                       <br />Matéria: <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_mat>"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
-                          <dtml-let id_documento_odt="_.str(cod_mat)+'_texto_integral.odt'">
-                           <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_documento_odt)">
-                             <dtml-let documento_odt="_.getattr(sapl_documentos.materia_odt,id_documento_odt).absolute_url">
-                               <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_mat)+'_texto_integral.odt')">
-                                 <a class="popup1" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento_odt>" data-fancybox-type="iframe">
-                                   <img align="top" width="13%" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Texto atualizado"></a>
-                             </dtml-let>
-                           </dtml-if>
-                          </dtml-let>
                                     <dtml-else>
                                       <br />Matéria: <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_mat>"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
-                          <dtml-let id_documento_odt="_.str(cod_mat)+'_texto_integral.odt'">
-                           <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_documento_odt)">
-                             <dtml-let documento_odt="_.getattr(sapl_documentos.materia_odt,id_documento_odt).absolute_url">
-                               <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_mat)+'_texto_integral.odt')">
-                                 <a class="popup1" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento_odt>" data-fancybox-type="iframe">
-                                   <img align="top" width="13%" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Texto atualizado"></a>
-                             </dtml-let>
-                           </dtml-if>
-                          </dtml-let>
                                     </dtml-if>
                                  </dtml-in>
                               <dtml-else>
@@ -290,6 +270,7 @@ $(document).ready(function() {
                           <textarea name="txt_descricao" cols="65" rows="4" maxlength="400" <dtml-if prop_enviada>readonly</dtml-if>><dtml-var txt_descricao missing></textarea>
                         </td>
                     </tr>
+                   <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor']) or cod_materia)"> 
                     <tr> 
                         <td width="44%" class="form-element">Matéria Vinculada<br />
                           <select name="lst_tip_id_basica" 
@@ -323,16 +304,16 @@ $(document).ready(function() {
                                             </dtml-if>
                         </td>
                     </tr>
-
+                </dtml-if>
                 <dtml-if cod_proposicao>
                   <dtml-if expr="usr_eh_autor">
                     <tr>
-                        <td colspan="3" class="form-text">
+                        <td colspan="1" valign="top" class="form-text">
                          <div id="toolbar" class="ui-widget ui-corner-all">
+                         <b>Texto da Proposição</b><br />  
                          <dtml-let id_documento="_.str(cod_proposicao)+'.odt'">
                            <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento)">
                              <dtml-let documento="_.getattr(sapl_documentos.proposicao,id_documento).absolute_url">
-                               <b>Texto da Proposição</b><br />  
                                <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'.odt')">
                                <dtml-if prop_enviada>
                                <a class="popup1 odt" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento>" data-fancybox-type="iframe">Visualizar</a>
@@ -356,6 +337,7 @@ $(document).ready(function() {
                            </dtml-if>
                              </dtml-let>
                            <dtml-else>
+                            <dtml-if expr="(not dat_devolucao)">
                              <b>Modelo ODT</b> <span class="campoObrigatorio">&nbsp;</span><br />
                                   <select name="lst_modelo" id="lst_modelo">
                                      <option value="0"> </option>
@@ -366,12 +348,17 @@ $(document).ready(function() {
                                       </dtml-with> 
                                     </select>
                               <dtml-if expr="_.has_key('cod_proposicao')">
-                               <a class="botao_gerar" href="javascript:texto_odt_gerar();">Gerar</a> 
+                               <a class="botao_gerar" href="javascript:void(0)" onclick="javascript:texto_odt_gerar()">Gerar</a> 
                               </dtml-if>
+                             </dtml-if>
                            </dtml-if>
                          </dtml-let>
                         </div>
                         </td>
+                        <td colspan="2" class="form-element" valign="top">
+                          Autor <br /> 
+                          <input type="text" name="txt_nom_autor" size="50" value="<dtml-var nom_autor missing>" disabled />
+                        </td> 
                     <tr>
                   <dtml-else>
                     <tr>
@@ -414,7 +401,7 @@ $(document).ready(function() {
                                       </dtml-with> 
                                     </select>
                               <dtml-if expr="_.has_key('cod_proposicao')">
-                                 <a class="botao_gerar" href="javascript:texto_odt_gerar();">Gerar</a>
+                               <a class="botao_gerar" href="javascript:void(0)" onclick="javascript:texto_odt_gerar()">Gerar</a> 
                               </dtml-if> 
                            </dtml-if>
                          </dtml-let>
@@ -441,7 +428,6 @@ $(document).ready(function() {
                         </td>   
                     <tr>
                 </dtml-if cod_proposicao>
-
                   <dtml-if usr_eh_autor>
                     <dtml-if dat_devolucao>
 		    <tr>
@@ -450,13 +436,11 @@ $(document).ready(function() {
                         </td>
                         <td colspan=1 class="form-element">
                           <b>Data de devolução</b><br />
-                          <input type="text" name="txt_dat_devolucao" value="<dtml-var dat_devolucao missing>" size="19"
-                                 maxlength="19" onChange="javascript:form.hdn_alterou.value=1" readonly>
+                          <input type="text" name="txt_dat_devolucao" value="<dtml-var dat_devolucao missing>" size="19"maxlength="19" onChange="javascript:form.hdn_alterou.value=1" readonly>
                         </td>
                     </tr>
                     </dtml-if>
                   </dtml-if>
-
               <dtml-unless usr_eh_autor>
                   <dtml-unless cod_mat_ou_doc>
                     <tr>
@@ -467,68 +451,64 @@ $(document).ready(function() {
                   </dtml-unless cod_mat_ou_doc>			
               </dtml-unless usr_eh_autor>
                 </table>
-
                     <p align="center">
-                        <dtml-if usr_eh_autor>
+                      <dtml-if usr_eh_autor>
                         <dtml-if cod_proposicao>
-                        <dtml-if prop_enviada>
-                        <dtml-unless dat_recebimento>
-                        <dtml-if dat_devolucao>
-                        <input class="botao" 
-                               type="button"
-                               name="btn_proposicao_retomar"
-                               value="Reaproveitar proposição devolvida"
-                               onClick="proposicao_retomar()" />
-                        <dtml-else>
-                        <input class="botao" 
-                               type="button"
-                               name="btn_proposicao_retomar"
-                               value="Retomar proposição enviada"
-                               onClick="proposicao_retomar()" />
-                        </dtml-if>
-                        </dtml-unless>
-                        <dtml-else>
-                        <input class="botao"
+                          <dtml-if prop_enviada>
+                            <dtml-unless dat_recebimento>
+                              <dtml-if dat_devolucao>
+                                <input class="botao" 
+                                   type="button"
+                                   name="btn_proposicao_retomar"
+                                   value="Reaproveitar proposição devolvida"
+                                   onClick="proposicao_retomar()" />
+                              <dtml-else>
+                                <input class="botao" 
+                                   type="button"
+                                   name="btn_proposicao_retomar"
+                                   value="Retomar proposição enviada"
+                                   onClick="proposicao_retomar()" />
+                              </dtml-if>
+                            </dtml-unless>
+                          <dtml-else>
+                           <input class="botao"
                                type="button"
                                id="btn_proposicao_salvar"
                                name="btn_proposicao_salvar"
                                value="Salvar e enviar"
                                onClick="campos_criticar(document.proposicao_form)" />
-                        <input class="botao"
+                           <input class="botao"
                                type="button"
                                name="btn_proposicao_excluir"
                                value="Excluir"
                                onClick="proposicao_excluir()" />
-                        </dtml-if>
+                          </dtml-if>
                         <dtml-else>
-                        <input class="botao"
+                          <input class="botao"
                                type="button"
                                id="btn_proposicao_salvar_enviar"
                                name="btn_proposicao_salvar_enviar"
                                value="Salvar"
                                onClick="campos_criticar(document.proposicao_form)" />
                         </dtml-if>
-                        <dtml-else>
+                        <input class="botao" type="button" value="Retornar" onClick="location.href='index_html'" />
+                      <dtml-else>
                          <dtml-unless cod_mat_ou_doc> 
                            <dtml-unless dat_devolucao>
-                        <input class="botao"
+                             <input class="botao"
                                type="button"
                                name="btn_proposicao_incorporar"
                                value="Incorporar Proposição"
                                onClick="proposicao_incorporar(document.proposicao_form)" />
-                        <input class="botao"
+                             <input class="botao"
                                type="button"
                                name="btn_proposicao_devolver"
                                value="Devolver ao autor"
                                onClick="proposicao_devolver(document.proposicao_form)" />
 			   </dtml-unless> 
 		         </dtml-unless>   
-                        </dtml-if>
-                        <dtml-if expr="usr_eh_autor">
-                          <input class="botao" type="button" value="Retornar" onClick="location.href='index_html'" />
-                        <dtml-else>
-                          <input class="botao" type="button" value="Retornar" onClick="history.go(-1)" />
-                        </dtml-if>
+                         <input class="botao" type="button" value="Retornar" onClick="history.go(-1)" />
+                      </dtml-if>
                     </p>  
         </form>
          <br />
@@ -543,14 +523,14 @@ $(document).ready(function() {
                   <dtml-if cod_mat_ou_doc>
                       <dtml-var txt_observacao missing null="">
                   <dtml-else>
-<dtml-if expr="(AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']))"> 
-<script type="text/javascript">
-$(document).ready(function() {
-$.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
-$("#txa_txt_observacao").cleditor({width:"98%", height:"100%"})[0].focus();
-});
-</script>
-</dtml-if>
+                      <dtml-if expr="(AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']))"> 
+                        <script type="text/javascript">
+                          $(document).ready(function() {
+                          $.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
+                          $("#txa_txt_observacao").cleditor({width:"98%", height:"100%"})[0].focus();
+                          });
+                        </script>
+                      </dtml-if>
                       <textarea name="txa_txt_observacao" id="txa_txt_observacao" cols="65" rows="4" <dtml-if cod_mat_ou_doc>readonly</dtml-if>><dtml-if txt_observacao><dtml-var txt_observacao missing></dtml-if></textarea>
                        <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var cod_proposicao missing>" />
                     <dtml-unless cod_mat_ou_doc>
@@ -569,12 +549,6 @@ $("#txa_txt_observacao").cleditor({width:"98%", height:"100%"})[0].focus();
                    </table>		
               </dtml-unless usr_eh_autor>
         </form>
-<dtml-else>
-  <dtml-let mensagem="'Você não tem permissão para ver esta proposição!'">
-     <dtml-var mensagem_popup_emitir>
-  </dtml-let>
-</dtml-if>
-
 	<script>
   	$(function() {
  	   $( ".odt" )
@@ -602,5 +576,10 @@ $("#txa_txt_observacao").cleditor({width:"98%", height:"100%"})[0].focus();
   	    });
  	 });
 	</script>
+<dtml-else>
+  <dtml-let mensagem="'Você não tem permissão para ver esta proposição!'">
+     <dtml-var mensagem_popup_emitir>
+  </dtml-let>
+</dtml-if>
 
 <dtml-var standard_html_footer>
