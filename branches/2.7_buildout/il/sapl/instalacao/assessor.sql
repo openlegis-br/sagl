@@ -449,6 +449,8 @@ CREATE TABLE IF NOT EXISTS `anexo_norma` (
 
 ALTER TABLE  `ordem_dia` ADD INDEX (  `cod_sessao_plen` ) ;
 
+ALTER TABLE  `expediente_materia` ADD INDEX (  `cod_sessao_plen` ) ;
+
 ALTER TABLE `materia_legislativa` DROP `txt_resultado`;
 
 ALTER TABLE `protocolo` DROP `cod_documento`;

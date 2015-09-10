@@ -406,10 +406,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
             documento_individual = E.DocumentoIndividual(urn)
             oai_lexml.append(documento_individual)
-            oai_lexml.append(E.Epigrafe(epigrafe.decode('iso-8859-1')))
-            oai_lexml.append(E.Ementa(ementa.decode('iso-8859-1')))
+            oai_lexml.append(E.Epigrafe(epigrafe))
+            oai_lexml.append(E.Ementa(ementa))
             if indexacao:
-                oai_lexml.append(E.Indexacao(indexacao.decode('iso-8859-1')))
+                oai_lexml.append(E.Indexacao(indexacao))
             return etree.tostring(oai_lexml)
         else:
             return None
