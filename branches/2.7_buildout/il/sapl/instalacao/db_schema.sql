@@ -1474,6 +1474,7 @@ CREATE TABLE `oradores` (
   `url_discurso` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_sessao_plen`,`cod_parlamentar`),
+  UNIQUE KEY `idx_num_ordem` (`cod_sessao_plen`,`num_ordem`,`ind_excluido`),
   KEY `cod_parlamentar` (`cod_parlamentar`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
@@ -1499,6 +1500,7 @@ CREATE TABLE `oradores_expediente` (
   `url_discurso` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_sessao_plen`,`cod_parlamentar`),
+  UNIQUE KEY `idx_num_ordem` (`cod_sessao_plen`,`num_ordem`,`ind_excluido`),
   KEY `cod_parlamentar` (`cod_parlamentar`),
   KEY `cod_sessao_plen` (`cod_sessao_plen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;

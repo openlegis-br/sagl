@@ -447,6 +447,10 @@ CREATE TABLE IF NOT EXISTS `anexo_norma` (
 
 -- Fim Anexo Norma
 
+ALTER TABLE `oradores`  ADD  UNIQUE KEY `idx_num_ordem` (`cod_sessao_plen`,`num_ordem`,`ind_excluido`),
+
+ALTER TABLE `oradores_expediente`  ADD  UNIQUE KEY `idx_num_ordem` (`cod_sessao_plen`,`num_ordem`,`ind_excluido`),
+
 ALTER TABLE  `ordem_dia` ADD INDEX (  `cod_sessao_plen` ) ;
 
 ALTER TABLE  `expediente_materia` ADD INDEX (  `cod_sessao_plen` ) ;
