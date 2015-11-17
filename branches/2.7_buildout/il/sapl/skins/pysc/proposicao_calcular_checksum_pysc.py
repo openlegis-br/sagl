@@ -7,7 +7,7 @@
 ##parameters=cod_proposicao
 ##title=
 ##
-txtint_path = 'sapl_documentos/proposicao/' + str(cod_proposicao) + '.odt'
+txtint_path = 'sapl_documentos/proposicao/' + str(cod_proposicao) + '_signed.pdf'
 try:
   txtint = context.restrictedTraverse (txtint_path)
 
@@ -22,6 +22,6 @@ try:
   else:
     c='M' + str(-1 * x)
 except:
-  c = 'Doc. Invalido!'
+  c = 'Sem assinatura digital!'
 c = c + '/' + str(cod_proposicao)
 return c

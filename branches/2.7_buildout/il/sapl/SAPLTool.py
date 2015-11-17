@@ -32,8 +32,20 @@ import cStringIO
 from appy.pod.renderer import Renderer
 
 #imports para o maps
+import sys
+import six
+import base64
 import simplejson as json
 
+from lacunarestpki import *
+
+from zope.testbrowser.browser import Browser
+browser = Browser()
+
+restpki_access_token = 'xmf2cIV29DFzg20PTIbRyTLR0nxnk9VvC1LYVsXdvy0YUKYZnrHFam8SivOCZEquEmQfIv44jT0W4RnjCjxAgDfbT2Iwcp6d5IZGAItx_vaY8SMXiPMuDN5MVhTvFGoYL2mXMswggcJcq4pj7wgFttBnVneWJOnCeMmlIBOT4KbHSWqLc8ZpG78khrQ_ou1lhhqKrUD05cHXa6LcfPen8Ub2Ja3sNwRnZ1hjEUL5DGc9-kEND4UwTcVBZTPle2ckZ16PSIaxOMi9BeL4httwsreYT_eie8UpEevSEJeOMRK2a5RKy1FfK2TK1zwAdSnfl0cH5bpeqlyl4d2dnFjtpwca_aNBuQuHLtuOv1W-TjFlaXaiWgsoJS5U1Qv3W6Neq7YsZzyxqnwFMQUbtdP612yu6bw2J3K6sQBZhym1UCQM08jEJy86HSoA5NekYv0IzyH2tovIVpTBYgbcQRQa6GsqAsn0jYp6VdSwVeDWYy4B8pcuUCj9pL1AAbQrcfO09wh6nA'                       
+
+restpki_url = 'https://pki.rest/'
+restpki_client = RestPkiClient(restpki_url, restpki_access_token)
 
 class ISAPLTool(Interface):
     """ Marker interface for SAPL Tool.
@@ -839,4 +851,209 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.substitutivo.manage_addFile(id=nom_arquivo,file=data)
 
+
+    def pades_signature(self, cod_proposicao):
+
+        # If the user was redirected here by /upload (signature with file uploaded by user), the "userfile" route argument
+        # will contain the filename under the uploads/ folder. Otherwise (signature with server file), we'll sign a sample
+        # document.
+        pdf_file = '%s' % (cod_proposicao) + ".pdf"
+
+        # Read the PDF path
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()
+        url = self.url() + '/sapl_documentos/proposicao/' + pdf_file
+        opener = urllib.urlopen(url)
+        f = open('/tmp/' + pdf_file, 'wb').write(opener.read())
+        tmp_path = '/tmp'
+        pdf_tmp = pdf_file
+        pdf_path = '%s/%s' % (tmp_path, pdf_file)
+        #pdf_path = open('/tmp/' + pdf_file, 'rb')
+
+        # Read the PDF stamp image
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()
+        id_logo = portal.sapl_documentos.props_sapl.id_logo
+        if id_logo in portal.sapl_documentos.props_sapl.objectValues('Image'):
+            url = self.url() + '/sapl_documentos/props_sapl/' + id_logo
+        else:
+            url = self.url() + '/imagens/brasao.gif'
+        opener = urllib.urlopen(url)
+        open('/tmp/' + id_logo, 'wb').write(opener.read())
+        f = open('/tmp/' + id_logo, 'rb')
+        pdf_stamp = f.read()
+        f.close()
+
+        signature_starter = PadesSignatureStarter(restpki_client)
+        signature_starter.set_pdf_path(pdf_path)
+        signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
+        signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
+        signature_starter.visual_representation = ({
+            'text': {
+                # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
+                # certificate
+                # signerName -> full name of the signer
+                # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
+                'text': 'Assinado por {{signerName}} ({{signerNationalId}})',
+                # Specify that the signing time should also be rendered
+                'includeSigningTime': True,
+                # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
+                # Left
+                'horizontalAlign': 'Left'
+            },
+
+            'image': {
+                # We'll use as background the image that we've read above
+                'resource': {
+                    'content': base64.b64encode(pdf_stamp),
+                    'mimeType': 'image/png'
+                },
+                # Opacity is an integer from 0 to 100 (0 is completely transparent, 100 is completely opaque).
+                'opacity': 50,
+                # Align the image to the right
+                'horizontalAlign': 'Right'
+            },
+
+            # Position of the visual representation. We have encapsulated this code in a function to include several
+            # possibilities depending on the argument passed to the function. Experiment changing the argument to see
+            # different examples of signature positioning (valid values are 1-6). Once you decide which is best for
+            # your case, you can place the code directly here.
+            'position': self.get_visual_representation_position(4)
+        })
+
+        token = signature_starter.start_with_webpki()
+
+        assinar = self.url() + '/cadastros/proposicao/assinar_proposicao'
+        #response = browser.open(assinar + '?cod_proposicao='+str(cod_proposicao)+'&token=token&pdf_path='+pdf_path)
+
+        #response = make_response(render_template('pades-signature.html', token=token, pdf_path=pdf_path))
+
+        # The token acquired above can only be used for a single signature attempt. In order to retry the signature it is
+        # necessary to get a new token. This can be a problem if the user uses the back button of the browser, since the
+        # browser might show a cached page that we rendered previously, with a now stale token. # we force page expiration
+        # through HTTP headers to prevent caching of the page.
+        #response.headers = get_expired_page_headers()
+ 
+        return token, pdf_path, cod_proposicao
+        #return token, pdf_path
+
+    def pades_signature_action(self, token, cod_proposicao):
+        # Get the token for this signature (rendered in a hidden input field, see pades-signature.html template)
+        token = token
+        cod_proposicao = cod_proposicao
+
+        # Instantiate the PadesSignatureFinisher class, responsible for completing the signature process
+        signature_finisher = PadesSignatureFinisher(restpki_client)
+
+        # Set the token
+        signature_finisher.token = token
+
+        # Call the finish() method, which finalizes the signature process and returns the signed PDF
+        signature_finisher.finish()
+
+        # Get information about the certificate used by the user to sign the file. This method must only be called after
+        # calling the finish() method.
+        signer_cert = signature_finisher.certificate
+
+        # At this point, you'd typically store the signed PDF on your database. For demonstration purposes, we'll
+        # store the PDF on a temporary folder publicly accessible and render a link to it.
+        filename = "%s"%cod_proposicao+'_signed.pdf'
+
+        tmp_path = "/tmp"
+
+        signature_finisher.write_signed_pdf(os.path.join(tmp_path, filename))
+
+        signature_finisher.write_signed_pdf(filename)
+
+        data = open('/tmp/' + filename, "rb").read()
+        for file in [filename]:
+            os.unlink(file)
+            self.sapl_documentos.proposicao.manage_addFile(id=filename,file=data)
+
+        for item in signer_cert:
+           subjectName = signer_cert['subjectName']
+           commonName = subjectName['commonName']
+           email = signer_cert['emailAddress']
+           pkiBrazil = signer_cert['pkiBrazil']
+           certificateType = pkiBrazil['certificateType']
+           cpf = pkiBrazil['cpf']
+           responsavel = pkiBrazil['responsavel']
+
+        return signer_cert, commonName, email, certificateType, cpf, responsavel, filename
+
+        #return signer_cert, filename
+
+        #return render_template('pades-signature-action.html', signed_file="%s/%s" % (UPLOAD_FOLDER, filename),signer_cert=signer_cert)
+
+    def get_visual_representation_position(self, sample_number):
+        if sample_number == 1:
+            # Example #1: automatic positioning on footnote. This will insert the signature, and future signatures,
+            # ordered as a footnote of the last page of the document
+            return PadesVisualPositioningPresets.get_footnote(restpki_client)
+        elif sample_number == 2:
+            # Example #2: get the footnote positioning preset and customize it
+            visual_position = PadesVisualPositioningPresets.get_footnote(restpki_client)
+            visual_position['auto']['container']['left'] = 2.54
+            visual_position['auto']['container']['bottom'] = 2.54
+            visual_position['auto']['container']['right'] = 2.54
+            return visual_position
+        elif sample_number == 3:
+            # Example #3: automatic positioning on new page. This will insert the signature, and future signatures,
+            # in a new page appended to the end of the document.
+            return PadesVisualPositioningPresets.get_new_page(restpki_client)
+        elif sample_number == 4:
+            # Example #4: get the "new page" positioning preset and customize it
+            visual_position = PadesVisualPositioningPresets.get_new_page(restpki_client)
+            visual_position['auto']['container']['left'] = 2.54
+            visual_position['auto']['container']['top'] = 2.54
+            visual_position['auto']['container']['right'] = 2.54
+            visual_position['auto']['signatureRectangleSize']['width'] = 8
+            visual_position['auto']['signatureRectangleSize']['height'] = 3
+            return visual_position
+        elif sample_number == 5:
+            # Example #5: manual positioning
+            return {
+                'pageNumber': 0,
+                # zero means the signature will be placed on a new page appended to the end of the document
+                'measurementUnits': 'Centimeters',
+                # define a manual position of 5cm x 3cm, positioned at 1 inch from the left and bottom margins
+                'manual': {
+                    'left': 2.54,
+                    'bottom': 2.54,
+                    'width': 5,
+                    'height': 3
+                }
+            }
+        elif sample_number == 6:
+            # Example #6: custom auto positioning
+            return {
+                'pageNumber': -1,
+                # negative values represent pages counted from the end of the document (-1 is last page)
+                'measurementUnits': 'Centimeters',
+                'auto': {
+                    # Specification of the container where the signatures will be placed, one after the other
+                    'container': {
+                        # Specifying left and right (but no width) results in a variable-width container with the given
+                        # margins
+                        'left': 2.54,
+                        'right': 2.54,
+                        # Specifying bottom and height (but no top) results in a bottom-aligned fixed-height container
+                        'bottom': 2.54,
+                        'height': 12.31
+                    },
+                    # Specification of the size of each signature rectangle
+                    'signatureRectangleSize': {
+                        'width': 5,
+                        'height': 3
+                    },
+                    # The signatures will be placed in the container side by side. If there's no room left, the
+                    # signatures will "wrap" to the next row. The value below specifies the vertical distance between
+                    # rows
+                    'rowSpacing': 1
+                }
+            }
+        else:
+            return None
+
 InitializeClass(SAPLTool)
+

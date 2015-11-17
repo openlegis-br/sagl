@@ -82,13 +82,12 @@ $(document).ready(function() {
       if (confirm("Confirma a geração do arquivo PDF?")) {
          location.href="&dtml-portal_url;/modelo_proposicao/proposicao_gerar_pdf?cod_proposicao=<dtml-var cod_proposicao missing>";
          setTimeout(function(){window.location.reload(true)},3000);
-         return true;
        }
-  return;
+         return;
   }
 
   function texto_integral_excluir(){
-
+       var form = document.proposicao_form;
        if (confirm("Deseja realmente excluir o texto integral?")) {
           location.href="texto_proposicao_excluir_proc?cod_proposicao=<dtml-var cod_proposicao missing>";
        }
@@ -96,7 +95,6 @@ $(document).ready(function() {
   }
 
   function texto_pdf_excluir(){
-
        if (confirm("Deseja realmente excluir o arquivo PDF?")) {
           location.href="texto_pdf_excluir_proc?cod_proposicao=<dtml-var cod_proposicao missing>";
        }
@@ -185,9 +183,9 @@ $(document).ready(function() {
 </dtml-if>
 
 <dtml-if usr_eh_autor>
-  <h1 class="firstHeading">Elaboração de Proposição</h1>
+  <h1 class="firstHeading">Proposição Eletrônica</h1>
 <dtml-else>
-  <h1 class="firstHeading">Recebimento de Proposição</h1>
+  <h1 class="firstHeading">Recebimento Eletrônico de Proposição</h1>
 </dtml-if>
 
 <dtml-if expr="usr_eh_autor or (AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']))"> 
@@ -220,7 +218,7 @@ $(document).ready(function() {
                   <dtml-if cod_proposicao>
                     <tr> 
                        <th colspan=3 class="form-element">
-                          Código do Documento: <dtml-var expr="pysc.proposicao_calcular_checksum_pysc(cod_proposicao)">
+                          Código do Autenticidade: <dtml-var expr="pysc.proposicao_calcular_checksum_pysc(cod_proposicao)">
                        </th>
                     </tr>
                   </dtml-if>
@@ -355,8 +353,8 @@ $(document).ready(function() {
     			           $.fancybox({
         			   type: 'iframe',
         			   href: '&dtml-portal_url;/webeditor/editorProposicao?<dtml-var documento>',
-				   width		: '90%',
-				   height		: '95%',
+				   width	   : '90%',
+				   height	   : '95%',
         			   preload         : true,
                                    afterClose      : function() {
                                    window.location.href = "&dtml-portal_url;/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>";},
@@ -410,10 +408,10 @@ $(document).ready(function() {
 			           $('#menuitem1').click(function () {
     			           $.fancybox({
         			   type: 'iframe',
-        			   href: '&dtml-portal_url;/cadastros/proposicao/assinar_proposicao?<dtml-var documento>',
-				   width		: '50%',
-				   height		: '25%',
-                                   maxHeight		: 280,
+        			   href: '&dtml-portal_url;/cadastros/proposicao/assinador/pades-signature_html?cod_proposicao=<dtml-var cod_proposicao>',
+				   width	   : '70%',
+				   height	   : '50%',
+                                   minHeight	   : 320,
         			   preload         : true,
                                    afterClose      : function() {
                                    window.location.href = "&dtml-portal_url;/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>";},
@@ -421,7 +419,7 @@ $(document).ready(function() {
     			           });
 			           });
 			         </script>
-                              <dtml-unless dat_envio>
+                              <dtml-unless dat_recebimento>
                                <a class="botao_excluir" href="javascript:texto_pdf_excluir()">
                                 Excluir
                                </a>
@@ -435,7 +433,7 @@ $(document).ready(function() {
                                 </dtml-if>
                               </dtml-let>
                               <dtml-if expr="_.has_key('temODT')">
-                                <a class="botao_gerar" href="javascript:texto_pdf_gerar()">Gerar PDF</a>
+                                <a class="botao_gerar" href="javascript:void(0)" onclick="javascript:texto_pdf_gerar()">Gerar PDF</a>
                               </dtml-if>
                             </dtml-if>
                           </div>
