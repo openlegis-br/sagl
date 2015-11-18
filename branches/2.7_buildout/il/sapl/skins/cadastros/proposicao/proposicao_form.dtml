@@ -192,7 +192,7 @@ $(document).ready(function() {
 <dtml-if usr_eh_autor>
   <h1 class="firstHeading">Proposição Eletrônica</h1>
 <dtml-else>
-  <h1 class="firstHeading">Recebimento Eletrônico de Proposição</h1>
+  <h1 class="firstHeading">Protocolo Eletrônico de Proposição</h1>
 </dtml-if>
 
 <dtml-if expr="usr_eh_autor or (AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']))"> 
@@ -225,7 +225,7 @@ $(document).ready(function() {
                   <dtml-if cod_proposicao>
                     <tr> 
                        <th colspan=3 class="form-element">
-                          Código do Autenticidade: <dtml-var expr="pysc.proposicao_calcular_checksum_pysc(cod_proposicao)">
+                          Código de Autenticidade: <dtml-var expr="pysc.proposicao_calcular_checksum_pysc(cod_proposicao)">
                        </th>
                     </tr>
                   </dtml-if>
@@ -459,7 +459,7 @@ $(document).ready(function() {
                          <dtml-let id_documento="_.str(cod_proposicao)+'.odt'">
                            <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento)">
                              <dtml-let documento="_.getattr(sapl_documentos.proposicao,id_documento).absolute_url">
-                               <b>Texto da Proposição (ODT)</b><br />  
+                               <b>Texto da Proposição (ODT)</b><p></p>  
                                <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'.odt')">
                                <dtml-if expr="(prop_enviada and (dat_recebimento==None)) and (not dat_devolucao)">
                                 <div id="menuitem" style="cursor: pointer; float:left; padding-right: 4px;">
@@ -499,10 +499,20 @@ $(document).ready(function() {
                          </dtml-let>
                         </div>
                         </td>
-                        <td colspan="2" class="form-element" valign="top">
-                          Autoria da Proposição <br /> 
-                          <input type="text" name="txt_nom_autor" size="50" value="<dtml-var nom_autor missing>" disabled />
-                        </td>    
+                        <td colspan="2" class="form-text" valign="top">
+                         <div id="toolbar" class="ui-widget ui-corner-all">
+                          <b>Texto Final (PDF)</b><p></p>
+                            <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.pdf')">
+                            <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
+                            <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento_assinado)">
+                             <dtml-let documento_assinado="_.getattr(sapl_documentos.proposicao,id_documento_assinado).absolute_url">
+                               <a class="signed_pdf" target="_blank" href="<dtml-var documento_assinado>">
+                                Visualizar Documento Assinado
+                               </a>
+                             </dtml-let>
+                            </dtml-if>
+                          </div>
+                        </td>
                     <tr>
                   </dtml-if>
                 <dtml-else>

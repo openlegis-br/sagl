@@ -81,15 +81,15 @@ $(document).ready(function() {
       <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
     </dtml-if previous-sequence>
    </dtml-if sequence-start>
-            <tr <dtml-if sequence-odd>class="even"</dtml-if>>            
-              <td class="texto">
+            <tr <dtml-if sequence-odd>class="even"</dtml-if>>          
+              <td width="83%" class="texto">
                 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
                   <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
                 <dtml-else>
-                  <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" >
+                  <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" >
                 </dtml-if>
-                <b><dtml-var des_tipo_materia upper> Nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></a></br>
-
+                <b><dtml-var des_tipo_materia upper> Nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></a>
+                 </br>
           <dtml-comment>verifica se usuário é anônimo</dtml-comment>
           <dtml-if expr="portal_membership.isAnonymousUser()">
                   <dtml-call expr="REQUEST.set('substituiEmentaTitulo', '0')">
@@ -129,6 +129,16 @@ $(document).ready(function() {
                   <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
                   <dtml-if sequence-end><br /></dtml-if>
                 </dtml-in>
+
+                <dtml-comment>mostra vinculo do processo eletronico</dtml-comment>
+                <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=cod_materia)">
+                  <dtml-if cod_proposicao>
+                   <b>Processo Eletrônico: </b><dtml-var cod_proposicao>
+                   <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                   / <b>Validação:</b> <dtml-var cod_documento>
+                     <br />
+                  </dtml-if>
+                 </dtml-in>
 
                <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">
                <dtml-if num_materia>
@@ -271,15 +281,31 @@ $(document).ready(function() {
                   <img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/acomp_email.png">&nbsp;<span style="color:#32682F;font-weight:normal;"><a href="&dtml-portal_url;/consultas/materia/acompanhamento/acomp_materia_form?cod_materia=<dtml-var cod_materia>" class="popup" data-fancybox-type="iframe"><b>Acompanhar matéria</b></a>&nbsp;</span>
                 </dtml-if>
               </td>
-              <td width="10%">
+              <td width="17%">
                <div align="center">
+                <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=cod_materia)">
+                 <dtml-if cod_proposicao>
+                   <dtml-call expr="REQUEST.set('proc_eletronico', '1')">
+                 </dtml-if>
+                 <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+                   <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+                     <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                      <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                        <a target="blank" href="<dtml-var proposicao>">
+                          <img align="middle" height="25" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
+                          <p style="line-height: 1.3em; font-size:11px"><b>Proposição Eletrônica<br /><dtml-var cod_documento></p>
+                        </a>
+                     </dtml-let>
+                   </dtml-if>
+                 </dtml-let>
+                </dtml-in>
                 <dtml-let id_documento="_.str(cod_materia)+'_texto_integral.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
                     <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-                      <a target="_blank" href="<dtml-var documento>"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                      <a target="_blank" href="<dtml-var documento>"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral">
+                      <p style="line-height: 1.3em; font-size:11px"><b>Texto Digitalizado</b></p>
+                      </a>
                     </dtml-let>
-                  <dtml-else>
-                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                   </dtml-if>
                 </dtml-let>
                </div>

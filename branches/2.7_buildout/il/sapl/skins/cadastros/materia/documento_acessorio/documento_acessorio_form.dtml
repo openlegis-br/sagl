@@ -180,7 +180,7 @@ $(document).ready(function() {
 <fieldset><legend>Documento Acessório</legend>
   <table>
      <input type="hidden" name="hdn_tip_texto" value="" />   
-     <input type="hidden" name="hdn_cod_proposicao" value="" />    
+     <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var hdnCodProposicao missing>" />    
      <input type="hidden" name="hdn_tip_documento" value="" />
      <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento missing>" onChange="javascript:form.hdn_alterou.value=1" />
          <tr>
@@ -188,15 +188,15 @@ $(document).ready(function() {
             <label for="lst_tip_documento">Tipo </label> <span class="campoObrigatorio">&nbsp;</span>
             <dtml-if temProposicao>
               <input type="hidden" name="lst_tip_documento" value="<dtml-var propTipoDoc>" />
-                <dtml-in expr="zsql.tipo_documento_obter_zsql(tip_documento=propTipoDoc)">
-                            <dtml-var des_tipo_documento>
+                <br /><dtml-in expr="zsql.tipo_documento_obter_zsql(tip_documento=propTipoDoc)">
+                   <input type="text" value="<dtml-var des_tipo_documento>" size="35" readonly />
                 </dtml-in>
 <dtml-else>           
                 <br />
                 <select id="lst_tip_documento" name="lst_tip_documento" onChange="javascript:form.hdn_alterou.value=1">
                   <option value="0">Selecione</option> 
                   <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0)">           
-                     <option <dtml-if  cod_documento>
+                     <option <dtml-if expr="_.has_key('cod_documento')">
                         <dtml-if expr="(cod_documento!=None) and _.int(tip_documento) == _.int(documento_acessorio_form.tip_documento)"> 
                            selected 
                         </dtml-if></dtml-if>
@@ -225,6 +225,30 @@ $(document).ready(function() {
               <a href="autor_doc_pesquisar_form?hdn_tipo_pesquisa=pesq_basica" class="botao-link popup" data-fancybox-type="iframe">Pesquisar</a>
             </td>
           </tr>
+
+<dtml-if cod_documento>
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
+<dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+<dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+         <tr>
+            <td class="form-label">
+             <p>Proposição Eletrônica</p>
+            </td>    
+            <td>
+               <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                 <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'_signed.pdf')">
+                 <dtml-call expr="REQUEST.set('cod_doc',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                    <a target="blank" href="<dtml-var proposicao>">
+                      <img align="top" height="40" style="float: left; margin-top: 2px; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica"></a>
+                    <p style="float: left; line-height: 1.3em;"><b>Código:</b><br /><dtml-var cod_doc></p>
+               </dtml-let>
+            </td>
+         </tr>
+</dtml-if>
+</dtml-let>
+</dtml-in>
+</dtml-if>
+
           <tr> 
             <td>
              <label>Texto digitalizado (PDF) </label><br />
@@ -232,7 +256,7 @@ $(document).ready(function() {
                <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
                <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
                  <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-                   <a target="_blank" href="<dtml-var documento>"><img align="top" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" /></a>
+                   <a target="_blank" href="<dtml-var documento>"><img align="top" src="&dtml-portal_url;/imagens/archiv.gif" style="float: left; margin-top: 2px; margin-right: 2px;" alt="Arquivo PDF" title="Visualizar PDF" /></a>
                    <a class="botao-link" href="javascript:texto_integral_excluir()">Excluir</a>
                  </dtml-let>
                 <dtml-else>
@@ -260,7 +284,7 @@ $(document).ready(function() {
                       <dtml-let documento_odt="_.getattr(sapl_documentos.materia_odt,id_documento_odt).absolute_url">
                          <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_documento)+'.odt')">
                             <a class="popup1" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento_odt>" data-fancybox-type="iframe">
-                            <img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
+                            <img align="top" style="float: left; margin-top: 2px; margin-right: 2px;" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
                             <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/materia_odt/externalEdit_/<dtml-var nome_arquivo_odt>">Editar</a>
                             <a class="botao-link" href="javascript:texto_odt_documento_excluir()">Excluir</a>
                       </dtml-let>
@@ -280,37 +304,6 @@ $(document).ready(function() {
                    </dtml-if>
                 </dtml-let>
              </dtml-if>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-              <dtml-if expr="_.has_key('cod_documento')">       
-                 <dtml-in expr="zsql.proposicao_obter_zsql(ind_recebido=1,ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
-                    <dtml-let id_proposicao="_.str(cod_proposicao)+'.odt'">
-                       <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
-                          <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
-                             <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'.odt')">
-                             <dtml-call expr="REQUEST.set('cod_doc',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
-                             <label for="radTipTxtIntegral">Código: <dtml-var cod_doc></label><br />
-                             <a target="_blank" href="<dtml-var proposicao>">
-                               <img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Proposição" title="Proposição"></a>
-                             <a class="botao-link" target="_blank" href="&dtml-portal_url;/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">Ver proposição</a>
-                          </dtml-let>
-                       </dtml-if>
-                    </dtml-let>
-                 <dtml-else>
-                    <span class="texto"><i>Este documento acessório não foi gerado por uma proposição.</i></span>
-                 </dtml-in>
-              </dtml-if>
-                  <dtml-if temProposicao>
-                     <dtml-call expr="REQUEST.set('cod_doc',pysc.proposicao_calcular_checksum_pysc(hdnCodProposicao))">
-                     <select name="dis_selProp" disabled>
-                        <option value="<dtml-var hdnCodProposicao>" selected>
-                          <dtml-var cod_doc>
-                        </option>
-                     </select>
-                     <a class="botao-link" target="_blank" href="&dtml-portal_url;/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var hdnCodProposicao>">Ver proposição</a>
-                  </dtml-if>
             </td>
           </tr>
           <tr> 

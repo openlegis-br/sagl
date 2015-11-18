@@ -312,13 +312,37 @@ $(function() {
               </dtml-if>
              </td>
            </tr>
+
+<dtml-if cod_emenda>
+<dtml-call expr="REQUEST.set('des_tipo_proposicao', 'Emenda')">
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',des_tipo_proposicao=des_tipo_proposicao,cod_mat_ou_doc=cod_materia,cod_autor=cod_autor)">
+<dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+<dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+         <tr>
+            <td class="form-label">
+             <p>Proposição Eletrônica</p>
+            </td>    
+            <td>
+               <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                 <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'_signed.pdf')">
+                 <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                    <a target="blank" href="<dtml-var proposicao>">
+                      <img align="top" height="40" style="float: left; margin-top: 2px; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica"></a>
+                    <p style="float: left; line-height: 1.3em;"><b>Código:</b><br /><dtml-var cod_documento></p>
+               </dtml-let>
+            </td>
+         </tr>
+</dtml-if>
+</dtml-let>
+</dtml-in>
+</dtml-if>
            <tr>
-              <td><label>Texto original (PDF)</label><br />
+              <td width="50%"><label>Texto digitalizado (PDF)</label><br />
                 <dtml-if expr="_.has_key('cod_emenda')">
                    <dtml-call expr="REQUEST.set('id_documento', _.str(cod_emenda)+'_emenda.pdf')">
                    <dtml-if "_.hasattr(sapl_documentos.emenda,id_documento)">
                      <dtml-let documento="_.getattr(sapl_documentos.emenda,id_documento).absolute_url">
-                       <a target="_blank" href="<dtml-var documento>"><img align="top" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" /></a>
+                       <a target="_blank" href="<dtml-var documento>"><img align="top" style="float: left; margin-top: 2px; margin-right: 2px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" /></a>
                        <a class="botao-link" href="javascript:texto_pdf_excluir()">
                          Excluir
                        </a>
@@ -360,7 +384,7 @@ $(function() {
                              <dtml-let documento_odt="_.getattr(sapl_documentos.emenda,id_documento_odt).absolute_url">
                                <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_emenda)+'_emenda.odt')">
                                  <a class="popup1" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento_odt>" data-fancybox-type="iframe">
-                                   <img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
+                                   <img align="top" style="float: left; margin-top: 2px; margin-right: 2px;" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
                                  <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/emenda/externalEdit_/<dtml-var nome_arquivo_odt>">Editar</a>
                                <a class="botao-link" href="javascript:texto_integral_odt_excluir()">Excluir</a>
                              </dtml-let>

@@ -18,7 +18,7 @@ $(document).ready(function() {
 });
 </script>
 
-<a id="ajuda" target="_blank" href="&dtml-portal_url;/relatorios/pdf_detalhe_materia_preparar_pysc?cod_materia=<dtml-var cod_materia>">PDF</a>
+<a id="ajuda" target="_blank" href="&dtml-portal_url;/relatorios/pdf_detalhe_materia_preparar_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">PDF</a>
 
 <h1 class="firstHeading"><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></h1>
 
@@ -37,7 +37,7 @@ $(document).ready(function() {
              <td class="texto">
                 <b><dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia></b>
              </td>
-             <td width="20%" class="texto"><b>Número:</b></td>
+             <td width="20%" class="form-label"><b>Número:</b></td>
              <td class="texto">
                 <b><dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b>
              </td>
@@ -47,7 +47,7 @@ $(document).ready(function() {
              <td class="texto">
                <dtml-var dat_apresentacao missing null="">
              </td>
-             <td class="texto"><b>Protocolo:</b></td>
+             <td class="form-label"><b>Protocolo:</b></td>
              <td class="texto">
            <dtml-if num_protocolo>
                <dtml-var num_protocolo missing null="">/<dtml-var ano_ident_basica missing>
@@ -120,7 +120,7 @@ $(document).ready(function() {
             <tr>
               <th class="form-label">Matéria Anexadora:</th>
               <td colspan="3" class="texto">
-                     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>">
+                     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia_principal)">">
                      <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing null="">/<dtml-var ano_ident_basica missing null=""></b></a> - 
                      <b>Data Anexação:</b> <dtml-var dat_anexacao missing missing null="">
                </td>
@@ -133,14 +133,13 @@ $(document).ready(function() {
              <tr>
                <th class="form-label">Matéria Anexada:</th> 
                <td colspan="3" class="texto">
-                     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
                      <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica></b></a> -
                      <b>Data Anexação:</b> <dtml-var dat_anexacao missing>
                </td>
              </tr>
         </dtml-in>
   </dtml-in>
-     <dtml-if expr="portal_membership.isAnonymousUser() and substituiEmentaTitulo=='0'">
         <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
            <dtml-call expr="REQUEST.set('temDespacho', cod_comissao_sel)">
         </dtml-in>
@@ -167,7 +166,6 @@ $(document).ready(function() {
                 </dtml-in>
                </td>
              </tr>
-        </dtml-if>
      </dtml-if>
 	<dtml-if txt_observacao>
           <tr>
@@ -194,24 +192,45 @@ $(document).ready(function() {
              </td>
           </tr>
 	</dtml-if>
+        <dtml-call expr="REQUEST.set('id_documento', _.str(cod_materia)+'_texto_integral.pdf')">
+        <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
              <tr>
                 <th class="form-label">Texto integral:</th> 
                 <td colspan="3" class="texto"> 
-                 <dtml-call expr="REQUEST.set('id_documento', _.str(cod_materia)+'_texto_integral.pdf')">
-                 <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
                   <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
                     <a target="_blank" href="<dtml-var documento>">
-                      <img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral">
+                      <img align="middle" style="float: left; margin-top: 2px; margin-right: 2px;" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral">
                     </a>
                   </dtml-let>
-                <dtml-else>
-                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
-                </dtml-if>  
                </td>
              </tr>
+        </dtml-if>  
   </table>
 </fieldset>
-        
+
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=cod_materia)">
+<dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+<dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+<fieldset>
+   <legend>Proposição Eletrônica</legend>
+    <table>   
+         <tr>    
+            <td>
+               <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                 <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'_signed.pdf')">
+                 <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                    <a target="blank" href="<dtml-var proposicao>">
+                      <img align="top" height="40" style="float: left; margin-top: 2px; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica"></a>
+                    <p style="float: left; line-height: 1.3em;"><b>Código:</b><br /><dtml-var cod_documento></p>
+               </dtml-let>
+            </td>
+         </tr>
+    </table>
+</fieldset>
+</dtml-if>
+</dtml-let>
+</dtml-in>
+
 <dtml-if expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia=cod_materia)">
  <fieldset>
   <legend>Norma Derivada</legend>
@@ -252,7 +271,8 @@ $(document).ready(function() {
           -
 	</dtml-if>
        </td>  
-       <td class="texto"><b>Data Publicação: </td>
+       <td class="form-label"><b>Data Publicação: </td>
+       <td class="texto">
 	<dtml-if dat_publicacao> 
          <dtml-var dat_publicacao missing null="">
         <dtml-else>
@@ -270,8 +290,8 @@ $(document).ready(function() {
               Não
             </dtml-if>
           </td>
-          <td class="texto" width="25%"><b>Regime Tramitação:</b></th>
-          <td class="texto">
+          <td class="form-label" width="25%"><b>Regime Tramitação:</b></th>
+          <td colspan="3" class="texto">
             <dtml-in expr="zsql.regime_tramitacao_obter_zsql(cod_regime_tramitacao = cod_regime_tramitacao)">
               <dtml-var des_regime_tramitacao missing>
             </dtml-in>
@@ -400,14 +420,14 @@ $(document).ready(function() {
 <dtml-if cod_substitutivo>
     <dtml-if sequence-start>   
 <fieldset>
-<legend>Substitutivo</legend>
+<legend>Substitutivos</legend>
   <table>
        <tr> 
-         <th width="5%" class="form-label">Número</th>
-         <th width="40%" class="form-label">Ementa</th>
-         <th width="30%" class="form-label">Autoria</th>
-         <th width="10%" class="form-label">Arquivo</th>
-         <th width="15%" class="form-label">Resultado</th>
+         <th class="form-label">Número</th>
+         <th class="form-label">Ementa</th>
+         <th class="form-label">Autoria</th>
+         <th class="form-label">Arquivo</th>
+         <th class="form-label">Resultado</th>
        </tr>  
     </dtml-if sequence-start>   
        <tr> 
@@ -435,13 +455,27 @@ $(document).ready(function() {
           </td>
           <td class="texto">
              <div align="center">
+              <dtml-call expr="REQUEST.set('des_tipo_proposicao', 'Substitutivo')">
+                <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',des_tipo_proposicao=des_tipo_proposicao,cod_mat_ou_doc=cod_materia,cod_autor=cod_autor)">
+                 <dtml-if cod_proposicao>
+                 </dtml-if>
+                 <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+                   <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+                     <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                      <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                        <a target="blank" href="<dtml-var proposicao>">
+                          <img align="middle" height="25" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
+                          <p style="line-height: 1.3em; font-size:11px"><b>Proposição Eletrônica<br /><dtml-var cod_documento></p>
+                        </a>
+                     </dtml-let>
+                   </dtml-if>
+                 </dtml-let>
+                </dtml-in>
                 <dtml-let id_substitutivo="_.str(cod_substitutivo)+'_substitutivo.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_substitutivo)">
                     <dtml-let substitutivo="_.getattr(sapl_documentos.substitutivo,id_substitutivo).absolute_url">
                       <a target="_blank" href="<dtml-var substitutivo>"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
                     </dtml-let>
-                  <dtml-else>
-                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                   </dtml-if>
                 </dtml-let>
              </div>
@@ -472,12 +506,12 @@ $(document).ready(function() {
 <legend>Emendas</legend>
   <table>
        <tr> 
-         <th width="5%" class="form-label">Número</th>
-         <th width="10%" class="form-label">Tipo</th>
-         <th width="30%" class="form-label">Ementa</th>
-         <th width="30%" class="form-label">Autoria</th>
-         <th width="10%" class="form-label">Arquivo</th>
-         <th width="15%" class="form-label">Resultado</th>
+         <th class="form-label">Número</th>
+         <th class="form-label">Tipo</th>
+         <th class="form-label">Ementa</th>
+         <th class="form-label">Autoria</th>
+         <th width="16%" class="form-label">Arquivo</th>
+         <th class="form-label">Resultado</th>
        </tr>  
     </dtml-if sequence-start>   
        <tr> 
@@ -508,13 +542,25 @@ $(document).ready(function() {
           </td>
           <td class="texto">
              <div align="center">
+              <dtml-call expr="REQUEST.set('des_tipo_proposicao', 'Emenda')">
+                <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',des_tipo_proposicao=des_tipo_proposicao,cod_mat_ou_doc=cod_materia,cod_autor=cod_autor)">
+                 <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+                   <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+                     <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                      <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                        <a target="blank" href="<dtml-var proposicao>">
+                          <img align="middle" height="25" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
+                          <p style="line-height: 1.3em; font-size:11px"><b>Proposição Eletrônica<br /><dtml-var cod_documento></p>
+                        </a>
+                     </dtml-let>
+                   </dtml-if>
+                 </dtml-let>
+                </dtml-in>
                 <dtml-let id_emenda="_.str(cod_emenda)+'_emenda.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.emenda,id_emenda)">
                     <dtml-let emenda="_.getattr(sapl_documentos.emenda,id_emenda).absolute_url">
                       <a target="_blank" href="<dtml-var emenda>"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
                     </dtml-let>
-                  <dtml-else>
-                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                   </dtml-if>
                 </dtml-let>
              </div>
@@ -564,14 +610,26 @@ $(document).ready(function() {
     <tr> 
       <th width="20%">
       <div align="center">
+                <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
+                 <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+                   <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+                     <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                      <dtml-call expr="REQUEST.set('cod_doc',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                        <a target="blank" href="<dtml-var proposicao>">
+                          <img align="middle" height="25" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
+                          <p style="line-height: 1.3em; font-size:11px"><b>Proposição Eletrônica<br /><dtml-var cod_doc></p>
+                        </a>
+                     </dtml-let>
+                   </dtml-if>
+                 </dtml-let>
+                </dtml-in>
+
       <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
       <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
          <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
            <a target="_blank" href="<dtml-var documento>">
              <img align=middle border=0 src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral"></a>
          </dtml-let>
-       <dtml-else>
-         <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
       </dtml-if>
       </th>
       <td class="texto">
@@ -636,9 +694,9 @@ $(document).ready(function() {
      <dtml-if expr="ind_tramitacao==1">
       <tr>
        <td colspan="4" class="texto">  
-              <span style="color:#32682F;font-weight:normal;float:left;text-align:center;width:45%;"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/acomp_email.png">&nbsp;<a href="&dtml-portal_url;/consultas/materia/acompanhamento/acomp_materia_form?cod_materia=<dtml-var cod_materia>" class="popup" data-fancybox-type="iframe"><b>Acompanhar matéria</a></b>&nbsp;</span>
+              <span style="color:#32682F;font-weight:normal;float:left;text-align:center;width:45%;"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/acomp_email.png">&nbsp;<a href="&dtml-portal_url;/consultas/materia/acompanhamento/acomp_materia_form?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" class="popup" data-fancybox-type="iframe"><b>Acompanhar matéria</a></b>&nbsp;</span>
 
-             <span style="color:#32682F;font-weight:normal;float:left;text-align:center;width:45%;"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/rss.gif">&nbsp;<a href="&dtml-portal_url;/generico/RSS2_tramitacao_materias?<dtml-var "REQUEST.get('QUERY_STRING','')">"><b>Feed RSS</b></a>
+             <span style="color:#32682F;font-weight:normal;float:left;text-align:center;width:45%;"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/rss.gif">&nbsp;<a href="&dtml-portal_url;/generico/RSS2_tramitacao_materias?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">"><b>Feed RSS</b></a>
         </td>
       </tr>
    </dtml-if>
@@ -654,7 +712,7 @@ $(document).ready(function() {
       </tr>
     </dtml-if>
       <tr <dtml-if sequence-odd>class="even"</dtml-if>>
-       <th width="20%" class="texto">
+       <td width="20%" class="texto">
         <b>Data:</b> <dtml-var dat_tramitacao missing null="">
        </th>
        <td width="35%" valign="top" class="texto">

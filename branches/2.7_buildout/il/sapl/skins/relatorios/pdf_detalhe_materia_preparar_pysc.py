@@ -36,7 +36,14 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
   rodape['sgl_uf']= local.sgl_uf
 
 
-for materia in context.zsql.materia_obter_zsql(cod_materia=REQUEST['cod_materia']):
+cod_materia = REQUEST['cod_materia']
+
+if cod_materia.isdigit():
+ cod_materia = cod_materia
+else:
+ cod_materia = context.pysc.b64decode_pysc(codigo=str(cod_materia))
+
+for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
 #Abaixo é gerado os dados para o bloco Informações Básicas
  inf_basicas_dic['texto_projeto']= materia.txt_ementa
  inf_basicas_dic['apresentada']= materia.dat_apresentacao
@@ -118,7 +125,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=REQUEST['cod_materia'
  
 #o bloco abaixo gera o dicionário de Tramitacoes
  lst_tramitacoes = []
- for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=REQUEST['cod_materia']):
+ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=cod_materia):
    dic_tramitacoes = {}
    dic_tramitacoes['data']= tramitacao.dat_tramitacao
    dic_tramitacoes['data_enc']= tramitacao.dat_encaminha
