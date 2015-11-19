@@ -8,6 +8,9 @@
 
 <dtml-if temProposicao>
   <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao)">
+    <dtml-call expr="REQUEST.set('cod_doc',pysc.proposicao_calcular_checksum_pysc(hdn_cod_proposicao))">
+    <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y às %H:%M'))">
+    <dtml-call expr="REQUEST.set('txt_tramitacao', 'Proposição Eletrônica ' + cod_doc + ' incorporada como Documento Acessório (' + des_tipo_proposicao + ') em ' + hdn_hor_tramitacao)">
     <dtml-if expr="tip_mat_ou_doc!=_.int(hdn_tip_documento)">
       <dtml-call expr="REQUEST.set('erro', 1)">
       <dtml-let mensagem="'O tipo do documento não é compatível com o tipo de proposição. Corrija um dos campos e tente novamente!'">
@@ -58,6 +61,42 @@
           <dtml-call expr="REQUEST.set('erro', 1)">
         </dtml-if>
       </dtml-let>
+
+      <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=hdn_cod_materia, ind_ult_tramitacao=1)">
+         <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
+      </dtml-in>
+
+      <dtml-if cod_ult_tramitacao>
+        <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao=cod_ult_tramitacao, ind_ult_tramitacao=0)">   
+      </dtml-if>
+
+      <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
+      <dtml-call expr="REQUEST.set('nom_unidade_origem', 'Protocolo Eletrônico')">
+      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_origem)">
+         <dtml-call expr="REQUEST.set('cod_unid_tram_local', cod_unid_tramitacao)">
+      </dtml-in>
+
+      <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
+      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_destino)">
+         <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tramitacao)">
+      </dtml-in>
+
+      <dtml-call expr="REQUEST.set('sgl_status', 'PRT')">
+      <dtml-in expr="zsql.status_tramitacao_obter_zsql(sgl_status=sgl_status)">
+         <dtml-call expr="REQUEST.set('cod_status', cod_status)">
+      </dtml-in>
+
+      <dtml-call expr="zsql.tramitacao_incluir_zsql(   
+                                                    cod_materia = hdn_cod_materia,
+                                                    dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
+                                                    cod_unid_tram_local = cod_unid_tram_local,
+                                                    cod_unid_tram_dest = cod_unid_tram_dest,
+                                                    cod_status = cod_status,
+                                                    ind_urgencia = 0,
+                                                    txt_tramitacao = txt_tramitacao,
+                                                    ind_ult_tramitacao = 1)">
+     <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=hdn_cod_materia)">
+
     </dtml-if>
 
     <dtml-if expr="metodo==zsql.documento_acessorio_incluir_zsql">
