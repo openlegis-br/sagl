@@ -400,6 +400,7 @@ CREATE TABLE `autor` (
   `nom_autor` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `des_cargo` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `col_username` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `end_email` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_autor`),
   KEY `idx_tip_autor` (`tip_autor`),
@@ -1762,6 +1763,8 @@ CREATE TABLE `proposicao` (
   `dat_recebimento` datetime DEFAULT NULL,
   `txt_descricao` varchar(400) COLLATE utf8_unicode_ci NOT NULL,
   `cod_mat_ou_doc` int(11) DEFAULT NULL,
+  `cod_emenda` int(11) DEFAULT NULL,
+  `cod_substitutivo` int(11) DEFAULT NULL,
   `dat_devolucao` datetime DEFAULT NULL,
   `txt_justif_devolucao` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `txt_observacao` text COLLATE utf8_unicode_ci,
@@ -1769,6 +1772,8 @@ CREATE TABLE `proposicao` (
   PRIMARY KEY (`cod_proposicao`),
   KEY `tip_proposicao` (`tip_proposicao`),
   KEY `cod_materia` (`cod_materia`),
+  KEY `cod_emenda` (`cod_emenda`),
+  KEY `cod_substitutivo` (`cod_substitutivo`),
   KEY `cod_autor` (`cod_autor`),
   KEY `idx_prop_autor` (`dat_envio`,`dat_recebimento`,`ind_excluido`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;

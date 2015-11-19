@@ -461,6 +461,10 @@ ALTER TABLE `protocolo` DROP `cod_documento`;
 
 ALTER TABLE `protocolo` DROP `cod_materia`;
 
+ALTER TABLE `autor` ADD `end_email` VARCHAR( 100 ) NULL AFTER `col_username` ;
 
+ALTER TABLE `proposicao` ADD `cod_emenda` INT( 11 ) NULL AFTER `cod_mat_ou_doc` ,
+ADD INDEX ( `cod_emenda` ) ;
 
-
+ALTER TABLE `proposicao` ADD `cod_substitutivo` INT( 11 ) NULL AFTER `cod_emenda` ,
+ADD INDEX ( `cod_substitutivo` ) ;

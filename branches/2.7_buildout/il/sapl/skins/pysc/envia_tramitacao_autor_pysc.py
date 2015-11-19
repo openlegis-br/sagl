@@ -14,11 +14,6 @@ mailhost = context.MailHost
 
 data_registro=DateTime().strftime('%d/%m/%Y às %H:%M')
 
-if hasattr(context.sapl_documentos.props_sapl,'logo_casa.gif'):
-  imagem = context.sapl_documentos.props_sapl['logo_casa.gif'].absolute_url()
-else:
-  imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
-
 casa={}
 aux=context.sapl_documentos.props_sapl.propertyItems()
 for item in aux:
@@ -28,15 +23,18 @@ casa_legislativa = casa['nom_casa']
 
 for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  ementa = materia.txt_ementa
- projeto = materia.sgl_tipo_materia+" "+materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+ projeto = materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
 
  nom_autor = ""
- autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
- fields = autores.data_dictionary().keys()
+ autorias = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
+ fields = autorias.data_dictionary().keys()
  lista_autor = []
- for autor in autores:
+ lista_codigo=[]
+ for autor in autorias:
    for field in fields:
+     cod_autor = int(autor['cod_autor'])
      nome_autor = autor['nom_autor_join']
+   lista_codigo.append(cod_autor)
    lista_autor.append(nome_autor)
  nom_autor = ', '.join(['%s' % (value) for (value) in lista_autor])
 
@@ -50,19 +48,21 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
 
 remetente = email_casa
 
-linkMat = "" + context.consultas.absolute_url()+"/materia/materia_mostrar_proc?cod_materia=" + cod_materia
+cod_materia_base64 = context.pysc.b64encode_pysc(codigo=str(cod_materia))
+
+linkMat = "" + context.consultas.absolute_url()+"/materia/materia_mostrar_proc?cod_materia=" + cod_materia_base64
 
 destinatarios=[]
-for destinatario in context.zsql.acomp_materia_obter_inscritos_zsql(cod_materia=cod_materia):
+for item in lista_codigo:
+ for destinatario in context.zsql.autor_obter_zsql(cod_autor=item):
   dic={}
   dic['end_email']=destinatario.end_email
-  dic['txt_hash']=destinatario.txt_hash
-  destinatarios.append(dic)
+  if dic['end_email'] != None:
+   destinatarios.append(dic)
 
 for dic in destinatarios:
-  hash = dic['txt_hash']
   mMsg = "Prezado(a) Senhor(a),\n\n"
-  mMsg = mMsg + "A seguinte matéria de seu interesse sofreu tramitação registrada em " + data_registro + ":\n\n"
+  mMsg = mMsg + "Informamos que a seguinte matéria de sua autoria sofreu tramitação registrada em " + data_registro + ":\n\n"
   mMsg = mMsg + "" + projeto + "\n"
   mMsg = mMsg + "" + str(ementa) + "\n"
   mMsg = mMsg + "Autoria: " + str(nom_autor) + "\n\n"
@@ -72,12 +72,10 @@ for dic in destinatarios:
   mMsg = mMsg + "Texto da Ação: " + str(texto_acao) + "\n\n"
   mMsg = mMsg + "Cordialmente,\n\n"
   mMsg = mMsg + "" + str(casa_legislativa) +"\n"
-  mMsg = mMsg + "Processo Legislativo Eletrônico\n\n\n"
-  mMsg = mMsg + "Clique no link abaixo para excluir seu e-mail da lista de envio:\n" 
-  mMsg = mMsg + "" + context.consultas.absolute_url() + "/materia/acompanhamento/acomp_materia_excluir_proc?txt_hash=" + str(hash) +"\n"
+  mMsg = mMsg + "Processo Legislativo Eletrônico\n"
 
   mTo = dic['end_email']
 
-  mSubj = projeto +" - Aviso de Tramitação" + data_registro
+  mSubj = projeto +" - Aviso de tramitação em " + data_registro
 
   mailhost.send(mMsg, mTo, remetente, subject=mSubj, encode='base64')
