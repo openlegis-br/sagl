@@ -17,21 +17,32 @@
              <tr>
               <td class="texto">
               <p><b>Código de Autenticidade:</b> <dtml-var cod_documento></p>
-              <p><b>Recebimento:</b> <dtml-var dat_recebimento></p>
+              <p><b>Descrição:</b> <dtml-var txt_descricao></p>
               <p><b>Autoria:</b> <dtml-var nom_autor></p>
-              <p><b>Matéria Devivada:</b> <dtml-var des_tipo_proposicao>
-                 <dtml-if expr="ind_mat_ou_doc=='D'">(matéria acessória)
+              <p><b>Recebimento:</b> <dtml-var dat_recebimento></p>
+                 <dtml-if expr="ind_mat_ou_doc=='D'">
+                   <p><b>Matéria Acessória:</b> 
+                   <dtml-if cod_emenda>
+                     <dtml-in expr="zsql.emenda_obter_zsql(cod_emenda=cod_emenda,ind_excluido=0)">
+                       Emenda nº <dtml-var num_emenda> - 
+                     </dtml-in>
+                   <dtml-elif cod_substitutivo>
+                     <dtml-in expr="zsql.substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo,ind_excluido=0)">
+                       Substitutivo nº <dtml-var num_substitutivo> - 
+                     </dtml-in>
+                   <dtml-elif cod_mat_ou_doc>
+                     <p><b>Documento Acessório:</b> <dtml-var des_tipo_proposicao> - 
+                   </dtml-if>
+                   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+                      <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                   </dtml-in>
                  <dtml-elif expr="ind_mat_ou_doc=='M'">
+                   <p><b>Matéria Legislativa:</b>
+                   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_mat_ou_doc,ind_excluido=0)">
+                      <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                   </dtml-in>
                  </dtml-if>
               </p>
-              <p><b>Descrição:</b> <dtml-var txt_descricao></p>
-              <dtml-if cod_materia>
-                <p><b>Processo Eletrônico:</b>
-                  <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
-                   <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
-                  </dtml-in>
-                </p>
-              </dtml-if>
               </td>
               <td class="texto">
                <div align="center">
