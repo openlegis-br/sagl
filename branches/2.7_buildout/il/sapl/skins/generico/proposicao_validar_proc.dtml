@@ -1,10 +1,10 @@
 <dtml-try>
   <dtml-let codigo="txt_numero_proposicao">
     <dtml-call expr="REQUEST.set('erro',1)">
-    <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=codigo, ind_excluido=0)">  
+    <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=codigo, ind_incorporado=1, ind_excluido=0)">  
     <dtml-if cod_proposicao>  
       <dtml-call expr="REQUEST.set('erro',0)">
-      <dtml-if expr="cod_materia==None or dat_recebimento==None">
+      <dtml-if expr="dat_recebimento==None">
         <dtml-let mensagem="'Proposição ainda não incorporada.'">
           <dtml-var mensagem_emitir>
         </dtml-let>
@@ -19,17 +19,19 @@
               <p><b>Código de Autenticidade:</b> <dtml-var cod_documento></p>
               <p><b>Recebimento:</b> <dtml-var dat_recebimento></p>
               <p><b>Autoria:</b> <dtml-var nom_autor></p>
-              <p><b>Matéria Resultante:</b> <dtml-var des_tipo_proposicao>
-                 <dtml-if expr="ind_mat_ou_doc=='D'">(processo acessório)
-                 <dtml-elif expr="ind_mat_ou_doc=='M'">(processo principal)
+              <p><b>Matéria Devivada:</b> <dtml-var des_tipo_proposicao>
+                 <dtml-if expr="ind_mat_ou_doc=='D'">(matéria acessória)
+                 <dtml-elif expr="ind_mat_ou_doc=='M'">
                  </dtml-if>
               </p>
               <p><b>Descrição:</b> <dtml-var txt_descricao></p>
-              <p><b>Processo Eletrônico Referenciado:</b>
-                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
-                 <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
-                </dtml-in>
-              </p>
+              <dtml-if cod_materia>
+                <p><b>Processo Eletrônico:</b>
+                  <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+                   <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                  </dtml-in>
+                </p>
+              </dtml-if>
               </td>
               <td class="texto">
                <div align="center">
