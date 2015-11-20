@@ -918,7 +918,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             # possibilities depending on the argument passed to the function. Experiment changing the argument to see
             # different examples of signature positioning (valid values are 1-6). Once you decide which is best for
             # your case, you can place the code directly here.
-            'position': self.get_visual_representation_position(4)
+            'position': self.get_visual_representation_position(2)
         })
 
         token = signature_starter.start_with_webpki()
@@ -994,7 +994,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             # Example #2: get the footnote positioning preset and customize it
             visual_position = PadesVisualPositioningPresets.get_footnote(restpki_client)
             visual_position['auto']['container']['left'] = 2.54
-            visual_position['auto']['container']['bottom'] = 2.54
+            visual_position['auto']['container']['bottom'] = 1.35
             visual_position['auto']['container']['right'] = 2.54
             return visual_position
         elif sample_number == 3:
@@ -1007,7 +1007,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             visual_position['auto']['container']['left'] = 2.54
             visual_position['auto']['container']['top'] = 2.54
             visual_position['auto']['container']['right'] = 2.54
-            visual_position['auto']['signatureRectangleSize']['width'] = 8
+            visual_position['auto']['signatureRectangleSize']['width'] = 6
             visual_position['auto']['signatureRectangleSize']['height'] = 3
             return visual_position
         elif sample_number == 5:
