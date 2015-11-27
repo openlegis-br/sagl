@@ -851,12 +851,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.substitutivo.manage_addFile(id=nom_arquivo,file=data)
 
-
     def pades_signature(self, cod_proposicao):
-
-        # If the user was redirected here by /upload (signature with file uploaded by user), the "userfile" route argument
-        # will contain the filename under the uploads/ folder. Otherwise (signature with server file), we'll sign a sample
-        # document.
         pdf_file = '%s' % (cod_proposicao) + ".pdf"
 
         # Read the PDF path
@@ -868,16 +863,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         tmp_path = '/tmp'
         pdf_tmp = pdf_file
         pdf_path = '%s/%s' % (tmp_path, pdf_file)
-        #pdf_path = open('/tmp/' + pdf_file, 'rb')
 
         # Read the PDF stamp image
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
         id_logo = portal.sapl_documentos.props_sapl.id_logo
-        if id_logo in portal.sapl_documentos.props_sapl.objectValues('Image'):
-            url = self.url() + '/sapl_documentos/props_sapl/' + id_logo
-        else:
-            url = self.url() + '/imagens/brasao.gif'
+        url = self.url() + '/sapl_documentos/props_sapl/logo_casa.gif'
         opener = urllib.urlopen(url)
         open('/tmp/' + id_logo, 'wb').write(opener.read())
         f = open('/tmp/' + id_logo, 'rb')
@@ -894,7 +885,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 # certificate
                 # signerName -> full name of the signer
                 # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
-                'text': 'Assinado por {{signerName}} ({{signerNationalId}})',
+                'text': 'Assinado por {{signerName}} - {{signerNationalId}}',
                 # Specify that the signing time should also be rendered
                 'includeSigningTime': True,
                 # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
@@ -909,33 +900,78 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                     'mimeType': 'image/png'
                 },
                 # Opacity is an integer from 0 to 100 (0 is completely transparent, 100 is completely opaque).
-                'opacity': 50,
+                'opacity': 40,
                 # Align the image to the right
                 'horizontalAlign': 'Right'
             },
 
-            # Position of the visual representation. We have encapsulated this code in a function to include several
-            # possibilities depending on the argument passed to the function. Experiment changing the argument to see
-            # different examples of signature positioning (valid values are 1-6). Once you decide which is best for
-            # your case, you can place the code directly here.
-            'position': self.get_visual_representation_position(2)
+            'position': self.get_visual_representation_position(3)
         })
 
         token = signature_starter.start_with_webpki()
-
-        assinar = self.url() + '/cadastros/proposicao/assinar_proposicao'
-        #response = browser.open(assinar + '?cod_proposicao='+str(cod_proposicao)+'&token=token&pdf_path='+pdf_path)
-
-        #response = make_response(render_template('pades-signature.html', token=token, pdf_path=pdf_path))
-
-        # The token acquired above can only be used for a single signature attempt. In order to retry the signature it is
-        # necessary to get a new token. This can be a problem if the user uses the back button of the browser, since the
-        # browser might show a cached page that we rendered previously, with a now stale token. # we force page expiration
-        # through HTTP headers to prevent caching of the page.
-        #response.headers = get_expired_page_headers()
  
         return token, pdf_path, cod_proposicao
-        #return token, pdf_path
+
+    def pades_cosignature(self, cod_proposicao):
+        pdf_file_signed = '%s' % (cod_proposicao) + "_signed.pdf"
+        
+        # Read the PDF path
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()
+        url = self.url() + '/sapl_documentos/proposicao/' + pdf_file_signed
+        opener = urllib.urlopen(url)
+        f = open('/tmp/' + pdf_file_signed, 'wb').write(opener.read())
+        tmp_path = '/tmp'
+        pdf_tmp = pdf_file_signed
+        pdf_path = '%s/%s' % (tmp_path, pdf_file_signed)
+
+        # Read the PDF stamp image
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()
+        id_logo = portal.sapl_documentos.props_sapl.id_logo
+        url = self.url() + '/sapl_documentos/props_sapl/logo_casa.gif'
+        opener = urllib.urlopen(url)
+        open('/tmp/' + id_logo, 'wb').write(opener.read())
+        f = open('/tmp/' + id_logo, 'rb')
+        pdf_stamp = f.read()
+        f.close()
+
+        signature_starter = PadesSignatureStarter(restpki_client)
+        signature_starter.set_pdf_path(pdf_path)
+        signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
+        signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
+        signature_starter.visual_representation = ({
+            'text': {
+                # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
+                # certificate
+                # signerName -> full name of the signer
+                # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
+                'text': 'Assinado por {{signerName}} - {{signerNationalId}}',
+                # Specify that the signing time should also be rendered
+                'includeSigningTime': True,
+                # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
+                # Left
+                'horizontalAlign': 'Left'
+            },
+
+            'image': {
+                # We'll use as background the image that we've read above
+                'resource': {
+                    'content': base64.b64encode(pdf_stamp),
+                    'mimeType': 'image/png'
+                },
+                # Opacity is an integer from 0 to 100 (0 is completely transparent, 100 is completely opaque).
+                'opacity': 40,
+                # Align the image to the right
+                'horizontalAlign': 'Right'
+            },
+
+            'position': self.get_visual_representation_position(3)
+        })
+
+        token = signature_starter.start_with_webpki()
+ 
+        return token, pdf_path, cod_proposicao
 
     def pades_signature_action(self, token, cod_proposicao):
         # Get the token for this signature (rendered in a hidden input field, see pades-signature.html template)
@@ -955,8 +991,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # calling the finish() method.
         signer_cert = signature_finisher.certificate
 
-        # At this point, you'd typically store the signed PDF on your database. For demonstration purposes, we'll
-        # store the PDF on a temporary folder publicly accessible and render a link to it.
+        # At this point, you'd typically store the signed PDF on your database.
         filename = "%s"%cod_proposicao+'_signed.pdf'
 
         tmp_path = "/tmp"
@@ -966,9 +1001,15 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signature_finisher.write_signed_pdf(filename)
 
         data = open('/tmp/' + filename, "rb").read()
+
         for file in [filename]:
             os.unlink(file)
-            self.sapl_documentos.proposicao.manage_addFile(id=filename,file=data)
+            if filename in self.sapl_documentos.proposicao:
+              documento = getattr(self.sapl_documentos.proposicao,filename)
+              documento.manage_upload(file=data)
+              #self.sapl_documentos.proposicao.manage_upload(id=filename,file=data)
+            else:
+              self.sapl_documentos.proposicao.manage_addFile(id=filename,file=data)
 
         for item in signer_cert:
            subjectName = signer_cert['subjectName']
@@ -980,10 +1021,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            responsavel = pkiBrazil['responsavel']
 
         return signer_cert, commonName, email, certificateType, cpf, responsavel, filename
-
-        #return signer_cert, filename
-
-        #return render_template('pades-signature-action.html', signed_file="%s/%s" % (UPLOAD_FOLDER, filename),signer_cert=signer_cert)
 
     def get_visual_representation_position(self, sample_number):
         if sample_number == 1:
@@ -1007,7 +1044,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             visual_position['auto']['container']['left'] = 2.54
             visual_position['auto']['container']['top'] = 2.54
             visual_position['auto']['container']['right'] = 2.54
-            visual_position['auto']['signatureRectangleSize']['width'] = 6
+            visual_position['auto']['signatureRectangleSize']['width'] = 5
             visual_position['auto']['signatureRectangleSize']['height'] = 3
             return visual_position
         elif sample_number == 5:
