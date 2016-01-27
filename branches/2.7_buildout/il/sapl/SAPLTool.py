@@ -42,7 +42,7 @@ from lacunarestpki import *
 from zope.testbrowser.browser import Browser
 browser = Browser()
 
-restpki_access_token = 'xmf2cIV29DFzg20PTIbRyTLR0nxnk9VvC1LYVsXdvy0YUKYZnrHFam8SivOCZEquEmQfIv44jT0W4RnjCjxAgDfbT2Iwcp6d5IZGAItx_vaY8SMXiPMuDN5MVhTvFGoYL2mXMswggcJcq4pj7wgFttBnVneWJOnCeMmlIBOT4KbHSWqLc8ZpG78khrQ_ou1lhhqKrUD05cHXa6LcfPen8Ub2Ja3sNwRnZ1hjEUL5DGc9-kEND4UwTcVBZTPle2ckZ16PSIaxOMi9BeL4httwsreYT_eie8UpEevSEJeOMRK2a5RKy1FfK2TK1zwAdSnfl0cH5bpeqlyl4d2dnFjtpwca_aNBuQuHLtuOv1W-TjFlaXaiWgsoJS5U1Qv3W6Neq7YsZzyxqnwFMQUbtdP612yu6bw2J3K6sQBZhym1UCQM08jEJy86HSoA5NekYv0IzyH2tovIVpTBYgbcQRQa6GsqAsn0jYp6VdSwVeDWYy4B8pcuUCj9pL1AAbQrcfO09wh6nA'                       
+restpki_access_token = ''                       
 
 restpki_url = 'https://pki.rest/'
 restpki_client = RestPkiClient(restpki_url, restpki_access_token)
