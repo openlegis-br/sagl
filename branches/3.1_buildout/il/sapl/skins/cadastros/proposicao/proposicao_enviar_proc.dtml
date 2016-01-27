@@ -1,0 +1,28 @@
+<dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, ind_excluido=0)">
+  <dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!='00/00/0000 00:00:00'))">
+  <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
+</dtml-in>
+<dtml-if prop_enviada>
+  <dtml-let mensagem="'Esta proposição já havia sido enviada! Erro de Sistema!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-elif expr="not usr_eh_autor">
+  <dtml-let mensagem="'Você não tem permissão para enviar esta proposição !'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
+  <dtml-try>
+    <dtml-call expr="zsql.proposicao_registrar_envio_zsql(
+          cod_proposicao            = hdn_cod_proposicao,
+          dat_envio                 = pysc.data_atual_iso_pysc() )">
+  <dtml-except>
+    <dtml-let mensagem="'Não foi possí­vel enviar a proposicao. Tente novamente!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-let cod_doc="_.str(pysc.proposicao_calcular_checksum_pysc(hdn_cod_proposicao))"
+              mensagem="'Proposição enviada com sucesso!<br><b>Código de Autenticidade: ' + cod_doc + '</b><br><div align=\'center\'><a target=\'blank\' href=\'proposicao_recibo_imprimir?cod_documento=' + cod_doc + '\'>[Imprimir Recibo]</a></div>'" sucesso="1">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+</dtml-if>

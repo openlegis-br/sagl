@@ -1,0 +1,245 @@
+<dtml-var standard_html_header>
+
+<link rel="stylesheet" href="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
+
+<script type="text/javascript">
+<!--
+   $(document).ready(function() { 
+    $("#pendentes")
+    .tablesorter(
+      {theme:'blue',
+       widgets:['filter'], 
+       sortList: [[0,0]], 
+       headers: 
+            {
+                0: {sorter: "shortDate", dateFormat: "ddmmyyyy"}
+            }
+     })
+    .tablesorterPager({container: $("#pager")});  
+    }); 
+ 
+   $(document).ready(function() { 
+    $("#devolvidas")
+    .tablesorter(
+      {theme:'blue',
+       widgets:['filter'], 
+       sortList: [[0,1]], 
+       headers: 
+            {
+                0: {sorter: "shortDate", dateFormat: "ddmmyyyy"}
+            }
+     })
+    .tablesorterPager({container: $("#pager")});  
+    }); 
+
+   $(document).ready(function() { 
+    $("#incorporadas")
+    .tablesorter(
+      {theme:'blue',
+       widgets:['filter'], 
+       sortList: [[0,1]], 
+       headers: 
+            {
+                0: {sorter: "shortDate", dateFormat: "ddmmyyyy"}
+            }
+     })
+    .tablesorterPager({container: $("#pager")});  
+    }); 
+-->
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/recebimento_proposicao">Ajuda</a>
+
+<h1 class="firstHeading">Recebimento de Proposições</h1> 
+
+<dtml-if expr="envrec=='E'">
+    <dtml-var proposicao_menu>
+    <fieldset>
+        <legend>Proposições Pendentes</legend>
+    </fieldset>
+        <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido=0)">
+        <dtml-if sequence-start>
+		    <table id="pendentes" class="tablesorter">
+                       <thead>
+		        <tr>  
+		            <th width="18%" class="form-label">Envio</th>
+		            <th width="16%" class="form-label">Tipo</th>
+		            <th width="40%" class="form-label">Descrição</th>
+		            <th width="26%" class="form-label">Autor</th>
+		        </tr>
+                       </thead>
+                       <tbody>
+        </dtml-if sequence-start>
+             <dtml-if expr="(dat_envio!='00/00/0000 00:00:00')">
+                  <dtml-if expr="(dat_recebimento==None)">
+                <dtml-if sequence-even>
+                   <tr>
+                <dtml-else>
+                  <tr class="even">
+                </dtml-if> 
+                    <td valign="top" class="form-element">
+                        <a href="proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>&ind_pendente=1">
+                            <dtml-var dat_envio>
+                        </a>
+                    </td>
+                    <td valign="top" class="form-text"><dtml-var des_tipo_proposicao></td>
+                    <td valign="top" class="form-text"><dtml-var txt_descricao></td>
+                    <td valign="top" class="form-text"><dtml-var nom_autor></td>
+                  </tr>
+                 </dtml-if>
+            </dtml-if>
+        <dtml-if sequence-end>
+             </tbody>
+            </table>
+      <div id="pager" class="pager">
+	<form>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
+		<input type="text" class="pagedisplay"/>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
+		<select class="pagesize">
+			<option selected="selected"  value="10">10</option>
+			<option value="20">20</option>
+			<option value="30">30</option>
+			<option value="40">40</option>
+		</select>
+	</form>
+      </div>
+        </dtml-if sequence-end>
+        <dtml-else>
+            <p class="form-text">Não há nenhuma proposição pendente.</p>
+        </dtml-in>
+  <dtml-elif expr="envrec=='R'">
+        <dtml-var proposicao_menu>
+        <fieldset>
+           <legend>Proposições Devolvidas</legend>
+        </fieldset>
+        <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_devolvido=1)" >
+        <dtml-if sequence-start>
+            <table id="devolvidas" class="tablesorter">
+              <thead>
+                <tr>  
+                    <th width="18%" class="form-label">Devolução</th>
+                    <th width="16%" class="form-label">Tipo</th>
+                    <th width="40%" class="form-label">Descrição</th>
+		    <th width="26%" class="form-label">Autor</th>
+                </tr>
+             </thead>
+             <tbody>
+        </dtml-if sequence-start>
+         <dtml-if expr="(dat_envio!='00/00/0000 00:00:00')">
+         <dtml-if sequence-even>
+            <tr>
+         <dtml-else>
+            <tr class="even">
+         </dtml-if>
+           <td valign="top"class="form-text"><a href="proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao >"><dtml-var dat_devolucao missing null=""></a></td>
+            <td valign="top" class="form-text"><dtml-var des_tipo_proposicao></td>
+            <td valign="top" class="form-text"><dtml-var txt_descricao></td>
+            <td valign="top" class="form-text"><dtml-var nom_autor></td>
+          </tr>
+       </dtml-if>
+        <dtml-if sequence-end>
+             </tbody>
+            </table>
+      <div id="pager" class="pager">
+        <form>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
+                <input type="text" class="pagedisplay"/>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
+                <select class="pagesize">
+                        <option selected="selected"  value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                </select>
+        </form>
+      </div>
+        </dtml-if sequence-end>
+        <dtml-else>
+            <p class="form-text">Não há nenhuma proposição devolvida.</p>
+        </dtml-in>
+   <dtml-elif expr="envrec=='I'">
+        <dtml-var proposicao_menu>
+    <fieldset>
+        <legend>Proposições Incorporadas</legend>
+    </fieldset>
+        <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_incorporado=1)" >
+        <dtml-if sequence-start>
+            <table id="incorporadas" class="tablesorter">
+              <thead>
+                <tr>  
+                    <th width="18%" class="form-label">Incorporação</th>
+                    <th width="13%" class="form-label">Tipo</th>
+                    <th width="30%" class="form-label">Descrição</th>
+		    <th width="25%" class="form-label">Autor</th>
+                    <th width="14%" class="form-label">Vínculo</th>
+                </tr>
+              </thead>
+              <tbody>
+        </dtml-if sequence-start>
+                <dtml-if expr="(dat_envio!='00/00/0000 00:00:00')">
+                <dtml-if sequence-even>
+                   <tr>
+                <dtml-else>
+                  <tr class="even">
+                </dtml-if>
+                    <td valign="top" class="form-text"><a href="proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao >"><dtml-var dat_recebimento></a></td>
+                    <td valign="top" class="form-text"><dtml-var des_tipo_proposicao></td>
+                    <td valign="top" class="form-text"><dtml-var txt_descricao></td>
+                    <td valign="top" class="form-text"><dtml-var nom_autor></td>
+                    <dtml-if expr="ind_mat_ou_doc=='D' and tip_proposicao!='3' and tip_proposicao!='6' and tip_proposicao!='7'">                    
+                    <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_documento=cod_mat_ou_doc)">
+                      <dtml-call expr="REQUEST.set('cod_mat', cod_materia)">
+                      <dtml-else><dtml-var cod_mat_ou_doc>Falha ao tentar acesso ao documento acessório - contactar suporte do sistema.
+                      </dtml-in>
+                    <dtml-else>
+                    <dtml-call expr="REQUEST.set('cod_mat', cod_mat_ou_doc)">
+                    </dtml-if>
+                  <dtml-if cod_mat>
+                     <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_mat)">
+                          <td class="form-text">
+                            <a href="<dtml-var "sapl" url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
+                          </td>
+                    <dtml-else> 
+                          <td class="form-text"><dtml-var cod_mat missing>&nbsp;Ocorreu uma falha ao tentar acessar a(o) matéria/documento - Contactar suporte do sistema.</td>
+                    </dtml-in>
+
+                  <dtml-elif expr="cod_mat==None">
+                          <td class="form-text"><i>Não incorporada</i></td>
+                  <dtml-else>
+                          <td class="form-text"><b><dtml-var cod_mat missing></b>Exceção: falha na identificação da matéria!</td>
+                </dtml-if>
+                </tr>
+             </dtml-if>
+        <dtml-if sequence-end>
+             </tbody>
+            </table>
+      <div id="pager" class="pager">
+        <form>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
+                <input type="text" class="pagedisplay"/>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
+                <select class="pagesize">
+                        <option selected="selected"  value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                </select>
+        </form>
+      </div>
+        </dtml-if sequence-end>
+        <dtml-else>
+            <p class="form-text">Nenhuma proposição foi incorporada até o momento.</p>
+        </dtml-in>
+</dtml-if>
+<dtml-var standard_html_footer>

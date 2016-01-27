@@ -1,0 +1,82 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript">
+    function autores_excluir(){
+        if (confirm("Deseja realmente excluir todas as autorias?")) {
+            location.href="autores_excluir_proc?<dtml-var "REQUEST.get('QUERY_STRING','')">";
+        }
+       return;
+    }
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 700,
+		maxHeight	: 600,
+		fitToView	: false,
+		width		: '70%',
+		height		: '77%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+                afterClose      : function() {
+                window.location.href = "&dtml-portal_url;/cadastros/materia/autoria/autoria_index_html?<dtml-var "REQUEST.get('QUERY_STRING','')">";
+                },
+		closeEffect	: 'fade'
+	});
+});
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/despacho_autoria#autoria">Ajuda</a>
+
+<h1 class="firstHeading">Matéria Legislativa</h1>
+
+<form name="index_form" action="autoria_form">
+  <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia missing>">
+  <input type="hidden" name="cod_materia" value="<dtml-var cod_materia missing>">
+  <input type="hidden" name="dat_apresentacao" value="<dtml-var dat_apresentacao missing>">
+    <dtml-var materia_menu>
+    <dtml-var materia_header>
+
+<fieldset><legend>Autoria</legend>  
+<dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+   <dtml-if sequence-start>
+    <table>
+      <tr> 
+         <th class="form-label">Nome Autor</th>
+         <th class="form-label">Tipo Autor</th>
+         <th class="form-label">Primeiro Autor</th>
+      </tr>  
+   </dtml-if sequence-start>
+      <tr> 
+         <td class="texto">
+             <a href="autoria_mostrar_proc?cod_autor=<dtml-var cod_autor>&ind_primeiro_autor=<dtml-var ind_primeiro_autor>&hdn_cod_materia=<dtml-var cod_materia>&cod_materia=<dtml-var cod_materia>&dat_apresentacao=<dtml-var dat_apresentacao>">
+                 <b><dtml-var nom_autor_join></b>
+             </a>
+         </td>
+         <td class="texto"><dtml-var des_tipo_autor></td>
+         <td class="texto">
+            <dtml-if expr="ind_primeiro_autor==0">Não 
+            <dtml-else>Sim
+            </dtml-if></td>
+      </tr>
+   <dtml-if sequence-end>
+      </table>
+   </dtml-if sequence-end>
+<dtml-else>   
+   <span class="texto">Nenhuma autoria cadastrada para essa matéria.</span>
+</dtml-in>
+
+</fieldset>
+
+<p align="center">
+  <input type="submit" class="botao" name="btn_incluir" value="Incluir Autoria">
+</p>
+
+</form>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,29 @@
+<dtml-if expr="_.int(num_ordem) != 0">
+  <dtml-call expr="REQUEST.set('metodo', zsql.despacho_inicial_atualizar_zsql)">  
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.despacho_inicial_incluir_zsql)">
+  <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=cod_materia)">
+    <dtml-if sequence-end>
+      <dtml-call expr="REQUEST.set('num_ordem', _.int(num_ordem)+1)">
+    </dtml-if>
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('num_ordem', 1)">
+  </dtml-in>
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(num_ordem    = num_ordem,
+                          cod_materia  = cod_materia,
+                          cod_comissao = lst_cod_comissao)">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar despacho inicial. Tente novamente.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+<dtml-else>
+  <dtml-let mensagem="'Despacho Inicial salvo com sucesso!'" sucesso="1" url=hdn_url>
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+</dtml-try>

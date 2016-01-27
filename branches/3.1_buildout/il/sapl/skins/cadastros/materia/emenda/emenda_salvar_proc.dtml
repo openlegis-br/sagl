@@ -1,0 +1,133 @@
+<dtml-if hdn_cod_proposicao>
+   <dtml-call expr="REQUEST.set('temProposicao',hdn_cod_proposicao!='')">
+</dtml-if>
+
+<dtml-if hdn_cod_emenda>
+    <dtml-call expr="REQUEST.set('metodo', zsql.emenda_atualizar_zsql)">
+<dtml-else> 
+    <dtml-call expr="REQUEST.set('metodo', zsql.emenda_incluir_zsql)">
+</dtml-if>
+
+<dtml-if expr="_.has_key('check_exc') and check_exc=='on'">
+   <dtml-call expr="REQUEST.set('check', 1)">
+<dtml-else>
+   <dtml-call expr="REQUEST.set('check', 0)">
+</dtml-if>
+
+<dtml-try>
+    <dtml-call expr="metodo(cod_emenda             = hdn_cod_emenda,
+                            tip_emenda             = lst_tip_emenda,
+                            num_emenda             = txt_num_emenda,
+                            cod_materia            = cod_materia,
+                            dat_apresentacao       = pysc.data_converter_pysc(data=txt_dat_apresentacao),
+                            num_protocolo          = txt_num_protocolo,
+                            txt_ementa             = txa_txt_ementa,
+                            txt_observacao         = txa_txt_observacao,
+                            cod_autor              = lst_cod_autor,
+                            exc_pauta              = check)">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar a emenda. Tente novamente!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+<dtml-in expr="zsql.emenda_incluida_codigo_obter_zsql()">
+    <dtml-call "REQUEST.set('ult_emenda_incluida',cod_emenda)">
+</dtml-in>
+
+<dtml-else>      
+
+   <dtml-if expr="(_.has_key('hdn_cod_proposicao') and hdn_cod_proposicao!='') or (_.has_key('temProposicao'))">
+
+      <dtml-in expr="zsql.emenda_incluida_codigo_obter_zsql()">
+         <dtml-call "REQUEST.set('hdn_cod_emenda',cod_emenda)">
+      </dtml-in>
+
+      <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao)">
+         <dtml-call expr="REQUEST.set('cod_doc',pysc.proposicao_calcular_checksum_pysc(hdn_cod_proposicao))">
+         <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y às %H:%M'))">
+         <dtml-call expr="REQUEST.set('txt_tramitacao', 'Proposição Eletrônica ' + cod_doc + ' incorporada como Matéria Acessória (Emenda) em ' + hdn_hor_tramitacao)">
+      </dtml-in>
+
+      <dtml-let ok="pysc.proposicao_salvar_como_emenda_pysc(hdn_cod_proposicao,hdn_cod_emenda,0)">
+        <dtml-if ok>
+          <dtml-call expr="REQUEST.set('dat_recebimento', pysc.data_atual_iso_pysc())">    
+          <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao=hdn_cod_proposicao,dat_recebimento=dat_recebimento,cod_mat_ou_doc=cod_materia,cod_emenda=hdn_cod_emenda)">
+        <dtml-else>
+          <dtml-call expr="REQUEST.set('erro', 1)">
+        </dtml-if>
+      </dtml-let>
+
+      <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+         <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
+      </dtml-in>
+
+      <dtml-if cod_ult_tramitacao>
+        <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao=cod_ult_tramitacao, ind_ult_tramitacao=0)">   
+      </dtml-if>
+
+      <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
+      <dtml-call expr="REQUEST.set('nom_unidade_origem', 'Protocolo Eletrônico')">
+      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_origem)">
+         <dtml-call expr="REQUEST.set('cod_unid_tram_local', cod_unid_tramitacao)">
+      </dtml-in>
+
+      <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
+      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_destino)">
+         <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tramitacao)">
+      </dtml-in>
+
+      <dtml-call expr="REQUEST.set('sgl_status', 'PRT')">
+      <dtml-in expr="zsql.status_tramitacao_obter_zsql(sgl_status=sgl_status)">
+         <dtml-call expr="REQUEST.set('cod_status', cod_status)">
+      </dtml-in>
+
+      <dtml-call expr="zsql.tramitacao_incluir_zsql(   
+                                                    cod_materia = cod_materia,
+                                                    dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
+                                                    cod_unid_tram_local = cod_unid_tram_local,
+                                                    cod_unid_tram_dest = cod_unid_tram_dest,
+                                                    cod_status = cod_status,
+                                                    ind_urgencia = 0,
+                                                    txt_tramitacao = txt_tramitacao,
+                                                    ind_ult_tramitacao = 1)">
+     <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=cod_materia)">
+     <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=cod_materia)">
+   </dtml-if>
+
+    <dtml-call expr="REQUEST.set('erro', 0)">              
+
+    <dtml-call expr="REQUEST.set('existe_arquivo', 0)">
+      <dtml-if file_nom_arquivo_emenda>
+        <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_emenda)+'_emenda.pdf')">
+        <dtml-if expr="_.hasattr(sapl_documentos.emenda,id_documento)">
+          <dtml-let documento="_.getattr(sapl_documentos.emenda,id_documento) ">
+            <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
+            <dtml-try>
+                <dtml-call "documento.manage_upload(file=file_nom_arquivo_emenda)">
+            <dtml-except>
+              <dtml-call expr="REQUEST.set('erro', 1)">
+              <dtml-let mensagem="'Ocorreu erro ao tentar salvar o texto integral'+hdn_cod_emenda">
+                 <dtml-var mensagem_emitir>
+              </dtml-let>
+            </dtml-try>
+          </dtml-let>
+        </dtml-if>
+      </dtml-if>
+
+      <dtml-if expr="not existe_arquivo">
+        <dtml-call expr="REQUEST.set('erro',0)">
+        <dtml-try>
+            <dtml-call expr="sapl_documentos.emenda.manage_addFile(id=id_documento,file=file_nom_arquivo_emenda)">
+        <dtml-except> 
+        </dtml-try>
+      </dtml-if>
+
+    <dtml-if erro>
+    </dtml-if>
+
+    <dtml-let mensagem="'Emenda salva com sucesso!'" sucesso="1" url="hdn_url">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+
+</dtml-try>

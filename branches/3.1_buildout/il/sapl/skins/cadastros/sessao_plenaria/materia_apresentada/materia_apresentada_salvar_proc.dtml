@@ -1,0 +1,120 @@
+﻿<dtml-if flag_atualizar>
+   <dtml-call expr="REQUEST.set('hdn_cod_ordem',cod_ordem)">   
+   <dtml-call expr="REQUEST.set('metodo', zsql.materia_apresentada_sessao_atualizar_zsql)">
+<dtml-else>
+   <dtml-call expr="REQUEST.set('metodo', zsql.materia_apresentada_sessao_incluir_zsql)">
+</dtml-if>
+
+
+<dtml-in expr="zsql.sessao_plenaria_obter_zsql(tip_sessao = lst_tip_sessao,
+                                                   dat_inicio_sessao = pysc.data_converter_pysc(data=txt_dat_ordem),
+                                                   ind_excluido=0)">
+
+<dtml-call expr="REQUEST.set('cod_sessao_plen', cod_sessao_plen)">
+
+<dtml-in expr="zsql.materia_apresentada_sessao_obter_zsql(num_ordem = txt_num_ordem,
+                                         cod_sessao_plen = cod_sessao_plen,
+                                         ind_excluido=0)">
+      <dtml-if hdn_cod_ordem>
+        <dtml-if expr="cod_ordem == hdn_cod_ordem">
+         <dtml-call expr="REQUEST.set('cod_ordem_atualizar',cod_ordem)">   
+        </dtml-if>
+      </dtml-if> 
+        <dtml-unless cod_ordem_atualizar>
+          <dtml-unless contador>
+           <dtml-let mensagem="'O número de ordem informado já existe para essa sessão plenária.'">
+             <dtml-var mensagem_popup_emitir>
+           </dtml-let>  
+           <dtml-call expr="REQUEST.set('contador',1)">
+           <dtml-call expr="REQUEST.set('marcador',1)"> 
+         </dtml-unless>
+        </dtml-unless>
+ </dtml-in>
+</dtml-in>
+
+<dtml-if expr="not(zsql.sessao_plenaria_obter_zsql(tip_sessao = lst_tip_sessao,
+                                                   dat_inicio_sessao = pysc.data_converter_pysc(data=txt_dat_ordem),
+                                                   ind_excluido=0))">
+    <dtml-let mensagem="'Não existe sessão plenária cadastrada para a data escolhida.'">
+        <dtml-var mensagem_popup_emitir>
+    </dtml-let>  
+    <dtml-call expr="REQUEST.set('contador',1)">
+    <dtml-call expr="REQUEST.set('marcador',1)">
+<dtml-else>
+    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(tip_sessao = lst_tip_sessao,
+                                                   dat_inicio_sessao = pysc.data_converter_pysc(data=txt_dat_ordem),
+                                                   ind_excluido=0)">
+        <dtml-call expr="REQUEST.set('cod_sessao_plen', cod_sessao_plen)">
+    </dtml-in>
+</dtml-if>
+
+<dtml-unless contador>
+  <dtml-in expr="zsql.materia_obter_zsql(tip_id_basica=lst_tip_id_basica,
+                                         num_ident_basica=txt_num_ident_basica,
+                                         ano_ident_basica=txt_ano_ident_basica,
+                                         ind_excluido=0)">
+    <dtml-call expr="REQUEST.set('cod_materia',cod_materia)">
+    <dtml-call expr="REQUEST.set('marcador',cod_materia)">
+  <dtml-else>
+    <dtml-let mensagem="'Essa matéria não existe no cadastro de matérias legislativas.'">
+      <dtml-var mensagem_popup_emitir>
+    </dtml-let>  
+  </dtml-in>
+</dtml-unless>
+
+<dtml-if cod_materia>  
+ <dtml-in expr="zsql.materia_apresentada_sessao_obter_zsql(cod_materia = cod_materia,
+                                          cod_sessao_plen = cod_sessao_plen,
+                                          ind_excluido=0)">
+      <dtml-if hdn_cod_ordem>
+        <dtml-if expr="cod_ordem == hdn_cod_ordem">
+         <dtml-call expr="REQUEST.set('cod_ordem_atualizar1',cod_ordem)">   
+        </dtml-if>
+      </dtml-if> 
+        <dtml-unless cod_ordem_atualizar1>
+         <dtml-unless contador>
+           <dtml-let mensagem="'Essa materia já faz parte da lista de matérias apresentadas na sessão plenária.'">
+             <dtml-var mensagem_popup_emitir>
+           </dtml-let>  
+           <dtml-call expr="REQUEST.set('contador',1)">
+           <dtml-call expr="REQUEST.set('marcador',1)">
+         </dtml-unless>
+        </dtml-unless>
+  </dtml-in>
+</dtml-if>
+
+<dtml-if marcador>
+  <dtml-if cod_materia>
+    <dtml-if expr="marcador == cod_materia">
+     <dtml-try>
+        <dtml-call expr="metodo(cod_ordem = cod_ordem,
+                                cod_sessao_plen = cod_sessao_plen,
+                                cod_materia = cod_materia,
+                                dat_ordem = pysc.data_converter_pysc(data=txt_dat_ordem),
+                                num_ordem = txt_num_ordem,
+                                txt_observacao = txa_txt_observacao)">
+        <dtml-except>
+           <dtml-let mensagem="'Não foi possível salvar a matéria apresentada. Tente novamente.'">
+             <dtml-var REQUEST>
+           </dtml-let>
+        <dtml-else>
+
+           <dtml-if hdn_cod_ordem>
+               <dtml-in expr="zsql.materia_apresentada_sessao_obter_zsql(cod_ordem=hdn_cod_ordem)">
+                   <dtml-call expr="REQUEST.set('dat_ordem', dat_ordem)">
+               </dtml-in>
+           <dtml-else>
+               <dtml-in expr="zsql.materia_apresentada_sessao_obter_zsql(cod_materia = cod_materia,
+                                         cod_sessao_plen = cod_sessao_plen,
+                                         ind_excluido=0)">
+                   <dtml-call expr="REQUEST.set('dat_ordem', dat_ordem)">
+                </dtml-in>
+           </dtml-if>
+           
+           <dtml-let mensagem="'Matéria apresentada salva com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close();'">
+              <dtml-var mensagem_popup_emitir>
+           </dtml-let>
+     </dtml-try>
+    </dtml-if>
+  </dtml-if>
+</dtml-if>

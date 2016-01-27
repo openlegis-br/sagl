@@ -1,0 +1,36 @@
+<dtml-if "not hdn_num_legislatura">
+  <dtml-if expr="zsql.legislatura_obter_zsql(num_legislatura=txt_num_legislatura)">
+    <dtml-let mensagem="'Já existe uma legislatura com a mesma numeração! Não foi possível salvá-la!'"> 
+      <dtml-call expr="REQUEST.set('erro', 1)">
+      <dtml-var mensagem_emitir>
+    </dtml-let>  
+  <dtml-else>  
+    <dtml-call expr="REQUEST.set('hdn_num_legislatura', txt_num_legislatura)">
+    <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=txt_num_legislatura, ind_excluido=1)">
+      <dtml-call expr="REQUEST.set('metodo', zsql.legislatura_estado_alterar_zsql)">
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('metodo', zsql.legislatura_incluir_zsql)">
+    </dtml-in>      
+  </dtml-if>
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.legislatura_atualizar_zsql)">
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="metodo(num_legislatura = hdn_num_legislatura,
+                            dat_inicio  = pysc.data_converter_pysc(txt_dat_inicio),
+                            dat_fim     = pysc.data_converter_pysc(txt_dat_fim),
+                            dat_eleicao  = pysc.data_converter_pysc(txt_dat_eleicao)
+                            )">
+  <dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar os dados da legislatura. Tente novamente!'"> 
+      <dtml-var mensagem_emitir>
+    </dtml-let>  
+
+  <dtml-else>
+    <dtml-let mensagem="'Legislatura salva com sucesso!'" sucesso="1">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+</dtml-unless>

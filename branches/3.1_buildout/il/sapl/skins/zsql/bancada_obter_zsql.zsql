@@ -1,0 +1,35 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_bancada="" num_legislatura="" cod_partido="" nom_bancada="" nom_bancada_match="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+SELECT
+       REPLACE(bancada.cod_bancada, 'L', '') as cod_bancada,
+       bancada.nom_bancada as nome_bancada,
+       CONCAT (bancada.nom_bancada, ' (', DATE_FORMAT(legislatura.dat_inicio, '%Y'),"-",DATE_FORMAT(legislatura.dat_fim, '%Y'),")") as nom_bancada,
+       bancada.num_legislatura as num_legislatura_sel,  
+       bancada.cod_partido as cod_partido_sel,
+       DATE_FORMAT(bancada.dat_criacao, '%d/%m/%Y') as dat_criacao,
+       DATE_FORMAT(bancada.dat_extincao, '%d/%m/%Y') as dat_extincao
+
+FROM   
+       bancada
+       LEFT JOIN legislatura on bancada.num_legislatura = legislatura.num_legislatura
+ 
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_bancada      column="bancada.cod_bancada"     op="="  type="int" optional> <dtml-and>
+  <dtml-sqltest num_legislatura  column="bancada.num_legislatura" op="="  type="int" optional> <dtml-and>
+  <dtml-sqltest cod_partido      column="bancada.cod_partido"     op="="  type="int" optional> <dtml-and>
+  <dtml-sqltest nom_bancada      column="bancada.nom_bancada"     op="="  type="nb"  optional> <dtml-and>
+  <dtml-sqltest ind_excluido     column="bancada.ind_excluido"    op="="  type="int" optional>
+
+</dtml-sqlgroup>
+
+<dtml-if nom_bancada_match>
+  and  (bancada.nom_bancada) like (<dtml-sqlvar expr="'%'+nom_bancada_match+'%'" type="string">)
+</dtml-if>
+
+ORDER BY bancada.num_legislatura DESC, nom_bancada
+

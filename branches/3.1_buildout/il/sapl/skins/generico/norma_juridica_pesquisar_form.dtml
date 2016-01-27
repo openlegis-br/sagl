@@ -1,0 +1,202 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript">
+$(function() {
+	$('#dt_norma').datepick();
+	$('#dt_norma2').datepick();
+        $('#dt_public').datepick();
+        $('#dt_public2').datepick();
+});
+</script>
+
+<script type="text/javascript" src="javascript/poshytips.js"></script>
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+
+<script type="text/javascript">
+
+(function ($) {
+  $(function () {
+    //$('input[type=submit]').hide();     //uncomment this if You want to hide the submit form buttons
+    document.onkeypress = function (event) {
+      var form = norma_pesquisar;
+      form.action = "norma_juridica_pesquisar_proc";
+      if (event.keyCode === 13) {
+        form.submit();
+      }
+    };
+  });
+}(jQuery));
+
+  function ordem() {
+    if(document.norma_pesquisar.txt_assunto.value == '') {
+       document.norma_pesquisar.rd_ordenacao[1].disabled = true;
+       document.norma_pesquisar.rd_ordenacao[0].checked = true; }
+    else {	
+       document.norma_pesquisar.rd_ordenacao[1].disabled = false; }
+    if(document.norma_pesquisar.rd_ordenacao[0].checked && document.norma_pesquisar.rd_ordenacao[1].checked) {
+       document.norma_pesquisar.rd_ordenacao[0].checked = false; }
+  }
+  function relevancia() {
+    if(document.norma_pesquisar.txt_assunto.value != '') {
+      document.norma_pesquisar.rd_ordenacao[1].checked = false;
+      document.norma_pesquisar.rd_ordenacao[0].checked = true;
+    }
+  }
+  function textual(form) {
+    if(form.chk_textual.checked == true) {
+      form.action = "norma_juridica_texto_pesquisar_proc";
+      if (form.txt_assunto.value == "") {
+         alert("É necessário informar um termo para a pesquisa textual!");
+         form.txt_assunto.focus();
+         return false;
+      }
+    }
+    else {
+      form.action = "norma_juridica_pesquisar_proc";
+    }
+    form.submit();
+  }
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+$(function(){
+  $('#txt_assunto').poshytip({
+	className: 'tip-twitter',
+	showOn: 'focus',
+	alignTo: 'target',
+	alignX: 'right',
+	alignY: 'center',
+	offsetX: 5,
+	showTimeout: 100
+  });
+  $('#lst_tip_norma').poshytip({
+	className: 'tip-twitter',
+	showOn: 'focus',
+	alignTo: 'target',
+	alignX: 'right',
+	alignY: 'center',
+	offsetX: 5,
+	showTimeout: 100
+  });
+});
+//]]>
+</script>
+
+<h1 class="firstHeading">Normas Jurídicas</h1>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+  <div id="toolbar" class="ui-widget ui-corner-all">
+    <button class="incluir" onclick="javasript:location.href='&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_form'">
+        Incluir Norma
+    </button>
+  </div>
+	<script>
+	  $(function() {
+	    $( ".incluir" )
+ 	     .button({
+ 		     icons: {
+        primary: "ui-icon-plus"
+ 	     }
+  	  })
+  	    .click(function( event ) {
+ 	       event.preventDefault();
+ 	     });
+ 	 });
+	</script>
+</dtml-if>
+
+<form class="pf-form" name="norma_pesquisar" action="norma_juridica_pesquisar_proc" onChange="ordem()">
+<fieldset>
+   <input type="hidden" name="incluir" value="<dtml-var incluir>"/>
+    <div class="pf-element pf-full-width">
+      <label for="lst_tip_norma"><span class="pf-label">Tipo de Norma</span></label>
+       <select class="pf-field" id="lst_tip_norma" name="lst_tip_norma" style="max-width: 236px; width: 100%;" title="Selecione um tipo de norma ou mantenha a opção 'Todos' pesquisar qualquer tipo"> 
+          <option value="">Todos</option>
+          <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
+            <option value="<dtml-var tip_norma missing>">
+              <dtml-var des_tipo_norma>
+            </option>
+          </dtml-in>
+        </select>
+    </div>
+    <div class="pf-element pf-full-width">
+     <label for="txt_numero"><span class="pf-label">Número</span></label>
+    <div class="pf-group">
+        <input class="pf-field" id="txt_numero" type="text" name="txt_numero" null="" missing="" style="min-width: 94px; max-width: 94px; width: 20%;"  maxlength="6"/>
+      <label for="txt_ano">&nbsp;Ano
+        <input class="pf-field" id="txt_ano" type="text" name="txt_ano" null="" style="min-width: 82px; max-width: 82px; width: 20%;"  maxlength="4"/></label>
+    </div>
+    </div>
+    <div class="pf-element pf-full-width">
+      <label><span class="pf-label">Período da Norma:</span></label>
+       <div class="pf-group">
+          <label for="dt_norma">
+          <input class="pf-field" type="text" id="dt_norma" name="dt_norma" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength=10 onblur="formata_data(form.dt_norma)" /></label>
+          <label for="dt_norma2">&nbsp;a&nbsp;
+            <input class="pf-field" type="text" id="dt_norma2" name="dt_norma2" style="min-width: 96px; max-width: 96px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_norma2)" /></label>
+       </div>
+    </div>
+    <div class="pf-element pf-full-width">
+        <label><span class="pf-label">Período de Publicação:</span></label>
+       <div class="pf-group">
+          <label for="dt_public">
+          <input class="pf-field" ype="text" id="dt_public" name="dt_public" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_public)" /></label>
+          <label for="dt_public2">&nbsp;a&nbsp;
+          <input class="pf-field" type="text" id="dt_public2" name="dt_public2" style="min-width: 96px; max-width: 96px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_public2)" /></label>
+       </div>
+    </div>
+    <div class="pf-element pf-full-width">
+      <label for="lst_assunto_norma"><span class="pf-label">Assunto / Classificação</span></label>
+        <select class="pf-field" id="lst_assunto_norma" name="lst_assunto_norma" style="max-width: 236px; width: 100%;">
+         <option value="">Todos</option>
+           <dtml-in expr="zsql.assunto_norma_juridica_obter_zsql(ind_excluido=0)">
+             <option value="<dtml-var cod_assunto missing>">
+               <dtml-var des_assunto>
+             </option>
+           </dtml-in>
+        </select>
+     </div>
+    <div class="pf-element pf-full-width">
+        <label for="txt_assunto"><span class="pf-label">Termos da Pesquisa</span></label>
+          <input class="pf-field" id="txt_assunto" type="text" name="txt_assunto" title="DICA: A frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no texto. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do texto." null="" style="min-width: 225px; max-width: 225px; width: 85%;" onKeyUp="ordem()" onBlur="relevancia()" />
+    </div>
+    <div class="pf-element pf-full-width">
+        <label for="chk_textual"><span class="pf-label">Pesquisa Textual?</span>
+          <input class="pf-field" type="checkbox" name="chk_textual" value="1" id="chk_textual">
+          <span style="vertical-align: top;">Pesquisar no conteúdo das Normas</span></label>
+    </div>
+    <div class="pf-element pf-full-width">
+      <label for="lst_tip_situacao_norma"><span class="pf-label">Situação</span></label>
+        <select class="pf-field" id="lst_tip_situacao_norma" name="lst_tip_situacao_norma" style="max-width: 236px; width: 100%;">
+         <option value="">Todos</option>
+           <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(ind_excluido=0)">
+             <option value="<dtml-var tip_situacao_norma missing>">
+               <dtml-var des_tipo_situacao>
+             </option>
+           </dtml-in>
+        </select>
+     </div>
+    <div class="pf-element pf-full-width">
+        <label><span class="pf-label">Ordenação do Resultado</span></label>
+        <div class="pf-group">
+          <dtml-in expr="[('Tipo/Ano/Número', '1'), ('Relevância', '2')]">     
+           <input class="pf-field" type="radio" name="rd_ordenacao" 
+                  value="<dtml-var expr="_['sequence-item']">"
+                  id="rd_ordenacao<dtml-var expr="_['sequence-item']">"
+                <dtml-if expr="_['sequence-item']=='1'">checked="1"</dtml-if> 
+                <dtml-if expr="_['sequence-item']=='2'">disabled</dtml-if> />
+             <label style="vertical-align: top;" for="rd_ordenacao<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"></label>
+          </dtml-in>
+        </div>
+    </div>
+        <div class="pf-element pf-buttons">
+           <input class="pf-button btn botao" type="button" id="btn_norma_pesquisar" name="btn_norma_pesquisar" value="Pesquisar" onClick="textual(document.norma_pesquisar)" />
+          <input class="pf-button btn botao" type="reset" name="btn_norma_limpar" value="Limpar" />
+        </div>
+
+</fieldset>
+</form>
+
+<dtml-var standard_html_footer>

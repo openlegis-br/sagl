@@ -1,0 +1,225 @@
+﻿<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+<script type="text/javascript">
+
+function campos_criticar(){
+
+  var form = document.protocolo_legislativo_form;
+  var regexp_digitos = /\D+/;
+
+  if (form.lst_tip_materia.selectedIndex==0){
+     alert("Selecione um tipo de matéria legislativa!");
+     form.lst_tip_materia.focus();
+     return false;
+  }
+
+  if (form.txt_num_paginas.value == "") {
+     alert("O número de páginas deve ser preenchido!");
+     form.txt_num_paginas.focus();
+     return false;
+  }
+
+  if (regexp_digitos.test(form.txt_num_paginas.value)) {
+     alert("O número de páginas deve ser um numero natural!");
+     form.txt_num_paginas.focus();
+     return false;
+  }
+
+  if (form.txa_txt_ementa.value == "") {
+     alert("A ementa deve ser preenchida!");
+     form.txa_txt_ementa.focus();
+     return false;
+  }
+
+  var tipo_autor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;
+  if (tipo_autor=='0'){
+     alert("Um tipo de autor deve ser selecionado!");
+     form.lst_tip_autor.focus();
+     return false;
+  }
+
+  var cod_autor = form.lst_cod_autor[form.lst_cod_autor.selectedIndex].value;
+  if (cod_autor=='0'){
+     alert("Um autor deve ser selecionado!");
+     form.lst_cod_autor.focus();
+     return false; 
+  }
+
+  form.submit();
+}
+
+   function tipo_autor_mudou(form){
+      var valor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;      
+      var separador = valor.indexOf("&");
+      var URL = 'protocolo_legislativo_form?tip_autor=' + valor.substring(0,separador)
+              + '&des_tipo_autor=' + valor.substring(separador+1,valor.length)
+              + '&tip_materia_sel=' + form.lst_tip_materia.options[form.lst_tip_materia.selectedIndex].value 
+              + '&num_paginas=' + form.txt_num_paginas.value
+              + '&txt_assunto_ementa=' + form.txa_txt_ementa.value
+              + '&txt_observacao=' + form.txa_txt_observacao.value;
+      location.href= URL;
+   }
+
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 500,
+		maxHeight	: 320,
+		fitToView	: false,
+		width		: '70%',
+		height		: '72%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/protocolo_legislativo">Ajuda</a>
+
+<h1 class="firstHeading">Protocolo Legislativo</h1>
+
+<dtml-call expr="REQUEST.set('dat_atual', _.DateTime().strftime('%d/%m/%Y'))">
+
+<dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
+  <dtml-if expr="((_.DateTime(dat_atual) >= dat_inicio and _.DateTime(dat_atual) <= dat_fim))">
+    <dtml-call expr="REQUEST.set('num_legislatura_sel', num_legislatura)">
+  </dtml-if>
+</dtml-in>
+
+<div id="barra-conteudo">
+    <ul>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form">Protocolar Documento</a>
+        </li>
+        <li>
+            <a class="selecionado" href="&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form">Protocolar Matéria</a>
+        </li>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form">Anular Protocolo</a>
+        </li>
+    </ul>
+</div>
+
+<form action="protocolo_legislativo_salvar_proc" name="protocolo_legislativo_form" method="post" enctype="multipart/form-data">
+
+<fieldset>
+<legend>Identificação da Matéria</legend>
+
+<input type="hidden" name="hdn_cod_protocolo" value="<dtml-var cod_protocolo missing>" />
+<input type="hidden" name="hdn_tip_protocolo" value="0" />
+<input type="hidden" name="hdn_tip_processo" value="1" />
+<input type="hidden" name="hdn_url" value="&dtml-portal_url;/consultas/protocolo/protocolo_pesquisar_form?incluir=1" />
+
+<table>
+    <tr>
+      <td width="50%"><label for="lst_tip_materia">Tipo Matéria </label> <span class="campoObrigatorio">&nbsp;</span> <br />
+        <select id="lst_tip_materia" name="lst_tip_materia">
+           <option value="0">Selecione</option>
+         <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+         <option 
+           <dtml-if expr="REQUEST.has_key('tip_materia_sel')">
+             <dtml-if expr="_.int(tip_materia) == _.int(tip_materia_sel)">
+                selected
+             </dtml-if>
+           </dtml-if>
+             value="<dtml-var tip_materia>" >
+          <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+         </option>
+         </dtml-in>
+        </select>
+      </td>
+      <td><label for="txt_num_paginas">Núm. Páginas </label> <span class="campoObrigatorio">&nbsp;</span> <br />
+        <input type="text" id="txt_num_paginas" name="txt_num_paginas" size="6 maxlength="3" value="<dtml-var num_paginas missing null="">"/>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"><label for="txa_txt_ementa">Ementa </label> <span class="campoObrigatorio">&nbsp;</span>
+       <textarea id="txa_txt_ementa" name="txa_txt_ementa" cols="67" rows="4"><dtml-var txt_assunto_ementa missing></textarea>
+      </td>
+    </tr>
+      <tr> 
+        <td><label for="lst_tip_autor">Tipo de Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
+              <select name="lst_tip_autor" size="1" onChange="tipo_autor_mudou(document.protocolo_legislativo_form)">
+              <dtml-unless tip_autor>
+               <option value="0"></option>
+             </dtml-unless>
+              <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor='')">            
+               <option <dtml-if expr="REQUEST.has_key('tip_autor') and tip_autor==_.int(REQUEST['tip_autor'])">
+                      selected </dtml-if>
+                      value="<dtml-var tip_autor>&<dtml-var des_tipo_autor url_quote>">
+              <dtml-var des_tipo_autor></option>
+              </dtml-in>
+             </select>
+             </td>
+             <td><label for="lst_cod_autor">Nome Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
+              <dtml-if expr="_.has_key('des_tipo_autor')"> 
+              <select name="lst_cod_autor" size="1">
+               <option value=0>Selecione</option>
+
+               <dtml-if expr="des_tipo_autor=='Parlamentar'">
+                   <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_atual)">
+                         <option value="<dtml-var cod_autor>">
+                              <dtml-var nom_completo> 
+                         </option>
+                   </dtml-in>
+     
+               <dtml-elif expr="des_tipo_autor=='Comissao'">
+                  <dtml-in expr="zsql.autor_obter_zsql(comissao='1')">
+                   <dtml-call expr="REQUEST.set('cod_autor_comissao', cod_autor)">
+                   <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
+                    <dtml-if expr="dat_extincao is None">
+                      <option value="<dtml-var cod_autor_comissao>">
+                            <dtml-var nom_comissao>
+                      </option>
+                    </dtml-if> 
+                   </dtml-in>
+                  </dtml-in>
+
+               <dtml-elif expr="des_tipo_autor=='Bancada'">
+                 <dtml-in expr="zsql.autor_obter_zsql(bancada='1')">
+                   <dtml-call expr="REQUEST.set('cod_autor_bancada', cod_autor)">
+                  <dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=num_legislatura_sel,cod_bancada=cod_bancada,ind_excluido=0)">
+                      <option value="<dtml-var cod_autor_bancada>">
+                            <dtml-var nom_bancada>
+                         </option>
+                   </dtml-in>
+                  </dtml-in>
+
+                 <dtml-else>                                    
+                  <dtml-in expr="zsql.autor_obter_zsql(des_tipo_autor=des_tipo_autor)">
+                   <dtml-call expr="REQUEST.set('cod_autor_geral', cod_autor)">
+                      <option value="<dtml-var cod_autor_geral>">
+                         <dtml-var nom_autor> 
+                       </option>
+                    </dtml-in>
+                   </dtml-if>
+                </select>
+                <dtml-else>
+                 <input type="text" name="txt_nom_autor" size="30" value="<dtml-var nom_autor missing>" disabled>
+              </dtml-if>
+             </td>
+           </tr>
+      <tr>
+        <td colspan="2"><label for="txa_txt_observacao">Observação</label>
+           <textarea id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
+        </td>
+      </tr>
+</table>
+
+</fieldset>
+
+<p align="center">
+  <input type="button" class="botao" name="button" value="Protocolar Matéria" onClick="campos_criticar()" />
+  <input class="botaoExtra" type="reset" name="btn_protocolo_limpar" value="Limpar" />
+</p>
+
+</form>
+
+<dtml-var standard_html_footer>

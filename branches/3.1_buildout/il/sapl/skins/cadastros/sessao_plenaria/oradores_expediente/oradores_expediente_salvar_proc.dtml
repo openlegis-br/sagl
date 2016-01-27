@@ -1,0 +1,39 @@
+﻿<dtml-call expr="REQUEST.set('ainda_ok', 1)">
+<dtml-call expr="REQUEST.set('atualizar',0)">
+<dtml-if flag_atualizar>
+    <dtml-call expr="REQUEST.set('atualizar',1)">
+</dtml-if>
+
+<dtml-if expr="ainda_ok == 1">
+    <dtml-in expr="zsql.oradores_expediente_obter_zsql(cod_parlamentar=lst_cod_parlamentar,
+                                            cod_sessao_plen = hdn_cod_sessao_plen,
+                                            ind_excluido = 1)">
+        <dtml-call expr="REQUEST.set('metodo', zsql.oradores_expediente_alterar_zsql)">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('metodo', zsql.oradores_expediente_incluir_zsql)">
+    </dtml-in>
+    <dtml-in expr="zsql.oradores_expediente_obter_zsql(cod_parlamentar=lst_cod_parlamentar,
+                                            cod_sessao_plen = hdn_cod_sessao_plen,
+                                            ind_excluido = 0)">
+        <dtml-call expr="REQUEST.set('metodo', zsql.oradores_expediente_alterar_zsql)">
+    </dtml-in>
+</dtml-if>
+
+<dtml-if expr="_.has_key('metodo')">
+    <dtml-try>
+        <dtml-call expr="metodo(cod_parlamentar=lst_cod_parlamentar,
+                                cod_sessao_plen = hdn_cod_sessao_plen,
+                                num_ordem = txt_num_ordem,
+                                url_discurso = txt_url_discurso,
+                                ind_excluido = 0)">
+
+    <dtml-except>
+        <dtml-let mensagem="'Não foi possível salvar o parlamentar na lista de oradores do Expediente. Tente novamente!'">
+            <dtml-var mensagem_emitir>
+        </dtml-let>
+    <dtml-else>
+        <dtml-let mensagem="'Parlamentar salvo com sucesso na lista de oradores do Expediente!'" sucesso="1" url="'index_html?&cod_sessao_leg=' + hdn_cod_sessao_leg + '&cod_sessao_plen=' + hdn_cod_sessao_plen + '&cod_num_legislatura=' + hdn_num_legislatura + '&dat_sessao=' + hdn_dat_sessao + '&tip_sessao=' + hdn_tip_sessao">
+            <dtml-var mensagem_emitir>
+    </dtml-let>
+    </dtml-try>
+</dtml-if>

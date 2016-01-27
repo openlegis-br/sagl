@@ -1,0 +1,74 @@
+<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/partidos">Ajuda</a>
+
+<h1 class="firstHeading">Tabelas Auxiliares</h1> 
+
+<table>
+  <tr> 
+    <td class="form-label">| <a href="partido_form">Incluir Partido</a> |</td>
+<dtml-comment>
+    <td align="right" class="form-label">| <a href="javascript:history.go(-1)">Voltar</a> |</td>
+</dtml-comment>  
+ </tr>
+</table>
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 10)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+<fieldset><legend>Partidos Políticos</legend>
+
+<dtml-in expr="zsql.partido_obter_zsql(ind_excluido=0)" size="step" start="start" orphan=0>
+  <dtml-if sequence-start>
+  <dtml-if previous-sequence>
+      <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+  </dtml-if previous-sequence>
+       <table>
+          <tr> 
+            <th width="60%" class="form-label">Nome do Partido</thd>
+            <th width="8%" class="form-label">Sigla</th>
+            <th width="15%" class="form-label">Data Criação</th>
+            <th width="17%" class="form-label">Data Extinção</th>
+          </tr>         
+    </dtml-if sequence-start>
+          <tr> 
+            <td width="60%" class="form-element">
+             <a href="partido_mostrar_proc?cod_partido=<dtml-var cod_partido>"><dtml-var nom_partido></a></td>
+            <td width="8%" class="form-text"><dtml-var sgl_partido></td>
+            <td width="15%" class="form-text"><dtml-var dat_criacao null=""></td>
+            <td width="17%" class="form-text"><dtml-if expr="dat_extincao!='00/00/0000'"><dtml-var dat_extincao null=""><dtml-else> </dtml-if></td>
+          </tr>
+  <dtml-if sequence-end>
+       </table>
+    </fieldset>
+      <dtml-if next-sequence>
+	<dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+      </dtml-if>
+      <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+         <p class="texto" align="center">          
+          <b><dtml-var "pysc.PageListOutput_pysc('partido_index_html', page,step, _['sequence-length'])"></b>
+         </p>
+      </dtml-if>
+  </dtml-if sequence-end>
+<dtml-else>
+<fieldset>
+  <table>
+     <tr>
+       <td class="form-text">Nenhum partido cadastrado.</td>
+     </tr>
+  </table>
+</fieldset>
+</dtml-in>
+
+<dtml-var standard_html_footer>
