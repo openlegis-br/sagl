@@ -81,10 +81,10 @@ INSERT INTO `assunto_norma` (`cod_assunto`, `des_assunto`, `des_estendida`, `ind
 -- Fazendo dump de dados para tabela `autor`
 --
 
-INSERT INTO `autor` (`cod_autor`, `cod_partido`, `cod_comissao`, `cod_bancada`, `cod_parlamentar`, `tip_autor`, `nom_autor`, `des_cargo`, `col_username`, `ind_excluido`) VALUES
-(1, NULL, NULL, NULL, NULL, 4, 'Executivo Municipal', 'Prefeito', NULL, 0),
-(2, NULL, NULL, NULL, NULL, 5, 'Mesa Diretora', 'Mesa', NULL, 0),
-(3, NULL, NULL, NULL, NULL, 4, 'Iniciativa Popular', 'Cidadão', NULL, 0);
+INSERT INTO `autor` (`cod_autor`, `cod_partido`, `cod_comissao`, `cod_bancada`, `cod_parlamentar`, `tip_autor`, `nom_autor`, `des_cargo`, `col_username`, `end_email`, `ind_excluido`) VALUES
+(1, NULL, NULL, NULL, NULL, 7, 'Prefeito Municipal', 'Prefeito', NULL, NULL, 0),
+(2, NULL, NULL, NULL, NULL, 5, 'Mesa Diretora', 'Mesa', NULL, NULL, 0),
+(3, NULL, NULL, NULL, NULL, 4, 'Iniciativa Popular', 'Cidadão', NULL, NULL, 0);
 
 --
 -- Fazendo dump de dados para tabela `cargo_bancada`
@@ -5792,7 +5792,8 @@ INSERT INTO `partido` (`cod_partido`, `sgl_partido`, `nom_partido`, `dat_criacao
 (40, 'PPL', 'Partido Pátria Livre', '2011-10-04', NULL, 0),
 (41, 'PEN', 'Partido Ecológico Nacional', '2012-06-19', NULL, 0),
 (42, 'PROS', 'Partido Republicano da Ordem Social', '2013-09-24', NULL, 0),
-(43, 'SDD', 'Solidariedade', '2013-09-24', NULL, 0);
+(43, 'SDD', 'Solidariedade', '2013-09-24', NULL, 0),
+(44, 'REDE', 'REDE', '2013-02-16', NULL, 0);
 
 --
 -- Fazendo dump de dados para tabela `quorum_votacao`
@@ -5872,7 +5873,10 @@ INSERT INTO `status_tramitacao` (`cod_status`, `sgl_status`, `des_status`, `ind_
 (49, 'RETORDIA', 'Proposição retirada da Ordem do Dia.', 0, 1, 0),
 (50, 'PAREUCONJ', 'Parecer em reunião conjunta das Comissões pertinentes', 0, 1, 0),
 (51, 'INCLEXP', 'Incluído na pauta do expediente', 0, 1, 0),
-(52, 'DESPACHADA', 'Indicação despachada ao Executivo', 1, 0, 0);
+(52, 'DESPACHADA', 'Indicação despachada ao Executivo', 1, 0, 0),
+(53, 'EXE', 'Encaminhamento ao Executivo', 1, 0, 0),
+(54, 'RECEXE', 'Recebimento no Executivo', 1, 0, 0),
+(55, 'PRT', 'Recebimento no Protocolo', 1, 0, 0);
 
 --
 -- Fazendo dump de dados para tabela `status_tramitacao_administrativo`
@@ -5903,7 +5907,9 @@ INSERT INTO `tipo_autor` (`tip_autor`, `des_tipo_autor`, `ind_excluido`) VALUES
 (3, 'Bancada', 0),
 (4, 'Externo', 0),
 (5, 'Mesa Diretora', 0),
-(6, 'Líderes', 0);
+(6, 'Líderes', 0),
+(7, 'Poder Executivo', 0),
+(8, 'Câmara Municipal', 0);
 
 --
 -- Fazendo dump de dados para tabela `tipo_comissao`
@@ -6021,7 +6027,7 @@ INSERT INTO `tipo_norma_juridica` (`tip_norma`, `voc_lexml`, `sgl_tipo_norma`, `
 INSERT INTO `tipo_proposicao` (`tip_proposicao`, `des_tipo_proposicao`, `ind_mat_ou_doc`, `tip_mat_ou_doc`, `nom_modelo`, `ind_excluido`) VALUES
 (1, 'Requerimento', 'M', 3, '', 0),
 (2, 'Projeto de Lei', 'M', 1, '', 0),
-(3, 'Parecer', 'D', 1, '', 1),
+(3, 'Parecer', 'D', 1, '', 0),
 (4, 'Indicação', 'M', 8, '', 0),
 (5, 'Moção', 'M', 7, '', 0),
 (6, 'Emenda', 'D', 1, '', 0),
@@ -6029,7 +6035,9 @@ INSERT INTO `tipo_proposicao` (`tip_proposicao`, `des_tipo_proposicao`, `ind_mat
 (8, 'Projeto de Lei Complementar', 'M', 5, '', 0),
 (9, 'Projeto de Resolução', 'M', 2, '', 0),
 (10, 'Projeto de Decreto Legislativo', 'M', 6, '', 0),
-(11, 'Proposta de Emenda à Lei Orgânica', 'M', 9, '', 0);
+(11, 'Proposta de Emenda à Lei Orgânica', 'M', 9, '', 0),
+(12, 'Parecer Jurídico', 'D', 17, '', 0),
+(13, 'Ofício / Resposta', 'D', 6, '', 0);
 
 --
 -- Fazendo dump de dados para tabela `tipo_resultado_votacao`
