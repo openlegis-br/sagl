@@ -6188,7 +6188,7 @@ INSERT INTO `tipo_situacao_norma` (`tip_situacao_norma`, `des_tipo_situacao`, `i
 -- Fazendo dump de dados para tabela `tipo_vinculo_norma`
 --
 
-INSERT INTO `tipo_vinculo_norma` (`tip_vinculo`, `des_vinculo`, `des_vinculo_passivo`, `ind_excluido`) VALUES 
+INSERT INTO `tipo_vinculo_norma` (`tipo_vinculo`, `des_vinculo`, `des_vinculo_passivo`, `ind_excluido`) VALUES 
 ('A', 'Altera', 'Alteração', '0'),
 ('C', 'Norma correlata', 'Norma correlata', '0'),
 ('G', 'Regulamenta', 'Regulamentação', '0'),
