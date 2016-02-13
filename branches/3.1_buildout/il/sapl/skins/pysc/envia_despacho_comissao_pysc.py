@@ -1,10 +1,10 @@
-## Script (Python) "envia_acomp_materia_pysc"
+## Script (Python) "envia_despacho_comissao_pysc"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_materia
+##parameters=cod_materia,cod_comissao
 ##title=
 request=context.REQUEST
 response=request.RESPONSE
@@ -26,12 +26,15 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  projeto = materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
 
  nom_autor = ""
- autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
- fields = autores.data_dictionary().keys()
+ autorias = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
+ fields = autorias.data_dictionary().keys()
  lista_autor = []
- for autor in autores:
+ lista_codigo = []
+ for autor in autorias:
    for field in fields:
+     cod_autor = int(autor['cod_autor'])
      nome_autor = autor['nom_autor_join']
+   lista_codigo.append(cod_autor)
    lista_autor.append(nome_autor)
  nom_autor = ', '.join(['%s' % (value) for (value) in lista_autor])
 
@@ -45,34 +48,42 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
 
 remetente = email_casa
 
-linkMat = "" + context.consultas.absolute_url()+"/materia/materia_mostrar_proc?cod_materia=" + cod_materia
+cod_materia_base64 = context.pysc.b64encode_pysc(codigo=str(cod_materia))
+
+linkMat = "" + context.consultas.absolute_url()+"/materia/materia_mostrar_proc?cod_materia=" + cod_materia_base64
+
+for comissao in context.zsql.comissao_obter_zsql(cod_comissao=cod_comissao):
+ cod_comissao = comissao.cod_comissao
+ nom_comissao = comissao.nom_comissao
+
+for periodo in context.zsql.periodo_comp_comissao_obter_zsql(data = DateTime(),cod_comissao=comissao.cod_comissao):
+ cod_periodo = periodo.cod_periodo_comp
 
 destinatarios=[]
-for destinatario in context.zsql.acomp_materia_obter_inscritos_zsql(cod_materia=cod_materia):
-  dic={}
-  dic['end_email']=destinatario.end_email
-  dic['txt_hash']=destinatario.txt_hash
-  destinatarios.append(dic)
+for composicao_comissao in context.zsql.composicao_comissao_obter_zsql(cod_comissao=comissao.cod_comissao,cod_periodo_comp=periodo.cod_periodo_comp):
+ if composicao_comissao.dat_desligamento == None or composicao_comissao.dat_desligamento <= DateTime():
+  for destinatario in context.zsql.autor_obter_zsql(cod_parlamentar=composicao_comissao.cod_parlamentar):
+   dic={}
+   dic['end_email'] = destinatario.end_email
+   if dic['end_email'] != None:
+    destinatarios.append(dic)
 
 for dic in destinatarios:
-  hash = dic['txt_hash']
-  mMsg = "Prezado(a) Senhor(a),\n\n"
-  mMsg = mMsg + "A seguinte matéria de seu interesse sofreu tramitação registrada em " + data_registro + ":\n\n"
+  mMsg = "Senhor(a) Parlamentar,\n\n"
+  mMsg = mMsg + "Informamos que a matéria abaixo foi despachada para parecer da " + nom_comissao +  " em " + data_registro + ".\n\n"
   mMsg = mMsg + "" + projeto + "\n"
   mMsg = mMsg + "" + str(ementa) + "\n"
   mMsg = mMsg + "Autoria: " + str(nom_autor) + "\n\n"
   mMsg = mMsg + "Link: " + linkMat + "\n\n"
-  mMsg = mMsg + "Data da Ação: " + str(data) + "\n"
+  mMsg = mMsg + "Última Tramitação: " + str(data) + "\n"
   mMsg = mMsg + "Status: " + str(status) + "\n"
   mMsg = mMsg + "Texto da Ação: " + str(texto_acao) + "\n\n"
   mMsg = mMsg + "Cordialmente,\n\n"
   mMsg = mMsg + "" + str(casa_legislativa) +"\n"
-  mMsg = mMsg + "Processo Legislativo Eletrônico\n\n\n"
-  mMsg = mMsg + "Clique no link abaixo para excluir seu e-mail da lista de envio:\n" 
-  mMsg = mMsg + "" + context.consultas.absolute_url() + "/materia/acompanhamento/acomp_materia_excluir_proc?txt_hash=" + str(hash) +"\n"
+  mMsg = mMsg + "Processo Legislativo Eletrônico\n"
 
   mTo = dic['end_email']
 
-  mSubj = projeto +" - Aviso de Tramitação" + data_registro
+  mSubj = projeto +" - Despacho para " + nom_comissao
 
   mailhost.send(mMsg, mTo, remetente, subject=mSubj, encode='base64')

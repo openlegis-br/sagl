@@ -1,4 +1,4 @@
-## Script (Python) "confirma_acomp_materia_pysc"
+## Script (Python) "envia_tramitacao_autor_pysc"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
@@ -29,7 +29,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  autorias = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
  fields = autorias.data_dictionary().keys()
  lista_autor = []
- lista_codigo=[]
+ lista_codigo = []
  for autor in autorias:
    for field in fields:
      cod_autor = int(autor['cod_autor'])
