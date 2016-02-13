@@ -38,14 +38,6 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
    lista_autor.append(nome_autor)
  nom_autor = ', '.join(['%s' % (value) for (value) in lista_autor])
 
- for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1):
-   data = tramitacao.dat_tramitacao
-   status = tramitacao.des_status
-   if tramitacao.txt_tramitacao != None:
-     texto_acao = tramitacao.txt_tramitacao
-   else:
-     texto_acao = " "
-
 remetente = email_casa
 
 cod_materia_base64 = context.pysc.b64encode_pysc(codigo=str(cod_materia))
@@ -75,9 +67,6 @@ for dic in destinatarios:
   mMsg = mMsg + "" + str(ementa) + "\n"
   mMsg = mMsg + "Autoria: " + str(nom_autor) + "\n\n"
   mMsg = mMsg + "Link: " + linkMat + "\n\n"
-  mMsg = mMsg + "Última Tramitação: " + str(data) + "\n"
-  mMsg = mMsg + "Status: " + str(status) + "\n"
-  mMsg = mMsg + "Texto da Ação: " + str(texto_acao) + "\n\n"
   mMsg = mMsg + "Cordialmente,\n\n"
   mMsg = mMsg + "" + str(casa_legislativa) +"\n"
   mMsg = mMsg + "Processo Legislativo Eletrônico\n"
