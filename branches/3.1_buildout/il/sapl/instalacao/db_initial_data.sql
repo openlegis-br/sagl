@@ -5945,10 +5945,10 @@ INSERT INTO `tipo_documento` (`tip_documento`, `des_tipo_documento`, `ind_exclui
 -- Fazendo dump de dados para tabela `tipo_documento_administrativo`
 --
 
-INSERT INTO `tipo_documento_administrativo` (`tip_documento`, `sgl_tipo_documento`, `des_tipo_documento`, `ind_excluido`) VALUES
-(1, 'CNV', 'Convite', 0),
-(2, 'OFC', 'Oficio', 0),
-(3, 'REQ', 'Requerimento', 0);
+INSERT INTO `tipo_documento_administrativo` (`tip_documento`, `sgl_tipo_documento`, `des_tipo_documento`, `ind_publico`, `ind_excluido`) VALUES
+(1, 'CNV', 'Convite', 0, 0),
+(2, 'OFC', 'Oficio', 0, 0),
+(3, 'REQ', 'Requerimento', 0, 0);
 
 --
 -- Fazendo dump de dados para tabela `tipo_emenda`

@@ -470,3 +470,6 @@ ADD INDEX ( `cod_emenda` ) ;
 
 ALTER TABLE `proposicao` ADD `cod_substitutivo` INT( 11 ) NULL AFTER `cod_emenda` ,
 ADD INDEX ( `cod_substitutivo` ) ;
+
+ALTER TABLE  `tipo_documento_administrativo` ADD  `ind_publico` TINYINT( 4 ) NOT NULL DEFAULT  '0' AFTER  `des_tipo_documento` ;
+

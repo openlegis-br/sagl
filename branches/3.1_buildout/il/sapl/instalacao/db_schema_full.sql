@@ -2278,6 +2278,7 @@ CREATE TABLE `tipo_documento_administrativo` (
   `tip_documento` int(11) NOT NULL AUTO_INCREMENT,
   `sgl_tipo_documento` varchar(5) COLLATE utf8_unicode_ci DEFAULT NULL,
   `des_tipo_documento` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ind_publico` tinyint(4) NOT NULL DEFAULT '0',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`tip_documento`),
   KEY `des_tipo_documento` (`des_tipo_documento`)
