@@ -1822,7 +1822,7 @@ CREATE TABLE `protocolo` (
   KEY `tip_materia` (`tip_materia`),
   KEY `tip_documento` (`tip_documento`),
   KEY `dat_protocolo` (`dat_protocolo`),
-  FULLTEXT KEY `idx_busca_protocolo` (`txt_interessado`,`txt_assunto_ementa`,`txt_observacao`)
+  FULLTEXT KEY `idx_busca_protocolo` (`txt_assunto_ementa`,`txt_observacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
 --
