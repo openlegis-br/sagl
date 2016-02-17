@@ -444,44 +444,50 @@ $(document).ready(function() {
           </fieldset>
 
   <dtml-if expr="_.has_key('cod_materia')">       
-          <fieldset>
+     <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=cod_materia)">
+       <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+         <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+           <fieldset>
              <legend>Processo Eletrônico</legend>
               <table>   
-                    <tr>    
-                      <td>
-
-                        <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=cod_materia)">
-                         <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
-                           <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
-                             <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
-                               <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
-                                  <a target="blank" href="<dtml-var proposicao>">
-                                    <img align="top" height="40" style="float: left; margin-top: 4px; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
-                                  <p style="float: left; line-height: 1.3em;"><b>Proposição Eletrônica</b><br /><dtml-var cod_documento></p></a>
+                  <tr>    
+                    <td>
+                       <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                          <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                          <a target="blank" href="<dtml-var proposicao>">
+                            <img align="top" height="40" style="float: left; margin-top: 4px; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
+                            <p style="float: left; line-height: 1.3em;"><b>Proposição Eletrônica</b><br /><dtml-var cod_documento></p></a>
                                   
-                                  <a class="botao-link" style="margin-top: 0.7em; margin-left: 1em;" target="_blank" href="&dtml-portal_url;/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">Mais Informações</a>
-                             </dtml-let>
-                            <dtml-else>
-                              <span class="texto"><i>Esta matéria não foi gerada por meio eletrônico.</i></span>
-                            </dtml-if>
-                          </dtml-let>
-                        </dtml-in>
-
-                        <dtml-if temProposicao>
-                          <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(hdnCodProposicao))">
-                          <select name="dis_selProp" disabled>
-                            <option value="<dtml-var hdnCodProposicao>" selected>
-                              <dtml-var cod_documento>
-                            </option>
-                          </select>
-                          <a class="botao-link" target="_blank" href="&dtml-portal_url;/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var hdnCodProposicao>">Visualizar</a>
-                        </dtml-if>
-
-                       </td>
-                   </tr>
+                          <a class="botao-link" style="margin-top: 0.7em; margin-left: 1em;" target="_blank" href="&dtml-portal_url;/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">Mais Informações</a>
+                       </dtml-let>
+                    </td>
+                  </tr>
               </table>
-          </fieldset>
-   </dtml-if>
+           </fieldset>
+         </dtml-if>
+       </dtml-let>
+     </dtml-in>
+
+     <dtml-if temProposicao>
+       <fieldset>
+         <legend>Proposição Eletrônica</legend>
+          <table>   
+              <tr>    
+                <td>
+                   <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(hdnCodProposicao))">
+                   <select name="dis_selProp" disabled>
+                     <option value="<dtml-var hdnCodProposicao>" selected>
+                       <dtml-var cod_documento>
+                     </option>
+                   </select>
+                   <a class="botao-link" target="_blank" href="&dtml-portal_url;/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var hdnCodProposicao>">Visualizar</a>
+                </td>
+              </tr>
+          </table>
+       </fieldset>
+     </dtml-if>
+
+  </dtml-if>
 
          <dtml-if cod_materia>
           <dtml-in "zsql.materia_buscar_norma_juridica_zsql(cod_materia)" mapping>
@@ -517,9 +523,11 @@ $(document).ready(function() {
                               <option <dtml-if tip_quorum>
                                <dtml-if expr="(tip_quorum!=None) and _.int(tip_quorum) == _.int(cod_quorum)"> 
                                 selected </dtml-if></dtml-if>
-                               <dtml-if expr="not _.has_key('cod_materia') and _.int(cod_quorum) == 1">
-                                selected
-                               </dtml-if>
+                               <dtml-comment>
+                                 <dtml-if expr="not _.has_key('cod_materia') and _.int(cod_quorum) == 1">
+                                    selected
+                                 </dtml-if>
+                               </dtml-comment>
                                 value="<dtml-var cod_quorum>"> <dtml-var des_quorum>
                               </option>
                              </dtml-in>
