@@ -31,7 +31,7 @@ import urllib
 import cStringIO
 from appy.pod.renderer import Renderer
 
-#imports para o maps
+#imports para assinatura digital
 import sys
 import six
 import base64
@@ -52,7 +52,6 @@ class ISAPLTool(Interface):
     """
     pass
 
-
 class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     __implements__ = (ISAPLTool)
@@ -63,175 +62,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
     XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance'
     ns = {'lexml': 'http://www.lexml.gov.br/oai_lexml'}
     schema = {'oai_lexml': 'http://projeto.lexml.gov.br/esquemas/oai_lexml.xsd'}
-
-    nome_arquivo = 'tmp_token_' + str(os.getpid())
-    nome_arquivo_atribuido = 'tmp_atribuido_' + str(os.getpid())
-    local_arquivo = '/tmp'
-
-    def get_geolocations(self, cidade, cep):
-        cidade = cidade.encode('utf-8')
-        try:
-            cep = cep.encode('utf-8')
-        except:
-            pass
-        url = 'http://maps.google.com/maps/api/geocode/json?address=' + cidade + '&components=postal_code:' + cep + '&sensor=false'
-        resp = urllib.urlopen(url).read()
-        data = json.loads(resp)
-        geolocation = []
-        for results in data['results']:
-            address_components = results['address_components']
-            errado = False
-            for address in address_components:
-                if 'postal_code' in address['types']:
-                    if len(address['long_name']) == 5:
-                        if cep.split('-')[0] != address['long_name']:
-                            errado = True
-                    else:
-                        if cep != address['long_name']:
-                            errado = True
-            if not errado:
-                geometry = dict(results['geometry'])
-                location = geometry['location']
-                lat = str(location['lat'])
-                lng = str(location['lng'])
-                geolocation.append(lat)
-                geolocation.append(lng)
-        return geolocation
-
-    def tempo_sessao(self, tempo):
-        # retorna a data de inicio da sessao em milisegundos
-        dt = datetime.strptime(tempo, "%d/%m/%Y %H:%M")
-        return time.mktime(dt.timetuple()) * 1000
-
-    def arquivo_atribuido(self, criar = None):
-        path = self.local_arquivo + '/' + self.nome_arquivo_atribuido
-        temporarios = os.listdir(self.local_arquivo)
-
-        for temporario in temporarios:
-            if temporario.startswith('tmp_atribuido_') and temporario != self.nome_arquivo_atribuido:
-                os.unlink(self.local_arquivo + '/' + temporario)
-
-        if criar:
-            try:
-                os.unlink(path)
-                return os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT, 0600), 'wb')
-            except OSError:
-                return os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT, 0600), 'wb')
-        else:
-            return os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT, 0600), 'wb')
-
-    def remover_arquivo_atribuido(self):
-        arquivo = self.arquivo_atribuido()
-        arquivo.close()
-        path = self.local_arquivo + '/' + self.nome_arquivo_atribuido
-        os.unlink(path)
-
-    def grava_arquivo_atribuido(self, arquivo, data):
-        pickle.dump(data, arquivo)
-
-    def ler_arquivo_atribuido(self):
-        lista = []
-        path = self.local_arquivo + '/' + self.nome_arquivo_atribuido
-        try:
-            arquivo = open(path, 'rb')
-        except IOError:
-            return []
-        while 1:
-            try:
-                lista.append(pickle.load(arquivo))
-            except:
-                break
-
-        arquivo.close()
-
-        return lista
-
-    def arquivo_token(self, criar=None):
-        path = self.local_arquivo + '/' + self.nome_arquivo
-        temporarios = os.listdir(self.local_arquivo)
-
-        for temporario in temporarios:
-            if temporario.startswith('tmp_token_') and temporario != self.nome_arquivo:
-                os.unlink(self.local_arquivo + '/' + temporario)
-
-        if criar:
-            try:
-                os.unlink(path)
-                return os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT, 0600), 'wb')
-            except OSError:
-                return os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT, 0600), 'wb')
-        else:
-            return os.fdopen(os.open(path, os.O_WRONLY | os.O_CREAT, 0600), 'wb')
-
-    def nome_arquivo_token(self):
-        return self.nome_arquivo
-
-    def gera_token(self, cod_sessao_plen, criar=None):
-        presenca = self.zsql.presenca_ordem_dia_obter_zsql(
-            cod_sessao_plen = cod_sessao_plen,
-            ind_excluido = 0
-        )
-
-        codigos = [i.cod_parlamentar for i in presenca]
-
-        tokens = [self.encrypt(codigo) for codigo in codigos]
-
-
-        arquivo = self.arquivo_token(criar)
-        for token in tokens:
-            data = {}
-            lista = []
-            lista.append('')
-            lista.append('')
-            data[token] = lista
-            self.grava_token(arquivo, data)
-
-        arquivo.close()
-
-        return len(tokens)
-
-    def existe_token(self):
-        if len(self.ler_token()) > 0:
-            return True
-        else:
-            return False
-
-    def remover_token(self):
-        arquivo = self.arquivo_token()
-        arquivo.close()
-        path = self.local_arquivo + '/' + self.nome_arquivo
-        os.unlink(path)
-
-    def grava_token(self, arquivo, data):
-        pickle.dump(data, arquivo)
-
-    def ler_token(self):
-        lista = []
-        path = self.local_arquivo + '/' + self.nome_arquivo
-        try:
-            arquivo = open(path, 'rb')
-        except IOError:
-            return []
-        while 1:
-            try:
-                lista.append(pickle.load(arquivo))
-            except:
-                break
-
-        arquivo.close()
-
-        return lista
-
-    def generate_salt(self):
-        salt = ''
-        for n in range(7):
-            salt += chr(randrange(256))
-        return salt
-
-    def encrypt(self, pw):
-        pw = str(pw)
-        salt = self.generate_salt()
-        return b2a_base64(sha.new(pw + salt).digest() + salt)[:-1]
 
     def verifica_esfera_federacao(self):
         ''' Funcao para verificar a esfera da federacao
@@ -289,7 +119,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             for i in re.findall('\s',municipio):
                 municipio = municipio.replace(i, '.')
 
-            # solucao temporaria
             if re.search( '\.de\.', municipio):
                 municipio = [municipio.replace(i, '.') for i in re.findall( '\.de\.', municipio)][0]
             if re.search( '\.da\.', municipio):
@@ -306,7 +135,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             for i in re.findall('\s',uf):
                 uf = uf.replace(i, '.')
 
-            # solucao temporaria
             if re.search( '\.de\.', uf):
                 uf = [uf.replace(i, '.') for i in re.findall( '\.de\.', uf)][0]
             if re.search( '\.da\.', uf):
@@ -349,11 +177,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             elif consulta.dat_publicacao:
                 urn += '@'
                 urn += 'inicio.vigencia;publicacao;' + self.pysc.port_to_iso_pysc(consulta.dat_publicacao)
-            #            else:
-            #                urn += 'inicio.vigencia;publicacao;'
-            #
-            #            if consulta.dat_publicacao:
-            #                urn += self.pysc.port_to_iso_pysc(consulta.dat_publicacao)
 
             return urn
         else:
@@ -361,8 +184,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def monta_xml(self,urn,cod_norma):
         #criacao do xml
-
-        # consultas
         consulta = self.zsql.lexml_normas_juridicas_obter_zsql(cod_norma=cod_norma)
         publicador = self.zsql.lexml_publicador_obter_zsql()
         if consulta and publicador:
@@ -438,7 +259,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         if batch_size < 0:
             batch_size = 0
 
-        # garante que a data 'until'(ate) esteja setada, e nao no futuro
         if until_date == None or until_date > datetime.now():
             until_date = datetime.now()
 
@@ -459,22 +279,14 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             xml_lexml = self.monta_xml(urn,cod_norma)
 
             resultado['tx_metadado_xml'] = xml_lexml
-            #resultado['id_registro_item'] = resultado['name']
-            #del resultado['name']
-            #record['sets'] = record['sets'].strip().split(' ')
-            #if resultado['sets'] == [u'']:
-            #    resultado['sets'] = []
             resultado['cd_status'] = 'N'
             resultado['id'] = identificador
             resultado['when_modified'] = norma.timestamp
             resultado['deleted'] = 0
             if norma.ind_excluido == 1:
                 resultado['deleted'] = 1
-            #                resultado['cd_status'] = 'D'
             yield {'record': resultado,
-                   #                   'sets': ['person'],
                    'metadata': resultado['tx_metadado_xml'],
-                   #                   'assets':{}
             }
 
     def url(self):
@@ -485,37 +297,44 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
         id_logo = portal.sapl_documentos.props_sapl.id_logo
-        if id_logo in portal.sapl_documentos.props_sapl.objectValues('Image'):
-            url = self.url() + '/sapl_documentos/props_sapl/' + id_logo
-        else:
-            url = self.url() + '/imagens/brasao.gif'
+        url = self.url() + '/sapl_documentos/props_sapl/logo_casa.gif'
         opener = urllib.urlopen(url)
         open('/tmp/' + id_logo, 'wb').write(opener.read())
         brasao = open('/tmp/' + id_logo, 'rb')
         os.unlink('/tmp/' + id_logo)
         return brasao
 
-    def gerar_ata_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_oradores, lst_presidente, lst_psecretario, lst_ssecretario):
-        # Criacao ODT
+    def ata_gerar_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, lst_psecretario, lst_ssecretario, nom_arquivo):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/ata.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
-        output_file_odt = "ata_sessao.odt"
+        output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
             os.unlink(file)
-        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
-        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
-        return data
+            self.sapl_documentos.ata_sessao.manage_addFile(id=output_file_odt,file=data)
+        #self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
+        #self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
+        #return data
 
-    def gerar_iom_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_oradores, lst_presidente, lst_psecretario, lst_ssecretario):
-        # Criacao ODT
+    def ata_gerar_pdf(self, cod_sessao_plen):
+        nom_arquivo_odt = "%s"%cod_sessao_plen+'_ata_sessao.odt'
+    	nom_arquivo_pdf = "%s"%cod_sessao_plen+'_ata_sessao.pdf'
+    	url = self.sapl_documentos.ata_sessao.absolute_url() + "/%s"%nom_arquivo_odt
+    	odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+    	output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+    	renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+    	renderer.run()
+    	data = open(output_file_pdf, "rb").read()
+    	for file in [output_file_pdf]:
+    	    os.unlink(file)
+    	    self.sapl_documentos.ata_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
+
+    def iom_gerar_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, lst_psecretario, lst_ssecretario):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/iom.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_odt = "publicacao_iom.odt"
@@ -528,15 +347,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
         return data
 
-    def gerar_materia_apreciada_odt(self, inf_basicas_dic, lst_votacao):
-        # Criacao ODT
+    def materia_apreciada_gerar_odt(self, inf_basicas_dic, lst_votacao):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/materia_apreciada.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "materia_apreciada.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -547,34 +363,106 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
         return data
 
-    def gerar_ordem_dia_odt(self, inf_basicas_dic, lst_votacao, lst_presidente):
-        # Criacao ODT
+    def materia_apresentada_gerar_odt(self, inf_basicas_dic, lst_materia_apresentada):
+        url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/materia_apresentada.odt"
+        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_odt = "materia_apresentada.odt"
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()                                                                              
+        data = open(output_file_odt, "rb").read()                 
+        for file in [output_file_odt]:
+            os.unlink(file)                                                                                                      
+        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
+        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
+        return data 
+
+    def ordem_dia_gerar_odt(self, inf_basicas_dic, lst_pdiscussao, lst_sdiscussao, lst_discussao_unica, lst_presidente, nom_arquivo):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/ordem_dia.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
-        output_file_odt = "ordem_dia.odt"
+        output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
             os.unlink(file)
-        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
-        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
-        return data
+            self.sapl_documentos.pauta_sessao.manage_addFile(id=output_file_odt,file=data)
 
-    def gerar_resumo_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_oradores, lst_presidente, lst_psecretario, lst_ssecretario):
-        # Criacao ODT
+    def ordem_dia_gerar_pdf(self, cod_sessao_plen):
+        nom_arquivo_odt = "%s"%cod_sessao_plen+'_pauta_sessao.odt'
+    	nom_arquivo_pdf = "%s"%cod_sessao_plen+'_pauta_sessao.pdf'
+    	url = self.sapl_documentos.pauta_sessao.absolute_url() + "/%s"%nom_arquivo_odt
+    	odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+    	output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+    	renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+    	renderer.run()
+    	data = open(output_file_pdf, "rb").read()
+    	for file in [output_file_pdf]:
+    	    os.unlink(file)
+    	    self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
+
+    def oradores_gerar_odt(self, inf_basicas_dic, lst_oradores, lst_presidente, nom_arquivo):
+        url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/oradores.odt"
+        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        brasao_file = self.get_brasao()
+        # atribui o brasao no locals
+        exec 'brasao = brasao_file'
+        output_file_odt = "%s"%nom_arquivo
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer.run()
+        data = open(output_file_odt, "rb").read()
+        for file in [output_file_odt]:
+            os.unlink(file)
+            self.sapl_documentos.oradores_expediente.manage_addFile(id=output_file_odt,file=data)
+
+    def oradores_gerar_pdf(self,cod_sessao_plen):
+        nom_arquivo_odt = "%s"%cod_sessao_plen+'_oradores_expediente.odt'
+        nom_arquivo_pdf = "%s"%cod_sessao_plen+'_oradores_expediente.pdf'
+        url = self.sapl_documentos.oradores_expediente.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.oradores_expediente.manage_addFile(id=nom_arquivo_pdf,file=data)
+
+    def expediente_gerar_odt(self, inf_basicas_dic, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_oradores, lst_presidente, nom_arquivo):
+        url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/expediente.odt"
+        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        brasao_file = self.get_brasao()
+        # atribui o brasao no locals
+        exec 'brasao = brasao_file'
+        output_file_odt = "%s"%nom_arquivo
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer.run()                                                                            
+        data = open(output_file_odt, "rb").read()                 
+        for file in [output_file_odt]:
+            os.unlink(file)
+            self.sapl_documentos.pauta_sessao.manage_addFile(id=output_file_odt,file=data)
+
+    def expediente_gerar_pdf(self, cod_sessao_plen):
+        nom_arquivo_odt = "%s"%cod_sessao_plen+'_expediente.odt'
+    	nom_arquivo_pdf = "%s"%cod_sessao_plen+'_expediente.pdf'
+    	url = self.sapl_documentos.pauta_sessao.absolute_url() + "/%s"%nom_arquivo_odt
+    	odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+    	output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+    	renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+    	renderer.run()
+    	data = open(output_file_pdf, "rb").read()
+    	for file in [output_file_pdf]:
+    	    os.unlink(file)
+    	    self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
+
+    def resumo_gerar_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, lst_psecretario, lst_ssecretario):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/resumo.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "resumo_sessao.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -585,15 +473,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
         return data
 
-    def gerar_acessorio_odt(self, inf_basicas_dic, nom_arquivo, des_tipo_documento, nom_documento, txt_ementa, dat_documento, data_documento, nom_autor, materia_vinculada, modelo_proposicao):
-        # Criacao ODT
+    def doc_acessorio_gerar_odt(self, inf_basicas_dic, nom_arquivo, des_tipo_documento, nom_documento, txt_ementa, dat_documento, data_documento, nom_autor, materia_vinculada, modelo_proposicao):
         url = self.sapl_documentos.modelo.materia.documento_acessorio.absolute_url() + "/%s" % modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -602,15 +487,25 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.materia_odt.manage_addFile(id=nom_arquivo,file=data)
 
-    def gerar_oficio_ind_odt(self, inf_basicas_dic, lst_indicacao, lst_presidente):
-        # Criacao ODT
+    def doc_acessorio_gerar_pdf(self, cod_documento):
+        nom_arquivo_odt = "%s"%cod_documento+'.odt'
+        nom_arquivo_pdf = "%s"%cod_documento+'.pdf'
+        url = self.sapl_documentos.materia_odt.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()                 
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.materia.manage_addFile(id=nom_arquivo_pdf,file=data)
+
+    def oficio_ind_gerar_odt(self, inf_basicas_dic, lst_indicacao, lst_presidente):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/oficio_indicacao.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "oficio_indicacao.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -621,15 +516,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
         return data
 
-    def gerar_emenda_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
-        # Criacao ODT
+    def emenda_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
         url = self.sapl_documentos.modelo.materia.emenda.absolute_url() + "/%s" % modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -638,15 +530,25 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.emenda.manage_addFile(id=nom_arquivo,file=data)
 
-    def gerar_materia_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
-        # Criacao ODT
+    def emenda_gerar_pdf(self,cod_emenda):
+        nom_arquivo_odt = "%s"%cod_emenda+'_emenda.odt'
+        nom_arquivo_pdf = "%s"%cod_emenda+'_emenda.pdf'
+        url = self.sapl_documentos.emenda.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()                 
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.emenda.manage_addFile(id=nom_arquivo_pdf,file=data)
+
+    def materia_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
         url = self.sapl_documentos.modelo.materia.absolute_url() + "/%s" % modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -655,59 +557,25 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.materia_odt.manage_addFile(id=nom_arquivo,file=data)
 
-    def gerar_materia_pdf(self, cod_materia):
-        # Conversao para PDF
+    def materia_gerar_pdf(self, cod_materia):
         nom_arquivo_odt = "%s"%cod_materia+'_texto_integral.odt'
         nom_arquivo_pdf1 = "%s"%cod_materia+'_texto_integral.pdf'
-        nom_arquivo_pdf2 = "%s"%cod_materia+'_texto_integral'
         url = self.sapl_documentos.materia_odt.absolute_url() + "/%s"%nom_arquivo_odt
         odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
-        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
+            os.unlink(file)
             self.sapl_documentos.materia.manage_addFile(id=nom_arquivo_pdf1, file=data)
-            os.unlink(file)
 
-    def ordem_dia_gerar_pdf(self, cod_sessao_plen):
-        # Conversao para PDF
-        nom_arquivo_odt = "%s"%cod_sessao_plen+'_pauta_sessao.odt'
-    	nom_arquivo_pdf = "%s"%cod_sessao_plen+'_pauta_sessao.pdf'
-    	url = self.sapl_documentos.pauta_sessao.absolute_url() + "/%s"%nom_arquivo_odt
-    	odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
-    	output_file_pdf = os.path.normpath(nom_arquivo_pdf)
-    	renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3')
-    	renderer.run()
-    	data = open(output_file_pdf, "rb").read()
-    	for file in [output_file_pdf]:
-    	    self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
-    	    os.unlink(file)
-
-    def gerar_proposicao_pdf(self, cod_proposicao):
-        # Conversao para PDF
-        nom_arquivo_odt = "%s" % cod_proposicao+'.odt'
-        nom_arquivo_pdf1 = "%s" % cod_proposicao+'.pdf'
-        nom_arquivo_pdf2 = str(cod_proposicao)
-        url = self.sapl_documentos.proposicao.absolute_url() + "/%s"%nom_arquivo_odt
-        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
-        output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
-        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3')
-        renderer.run()
-        data = open(output_file_pdf, "rb").read()
-        for file in [output_file_pdf]:
-            self.sapl_documentos.proposicao.manage_addFile(id=nom_arquivo_pdf1, file=data)
-            os.unlink(file)
-
-    def gerar_norma_odt(self, inf_basicas_dic, nom_arquivo, des_tipo_norma, num_norma, ano_norma, dat_norma, data_norma, txt_ementa, modelo_norma):
-        # Criacao ODT
+    def norma_gerar_odt(self, inf_basicas_dic, nom_arquivo, des_tipo_norma, num_norma, ano_norma, dat_norma, data_norma, txt_ementa, modelo_norma):
         url = self.sapl_documentos.modelo.norma.absolute_url() + "/%s" % modelo_norma
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -716,11 +584,9 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.norma_juridica.manage_addFile(id=nom_arquivo,file=data)
 
-    def gerar_norma_pdf(self, cod_norma):
-        # Conversao para PDF
+    def norma_gerar_pdf(self, cod_norma):
         nom_arquivo_odt = "%s"%cod_norma+'_texto_integral.odt'
         nom_arquivo_pdf1 = "%s"%cod_norma+'_texto_consolidado.pdf'
-        nom_arquivo_pdf2 = "%s"%cod_norma+'_texto_consolidado'
         url = self.sapl_documentos.norma_juridica.absolute_url() + "/%s"%nom_arquivo_odt
         odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
@@ -728,32 +594,15 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         renderer.run()
         data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
+            os.unlink(file)
             self.sapl_documentos.norma_juridica.manage_addFile(id=nom_arquivo_pdf1, file=data)
-            os.unlink(file)
 
-    def gerar_proposicao_pdf(self, cod_proposicao):
-        # Conversao para PDF
-        nom_arquivo_odt = "%s"%cod_proposicao+'.odt'
-        nom_arquivo_pdf1 = "%s"%cod_proposicao+'.pdf'
-        url = self.sapl_documentos.proposicao.absolute_url() + "/%s"%nom_arquivo_odt
-        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
-        output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
-        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3')
-        renderer.run()
-        data = open(output_file_pdf, "rb").read()
-        for file in [output_file_pdf]:
-            self.sapl_documentos.proposicao.manage_addFile(id=nom_arquivo_pdf1, file=data)
-            os.unlink(file)
-
-    def gerar_oficio_odt(self, inf_basicas_dic, nom_arquivo, sgl_tipo_documento, num_documento, ano_documento, txt_ementa, dat_documento, dia_documento, nom_autor, modelo_documento):
-        # Criacao ODT
+    def oficio_gerar_odt(self, inf_basicas_dic, nom_arquivo, sgl_tipo_documento, num_documento, ano_documento, txt_ementa, dat_documento, dia_documento, nom_autor, modelo_documento):
         url = self.sapl_documentos.modelo.documento_administrativo.absolute_url() + "/%s" % modelo_documento
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -762,53 +611,25 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.administrativo.manage_addFile(id=nom_arquivo,file=data)
 
-    def gerar_oficio_moc_odt(self, inf_basicas_dic, num_ident_basica, nom_autor):
-        # Criacao ODT
-        url = self.sapl_documentos.modelo.documento_administrativo.absolute_url() + "/oficio_mocao.odt"
-        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
-        brasao_file = self.get_brasao()
-
-        # atribui o brasao no locals
-        exec 'brasao = brasao_file'
-
-        output_file_odt = "oficio_mocao.odt"
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+    def oficio_gerar_pdf(self, cod_documento):
+        nom_arquivo_odt = "%s"%cod_documento+'_texto_integral.odt'
+        nom_arquivo_pdf1 = "%s"%cod_documento+'_texto_integral.pdf'
+        url = self.sapl_documentos.administrativo.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
-        data = open(output_file_odt, "rb").read()
-        for file in [output_file_odt]:
+        data = open(output_file_pdf, "rb").read()
+        for file in [output_file_pdf]:
             os.unlink(file)
-        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
-        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
-        return data
+            self.sapl_documentos.administrativo.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
-    def gerar_oficio_req_pres_odt(self, inf_basicas_dic, num_ident_basica, nom_autor):
-        # Criacao ODT
-        url = self.sapl_documentos.modelo.documento_administrativo.absolute_url() + "/oficio_requerimento_pres.odt"
-        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
-        brasao_file = self.get_brasao()
-
-        # atribui o brasao no locals
-        exec 'brasao = brasao_file'
-
-        output_file_odt = "oficio_req_presidencia.odt"
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
-        renderer.run()
-        data = open(output_file_odt, "rb").read()
-        for file in [output_file_odt]:
-            os.unlink(file)
-        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
-        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
-        return data
-
-    def gerar_parecer_odt(self, inf_basicas_dic,nom_arquivo,nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao):
-        # Criacao ODT
+    def parecer_gerar_odt(self, inf_basicas_dic, nom_arquivo, nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao):
         url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/parecer.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -817,15 +638,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.parecer_comissao.manage_addFile(id=nom_arquivo,file=data)
 
-    def gerar_proposicao_odt(self, inf_basicas_dic, num_proposicao,nom_arquivo,des_tipo_materia,num_ident_basica,ano_ident_basica,txt_ementa,materia_vinculada,dat_apresentacao,nom_autor,apelido_autor,modelo_proposicao):
-        # Criacao ODT
+    def proposicao_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
         url = self.sapl_documentos.modelo.materia.absolute_url() + "/%s"%modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -834,15 +652,25 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.proposicao.manage_addFile(id=nom_arquivo,file=data)
 
-    def gerar_substitutivo_odt(self,inf_basicas_dic, num_proposicao,nom_arquivo,des_tipo_materia,num_ident_basica,ano_ident_basica,txt_ementa,materia_vinculada,dat_apresentacao,nom_autor,apelido_autor,modelo_proposicao):
-        # Criacao ODT
+    def proposicao_gerar_pdf(self, cod_proposicao):
+        nom_arquivo_odt = "%s"%cod_proposicao+'.odt'
+        nom_arquivo_pdf1 = "%s"%cod_proposicao+'.pdf'
+        url = self.sapl_documentos.proposicao.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.proposicao.manage_addFile(id=nom_arquivo_pdf1, file=data)
+
+    def substitutivo_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
         url = self.sapl_documentos.modelo.materia.substitutivo.absolute_url() + "/%s"%modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
-
         output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
         renderer.run()
@@ -850,6 +678,19 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for file in [output_file_odt]:
             os.unlink(file)
             self.sapl_documentos.substitutivo.manage_addFile(id=nom_arquivo,file=data)
+
+    def substitutivo_gerar_pdf(self,cod_substitutivo):
+        nom_arquivo_odt = "%s"%cod_substitutivo+'_substitutivo.odt'
+        nom_arquivo_pdf = "%s"%cod_substitutivo+'_substitutivo.pdf'
+        url = self.sapl_documentos.substitutivo.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()                 
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.substitutivo.manage_addFile(id=nom_arquivo_pdf,file=data)
 
     def pades_signature(self, cod_proposicao):
         pdf_file = '%s' % (cod_proposicao) + ".pdf"
@@ -905,7 +746,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 'horizontalAlign': 'Right'
             },
 
-            'position': self.get_visual_representation_position(3)
+            'position': self.get_visual_representation_position(1)
         })
 
         token = signature_starter.start_with_webpki()
@@ -966,7 +807,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 'horizontalAlign': 'Right'
             },
 
-            'position': self.get_visual_representation_position(3)
+            'position': self.get_visual_representation_position(1)
         })
 
         token = signature_starter.start_with_webpki()
@@ -1007,7 +848,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if filename in self.sapl_documentos.proposicao:
               documento = getattr(self.sapl_documentos.proposicao,filename)
               documento.manage_upload(file=data)
-              #self.sapl_documentos.proposicao.manage_upload(id=filename,file=data)
             else:
               self.sapl_documentos.proposicao.manage_addFile(id=filename,file=data)
 

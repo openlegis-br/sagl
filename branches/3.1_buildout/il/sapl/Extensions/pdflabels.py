@@ -346,7 +346,7 @@ def factory(cia, model):
     raise Exception(Error, "Modelo de etiqueta não encontrado")
 
 def gera_etiqueta(self, dados):
-    labels = factory("Pimaco", "6183")
+    labels = factory("Pimaco", "6182")
     filename=str(int(time.time()*100))+".pdf"
     labels.setGrid()
     labels.generate(dados, filename)

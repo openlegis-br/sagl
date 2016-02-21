@@ -52,9 +52,9 @@ manage_addSAPLForm = PageTemplateFile('www/addSAPL', globals())
 manage_addSAPLForm.__name__ = 'addSAPL'
 
 
-def manage_addSAPL(context, id, title='SAPL-Sistema de Apoio ao Processo Legislativo', description='',
+def manage_addSAPL(context, id, title='OpenLegis-Processo Legislativo Eletrônico', description='',
                    database='MySQL', profile_id=_DEFAULT_PROFILE, RESPONSE=None):
-    """ Adicionar uma instancia do SAPL.
+    """ Adicionar uma instancia do SAGL.
     """
 
     context._setObject(id, SAPL(id))
