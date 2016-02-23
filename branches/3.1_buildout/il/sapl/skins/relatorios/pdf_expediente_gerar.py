@@ -107,13 +107,13 @@ def materia_apresentada(lst_materia_apresentada):
     """
     tmp = ''
     tmp+='\t\t<para style="P7" spaceBefore="10"><b><u>MATÉRIAS APRESENTADAS</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+    tmp+='\t\t<para style="P2" spaceAfter="4">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     for materia_apresentada in lst_materia_apresentada:
      if materia_apresentada['link_materia']!=None and materia_apresentada['link_materia']!="":
         tmp+='\t\t<para style="P1"><font color="#126e90">' + materia_apresentada['link_materia']+'</font> - '+ materia_apresentada['nom_autor'] + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="2">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
         tmp+='\t\t<para style="P3">' + materia_apresentada['txt_ementa'].replace('&','&amp;') + '</para>\n'
@@ -130,13 +130,13 @@ def indicacoes(lst_indicacoes):
     """
     tmp = ''
     tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>INDICAÇÕES</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+    tmp+='\t\t<para style="P2" spaceAfter="4">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     for indicacao in lst_indicacoes:
      if indicacao['link_materia']!=None or indicacao['link_materia']!="":
         tmp+='\t\t<para style="P1"><font color="#126e90">' + indicacao['link_materia']+'</font> - '+ indicacao['nom_autor'] + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="2">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
         tmp+='\t\t<para style="P3">' + indicacao['txt_ementa'].replace('&','&amp;') + '</para>\n'
@@ -153,13 +153,13 @@ def requerimentos(lst_requerimentos):
     """
     tmp = ''
     tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>REQUERIMENTOS</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+    tmp+='\t\t<para style="P2" spaceAfter="4">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     for requerimento in lst_requerimentos:
      if requerimento['link_materia']!=None or requerimento['link_materia']!="":
         tmp+='\t\t<para style="P1"><font color="#126e90">' + requerimento['link_materia']+'</font> - '+ requerimento['nom_autor'] + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="2">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
         tmp+='\t\t<para style="P3">' + requerimento['txt_ementa'].replace('&','&amp;') + '</para>\n'
@@ -176,13 +176,13 @@ def mocoes(lst_mocoes):
     """
     tmp = ''
     tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>MOÇÕES</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+    tmp+='\t\t<para style="P2" spaceAfter="4">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     for mocao in lst_mocoes:
      if mocao['link_materia']!=None or mocao['link_materia']!="":
         tmp+='\t\t<para style="P1"><font color="#126e90">' + mocao['link_materia']+'</font> - '+ mocao['nom_autor'] + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="2">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
         tmp+='\t\t<para style="P3">' + mocao['txt_ementa'].replace('&','&amp;') + '</para>\n'
