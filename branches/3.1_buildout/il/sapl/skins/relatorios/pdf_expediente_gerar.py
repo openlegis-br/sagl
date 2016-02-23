@@ -107,7 +107,7 @@ def materia_apresentada(lst_materia_apresentada):
     """
     tmp = ''
     tmp+='\t\t<para style="P7" spaceBefore="10"><b><u>MATÉRIAS APRESENTADAS</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+    tmp+='\t\t<para style="P2" spaceAfter="2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     for materia_apresentada in lst_materia_apresentada:
@@ -130,7 +130,7 @@ def indicacoes(lst_indicacoes):
     """
     tmp = ''
     tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>INDICAÇÕES</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+    tmp+='\t\t<para style="P2" spaceAfter="2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     for indicacao in lst_indicacoes:
@@ -153,7 +153,7 @@ def requerimentos(lst_requerimentos):
     """
     tmp = ''
     tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>REQUERIMENTOS</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+    tmp+='\t\t<para style="P2" spaceAfter="2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     for requerimento in lst_requerimentos:
@@ -176,7 +176,7 @@ def mocoes(lst_mocoes):
     """
     tmp = ''
     tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>MOÇÕES</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+    tmp+='\t\t<para style="P2" spaceAfter="2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     for mocao in lst_mocoes:
