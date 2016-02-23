@@ -63,14 +63,14 @@ def paraStyle():
     tmp+='\t\t<initialize>\n'
     tmp+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp+='\t\t</initialize>\n'
-    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="12" alignment="CENTER"/>\n'
-    tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
+    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="12" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="11" alignment="JUSTIFY"/>\n'
     tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="9" alignment="LEFT"/>\n'
     tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="9.0" leading="11" alignment="JUSTIFY"/>\n'
     tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P5" fontName="Helvetica" fontSize="11.0" leading="12" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P6" fontName="Helvetica" fontSize="11.0" leading="12" alignment="CENTER"/>\n'
-    tmp+='\t\t<paraStyle name="P7" fontName="Helvetica-Bold" fontSize="12.0" textColor="#444444" leading="14" spaceAfter="2" spaceBefore="8" alignment="CENTER"/>\n'
+    tmp+='\t\t<paraStyle name="P7" fontName="Helvetica-Bold" fontSize="12.0" textColor="#444444" leading="16" spaceAfter="2" spaceBefore="8" alignment="JUSTIFY"/>\n'
     tmp+='\t</stylesheet>\n'
     return tmp
 
@@ -93,7 +93,7 @@ def inf_basicas(inf_basicas_dic):
     tmp+='\t\t<para style="P2" spaceAfter="4">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
-    tmp+='\t\t<para style="P1">(Pauta do Expediente)</para>\n'
+    tmp+='\t\t<para style="P4">(Pauta do Expediente)</para>\n'
     tmp+='\t\t<para style="P2" spaceAfter="12">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
@@ -182,11 +182,11 @@ def mocoes(lst_mocoes):
     for mocao in lst_mocoes:
      if mocao['link_materia']!=None or mocao['link_materia']!="":
         tmp+='\t\t<para style="P1"><font color="#126e90">' + mocao['link_materia']+'</font> - '+ mocao['nom_autor'] + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="4">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
         tmp+='\t\t<para style="P3">' + mocao['txt_ementa'].replace('&','&amp;') + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="5">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="6">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
      else:
@@ -201,7 +201,7 @@ def presidente(lst_presidente):
     tmp+='\t\t<para style="P3" spaceAfter="25">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
-    tmp+='\t\t<para style="P1"><b>' + str(lst_presidente) + '</b></para>\n'
+    tmp+='\t\t<para style="P4"><b>' + str(lst_presidente) + '</b></para>\n'
     tmp+='\t\t<para style="P4">Presidente </para>\n'
     return tmp
 
