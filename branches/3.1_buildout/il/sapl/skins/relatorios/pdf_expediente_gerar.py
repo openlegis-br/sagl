@@ -70,7 +70,7 @@ def paraStyle():
     tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P5" fontName="Helvetica" fontSize="11.0" leading="12" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P6" fontName="Helvetica" fontSize="11.0" leading="12" alignment="CENTER"/>\n'
-    tmp+='\t\t<paraStyle name="P7" fontName="Helvetica-Bold" fontSize="12.0" textColor="#444444" leading="16" spaceAfter="2" spaceBefore="8" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="P7" fontName="Helvetica-Bold" fontSize="12.0" textColor="#444444" leading="16" spaceAfter="2" spaceBefore="8" alignment="LEFT"/>\n'
     tmp+='\t</stylesheet>\n'
     return tmp
 
