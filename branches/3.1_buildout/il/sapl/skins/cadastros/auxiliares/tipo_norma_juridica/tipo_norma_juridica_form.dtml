@@ -25,7 +25,23 @@ function tipo_norma_juridica_excluir() {
   if (confirm("Deseja realmente excluir?")) {  
     location.href = "tipo_norma_juridica_excluir_proc?tip_norma=<dtml-var tip_norma missing>";
   }
-  
+}
+
+function modelo_criticar(form){  
+
+  if (form.txt_title.value == "") {
+    alert("O título do modelo deve ser preenchido.");
+    form.txt_title.focus();
+    return false;
+  }
+
+  if (form.file_nom_arquivo.value == 0) {
+    alert("Selecione um arquivo de modelo para enviar.");
+    form.file_nom_arquivo.focus();
+    return false;
+  }
+
+  form.submit();
 }
 
 //-->
@@ -78,4 +94,52 @@ function tipo_norma_juridica_excluir() {
   </dtml-if>
   </p>
 </fieldset>
+
+<dtml-if tip_norma>
+  <fieldset><legend>Modelos ODT</legend>
+    <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_norma)+'-')">
+    <table>
+          <tr>
+             <th>Título do Modelo</th>
+             <th width="30%">Última Alteração</th>
+             <th width="25%">Ações</th>
+          </tr>
+      <dtml-with expr="sapl_documentos.modelo.norma">
+       <dtml-in expr="objectValues('File')" sort="id">
+        <dtml-if expr="id().startswith(prefixo_arquivo)">
+          <tr>
+            <td><a href="&dtml-absolute_url;"><dtml-var title></a></td>
+            <td><dtml-var bobobase_modification_time fmt="%d/%m/%Y - %H:%M"></td>
+            <td>
+              <div align="center">
+              <a class="botao-link" target="_blank" href="&dtml-portal_url;/sapl_documentos/modelo/norma/externalEdit_/<dtml-var id>.zem">Editor Externo</a>
+              <a class="botao-link" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=tipo_norma_juridica_mostrar_proc?tip_norma=<dtml-var tip_norma>">Excluir</a>
+              </div>
+            </td>
+          </tr>
+         </dtml-if>
+        </dtml-in>
+      </dtml-with>
+  </table>
+</fieldset>
+
+<form name="modelo_form" method="post" action="modelo_incluir_proc" enctype="multipart/form-data">
+<table>
+  <tr>
+   <td>
+     <input type="text" name="txt_title" placeholder="Descrição do modelo" size="35" maxlength="35"/>
+   </td>
+   <td>
+     <input type="file" name="file_nom_arquivo" accept="application/vnd.oasis.opendocument.text" size="15" maxlength="50" />
+   </td>
+   <td>
+     <input type="hidden" name="id_documento" value="<dtml-var sgl_tipo_norma>-<dtml-var expr="ZopeTime().timeTime()">.odt">
+     <input type="hidden" name="hdn_url" value="tipo_norma_juridica_mostrar_proc?tip_norma=<dtml-var tip_norma>">
+     <input type="button" class="botao-link" name="btn_documento_acessorio_salvar" value="Incluir Modelo" onClick="modelo_criticar(document.modelo_form)" />
+   </td>
+  </tr>
+</table>
+</form>
+</dtml-if>
+
 <dtml-var standard_html_footer>

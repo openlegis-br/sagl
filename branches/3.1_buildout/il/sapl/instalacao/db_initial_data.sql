@@ -3624,7 +3624,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3518909, 'Guzolândia', 'GUZOLANDIA', 'M', 'SP', 'SD', 0),
 (3519006, 'Herculândia', 'HERCULANDIA', 'M', 'SP', 'SD', 0),
 (3519055, 'Holambra', 'HOLAMBRA', 'M', 'SP', 'SD', 0),
-(3519071, 'Hortolandia', 'HORTOLANDIA', 'M', 'SP', 'SD', 0),
+(3519071, 'Hortolândia', 'HORTOLANDIA', 'M', 'SP', 'SD', 0),
 (3519105, 'Iacanga', 'IACANGA', 'M', 'SP', 'SD', 0),
 (3519204, 'Iacri', 'IACRI', 'M', 'SP', 'SD', 0),
 (3519253, 'Iaras', 'IARAS', 'M', 'SP', 'SD', 0),

@@ -335,7 +335,7 @@ $(document).ready(function() {
               <dtml-call expr="REQUEST.set('id_documento', _.str(cod_norma)+'_'+sapl_documentos.norma_juridica.nom_documento)">
               <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento)">
                 <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento).absolute_url">
-                <a href="<dtml-var documento>" target="_blank"><img align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Arquivo PDF"></a>
+                <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><img align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Arquivo PDF"></a>
                 </dtml-let>
                 <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field(document.norma_juridica_form)"/><span class="texto">Manter</span>
                 <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field(document.norma_juridica_form)"/><span class="texto">Excluir</span>
@@ -358,6 +358,7 @@ $(document).ready(function() {
               <option
                <dtml-if expr="_.has_key('cod_situacao') and _.int(tip_situacao_norma) == cod_situacao">
                 selected
+               <dtml-elif expr="tip_situacao_norma == 1">selected
                </dtml-if>
                value="<dtml-var tip_situacao_norma missing>">
                <dtml-var des_tipo_situacao></option>
@@ -380,7 +381,7 @@ $(document).ready(function() {
 			$('#menuitem').click(function () {
     			$.fancybox({
         			type: 'iframe',
-        			href: '&dtml-portal_url;/webeditor/editorNorma?<dtml-var documento_odt>',
+        			href: '&dtml-portal_url;/webeditor/editorNorma?<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()">',
 				width		: '90%',
 				height		: '95%',
         			preload         : true
@@ -392,11 +393,14 @@ $(document).ready(function() {
                   </dtml-let>
            </div>
                <dtml-else>
+                  <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_norma)+'-')">
                   <select id="lst_modelo" name="lst_modelo">
                     <option value="0">Selecione um modelo</option>
                       <dtml-with expr="sapl_documentos.modelo.norma">
                       <dtml-in expr="objectValues('File')" sort="id">
+                       <dtml-if expr="id().startswith(prefixo_arquivo)">
                         <option value="<dtml-var id>"><dtml-var title></option>
+                       </dtml-if>
                       </dtml-in>
                       </dtml-with>
                   </select>
@@ -415,7 +419,7 @@ $(document).ready(function() {
                <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento_pdf)">
                   <dtml-let documento_pdf="_.getattr(sapl_documentos.norma_juridica,id_documento_pdf).absolute_url">
                   <dtml-call expr="REQUEST.set('nome_arquivo_pdf',_.str(cod_norma)+'_texto_consolidado.pdf')">
-                  <a href="&dtml-URL1;/sapl_documentos/norma_juridica/<dtml-var nome_arquivo_pdf>" target="_blank">
+                  <a href="&dtml-URL1;/sapl_documentos/norma_juridica/<dtml-var nome_arquivo_pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
                     <img align="top" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="PDF consolidado" title="Visualizar PDF"></a>
                     <a class="botao_excluir" href="javascript:void(0)" onclick="javascript:texto_consolidado_excluir()">Excluir</a>
                   </dtml-let>
