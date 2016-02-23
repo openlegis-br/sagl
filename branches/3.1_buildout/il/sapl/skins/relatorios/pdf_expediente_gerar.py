@@ -63,7 +63,7 @@ def paraStyle():
     tmp+='\t\t<initialize>\n'
     tmp+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp+='\t\t</initialize>\n'
-    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="12" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="12" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="12" alignment="JUSTIFY"/>\n'
     tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="9" alignment="LEFT"/>\n'
     tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="9.0" leading="11" alignment="JUSTIFY"/>\n'
