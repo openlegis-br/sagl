@@ -337,22 +337,25 @@ $(document).ready(function() {
                            <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
                              <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
                                <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_documento)+'_texto_integral.odt')">
-                               <a class="popup1" href="&dtml-portal_url;/generico/view_odt?arquivo_odt=<dtml-var documento>" data-fancybox-type="iframe">
+                               <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">                              
                                  <img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Visualizar Arquivo ODT" title="Visualizar Arquivo ODT">
                                </a>
                                <dtml-if "not _.hasattr(sapl_documentos.administrativo,_.str(cod_documento)+'_texto_integral.pdf')">
-                               <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/administrativo/externalEdit_/<dtml-var nome_arquivo>">
-                                 Editar</a>
+                               <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/administrativo/externalEdit_/<dtml-var nome_arquivo>.zem">
+                                 Editor Externo</a>
                                </dtml-if>
                              </dtml-let>
                                &nbsp;<a class="botao-link" href="javascript:texto_integral_excluir_odt()">Excluir</a>
                         </dtml-if>
                            <dtml-unless "_.hasattr(sapl_documentos.administrativo,id_documento)">
+                              <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_documento))">
                               <select id="lst_modelo" name="lst_modelo">
                                 <option value="0">Selecione um modelo</option>
                                 <dtml-with expr="sapl_documentos.modelo.documento_administrativo">
                                   <dtml-in expr="objectValues('File')" sort="id">
+                                   <dtml-if expr="id().startswith(prefixo_arquivo)">
                                      <option value="<dtml-var id>"><dtml-var title></option>
+                                   </dtml-if>
                                   </dtml-in>
                                 </dtml-with>
                               </select>
