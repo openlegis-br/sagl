@@ -1,5 +1,5 @@
 ##parameters=rodape_dic, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_presidente, sessao=''
-"""Script para geração do PDF das pautas dos expedientes das sessoes
+"""Script para geração da pauta das matérias do expediente em PDF
    Autor: Luciano De Fázio - OpenLegis
    versão: 1.0
 """
@@ -93,7 +93,7 @@ def inf_basicas(inf_basicas_dic):
     tmp+='\t\t<para style="P2" spaceAfter="4">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
-    tmp+='\t\t<para style="P4">(Pauta do Expediente)</para>\n'
+    tmp+='\t\t<para style="P4">(Pauta das Matérias do Expediente)</para>\n'
     tmp+='\t\t<para style="P2" spaceAfter="12">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
@@ -215,7 +215,7 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     tmp+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp+='<document filename="relatorio.pdf">\n'
-    tmp+='\t<template pageSize="(21cm, 29.7cm)" title="Pauta do Expediente" author="OpenLegis" allowSplitting="20">\n'
+    tmp+='\t<template pageSize="(21cm, 29.7cm)" title="Pauta das Matérias do Expediente" author="OpenLegis" allowSplitting="20">\n'
     tmp+='\t\t<pageTemplate id="first">\n'
     tmp+='\t\t\t<pageGraphics>\n'
     tmp+=cabecalho(inf_basicas_dic,imagem)
