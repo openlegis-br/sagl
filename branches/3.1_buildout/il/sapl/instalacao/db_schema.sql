@@ -524,6 +524,22 @@ CREATE TABLE `cargo_mesa` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `coautoria_proposicao`
+--
+
+CREATE TABLE IF NOT EXISTS `coautoria_proposicao` (
+  `cod_proposicao` int(11) NOT NULL,
+  `cod_autor` int(11) NOT NULL,
+  `ind_aderido` tinyint(4) NOT NULL DEFAULT '0',
+  `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`cod_proposicao`,`cod_autor`),
+  KEY `idx_proposicao` (`cod_proposicao`),
+  KEY `idx_autor` (`cod_autor`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `coligacao`
 --
 

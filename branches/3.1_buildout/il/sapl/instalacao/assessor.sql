@@ -473,3 +473,13 @@ ADD INDEX ( `cod_substitutivo` ) ;
 
 ALTER TABLE  `tipo_documento_administrativo` ADD  `ind_publico` TINYINT( 4 ) NOT NULL DEFAULT  '0' AFTER  `des_tipo_documento` ;
 
+CREATE TABLE IF NOT EXISTS `coautoria_proposicao` (
+  `cod_proposicao` int(11) NOT NULL,
+  `cod_autor` int(11) NOT NULL,
+  `ind_aderido` tinyint(4) NOT NULL DEFAULT '0',
+  `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`cod_proposicao`,`cod_autor`),
+  KEY `idx_proposicao` (`cod_proposicao`),
+  KEY `idx_autor` (`cod_autor`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
