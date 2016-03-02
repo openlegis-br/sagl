@@ -53,7 +53,7 @@ for periodo in context.zsql.periodo_comp_comissao_obter_zsql(data = DateTime(),c
 
 destinatarios=[]
 for composicao_comissao in context.zsql.composicao_comissao_obter_zsql(cod_comissao=comissao.cod_comissao,cod_periodo_comp=periodo.cod_periodo_comp):
- if composicao_comissao.dat_desligamento == None or composicao_comissao.dat_desligamento <= DateTime():
+ if composicao_comissao.dat_desligamento == None or composicao_comissao.dat_desligamento >= DateTime():
   for destinatario in context.zsql.autor_obter_zsql(cod_parlamentar=composicao_comissao.cod_parlamentar):
    dic={}
    dic['end_email'] = destinatario.end_email
