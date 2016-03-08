@@ -12,7 +12,7 @@ breadcrumbs = []
 request = context.REQUEST
 vRoot = request.has_key('VirtualRootPhysicalPath')
 
-PARENTS = context.REQUEST.PARENTS[:-2]
+PARENTS = context.REQUEST.PARENTS[:-1]
 
 foldertypes = ('Folder','CMF-Folder')
 
