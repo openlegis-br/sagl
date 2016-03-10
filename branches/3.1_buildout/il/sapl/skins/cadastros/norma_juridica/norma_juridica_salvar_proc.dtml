@@ -69,21 +69,8 @@
                             <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento) ">
                                 <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
                                 <dtml-try>
-                                    <dtml-try>
-                                       <dtml-with "restrictedTraverse('sapl_documentos/norma_juridica/' + id_documento)">
-                                       <dtml-let path=absolute_url_path>
-                                            <dtml-call expr="sapl_documentos.norma_juridica.Catalog.uncatalog_object(path)">
-                                            <dtml-call expr="sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(hdn_cod_norma)">
-                                       </dtml-let>
-                                       </dtml-with>
-                                    </dtml-try>
                                     <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
-                                    <dtml-with "restrictedTraverse('sapl_documentos/norma_juridica/' + id_documento)">
-                                    <dtml-let path=absolute_url_path>
-                                        <dtml-call expr="sapl_documentos.norma_juridica.Catalog.catalog_object(documento, path)">
-                                        <dtml-call expr="sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(hdn_cod_norma)">
-                                    </dtml-let>
-                                    </dtml-with>
+                                    <dtml-call expr="sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(hdn_cod_norma)">
                                 <dtml-except>
                                     <dtml-call expr="REQUEST.set('erro', 1)">              
                                 </dtml-try>
@@ -97,14 +84,7 @@
                     <dtml-if "not existe_arquivo">
                         <dtml-try>            
                             <dtml-call expr="sapl_documentos.norma_juridica.manage_addFile(id=id_documento,file=file_nom_arquivo)">
-                            <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento) ">
-                                <dtml-with "restrictedTraverse('sapl_documentos/norma_juridica/' + id_documento)">
-                                <dtml-let path=absolute_url_path>
-                                    <dtml-call expr="sapl_documentos.norma_juridica.Catalog.catalog_object(documento, path)">
-                                    <dtml-call expr="sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(hdn_cod_norma)">
-                                 </dtml-let>
-                                </dtml-with>
-                            </dtml-let>
+                            <dtml-call expr="sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(hdn_cod_norma)">
                         <dtml-except> 
                             <dtml-call expr="REQUEST.set('erro', 1)">              
                         </dtml-try>      
@@ -113,14 +93,8 @@
             <dtml-elif expr="radTI=='E'">
                 <dtml-if hdn_cod_norma>
                     <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_norma)+'_'+sapl_documentos.norma_juridica.nom_documento)">
-                    <dtml-try>
-                        <dtml-with "restrictedTraverse('sapl_documentos/norma_juridica/' + id_documento)">
-                            <dtml-let path=absolute_url_path>
-                                <dtml-call expr="sapl_documentos.norma_juridica.Catalog.uncatalog_object(path)">
-                            </dtml-let>
-                        </dtml-with>
-                    </dtml-try>
                     <dtml-call expr="sapl_documentos.norma_juridica.manage_delObjects(id_documento)">
+                    <dtml-call expr="sapl_documentos.norma_juridica.Catalog.removerCatalogo(hdn_cod_norma)">
                     <dtml-call expr="sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(hdn_cod_norma)">
                 </dtml-if>
             </dtml-if>

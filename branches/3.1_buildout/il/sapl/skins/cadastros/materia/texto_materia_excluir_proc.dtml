@@ -1,12 +1,16 @@
 <dtml-call expr="REQUEST.set('erro', 0)">
 <dtml-call expr="REQUEST.set('id_texto', _.str(cod_materia)+'_texto_integral.pdf')">
 <dtml-if expr="_.hasattr(sapl_documentos.materia,id_texto)">
+ <dtml-let documento="_.getattr(sapl_documentos.materia,id_texto) ">
   <dtml-try>
     <dtml-call "sapl_documentos.materia.manage_delObjects(id_texto)">
+    <dtml-call expr="sapl_documentos.materia.Catalog.removerCatalogo(cod_materia)">
+    <dtml-call expr="sapl_documentos.materia.Catalog.atualizarCatalogo(cod_materia)">
   <dtml-except>
     <dtml-call expr="REQUEST.set('erro', 1)">
   </dtml-try>
-  
+ </dtml-let>
+
   <dtml-if erro>
     <dtml-let mensagem="'Ocorreu um erro ao tentar excluir o arquivo PDF dessa matéria!'">
       <dtml-var mensagem_emitir>
