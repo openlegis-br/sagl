@@ -42,11 +42,6 @@ from lacunarestpki import *
 from zope.testbrowser.browser import Browser
 browser = Browser()
 
-restpki_access_token = ''                       
-
-restpki_url = 'https://pki.rest/'
-restpki_client = RestPkiClient(restpki_url, restpki_access_token)
-
 class ISAPLTool(Interface):
     """ Marker interface for SAPL Tool.
     """
@@ -692,6 +687,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.substitutivo.manage_addFile(id=nom_arquivo_pdf,file=data)
 
+    def restpki_client(self):
+        restpki_url = 'https://pki.rest/'
+        restpki_access_token = self.sapl_documentos.props_sapl.restpki_access_token            
+        restpki_client = RestPkiClient(restpki_url, restpki_access_token)
+        return restpki_client
+
     def pades_signature(self, cod_proposicao):
         pdf_file = '%s' % (cod_proposicao) + ".pdf"
 
@@ -716,7 +717,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdf_stamp = f.read()
         f.close()
 
-        signature_starter = PadesSignatureStarter(restpki_client)
+        signature_starter = PadesSignatureStarter(self.restpki_client())
         signature_starter.set_pdf_path(pdf_path)
         signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
         signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
@@ -777,7 +778,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdf_stamp = f.read()
         f.close()
 
-        signature_starter = PadesSignatureStarter(restpki_client)
+        signature_starter = PadesSignatureStarter(self.restpki_client())
         signature_starter.set_pdf_path(pdf_path)
         signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
         signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
@@ -820,7 +821,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         cod_proposicao = cod_proposicao
 
         # Instantiate the PadesSignatureFinisher class, responsible for completing the signature process
-        signature_finisher = PadesSignatureFinisher(restpki_client)
+        signature_finisher = PadesSignatureFinisher(self.restpki_client())
 
         # Set the token
         signature_finisher.token = token
@@ -866,10 +867,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         if sample_number == 1:
             # Example #1: automatic positioning on footnote. This will insert the signature, and future signatures,
             # ordered as a footnote of the last page of the document
-            return PadesVisualPositioningPresets.get_footnote(restpki_client)
+            return PadesVisualPositioningPresets.get_footnote(self.restpki_client())
         elif sample_number == 2:
             # Example #2: get the footnote positioning preset and customize it
-            visual_position = PadesVisualPositioningPresets.get_footnote(restpki_client)
+            visual_position = PadesVisualPositioningPresets.get_footnote(self.restpki_client())
             visual_position['auto']['container']['left'] = 2.54
             visual_position['auto']['container']['bottom'] = 1.35
             visual_position['auto']['container']['right'] = 2.54
@@ -877,10 +878,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif sample_number == 3:
             # Example #3: automatic positioning on new page. This will insert the signature, and future signatures,
             # in a new page appended to the end of the document.
-            return PadesVisualPositioningPresets.get_new_page(restpki_client)
+            return PadesVisualPositioningPresets.get_new_page(self.restpki_client())
         elif sample_number == 4:
             # Example #4: get the "new page" positioning preset and customize it
-            visual_position = PadesVisualPositioningPresets.get_new_page(restpki_client)
+            visual_position = PadesVisualPositioningPresets.get_new_page(self.restpki_client())
             visual_position['auto']['container']['left'] = 2.54
             visual_position['auto']['container']['top'] = 2.54
             visual_position['auto']['container']['right'] = 2.54
