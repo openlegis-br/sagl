@@ -757,14 +757,21 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         lst_acessorios = []
         for documento in self.zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia,ind_excluido=0):
-           dic_dados={}
-           if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
-              dic_dados['pdf_documento'] = self.sapl_documentos.materia.absolute_url()+ "/" + documento.cod_documento + ".pdf"
-           lst_acessorios.append(dic_dados)
-           if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
-              for dic_dados in lst_acessorios:
-                texto_documento = cStringIO.StringIO(urllib.urlopen(dic_dados['pdf_documento']).read())
-                merger.append(texto_documento)
+           proposicao = self.zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=documento.cod_documento,ind_excluido=0)
+           if proposicao:
+              cod_proposicao = proposicao[0].cod_proposicao
+              pdf_proposicao = self.sapl_documentos.proposicao.absolute_url() + "/" +  str(cod_proposicao) + "_signed.pdf"
+              texto_documento = cStringIO.StringIO(urllib.urlopen(pdf_proposicao).read())
+              merger.append(texto_documento)
+           else:
+              dic_dados={}
+              if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
+                 dic_dados['pdf_documento'] = self.sapl_documentos.materia.absolute_url()+ "/" + documento.cod_documento + ".pdf"
+              lst_acessorios.append(dic_dados)
+              if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
+                 for dic_dados in lst_acessorios:
+                   texto_documento = cStringIO.StringIO(urllib.urlopen(dic_dados['pdf_documento']).read())
+                   merger.append(texto_documento)
 
         output_file_pdf = os.path.normpath(nom_arquivo_pdf)
         f = open(output_file_pdf, "wb")
