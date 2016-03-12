@@ -28,8 +28,11 @@ from Products.CMFCore.utils import getToolByName
 
 #imports para a geracao dos documentos
 import urllib
+import urllib2
 import cStringIO
 from appy.pod.renderer import Renderer
+from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
+from StringIO import StringIO
 
 #imports para assinatura digital
 import sys
@@ -686,6 +689,93 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for file in [output_file_pdf]:
             os.unlink(file)
             self.sapl_documentos.substitutivo.manage_addFile(id=nom_arquivo_pdf,file=data)
+
+    def processo_eletronico_gerar_pdf(self,cod_materia):
+        if cod_materia.isdigit():
+           cod_materia = cod_materia
+        else:
+           cod_materia = self.pysc.b64decode_pysc(codigo=str(cod_materia))
+        writer = PdfFileWriter()
+        merger = PdfFileMerger()
+        for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia):
+           nom_arquivo_pdf = materia.sgl_tipo_materia + "-" +str(materia.num_ident_basica) + "-" + str(materia.ano_ident_basica) + '_processo_eletronico.pdf'
+        proposicao = self.zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=cod_materia,ind_excluido=0)
+        if proposicao:
+           pdf_proposicao = self.sapl_documentos.proposicao.absolute_url() + "/" + cod_proposicao + "_signed.pdf"
+           texto_materia = cStringIO.StringIO(urllib.urlopen(pdf_proposicao).read())
+           merger.append(texto_materia)
+        else:
+           if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
+              pdf_materia = self.sapl_documentos.materia.absolute_url()+ "/" + cod_materia + "_texto_integral.pdf"
+              texto_materia = cStringIO.StringIO(urllib.urlopen(pdf_materia).read())
+              merger.append(texto_materia)
+
+        lst_mat_anexadas = []
+        for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
+           dic_mat = {}
+           if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
+              dic_mat['pdf_anexada'] = self.sapl_documentos.materia.absolute_url()+ "/" + str(anexada.cod_materia_anexada) + "_texto_integral.pdf"
+           lst_mat_anexadas.append(dic_mat)
+           if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
+              for dic_mat in lst_mat_anexadas:
+                 texto_anexada = cStringIO.StringIO(urllib.urlopen(dic_mat['pdf_anexada']).read())
+                 merger.append(texto_anexada)
+
+        lst_emendas = []
+        for emenda in self.zsql.emenda_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+           dic_emendas = {}
+           if hasattr(self.sapl_documentos.emenda, str(emenda.cod_emenda) + '_emenda.pdf'):
+              dic_emendas['pdf_emenda'] = self.sapl_documentos.emenda.absolute_url()+ "/" + str(emenda.cod_emenda) + "_emenda.pdf"
+           lst_emendas.append(dic_emendas)
+           if hasattr(self.sapl_documentos.emenda, str(emenda.cod_emenda) + '_emenda.pdf'):
+              for dic_emendas in lst_emendas:
+                 texto_emenda = cStringIO.StringIO(urllib.urlopen(dic_emendas['pdf_emenda']).read())
+                 merger.append(texto_emenda)
+
+        lst_substitutivos = []
+        for substitutivo in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia):
+           dic_substitutivos = {}
+           if hasattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf'):
+              dic_substitutivos['pdf_substitutivo'] = self.sapl_documentos.substitutivo.absolute_url()+ "/" + str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
+           lst_substitutivos.append(dic_substitutivos)
+           if hasattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf'):
+              for dic_substitutivos in lst_substitutivos:
+                 texto_substitutivo = cStringIO.StringIO(urllib.urlopen(dic_substitutivos['pdf_substitutivo']).read())
+                 merger.append(texto_substitutivo)
+
+        #lst_relatorias = []
+        #for relatoria in self.zsql.relatoria_obter_zsql(cod_materia = cod_materia,ind_excluido=0):
+        #   dic_comissao={}
+        #   if hasattr(self.sapl_documentos.parecer_comissao, str(relatoria.cod_relatoria) + '_parecer.pdf'):
+        #      dic_comissao['pdf_relatoria'] = self.sapl_documentos.parecer_comissao.absolute_url()+ "/" + relatoria.cod_relatoria + "_parecer.pdf"
+        #   lst_relatorias.append(dic_comissao)
+        #   if hasattr(self.sapl_documentos.parecer_comissao, str(relatoria.cod_relatoria) + '_parecer.pdf'):
+        #      for dic_comissao in lst_relatorias:
+        #         texto_relatoria = cStringIO.StringIO(urllib.urlopen(dic_comissao['pdf_relatoria']).read())
+        #         merger.append(texto_relatoria)
+
+        lst_acessorios = []
+        for documento in self.zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia,ind_excluido=0):
+           dic_dados={}
+           if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
+              dic_dados['pdf_documento'] = self.sapl_documentos.materia.absolute_url()+ "/" + documento.cod_documento + ".pdf"
+           lst_acessorios.append(dic_dados)
+           if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
+              for dic_dados in lst_acessorios:
+                texto_documento = cStringIO.StringIO(urllib.urlopen(dic_dados['pdf_documento']).read())
+                merger.append(texto_documento)
+
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+        f = open(output_file_pdf, "wb")
+        merger.write(f)
+        f.close()
+        readin = open(output_file_pdf, 'r' )
+        contents = readin.read()
+        for file in [output_file_pdf]:
+            os.unlink(file)
+        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
+        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="processo_eletronico.pdf"'
+        return contents
 
     def restpki_client(self):
         restpki_url = 'https://pki.rest/'

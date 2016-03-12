@@ -18,7 +18,7 @@ _DEFAULT_PROFILE = 'il.sapl:default'
 
 
 class SAPL(CMFSite):
-    """ Inicia um novo SAPL baseado em um CMFSite.
+    """ Inicia um novo SAGL-OpenLegis baseado em um CMFSite.
     """
     security=ClassSecurityInfo()
     meta_type = portal_type = 'SAPL'
@@ -52,9 +52,9 @@ manage_addSAPLForm = PageTemplateFile('www/addSAPL', globals())
 manage_addSAPLForm.__name__ = 'addSAPL'
 
 
-def manage_addSAPL(context, id, title='OpenLegis-Processo Legislativo Eletrônico', description='',
+def manage_addSAPL(context, id, title='OpenLegis - Processo Legislativo Eletrônico', description='',
                    database='MySQL', profile_id=_DEFAULT_PROFILE, RESPONSE=None):
-    """ Adicionar uma instancia do SAGL.
+    """ Adicionar uma instancia do SAGL-OpenLegis.
     """
 
     context._setObject(id, SAPL(id))
@@ -80,14 +80,14 @@ def manage_addSAPL(context, id, title='OpenLegis-Processo Legislativo Eletrônic
     if database == 'MySQL':
         site.manage_addProduct['ZMySQLDA'].manage_addZMySQLConnection(
             id='dbcon_interlegis',
-            title='Banco de Dados do SAPL (MySQL)',
+            title='Banco de Dados do SAGL-OpenLegis (MySQL)',
             use_unicode=True,
             connection_string='interlegis sapl sapl'
         )
     else:
         site.manage_addProduct['ZPsycopgDA'].manage_addZPsycopgConnection(
             id='dbcon_interlegis',
-            title='Banco de Dados do SAPL (PostgreSQL)',
+            title='Banco de Dados do SAGL-OpenLegis (PostgreSQL)',
             connection_string='dbname=interlegis user=sapl password=sapl host=localhost'
         )
 

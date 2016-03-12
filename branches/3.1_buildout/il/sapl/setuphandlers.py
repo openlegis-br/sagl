@@ -1,5 +1,5 @@
 """
-SAPL setup handlers.
+SAGL-OpenLegis setup handlers.
 """
 
 
@@ -14,8 +14,8 @@ def setupMountPoint(portal):
 
 
 def setupConteudo(portal):
-    # Metodo para a importacao do SAPL
-    # estrutura do diretorio das materias legislativas
+    # Metodo para a importacao do SAGL-OpenLegis
+    # estrutura do diretorio para armazenamento de documentos
     if hasattr(portal, 'sapl_documentos'):
         for o in [
             'administrativo.zexp',
@@ -40,18 +40,17 @@ def setupConteudo(portal):
             if o[:len(o)-5] not in portal.sapl_documentos.objectIds():
                 portal.sapl_documentos.manage_importObject(o)
 
-    # importar conteudos na raiz do SAPL
-#    for o in ['XSD.zexp','XSLT.zexp', 'modelo_proposicao.zexp', 'pdflabels.zexp', 'gerar_etiquetas_pdf.zexp']:
-    for o in ['modelo_proposicao.zexp', 'pdflabels.zexp', 'gerar_etiquetas_pdf.zexp']:
+    # importar conteudos na raiz do SAGL-OpenLegis
+    for o in ['modelo_proposicao.zexp', 'webeditor.zexp', 'pdflabels.zexp', 'gerar_etiquetas_pdf.zexp']:
         if o[:len(o)-5] not in portal.objectIds():
             portal.manage_importObject(o)
 
 
 def setupAdicionarUsuarios(portal):
     # Metodo para criar usuario padrao
-    portal.acl_users._addUser(name='saploper',password='saploper',confirm='saploper',roles=['Operador'],domains=[])
-    portal.acl_users._addUser(name='sapllexml',password='sapllexml',confirm='sapllexml',roles=['Operador Lexml'],domains=[])
-    portal.acl_users._addUser(name='sapladm',password='sapladm',confirm='sapladm',roles=['Administrador'],domains=[])
+    portal.acl_users._addUser(name='openlegis',password='openlegis',confirm='openlegis',roles=['Operador'],domains=[])
+    portal.acl_users._addUser(name='lexml',password='lexml',confirm='lexml',roles=['Operador Lexml'],domains=[])
+    portal.acl_users._addUser(name='openlegisadm',password='openlegisadm',confirm='openlegisadm',roles=['Administrador'],domains=[])
 
 
 def setupAdicionaSPDO(portal):
@@ -61,7 +60,7 @@ def setupAdicionaSPDO(portal):
     except:
         pass
     try:
-        props.manage_addProperty('end_spdo', 'http://10.1.1.1:8380/spdo', 'string')
+        props.manage_addProperty('end_spdo', ' ', 'string')
     except:
         pass
 

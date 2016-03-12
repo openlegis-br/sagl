@@ -30,10 +30,8 @@ from Products.CMFCore.utils import ToolInit
 
 import SAPLTool
 
-
 def initialize(context):
-    # inicializa a instalacao e estrutura do SAPL
-
+    # inicializa a instalacao e estrutura do SAGL-OpenLegis
 
     ModuleSecurityInfo('socket.socket').declarePublic('fileno')
     ModuleSecurityInfo('tempfile.NamedTemporaryFile').declarePublic('flush')
@@ -63,7 +61,8 @@ def initialize(context):
     allow_module('array')
     allow_module('datetime')
     allow_module('datetime.datetime.timetuple')
-
+    allow_module('PyPDF2')
+    allow_module('StringIO')
 
     tools = (SAPLTool.SAPLTool,)
     ToolInit('SAPL Tool',
