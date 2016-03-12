@@ -701,7 +701,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            nom_arquivo_pdf = materia.sgl_tipo_materia + "-" +str(materia.num_ident_basica) + "-" + str(materia.ano_ident_basica) + '_processo_eletronico.pdf'
         proposicao = self.zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=cod_materia,ind_excluido=0)
         if proposicao:
-           pdf_proposicao = self.sapl_documentos.proposicao.absolute_url() + "/" + cod_proposicao + "_signed.pdf"
+           cod_proposicao = proposicao[0].cod_proposicao
+           pdf_proposicao = self.sapl_documentos.proposicao.absolute_url() + "/" +  str(cod_proposicao) + "_signed.pdf"
            texto_materia = cStringIO.StringIO(urllib.urlopen(pdf_proposicao).read())
            merger.append(texto_materia)
         else:
