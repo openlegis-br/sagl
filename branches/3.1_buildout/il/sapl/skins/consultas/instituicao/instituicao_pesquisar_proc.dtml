@@ -30,20 +30,21 @@
 <dtml-if lst_localidade>
   <dtml-call "REQUEST.set('lst_localidade', _.int(lst_localidade))">
 </dtml-if>
-<table>
-<dtml-in expr="zsql.instituicao_obter_zsql(tip_instituicao=lst_tip_instituicao, txt_nom_instituicao=txa_txt_nom_instituicao, txt_nom_responsavel=txa_txt_nom_responsavel, cod_localidade=lst_localidade, rd_ordem=rd_ordenacao)"
-                                           size="step" start="start" orphan=0>
+
+<fieldset>
+<dtml-in expr="zsql.instituicao_obter_zsql(tip_instituicao=lst_tip_instituicao, txt_nom_instituicao=txa_txt_nom_instituicao, txt_nom_responsavel=txa_txt_nom_responsavel, cod_localidade=lst_localidade, rd_ordem=rd_ordenacao)" size="step" start="start" orphan=0>
 <dtml-if sequence-start>
-<tr>
-<th colspan="2" class="form-label">Resultado da Pesquisa: <dtml-var sequence-length> ocorrência(s) encontrada(s).</th>
-</tr>
+<table>
+  <tr>
+    <th colspan="2" class="form-label">Resultado da Pesquisa: <dtml-var sequence-length> ocorrência(s) encontrada(s).</th>
+  </tr>
 <dtml-if previous-sequence>
-<dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+  <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
 </dtml-if>
 </dtml-if sequence-start>
             <tr <dtml-if sequence-odd>class="even"</dtml-if>>            
               <td class="texto">
-                <dtml-if expr="incluir=='1'">
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
                   <a href="&dtml-portal_url;/cadastros/instituicao/instituicao_mostrar_proc?cod_instituicao=<dtml-var cod_instituicao>">
                 <dtml-else>
                   <a href="#" >
@@ -81,17 +82,23 @@
   </dtml-if>
     <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
       <p align="center" class="texto"><b>          
-          <dtml-var "pysc.PageListOutput_pysc('instituicao_pesquisar_proc', page, step, _['sequence-length'], incluir=incluir, existe_ocorrencia=existe_ocorrencia, lst_tip_instituicao=lst_tip_instituicao, txa_txt_nom_instituicao=txa_txt_nom_instituicao, txa_txt_nom_responsavel=txa_txt_nom_responsavel, lst_localidade=lst_localidade, rd_ordenacao=rd_ordenacao, btn_instituicao_pesquisar=btn_instituicao_pesquisar)">
+          <dtml-var "pysc.PageListOutput_pysc('instituicao_pesquisar_proc', page, step, _['sequence-length'], existe_ocorrencia=existe_ocorrencia, lst_tip_instituicao=lst_tip_instituicao, txa_txt_nom_instituicao=txa_txt_nom_instituicao, txa_txt_nom_responsavel=txa_txt_nom_responsavel, lst_localidade=lst_localidade, rd_ordenacao=rd_ordenacao, btn_instituicao_pesquisar=btn_instituicao_pesquisar)">
       </b></p>
     </dtml-if>
   </dtml-if sequence-end>
 
 <dtml-else>
-<tr>
-<th colspan="2" class="form-label">Resultado da Pesquisa: Nenhuma ocorrência encontrada.</th>
-</tr>
-</dtml-in>
+<table>
+ <tr>
+    <th class="form-label">Resultado da Pesquisa</th>
+ </tr>
+ <tr>
+    <td class="texto">Nenhuma ocorrência encontrada.</td>
+ </tr>
 </table>
+</dtml-in>
+
+</fieldset>
 
 <p align="center">
     <input type="button" class="botao" name="retornar" value="retornar" onClick="javascript:history.go(-1)">
