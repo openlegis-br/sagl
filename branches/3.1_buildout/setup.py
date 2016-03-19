@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '2.7'
+version = '3.1'
 
 setup(name='il.sapl',
       version=version,
@@ -38,7 +38,7 @@ setup(name='il.sapl',
           'Products.GenericSetup',
           'Products.ZMySQLDA',
           'Products.AdvancedQuery',
-          'Products.TextIndexNG3==3.4.8',
+          'Products.TextIndexNG3',
           'Products.ExtendedPathIndex',
           'ZODB3',
           'Zope2',
@@ -60,7 +60,7 @@ setup(name='il.sapl',
           'grokcore.view == 2.7',
           'grokcore.viewlet == 1.10.1',
           'martian == 0.14',
-          'reportlab == 2.7',
+          'reportlab',
           'trml2pdf==1.2',
       ],
       entry_points="""
