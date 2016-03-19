@@ -2,7 +2,6 @@
 SAGL-OpenLegis setup handlers.
 """
 
-
 def setupMountPoint(portal):
     # Metodo para adicionar o mount point do sapl_documentos
     if not hasattr(portal, 'sapl_documentos'):
@@ -11,7 +10,6 @@ def setupMountPoint(portal):
             portal.manage_addProduct['ZODBMountPoint'].manage_addMounts(paths=["/%s/sapl_documentos" % path_sapl],create_mount_points=1)
         except:
             portal.manage_addProduct['OFSP'].manage_addFolder(id='sapl_documentos')
-
 
 def setupConteudo(portal):
     # Metodo para a importacao do SAGL-OpenLegis
