@@ -10,7 +10,7 @@
 
 dic={}
 
-# verifica se existe apenas um expediente e caso não exista ele faz um laço para construir um dicionário
+# verifica se existe apenas um expediente e caso nÃ£o exista ele faz um laÃ§o para construir um dicionÃ¡rio
 if len(cod_expediente) > 1:
     for n in range(len(cod_expediente)):
         dic[cod_expediente[n]]=txt_expediente[n]

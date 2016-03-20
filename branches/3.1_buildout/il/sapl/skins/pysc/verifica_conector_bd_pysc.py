@@ -11,7 +11,7 @@
 root = context.portal_url.getPortalObject()
 
 # Verifica o tipo do conector do banco de dados
-# Caso necessite mudar a instancia, customize o script e faÁa a mudanÁa necess·ria
+# Caso necessite mudar a instancia, customize o script e fa√ßa a mudan√ßa necess√°ria
 if root.objectValues('Z MySQL Database Connection'):
     return 1
 else:

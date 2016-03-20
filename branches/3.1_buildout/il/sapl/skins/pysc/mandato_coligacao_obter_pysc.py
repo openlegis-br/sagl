@@ -12,7 +12,7 @@
 if not lst_cod_coligacao:
    return ""
 
-n=int(lst_num_legislatura.split('ª')[0])
+n=int(lst_num_legislatura.split('Âª')[0])
 nc=""
 try:
   nc=context.zsql.coligacao_obter_zsql(num_legislatura=n, cod_coligacao=lst_cod_coligacao)[0].cod_coligacao

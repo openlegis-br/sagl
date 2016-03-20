@@ -8,7 +8,7 @@
 ##title=
 ##
 
-# atualiza indicação de materia em tramitação (sim ou não)
+# atualiza indicaÃ§Ã£o de materia em tramitaÃ§Ã£o (sim ou nÃ£o)
 
 # obtem ind_fim_tramitacao ou ind_retorno_tramitacao
 status=context.zsql.status_tramitacao_obter_zsql(cod_status=cod_status)[0]

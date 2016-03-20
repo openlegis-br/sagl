@@ -7,7 +7,7 @@
 ##parameters=datai, dataf, cod_p
 ##title=
 ##
-'''Esse script tem como finalidade validar se o parlamentar tem mandato no período indicado da composicao da comissao''' 
+'''Esse script tem como finalidade validar se o parlamentar tem mandato no perÃ­odo indicado da composicao da comissao''' 
 
 di=datai[6:] + '-' + datai[3:5] + '-' + datai[0:2]
 df=dataf[6:] + '-' + dataf[3:5] + '-' + dataf[0:2]

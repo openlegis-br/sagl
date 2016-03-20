@@ -9,5 +9,5 @@
 ##
 '''Esse script retorna o num_legislatura para tratar mandatos''' 
 
-return int(lst_num_legislatura.split('ª')[0])
+return int(lst_num_legislatura.split('Âª')[0])
 

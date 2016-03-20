@@ -8,7 +8,7 @@
 ##title=
 ##
 """
-  Função: formatar hora: hh:mm -  o formato troca : por h.
+  FunÃ§Ã£o: formatar hora: hh:mm -  o formato troca : por h.
 """
 if hora != '':
    return hora[0:2] + 'h' + hora[3:]

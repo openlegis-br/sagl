@@ -8,7 +8,7 @@
 ##title=
 ##
 """
-  Função: separar as variáveis cod_parlamentar e dat_designacao do parlamentar na composição da Comissão
+  FunÃ§Ã£o: separar as variÃ¡veis cod_parlamentar e dat_designacao do parlamentar na composiÃ§Ã£o da ComissÃ£o
   
   Argumento: Dados: cod_parlamentar - dat_designacao; se parm="" --> retorna cod_parlamentar, se parm=1 --> retorna dat_designacao.
 

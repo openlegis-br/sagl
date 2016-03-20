@@ -8,7 +8,7 @@
 ##title=
 ##
 """
-  Função: validar se o parlamentar pode ou não ser autor de materia legislativa na data da apresentação indicada
+  FunÃ§Ã£o: validar se o parlamentar pode ou nÃ£o ser autor de materia legislativa na data da apresentaÃ§Ã£o indicada
   
   Argumentos: txt_dat_apresentacao e cod_parlamentar  --> retorna 1-verdadeiro ou 0-falso.
 

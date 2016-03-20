@@ -7,7 +7,7 @@
 ##parameters=tip_afastamento
 ##title=
 ##
-'''Esse script tem como finalidade retornar a descrição do tipo fim de afastamento''' 
+'''Esse script tem como finalidade retornar a descriÃ§Ã£o do tipo fim de afastamento''' 
 
 des_afastamento=" "
 if str(tip_afastamento)==" ":

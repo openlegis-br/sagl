@@ -8,7 +8,7 @@
 ##title=
 ##
 """
-  FunÁ„o: retornar a relatoria atual: cod_parlamentar e dat_designacao do parlamentar na composiÁ„o da Comiss„o
+  Fun√ß√£o: retornar a relatoria atual: cod_parlamentar e dat_designacao do parlamentar na composi√ß√£o da Comiss√£o
   
   Argumento: Dados: codigo=cod_parlamentar, data=dat_desig_relator
 

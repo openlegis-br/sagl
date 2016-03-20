@@ -12,7 +12,7 @@
 if (lst_cod_coligacao==""):
    return true
 
-n=int(lst_num_legislatura.split('ª')[0])
+n=int(lst_num_legislatura.split('Âª')[0])
 try:
   nc=zsql.coligacao_obter_zsql(num_legislatura=n, cod_coligacao=lst_cod_coligacao)[0].nom_coligacao
   return true

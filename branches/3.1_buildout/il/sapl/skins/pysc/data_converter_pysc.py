@@ -8,7 +8,7 @@
 ##title=
 ##
 """
-  Função: Converter a data do formato DD/MM/AAAA para
+  FunÃ§Ã£o: Converter a data do formato DD/MM/AAAA para
           o formato AAAA/MM/DD, utilizado para gravar 
           no formato aceito pelo banco de dados.
   

@@ -7,7 +7,7 @@
 ##parameters=tip_causa_fim_afastamento
 ##title=
 ##
-'''Esse script tem como finalidade retornar a descrição do tipo de causa fim mandato''' 
+'''Esse script tem como finalidade retornar a descriÃ§Ã£o do tipo de causa fim mandato''' 
 ##
 des_dispositivo=""
 if str(tip_causa_fim_afastamento)==" ":

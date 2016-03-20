@@ -8,7 +8,7 @@
 ##title=
 ##
 
-# atualiza indicaÁ„o de documento em tramitaÁ„o (sim ou n„o)
+# atualiza indica√ß√£o de documento em tramita√ß√£o (sim ou n√£o)
 
 # obtem ind_fim_tramitacao ou ind_retorno_tramitacao
 status=context.zsql.status_tramitacao_administrativo_obter_zsql(cod_status=cod_status)[0]
