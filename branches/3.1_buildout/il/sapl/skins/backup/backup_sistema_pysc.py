@@ -12,7 +12,7 @@ response=request.RESPONSE
 session= request.SESSION
 nome="bkpbancosapl"
 
-# Faz o backup e exporta o produto como 'sapl.zexp', no diretório 'var' do Zope
+# Faz o backup e exporta o produto como 'sapl.zexp', no diretÃ³rio 'var' do Zope
 context.sapl.manage_exportObject()
 
 #coloca o sapl.zexp no /tmp do zope
