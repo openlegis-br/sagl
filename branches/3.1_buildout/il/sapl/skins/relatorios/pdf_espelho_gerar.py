@@ -1,10 +1,10 @@
 ##parameters=sessao,imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtro
 
 """relatorio_materia.py
-   External method para gerar o arquivo rml do resultado de uma pesquisa de matÈrias
+   External method para gerar o arquivo rml do resultado de uma pesquisa de mat√©rias
    Autor: Leandro Gasparotto Valladares
    Empresa: Interlegis
-   vers„o: 1.0
+   vers√£o: 1.0
 """
 from trml2pdf import parseString
 from cStringIO import StringIO
@@ -81,7 +81,7 @@ def materias(lst_materias):
 			tmp_data+='\t\t<para style="P2">\n'
 			tmp_data+='\t\t\t<font color="white"> </font>\n'
 			tmp_data+='\t\t</para>\n'
-			tmp_data+='\t\t<para style="P2"><b>INDICA«√O:</b> ' + dic['materia'] + '</para>\n'
+			tmp_data+='\t\t<para style="P2"><b>INDICA√á√ÉO:</b> ' + dic['materia'] + '</para>\n'
 			tmp_data+='\t\t<para style="P2">\n'
                         tmp_data+='\t\t\t<font color="white"> </font>\n'
                         tmp_data+='\t\t</para>\n'
@@ -144,7 +144,7 @@ def principal(sessao,imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtr
             context.temp_folder.manage_delObjects(ids=arquivoPdf)
         context.temp_folder.manage_addFile(arquivoPdf)
         arq=context.temp_folder[arquivoPdf]
-        arq.manage_edit(title='Arquivo PDF tempor·rio.',filedata=tmp_pdf,content_type='application/pdf')
+        arq.manage_edit(title='Arquivo PDF tempor√°rio.',filedata=tmp_pdf,content_type='application/pdf')
 
         return "/temp_folder/"+arquivoPdf
 

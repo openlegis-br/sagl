@@ -6,7 +6,7 @@ session= request.SESSION
 
 data=DateTime().strftime('%d/%m/%Y')
 
-#Abaixo È gerada a string para o rodapÈ da p·gina
+#Abaixo √© gerada a string para o rodap√© da p√°gina
 casa={}
 aux=context.sapl_documentos.props_sapl.propertyItems()
 for item in aux:
@@ -36,7 +36,7 @@ if casa["end_email_casa"]!="" and casa["end_email_casa"]!=None:
 data_emissao=DateTime().strftime("%d/%m/%Y")
 rodape=[linha1,linha2,data_emissao]
 
-#Por fim, gera-se as entradas para o cabeÁalho
+#Por fim, gera-se as entradas para o cabe√ßalho
 estados=context.zsql.localidade_obter_zsql(tip_localidade="u")
 for uf in estados:
  if localidade[0].sgl_uf==uf.sgl_uf:
@@ -60,7 +60,7 @@ if REQUEST.txt_check=='1':
   REQUEST=context.REQUEST
   for materia in context.zsql.materia_obter_zsql(cod_materia=cod_mat):
         dic={}
-	dic['titulo']="INDICA√á√ÉO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
+	dic['titulo']="INDICA√É¬á√É¬ÉO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
 	dic['materia']=str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
 	dic['dat_apresentacao']=materia.dat_apresentacao
 	dic['txt_ementa']=materia.txt_ementa
@@ -104,7 +104,7 @@ if REQUEST.txt_check=='1':
         dic['ultima_acao']=txt_tramitacao
         dic['data_ultima_acao']=data_ultima_acao
 
-        dic['norma_juridica_vinculada'] = "N„o h· nenhuma norma jurÌdica vinculada"
+        dic['norma_juridica_vinculada'] = "N√£o h√° nenhuma norma jur√≠dica vinculada"
         for norma in context.zsql.materia_buscar_norma_juridica_zsql(cod_materia=materia.cod_materia):
             dic['norma_juridica_vinculada']=norma.des_norma+" "+str(norma.num_norma)+"/"+str(norma.ano_norma)
 
@@ -117,7 +117,7 @@ else:
   for cod_mat in codigo:
    for materia in context.zsql.materia_obter_zsql(cod_materia=cod_mat):
         dic={}
-	dic['titulo']="INDICA√á√ÉO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
+	dic['titulo']="INDICA√É¬á√É¬ÉO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
         dic['materia']=str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
         dic['dat_apresentacao']=materia.dat_apresentacao
         dic['txt_ementa']=materia.txt_ementa
@@ -161,15 +161,15 @@ else:
         dic['ultima_acao']=txt_tramitacao
 	dic['data_ultima_acao']=data_ultima_acao
 
-	dic['norma_juridica_vinculada'] = "N„o h· nenhuma norma jurÌdica vinculada"
+	dic['norma_juridica_vinculada'] = "N√£o h√° nenhuma norma jur√≠dica vinculada"
 	for norma in context.zsql.materia_buscar_norma_juridica_zsql(cod_materia=materia.cod_materia):
 	    dic['norma_juridica_vinculada']=norma.des_norma+" "+str(norma.num_norma)+"/"+str(norma.ano_norma)
 
         materias.append(dic)
 
-filtro={} # Dicion·rio que conter· os dados do filtro
+filtro={} # Dicion√°rio que conter√° os dados do filtro
 
-# AtribuiÁıes diretas do REQUEST
+# Atribui√ß√µes diretas do REQUEST
 #filtro['data_apres']=REQUEST.data
 
 #filtro['tipo_materia']=''
@@ -185,7 +185,7 @@ filtro={} # Dicion·rio que conter· os dados do filtro
 #if REQUEST.rad_tramitando=='1':
 #    filtro['tramitacao']='Sim'
 #elif REQUEST['rad_tramitando']=='0':
-#    filtro['tramitacao']='N„o'
+#    filtro['tramitacao']='N√£o'
 
 #filtro['situacao_atual']=''
 #if REQUEST.lst_status!='':
