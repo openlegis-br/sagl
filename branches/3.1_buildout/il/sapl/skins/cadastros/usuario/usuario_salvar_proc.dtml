@@ -6,27 +6,83 @@
 <dtml-call expr="REQUEST.set('roles', roles)">
 </dtml-comment>
 
-<dtml-if atualizar>
-  <dtml-call expr="REQUEST.set('metodo', acl_users.manage_users('Change', REQUEST))">
-<dtml-else>
-  <dtml-call expr="REQUEST.set('roles', roles+['Alterar Senha'])">
-</dtml-if> 
-
-<dtml-call expr="REQUEST.set('metodo', acl_users.manage_users('Add', REQUEST))">
-
-<dtml-if expr="(name == AUTHENTICATED_USER.getUserName()) and (roles == ['Operador'])">
-  <dtml-call expr="REQUEST.set('url', portal_url() + '/index_html')">
-<dtml-else>
-  <dtml-call expr="REQUEST.set('url', 'index_html')">
+<dtml-call expr="REQUEST.set('cod_localidade_resid', '')">
+<dtml-if expr="txt_municipio!='' and lst_sgl_uf!=''">
+  <dtml-in expr="zsql.localidade_obter_zsql(sgl_uf = lst_sgl_uf, tip_localidade='M', nom_localidade_pesq=txt_municipio)">
+     <dtml-call expr="REQUEST.set('cod_localidade_resid', cod_localidade)">
+  <dtml-else>
+     <dtml-let mensagem="'A localidade especificada não existe.'">
+          <dtml-var mensagem_emitir>
+     </dtml-let>
+     <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-in>
 </dtml-if>
 
-<dtml-if expr="metodo">
-  <dtml-let mensagem="'O usuário foi salvo com sucesso.'" sucesso="1" url=url>
-    <dtml-var mensagem_emitir>
-  </dtml-let>
-<dtml-else>
-  <dtml-let mensagem="'Não foi possível salvar o usuario. Tente novamente!'">
-    <dtml-var mensagem_emitir>
-  </dtml-let>
-</dtml-if>
+<dtml-unless hdn_cod_usuario>
+    <dtml-if expr="zsql.usuario_obter_zsql(num_cpf=txt_num_cpf)">
+       <dtml-let mensagem="'Já existe um usuário com este CPF.'">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+       <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-if>
+</dtml-unless>
 
+<dtml-unless erro>
+<dtml-if hdn_cod_usuario>
+  <dtml-call expr="REQUEST.set('metodo_usuario', zsql.usuario_atualizar_zsql)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo_usuario', zsql.usuario_incluir_zsql)">
+</dtml-if>
+<dtml-try>
+  <dtml-call expr="metodo_usuario(  
+        cod_usuario = hdn_cod_usuario,
+        col_username = txt_nome,   
+        nom_completo = txt_nom_completo,
+        dat_nascimento = pysc.data_converter_pysc(data=txt_dat_nascimento),
+        num_cpf = txt_num_cpf,
+        num_rg = txt_num_rg,
+        num_tit_eleitor = txt_num_tit_eleitor,
+        end_residencial = txt_end_residencial,
+        cod_localidade_resid = cod_localidade_resid,
+        num_cep_resid = txt_num_cep_resid,
+        num_tel_resid = txt_num_tel_resid,
+        num_tel_celular = txt_num_tel_celular,
+        end_email = txt_end_email,
+        nom_cargo = txt_nom_cargo,
+        num_tel_comercial = txt_num_tel_comercial,
+        num_ramal = txt_num_ramal,
+        txt_observacao = txa_txt_observacao
+  )">
+<dtml-except>
+    <dtml-let mensagem="'Houve um erro no banco de dados.'">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+<dtml-else>
+   <dtml-if expr="(metodo_usuario==zsql.usuario_incluir_zsql)">
+      <dtml-in expr="zsql.usuario_incluido_codigo_obter_zsql()">
+          <dtml-call expr="REQUEST.set('hdn_cod_usuario', _.str(_.int(cod_usuario)))">
+      </dtml-in>
+   </dtml-if>
+   <dtml-call expr="pysc.usuario_unid_tram_vincular_pysc(cod_usuario=hdn_cod_usuario,cod_unid_tramitacao=lst_cod_unid_tramitacao)">
+   <dtml-if expr="(name == AUTHENTICATED_USER.getUserName()) and (roles == ['Operador'])">
+     <dtml-call expr="REQUEST.set('url', portal_url() + '/index_html')">
+   <dtml-else>
+     <dtml-call expr="REQUEST.set('url', 'index_html')">
+   </dtml-if>
+   <dtml-if atualizar>
+     <dtml-call expr="REQUEST.set('metodo', acl_users.manage_users('Change', REQUEST))">
+   <dtml-else>
+     <dtml-call expr="REQUEST.set('metodo', acl_users.manage_users('Add', REQUEST))">
+     <dtml-call expr="REQUEST.set('roles', roles+['Alterar Senha'])">
+   </dtml-if>
+   <dtml-if expr="metodo">
+     <dtml-let mensagem="'O usuário foi salvo com sucesso.'" sucesso="1" url=url>
+       <dtml-var mensagem_emitir>
+     </dtml-let>
+   <dtml-else>
+     <dtml-let mensagem="'Não foi possível salvar o usuario. Tente novamente!'">
+       <dtml-var mensagem_emitir>
+     </dtml-let>
+   </dtml-if>
+</dtml-try>
+</dtml-unless>
