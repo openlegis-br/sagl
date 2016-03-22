@@ -25,7 +25,6 @@ setup(name='il.sapl',
       install_requires=[
           'setuptools',
           'Pillow',
-          'Products.SecureMailHost',
           'Products.CMFActionIcons',
           'Products.CMFCalendar',
           'Products.CMFCore',
