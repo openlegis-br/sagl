@@ -2528,8 +2528,11 @@ CREATE TABLE `tramitacao` (
   `cod_materia` int(11) NOT NULL,
   `dat_tramitacao` date DEFAULT NULL,
   `cod_unid_tram_local` int(11) DEFAULT NULL,
-  `dat_encaminha` date DEFAULT NULL,
+  `cod_usuario_local` int(11) DEFAULT NULL,
+  `dat_encaminha` datetime DEFAULT NULL,
   `cod_unid_tram_dest` int(11) DEFAULT NULL,
+  `cod_usuario_dest` int(11) DEFAULT NULL,
+  `dat_recebimento` datetime DEFAULT NULL,
   `ind_ult_tramitacao` tinyint(4) NOT NULL,
   `ind_urgencia` tinyint(4) NOT NULL,
   `sgl_turno` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -2542,19 +2545,25 @@ CREATE TABLE `tramitacao` (
   KEY `cod_status` (`cod_status`),
   KEY `cod_materia` (`cod_materia`),
   KEY `idx_tramit_ultmat` (`ind_ult_tramitacao`,`dat_tramitacao`,`cod_materia`,`ind_excluido`),
-  KEY `sgl_turno` (`sgl_turno`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+  KEY `sgl_turno` (`sgl_turno`),
+  KEY `cod_usuario_local` (`cod_usuario_local`),
+  KEY `cod_usuario_dest` (`cod_usuario_dest`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
 -- RELACIONAMENTOS PARA A TABELA `tramitacao`:
---   `cod_status`
---       `status_tramitacao` -> `cod_status`
 --   `cod_materia`
 --       `materia_legislativa` -> `cod_materia`
---   `cod_unid_tram_local`
---       `unidade_tramitacao` -> `cod_unid_tramitacao`
+--   `cod_status`
+--       `status_tramitacao` -> `cod_status`
 --   `cod_unid_tram_dest`
 --       `unidade_tramitacao` -> `cod_unid_tramitacao`
+--   `cod_unid_tram_local`
+--       `unidade_tramitacao` -> `cod_unid_tramitacao`
+--   `cod_usuario_dest`
+--       `usuario` -> `cod_usuario`
+--   `cod_usuario_local`
+--       `usuario` -> `cod_usuario`
 --
 
 -- --------------------------------------------------------
@@ -2568,8 +2577,11 @@ CREATE TABLE `tramitacao_administrativo` (
   `cod_documento` int(11) NOT NULL DEFAULT '0',
   `dat_tramitacao` date DEFAULT NULL,
   `cod_unid_tram_local` int(11) DEFAULT NULL,
-  `dat_encaminha` date DEFAULT NULL,
+  `cod_usuario_local` int(11) DEFAULT NULL,
+  `dat_encaminha` datetime DEFAULT NULL,
   `cod_unid_tram_dest` int(11) DEFAULT NULL,
+  `cod_usuario_dest` int(11) DEFAULT NULL,
+  `dat_recebimento` datetime DEFAULT NULL,
   `cod_status` int(11) DEFAULT NULL,
   `ind_ult_tramitacao` tinyint(4) NOT NULL DEFAULT '0',
   `txt_tramitacao` text COLLATE utf8_unicode_ci,
@@ -2580,19 +2592,23 @@ CREATE TABLE `tramitacao_administrativo` (
   KEY `tramitacao_ind1` (`ind_ult_tramitacao`),
   KEY `cod_unid_tram_local` (`cod_unid_tram_local`),
   KEY `cod_status` (`cod_status`),
-  KEY `cod_documento` (`cod_documento`)
+  KEY `cod_documento` (`cod_documento`),
+  KEY `cod_usuario_local` (`cod_usuario_local`),
+  KEY `cod_usuario_dest` (`cod_usuario_dest`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
 --
 -- RELACIONAMENTOS PARA A TABELA `tramitacao_administrativo`:
 --   `cod_documento`
 --       `documento_administrativo` -> `cod_documento`
---   `cod_unid_tram_local`
---       `unidade_tramitacao` -> `cod_unid_tramitacao`
---   `cod_unid_tram_dest`
---       `unidade_tramitacao` -> `cod_unid_tramitacao`
 --   `cod_status`
 --       `status_tramitacao_administrativo` -> `cod_status`
+--   `cod_unid_tram_dest`
+--       `unidade_tramitacao` -> `cod_unid_tramitacao`
+--   `cod_unid_tram_local`
+--       `unidade_tramitacao` -> `cod_unid_tramitacao`
+--   `cod_usuario_local`
+--       `usuario` -> `cod_usuario`
 --
 
 -- --------------------------------------------------------

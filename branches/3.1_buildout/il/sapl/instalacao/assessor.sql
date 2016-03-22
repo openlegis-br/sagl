@@ -520,3 +520,23 @@ ALTER TABLE  `status_tramitacao` ADD  `num_dias_prazo` TINYINT( 4 ) NULL DEFAULT
 
 ALTER TABLE  `status_tramitacao_administrativo` ADD  `num_dias_prazo` TINYINT( 4 ) NULL DEFAULT NULL AFTER  `ind_retorno_tramitacao` ;
 
+ALTER TABLE  `tramitacao` ADD  `cod_usuario_local` INT( 11 ) NULL DEFAULT NULL AFTER  `cod_unid_tram_local` ,
+ADD INDEX (  `cod_usuario_local` ) ;
+
+ALTER TABLE  `tramitacao` ADD  `cod_usuario_dest` INT( 11 ) NULL DEFAULT NULL AFTER  `cod_unid_tram_dest` ,
+ADD INDEX (  `cod_usuario_dest` ) ;
+
+ALTER TABLE  `tramitacao` CHANGE  `dat_encaminha`  `dat_encaminha` DATETIME NULL DEFAULT NULL ;
+
+ALTER TABLE  `tramitacao` ADD  `dat_recebimento` DATETIME NULL DEFAULT NULL AFTER  `cod_usuario_dest` ;
+
+ALTER TABLE  `tramitacao_administrativo` ADD  `cod_usuario_local` INT( 11 ) NULL DEFAULT NULL AFTER  `cod_unid_tram_local` ,
+ADD INDEX (  `cod_usuario_local` ) ;
+
+ALTER TABLE  `tramitacao_administrativo` ADD  `cod_usuario_dest` INT( 11 ) NULL DEFAULT NULL AFTER  `cod_unid_tram_dest` ,
+ADD INDEX (  `cod_usuario_dest` ) ;
+
+ALTER TABLE  `tramitacao_administrativo` CHANGE  `dat_encaminha`  `dat_encaminha` DATETIME NULL DEFAULT NULL ;
+
+ALTER TABLE  `tramitacao_administrativo` ADD  `dat_recebimento` DATETIME NULL DEFAULT NULL AFTER  `cod_usuario_dest` ;
+
