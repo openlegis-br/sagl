@@ -1,17 +1,19 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_tramitacao="" cod_materia="" ind_ult_tramitacao="" cod_unid_tram_origem="" cod_unid_tram_destino="" cod_status="" ind_excluido=0
+arguments : cod_tramitacao="" cod_materia="" ind_ult_tramitacao="" cod_unid_tram_origem="" cod_usuario_local="" cod_unid_tram_destino="" cod_usuario_dest="" cod_status="" ind_excluido=0
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
-<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
 SELECT 
        REPLACE(tramitacao.cod_tramitacao, 'L', '') as cod_tramitacao,
        REPLACE(tramitacao.cod_materia, 'L', '') as cod_materia,
        DATE_FORMAT(tramitacao.dat_tramitacao, '%d/%m/%Y') as dat_tramitacao,
        REPLACE(tramitacao.cod_unid_tram_local, 'L', '') as cod_unid_tram_local,
+       REPLACE(tramitacao.cod_usuario_local, 'L', '') as cod_usuario_local,
        DATE_FORMAT(tramitacao.dat_encaminha, '%d/%m/%Y') as dat_encaminha,
        REPLACE(tramitacao.cod_unid_tram_dest, 'L', '') as cod_unid_tram_dest,
+       DATE_FORMAT(tramitacao.dat_recebimento, '%d/%m/%Y') as dat_recebimento,
+       REPLACE(tramitacao.cod_usuario_dest, 'L', '') as cod_usuario_dest,
        REPLACE(tramitacao.cod_status, 'L', '') as cod_status,
        tramitacao.ind_urgencia,
        tramitacao.sgl_turno,
@@ -30,52 +32,15 @@ FROM
        tramitacao.cod_unid_tram_dest = unidade2.cod_unid_tramitacao          
        
   <dtml-sqlgroup where>
-    <dtml-sqltest cod_tramitacao op="=" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_materia    op="=" type="int" optional> <dtml-and>
-    <dtml-sqltest ind_ult_tramitacao op="=" column="ind_ult_tramitacao" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_unid_tram_origem op="=" column="tramitacao.cod_unid_tram_local" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_unid_tram_destino op="=" column="tramitacao.cod_unid_tram_dest" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_status    op="=" column="tramitacao.cod_status" type="int" optional> <dtml-and>
-    <dtml-sqltest ind_excluido   op="=" column="tramitacao.ind_excluido" type="int" optional>
+    <dtml-sqltest cod_tramitacao        op="="                                         type="int" optional> <dtml-and>
+    <dtml-sqltest cod_materia           op="="                                         type="int" optional> <dtml-and>
+    <dtml-sqltest ind_ult_tramitacao    op="=" column="tramitacao.ind_ult_tramitacao"   type="int" optional> <dtml-and>
+    <dtml-sqltest cod_unid_tram_origem  op="=" column="tramitacao.cod_unid_tram_local" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_usuario_local     op="=" column="tramitacao.cod_usuario_local"   type="int" optional> <dtml-and>
+    <dtml-sqltest cod_unid_tram_destino op="=" column="tramitacao.cod_unid_tram_dest"  type="int" optional> <dtml-and>
+    <dtml-sqltest cod_usuario_dest      op="=" column="tramitacao.cod_usuario_dest"    type="int" optional> <dtml-and>
+    <dtml-sqltest cod_status            op="=" column="tramitacao.cod_status"          type="int" optional> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="tramitacao.ind_excluido"        type="int" optional>
   </dtml-sqlgroup>
 
 ORDER BY tramitacao.cod_materia DESC, tramitacao.dat_tramitacao DESC, tramitacao.cod_tramitacao DESC
-
-<dtml-else>
-
-SELECT 
-       tramitacao.cod_tramitacao as cod_tramitacao,
-       tramitacao.cod_materia as cod_materia,
-       TO_CHAR(tramitacao.dat_tramitacao, 'DD/MM/YYYY') as dat_tramitacao,
-       tramitacao.cod_unid_tram_local as cod_unid_tram_local,
-       TO_CHAR(tramitacao.dat_encaminha, 'DD/MM/YYYY') as dat_encaminha,
-       tramitacao.cod_unid_tram_dest as cod_unid_tram_dest,
-       tramitacao.cod_status as cod_status,
-       tramitacao.ind_urgencia,
-       tramitacao.sgl_turno,
-       tramitacao.txt_tramitacao,       
-       TO_CHAR(tramitacao.dat_fim_prazo, 'DD/MM/YYYY') as dat_fim_prazo,
-       tramitacao.ind_ult_tramitacao, 
-       status.sgl_status,
-       status.des_status       
-FROM   
-     tramitacao 
-       LEFT JOIN status_tramitacao as status ON 
-       tramitacao.cod_status = status.cod_status 
-       LEFT JOIN unidade_tramitacao as unidade1 ON
-       tramitacao.cod_unid_tram_local = unidade1.cod_unid_tramitacao 
-       LEFT JOIN unidade_tramitacao as unidade2 ON
-       tramitacao.cod_unid_tram_dest = unidade2.cod_unid_tramitacao          
-       
-  <dtml-sqlgroup where>
-    <dtml-sqltest cod_tramitacao op="=" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_materia    op="=" type="int" optional> <dtml-and>
-    <dtml-sqltest ind_ult_tramitacao op="=" column="ind_ult_tramitacao" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_unid_tram_origem op="=" column="tramitacao.cod_unid_tram_local" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_unid_tram_destino op="=" column="tramitacao.cod_unid_tram_dest" type="int" optional> <dtml-and>
-    <dtml-sqltest ind_excluido   op="=" column="tramitacao.ind_excluido" type="int" optional>
-  </dtml-sqlgroup>
-
-ORDER BY tramitacao.cod_materia DESC, tramitacao.dat_tramitacao DESC, tramitacao.cod_tramitacao DESC
-
-</dtml-if>
