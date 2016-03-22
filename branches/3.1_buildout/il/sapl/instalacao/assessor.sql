@@ -516,4 +516,7 @@ CREATE TABLE `usuario_unid_tram` (
   KEY `idx_unid_tramitacao` (`cod_unid_tramitacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+ALTER TABLE  `status_tramitacao` ADD  `num_dias_prazo` TINYINT( 4 ) NULL DEFAULT NULL AFTER  `ind_retorno_tramitacao` ;
+
+ALTER TABLE  `status_tramitacao_administrativo` ADD  `num_dias_prazo` TINYINT( 4 ) NULL DEFAULT NULL AFTER  `ind_retorno_tramitacao` ;
 
