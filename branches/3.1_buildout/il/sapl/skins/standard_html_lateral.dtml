@@ -51,7 +51,7 @@
   </ul>
   </dtml-if>
 
-<dtml-comment>###### MENU PROCESSO ELETRÔNICO #######</dtml-comment>
+<dtml-comment>###### MENU PROPOSIÇÃO ELETRÔNICA #######</dtml-comment>
   <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Operador', 'Operador Materia'])">
   <script>
   $(function() {
@@ -61,7 +61,7 @@
   });
   </script>
   <ul id="processo">
-       <li class="ui-widget-header">Processo Eletrônico</li>
+       <li class="ui-widget-header">Proposição Eletrônica</li>
           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
             <li><span class="ui-icon ui-icon-transferthick-e-w"></span><a href="<dtml-var diretorio>recebimento_proposicao">Receber Proposições</a></li>
             <li><span class="ui-icon ui-icon-key"></span><a href="&dtml-portal_url;/generico/proposicao_validar">Validar Proposição</a></li>
@@ -76,6 +76,53 @@
           </dtml-if>
        </li>
   </ul>
+</dtml-if>
+
+<dtml-comment>###### MENU TRAMITAÇÃO DE MATÉRIAS #######</dtml-comment>
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
+  <script>
+  $(function() {
+    $( "#tram-materias" ).menu({
+      items: "> :not(.ui-widget-header)"
+    });
+  });
+  </script>
+  <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
+    <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+       <dtml-if cod_usuario>
+         <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+       </dtml-if>
+    </dtml-in>
+    <dtml-if cod_usuario_corrente>
+      <ul id="tram-materias">
+         <li class="ui-widget-header">Tramitação de Matérias</li>
+         <li><span class="ui-icon ui-icon-arrowthickstop-1-s"></span><a href="<dtml-var diretorio>tramitacao_materia/caixa_entrada_html">Caixa de Entrada
+              <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_dest=cod_usuario_corrente,ind_pendente=1,ind_ult_tramitacao=1,ind_retorno_tramitacao=1)" size="1">
+                <dtml-call expr="REQUEST.set('qtde_inbox', _['sequence-length'])">
+                  <b>(<dtml-var qtde_inbox>)</b>
+              </dtml-in></a>
+         </li>
+         <li><span class="ui-icon ui-icon-pencil"></span><a href="<dtml-var diretorio>tramitacao_materia/rascunhos_html">Rascunhos
+              <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_local=cod_usuario_corrente,ind_ult_tramitacao=1,ind_rascunho=1)" size="1">
+              <dtml-call expr="REQUEST.set('qtde', _['sequence-length'])">
+                   <b>(<dtml-var qtde>)</b>
+              </dtml-in></a>
+         </li>
+         <li><span class="ui-icon ui-icon-arrowthickstop-1-n"></span><a href="<dtml-var diretorio>tramitacao_materia/caixa_saida_html">Caixa de Saída
+              <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_local=cod_usuario_corrente,ind_ult_tramitacao=1,ind_rascunho=0,ind_pendente=1)" size="1">
+              <dtml-call expr="REQUEST.set('qtde', _['sequence-length'])">
+                   <b>(<dtml-var qtde>)</b>
+              </dtml-in></a>
+         </li>
+         <li><span class="ui-icon ui-icon-check"></span><a href="<dtml-var diretorio>tramitacao_materia/itens_enviados_html">Itens Enviados
+              <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_local=cod_usuario_corrente,ind_pendente=0)" size="1">
+              <dtml-call expr="REQUEST.set('qtde', _['sequence-length'])">
+                   <b>(<dtml-var qtde>)</b>
+              </dtml-in></a>
+         </li>
+      </ul>
+    </dtml-if>
+  </dtml-if>
 </dtml-if>
 
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor'])">
@@ -284,7 +331,7 @@
        <li><span class="ui-icon ui-icon-person"></span><a href="<dtml-var diretorio>parlamentar">Parlamentares</a></li>
   </ul>
   <ul id="processo">
-       <li class="ui-widget-header">Processo Eletrônico</li>
+       <li class="ui-widget-header">Proposição Eletrônica</li>
        <li><span class="ui-icon ui-icon-locked"></span><a href="&dtml-portal_url;/consultas/proposicao">Validar Proposição</a></li>
   </ul>
 <dtml-if expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">

@@ -256,34 +256,6 @@ $(document).ready(function() {
 <fieldset>
 <legend>Outras Informações</legend>
   <table>
-  <dtml-if expr="num_dias_prazo or dat_fim_prazo or dat_publicacao">
-    <tr>
-       <th width="20%" class="form-label">Dias Prazo: </th>
-       <td class="texto">
-	<dtml-if num_dias_prazo>  
-         <dtml-var num_dias_prazo missing null="">
-        <dtml-else>
-          -
-	</dtml-if> 
-       </td>
-       <td class="form-label">Data Fim Prazo: </td>
-       <td class="texto">
-	<dtml-if dat_fim_prazo> 
-           <dtml-var dat_fim_prazo missing null="">
-        <dtml-else>
-          -
-	</dtml-if>
-       </td>  
-       <td class="form-label"><b>Data Publicação: </td>
-       <td class="texto">
-	<dtml-if dat_publicacao> 
-         <dtml-var dat_publicacao missing null="">
-        <dtml-else>
-          -
-        </dtml-if>
-       </td> 
-    </tr>
-  </dtml-if>
         <tr>
           <th width="20%" class="form-label" width="25%">Em Tramitação?</th>
           <td class="texto">
@@ -293,24 +265,47 @@ $(document).ready(function() {
               Não
             </dtml-if>
           </td>
-          <td class="form-label" width="25%"><b>Regime Tramitação:</b></th>
-          <td colspan="3" class="texto">
+          <td colspan="2" class="texto"><b>Regime Tramitação:</b>
             <dtml-in expr="zsql.regime_tramitacao_obter_zsql(cod_regime_tramitacao = cod_regime_tramitacao)">
               <dtml-var des_regime_tramitacao missing>
             </dtml-in>
           </td>
         </tr>
+  <dtml-if expr="num_dias_prazo or dat_fim_prazo or dat_publicacao">
+    <tr>
+       <th width="20%" class="form-label">Dias Prazo:</th>
+       <td class="texto">
+	<dtml-if num_dias_prazo>  
+         <dtml-var num_dias_prazo missing null="">
+        <dtml-else>
+          -
+	</dtml-if> 
+       </td>
+       <td class="texto"><b>Data Fim Prazo:</b>
+	<dtml-if dat_fim_prazo> 
+           <dtml-var dat_fim_prazo missing null="">
+        <dtml-else>
+          -
+	</dtml-if>
+       </td>  
+       <td class="texto"><b>Data Publicação:</b>
+	<dtml-if dat_publicacao> 
+         <dtml-var dat_publicacao missing null="">
+        <dtml-else>
+          -
+        </dtml-if>
+       </td> 
+    </tr>
+  </dtml-if>
 <dtml-if expr="tip_origem_externa or num_origem_externa or ano_origem_externa or cod_local_origem_externa or dat_origem_externa">
      <dtml-if expr="tip_origem_externa or num_origem_externa or ano_origem_externa">  
     <tr>
       <th rowspan="2" class="form-label"><b>Origem Externa</b></th> 
-        <dtml-if tip_origem_externa>
          <td class="texto"><b>Tipo: </b>
           <dtml-if tip_origem_externa>
              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_origem_externa)">
               <dtml-var sgl_tipo_materia missing null=""> - <dtml-var des_tipo_materia missing null="">
              </dtml-in>
-           </dtml-if>
          </td>
 	 </dtml-if>
 	 <dtml-if num_origem_externa>
@@ -335,7 +330,7 @@ $(document).ready(function() {
       </td>
       </dtml-if>
       <dtml-if dat_origem_externa>
-      <td colspan="2" class="texto"><b>Data: </b>
+      <td colspan="1" class="texto"><b>Data: </b>
        <dtml-var dat_origem_externa missing null=""></td>
       </dtml-if>
      </tr>
@@ -655,15 +650,24 @@ $(document).ready(function() {
 <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_ult_tramitacao=1)">
     <dtml-if sequence-start>
      <table style="margin-bottom: 1em;">
-      <tr class="even">
+      <tr>
        <th class="form-label" width="20%" colspan="4"><h4>Situação Atual</h4></th>
       </tr>
     </dtml-if>
-      <tr <dtml-if sequence-odd>class="even"</dtml-if>>
-       <th width="20%" class="texto">
+      <tr>
+       <td width="20%" class="texto">
         <b>Data:</b> <dtml-var dat_tramitacao missing null="">
-       </th>
-       <td width="35%" valign="top" class="texto">
+       </td>
+       <td width="35%" class="texto">
+       <dtml-if cod_unid_tram_dest>
+       <b>Destino:</b> 
+       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
+          <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
+          <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
+          <dtml-else><dtml-var nom_parlamentar missing null="">
+          </dtml-if> 
+       </dtml-in><br />
+       </dtml-if>
        <b>Origem:</b>
        <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
           <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
@@ -671,32 +675,17 @@ $(document).ready(function() {
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
        </dtml-in>  
-       <dtml-if cod_unid_tram_dest>
-       <br />
-       <b>Destino:</b> 
-       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
-          <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
-          <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
-          <dtml-else><dtml-var nom_parlamentar missing null="">
-          </dtml-if> 
-       </dtml-in>  
-       </dtml-if>
        </td>
-       <td valign="top" class="texto"><b><dtml-var expr="des_status.upper()" missing null=""></b><br />
+       <td class="texto"><b><dtml-var expr="des_status" missing null=""></b><br />
         <dtml-var expr="txt_tramitacao" missing>
-        <dtml-if sgl_turno>
-          <dtml-in expr="zsql.turno_discussao_obter_zsql(sgl_turno=sgl_turno)">
-                - <b>Turno:</b> <dtml-var des_turno>
-          </dtml-in>
-        </dtml-if>
         <dtml-if dat_fim_prazo>
-          <b>Prazo: </b> <dtml-var dat_fim_prazo>
+          <br /><b>Prazo: </b> <dtml-var dat_fim_prazo>
         </dtml-if>
        </td>
       </tr>
    <dtml-if sequence-end>
      <dtml-if expr="ind_tramitacao==1">
-      <tr>
+      <tr class="even">
        <td colspan="4" class="texto">  
            <dtml-if expr="int(sapl.sapl_documentos.props_sapl.acompanhamento_materia)==1">
               <span style="color:#32682F;font-weight:normal;float:left;text-align:center;width:45%;"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/acomp_email.png">&nbsp;<a href="&dtml-portal_url;/consultas/materia/acompanhamento/acomp_materia_form?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" class="popup" data-fancybox-type="iframe"><b>Acompanhar matéria</a></b>&nbsp;</span>
@@ -720,7 +709,16 @@ $(document).ready(function() {
        <td width="20%" class="texto">
         <b>Data:</b> <dtml-var dat_tramitacao missing null="">
        </th>
-       <td width="35%" valign="top" class="texto">
+       <td width="35%" class="texto">
+       <dtml-if cod_unid_tram_dest>
+       <b>Destino:</b> 
+       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
+          <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
+          <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
+          <dtml-else><dtml-var nom_parlamentar missing null="">
+          </dtml-if> 
+       </dtml-in><br />
+       </dtml-if>
        <b>Origem:</b>
        <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
           <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
@@ -728,24 +726,9 @@ $(document).ready(function() {
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
        </dtml-in>  
-       <dtml-if cod_unid_tram_dest>
-       <br />
-       <b>Destino:</b> 
-       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
-          <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
-          <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
-          <dtml-else><dtml-var nom_parlamentar missing null="">
-          </dtml-if> 
-       </dtml-in>  
-       </dtml-if>
        </td>
-       <td valign="top" class="texto"><dtml-var expr="des_status.upper()" missing null=""><br />
+       <td valign="top" class="texto"><dtml-var expr="des_status" missing null=""><br />
         <dtml-var expr="txt_tramitacao" missing>
-        <dtml-if sgl_turno>
-          <dtml-in expr="zsql.turno_discussao_obter_zsql(sgl_turno=sgl_turno)">
-               - <b>Turno:</b> <dtml-var des_turno>
-          </dtml-in>
-        </dtml-if>
        </td>
       </tr>
     <dtml-if sequence-end>
