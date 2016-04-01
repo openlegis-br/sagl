@@ -52,7 +52,7 @@ if context.REQUEST['data']!='':
             for expediente in context.zsql.expediente_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen,cod_expediente=tip_expediente.cod_expediente, ind_excluido=0):
                 dic_expedientes = {}
                 dic_expedientes["nom_expediente"] = tip_expediente.nom_expediente
-                dic_expedientes["txt_expediente"] = expediente.txt_expediente
+                dic_expedientes["txt_expediente"] = context.modelo_proposicao.xhtml2rml(expediente.txt_expediente,'P2')
 
             if dic_expedientes:
                 lst_expedientes.append(dic_expedientes)
