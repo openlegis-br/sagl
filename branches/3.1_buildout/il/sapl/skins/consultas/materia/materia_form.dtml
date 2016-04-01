@@ -546,7 +546,7 @@ $(document).ready(function() {
                    <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
                      <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
                       <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
-                        <a target="blank" href="<dtml-var proposicao>">
+                        <a target="blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
                           <img align="middle" height="25" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
                           <p style="line-height: 1.3em; font-size:11px"><b>Proposição Eletrônica<br /><dtml-var cod_documento></p>
                         </a>
@@ -557,7 +557,7 @@ $(document).ready(function() {
                 <dtml-let id_emenda="_.str(cod_emenda)+'_emenda.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.emenda,id_emenda)">
                     <dtml-let emenda="_.getattr(sapl_documentos.emenda,id_emenda).absolute_url">
-                      <a target="_blank" href="<dtml-var emenda>"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                      <a target="_blank" href="<dtml-var emenda>?<dtml-var expr="ZopeTime().timeTime()">"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
                     </dtml-let>
                   </dtml-if>
                 </dtml-let>
@@ -613,7 +613,7 @@ $(document).ready(function() {
                    <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
                      <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
                       <dtml-call expr="REQUEST.set('cod_doc',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
-                        <a target="blank" href="<dtml-var proposicao>">
+                        <a target="blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
                           <img align="middle" height="25" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
                           <p style="line-height: 1.3em; font-size:11px"><b>Proposição Eletrônica<br /><dtml-var cod_doc></p>
                         </a>
@@ -625,7 +625,7 @@ $(document).ready(function() {
       <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
       <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
          <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-           <a target="_blank" href="<dtml-var documento>">
+           <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
              <img align=middle border=0 src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral"></a>
          </dtml-let>
       </dtml-if>
@@ -674,13 +674,32 @@ $(document).ready(function() {
           <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
-       </dtml-in>  
+       </dtml-in>
        </td>
-       <td class="texto"><b><dtml-var expr="des_status" missing null=""></b><br />
-        <dtml-var expr="txt_tramitacao" missing>
+       <td class="texto"><b><dtml-var expr="des_status" missing null=""></b>
+        <dtml-if txt_tramitacao>
+          <br /><dtml-var expr="txt_tramitacao" missing>
+        </dtml-if>
         <dtml-if dat_fim_prazo>
           <br /><b>Prazo: </b> <dtml-var dat_fim_prazo>
         </dtml-if>
+        <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+        <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+
+        <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+           <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+             <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+               <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                 <img align="top" style="float: right;margin-top:-10px;margin-right: 4px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF"></a>
+             </dtml-let>
+           </dtml-if>
+           <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+             <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
+               <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                  <img height="22" style="float: right;margin-top:-10px;margin-right: 4px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada"></a>
+             </dtml-let>
+           </dtml-if>
+        </dtml-if> 
        </td>
       </tr>
    <dtml-if sequence-end>
@@ -708,7 +727,7 @@ $(document).ready(function() {
       <tr <dtml-if sequence-odd>class="even"</dtml-if>>
        <td width="20%" class="texto">
         <b>Data:</b> <dtml-var dat_tramitacao missing null="">
-       </th>
+       </td>
        <td width="35%" class="texto">
        <dtml-if cod_unid_tram_dest>
        <b>Destino:</b> 
@@ -727,8 +746,27 @@ $(document).ready(function() {
           </dtml-if> 
        </dtml-in>  
        </td>
-       <td valign="top" class="texto"><dtml-var expr="des_status" missing null=""><br />
-        <dtml-var expr="txt_tramitacao" missing>
+       <td valign="top" class="texto"><dtml-var expr="des_status" missing null="">
+        <dtml-if txt_tramitacao>
+          <br /><dtml-var expr="txt_tramitacao" missing>
+        </dtml-if>
+        <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+        <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+
+        <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+           <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+             <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+               <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                 <img align="top" style="float: right;margin-top:-10px;margin-right: 4px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF"></a>
+             </dtml-let>
+           </dtml-if>
+           <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+             <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
+               <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                  <img height="22" style="float: right;margin-top:-10px;margin-right: 4px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada"></a>
+             </dtml-let>
+           </dtml-if>
+        </dtml-if> 
        </td>
       </tr>
     <dtml-if sequence-end>

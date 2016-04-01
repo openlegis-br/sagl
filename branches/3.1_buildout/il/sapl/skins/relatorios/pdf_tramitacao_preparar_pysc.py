@@ -1,3 +1,12 @@
+## Script (Python) "pdf_tramitaao_preparar_pysc"
+##bind container=container
+##bind context=context
+##bind namespace=
+##bind script=script
+##bind subpath=traverse_subpath
+##parameters=hdn_cod_tramitacao
+##title=
+##
 import os
 
 request=context.REQUEST
@@ -35,11 +44,11 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
   rodape['nom_localidade']= "   "+local.nom_localidade
   rodape['sgl_uf']= local.sgl_uf
 
-cod_tramitacao=REQUEST['hdn_cod_tramitacao']
+cod_tramitacao=hdn_cod_tramitacao
 
 tramitacao_dic = {}
 #obtém os dados da tramitação
-for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=REQUEST['hdn_cod_tramitacao']):
+for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tramitacao):
   tramitacao_dic['dat_tramitacao'] = tramitacao.dat_tramitacao
   tramitacao_dic['dat_extenso'] = context.pysc.data_converter_por_extenso_pysc(data=tramitacao.dat_tramitacao)
   tramitacao_dic['dat_encaminha'] = tramitacao.dat_encaminha

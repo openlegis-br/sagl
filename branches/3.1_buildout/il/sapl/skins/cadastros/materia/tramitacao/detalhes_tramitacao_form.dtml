@@ -135,6 +135,26 @@ $(function() {
 });
 </script>
 
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup1").fancybox({
+		maxWidth	: 1024,
+		maxHeight	: 800,
+		fitToView	: false,
+		width		: '95%',
+		height		: '93%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<dtml-call expr="REQUEST.set('cod_tramitacao', int(hdn_cod_tramitacao))">
+
 <a id="ajuda" href="&dtml-portal_url;/ajuda/tramitacao_relatoria">Ajuda</a>
 <h1 class="firstHeading">Matéria Legislativa</h1>
 
@@ -223,8 +243,51 @@ $(function() {
               <span class="texto"><dtml-var sequence-item></span>
             </dtml-in>
        </td>
-            </tr>
+      </tr>
+
+      <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+      <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
          <tr>
+           <td class="form-element">
+                Texto PDF
+           </td>
+           <td valign="top" class="form-element" colspan="2">
+                 <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+                   <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+                     <a class="popup1" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                       <img align="top" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF">
+                     <dtml-if expr="int(cod_usuario_corrente)==int(cod_usuario_local)" >
+                       </a><div class="assinar-pdf" style="cursor: pointer; float:left; padding-right: 4px;"><a class="botao">Assinar Digitalmente</a></div>
+                     </dtml-if>
+                   </dtml-let>
+			         <script type="text/javascript">
+			           $('.assinar-pdf').click(function () {
+    			           $.fancybox({
+        			   type: 'iframe',
+        			   href: 'assinador/tramitacao-signature_html?cod_tramitacao=<dtml-var cod_tramitacao>',
+				   width	   : '70%',
+				   height	   : '50%',
+                                   minHeight	   : 320,
+        			   preload         : true,
+                                   afterClose      : function() {
+                                     window.location.href = "tramitacao_mostrar_proc?cod_tramitacao=<dtml-var cod_tramitacao>";},
+		                   closeEffect	: 'fade'
+    			           });
+			           });
+			         </script>
+                 </dtml-if>
+
+                 <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+                   <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
+                     <a class="popup1" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                       <img height="22" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada">Tramitação com Assinatura Digital
+                     </a>
+                   </dtml-let>
+                 </dtml-if>
+           </td>
+         </tr>
+      </dtml-if>
     <tr>
        <td colspan="3"class="form-element">Texto da Ação</br>
          <textarea name="txa_txt_tramitacao" id="txa_txt_tramitacao" cols="65" rows="4" disabled><dtml-var txt_tramitacao missing html_quote></textarea>
@@ -235,7 +298,7 @@ $(function() {
 
       <p align="center">
        <input class="botao" type="button" value="Voltar" onclick="history.back()">
-       <dtml-if expr="ind_ult_tramitacao==1">
+       <dtml-if expr="ind_ult_tramitacao==1 and int(cod_usuario_corrente)==int(cod_usuario_local)">
         <input type="button" class="botao" name="btn_tramitacao_excluir" value="Excluir" onClick="tramitacao_excluir()" />
        </dtml-if>
       </p>

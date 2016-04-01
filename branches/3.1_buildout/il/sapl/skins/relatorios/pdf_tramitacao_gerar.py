@@ -137,20 +137,19 @@ def tramitacao(tramitacao_dic):
     tmp+='\t\t\t<font color="white">-</font>\n'
     tmp+='\t\t</para>\n'
 
-    tmp+='\t\t<para style="P2">\n'
-    tmp+='\t\t\t<font color="white"> </font>\n'
-    tmp+='\t\t</para>\n'
-    tmp+='<blockTable style="tramitacao" repeatRows="1" colWidths="460">\n'
-    tmp+='<tr><td>TEXTO DA AÇÃO</td></tr>\n'
-    tmp+='\t\t</blockTable>\n'
-    tmp+='\t\t<para style="P2">\n'
-    tmp+='\t\t\t<font color="white">-</font>\n'
-    tmp+='\t\t</para>\n'
+    texto_tramitacao = str(tramitacao_dic['txt_tramitacao'])
+    if texto_tramitacao != '' and texto_tramitacao != "None":
+      tmp+='<blockTable style="tramitacao" repeatRows="1" colWidths="460">\n'
+      tmp+='<tr><td>TEXTO DA AÇÃO</td></tr>\n'
+      tmp+='\t\t</blockTable>\n'
+      tmp+='\t\t<para style="P2">\n'
+      tmp+='\t\t\t<font color="white">-</font>\n'
+      tmp+='\t\t</para>\n'
 
-    tmp+='\t\t<para style="P2">' + str(tramitacao_dic['txt_tramitacao']) + '</para>\n\n'
-    tmp+='\t\t<para style="P2">\n'
-    tmp+='\t\t\t<font color="white">-</font>\n'
-    tmp+='\t\t</para>\n'
+      tmp+='\t\t<para style="P2">' + str(tramitacao_dic['txt_tramitacao']) + '</para>\n\n'
+      tmp+='\t\t<para style="P2">\n'
+      tmp+='\t\t\t<font color="white">-</font>\n'
+      tmp+='\t\t</para>\n'
 
     tmp+='\t\t<para style="P3">' + str(dic_rodape['nom_localidade']) +', '+tramitacao_dic['dat_extenso']+ '.</para>\n\n'
     tmp+='\t\t<para style="P2">\n'
@@ -171,6 +170,7 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
     """
 
     arquivoPdf=str(cod_tramitacao)+"_tram.pdf"
+    arquivoAssinado=str(cod_tramitacao)+"_tram_signed.pdf"
 
     tmp=''
     tmp+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
@@ -194,10 +194,12 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
 
     if hasattr(context.sapl_documentos.materia.tramitacao,arquivoPdf):
         context.sapl_documentos.materia.tramitacao.manage_delObjects(ids=arquivoPdf)
+    if hasattr(context.sapl_documentos.materia.tramitacao,arquivoAssinado):
+        context.sapl_documentos.materia.tramitacao.manage_delObjects(ids=arquivoAssinado)
     context.sapl_documentos.materia.tramitacao.manage_addFile(arquivoPdf)
     arq=context.sapl_documentos.materia.tramitacao[arquivoPdf]
     arq.manage_edit(title='PDF Tramitação',filedata=tmp_pdf,content_type='application/pdf')
 
-    return "sapl_documentos/materia/tramitacao/"+arquivoPdf
+    return "tramitacao_mostrar_proc?hdn_cod_tramitacao="+str(cod_tramitacao)
 
 return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,sessao)
