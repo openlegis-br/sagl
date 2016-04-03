@@ -100,13 +100,37 @@ $("#txa_txt_tramitacao").cleditor()[0].disable("true");;
             </dtml-in>
        </td>
     </tr>
-  <dtml-if txt_tramitacao>
+      <dtml-call expr="REQUEST.set('pdf', _.str(hdn_cod_tramitacao)+'_tram.pdf')">
+      <dtml-call expr="REQUEST.set('pdf_assinado', _.str(hdn_cod_tramitacao)+'_tram_signed.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+         <tr>
+           <td class="form-element">
+                Texto PDF
+           </td>
+           <td valign="top" class="form-element" colspan="2">
+                 <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+                   <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+                     <a class="popup1" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                       <img align="top" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF">
+                     
+                   </dtml-let>
+                 </dtml-if>
+
+                 <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+                   <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
+                     <a class="popup1" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                       <img height="22" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada">Tramitação com Assinatura Digital
+                     </a>
+                   </dtml-let>
+                 </dtml-if>
+           </td>
+         </tr>
+   </dtml-if>
     <tr>
        <td colspan="3"class="form-element">Despacho</br>
          <textarea name="txa_txt_tramitacao" id="txa_txt_tramitacao" cols="65" rows="4" disabled><dtml-var txt_tramitacao missing html_quote></textarea>
        </td>
     </tr>
-  </dtml-if>
   </table>
 
       <p align="center">

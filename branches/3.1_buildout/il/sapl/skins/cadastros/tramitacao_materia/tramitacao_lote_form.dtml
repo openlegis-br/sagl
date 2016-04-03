@@ -67,6 +67,20 @@
       }
 
       var check = 0;
+      if (form.txt_tamanho.value == 1) {
+        if (form.check_tram.checked) check++;
+      }
+
+      else 
+        for (var i = 0; i < form.txt_tamanho.value; i++)
+          if (form.check_tram[i].checked) check++;
+       
+      if (check == 0) {
+         alert("Nenhuma matéria foi selecionada!");
+         return false;
+      }
+
+      form.txt_check.value = check;
 
     form.submit();
   }
@@ -129,8 +143,9 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/tramitacao_lote">Ajuda</a>
 
-<h1 class="firstHeading">Tramitação em Lote</h1>
+<h1 class="firstHeading">Tramitação de Matérias em Lote</h1>
 
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
 <ul>
     <li>
         <a href="&dtml-portal_url;/cadastros/materia/tramitacao/primeira_tramitacao_lote_form">Primeira Tramitação</a>
@@ -139,10 +154,7 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
      <a class="selecionado">Tramitação em Lote</a>
     </li>
 </ul>
-
-<fieldset>
-
-  <legend>Tramitação em Lote</legend>
+</dtml-if>
 
  <dtml-call expr="REQUEST.set('check_ocorrencia', 0)">
  <dtml-call expr="REQUEST.set('contador', 0)">
@@ -153,12 +165,10 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
   <dtml-call expr="REQUEST.set('npc', '')">
  </dtml-if>
 
-
-
 <dtml-if expr="not _.has_key('hdn_cod_unid_tram_local')">
       <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_local',0)">
 </dtml-if>
- <dtml-in expr="zsql.tramitacao_obter_zsql(cod_unid_tram_destino=int(hdn_cod_unid_tram_local),cod_usuario_dest=cod_usuario_corrente,ind_ult_tramitacao=1,ind_retorno_tramitacao=1)">
+ <dtml-in expr="zsql.tramitacao_obter_zsql(cod_unid_tram_destino=int(hdn_cod_unid_tram_local),cod_usuario_dest=cod_usuario_corrente,ind_ult_tramitacao=1,ind_encaminha=1,ind_retorno_tramitacao=1)">
   <form name="tramitacao_lote_tramitar_proc" method="post" action="tramitacao_lote_salvar_proc">
 <dtml-if sequence-start>
  <table>
@@ -268,7 +278,7 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
       <tr>          
          <td colspan="2">
            <label>Data Fim Prazo</label> <br />
-           <input type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" valign="top" size="12" maxlength="10" value="<dtml-var dat_fim_prazo missing null="">" onBlur="formata_data(form.txt_dat_fim_prazo)">
+           <input type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" valign="top" size="12" maxlength="10" value="" onBlur="formata_data(form.txt_dat_fim_prazo)">
          </td>
       </tr>
       <tr> 
@@ -279,11 +289,12 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
       </tr>
   </table>
   <input type="hidden" name="txt_tamanho" value="<dtml-var sequence-length>">
+  <input type="hidden" name="txt_check" value="">
   <table>
-      <tr><th colspan="2" class="label">3. Selecione as matérias que sofrerão a nova tramitação</th></tr>
+      <tr><th colspan="3" class="label">3. Selecione as matérias para nova tramitação</th></tr>
        <tr>
-          <td class="texto" colspan="2">
-	     Há <dtml-var sequence-length> matéria(s) sob responsabilidade do usuário atual.
+          <td class="texto" colspan="3">
+	     Há <dtml-var sequence-length> matéria(s) pendente(s) de tramitação para este usuário.
           </td>
        </tr>
  </dtml-if sequence-start>
@@ -311,12 +322,14 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
             </dtml-in></a>
             <br /><dtml-var txt_ementa> -  
           </td>
+          <td>
+            <dtml-var des_status>
+          </td>
        </tr>
   </dtml-in>
 
  <dtml-if sequence-end>
  </table>
-</fieldset>
    <p align="center">
       <input class="botao" type="button" name="btn_tramitacao_lote_tramitar" value="Tramitar" 
         onClick="campos_criticar(document.tramitacao_lote_tramitar_proc)">
@@ -327,7 +340,7 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
   </dtml-if sequence-end>
   <dtml-else>
 </fieldset>
-  <span class="texto">Não foram encontradas matérias correspondentes ao critério informado.</span>
+  <span class="texto">Não há matérias para tramitação a partir desta unidade.</span>
    <p align="center">
      <input type="button" class="botao" name="btn-retornar" value="Retornar" onClick="history.go(-1)" />
    </p>
