@@ -20,16 +20,16 @@ $(document).ready(function() {
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/protocolo_administrativo">Ajuda</a>
 
-<h1 class="firstHeading">Protocolo nº <dtml-var num_protocolo> / <dtml-var ano_protocolo></h1>
+<h1 class="firstHeading">Protocolo nº <dtml-var num_protocolo>/<dtml-var ano_protocolo></h1>
 
  <table>
   <tr>
    <th class="texto" width="30%"><b>Número / Ano:</b></th>
-   <td class="texto" width="70%"><dtml-var num_protocolo> / <dtml-var ano_protocolo></td>
+   <td class="texto" width="70%"><dtml-var num_protocolo>/<dtml-var ano_protocolo></td>
   </tr>
   <tr>
    <th class="texto" width="30%"><b>Data / Horário:</b></th>
-   <td class="texto" width="70%"><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> - <dtml-var hor_protocolo></td>
+   <td class="texto" width="70%"><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> - <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td>
   </tr>
   <tr>
   <dtml-if expr="tip_processo==0">
@@ -46,7 +46,7 @@ $(document).ready(function() {
         </dtml-if>
 
 	<dtml-if txt_interessado>
-		<b>Interessado:</b>
+		<b>Interessado / Autor:</b>
         </dtml-if>
    </th>
    <td class="texto" width="70%">
@@ -103,8 +103,23 @@ $(document).ready(function() {
   </td>
   </tr>
   <tr>
+
+   <th class="texto" width="30%"><b>Arquivo Digitalizado:</b></th>
+              <td width="70%">
+                <dtml-let id_documento="_.str(cod_protocolo.strip('0'))+'_protocolo.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">
+                    <dtml-let documento="_.getattr(sapl_documentos.protocolo,id_documento).absolute_url">
+                      <a target="_blank" href="<dtml-var documento>"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo Digitalizado" title="Arquivo Digitalizado"></a>
+                    </dtml-let>
+                  <dtml-else>
+                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                  </dtml-if>
+                </dtml-let>
+              </td>
+  </tr>
+  <tr>
    <th class="texto" width="30%"><b>Número Páginas:</b></th>
-   <td class="texto" width="70%"><dtml-var num_paginas></td>
+   <td class="texto" width="30%"><dtml-var num_paginas></td>
   </tr>
  <dtml-if expr="txt_observacao!=''">
   <tr>

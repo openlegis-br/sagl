@@ -32,6 +32,7 @@ def setupConteudo(portal):
             'pauta_sessao.zexp',
             'proposicao.zexp',
             'props_sapl.zexp',
+            'protocolo.zexp',
             'reuniao_comissao.zexp',
             'substitutivo.zexp',
         ]:

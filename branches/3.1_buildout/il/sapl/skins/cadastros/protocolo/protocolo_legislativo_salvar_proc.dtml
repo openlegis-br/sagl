@@ -2,7 +2,7 @@
 *********************************************************************
 *   Função: Salvar os dados do protocolo vindos do formulário,      *
 *   Retorno: Mensagem de sucesso ou erro.                           *
-*   OpenLegis - 23/08/2015                                   *
+*   OpenLegis - 05/04/2016                                          *
 *********************************************************************
 </dtml-comment>
 
@@ -18,7 +18,7 @@
 
 <dtml-call expr="REQUEST.set('metodo', zsql.protocolo_legislativo_incluir_zsql)">
 
-  <dtml-try>
+<dtml-try>
     <dtml-call expr="metodo(
         num_protocolo            = hdn_num_protocolo,
         tip_protocolo		 = hdn_tip_protocolo,
@@ -29,13 +29,24 @@
         cod_autor                = lst_cod_autor,
         txt_observacao           = txa_txt_observacao)">
 
-        <dtml-in expr="zsql.protocolo_incluido_codigo_obter_zsql()">
 
-	  <dtml-call expr="REQUEST.set('codigo', cod_protocolo)">
+  <dtml-in expr="zsql.protocolo_incluido_codigo_obter_zsql()">
+    <dtml-call expr="REQUEST.set('codigo', cod_protocolo)">
 
-          <dtml-let mensagem="'Matéria protocolada com sucesso!'" sucesso="1" url="hdn_url" codigo="cod_protocolo">
-                      <dtml-var mensagem_prot_emitir>
-          </dtml-let>
-        </dtml-in>
+    <dtml-if file_nom_arquivo>
+      <dtml-call expr="REQUEST.set('id_documento', _.str(codigo)+'_protocolo.pdf')">
+      <dtml-try>
+        <dtml-call expr="sapl_documentos.protocolo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+      <dtml-except>
+            <dtml-let mensagem="'Ocorreu erro ao tentar salvar o documento digitalizado'+codigo">
+               <dtml-var mensagem_emitir>
+            </dtml-let>
+      </dtml-try>
+    </dtml-if>
+
+    <dtml-let mensagem="'Matéria protocolada com sucesso!'" sucesso="1" url="hdn_url" codigo="cod_protocolo">
+      <dtml-var mensagem_prot_emitir>
+    </dtml-let>
+  </dtml-in>
 
 </dtml-try>
