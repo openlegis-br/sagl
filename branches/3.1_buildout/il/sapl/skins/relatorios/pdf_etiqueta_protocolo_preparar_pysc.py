@@ -3,6 +3,11 @@ import os
 request=context.REQUEST
 response=request.RESPONSE
 session= request.SESSION
+REQUEST=context.REQUEST
+
+filename = str(REQUEST['txt_cod_protocolo'])+'_protocolo.pdf'
+if filename in context.sapl_documentos.protocolo:
+ context.modelo_proposicao.protocolo_barcode(cod_protocolo=int(REQUEST['txt_cod_protocolo']))
 
 data=DateTime().strftime('%d/%m/%Y')
 
@@ -55,7 +60,6 @@ else:
 #Por fim, utiliza o PythonScript para pesquisar os protocolos e gerar os dados
 
 protocolos=[]
-REQUEST=context.REQUEST
 for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['rad_tip_protocolo'], 
                               num_protocolo=REQUEST['txt_num_protocolo'], ano_protocolo=REQUEST['txt_ano_protocolo'],
                               tip_documento=REQUEST['lst_tip_documento'], tip_processo=REQUEST['rad_tip_processo'], 
@@ -64,7 +68,7 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
                               dat_apres=REQUEST['dt_apres'], dat_apres2=REQUEST['dt_apres2']):
         dic={}
 
-        dic['codigo']=str(protocolo.cod_protocolo)
+        dic['codigo']=str(protocolo.cod_protocolo).zfill(7)
 
         dic['titulo']=str(protocolo.num_protocolo)
 

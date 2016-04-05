@@ -33,6 +33,12 @@ import cStringIO
 from appy.pod.renderer import Renderer
 from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
 from StringIO import StringIO
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import mm
+from reportlab.graphics.barcode import code128
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 #imports para assinatura digital
 import sys
@@ -690,6 +696,53 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.substitutivo.manage_addFile(id=nom_arquivo_pdf,file=data)
 
+    def protocolo_barcode(self,cod_protocolo):
+        sgl_casa = self.sapl_documentos.props_sapl.sgl_casa
+        for protocolo in self.zsql.protocolo_obter_zsql(cod_protocolo=cod_protocolo):
+          string = str(protocolo.cod_protocolo).zfill(7)
+          texto = 'PROT-'+ str(sgl_casa)+' '+ str(protocolo.num_protocolo)+'/'+str(protocolo.ano_protocolo)
+          data = self.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' - '+protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
+          pdf_protocolo = self.sapl_documentos.protocolo.absolute_url() + "/" +  str(cod_protocolo) + "_protocolo.pdf"
+          nom_pdf_protocolo = str(cod_protocolo) + "_protocolo.pdf"
+        pdfmetrics.registerFont(TTFont('Courier_Bold', '/usr/share/fonts/truetype/msttcorefonts/Courier_New_Bold.ttf'))
+        x_var=169
+        y_var=285
+        packet = os.path.normpath('temp.pdf')
+        slab = canvas.Canvas(packet, pagesize=A4)
+        slab.setFillColorRGB(0,0,0) 
+        barcode = barcode128 = code128.Code128(string,barWidth=.34*mm,barHeight=7*mm)
+        barcode.drawOn(slab, x_var*mm , y_var*mm)
+        slab.setFont("Courier_Bold", 8)
+        slab.drawString(497, 801, texto)
+        slab.drawString(497, 794, data)
+        slab.save()
+        barcode_pdf = open(packet, 'rb')
+        new_pdf = PdfFileReader(barcode_pdf)
+        pdf_file = '%s' % (cod_protocolo) + "_protocolo.pdf"
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()
+        url = self.url() + '/sapl_documentos/protocolo/' + pdf_file
+        opener = urllib.urlopen(url)
+        f = open('/tmp/' + pdf_file, 'wb').write(opener.read())
+        existing_pdf = PdfFileReader(file('/tmp/'+nom_pdf_protocolo, "rb"))
+        output = PdfFileWriter()
+        for item in range(existing_pdf.getNumPages()):
+          pages = existing_pdf.getPage(item)
+          page1 = existing_pdf.getPage(0)
+          pages.mergePage(new_pdf.getPage(0))
+          output.addPage(pages)
+        outputStream = file(os.path.normpath(nom_pdf_protocolo), "wb")
+        output.write(outputStream)
+        outputStream.close()
+        data = open(nom_pdf_protocolo, "rb").read()              
+        for item in [outputStream]:
+          if nom_pdf_protocolo in self.sapl_documentos.protocolo:
+            documento = getattr(self.sapl_documentos.protocolo,nom_pdf_protocolo)
+            documento.manage_upload(file=data)
+        os.unlink('/tmp/'+nom_pdf_protocolo)
+        os.unlink(packet)
+        os.unlink(nom_pdf_protocolo)
+
     def processo_eletronico_gerar_pdf(self,cod_materia):
         if cod_materia.isdigit():
            cod_materia = cod_materia
@@ -778,14 +831,14 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            dic_tramitacoes={}
            if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf'):
               dic_tramitacoes['pdf_tramitacao'] = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + tramitacao.cod_tramitacao + "_tram_signed.pdf"
+              lst_tramitacoes.append(dic_tramitacoes)
            if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram.pdf'):
               dic_tramitacoes['pdf_tramitacao'] = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + tramitacao.cod_tramitacao + "_tram.pdf"
-           lst_tramitacoes.append(dic_tramitacoes)
+              lst_tramitacoes.append(dic_tramitacoes)
            if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf') or hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram.pdf'):
               for dic_tramitacoes in lst_tramitacoes:
-                texto_documento = cStringIO.StringIO(urllib.urlopen(dic_tramitacoes['pdf_tramitacao']).read())
-                merger.append(texto_documento)
-
+                texto_tramitacao = cStringIO.StringIO(urllib.urlopen(dic_tramitacoes['pdf_tramitacao']).read())
+                merger.append(texto_tramitacao)
 
         output_file_pdf = os.path.normpath(nom_arquivo_pdf)
         f = open(output_file_pdf, "wb")
