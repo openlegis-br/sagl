@@ -521,7 +521,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         return data
 
     def emenda_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
-        url = self.sapl_documentos.modelo.materia.emenda.absolute_url() + "/%s" % modelo_proposicao
+        url = self.sapl_documentos.modelo.materia.absolute_url() + "/%s" % modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
         # atribui o brasao no locals
@@ -629,7 +629,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             self.sapl_documentos.administrativo.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
     def parecer_gerar_odt(self, inf_basicas_dic, nom_arquivo, nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao):
-        url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/parecer.odt"
+        url = self.sapl_documentos.modelo.materia.absolute_url() + "/parecer.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
         # atribui o brasao no locals
@@ -670,7 +670,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             self.sapl_documentos.proposicao.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
     def substitutivo_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
-        url = self.sapl_documentos.modelo.materia.substitutivo.absolute_url() + "/%s"%modelo_proposicao
+        url = self.sapl_documentos.modelo.materia.absolute_url() + "/%s"%modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
         # atribui o brasao no locals
