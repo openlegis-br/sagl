@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : tip_id_basica="" num_ident_basica="" ano_ident_basica="" npc="" num_protocolo="" dat_apresentacao="" dat_apresentacao2="" dat_publicacao="" dat_publicacao2="" cod_autor="" des_tipo_autor="" des_assunto="" ind_tramitacao="" cod_unid_tramitacao="" cod_status="" rd_ordem="" ind_excluido=0
+arguments : tip_id_basica="" num_ident_basica="" ano_ident_basica="" num_protocolo="" dat_apresentacao="" dat_apresentacao2="" dat_publicacao="" dat_publicacao2="" cod_autor="" cod_relator="" des_tipo_autor="" des_assunto="" ind_tramitacao="" cod_unid_tramitacao="" cod_status="" rd_ordem="" ind_excluido=0
 max_rows : 5000
 max_cache : 100
 </dtml-comment>
@@ -21,8 +21,8 @@ SELECT
        ano_origem_externa,
        tipo_materia_legislativa.sgl_tipo_materia,
        tipo_materia_legislativa.des_tipo_materia
-       <dtml-if npc>
-         ,proposicao.cod_proposicao
+       <dtml-if cod_relator>
+         ,parlamentar.nom_completo
        </dtml-if>
        <dtml-if cod_status>
          ,REPLACE(tramitacao.cod_status, 'L', '') as cod_status
@@ -44,8 +44,9 @@ FROM
     <dtml-if expr="cod_status!='' or cod_unid_tramitacao">
      LEFT JOIN tramitacao ON materia_legislativa.cod_materia = tramitacao.cod_materia
     </dtml-if>
-    <dtml-if npc>
-     LEFT JOIN proposicao ON materia_legislativa.cod_materia = proposicao.cod_mat_ou_doc
+    <dtml-if cod_relator>
+     LEFT JOIN relatoria ON materia_legislativa.cod_materia = relatoria.cod_materia
+     LEFT JOIN parlamentar ON relatoria.cod_parlamentar = parlamentar.cod_parlamentar
     </dtml-if>
 
 <dtml-sqlgroup where>
@@ -94,10 +95,9 @@ FROM
       </dtml-let>
    </dtml-if>
 
-    <dtml-if npc>
-      and proposicao.cod_mat_ou_doc = materia_legislativa.cod_materia
-      and proposicao.cod_proposicao = <dtml-sqlvar npc type="string">
-      and proposicao.ind_excluido = 0
+    <dtml-if cod_relator>
+      and relatoria.ind_excluido = 0 and
+      parlamentar.cod_parlamentar = <dtml-sqlvar cod_relator type="string">   
     </dtml-if>
 
    <dtml-if cod_status>
