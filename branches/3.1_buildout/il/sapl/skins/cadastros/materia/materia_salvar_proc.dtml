@@ -131,6 +131,30 @@
             </dtml-let>
  	</dtml-if>
 
+        <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
+          <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=txt_ano_ident_basica)">
+             <dtml-if sequence-start>
+               <dtml-call expr="REQUEST.set('cod_protocolo', cod_protocolo)">
+             </dtml-if>
+          </dtml-in>
+          <dtml-if cod_protocolo>
+            <dtml-let id_documento="_.str(cod_protocolo)+'_protocolo.pdf'">
+              <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">
+                <dtml-let ok="pysc.protocolo_salvar_como_texto_integral_materia_pysc(cod_protocolo,hdn_cod_materia,0)">
+                  <dtml-if ok>
+                    <dtml-call expr="sapl_documentos.materia.Catalog.atualizarCatalogo(hdn_cod_materia)">
+                  <dtml-else>
+                    <dtml-call expr="REQUEST.set('erro', 1)">
+                    <dtml-let mensagem="'Ocorreu erro ao salvar texto integral'+hdn_cod_materia">
+                      <dtml-var mensagem_emitir>
+                    </dtml-let>
+                  </dtml-if>
+                </dtml-let>
+              </dtml-if>
+            </dtml-let>
+          </dtml-if>
+        </dtml-if>
+
         <dtml-if protAutor>
             <dtml-try>
                 <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor          = protAutor,

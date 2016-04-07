@@ -540,3 +540,5 @@ ALTER TABLE  `tramitacao_administrativo` CHANGE  `dat_encaminha`  `dat_encaminha
 
 ALTER TABLE  `tramitacao_administrativo` ADD  `dat_recebimento` DATETIME NULL DEFAULT NULL AFTER  `cod_usuario_dest` ;
 
+ALTER TABLE  `protocolo` CHANGE  `tip_processo`  `tip_processo` INT( 4 ) NULL DEFAULT NULL ;
+

@@ -1818,7 +1818,7 @@ CREATE TABLE `protocolo` (
   `hor_protocolo` time NOT NULL DEFAULT '00:00:00',
   `dat_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `tip_protocolo` int(4) NOT NULL,
-  `tip_processo` int(4) NOT NULL,
+  `tip_processo` int(4) DEFAULT NULL,
   `txt_interessado` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cod_autor` int(11) DEFAULT NULL,
   `txt_assunto_ementa` text COLLATE utf8_unicode_ci,

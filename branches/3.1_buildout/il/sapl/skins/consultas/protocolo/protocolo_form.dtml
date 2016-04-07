@@ -32,13 +32,10 @@ $(document).ready(function() {
    <td class="texto" width="70%"><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> - <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td>
   </tr>
   <tr>
-  <dtml-if expr="tip_processo==0">
-    <th class="texto"><b>Assunto</b></td class="texto">
-  <dtml-else>
-    <th class="texto"><b>Ementa</b></td class="texto">
-  </dtml-if>
+    <th class="texto"><b>Assunto / Ementa</b></td class="texto">
    <td class="texto" width="70%"><dtml-var txt_assunto_ementa></td>
   </tr>
+<dtml-if tip_processo>
   <tr>
    <th class="texto" width="30%">
 	<dtml-if cod_autor>
@@ -103,7 +100,7 @@ $(document).ready(function() {
   </td>
   </tr>
   <tr>
-
+</dtml-if>
    <th class="texto" width="30%"><b>Arquivo Digitalizado:</b></th>
               <td width="70%">
                 <dtml-let id_documento="_.str(cod_protocolo)+'_protocolo.pdf'">
@@ -131,54 +128,60 @@ $(document).ready(function() {
  </dtml-if> 
   <tr>
    <th class="texto" width="30%">
-	<dtml-if expr="tip_processo==0">
-		<b>Documento Vinculado:</b>
-	</dtml-if>
-
-	<dtml-if expr="tip_processo==1">
-		<b>Matéria Vinculada:</b>
-	</dtml-if>
+	<b>Cadastro vinculado:</b>
   </th>
   <td class="texto" width="70%">
-              <dtml-if expr="tip_processo==0">
-               <dtml-in expr="zsql.documento_administrativo_obter_zsql(num_protocolo=num_protocolo,ano_documento=ano_protocolo)">
-                  <dtml-if cod_documento>
+      	<dtml-if expr="not tip_processo or tip_processo!=1">
+           <dtml-in expr="zsql.documento_administrativo_obter_zsql(num_protocolo=num_protocolo,ano_documento=ano_protocolo)">
+              <dtml-if sequence-start>
+                    <dtml-call "REQUEST.set('vinculo_documento', 1)">
+                    <b>Documento:</b>
                     <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
                     <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></a><br />
-                  </dtml-if>
-                </dtml-in>
               </dtml-if>
-              <dtml-if expr="tip_processo==0">
-            <form method="post" action="&dtml-portal_url;/cadastros/documento_administrativo/numero_buscar_proc">
-                <input type="hidden" name="tip_documento"   value="<dtml-var tip_documento>" />
-                <input type="hidden" name="ano_documento"   value="<dtml-var ano_protocolo>" />
-                <input type="hidden" name="dat_documento"   value="<dtml-var "pysc.iso_to_port_pysc(dat_protocolo)">" />
-                <input type="hidden" name="num_protocolo"   value="<dtml-var num_protocolo>" />
-                <input type="hidden" name="txt_assunto"     value="<dtml-var txt_assunto_ementa>" />
-                <input type="hidden" name="txt_interessado" value="<dtml-var txt_interessado>" />
-                <input class="botao"type="submit" name="cmdCriarDoc" value="Criar Documento" />
-            </form>
-              </dtml-if>
-              <dtml-if expr="tip_processo==1">
-               <dtml-in expr="zsql.materia_obter_zsql(num_protocolo=num_protocolo,ano_ident_basica=ano_protocolo)">
-                  <dtml-if cod_materia>
+              <dtml-else>
+               <dtml-if expr="tip_documento and AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Modulo Administrativo'])">
+                <form style="float: left" method="post" action="&dtml-portal_url;/cadastros/documento_administrativo/numero_buscar_form">
+               <dtml-else>
+                <form style="float: left" method="post" action="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_form">
+               </dtml-if>
+                  <input type="hidden" name="tip_documento"   value="<dtml-var tip_documento missing>" />
+                  <input type="hidden" name="ano_documento"   value="<dtml-var ano_protocolo>" />
+                  <input type="hidden" name="dat_documento"   value="<dtml-var "pysc.iso_to_port_pysc(dat_protocolo)">" />
+                  <input type="hidden" name="num_protocolo"   value="<dtml-var num_protocolo>" />
+                  <input type="hidden" name="txt_assunto"     value="<dtml-var txt_assunto_ementa>" />
+                  <input type="hidden" name="txt_interessado" value="<dtml-var txt_interessado missing null="">" />
+                  <input class="botao" type="submit" name="cmdCriarDoc" value="Criar Documento" />
+                </form>
+           </dtml-in>
+        </dtml-if>
+      	<dtml-if expr="not tip_processo or tip_processo!=0">
+           <dtml-in expr="zsql.materia_obter_zsql(num_protocolo=num_protocolo,ano_ident_basica=ano_protocolo)">
+              <dtml-if sequence-start>
+                    <dtml-call "REQUEST.set('vinculo_materia', 1)">
+                    &nbsp;<b>Matéria:</b>
                     <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
                     <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
-                  </dtml-if>
-               </dtml-in>
               </dtml-if>
-         <dtml-if expr="tip_processo==1">
-            <form method="post" action="&dtml-portal_url;/cadastros/materia/numero_materia_buscar_proc">
-                <input type="hidden" name="tip_id_basica_sel" value="<dtml-var tip_materia>" />
+              <dtml-else>
+               <dtml-if expr="tip_materia and AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Materia'])">
+                 <form method="post" action="&dtml-portal_url;/cadastros/materia/numero_materia_buscar_proc">
+               <dtml-else>
+                <form method="post" action="&dtml-portal_url;/cadastros/materia/materia_form_resumido">
+               </dtml-if>
+                <input type="hidden" name="tip_id_basica_sel" value="<dtml-var tip_materia missing null="0">" />
                 <input type="hidden" name="ano_ident_basica"  value="<dtml-var ano_protocolo>" />
                 <input type="hidden" name="dat_apresentacao"  value="<dtml-var "pysc.iso_to_port_pysc(dat_protocolo)">" />
                 <input type="hidden" name="num_protocolo"     value="<dtml-var num_protocolo>" />
                 <input type="hidden" name="txt_ementa"        value="<dtml-var txt_assunto_ementa>" />
                 <input type="hidden" name="txt_observacao"    value="<dtml-var txt_observacao missing null="">" />
-                <input type="hidden" name="protAutor"         value="<dtml-var cod_autor>" />
-                <input class="botao"type="submit" name="cmdCriarMat" value="Criar Matéria" />
-            </form>
-          </dtml-if>
+                <dtml-if cod_autor>
+                  <input type="hidden" name="protAutor"         value="<dtml-var cod_autor>" />
+                </dtml-if>
+                &nbsp;<input class="botao"type="submit" name="cmdCriarMat" value="Criar Matéria" />
+              </form>
+           </dtml-in>
+        </dtml-if>
     </td>
   </tr>
  </table>
@@ -187,11 +190,12 @@ $(document).ready(function() {
 <p align="center">
       <a href="&dtml-portal_url;/relatorios/pdf_etiqueta_protocolo_preparar_pysc?rad_tip_protocolo=&amp;txt_cod_protocolo=<dtml-var cod_protocolo>&amp;txt_num_protocolo=<dtml-var num_protocolo>&amp;txt_ano_protocolo=<dtml-var ano_protocolo>&amp;dt_apres=&amp;dt_apres2=&amp;rad_tip_processo=&amp;lst_tip_documento=&amp;lst_tip_materia=&amp;txt_assunto=&amp;txa_txt_interessado=&amp;hdn_cod_autor=" class="botao popup" data-fancybox-type="iframe">Etiqueta de Protocolo</a>
 
+    <dtml-if expr="tip_processo">
        <a href="&dtml-portal_url;/relatorios/pdf_capa_processo_preparar_pysc?rad_tip_protocolo=&amp;txt_cod_protocolo=<dtml-var cod_protocolo>&amp;txt_num_protocolo=<dtml-var num_protocolo>&amp;txt_ano_protocolo=<dtml-var ano_protocolo>&amp;dt_apres=&amp;dt_apres2=&amp;rad_tip_processo=&amp;lst_tip_documento=&amp;lst_tip_materia=&amp;txt_assunto=&amp;txa_txt_interessado=&amp;hdn_cod_autor=" class="botao popup" data-fancybox-type="iframe">Etiqueta de Processo</a>
+    </dtml-if>
 
      <a href="comprovante_protocolo_mostrar_proc?cod_protocolo=<dtml-var cod_protocolo>" class="botao popup" data-fancybox-type="iframe">Emitir Comprovante</a>
-
-     <input class="botao" type="button" value="Retornar" onClick="history.go(-1)">
+     <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_rapido_form" class="botao">Voltar</a>
     </p>
    </form>
 
