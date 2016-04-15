@@ -54,7 +54,15 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
   tramitacao_dic['dat_encaminha'] = tramitacao.dat_encaminha
   tramitacao_dic['des_status'] = tramitacao.des_status
   tramitacao_dic['txt_tramitacao'] = context.modelo_proposicao.xhtml2rml(tramitacao.txt_tramitacao,'P2')
-  tramitacao_dic['dat_fim_prazo'] = tramitacao.dat_fim_prazo
+  if tramitacao.dat_fim_prazo != None:
+    tramitacao_dic['dat_fim_prazo'] = tramitacao.dat_fim_prazo
+  else:
+    for prazo_status in context.zsql.status_tramitacao_obter_zsql(cod_status=tramitacao.cod_status):
+      if prazo_status.num_dias_prazo != None:
+        data_calculada = DateTime() + prazo_status.num_dias_prazo
+        tramitacao_dic['dat_fim_prazo'] = DateTime(data_calculada).strftime('%d/%m/%Y')
+      else:
+        tramitacao_dic['dat_fim_prazo'] = ''
   tramitacao_dic['ind_urgencia'] = tramitacao.ind_urgencia
 
   # dados da materia

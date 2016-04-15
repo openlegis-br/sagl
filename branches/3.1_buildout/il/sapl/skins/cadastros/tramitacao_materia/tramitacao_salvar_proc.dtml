@@ -3,14 +3,27 @@
 
 <dtml-if hdn_cod_tramitacao>
   <dtml-call expr="REQUEST.set('metodo', zsql.tramitacao_atualizar_zsql)">
+  <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=hdn_cod_materia, ind_ult_tramitacao=1)">
+  </dtml-in>
 <dtml-else>  
   <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=hdn_cod_materia, ind_ult_tramitacao=1)">
     <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
   </dtml-in>
-
   <dtml-call expr="REQUEST.set('ind_ult_tramitacao', '1')">
-
   <dtml-call expr="REQUEST.set('metodo', zsql.tramitacao_incluir_zsql)">
+</dtml-if>
+
+<dtml-if expr="txt_dat_fim_prazo==None or txt_dat_fim_prazo==''">
+ <dtml-in expr="zsql.status_tramitacao_obter_zsql(cod_status=lst_cod_status)">
+  <dtml-if num_dias_prazo>
+   <dtml-let data_atual="_.DateTime()">
+     <dtml-call expr="REQUEST.set('data_calculada', data_atual+num_dias_prazo)">
+     <dtml-call expr="REQUEST.set('txt_dat_fim_prazo', _.DateTime(data_calculada).strftime('%d/%m/%Y'))">
+   </dtml-let>
+  <dtml-else>
+     <dtml-call expr="REQUEST.set('txt_dat_fim_prazo', '')">
+  </dtml-if>
+ </dtml-in>
 </dtml-if>
 
 <dtml-try>
@@ -52,3 +65,5 @@
     </dtml-let>
 
 </dtml-try>
+
+<dtml-var REQUEST>
