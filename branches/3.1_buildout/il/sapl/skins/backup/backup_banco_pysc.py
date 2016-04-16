@@ -19,7 +19,7 @@ if dump_banco[0]==1: #Se ocorrer erro, retorna-o.
    retorno=dump_banco[1]
 else: #Se não, exporta a pasta documentos
    context.documentos.manage_exportObject()
-   retono='Foram gerados os arquivos \'%s.sql\' e \'documentos.zexp\' na pasta var da instancia do Zope do SAPL.'%nome
+   retono='Foram gerados os arquivos \'%s.sql\' e \'documentos.zexp\' na pasta var da instancia do Zope do SAGL.'%nome
 
 #Retorna a mensagem
 return response.redirect('backup_sapl?banco=%s' % retorno)

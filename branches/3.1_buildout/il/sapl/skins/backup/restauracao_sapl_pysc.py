@@ -14,7 +14,7 @@ nome="bkpbancosapl"
 
 oque=context.restaura_backup(banco='interlegis',caminho=caminho,nome=nome)
 
-if oque=="sistema e do banco de dados": #Importa o SAPL
+if oque=="sistema e do banco de dados": #Importa o SAGL
 
    root = context.aq_parent.aq_parent   
    old = 'sapl_' + context.ZopeTime().strftime('%Y%m%d%H%M%S')
