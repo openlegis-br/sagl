@@ -59,7 +59,8 @@ tr.clickable:hover td {
 		 </tr>
              </thead>
              <tbody>
-              <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_local=cod_usuario_corrente,ind_ult_tramitacao=1,ind_rascunho=0,ind_pendente=1)">
+              <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_local=cod_usuario_corrente,ind_ult_tramitacao=1,ind_recebido=0,ind_rascunho=0)">
+                   <dtml-call expr="REQUEST.set('prazo_a_vencer', _.DateTime()+3)">
                    <tr onclick="javascript:submeter(<dtml-var cod_tramitacao>,document.outbox_form_<dtml-var cod_tramitacao>)" class="clickable">
                    <form name="outbox_form_<dtml-var cod_tramitacao>" method="post" action="tramitacao_mostrar_proc"> 
                    <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao>" />
@@ -84,10 +85,20 @@ tr.clickable:hover td {
                        <dtml-if dat_recebimento>
                          <div align="center"><dtml-var dat_recebimento missing null></div>
                        <dtml-else>
-                         <div align="center" style="color:#DE1E1E;font-weight:bold">Pendente</div>
+                         <div align="center" style="color:#DE1E1E;font-weight:bold">Não recebido</div>
                        </dtml-if>
                      </td>
-                     <td class="form-text"><dtml-var dat_fim_prazo missing null></td>
+                     <td class="form-text"
+                       <dtml-if dat_fim_prazo>
+                        <dtml-if expr="(_.DateTime(prazo_a_vencer).strftime('%d/%m/%Y') >= _.DateTime(dat_fim_prazo).strftime('%d/%m/%Y')) and (_.DateTime().strftime('%d/%m/%Y')<=_.DateTime(dat_fim_prazo).strftime('%d/%m/%Y'))">
+                          style="background-color: #F9F475"
+                        <dtml-elif expr="_.DateTime().strftime('%d/%m/%Y') > _.DateTime(dat_fim_prazo).strftime('%d/%m/%Y')">
+                          style="background-color: #FFCDCD"
+                        <dtml-else>
+                          style="background-color: #DBF3DB"
+                        </dtml-if>
+                       </dtml-if>
+                     ><dtml-var dat_fim_prazo missing null></td>
                    </form>
                    </tr>
               </dtml-in>
