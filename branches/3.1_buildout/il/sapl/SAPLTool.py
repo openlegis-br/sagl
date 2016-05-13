@@ -39,11 +39,13 @@ from reportlab.lib.units import mm
 from reportlab.graphics.barcode import code128
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.graphics.barcode import createBarcodeDrawing
 
 #imports para assinatura digital
 import sys
 import six
 import base64
+from base64 import b64encode
 import simplejson as json
 
 from lacunarestpki import *
@@ -292,6 +294,16 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             yield {'record': resultado,
                    'metadata': resultado['tx_metadado_xml'],
             }
+
+    def create_barcode(self, value):
+        barcode = createBarcodeDrawing('Code128',
+                                       value=str(value).zfill(7),
+                                       barWidth=170,
+                                       height=50,
+                                       fontSize=2,
+                                       humanReadable=True)
+        data = b64encode(barcode.asString('png'))
+        return data.decode('utf-8')
 
     def url(self):
         utool = getToolByName(self, 'portal_url')
