@@ -841,16 +841,16 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         lst_tramitacoes = []
         for tramitacao in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
            dic_tramitacoes={}
-           if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf'):
-              dic_tramitacoes['pdf_tramitacao'] = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + tramitacao.cod_tramitacao + "_tram_signed.pdf"
-              lst_tramitacoes.append(dic_tramitacoes)
+           #if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf'):
+           #   dic_tramitacoes['pdf_tramitacao'] = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + tramitacao.cod_tramitacao + "_tram_signed.pdf"
+           #   lst_tramitacoes.append(dic_tramitacoes)
            if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram.pdf'):
               dic_tramitacoes['pdf_tramitacao'] = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + tramitacao.cod_tramitacao + "_tram.pdf"
               lst_tramitacoes.append(dic_tramitacoes)
-           if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf') or hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram.pdf'):
-              for dic_tramitacoes in lst_tramitacoes:
-                texto_tramitacao = cStringIO.StringIO(urllib.urlopen(dic_tramitacoes['pdf_tramitacao']).read())
-                merger.append(texto_tramitacao)
+           #if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf') or hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram.pdf'):
+           for dic_tramitacoes in lst_tramitacoes:
+             texto_tramitacao = cStringIO.StringIO(urllib.urlopen(dic_tramitacoes['pdf_tramitacao']).read())
+             merger.append(texto_tramitacao)
 
         output_file_pdf = os.path.normpath(nom_arquivo_pdf)
         f = open(output_file_pdf, "wb")

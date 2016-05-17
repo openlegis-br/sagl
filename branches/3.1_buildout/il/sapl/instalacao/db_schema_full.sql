@@ -1443,7 +1443,7 @@ CREATE TABLE `norma_juridica` (
   KEY `idx_ano_numero` (`ano_norma`,`num_norma`,`ind_excluido`),
   KEY `dat_norma` (`dat_norma`),
   KEY `cod_situacao` (`cod_situacao`),
-  FULLTEXT KEY `idx_busca_norma` (`txt_ementa`,`txt_indexacao`)
+  FULLTEXT KEY `idx_busca` (`txt_ementa`,`txt_observacao`,`txt_indexacao`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 --
