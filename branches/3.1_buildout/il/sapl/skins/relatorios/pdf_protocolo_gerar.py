@@ -13,7 +13,7 @@ import time
 def cabecalho(inf_basicas_dic,imagem):
     """Gera o codigo rml do cabecalho"""
     tmp_data=''
-    tmp_data+='\t\t\t\t<image x="4.1cm" y="26.9cm" width="74" height="60" file="' + imagem + '"/>\n'
+    tmp_data+='\t\t\t\t<image x="4cm" y="26.7cm" width="70" height="70" file="' + imagem + '"/>\n'
     tmp_data+='\t\t\t\t<lines>3.3cm 26.3cm 19.5cm 26.3cm</lines>\n'
     tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="15"/>\n'
     tmp_data+='\t\t\t\t<drawString x="6.7cm" y="28.1cm">' + dic_cabecalho['nom_casa'] + '</drawString>\n'
