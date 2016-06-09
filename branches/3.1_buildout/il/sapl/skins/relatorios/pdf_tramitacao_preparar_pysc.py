@@ -92,10 +92,11 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
     tramitacao_dic['unidade_destino'] = unid_destino.nom_unidade_join
 
   # usuario de destino
-  for usu_destino in context.zsql.usuario_obter_zsql(cod_usuario=tramitacao.cod_usuario_dest):
-   tramitacao_dic['usuario_destino'] = usu_destino.col_username
-   tramitacao_dic['nom_usuario_destino'] = usu_destino.nom_completo
-   tramitacao_dic['nom_cargo_usuario_destino'] = usu_destino.nom_cargo
+  if tramitacao.cod_usuario_dest != None:
+    for usu_destino in context.zsql.usuario_obter_zsql(cod_usuario=tramitacao.cod_usuario_dest):
+     tramitacao_dic['usuario_destino'] = usu_destino.col_username
+     tramitacao_dic['nom_usuario_destino'] = usu_destino.nom_completo
+     tramitacao_dic['nom_cargo_usuario_destino'] = usu_destino.nom_cargo
 
 caminho=context.pdf_tramitacao_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,sessao=session.id)
 if caminho=='aviso':

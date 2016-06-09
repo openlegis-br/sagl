@@ -100,11 +100,6 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0].focus();
           return false;
       }
 
-      if (form.lst_cod_usuario_dest.value==""){
-          alert("O usuário de destino deve ser selecionado!");
-          form.lst_cod_usuario_dest.focus();
-          return false;
-      }
 
       if (form.lst_cod_usuario_dest.value==form.hdn_cod_usuario_corrente.value){
           alert("O usuário de destino deve ser diferente do usuário local!");
@@ -187,6 +182,30 @@ $(function() {
                <dtml-call expr="REQUEST.set('dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
              </dtml-unless>
              <input type="text" name="txt_dat_tramitacao" id="txt_dat_tramitacao" size="13" maxlength="10" value="<dtml-var dat_tramitacao missing>" />
+          <dtml-if expr="zsql.tramitacao_pesquisar_zsql(cod_materia=cod_materia)">
+             <td>
+             <label for="lst_cod_unid_tram_local">Unidade de Origem </label><span class="campoObrigatorio">&nbsp;</span><br/>
+             <select name="lst_cod_unid_tram_local" style="max-width: 338px; width: 100%;">
+             <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+                  <dtml-if cod_unid_tram_dest>
+                    <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
+                    <dtml-call expr="REQUEST.set('lst_cod_ult_tram_dest', cod_unid_tram_dest)">
+                  <dtml-else>
+                    <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_local)">
+                  </dtml-if>
+             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram)">
+               <option
+                  <dtml-if expr="_.has_key('cod_tramitacao') and cod_unid_tram_dest==cod_unid_tramitacao"> selected
+                  </dtml-if> 
+               value="<dtml-var cod_unid_tramitacao>">
+               <dtml-if cod_orgao><dtml-var nom_orgao>
+               <dtml-elif cod_comissao><dtml-var nom_comissao> 
+               <dtml-else><dtml-var nom_parlamentar> 
+               </dtml-if></option>
+             </dtml-in></dtml-in>
+             </select> 
+             </td>
+          <dtml-else>
              <td>
              <label for="lst_cod_unid_tram_local">Unidade de Origem </label><span class="campoObrigatorio">&nbsp;</span><br/>
              <select name="lst_cod_unid_tram_local" style="max-width: 338px; width: 100%;">
@@ -206,7 +225,8 @@ $(function() {
              </dtml-in>
              </select>
              </td>
-        <td class="form-element" width="25%">Usuário de Origem</br>
+          </dtml-if>
+        <td class="form-element" width="25%">Usuário Local</br>
            <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
              <input type="text" size="12" value="<dtml-var col_username>" readonly>
              <input type="hidden" name="hdn_cod_usuario_corrente" id="hdn_cod_usuario_corrente" value="<dtml-var cod_usuario_corrente missing>" />
@@ -239,7 +259,7 @@ $(function() {
              </dtml-in>
              </select>
               </td>
-        <td class="form-element">Usuário de Destino <span class="campoObrigatorio">&nbsp;</span></br>
+        <td class="form-element">Usuário de Destino</br>
           <style scoped>div.dhxcombo_dhx_skyblue{margin-left: 0;}</style>
              <select name="lst_cod_usuario_dest" id="lst_cod_usuario_dest" style="max-width: 110.25px; width: 100%;">
                <option value="<dtml-var cod_usuario_dest missing>">

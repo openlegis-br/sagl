@@ -20,7 +20,7 @@
 <script type="text/javascript">
 <!--
    $(document).ready(function() { 
-    $("#pendentes")
+    $("#inbox")
     .tablesorter(
       {theme:'blue',
        widgets:['filter'], 
@@ -48,7 +48,7 @@ tr.clickable:hover td {
 </dtml-in>
 
 <h1 class="firstHeading">Caixa de Entrada - Tramitação de Matérias</h1>
-           <table id="pendentes" class="tablesorter">
+           <table id="inbox" class="tablesorter">
              <thead>
 		 <tr>  
 		     <th width="20%" class="form-label">Origem</th>
@@ -59,7 +59,8 @@ tr.clickable:hover td {
 		 </tr>
              </thead>
              <tbody>
-              <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_dest=cod_usuario_corrente,ind_ult_tramitacao=1,ind_recebido=0,ind_encaminha=1)">
+              <dtml-in expr="caixa_entrada_pysc(cod_usuario=cod_usuario_corrente)">
+              <dtml-in expr="zsql.tramitacao_obter_zsql(cod_tramitacao=_['sequence-item'])">
                    <dtml-call expr="REQUEST.set('prazo_a_vencer', _.DateTime()+3)">
                    <tr onclick="javascript:submeter(<dtml-var cod_tramitacao>,document.inbox_form_<dtml-var cod_tramitacao>)" class="clickable">
                    <form name="inbox_form_<dtml-var cod_tramitacao>" method="post" action="tramitacao_mostrar_proc"> 
@@ -100,7 +101,7 @@ tr.clickable:hover td {
                      ><dtml-var dat_fim_prazo missing null></td>
                    </form>
                    </tr>
-                </dtml-in>
+                </dtml-in></dtml-in>
              </tbody>
            </table>
            <div id="pager" class="pager">
