@@ -327,7 +327,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -354,7 +354,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/iom.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_odt = "publicacao_iom.odt"
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -370,7 +370,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "materia_apreciada.odt"
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -399,7 +399,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -426,7 +426,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -453,7 +453,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()                                                                            
         data = open(output_file_odt, "rb").read()                 
         for file in [output_file_odt]:
@@ -480,7 +480,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "resumo_sessao.odt"
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -496,7 +496,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -523,7 +523,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "oficio_indicacao.odt"
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -539,7 +539,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -566,7 +566,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -593,7 +593,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -606,7 +606,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.norma_juridica.absolute_url() + "/%s"%nom_arquivo_odt
         odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
-        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
@@ -620,7 +620,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -633,7 +633,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.administrativo.absolute_url() + "/%s"%nom_arquivo_odt
         odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
-        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
@@ -647,7 +647,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -661,7 +661,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
@@ -688,7 +688,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
-        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3')
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
