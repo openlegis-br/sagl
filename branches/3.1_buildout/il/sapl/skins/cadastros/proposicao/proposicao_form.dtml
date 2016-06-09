@@ -178,10 +178,10 @@ $(document).ready(function() {
 <a id="ajuda" href="&dtml-portal_url;/ajuda/proposicao">Ajuda</a>
 
 <dtml-unless dat_envio>
-    <dtml-call expr="REQUEST.set('dat_envio','00/00/0000 00:00:00')">
+    <dtml-call expr="REQUEST.set('dat_envio',None)">
 </dtml-unless>
 
-<dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!='00/00/0000 00:00:00'))">
+<dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!=None))">
 
 <dtml-if cod_proposicao>
     <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
@@ -202,12 +202,14 @@ $(document).ready(function() {
             <dtml-if expr="not (prop_enviada)">
             <dtml-else>
               <dtml-if usr_eh_autor>
-            <ul>
+              <div id="barra-conteudo">
+               <ul>
                 <dtml-let cod_doc="pysc.proposicao_calcular_checksum_pysc(cod_proposicao)">
                  <li>
                     <a target="blank" href="proposicao_recibo_imprimir?cod_documento=<dtml-var cod_doc>">Imprimir Recibo</a>
                  </li>
-            </ul>
+               </ul>
+               </div>
                 </dtml-let>
               </dtml-if>
             </dtml-if>
@@ -255,7 +257,7 @@ $(document).ready(function() {
                           <dtml-if cod_proposicao>
                             <b>Data de Envio</b><br />
                             <dtml-if prop_enviada>
-                               <input type="text" name="txt_dat_criacao" value="<dtml-var dat_envio missing>"
+                               <input type="text" name="txt_dat_criacao" value="<dtml-var dat_envio missing null>"
                                       size="19" maxlength="19" onChange="javascript:form.hdn_alterou.value=1"
                                 readonly /> 
                             <dtml-else>
@@ -404,7 +406,7 @@ $(document).ready(function() {
                                 Documento Assinado
                                </a>
                              </dtml-let>
-                              <dtml-if expr="dat_envio=='00/00/0000 00:00:00'">
+                              <dtml-if expr="dat_envio==None">
                                 <div id="menuitem2" style="cursor: pointer; float:left; padding-right: 4px;">
                                  <a class="pdf">Adicionar Assinaturas</a>
                                 </div>

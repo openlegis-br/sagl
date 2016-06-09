@@ -1783,7 +1783,7 @@ CREATE TABLE `proposicao` (
   `cod_materia` int(11) DEFAULT NULL,
   `cod_autor` int(11) NOT NULL,
   `tip_proposicao` int(11) NOT NULL,
-  `dat_envio` datetime NOT NULL,
+  `dat_envio` datetime DEFAULT NULL,
   `dat_recebimento` datetime DEFAULT NULL,
   `txt_descricao` varchar(400) COLLATE utf8_unicode_ci NOT NULL,
   `cod_mat_ou_doc` int(11) DEFAULT NULL,
