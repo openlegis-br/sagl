@@ -30,11 +30,12 @@ FROM
        LEFT JOIN status_tramitacao as status ON tramitacao.cod_status = status.cod_status 
        LEFT JOIN unidade_tramitacao as unidade1 ON tramitacao.cod_unid_tram_local = unidade1.cod_unid_tramitacao 
        LEFT JOIN unidade_tramitacao as unidade2 ON tramitacao.cod_unid_tram_dest = unidade2.cod_unid_tramitacao
-       LEFT JOIN materia_legislativa ON tramitacao.cod_materia = materia_legislativa.cod_materia       
+       LEFT JOIN materia_legislativa ON tramitacao.cod_materia = materia_legislativa.cod_materia
+       LEFT JOIN tipo_materia_legislativa ON materia_legislativa.tip_id_basica = tipo_materia_legislativa.tip_materia
        
   <dtml-sqlgroup where>
     <dtml-sqltest cod_tramitacao        op="="                                         type="int" optional> <dtml-and>
-    <dtml-sqltest cod_materia           op="="                                         type="int" optional> <dtml-and>
+    <dtml-sqltest cod_materia           op="=" column="tramitacao.cod_materia" type="int" optional> <dtml-and>
     <dtml-sqltest ind_ult_tramitacao    op="=" column="tramitacao.ind_ult_tramitacao"  type="int" optional> <dtml-and>
     <dtml-sqltest cod_unid_tram_origem  op="=" column="tramitacao.cod_unid_tram_local" type="int" optional> <dtml-and>
     <dtml-sqltest cod_usuario_local     op="=" column="tramitacao.cod_usuario_local"   type="int" optional> <dtml-and>
@@ -86,4 +87,10 @@ FROM
       AND <dtml-sqltest ind_fim_tramitacao   op="=" column="status.ind_fim_tramitacao"   type="int" optional>
     </dtml-if>
 
-ORDER BY tramitacao.cod_materia DESC, tramitacao.dat_tramitacao DESC, tramitacao.cod_tramitacao DESC
+ORDER BY 
+     tipo_materia_legislativa.sgl_tipo_materia, 
+     LPAD(materia_legislativa.num_ident_basica, 5, '0'), 
+     materia_legislativa.ano_ident_basica,
+     tramitacao.cod_materia DESC, 
+     tramitacao.dat_tramitacao DESC, 
+     tramitacao.cod_tramitacao DESC
