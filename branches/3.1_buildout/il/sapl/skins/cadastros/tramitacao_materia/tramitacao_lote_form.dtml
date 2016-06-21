@@ -216,8 +216,6 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
               <dtml-if expr="not dat_extincao">
                 <option 
-                  <dtml-if expr="_.has_key('hdn_cod_unid_tram_dest') and hdn_cod_unid_tram_dest==int(cod_unid_tramitacao)"> selected
-                  </dtml-if>
                   value="<dtml-var cod_unid_tramitacao>">
                 <dtml-if cod_orgao><dtml-var nom_orgao>
                 <dtml-elif cod_comissao><dtml-var nom_comissao> 
@@ -267,10 +265,12 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
          </td>
          <td class="label">
           Urgente? <span class="campoObrigatorio">&nbsp;</span><br />
-                <dtml-in expr="[(1,'Sim'),(0,'Não')]">
-                 <input type="radio" name="rad_ind_urgencia" value="<dtml-var sequence-key>">
-                  <dtml-var sequence-item>
-                </dtml-in>
+             <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+              <input type="radio" name="rad_ind_urgencia" value="<dtml-var sequence-key>" 
+                 <dtml-if expr="_.has_key('cod_tramitacao') and ind_urgencia==_['sequence-key']">checked=1</dtml-if>
+                 <dtml-if expr="_['sequence-item']=='Não'">checked=1</dtml-if> onChange="javascript:form.hdn_alterou.value=1" />
+              <span class="texto"><dtml-var sequence-item></span>
+            </dtml-in>
          </td>
       </tr>
       <tr>          
@@ -335,7 +335,7 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
   </dtml-if sequence-end>
   <dtml-else>
 </fieldset>
-  <span class="texto">Não há matérias para tramitação em lote a partir desta unidade.</span>
+  <br /><span class="texto">Não há matérias para tramitação em lote a partir desta unidade.</span>
    <p align="center">
      <input type="button" class="botao" name="btn-retornar" value="Retornar" onClick="history.go(-1)" />
    </p>

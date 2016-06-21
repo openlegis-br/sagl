@@ -240,9 +240,7 @@ $(function() {
               <select name="lst_cod_unid_tram_dest" onChange="javascript:form.hdn_alterou.value=1">
                <option></option>
               <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
-               <option <dtml-if expr="_.has_key('cod_tramitacao') and cod_unid_tram_dest==cod_unid_tramitacao">
-                        selected
-                       </dtml-if> value="<dtml-var cod_unid_tramitacao>">
+               <option value="<dtml-var cod_unid_tramitacao>">
                        <dtml-if cod_orgao>
                         <dtml-var nom_orgao>
                        <dtml-elif cod_comissao>
@@ -256,10 +254,12 @@ $(function() {
              </td>
              <td class="label">
               Urgente? <span class="campoObrigatorio">&nbsp;</span><br />
-              <dtml-in expr="[(1,'Sim'),(0,'Não')]">
-               <input type="radio" name="rad_ind_urgencia" value="<dtml-var sequence-key>" 
-                      onChange="javascript:form.hdn_alterou.value=1"><dtml-var sequence-item>
-              </dtml-in>
+             <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+              <input type="radio" name="rad_ind_urgencia" value="<dtml-var sequence-key>" 
+                 <dtml-if expr="_.has_key('cod_tramitacao') and ind_urgencia==_['sequence-key']">checked=1</dtml-if>
+                 <dtml-if expr="_['sequence-item']=='Não'">checked=1</dtml-if> onChange="javascript:form.hdn_alterou.value=1" />
+              <span class="texto"><dtml-var sequence-item></span>
+            </dtml-in>
              </td>
            </tr>
            <tr>
@@ -320,7 +320,7 @@ $(function() {
 </form>
 <dtml-else>  
      <fieldset><legend>Primeira Tramitação</legend>
-          <span class="texto">Não foram encontradas matérias com o critério informado.</span> 
+          <br /><span class="texto">Não foram encontradas matérias com o critério informado.</span> 
            <p align="center">
               <input class="botao" type="button" name="btn-retornar" value="Retornar" onClick="history.go(-1)">
            </p>
