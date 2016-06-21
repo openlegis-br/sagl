@@ -8,7 +8,8 @@
 <!--
   function campos_criticar(form){
 
-      var form = document.tramitacao_lote_tramitar_proc;
+      var form = document.getElementById('tramitacao_lote_tramitar_proc');
+
 
       if (form.lst_cod_unid_tram_local.selectedIndex == 0 ){
           alert("A unidade local deve ser selecionada!");
@@ -19,12 +20,6 @@
       if (form.lst_cod_unid_tram_dest.value==""){
           alert("A unidade de destino deve ser selecionada!");
           form.lst_cod_unid_tram_dest.focus();
-          return false;
-      }
-
-      if (form.lst_cod_usuario_dest.value==""){
-          alert("O usuário de destino deve ser selecionado!");
-          form.lst_cod_usuario_dest.focus();
           return false;
       }
 
@@ -174,25 +169,22 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
 <dtml-if expr="not _.has_key('hdn_cod_unid_tram_local')">
       <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_local',0)">
 </dtml-if>
- <dtml-in expr="zsql.tramitacao_obter_zsql(cod_unid_tram_destino=int(hdn_cod_unid_tram_local),ind_ult_tramitacao=1,ind_recebido=0,ind_encaminha=1,ind_retorno_tramitacao=1)">
+
+<dtml-in expr="caixa_entrada_pysc(cod_usuario=cod_usuario_corrente)">
 <dtml-if sequence-start>
-  <form name="tramitacao_lote_tramitar_proc" method="post" action="tramitacao_lote_salvar_proc">
-  <table>
+ <form name="tramitacao_lote_tramitar_proc" id="tramitacao_lote_tramitar_proc" method="post" action="tramitacao_lote_salvar_proc">
+ <table>
     <tr>
        <th colspan="2" class="label">1. Selecione a Unidade Local</th>
     </tr>
     <tr>
         <td class="form-element" width="50%">Unidade Local </label><span class="campoObrigatorio">&nbsp;</span></br>
-          <select name="lst_cod_unid_tram_local" id="lst_cod_unid_tram_local" style="max-width: 338px; width: 100%;"">
+          <select name="lst_cod_unid_tram_local" id="lst_cod_unid_tram_local" style="max-width: 338px; width: 100%;">
             <option value="0">Selecione</option>
             <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
              <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = cod_unid_tramitacao)">
               <dtml-if expr="not dat_extincao">
-                <option
-                   <dtml-if expr="_.has_key('hdn_cod_unid_tram_local') and cod_unid_tramitacao==hdn_cod_unid_tram_local">
-                    selected
-                   </dtml-if>
-                  value="<dtml-var cod_unid_tramitacao>">
+                <option value="<dtml-var cod_unid_tramitacao>">
                 <dtml-if cod_orgao><dtml-var nom_orgao>
                 <dtml-elif cod_comissao><dtml-var nom_comissao> 
                 <dtml-else><dtml-var nom_parlamentar> 
@@ -236,7 +228,7 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
           </select>
         </td>
         <style scoped>div.dhxcombo_dhx_skyblue{margin-left: 0;}</style>
-        <td class="form-element">Usuário de Destino <span class="campoObrigatorio">&nbsp;</span></br>
+        <td class="form-element">Usuário de Destino</br>
              <select name="lst_cod_usuario_dest" id="lst_cod_usuario_dest" style="max-width: 110.25px; width: 100%;">
 
              </select>
@@ -300,20 +292,16 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
       <tr><th colspan="3" class="label">3. Selecione as matérias para nova tramitação</th></tr>
        <tr>
           <td class="texto" colspan="3">
-	     Há <dtml-var sequence-length> matéria(s) pendente(s) de tramitação para este usuário.
+	     Há <dtml-var sequence-length> matéria(s) pendente(s) de tramitação nesta unidade.
           </td>
        </tr>
  </dtml-if sequence-start>
-  <dtml-in expr="zsql.numeracao_pesquisar_zsql(cod_materia=cod_materia, ind_excluido=0)">
-    <dtml-call expr="REQUEST.set('num_materia', _['sequence-item'][0])">
-  <dtml-else>
-    <dtml-call expr="REQUEST.set('num_materia', '')">
-  </dtml-in>
 
+ <dtml-in expr="zsql.tramitacao_obter_zsql(cod_tramitacao=_['sequence-item'], ind_excluido=0)">
   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
        <tr>
           <td class="texto" width="7%">
-            <div align="center"><input type="checkbox" name="check_tram" value="<dtml-var cod_materia>"></div>
+            <div align="center"><input type="checkbox" id="check_tram" name="check_tram" value="<dtml-var cod_materia>"></div>
             <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao missing>">
           </td>
           <td class="texto">
@@ -333,6 +321,7 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
           </td>
        </tr>
   </dtml-in>
+ </dtml-in>
 
  <dtml-if sequence-end>
  </table>
@@ -342,7 +331,7 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
       <input class="botao" type="button" name="btn_limpar" value="Limpar" onClick="Limpa(document.tramitacao_lote_tramitar_proc)">
       <input class="botao" type="button" name="select_all" value="Selecionar todas" onClick="selecao(this.form)">
    </p>
-</form>
+  </form>
   </dtml-if sequence-end>
   <dtml-else>
 </fieldset>
@@ -351,5 +340,6 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
      <input type="button" class="botao" name="btn-retornar" value="Retornar" onClick="history.go(-1)" />
    </p>
 </dtml-in>
+
 
 <dtml-var standard_html_footer>
