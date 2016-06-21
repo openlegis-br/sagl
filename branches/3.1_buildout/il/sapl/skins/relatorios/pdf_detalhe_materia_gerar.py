@@ -13,7 +13,7 @@ def cabecalho(dic_inf_basicas,imagem):
     Função que gera o código rml do cabeçalho da página
     """
     tmp=''
-    tmp+='\t\t\t\t<image x="4.1cm" y="26.9cm" width="74" height="60" file="' + imagem + '"/>\n'
+    tmp+='\t\t\t\t<image x="4cm" y="26.7cm" width="70" height="70" file="' + imagem + '"/>\n'
     tmp+='\t\t\t\t<lines>3.3cm 26.3cm 19.5cm 26.3cm</lines>\n'
     tmp+='\t\t\t\t<setFont name="Helvetica-Bold" size="15"/>\n'
     tmp+='\t\t\t\t<drawString x="6.7cm" y="28.1cm">' + dic_inf_basicas['nom_camara'] + '</drawString>\n'

@@ -68,7 +68,15 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=REQUEST['lst_ti
         dic={}
 
         dic['titulo']=materia.des_tipo_materia.upper()+" N° "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
-        dic['txt_ementa']=materia.txt_ementa 
+
+        if context.portal_membership.isAnonymousUser() and materia.sgl_tipo_materia=='PDL' and materia.txt_indexacao == "TÍTULO" and materia.ano_ident_basica>=2014:
+          for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=materia.cod_materia):
+            if len(tramitacao) > 0 and (tramitacao.sgl_status=='APROVADA' or tramitacao.sgl_status=='LEI CAMARA'):
+              dic['txt_ementa']= materia.txt_ementa
+            else:
+              dic['txt_ementa']= "CONCEDE TÍTULO HONORÍFICO"
+        else:
+          dic['txt_ementa']= materia.txt_ementa 
 
         dic["nom_autor"] = ""
         autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)

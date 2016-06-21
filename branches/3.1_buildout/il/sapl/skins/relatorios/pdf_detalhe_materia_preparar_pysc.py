@@ -45,7 +45,14 @@ else:
 
 for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
 #Abaixo é gerado os dados para o bloco Informações Básicas
- inf_basicas_dic['texto_projeto']= materia.txt_ementa
+ if context.portal_membership.isAnonymousUser() and materia.sgl_tipo_materia=='PDL' and materia.txt_indexacao == "TÍTULO" and materia.ano_ident_basica>=2014:
+    for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=materia.cod_materia):
+      if len(tramitacao) > 0 and (tramitacao.sgl_status=='APROVADA' or tramitacao.sgl_status=='LEI CAMARA'):
+        inf_basicas_dic['texto_projeto']= "CONCEDE TÍTULO HONORÍFICO"
+      else:
+        inf_basicas_dic['texto_projeto']= materia.txt_ementa
+ else:
+    inf_basicas_dic['texto_projeto']= materia.txt_ementa 
  inf_basicas_dic['apresentada']= materia.dat_apresentacao
  inf_basicas_dic['formato']= materia.tip_apresentacao
  inf_basicas_dic['publicada']= materia.dat_publicacao

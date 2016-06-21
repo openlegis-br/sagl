@@ -12,7 +12,7 @@ import time
 def cabecalho(dic_cabecalho,imagem):
     """Gera o codigo rml do cabecalho"""
     tmp_data=''
-    tmp_data+='\t\t\t\t<image x="4.1cm" y="26.9cm" width="74" height="60" file="' + imagem + '"/>\n'
+    tmp_data+='\t\t\t\t<image x="4cm" y="26.7cm" width="70" height="70" file="' + imagem + '"/>\n'
     tmp_data+='\t\t\t\t<lines>3.3cm 26.3cm 19.5cm 26.3cm</lines>\n'
     tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="15"/>\n'
     tmp_data+='\t\t\t\t<drawString x="6.7cm" y="28.1cm">' + dic_cabecalho['nom_casa'] + '</drawString>\n'
@@ -96,7 +96,7 @@ def principal(sessao,imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtr
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="relatorio.pdf">\n'
-    tmp_data+='\t<template pageSize="(21cm, 29.7cm)" title="Relatorio de Matérias" author="OpenLegis" allowSplitting="20">\n'
+    tmp_data+='\t<template pageSize="(21cm, 29.7cm)" title="Relatório de Matérias" author="OpenLegis" allowSplitting="20">\n'
     tmp_data+='\t\t<pageTemplate id="first">\n'
     tmp_data+='\t\t\t<pageGraphics>\n'
     tmp_data+=cabecalho(dic_cabecalho,imagem)
