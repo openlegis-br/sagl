@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_sessao_plen,cod_parlamentar,tip_frequencia="",txt_justif_ausencia=""
+##parameters=cod_sessao_plen,cod_parlamentar,tip_frequencia="",txt_justif_ausencia="",dat_ordem=""
 ##title=
 ##
 
@@ -23,7 +23,7 @@ for parlamentar in lista:
 
 for p in cod_parlamentar:
     if p not in parlamentares:
-        context.zsql.presenca_ordem_dia_incluir_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=p,tip_frequencia=dic.get(p),txt_justif_ausencia=dic2.get(p))
+        context.zsql.presenca_ordem_dia_incluir_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=p,tip_frequencia=dic.get(p),txt_justif_ausencia=dic2.get(p),dat_ordem=dat_ordem)
     else:
         context.zsql.presenca_ordem_dia_alterar_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=p,tip_frequencia=dic.get(p),txt_justif_ausencia=dic2.get(p))
 
