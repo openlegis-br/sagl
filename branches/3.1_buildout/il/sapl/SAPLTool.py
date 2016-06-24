@@ -36,10 +36,12 @@ from StringIO import StringIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
-from reportlab.graphics.barcode import code128
+from reportlab.graphics.barcode import code128, qr
+from reportlab.graphics.shapes import Drawing 
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.graphics.barcode import createBarcodeDrawing
+from reportlab.graphics import renderPDF
 
 #imports para assinatura digital
 import sys
@@ -841,16 +843,16 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         lst_tramitacoes = []
         for tramitacao in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
            dic_tramitacoes={}
-           #if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf'):
-           #   dic_tramitacoes['pdf_tramitacao'] = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + tramitacao.cod_tramitacao + "_tram_signed.pdf"
+           if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf'):
+              dic_tramitacoes['pdf_tramitacao'] = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + tramitacao.cod_tramitacao + "_tram_signed.pdf"
            #   lst_tramitacoes.append(dic_tramitacoes)
-           if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram.pdf'):
+           elif hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram.pdf'):
               dic_tramitacoes['pdf_tramitacao'] = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + tramitacao.cod_tramitacao + "_tram.pdf"
               lst_tramitacoes.append(dic_tramitacoes)
            #if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf') or hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram.pdf'):
-           for dic_tramitacoes in lst_tramitacoes:
-             texto_tramitacao = cStringIO.StringIO(urllib.urlopen(dic_tramitacoes['pdf_tramitacao']).read())
-             merger.append(texto_tramitacao)
+        for dic_tramitacoes in lst_tramitacoes:
+           texto_tramitacao = cStringIO.StringIO(urllib.urlopen(dic_tramitacoes['pdf_tramitacao']).read())
+           merger.append(texto_tramitacao)
 
         output_file_pdf = os.path.normpath(nom_arquivo_pdf)
         f = open(output_file_pdf, "wb")
@@ -863,6 +865,72 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="processo_eletronico.pdf"'
         return contents
+
+    def proposicao_autuar(self,cod_proposicao):
+        nom_pdf_proposicao = str(cod_proposicao) + "_signed.pdf"
+        pdf_proposicao = self.sapl_documentos.proposicao.absolute_url() + "/" +  nom_pdf_proposicao
+        nom_pdf_proposicao = str(cod_proposicao) + "_signed.pdf"
+        for proposicao in self.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao):
+          for tipo_proposicao in self.zsql.tipo_proposicao_obter_zsql(tip_proposicao=proposicao.tip_proposicao):
+            if tipo_proposicao.ind_mat_ou_doc == "M":
+              for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
+                string = str(materia.cod_materia).zfill(11)
+                cod_materia = materia.cod_materia
+                texto = str(materia.des_tipo_materia.upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+                validacao = 'Código: ' + self.pysc.proposicao_calcular_checksum_pysc(cod_proposicao)
+                nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
+            elif tipo_proposicao.ind_mat_ou_doc == "D":
+              for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=proposicao.cod_mat_ou_doc):
+                string = str(documento.cod_documento).zfill(11)
+                cod_materia = documento.cod_materia
+                texto = str(documento.des_tipo_documento.upper())
+                nom_pdf_saida = str(documento.cod_documento) + ".pdf"
+        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
+        pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
+        x_var=27
+        y_var=210
+        packet = os.path.normpath('temp.pdf')
+        slab = canvas.Canvas(packet, pagesize=A4)
+        slab.setFillColorRGB(0,0,0)
+        qr_code = qr.QrCodeWidget(self.url()+'/consultas/materia/materia_mostrar_proc?cod_materia='+str(cod_materia))
+        bounds = qr_code.getBounds()
+        width = bounds[2] - bounds[0]
+        height = bounds[3] - bounds[1]
+        d = Drawing(100, 100, transform=[100./width,0,0,100./height,0,0])
+        d.add(qr_code)
+        renderPDF.draw(d, slab,  x_var*mm, y_var*mm)
+        slab.setFont("Arial_Bold", 12)
+        slab.drawString(185, 675, texto)
+        slab.setFont("Arial", 9)
+        slab.drawString(185, 662, validacao)
+        slab.save()
+        barcode_pdf = open(packet, 'rb')
+        new_pdf = PdfFileReader(barcode_pdf)
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()
+        url = self.url() + '/sapl_documentos/proposicao/' + nom_pdf_proposicao
+        opener = urllib.urlopen(url)
+        f = open('/tmp/' + nom_pdf_proposicao, 'wb').write(opener.read())
+        existing_pdf = PdfFileReader(file('/tmp/' + nom_pdf_proposicao, "rb"))
+        output = PdfFileWriter()
+        for item in range(existing_pdf.getNumPages()):
+          pages = existing_pdf.getPage(item)
+          page1 = existing_pdf.getPage(0)
+          page1.mergePage(new_pdf.getPage(0))
+          output.addPage(pages)
+        outputStream = file(os.path.normpath(nom_pdf_proposicao), "wb")
+        output.write(outputStream)
+        outputStream.close()
+        data = open(nom_pdf_proposicao, "rb").read()              
+        for item in [outputStream]:
+          if nom_pdf_saida in self.sapl_documentos.materia:
+            documento = getattr(self.sapl_documentos.materia,nom_pdf_saida)
+            documento.manage_upload(file=data)
+          else:
+            self.sapl_documentos.materia.manage_addFile(id=nom_pdf_saida,file=data)
+        os.unlink('/tmp/'+nom_pdf_proposicao)
+        os.unlink(packet)
+        os.unlink(nom_pdf_proposicao)
 
     def restpki_client(self):
         restpki_url = 'https://pki.rest/'
