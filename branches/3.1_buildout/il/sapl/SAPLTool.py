@@ -875,16 +875,23 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if tipo_proposicao.ind_mat_ou_doc == "M":
               for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
                 string = str(materia.cod_materia).zfill(11)
+                num_proposicao = proposicao.cod_proposicao
                 cod_materia = materia.cod_materia
+                nom_autor = proposicao.nom_autor
                 texto = str(materia.des_tipo_materia.upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
                 validacao = 'Código: ' + self.pysc.proposicao_calcular_checksum_pysc(cod_proposicao)
                 nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
             elif tipo_proposicao.ind_mat_ou_doc == "D":
               for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=proposicao.cod_mat_ou_doc):
                 string = str(documento.cod_documento).zfill(11)
+                num_proposicao = proposicao.cod_proposicao
                 cod_materia = documento.cod_materia
+                nom_autor = proposicao.nom_autor
                 texto = str(documento.des_tipo_documento.upper())
+                validacao = 'Código: ' + self.pysc.proposicao_calcular_checksum_pysc(cod_proposicao)
                 nom_pdf_saida = str(documento.cod_documento) + ".pdf"
+        mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por '+nom_autor+'.'
+        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/proposicao'+' e informe o número '+ num_proposicao+'.'
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         x_var=27
@@ -906,6 +913,18 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         slab.save()
         barcode_pdf = open(packet, 'rb')
         new_pdf = PdfFileReader(barcode_pdf)
+
+        packet1 = os.path.normpath('temp1.pdf')
+        c = canvas.Canvas(packet1, pagesize=A4)
+        c.setFillColorRGB(0,0,0)
+        c.rotate(90)
+        c.setFont("Arial", 9)
+        c.drawString(10, -578, mensagem1)
+        c.drawString(10, -590, mensagem2)
+        c.save()
+        texto_pdf = open(packet1, 'rb')
+        new_pdf1 = PdfFileReader(texto_pdf)
+
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
         url = self.url() + '/sapl_documentos/proposicao/' + nom_pdf_proposicao
@@ -917,6 +936,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
           pages = existing_pdf.getPage(item)
           page1 = existing_pdf.getPage(0)
           page1.mergePage(new_pdf.getPage(0))
+          pages.mergePage(new_pdf1.getPage(0))
           output.addPage(pages)
         outputStream = file(os.path.normpath(nom_pdf_proposicao), "wb")
         output.write(outputStream)
@@ -930,6 +950,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             self.sapl_documentos.materia.manage_addFile(id=nom_pdf_saida,file=data)
         os.unlink('/tmp/'+nom_pdf_proposicao)
         os.unlink(packet)
+        os.unlink(packet1)
         os.unlink(nom_pdf_proposicao)
 
     def restpki_client(self):
@@ -1053,7 +1074,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 'horizontalAlign': 'Right'
             },
 
-            'position': self.get_visual_representation_position(1)
+            'position': self.get_visual_representation_position(2)
         })
 
         token = signature_starter.start_with_webpki()
@@ -1230,7 +1251,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             # Example #2: get the footnote positioning preset and customize it
             visual_position = PadesVisualPositioningPresets.get_footnote(self.restpki_client())
             visual_position['auto']['container']['left'] = 2.54
-            visual_position['auto']['container']['bottom'] = 3
+            visual_position['auto']['container']['bottom'] = 2.54
             visual_position['auto']['container']['right'] = 2.54
             return visual_position
         elif sample_number == 3:
