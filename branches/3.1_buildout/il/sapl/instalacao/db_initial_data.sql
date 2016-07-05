@@ -5743,7 +5743,8 @@ INSERT INTO `orgao` (`cod_orgao`, `nom_orgao`, `sgl_orgao`, `ind_unid_deliberati
 (4, 'Externo - Executivo', 'PM', 0, NULL, NULL, 0),
 (5, 'Externo - Outros', 'EXT', 0, NULL, NULL, 0),
 (6, 'Departamento Legislativo', 'DL', 0, NULL, NULL, 0),
-(7, 'Arquivo', 'ARQ', 0, NULL, NULL, 0);
+(7, 'Arquivo', 'ARQ', 0, NULL, NULL, 0),
+(8, 'Assessoria Legislativa', 'AL', 0, NULL, NULL, 0);
 
 --
 -- Fazendo dump de dados para tabela `partido`
@@ -6188,14 +6189,14 @@ INSERT INTO `tipo_situacao_norma` (`tip_situacao_norma`, `des_tipo_situacao`, `i
 -- Fazendo dump de dados para tabela `tipo_vinculo_norma`
 --
 
-INSERT INTO `tipo_vinculo_norma` (`tipo_vinculo`, `des_vinculo`, `des_vinculo_passivo`, `ind_excluido`) VALUES 
-('A', 'Altera', 'Alteração', '0'),
-('C', 'Norma correlata', 'Norma correlata', '0'),
-('G', 'Regulamenta', 'Regulamentação', '0'),
-('I', 'Suspende a execução', 'Suspensão de execução', '0'),
-('P', 'Revoga parcialmente', 'Revogação parcial', '0'),
-('R', 'Revoga', 'Revogação', '0'),
-('T', 'Revoga por consolidação', 'Revogação por consolidação', '0');
+INSERT INTO `tipo_vinculo_norma` (`cod_tip_vinculo`, `tipo_vinculo`, `des_vinculo`, `des_vinculo_passivo`, `tip_situacao`, `ind_excluido`) VALUES
+(1, 'A', 'Altera a', 'Alterada pela', 22, 0),
+(2, 'C', 'Norma correlata', 'Norma correlata', NULL, 0),
+(3, 'G', 'Regulamenta a', 'Regulamentada pela', NULL, 0),
+(4, 'I', 'Suspende a execução', 'Suspensão de execução', NULL, 0),
+(5, 'P', 'Revoga parcialmente a', 'Revogada parcialmente pela', 3, 0),
+(6, 'R', 'Revoga a', 'Revogada pela', 2, 0),
+(7, 'T', 'Revoga por consolidação', 'Revogação por consolidação', NULL, 0);
 
 --
 -- Fazendo dump de dados para tabela `tipo_votacao`
@@ -6227,7 +6228,8 @@ INSERT INTO `unidade_tramitacao` (`cod_unid_tramitacao`, `cod_comissao`, `cod_or
 (4, NULL, 4, NULL, 0),
 (5, NULL, 5, NULL, 0),
 (6, NULL, 6, NULL, 0),
-(7, NULL, 7, NULL, 0);
+(7, NULL, 7, NULL, 0),
+(8, NULL, 8, NULL, 0);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

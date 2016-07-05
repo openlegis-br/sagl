@@ -509,6 +509,21 @@ CREATE TABLE `cargo_comissao` (
 
 -- --------------------------------------------------------
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `cargo_executivo`
+--
+
+CREATE TABLE `cargo_executivo` (
+  `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT,
+  `des_cargo` varchar(50) NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`cod_cargo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
 --
 -- Estrutura da tabela `cargo_mesa`
 --
@@ -693,6 +708,46 @@ CREATE TABLE `composicao_comissao` (
 --   `cod_cargo`
 --       `cargo_comissao` -> `cod_cargo`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `composicao_executivo`
+--
+
+CREATE TABLE `composicao_executivo` (
+  `cod_composicao` int(11) NOT NULL AUTO_INCREMENT,
+  `num_legislatura` tinyint(4) NOT NULL,
+  `nom_completo` varchar(50) NOT NULL,
+  `cod_cargo` tinyint(4) NOT NULL,
+  `cod_partido` int(11) DEFAULT NULL,
+  `dat_inicio_mandato` date DEFAULT NULL,
+  `dat_fim_mandato` date DEFAULT NULL,
+  `txt_observacao` text COLLATE utf8_unicode_ci,
+  `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
+   PRIMARY KEY (`cod_composicao`),
+   KEY `num_legislatura` (`num_legislatura`),
+   KEY `cod_cargo` (`cod_cargo`),
+   KEY `cod_partido` (`cod_partido`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- RELACIONAMENTOS PARA A TABELA `composicao_executivo`:
+--   `num_legislatura`
+--       `legislatura` -> `num_legislatura`
+--   `cod_cargo`
+--       `cargo_executivo` -> `cod_cargo`
+--   `cod_partido`
+--       `partido` -> `cod_partido`
+--
+
+--
+-- Limitadores para a tabela `composicao_executivo`
+--
+ALTER TABLE `composicao_executivo`
+  ADD CONSTRAINT `cod_cargo_ibfk` FOREIGN KEY (`cod_cargo`) REFERENCES `cargo_executivo` (`cod_cargo`) ON UPDATE NO ACTION,
+  ADD CONSTRAINT `cod_partido_ibfk` FOREIGN KEY (`cod_partido`) REFERENCES `partido` (`cod_partido`) ON UPDATE NO ACTION,
+  ADD CONSTRAINT `num_legislatura_ibfk` FOREIGN KEY (`num_legislatura`) REFERENCES `legislatura` (`num_legislatura`) ON UPDATE NO ACTION;
 
 -- --------------------------------------------------------
 

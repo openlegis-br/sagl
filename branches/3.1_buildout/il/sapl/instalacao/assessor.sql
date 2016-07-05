@@ -542,6 +542,3 @@ ALTER TABLE  `tramitacao_administrativo` ADD  `dat_recebimento` DATETIME NULL DE
 
 ALTER TABLE  `protocolo` CHANGE  `tip_processo`  `tip_processo` INT( 4 ) NULL DEFAULT NULL ;
 
-ALTER TABLE `proposicao` CHANGE `dat_envio` `dat_envio` DATETIME NULL;
-
-
