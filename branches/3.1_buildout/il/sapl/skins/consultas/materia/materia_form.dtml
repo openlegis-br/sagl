@@ -312,32 +312,27 @@ $(document).ready(function() {
 </dtml-if>
 
 <dtml-if expr="tip_origem_externa or num_origem_externa or ano_origem_externa or cod_local_origem_externa or dat_origem_externa">
- <dtml-if expr="tip_origem_externa or num_origem_externa or ano_origem_externa">  
  <fieldset>
   <legend>Origem Externa</legend>
   <table>
     <tr>
-      <th rowspan="2" class="form-label"><b>Origem Externa</b></th> 
+      <th rowspan="2" class="form-label" width="20%"><b>Origem Externa</b></th> 
          <td class="texto"><b>Tipo: </b>
           <dtml-if tip_origem_externa>
              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_origem_externa)">
               <dtml-var sgl_tipo_materia missing null=""> - <dtml-var des_tipo_materia missing null="">
              </dtml-in>
+	  </dtml-if>
          </td>
-	 </dtml-if>
 	 <dtml-if num_origem_externa>
-         <td class="texto"><b>Número: </b>
-          <dtml-var num_origem_externa missing></td>
-	 </dtml-if>
-	 <dtml-if ano_origem_externa>
-         <td class="texto"><b>Ano: </b>
-          <dtml-var ano_origem_externa missing null=""></td>
+           <td class="texto"><b>Número: </b>
+            <dtml-var num_origem_externa missing></td>
+           <td class="texto"><b>Ano: </b>
+            <dtml-var ano_origem_externa missing null=""></td>
 	 </dtml-if> 
      </tr>
-     </dtml-if>
      <dtml-if expr="cod_local_origem_externa or dat_origem_externa">
      <tr> 
-       <dtml-if cod_local_origem_externa>
        <td colspan="2" class="texto"><b>Local Origem: </b>
         <dtml-if cod_local_origem_externa>
           <dtml-in expr="zsql.origem_obter_zsql(cod_origem=cod_local_origem_externa)">
@@ -345,15 +340,14 @@ $(document).ready(function() {
           </dtml-in> 
         </dtml-if>
       </td>
-      </dtml-if>
-      <dtml-if dat_origem_externa>
       <td colspan="1" class="texto"><b>Data: </b>
+      <dtml-if dat_origem_externa>
        <dtml-var dat_origem_externa missing null=""></td>
       </dtml-if>
      </tr>
+   </dtml-if>
   </table>
   </fieldset>
- </dtml-if>
 </dtml-if>
 
 <dtml-if expr="zsql.votacao_materia_expediente_pesquisar_zsql(cod_materia=cod_materia) or zsql.votacao_materia_ordem_dia_pesquisar_zsql(cod_materia=cod_materia)">
@@ -731,16 +725,7 @@ $(document).ready(function() {
        <td width="20%" class="texto">
         <b>Data:</b> <dtml-var dat_tramitacao missing null="">
        </td>
-       <td width="35%" class="texto">
-       <dtml-if cod_unid_tram_dest>
-       <b>Destino:</b> 
-       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
-          <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
-          <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
-          <dtml-else><dtml-var nom_parlamentar missing null="">
-          </dtml-if> 
-       </dtml-in><br />
-       </dtml-if>
+       <td width="30%" class="texto">
        <b>Origem:</b>
        <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
           <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
@@ -748,30 +733,38 @@ $(document).ready(function() {
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
        </dtml-in>
+       <dtml-if cod_unid_tram_dest>
+       <br /><b>Destino:</b> 
+       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
+          <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
+          <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
+          <dtml-else><dtml-var nom_parlamentar missing null="">
+          </dtml-if> 
+       </dtml-in>
+       </dtml-if>
        </td>
        <td class="texto"><b><dtml-var expr="des_status" missing null=""></b>
-       <dtml-comment>
         <dtml-if txt_tramitacao>
           <br /><dtml-var expr="txt_tramitacao" missing>
         </dtml-if>
-       </dtml-comment>
         <dtml-if dat_fim_prazo>
           <br /><b>Prazo: </b> <dtml-var dat_fim_prazo>
         </dtml-if>
+       </td>
+       <td class="texto" width="4%">
         <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
         <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
-
         <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
            <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
              <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
                <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
-                 <img align="top" style="float: right;margin-top:-5px;margin-right: 4px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF"></a>
+                 <img src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF"></a>
              </dtml-let>
            </dtml-if>
            <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
              <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
                <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
-                  <img height="22" style="float: right;margin-top:-10px;margin-right: 4px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada"></a>
+                  <img height="22" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada"></a>
              </dtml-let>
            </dtml-if>
         </dtml-if> 
@@ -803,16 +796,7 @@ $(document).ready(function() {
        <td width="20%" class="texto">
         <b>Data:</b> <dtml-var dat_tramitacao missing null="">
        </td>
-       <td width="35%" class="texto">
-       <dtml-if cod_unid_tram_dest>
-       <b>Destino:</b> 
-       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
-          <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
-          <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
-          <dtml-else><dtml-var nom_parlamentar missing null="">
-          </dtml-if> 
-       </dtml-in><br />
-       </dtml-if>
+       <td width="30%" class="texto">
        <b>Origem:</b>
        <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
           <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
@@ -820,21 +804,29 @@ $(document).ready(function() {
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
        </dtml-in>  
+       <dtml-if cod_unid_tram_dest>
+       <br /> <b>Destino:</b> 
+       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
+          <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
+          <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
+          <dtml-else><dtml-var nom_parlamentar missing null="">
+          </dtml-if> 
+       </dtml-in>
+       </dtml-if>
        </td>
-       <td valign="top" class="texto"><dtml-var expr="des_status" missing null="">
-       <dtml-comment>
+       <td class="texto"><dtml-var expr="des_status" missing null="">
         <dtml-if txt_tramitacao>
           <br /><dtml-var expr="txt_tramitacao" missing>
         </dtml-if>
-       </dtml-comment>
+       </td>
+       <td class="texto" width="4%">
         <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
         <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
-
         <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
            <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
              <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
                <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
-                 <img align="top" style="float: right;margin-top:-5px;margin-right: 4px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF"></a>
+                 <img src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF"></a>
              </dtml-let>
            </dtml-if>
            <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
@@ -844,7 +836,7 @@ $(document).ready(function() {
              </dtml-let>
            </dtml-if>
         </dtml-if> 
-       </td>
+         </td>
       </tr>
     <dtml-if sequence-end>
      </table>
