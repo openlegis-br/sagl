@@ -58,7 +58,7 @@ materias=[]
 REQUEST=context.REQUEST
 for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=REQUEST['lst_tip_materia'], num_ident_basica=REQUEST['txt_numero'],
                                                    ano_ident_basica=REQUEST['txt_ano'], ind_tramitacao=REQUEST['rad_tramitando'],
-                                                   des_assunto=REQUEST['txt_assunto'], nom_relator=REQUEST['txt_relator'],
+                                                   des_assunto=REQUEST['txt_assunto'],
                                                    cod_status=REQUEST['lst_status'], des_tipo_autor=REQUEST['lst_tip_autor'],
                                                    dat_apresentacao=REQUEST['dt_apres'], dat_apresentacao2=REQUEST['dt_apres2'],
                                                    dat_publicacao=REQUEST['dt_public'], dat_publicacao2=REQUEST['dt_public2'],
@@ -124,7 +124,7 @@ filtro['numero']=REQUEST.txt_numero
 filtro['ano']=REQUEST.txt_ano
 filtro['autor']=REQUEST.hdn_txt_autor
 filtro['tipo_autor']=REQUEST.lst_tip_autor
-filtro['relator']=REQUEST.txt_relator
+#filtro['relator']=REQUEST.txt_relator
 filtro['assunto']=REQUEST.txt_assunto
 
 # Atribuição do restante dos dados que precisam de processamento
