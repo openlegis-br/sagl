@@ -105,6 +105,13 @@ INSERT INTO `cargo_comissao` (`cod_cargo`, `des_cargo`, `ind_unico`, `ind_exclui
 (3, 'Suplente', 0, 0);
 
 --
+-- Fazendo dump de dados para tabela `cargo_executivo`
+--
+
+INSERT INTO `cargo_executivo` (`cod_cargo`, `des_cargo`, `ind_excluido`) VALUES ('1', 'Prefeito ', '0');
+INSERT INTO `cargo_executivo` (`cod_cargo`, `des_cargo`, `ind_excluido`) VALUES ('2', 'Vice-prefeito', '0');
+
+--
 -- Fazendo dump de dados para tabela `cargo_mesa`
 --
 

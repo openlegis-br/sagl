@@ -2748,6 +2748,7 @@ CREATE TABLE `usuario` (
 CREATE TABLE `usuario_unid_tram` (
   `cod_usuario` int(11) NOT NULL,
   `cod_unid_tramitacao` int(11) NOT NULL,
+  `ind_responsavel` tinyint(4) NOT NULL DEFAULT '0',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   UNIQUE KEY `PRIMARY_KEY` (`cod_usuario`,`cod_unid_tramitacao`),
   KEY `idx_usuario` (`cod_usuario`),

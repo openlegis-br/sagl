@@ -40,6 +40,8 @@ CREATE TABLE `cargo_executivo` (
   PRIMARY KEY (`cod_cargo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+INSERT INTO `cargo_executivo` (`cod_cargo`, `des_cargo`, `ind_excluido`) VALUES ('1', 'Prefeito ', '0');
+INSERT INTO `cargo_executivo` (`cod_cargo`, `des_cargo`, `ind_excluido`) VALUES ('2', 'Vice-prefeito', '0');
 
 -- Cria Tabela "composicao_executivo"
 
@@ -58,5 +60,9 @@ CREATE TABLE `composicao_executivo` (
    KEY `cod_cargo` (`cod_cargo`),
    KEY `cod_partido` (`cod_partido`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+-- Adiciona campo responsável pela unidade - tabela de vinculo de usuários com unidades
+ALTER TABLE `usuario_unid_tram` ADD `ind_responsavel` TINYINT(4) NOT NULL DEFAULT '0' AFTER `cod_unid_tramitacao`;
 
 
