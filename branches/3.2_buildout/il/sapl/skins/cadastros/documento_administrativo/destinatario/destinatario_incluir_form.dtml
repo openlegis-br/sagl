@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+
+<script type="text/javascript">
+
+    function atualiza_tipo_entidade(cod_documento, tip_instituicao){  
+        location.href = "<dtml-var absolute_url>/destinatario_incluir_form?cod_documento="+cod_documento+"&tip_instituicao_sel="+tip_instituicao;
+    }
+
+   function campos_criticar(form){
+      if (form.txt_cod_instituicao.selectedIndex == '0'){
+          alert("Um destinatário deve ser selecionado!");
+          form.txt_cod_instituicao.focus();
+          return false;
+      }
+
+      form.submit();
+    }
+
+function reloadParentAndClose()
+{
+    // then close this pop-up window
+    parent.jQuery.fancybox.close();
+}
+</script>
+</head>
+<body class="modal">
+
+<h1 class="firstHeading">Destinatários</h1>
+
+<h3 align="center"><dtml-var documento_header></h3>
+
+<fieldset><legend>Incluir Destinatário</legend>
+   <table>
+     <form name="destinatario_incluir_form" method="post" action="destinatario_incluir_proc">
+            <input type="hidden" id="cod_documento" name="cod_documento" value="<dtml-var cod_documento>" />
+	  <tr>
+	     <th>
+		<label for="lst_tip_instituicao">Tipo de entidade</label><span class="campoObrigatorio"></span>
+	     </th>
+	     <th>
+		<label for="lst_tip_instituicao">Destinatário</label><span class="campoObrigatorio"></span>
+	     </th>
+	  </tr>
+	  <tr>
+       <td>
+          <select id="lst_tip_instituicao" name="lst_tip_instituicao" size="10" onChange="atualiza_tipo_entidade(form.elements['cod_documento'].value,form.lst_tip_instituicao [form.lst_tip_instituicao.selectedIndex].value)">
+
+            <dtml-in expr="zsql.tipo_instituicao_obter_zsql(ind_excluido=0)">
+              <option
+              <dtml-if expr="(not _.has_key('tip_instituicao_sel') or (_.has_key('tip_instituicao_sel') and tip_instituicao == _.int(tip_instituicao_sel)))">
+                    selected
+               <dtml-call expr="REQUEST.set('tip_instituicao_sel', tip_instituicao)">
+              </dtml-if> 
+                value="<dtml-var tip_instituicao missing>">
+                <dtml-var nom_tipo_instituicao>
+              </option>
+            </dtml-in>
+          </select>
+        </td>
+       <td>
+          <select id="txt_cod_instituicao" name="txt_cod_instituicao" size="10" style="min-width: 400px !important; max-width: 400px !important;">
+            <option value="0" selected></option>
+            <dtml-in expr="zsql.instituicao_obter_zsql(tip_instituicao=tip_instituicao_sel,ind_excluido=0)">
+              <option value="<dtml-var cod_instituicao>">
+                <dtml-var nom_instituicao>
+              </option>
+            </dtml-in>
+          </select>
+        </td>
+          </tr>
+   </table>
+           <p align="center">
+            <input type="button" name="btn_destinatario_incluir_form" class="botao" value="Incluir" 
+                   onClick="campos_criticar(document.destinatario_incluir_form)">
+            <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+           </p>
+     </form>
+
+</fieldset>
+</body>
+</html>

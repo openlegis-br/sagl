@@ -1,0 +1,51 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_proposicao cod_autor ind_aderido ind_excluido
+max_rows : 50
+max_cache : 100
+</dtml-comment>
+SELECT 
+     REPLACE(coautoria_proposicao.cod_proposicao, 'L', '') as cod_proposicao,
+     REPLACE(coautoria_proposicao.cod_autor, 'L', '') as cod_autor,
+     if(tipo_autor.des_tipo_autor='Parlamentar',parlamentar.nom_completo, 
+     if(tipo_autor.des_tipo_autor='Bancada',bancada.nom_bancada,
+     if(tipo_autor.des_tipo_autor='Comissao', comissao.nom_comissao, autor.nom_autor))) as nom_autor_join,
+     tipo_autor.des_tipo_autor,
+     coautoria_proposicao.ind_aderido,
+     coautoria_proposicao.ind_excluido,
+     proposicao.cod_autor as cod_autor_proposicao,
+     proposicao.txt_descricao,
+     DATE_FORMAT(proposicao.dat_envio, '%d/%m/%Y %T') as dat_envio,
+     tipo_proposicao.des_tipo_proposicao
+
+FROM 
+    coautoria_proposicao
+    LEFT JOIN autor ON coautoria_proposicao.cod_autor=autor.cod_autor
+    LEFT JOIN tipo_autor ON autor.tip_autor = tipo_autor.tip_autor
+    LEFT JOIN parlamentar ON autor.cod_parlamentar = parlamentar.cod_parlamentar AND parlamentar.ind_excluido=0
+    LEFT JOIN comissao ON autor.cod_comissao=comissao.cod_comissao AND comissao.ind_excluido=0
+    LEFT JOIN bancada ON autor.cod_bancada=bancada.cod_bancada AND bancada.ind_excluido=0
+    LEFT JOIN proposicao ON coautoria_proposicao.cod_proposicao=proposicao.cod_proposicao
+    LEFT JOIN tipo_proposicao on proposicao.tip_proposicao = tipo_proposicao.tip_proposicao
+
+<dtml-sqlgroup where>  
+ ((parlamentar.cod_parlamentar is not null AND tipo_autor.des_tipo_autor='Parlamentar') OR
+  (bancada.cod_bancada         is not null AND (tipo_autor.des_tipo_autor='Bancada')) OR  
+  (comissao.cod_comissao       is not null AND (tipo_autor.des_tipo_autor='Comissao')) OR 
+  (tipo_autor.des_tipo_autor!='Parlamentar' AND tipo_autor.des_tipo_autor!='Bancada' and tipo_autor.des_tipo_autor!='Comissao')) <dtml-and>
+  <dtml-sqltest cod_parlamentar    column="autor.cod_parlamentar"                    op="="  type="int"  optional><dtml-and>
+  <dtml-sqltest cod_comissao       column="autor.cod_comissao"                       op="="  type="int"  optional><dtml-and>
+  <dtml-sqltest cod_bancada        column="autor.cod_bancada"                        op="="  type="int"  optional><dtml-and>
+  <dtml-sqltest nom_autor          column="autor.nom_autor"                          op="="  type="nb"   optional><dtml-and>
+  <dtml-sqltest col_username       column="autor.col_username"                       op="="  type="nb"   optional><dtml-and>
+  <dtml-sqltest cod_autor          column="autor.cod_autor"                          op="="  type="int"  optional><dtml-and>
+  <dtml-sqltest des_tipo_autor     column="tipo_autor.des_tipo_autor"                op="="  type="nb"   optional><dtml-and>
+  <dtml-sqltest cod_proposicao     column="coautoria_proposicao.cod_proposicao"      op="="  type="int"  optional><dtml-and>
+  <dtml-sqltest cod_autor          column="coautoria_proposicao.cod_autor"           op="="  type="int"  optional><dtml-and>
+  <dtml-sqltest ind_aderido        column="coautoria_proposicao.ind_aderido"         op="="  type="int"  optional><dtml-and>
+  <dtml-sqltest ind_excluido       column="coautoria_proposicao.ind_excluido"        op="="  type="int"  optional><dtml-and>
+  proposicao.ind_excluido = 0
+</dtml-sqlgroup>
+
+ORDER BY
+  nom_autor_join

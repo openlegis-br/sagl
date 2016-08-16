@@ -1,0 +1,29 @@
+<dtml-call expr="REQUEST.set('erro', 0)">
+<dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento_acessorio)+'.pdf')">
+<dtml-if expr="_.hasattr(sapl_documentos.administrativo,id_documento)">
+    <dtml-try>
+      <dtml-call "sapl_documentos.administrativo.manage_delObjects(id_documento)">
+    </dtml-try>
+</dtml-if>
+
+  <dtml-try>
+      <dtml-call expr="zsql.documento_acessorio_administrativo_excluir_zsql(cod_documento_acessorio = cod_documento_acessorio,
+                       ind_excluido = 0)">
+    <dtml-except>   
+      <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-try>
+
+  <dtml-if silent>
+    <dtml-return erro>
+  <dtml-else>
+    <dtml-if erro>  
+      <dtml-let mensagem="'Ocorreu um erro ao tentar excluir este Documento Acessório!'">
+        <dtml-var mensagem_emitir>
+      </dtml-let>
+    <dtml-else>
+      <dtml-let mensagem="'Documento Acessório excluído com sucesso!'" sucesso="1" url="'index_html?cod_documento_acessorio='+cod_documento_acessorio+'&cod_documento='+cod_documento">
+        <dtml-var mensagem_emitir>
+      </dtml-let>
+    </dtml-if>
+  </dtml-if>
+

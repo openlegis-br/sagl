@@ -1,0 +1,125 @@
+<dtml-var standard_html_header>
+
+<dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+  <dtml-call expr="REQUEST.set('nom_comissao', nom_comissao)">
+</dtml-in>
+
+<script type="text/javascript">
+<!--
+function submeter(endereco){
+var form = document.comissao_form;      
+endereco += '?cod_comissao=<dtml-var cod_comissao>&incluir=0';
+location.href = endereco;
+}   
+//-->
+</script>
+
+<script type="text/javascript">
+<!--
+function periodo_mudou(form){
+var URL = 'index_html?cod_periodo_comp_sel=' +
+form.cod_periodo_comp[form.cod_periodo_comp.selectedIndex].value +
+'&cod_comissao=' + form.cod_comissao.value 
+location.href= URL;
+}
+//-->
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_comissoes">Ajuda</a>
+
+<h1 class="firstHeading"><dtml-var nom_comissao></h1> 
+<div id="barra-conteudo">
+<ul>
+    <li>
+        <a href="&dtml-portal_url;/cadastros/comissao/composicao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>">Início</a>
+    </li>
+    <li>
+        <a class="selecionado">Composição</a>
+    </li>
+    <li>
+        <a href="&dtml-portal_url;/cadastros/comissao/materia/index_html?cod_comissao=<dtml-var cod_comissao>"">Matérias</a>
+    </li>
+    <li>
+        <a href="&dtml-portal_url;/cadastros/comissao/reuniao/index_html?cod_comissao=<dtml-var cod_comissao>"">Reuniões</a>
+    </li>
+</ul>
+</div>
+
+<form name="composicao_index_form" action="composicao_comissao_form">
+   <input type="hidden" name="nom_comissao" value="<dtml-var nom_comissao>" />
+   <input type="hidden" name="cod_comissao" value="<dtml-var cod_comissao>" />
+<fieldset>
+<legend>Composição</legend>
+  <div><label for="cod_periodo_comp">Selecione um Período:</label>
+      <select name="cod_periodo_comp" id="cod_periodo_comp" size="1" onChange="periodo_mudou(document.composicao_index_form)">
+        <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao='')">
+          <option 
+            <dtml-if cod_periodo_comp_sel>
+              <dtml-if expr="(cod_periodo_comp==cod_periodo_comp_sel)"> 
+                selected
+              </dtml-if>
+            <dtml-elif expr="(_.DateTime() <= dat_fim and _.DateTime() >= dat_inicio)">
+              <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', cod_periodo_comp)">
+              selected
+            </dtml-if> value="<dtml-var cod_periodo_comp>"><dtml-var dat_inicio_periodo> a <dtml-var dat_fim_periodo>
+          </option>
+       <dtml-else>
+         <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', -1)">           
+       </dtml-in>
+      </select>
+       <dtml-if expr="not _.has_key('cod_periodo_comp_sel')">
+         <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao='')">
+           <dtml-if sequence-start>
+             <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', cod_periodo_comp)">
+           </dtml-if>
+         </dtml-in>
+       </dtml-if>           
+  </div>
+</fieldset>
+<dtml-if expr="_.int(cod_periodo_comp_sel) != -1">
+  <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_periodo_comp=cod_periodo_comp_sel)">
+     <input type="hidden" name="dat_inicio_periodo" value="<dtml-var dat_inicio_periodo missing>" >
+     <input type="hidden" name="dat_fim_periodo"    value="<dtml-var dat_fim_periodo missing>" >
+  </dtml-in>
+  <dtml-in expr="zsql.composicao_comissao_obter_zsql(cod_comissao=cod_comissao, cod_periodo_comp=cod_periodo_comp_sel)">
+    <dtml-if sequence-start>
+     <fieldset>
+      <table>
+        <tr>
+          <th class="form-label">Parlamentar</th>
+          <th class="form-label">Cargo</th>
+          <th class="form-label">Titular</th>
+          <th class="form-label">Data Designação</th>
+          <th class="form-label">Data Desligamento</th>
+        </tr>
+        
+    </dtml-if sequence-start>
+        <tr><td class="texto">
+                <a href="composicao_comissao_mostrar_proc?cod_comp_comissao=<dtml-var cod_comp_comissao>&cod_periodo_comp=<dtml-var cod_periodo_comp_sel>"><b><dtml-var nom_completo missing></b></a></td>
+             <td class="texto"><dtml-var des_cargo missing></td>
+             <td class="texto"><dtml-if expr="ind_titular">SIM <dtml-else>NÃO</dtml-if></td>
+             <td class="texto"><dtml-var dat_designacao></td>
+             <td class="texto"><dtml-var dat_desligamento missing null=""></td>
+        </tr>
+    <dtml-if sequence-end>
+      </table>
+     </fieldset>
+    </dtml-if sequence-end>
+  <dtml-else>
+ <fieldset><legend>Composição</legend>
+   <p class="texto">Nenhum parlamentar cadastrado neste período para esta comissão.</p>
+   </fieldset>
+  </dtml-in>
+  <p align="center">
+     <input type="submit" name="Submit" class="botao" value="Incluir Parlamentar na Composição" />
+  </p>
+
+<dtml-else>
+ <fieldset><legend>Composição</legend>
+   <p class="texto">Nenhum período cadastrado para composição.</p>
+ </fieldset>
+</dtml-if>
+
+</form>
+<dtml-var standard_html_footer>
+

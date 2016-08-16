@@ -1,0 +1,69 @@
+<dtml-if hdn_cod_proposicao>
+   <dtml-call expr="REQUEST.set('temProposicao',hdn_cod_proposicao!='')">
+</dtml-if>
+
+<dtml-if hdn_cod_substitutivo>
+    <dtml-call expr="REQUEST.set('metodo', zsql.substitutivo_atualizar_zsql)">
+<dtml-else> 
+    <dtml-call expr="REQUEST.set('metodo', zsql.substitutivo_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+    <dtml-call expr="metodo(cod_substitutivo       = hdn_cod_substitutivo,
+                            num_substitutivo       = txt_num_substitutivo,
+                            cod_materia            = cod_materia,
+                            dat_apresentacao       = pysc.data_converter_pysc(data=txt_dat_apresentacao),
+                            num_protocolo          = txt_num_protocolo,
+                            txt_ementa             = txa_txt_ementa,
+                            txt_observacao         = txa_txt_observacao,
+                            cod_autor              = lst_cod_autor)">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar o substitutivo. Tente novamente!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+<dtml-in expr="zsql.substitutivo_incluido_codigo_obter_zsql()">
+    <dtml-call "REQUEST.set('ult_substitutivo_incluido',cod_substitutivo)">
+</dtml-in>
+
+<dtml-else>     
+
+   <dtml-if expr="(_.has_key('hdn_cod_proposicao') and hdn_cod_proposicao!='') or (_.has_key('temProposicao'))">
+
+      <dtml-in expr="zsql.substitutivo_incluido_codigo_obter_zsql()">
+         <dtml-call "REQUEST.set('hdn_cod_substitutivo',cod_substitutivo)">
+      </dtml-in>
+  
+      <dtml-let ok="pysc.proposicao_salvar_como_substitutivo_pysc(hdn_cod_proposicao,hdn_cod_substitutivo,0)">
+        <dtml-if ok>
+          <dtml-call expr="REQUEST.set('dat_recebimento', pysc.data_atual_iso_pysc())">    
+          <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao=hdn_cod_proposicao,dat_recebimento=dat_recebimento,cod_mat_ou_doc=cod_materia,cod_substitutivo=hdn_cod_substitutivo)">
+        <dtml-else>
+          <dtml-call expr="REQUEST.set('erro', 1)">
+        </dtml-if>
+      </dtml-let>
+
+   </dtml-if>
+ 
+    <dtml-call expr="REQUEST.set('erro', 0)">              
+        <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
+          <dtml-if file_nom_arquivo_substitutivo>
+                <dtml-in expr="zsql.substitutivo_incluido_codigo_obter_zsql()">
+                 <dtml-call "REQUEST.set('ult_substitutivo_incluido',cod_substitutivo)">
+                </dtml-in>
+                <dtml-call expr="REQUEST.set('id_substitutivo',_.str(ult_substitutivo_incluido)+'_substitutivo.pdf')">
+             <dtml-if "not existe_arquivo">
+              <dtml-try>            
+                  <dtml-call expr="sapl_documentos.substitutivo.manage_addFile(id=id_substitutivo,file=file_nom_arquivo_substitutivo)">
+              <dtml-except> 
+                     <dtml-call expr="REQUEST.set('erro', 1)">              
+              </dtml-try>      
+             </dtml-if>
+     </dtml-if>
+
+    <dtml-let mensagem="'Substitutivo salvo com sucesso!'" sucesso="1" url="hdn_url">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+
+</dtml-try>

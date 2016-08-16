@@ -1,0 +1,24 @@
+<dtml-in expr="zsql.periodo_comp_mesa_obter_zsql(cod_periodo_comp=hdn_cod_periodo_comp)">
+  <dtml-call expr="REQUEST.set('hdn_dat_inicio', dat_inicio)">
+</dtml-in>
+
+<dtml-in expr="zsql.sessao_legislativa_obter_zsql(data=hdn_dat_inicio)">
+  <dtml-call expr="REQUEST.set('cod_sessao_leg', cod_sessao_leg)">
+</dtml-in>
+
+<dtml-try>
+<dtml-call expr="zsql.composicao_estado_alterar_zsql(cod_parlamentar=cod_parlamentar,
+                                                     cod_sessao_leg=cod_sessao_leg,
+                                                     cod_periodo_comp=hdn_cod_periodo_comp,
+                                                     cod_cargo=cod_cargo,
+                                                     ind_excluido = 1)">
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível excluir o parlamentar da composição da mesa!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>   
+<dtml-else>   
+  <dtml-let mensagem="'Parlamentar excluído com sucesso da composição da mesa!'" sucesso="1" url="'index_html?num_legislatura_sel=' + hdn_num_legislatura + '&cod_periodo_comp_sel=' + hdn_cod_periodo_comp">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+   
+</dtml-try>

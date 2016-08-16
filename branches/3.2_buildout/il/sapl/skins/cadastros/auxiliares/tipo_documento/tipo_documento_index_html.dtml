@@ -1,0 +1,73 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+  function submeter(tip_documento, campo, form) {
+    if (campo.value == "") {
+      alert("O campo não pode ficar vazio!");
+      campo.focus();
+      return;
+    }
+
+    form.hdn_tip_documento.value = tip_documento;
+    form.hdn_des_tipo_documento.value = campo.value;
+
+    form.submit();
+
+  }
+
+  function excluir(tip_documento) {
+    location.href = "<dtml-var absolute_url>/tipo_documento_excluir_proc?tip_documento=" + tip_documento;
+  }
+
+  
+  
+//-->
+</SCRIPT>
+<form name="tipo_documento_form" method="post" action="tipo_documento_salvar_proc">  
+
+<div class="helpsapl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/tipo_documento">Ajuda</a> </div>
+<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+
+<input type="hidden" name="hdn_tip_documento" value=0 />
+<input type="hidden" name="hdn_des_tipo_documento" />  
+
+<fieldset><legend>Tipo Documento</legend>
+
+  <dtml-in expr="zsql.tipo_documento_obter_zsql()">
+    <dtml-if sequence-start>
+       <table>
+         <tr> 
+           <th width="10%" class="form-label">Código</th>
+           <th width="65%" class="form-label">Tipo Documento</th>
+           <th width="25%" class="form-label">Ação</th>
+         </tr>
+       </dtml-if sequence-start>
+         <tr> 
+           <td width="10%" class="form-text">&nbsp;&nbsp;<dtml-var tip_documento></td>
+           <td width="65%"><input type="text" name="txt_des_tipo_documento_<dtml-var tip_documento>" 
+           value="<dtml-var des_tipo_documento>" size="40" maxlength="50" /></td>
+           <td width="25%" class="form-element">&nbsp;<a href="javascript:submeter(<dtml-var tip_documento>,document.tipo_documento_form.txt_des_tipo_documento_<dtml-var tip_documento>,document.tipo_documento_form)">
+                Atualizar</a> / <a href="javascript:excluir(<dtml-var tip_documento>)">Excluir</a>
+        </tr>
+    <dtml-if sequence-end>
+       </table>
+    </dtml-if sequence-end>
+   <dtml-else>
+       <table>
+          <tr><td class="form-text">Nenhum tipo de documento cadastrado.</td></tr>
+       </table>
+   </dtml-in>
+ <table>
+  <tr>
+    <td>
+     <input type="text" name="txt_des_tipo_documento" maxlength="50 "size="40" /><br />
+     <input type="button" class="botao" name="btn_tipo_documento_incluir" value="Incluir Tipo Documento" 
+                onClick="submeter(0, document.tipo_documento_form.txt_des_tipo_documento, document.tipo_documento_form)" />
+     
+   </td>
+ </tr>
+ </table>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

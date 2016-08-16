@@ -1,0 +1,42 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          libreoffice-server
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: libreoffice-server at boot time
+# Description:       Enable service provided by libreoffice-server.
+### END INIT INFO
+OOo_HOME=/usr/lib/libreoffice/program
+SOFFICE_PATH=$OOo_HOME/soffice
+SOFFICE_EXEC=soffice.bin
+PIDFILE=/var/run/libreoffice-server.pid
+set -e
+case "$1" in
+    start)
+    if [ -f $PIDFILE ]; then
+      echo "LibreOffice headless server has already started."
+      sleep 5
+      exit
+    fi
+      echo "Starting LibreOffice headless server"
+      $SOFFICE_PATH --invisible --headless --nologo --nofirststartwizard --accept="socket,host=127.0.0.1,port=2002;urp" & > /dev/null 2>&1
+      PID=`ps ax|grep "soffice.bin --headless"|grep -v grep|cut -d \  -f 1`
+      echo $PID> $PIDFILE
+    ;;
+    stop)
+    if [ -f $PIDFILE ]; then
+      echo "Stopping LibreOffice headless server."
+      killall -9 $SOFFICE_EXEC
+      rm -f $PIDFILE
+      exit
+    fi
+      echo "LibreOffice headless server is not running."
+      exit
+    ;;
+    *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+esac
+exit 0

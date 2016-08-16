@@ -1,0 +1,56 @@
+<dtml-var standard_html_header>
+<a id="ajuda" href="&dtml-portal_url;/ajuda/gerenciamento_usuarios">Ajuda</a>
+<h1 class="firstHeading">Gerenciamento de Usuários</h1>
+<fieldset>
+<script type="text/javascript">
+<!--
+   function mostrar(){
+      location.href = "usuario_form";
+   }
+//-->
+</script>
+
+<form name="usuario_index" action="usuario_excluir_proc" method="post">
+ <div class="form-help">
+   Clique no nome do usuário para editá-lo.
+ </div>
+<table>
+  <tr>
+    <th class="form-label"></th>
+    <th class="form-label">Nome do Usuário</th>
+    <th class="form-label">Perfil</th>
+  <tr>
+<dtml-in "acl_users.getUsers()">
+  <dtml-let user_roles="_.getitem('sequence-item').getRoles()">
+    <dtml-unless "('Manager' in user_roles)">
+      <dtml-if sequence-odd>
+        <tr class="even">
+      <dtml-else>
+        <tr>
+      </dtml-if>
+          <td width="6%">
+            <input type="checkbox" name="names:list" value="<dtml-var sequence-item>" />
+          </td>
+          <td>
+            <a href="usuario_mostrar_proc?nome=<dtml-var sequence-item>"><img src="/p_/User_icon" alt="" border="0" /></a>
+            <a href="usuario_mostrar_proc?nome=<dtml-var sequence-item>"><dtml-var sequence-item></a>
+          </td>
+          <td>
+             <dtml-in user_roles>
+              <dtml-if expr="(_['sequence-item']!='Authenticated'and _['sequence-item']!='Alterar Senha')">
+                <dtml-var sequence-item>
+              </dtml-if>
+             </dtml-in>
+          </td>
+        </tr>
+    </dtml-unless>
+  </dtml-let>
+</dtml-in>
+</table>
+</fieldset>
+<p align="center">
+  <input type="button" class="botao" name="submit" value="Adicionar" onClick="mostrar()"/>
+  <input type="submit" class="botao" name="btn_excluir" value="Excluir" />
+</p>
+</form>
+<dtml-var standard_html_footer>

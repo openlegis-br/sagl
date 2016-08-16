@@ -1,0 +1,40 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_usuario col_username num_cpf ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+SELECT
+       DISTINCT REPLACE(usuario.cod_usuario, 'L', '') as cod_usuario,
+       usuario.col_username,
+       usuario.nom_completo,
+       DATE_FORMAT(usuario.dat_nascimento, '%d/%m/%Y') as dat_nascimento,
+       usuario.num_cpf,
+       usuario.num_rg,
+       usuario.num_tit_eleitor,
+       usuario.end_residencial,
+       REPLACE(usuario.cod_localidade_resid, 'L', '') as cod_localidade_resid,
+       usuario.num_cep_resid,
+       usuario.num_tel_resid,
+       usuario.num_tel_celular,
+       usuario.end_email,
+       usuario.nom_cargo,
+       usuario.num_tel_comercial,
+       usuario.num_ramal,
+       usuario.txt_observacao,
+       localidade.nom_localidade, 
+       localidade.sgl_uf as sgl_uf_sel
+FROM   
+       usuario 
+       LEFT JOIN localidade ON usuario.cod_localidade_resid=localidade.cod_localidade and localidade.ind_excluido = 0
+ 
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_usuario          column="usuario.cod_usuario"         op="="  type="int" optional> <dtml-and>
+  <dtml-sqltest col_username         column="usuario.col_username"        op="="  type="nb"  optional> <dtml-and>
+  <dtml-sqltest num_cpf              column="usuario.num_cpf"             op="="  type="nb"  optional> <dtml-and>
+  <dtml-sqltest ind_excluido         column="usuario.ind_excluido"        op="="  type="int" optional>
+</dtml-sqlgroup>
+
+ORDER BY usuario.nom_completo
+

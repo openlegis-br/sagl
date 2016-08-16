@@ -1,0 +1,85 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_proposicao="" cod_autor="" des_tipo_proposicao="" tip_proposicao="" dat_envio="" ind_excluido=0 col_username="" dat_recebimento="" ind_mat_ou_doc="" tip_mat_ou_doc="" cod_mat_ou_doc="" cod_emenda="" cod_substitutivo="" ind_enviado="" ind_pendente="" ind_recebido="" ind_devolvido="" ind_incorporado="" cod_parlamentar="" 
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+SELECT 
+    REPLACE(p.cod_proposicao, 'L', '') as cod_proposicao,
+    p.txt_justif_devolucao,
+    DATE_FORMAT(p.dat_devolucao, '%d/%m/%Y %T') as dat_devolucao,
+    p.cod_autor,    
+    p.txt_descricao,
+    p.txt_observacao,
+    REPLACE(p.tip_proposicao, 'L', '') as tip_proposicao,
+    REPLACE(p.cod_materia, 'L', '') as cod_materia,
+    t.des_tipo_proposicao,
+    DATE_FORMAT(p.dat_envio, '%d/%m/%Y') as data_envio,
+    DATE_FORMAT(p.dat_envio, '%d/%m/%Y %T') as dat_envio,
+    DATE_FORMAT(p.dat_recebimento, '%d/%m/%Y %T') as dat_recebimento,
+    p.ind_excluido,
+    a.col_username,
+    if (a.cod_parlamentar is not null, parlamentar.nom_completo, if(a.cod_comissao is not null, comissao.nom_comissao, a.nom_autor)) as nom_autor,
+    t.ind_mat_ou_doc,
+    t.tip_mat_ou_doc,
+    p.cod_mat_ou_doc,
+    p.cod_emenda,
+    p.cod_substitutivo
+FROM 
+    proposicao p    
+    left join tipo_proposicao t on p.tip_proposicao = t.tip_proposicao,
+    autor a left join parlamentar on a.cod_parlamentar=parlamentar.cod_parlamentar,
+    autor left join comissao on autor.cod_comissao=comissao.cod_comissao
+<dtml-sqlgroup where>
+    autor.cod_autor = a.cod_autor <dtml-and>
+    autor.ind_excluido = 0 <dtml-and>
+    p.tip_proposicao = t.tip_proposicao <dtml-and>  
+    a.cod_autor = p.cod_autor <dtml-and>
+    <dtml-sqltest cod_proposicao    op="=" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_autor         op="=" column="p.cod_autor" type="int" optional> <dtml-and>
+    <dtml-sqltest des_tipo_proposicao  op="=" column="t.des_tipo_proposicao" type="nb" optional> <dtml-and>
+    <dtml-sqltest tip_proposicao  op="=" column="p.tip_proposicao" type="int" optional> <dtml-and>
+    <dtml-sqltest dat_envio         op="=" type="nb"  optional> <dtml-and>
+    <dtml-sqltest dat_recebimento   op="=" type="nb" optional> <dtml-and>
+    <dtml-sqltest ind_excluido      op="=" column="p.ind_excluido" type="int" optional> <dtml-and>
+    <dtml-sqltest col_username      op="=" column="a.col_username" type="nb"  optional> <dtml-and>
+    <dtml-sqltest ind_mat_ou_doc    op="=" column="t.ind_mat_ou_doc" type="nb" optional> <dtml-and>
+    <dtml-sqltest tip_mat_ou_doc    op="=" column="t.tip_mat_ou_doc" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_mat_ou_doc    op="=" column="p.cod_mat_ou_doc" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_emenda        op="=" column="p.cod_emenda" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_substitutivo  op="=" column="p.cod_substitutivo" type="int" optional> <dtml-and>
+    <dtml-if expr="ind_enviado=='1'">
+        p.dat_envio is not null and p.dat_envio != ''
+    <dtml-elif expr="ind_enviado=='0'">
+        p.dat_envio is null
+    </dtml-if>
+    <dtml-and>
+    <dtml-if expr="ind_pendente==1">
+        p.dat_envio != '' and p.dat_recebimento is null
+    <dtml-elif expr="ind_pendente=='0'">
+        p.dat_envio = ''
+    </dtml-if>
+    <dtml-and>
+    <dtml-if expr="ind_recebido==1">
+        p.dat_recebimento != '' and p.cod_mat_ou_doc is null
+    <dtml-elif expr="ind_recebido==0">
+        p.dat_recebimento is null
+    </dtml-if>
+    <dtml-and>
+    <dtml-if expr="ind_devolvido==1">
+        p.dat_devolucao != ''
+    <dtml-elif expr="ind_devolvido==0">
+        p.dat_devolucao is null
+    </dtml-if>
+    <dtml-and>
+    <dtml-if expr="ind_incorporado==1">
+        p.dat_recebimento != ''
+    <dtml-elif expr="ind_incorporado==0">
+        p.cod_mat_ou_doc is null
+    </dtml-if>
+
+</dtml-sqlgroup>
+
+ORDER BY p.dat_envio DESC, p.cod_proposicao DESC
+

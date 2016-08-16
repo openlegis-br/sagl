@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
+<html lang="pt-br">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Formulário de Afastamento</title>
+<dtml-var standard_css_slot>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/data_validar_jvsc"></script>
+
+<script type="text/javascript">
+<!--
+
+function campos_criticar(form){  
+
+  if (form.lst_tip_afastamento.selectedIndex==0){
+    alert("Selecione o motivo do afastamento ou licença!");
+    form.lst_tip_afastamento.focus();
+    return false;
+  }
+
+  if (form.txt_dat_inicio_afastamento.value == "") {
+    alert("A data iní­cio deve ser preenchida.");
+    form.txt_dat_inicio_afastamento.focus();
+    return false;
+  }
+  
+  if (!IsValidDate(form.txt_dat_inicio_afastamento.value)) {
+    alert("Digite uma data iní­cio válida!");
+    form.txt_dat_inicio_afastamento.focus();
+    form.txt_dat_inicio_afastamento.select();
+    return false;
+  }
+
+  if (form.txt_dat_fim_afastamento.value != "") {
+      if (!IsValidDate(form.txt_dat_fim_afastamento.value)) {
+         alert("Digite uma data fim válida!");
+         form.txt_dat_fim_afastamento.focus();
+         return false;
+      }
+  }
+
+  var dat_fim_afastamento = form.txt_dat_fim_afastamento.value;
+  dat_fim_afastamento = dat_fim_afastamento.substring(6,10) +'/'+ dat_fim_afastamento.substring(3,5) +'/'+ dat_fim_afastamento.substring(0,2);
+
+  var dat_inicio_afastamento = form.txt_dat_inicio_afastamento.value;
+  dat_inicio_afastamento = dat_inicio_afastamento.substring(6,10) +'/'+ dat_inicio_afastamento.substring(3,5) +'/'+ dat_inicio_afastamento.substring(0,2);
+
+  if (form.txt_dat_fim_afastamento.value != "") {  
+     if (dat_inicio_afastamento >= dat_fim_afastamento) {
+        alert("A data iní­cio deve ser menor que a data fim!");
+        return false;
+     }
+  }
+
+  <dtml-try>
+    <dtml-call expr="REQUEST.set('num_legislatura', num_legislatura)">
+    <dtml-except>
+  </dtml-try>
+  <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=num_legislatura)">
+
+  if ((dat_inicio_afastamento > '<dtml-var dat_fim>')||('<dtml-var dat_inicio>' > dat_inicio_afastamento)) {
+     alert("A data de iní­cio deve estar compreendida no perí­odo da\nlegislatura (<dtml-var dat_inicio_conv> - <dtml-var dat_fim_conv>)!");
+     form.txt_dat_inicio_afastamento.focus();
+     return false;
+  }
+
+  if (form.txt_dat_fim_afastamento.value != "") {  
+     if ((dat_fim_afastamento < '<dtml-var dat_inicio>')||('<dtml-var dat_fim>' < dat_fim_afastamento)){
+        alert("A data de fim deve estar entre compreendida no perí­odo da\nlegislatura (<dtml-var dat_inicio_conv> - <dtml-var dat_fim_conv>)!");
+        form.txt_dat_fim_afastamento.focus(); 
+        return false;
+     }
+  }
+
+  </dtml-in>
+
+  if (form.lst_suplente.selectedIndex==0){
+    alert("O suplente deve ser selecionado!");
+    form.lst_suplente.focus();
+    return false;
+  }
+
+  form.submit();
+}
+
+function afastamento_excluir(form) {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "afastamento_excluir_proc?cod_afastamento=<dtml-var cod_afastamento missing>";
+  }
+  
+}
+//-->
+</script>
+
+</head>
+
+<body class="modal">
+
+<h1 class="firstHeading">Cadastro de Afastamento / Licença</h1> 
+
+<dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+  <dtml-call expr="REQUEST.set('nom_parlamentar', nom_parlamentar)">
+</dtml-in>
+
+<h4><dtml-var nom_parlamentar></h4>
+
+<form class="pf-form" id="afastamento_form" name="afastamento_form" action="afastamento_salvar_proc">
+<fieldset>
+  <input type="hidden" name="hdn_cod_afastamento" value="<dtml-var cod_afastamento missing>" />
+  <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>" />
+  <input type="hidden" name="hdn_cod_mandato" value="<dtml-var cod_mandato missing>" />
+  <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura missing>" />
+  <div class="pf-element pf-full-width">
+    <label for="lst_num_legislatura"><span class="pf-label pf-required">Legislatura</span></label>
+       <select class="pf-field" name="lst_num_legislatura" id="lst_num_legislatura" onfocus="this.initialSelect = this.selectedIndex;" onchange="this.selectedIndex = this.initialSelect;" style="min-width: 270px; width: 100%;">
+          <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=num_legislatura,ind_excluido=0)">
+            <option 
+              <dtml-if expr="_.int(afastamento_form.num_legislatura) == _.int(num_legislatura)">
+               selected
+              </dtml-if>
+             value="<dtml-var num_legislatura>">
+              <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">
+            </option>
+          </dtml-in>
+       </select>
+  </div>
+  <div class="pf-element pf-full-width">
+    <label for="lst_tip_afastamento"><span class="pf-label pf-required">Motivo</span></label>
+       <select class="pf-field" name="lst_tip_afastamento" id="lst_tip_afastamento" style="min-width: 270px; width: 100%;">
+          <option value="0">Selecione</option> 
+          <dtml-in expr="zsql.tipo_afastamento_obter_zsql(ind_excluido=0)">
+            <option 
+             <dtml-if tip_afastamento_sel>
+              <dtml-if expr="_.int(tip_afastamento) == _.int(tip_afastamento_sel)">
+               selected
+              </dtml-if>
+             </dtml-if>
+             value="<dtml-var tip_afastamento>">
+              <dtml-var des_afastamento>
+            </option>
+          </dtml-in>
+       </select>
+  </div>
+  <div class="pf-element pf-full-width">
+   <label><span class="pf-label pf-required">Período:</span></label>
+     <div class="pf-group">
+      <label for="txt_dat_inicio_afastamento" class="pf-required">Início
+      <input class="pf-field" type="text" id="txt_dat_inicio_afastamento" name="txt_dat_inicio_afastamento" style="min-width: 94px; max-width: 94px; width: 20%;" value="<dtml-var dat_inicio_afastamento missing null="">" maxlength=10 onblur="formata_data(form.txt_dat_inicio_afastamento)" /></label>
+      <label for="txt_dat_fim_afastamento">&nbsp;Fim
+      <input class="pf-field" type="text" id="txt_dat_fim_afastamento" name="txt_dat_fim_afastamento" style="min-width: 94px; max-width: 94px; width: 20%;" value="<dtml-var dat_fim_afastamento missing null="">" maxlength=10 onblur="formata_data(form.txt_dat_fim_afastamento)" /></label>
+     </div>
+  </div>
+  <div class="pf-element pf-full-width">
+    <label for="lst_suplente"><span class="pf-label pf-required">Suplente</span></label>
+       <select class="pf-field" name="lst_suplente" id="lst_suplente" style="min-width: 270px; width: 100%;">
+          <option value="0">Selecione</option> 
+          <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=num_legislatura,ind_titular='0')">
+            <option 
+             <dtml-if cod_parlamentar_suplente>
+              <dtml-if expr="_.int(cod_parlamentar) == _.int(cod_parlamentar_suplente)">
+               selected
+              </dtml-if>
+             </dtml-if>
+             value="<dtml-var cod_parlamentar>">
+              <dtml-var nom_completo> / <dtml-var sgl_partido>
+            </option>
+          </dtml-in>
+       </select>
+  </div>
+  <div class="pf-element pf-full-width" style="min-height:105px;">
+   <label for="txa_txt_observacao"><span class="pf-label">Observação</span></label>
+      <textarea class="pf-field" name="txa_txt_observacao" id="txa_txt_observacao" style="max-width: 270px; min-height:70px;"><dtml-var txt_observacao missing null=""></textarea>
+  </div>
+</form>
+<div class="pf-element pf-buttons pf-centered">
+  <input type="button" class="botao" name="btn_salvar" value="Salvar" onClick="campos_criticar(document.afastamento_form)" />
+  <dtml-if cod_afastamento>
+    <input type="button" class="botaoExtra" name="btn_excluir" value="Excluir" onClick="afastamento_excluir()" />
+ </dtml-if>
+  <input type="button" class="botao" name="btn_fechar" value="Fechar" onClick="parent.jQuery.fancybox.close();" />
+</div>
+
+</body>
+</html>
+

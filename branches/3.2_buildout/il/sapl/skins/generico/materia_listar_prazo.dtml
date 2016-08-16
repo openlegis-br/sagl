@@ -1,0 +1,100 @@
+<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/materia_legislativa">Ajuda</a>
+
+<h1 class="firstHeading">Matérias Legislativas</h1>
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 20)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+    <dtml-in expr="zsql.tramitacao_prazo_vincendo_obter_zsql()" size="step" start="start" orphan=0>
+          <dtml-if sequence-even>
+             <dtml-call "REQUEST.set ('class', 'odd')">
+          <dtml-else>
+             <dtml-call "REQUEST.set ('class', 'even')">
+          </dtml-if>
+        <dtml-if sequence-start>
+        <fieldset>
+        <legend>Prazos de tramitação vencendo em <dtml-var expr="ZopeTime().strftime('%d/%m/%Y')"></legend>
+        <table>
+         <thead>
+            <tr>
+                <th width="50%" class="form-label">Matéria</th>
+                <th class="form-label">Localização</th>
+                <th class="form-label">Situação</th>
+                <th class="form-label">Prazo</th>
+            </tr>
+         </thead>
+         <tfoot>
+         </tfoot>
+         <tbody>
+        <dtml-if previous-sequence>
+          <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+        </dtml-if previous-sequence>
+        </dtml-if sequence-start>
+          <tr class="<dtml-var class>">
+            <td class="texto" valign="top">
+              <b><a href="&dtml-portal_url;/cadastros/materia/tramitacao/tramitacao_index_html?cod_materia=<dtml-var cod_materia>" target="_blank">
+                 <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a><br />
+                 <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
+                   <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
+                     <b>Autores:</b>
+                   <dtml-else>
+                     <b>Autor:</b>
+                   </dtml-if>
+                 </dtml-if> 
+                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                   <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                  <dtml-if sequence-end><br /></dtml-if>
+                 </dtml-in>
+              <dtml-var txt_ementa>
+            </td>
+            <td class="texto" valign="top">
+              <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest)">
+                    <dtml-if cod_orgao>
+                      <dtml-var nom_orgao><br>
+                    <dtml-elif cod_comissao>
+                      <dtml-var nom_comissao><br>
+                    <dtml-else> 
+                      <dtml-var nom_parlamentar><br> 
+                    </dtml-if>
+              </dtml-in>
+            </td>
+            <td class="texto" valign="top">
+               <dtml-var des_status>
+            </td>
+            <td class="texto" valign="top">
+               <dtml-var dat_fim_prazo>
+            </td>
+        </tr>
+    <dtml-if sequence-end>
+         <tbody>
+     </table>
+</fieldset>
+     <dtml-if next-sequence>
+      <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+    </dtml-if next-sequence>
+    <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+     <p align="center" class="texto">
+        <b><dtml-var "pysc.PageListOutput_pysc('materia_listar_prazo', page, step, _['sequence-length'])">
+      </b></p>
+    </dtml-if>
+  </dtml-if sequence-end>
+  <dtml-else>
+      <fieldset>
+       <legend>Prazos de tramitação vencendo em <dtml-var expr="ZopeTime().strftime('%d/%m/%Y')"></legend>
+        <p class="texto">Nenhuma matéria encontrada.</p>
+      </fieldset>
+</dtml-in>
+<dtml-var standard_html_footer>

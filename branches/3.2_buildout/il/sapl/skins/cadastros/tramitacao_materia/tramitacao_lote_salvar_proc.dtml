@@ -1,0 +1,109 @@
+<dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
+
+<dtml-call expr="REQUEST.set('metodo', zsql.tramitacao_incluir_zsql)">
+<dtml-if expr="txt_check and int(_['txt_check']) == 1">
+  <dtml-call expr="REQUEST.set('cod_materia', check_tram)">
+
+  <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+    <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
+  </dtml-in>
+
+  <dtml-call expr="REQUEST.set('ind_ult_tramitacao', '1')">
+
+  <dtml-try> 
+
+    <dtml-call expr="metodo( cod_materia = cod_materia,
+                             dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
+                             cod_unid_tram_local = lst_cod_unid_tram_local,
+                             cod_usuario_local = hdn_cod_usuario_local,
+                             cod_unid_tram_dest = lst_cod_unid_tram_dest,
+                             cod_usuario_dest = lst_cod_usuario_dest,
+                             dat_encaminha = hdn_dat_encaminha,
+                             cod_status = lst_cod_status, 
+                             ind_urgencia = rad_ind_urgencia,
+                             txt_tramitacao = txa_txt_tramitacao,
+                             dat_fim_prazo = pysc.data_converter_pysc(data=txt_dat_fim_prazo),
+                             ind_ult_tramitacao = ind_ult_tramitacao)">
+
+    <dtml-if cod_ult_tramitacao>
+      <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao = cod_ult_tramitacao, ind_ult_tramitacao = 0)">
+      <dtml-call expr="zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao=cod_ult_tramitacao,cod_usuario_corrente=hdn_cod_usuario_local)">  
+    </dtml-if>
+
+    <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=cod_materia, cod_status=lst_cod_status)">
+    <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=cod_materia)">
+    <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=cod_materia)">
+
+  <dtml-except>
+
+    <dtml-let mensagem="'Houve um erro no banco de dados.'">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-let mensagem="'Tramitação em lote realizada com sucesso! Verifique no menu Caixa de Saída.'" sucesso="1" url="'tramitacao_lote_form'">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+
+<dtml-else>
+  <dtml-try>
+    <dtml-call expr="REQUEST.set('indice', 0)">
+
+    <dtml-in check_tram>
+      <dtml-call expr="REQUEST.set('cod_materia', int(_['sequence-item']))">
+
+      <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+        <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
+      </dtml-in>
+
+      <dtml-call expr="REQUEST.set('ind_ult_tramitacao', '1')">
+
+      <dtml-call expr="metodo( cod_materia = cod_materia,
+                               dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
+                               cod_unid_tram_local = lst_cod_unid_tram_local,
+                               cod_usuario_local = hdn_cod_usuario_local,
+                               cod_unid_tram_dest = lst_cod_unid_tram_dest,
+                               cod_usuario_dest = lst_cod_usuario_dest,
+                               dat_encaminha = hdn_dat_encaminha,
+                               cod_status = lst_cod_status, 
+                               ind_urgencia = rad_ind_urgencia,
+                               txt_tramitacao = txa_txt_tramitacao,
+                               dat_fim_prazo = pysc.data_converter_pysc(data=txt_dat_fim_prazo),
+                               ind_ult_tramitacao = ind_ult_tramitacao)">
+
+      <dtml-if cod_ult_tramitacao>
+        <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao=cod_ult_tramitacao,ind_ult_tramitacao=0)">
+        <dtml-call expr="zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao=cod_ult_tramitacao,cod_usuario_corrente=hdn_cod_usuario_local)">  
+      </dtml-if>
+
+     <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=cod_materia, cod_status=lst_cod_status)">
+
+     <dtml-if chk_encerrar_tramitacao>
+       <dtml-call expr="zsql.tramitacao_fim_processo_zsql(cod_materia=cod_materia)">
+     </dtml-if>
+
+      <dtml-call expr="REQUEST.set('indice', indice + 1)">
+
+    </dtml-in>
+
+  <dtml-except>
+    <dtml-let mensagem="'Houve um erro no banco de dados.'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-let mensagem="'Tramitação em lote realizada com sucesso! Verifique no menu Caixa de Saída.'" sucesso="1" url="'tramitacao_lote_form'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+
+    <dtml-in check_tram>
+      <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=_['sequence-item'])">
+      <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=_['sequence-item'])">
+      <dtml-if sequence-end>
+      <dtml-else>
+       ,
+      </dtml-if>
+    </dtml-in>
+
+  </dtml-try>
+  
+</dtml-if>
