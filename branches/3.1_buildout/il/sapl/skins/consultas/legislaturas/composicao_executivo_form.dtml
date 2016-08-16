@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
+<html lang="pt-br">
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Chefia do Poder Executivo</title>
+  <dtml-var standard_css_slot>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+  <script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/data_validar_jvsc"></script>
+  <script type="text/javascript">
+  function campos_criticar(form){  
+
+    if (form.txt_nom_completo.value == "") {
+      alert("Informe o nome completo!");
+      form.txt_nom_completo.focus();
+      return false;
+    }
+
+    if (form.lst_cod_partido.selectedIndex==0){
+      alert("Selecione o partido!");
+      form.lst_cod_partido.focus();
+      return false;
+    }
+
+    if (form.txt_dat_inicio_mandato.value == "") {
+      alert("A data de iní­cio do mandato deve ser preenchida.");
+      form.txt_dat_inicio_mandato.focus();
+      return false;
+    }
+
+    if (form.txt_dat_fim_mandato.value == "") {
+      alert("A data de fim do mandato deve ser preenchida.");
+      form.ttxt_dat_fim_mandato.focus();
+      return false;
+    }
+
+    if (!IsValidDate(form.txt_dat_inicio_mandato.value)) {
+        alert("Digite uma data de iní­cio de mandato válida!");
+        form.txt_dat_inicio_mandato.focus();
+        return false;
+    }
+
+    if (form.txt_dat_fim_mandato.value != "") {
+        if (!IsValidDate(form.txt_dat_fim_mandato.value)) {
+           alert("Digite uma data de fim de mandato válida!");
+           form.txt_txt_dat_fim_mandato.focus();
+           return false;
+        }
+    }
+
+  form.submit();
+  }
+  //-->
+  </script>
+  </head>
+  <body class="modal">
+    <h1 class="firstHeading">Chefia do Poder Executivo</h1>
+    <form class="pf-form" id="composicao_executivo_form" name="composicao_executivo_form" action="composicao_executivo_salvar_proc">
+      <input type="hidden" name="hdn_cod_cargo" value="<dtml-var cod_cargo>" />
+      <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura>" />
+      <input type="hidden" name="hdn_cod_composicao" value="<dtml-var cod_composicao missing>" />
+      <div class="pf-element pf-full-width">
+        <label for="txt_cargo"><span class="pf-label">Cargo: </span></label>
+          <dtml-in expr="zsql.cargo_executivo_obter_zsql(cod_cargo=cod_cargo,ind_excluido=0)">
+            <input class="pf-field" id="txt_cargo" type="text" name="txt_cargo" value="<dtml-var des_cargo>" disabled size="40" />
+          </dtml-in>
+      </div>
+      <div class="pf-element pf-full-width">
+        <label for="txt_legislatura"><span class="pf-label">Legislatura: </span></label>
+          <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=num_legislatura,ind_excluido=0)">
+            <input class="pf-field" id="txt_legislatura" type="text" name="txt_legislatura" value="<dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">" disabled size="40" />
+          </dtml-in>
+      </div>
+      <div class="pf-element pf-full-width">
+        <label for="txt_nom_completo"><span class="pf-label pf-required">Nome: </span></label>
+        <input class="pf-field" id="txt_nom_completo" type="text" name="txt_nom_completo" value="<dtml-var nom_completo missing>" size="40" />
+      </div>
+      <div class="pf-element pf-full-width">
+        <label for="lst_cod_partido"><span class="pf-label pf-required">Partido: </span></label>
+        <dtml-if cod_partido>
+          <dtml-call expr="REQUEST.set('cod_partido_sel', cod_partido)">
+        </dtml-if>
+        <select class="pf-field" name="lst_cod_partido" id="lst_cod_partido" style="max-width: 278px; width: 100%;">
+                  <option value="0">
+		  Selecione
+                  <dtml-in expr="zsql.partido_obter_zsql(ind_excluido=0)">
+                  <option
+                    <dtml-if cod_partido_sel>
+                      <dtml-if expr="(_.int(cod_partido) == _.int(cod_partido_sel))">
+                        selected
+                      </dtml-if>
+                    </dtml-if>
+                    value="<dtml-var cod_partido>">
+                 <dtml-var sgl_partido>                   
+                 </dtml-in>
+        </select>
+      </div>
+      <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=num_legislatura)">
+          <dtml-call expr="REQUEST.set('dat_inicio_mandato', dat_inicio_conv)">
+          <dtml-call expr="REQUEST.set('dat_fim_mandato', dat_fim_conv)">
+      </dtml-in>
+      <div class="pf-element pf-full-width">
+        <label for="txt_dat_inicio_mandato"><span class="pf-label pf-required">Início de Mandato </span></label>
+        <input class="pf-field" type="text" id="txt_dat_inicio_mandato" name="txt_dat_inicio_mandato" value="<dtml-var dat_inicio_mandato missing null="">" onblur="formata_data(form.txt_dat_inicio_mandato)" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength=10 />
+      </div>
+      <div class="pf-element pf-full-width">
+        <label for="txt_dat_fim_mandato"><span class="pf-label pf-required">Fim de Mandato </span></label>
+        <input class="pf-field" type="text" id="txt_dat_fim_mandato" name="txt_dat_fim_mandato" value="<dtml-var dat_fim_mandato missing null="">" onblur="formata_data(form.txt_dat_fim_mandato)" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength=10 />
+      </div>
+      <div class="pf-element pf-full-width" style="min-height:105px;">
+       <label for="txa_txt_observacao"><span class="pf-label">Observação</span></label>
+          <textarea class="pf-field" name="txa_txt_observacao" id="txa_txt_observacao" style="max-width: 270px; min-height:70px;"><dtml-var txt_observacao missing null=""></textarea>
+      </div>
+      </fieldset>
+      <p align="center">
+        <input type="button" class="botao" name="btn_salvar" value="Salvar" onClick="campos_criticar(document.composicao_executivo_form)" />
+        <input type="button" class="botao" name="btn_fechar" value="Fechar" onclick="javascript:parent.jQuery.fancybox.close();" />
+      </p>
+    </form>
+  </body>
+</html>
