@@ -105,6 +105,9 @@ $(document).ready(function() {
   <input type="hidden" name="nom_parlamentar" value="<dtml-var nom_parlamentar>" />
 </dtml-in>
 
+<dtml-if num_legislatura>
+  <dtml-call expr="REQUEST.set('num_legislatura_sel', _.int(num_legislatura))">
+</dtml-if>
 
 <h1 class="firstHeading"><dtml-var nom_parlamentar></h1>
 
@@ -120,10 +123,11 @@ $(document).ready(function() {
        <tr>
          <td class="form-element">Legislatura <span class="campoObrigatorio">&nbsp;</span> <br />
             <select name="lst_num_legislatura">
+              <option value="0">Selecione</option>
               <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
               <option 
-               <dtml-if num_legislatura>
-                <dtml-if expr="_.int(num_legislatura) == _.int(mandato_form.num_legislatura)">
+               <dtml-if num_legislatura_sel>
+                <dtml-if expr="num_legislatura_sel == num_legislatura">
                  selected
                </dtml-if>
               </dtml-if>
@@ -137,7 +141,7 @@ $(document).ready(function() {
              <select name="lst_cod_coligacao" onChange="javascript:form.hdn_alterou.value=1">
                <option value="0"></option>
                <dtml-if num_legislatura>
-                 <dtml-in expr="zsql.coligacao_obter_zsql(num_legislatura=num_legislatura)">
+                 <dtml-in expr="zsql.coligacao_obter_zsql(num_legislatura=num_legislatura_sel)">
                    <dtml-if cod_coligacao>
                     <option
                      <dtml-if expr="_.int(cod_coligacao) == _.int(mandato_form.cod_coligacao)">
