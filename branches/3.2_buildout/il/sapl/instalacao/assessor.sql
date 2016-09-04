@@ -542,3 +542,5 @@ ALTER TABLE  `tramitacao_administrativo` ADD  `dat_recebimento` DATETIME NULL DE
 
 ALTER TABLE  `protocolo` CHANGE  `tip_processo`  `tip_processo` INT( 4 ) NULL DEFAULT NULL ;
 
+ALTER TABLE `comissao` CHANGE `nom_comissao` `nom_comissao` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+

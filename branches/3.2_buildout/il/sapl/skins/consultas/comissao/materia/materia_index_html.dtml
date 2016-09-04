@@ -83,7 +83,7 @@ $(document).ready(function() {
 
 <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)" size="step" start="start" orphan=0>
     <dtml-if sequence-start>
-<fieldset><legend>Matérias na Comissão (<dtml-var sequence-length> registro<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>)</legend>
+<fieldset><legend>Matérias na Comissão [<dtml-var sequence-length> registro<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>]</legend>
  <table>
   <tr <dtml-if sequence-odd>class="even"</dtml-if>>            
      <th class="form-label" width="50%">Matéria</th>
@@ -102,7 +102,7 @@ $(document).ready(function() {
            <dtml-else>
 	      <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
            </dtml-if>
-           <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var des_tipo_materia></b></a></br />
+           <b><dtml-var des_tipo_materia upper> Nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></a></br />
            <dtml-var txt_ementa missing><br />
 
            <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
@@ -132,7 +132,7 @@ $(document).ready(function() {
               </dtml-in>
            </dtml-in>
      </td>
-     <td class="texto" valign="top">
+     <td class="texto">
       <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao)">
         <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
            <b><dtml-var nom_completo></b>
@@ -142,8 +142,9 @@ $(document).ready(function() {
       </dtml-in>
      </td>
  </dtml-in>
-     <td class="texto" valign="top">
-      <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao)">
+     <td class="texto" >
+      <div align="center">
+        <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao)">
                 <dtml-let id_parecer="_.str(cod_relatoria)+'_parecer.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.parecer_comissao,id_parecer)">
                     <dtml-let parecer="_.getattr(sapl_documentos.parecer_comissao,id_parecer).absolute_url">
@@ -153,7 +154,8 @@ $(document).ready(function() {
                   <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                   </dtml-if>
                 </dtml-let>
-      </dtml-in>
+        </dtml-in>
+      </div>
      </td>
   </tr>
 <dtml-if sequence-end>

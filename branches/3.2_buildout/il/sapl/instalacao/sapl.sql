@@ -584,7 +584,7 @@ CREATE TABLE `coligacao` (
 CREATE TABLE `comissao` (
   `cod_comissao` int(11) NOT NULL AUTO_INCREMENT,
   `tip_comissao` tinyint(4) NOT NULL,
-  `nom_comissao` varchar(120) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nom_comissao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sgl_comissao` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dat_criacao` date NOT NULL,
   `dat_extincao` date DEFAULT NULL,

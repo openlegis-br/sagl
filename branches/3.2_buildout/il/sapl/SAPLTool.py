@@ -643,7 +643,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             self.sapl_documentos.administrativo.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
     def parecer_gerar_odt(self, inf_basicas_dic, nom_arquivo, nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao):
-        url = self.sapl_documentos.modelo.materia.absolute_url() + "/parecer.odt"
+        url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/parecer.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
         # atribui o brasao no locals
@@ -655,6 +655,19 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for file in [output_file_odt]:
             os.unlink(file)
             self.sapl_documentos.parecer_comissao.manage_addFile(id=nom_arquivo,file=data)
+
+    def parecer_gerar_pdf(self, cod_parecer):
+        nom_arquivo_odt = "%s"%cod_parecer+'_parecer.odt'
+        nom_arquivo_pdf1 = "%s"%cod_parecer+'_parecer.pdf'
+        url = self.sapl_documentos.parecer_comissao.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.parecer_comissao.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
     def proposicao_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
         url = self.sapl_documentos.modelo.materia.absolute_url() + "/%s"%modelo_proposicao
