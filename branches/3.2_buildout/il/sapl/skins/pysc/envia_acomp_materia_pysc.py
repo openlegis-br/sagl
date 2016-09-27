@@ -23,7 +23,7 @@ casa_legislativa = casa['nom_casa']
 
 for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  ementa = materia.txt_ementa
- projeto = materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+ projeto = materia.des_tipo_materia+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
 
  nom_autor = ""
  autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)

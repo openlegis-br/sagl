@@ -1,42 +1,40 @@
 <dtml-call expr="REQUEST.set('hdn_ind_excluido', 1)">
-
 <dtml-try>
   <dtml-call expr="REQUEST.set('metodo', zsql.acomp_materia_incluir_zsql)">
   <dtml-let s="_.string.letters + _.string.digits">
-  <dtml-call "REQUEST.set('hdn_txt_hash',_.whrandom.choice(s))"> 
-   <dtml-in "_.range(_.whrandom.choice([6,7]))">
-     <dtml-call "REQUEST.set('hdn_txt_hash',hdn_txt_hash + _.whrandom.choice(s))">
-   </dtml-in>
-
-        <dtml-call expr="metodo(cod_materia         = hdn_cod_materia,
-                                end_email           = txt_end_email,
-                                txt_hash            = hdn_txt_hash,
-                                ind_excluido        = hdn_ind_excluido)">
+    <dtml-call "REQUEST.set('hdn_txt_hash',_.whrandom.choice(s))"> 
+    <dtml-in "_.range(_.whrandom.choice([6,7]))">
+      <dtml-call "REQUEST.set('hdn_txt_hash',hdn_txt_hash + _.whrandom.choice(s))">
+    </dtml-in>
+    <dtml-call expr="metodo(cod_materia         = hdn_cod_materia,
+                            end_email           = txt_end_email,
+                            txt_hash            = hdn_txt_hash,
+                            ind_excluido        = hdn_ind_excluido)">
   </dtml-let>
-    <dtml-except>
-        <dtml-let mensagem="'Este E-mail já está cadastrado para acompanhamento da matéria selecionada!'">
-            <dtml-var mensagem_popup_emitir>
-        </dtml-let>
-
-    <dtml-else>
+<dtml-except>
+  <dtml-let mensagem="'O e-mail informado já se encontra cadastrado para acompanhamento desta matéria!'">
+     <dtml-var mensagem_popup_emitir>
+  </dtml-let>
+<dtml-else>
     <!DOCTYPE>
     <html lang="pt-br">
-    <head>
-    <meta charset="utf-8">
-    <title>Sistema Aberto de Gestão Legislativa</title>
-    <script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
-    <dtml-var standard_css_slot>
-    </head>
-     <table> 
-      <tr>
-       <td width="20%" class="exclama"> <p>!</p> </td>
-       <td width="80%" class="texto">E-mail cadastrado com sucesso!<br /><br />
-        <a href="javascript:parent.jQuery.fancybox.close();" class="botao">Fechar</a>
-      </td></tr>
-     </table>
+     <head>
+       <meta charset="utf-8">
+       <title>OpenLegis - Processo Legislativo Eletrônico</title>
+       <script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
+       <dtml-var standard_css_slot>
+     </head>
+     <body>
+
+       <table> 
+         <tr>
+           <td width="20%" class="exclama"> <p>!</p> </td>
+           <td width="80%" class="texto">E-mail cadastrado com sucesso!<br /><br />
+             <a href="javascript:parent.jQuery.fancybox.close();" class="botao">Fechar</a>
+           </td>
+         </tr>
+       </table>
+     </body>
     </html>
-
     <dtml-call expr="pysc.confirma_acomp_materia_pysc(cod_materia=hdn_cod_materia, end_email=txt_end_email, txt_hash=hdn_txt_hash)">
-
 </dtml-try>
-

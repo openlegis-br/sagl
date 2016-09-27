@@ -1,46 +1,73 @@
-<dtml-if expr="zsql.acomp_materia_obter_zsql(txt_hash=txt_hash,ind_excluido=1)">
-  <dtml-call expr="REQUEST.set('metodo', zsql.acomp_materia_atualizar_zsql)">
+<dtml-var standard_html_header>
+
+<h1 class="firstHeading">Acompanhamento de Matéria</h1>
+
+<dtml-in expr="zsql.acomp_materia_obter_zsql(txt_hash=txt_hash)">
+  <dtml-if expr="ind_excluido==1">
+    <dtml-call expr="REQUEST.set('erro', 0)">
+    <dtml-call expr="REQUEST.set('metodo', zsql.acomp_materia_atualizar_zsql)">
+    <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+  <dtml-elif expr="ind_excluido==0">
+    <dtml-call expr="REQUEST.set('erro', 0)">
+    <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+  </dtml-if>
 <dtml-else>
   <dtml-call expr="REQUEST.set('erro', 1)">
-</dtml-if>
+</dtml-in>
+
+<dtml-unless erro>
+<table>
+  <tr>
+     <td class="form-label">
+        <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)"><div align="center">
+           <h2>
+              <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
+              <dtml-else>
+                <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" target="_blank">
+              </dtml-if>
+              <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - 
+              <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+              </dtml-in></a></h2>
+           <dtml-var txt_ementa>
+        </dtml-in></div>
+     </td>
+  </tr>
+</table>
+</dtml-unless>
 
 <dtml-if erro>
-     <dtml-var standard_html_header>
-     <table> 
-      <tr>
-       <td width="20%" class="exclama"> <p>!</p> </td>   
-       <td width="80%" class="texto">Houve um erro ao localizar seu e-mail<br />
-      </td></tr>
-     </table>
-     <dtml-var standard_html_footer>
+    <br />
+    <div class="ui-state-error ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
+      <p>
+         <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+         <strong>Houve um erro ao localizar sua inscrição !</strong>
+      </p>
+    </div>
 </dtml-if>
 
 <dtml-unless erro>
-
-<dtml-try>
-        <dtml-call expr="REQUEST.set('ind_excluido', 0)">
-        <dtml-call expr="metodo(txt_hash            = txt_hash,
-                                ind_excluido        = ind_excluido)">
-    <dtml-except>
-     <dtml-var standard_html_header>
-     <table border=0 align="center"> 
-      <tr>
-       <td width="20%" class="exclama"> <p>!</p> </td>   
-       <td width="80%" class="texto">Houve um erro<br />
-      </td></tr>
-     </table>
-     <dtml-var standard_html_footer>
-
-    <dtml-else>
-     <dtml-var standard_html_header>
-     <table> 
-      <tr>
-       <td width="20%" class="exclama"> <p>!</p> </td>   
-       <td width="80%" class="texto">E-mail ativado com sucesso<br />
-      </td></tr>
-     </table>
-     <dtml-var standard_html_footer>
-
-</dtml-try>
-
+ <dtml-try>
+    <dtml-call expr="REQUEST.set('ind_excluido', 0)">
+    <dtml-call expr="metodo(txt_hash = txt_hash, ind_excluido = ind_excluido)">
+ <dtml-except>
+    <br />
+    <div class="ui-state-error ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
+      <p>
+         <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+         <strong>Seu e-mail já se encontra ativo para acompanhamento desta matéria!</strong>
+      </p>
+    </div>
+ <dtml-else>
+    <br />
+    <div class="ui-state-highlight ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
+      <p>
+        <span class="ui-icon ui-icon-check" style="float: left; margin-right: .3em;"></span>
+        <strong>E-mail ativado com sucesso.</strong>
+      </p>
+    </div>
+ </dtml-try>
 </dtml-unless>
+
+<dtml-var standard_html_footer>

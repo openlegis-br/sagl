@@ -26,7 +26,7 @@ casa_legislativa = casa['nom_casa']
 
 for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  ementa = materia.txt_ementa
- projeto = materia.sgl_tipo_materia.encode('utf-8')+" "+materia.des_tipo_materia.encode('utf-8')+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+ projeto = materia.des_tipo_materia+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
 
  nom_autor = ""
  autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
@@ -47,13 +47,13 @@ hash = str(txt_hash)
 link = "" + context.consultas.absolute_url() + "/materia/acompanhamento/acomp_materia_confirmar_proc?txt_hash=" + txt_hash
 
 mMsg = "Prezado(a) Senhor(a),\n\n"
-mMsg = mMsg + "Para acompanhar por E-mail o andamento da matéria acima identificada, solicitamos que confirme o recebimento de futuras mensagens eletrônicas, clicando no link:\n\n"
+mMsg = mMsg + "Para acompanhar por e-mail o andamento da matéria acima identificada, solicitamos que confirme o recebimento de futuras mensagens eletrônicas, clicando no link:\n\n"
 mMsg = mMsg + link + "\n\n"
-mMsg = mMsg + "Caso não tenha solicitado o acompanhamento dessa matéria em nosso sistema, favor desconsiderar esta mensagem.\n\n"
+mMsg = mMsg + "Caso não tenha solicitado o acompanhamento dessa matéria em nosso sistema, favor desconsiderar a presente mensagem.\n\n"
 mMsg = mMsg + "Cordialmente,\n\n"
 mMsg = mMsg + ""+ str(casa_legislativa) +"\n"
-mMsg = mMsg + "Sistema Aberto de Gestão Legislativa\n"
+mMsg = mMsg + "Processo Legislativo Eletrônico\n"
 
-mSubj = projeto +" - Acompanhamento por E-mail"
+mSubj = projeto +" - Acompanhamento por e-mail"
 
 mailhost.send(mMsg, destinatario, remetente, subject=mSubj, encode='base64')
