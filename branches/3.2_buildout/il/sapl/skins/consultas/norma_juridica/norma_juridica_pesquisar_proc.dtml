@@ -29,6 +29,51 @@
 	</script>
 </dtml-if>
 
+<script type='text/javascript'>//<![CDATA[
+$(window).load(function(){
+$(".header").click(function () {
+
+    $header = $(this);
+    //getting the next element
+    $content = $header.next();
+    //open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+    $content.slideToggle(100, function () {
+        //execute this after slideToggle is done
+        //change text of header based on visibility of content div
+        $header.text(function () {
+            //change text based on condition
+            return $content.is(":visible") ? "Normas Vinculadas [-]" : "Normas Vinculadas [+]";
+        });
+    });
+
+});
+});//]]> 
+</script>
+
+<style>
+.vinculadasContainer {
+    width:90%;
+}
+.vinculadasContainer div {
+    width:90%;
+}
+.vinculadasContainer .header {
+    color: #427597;
+    cursor: pointer;
+    font-weight: bold;
+}
+.vinculadasContainer .content {
+    display: none;
+    padding : 3px 15px;
+}
+
+.vinculadasContainer ul {
+    margin:0; 
+    padding: 0
+}
+
+</style>
+
 <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
 <dtml-call "REQUEST.set('existe_seq_posterior', 0)">
 <dtml-if page>
@@ -77,9 +122,9 @@
                     <dtml-else>
                        <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
                     </dtml-if>
-                          <dtml-var sgl_tipo_materia> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
+                          <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
                        </a>
-                    / <b>Autor:</b> <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                    - <b>Autor:</b> <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
                                  <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
                               </dtml-in>
                  </dtml-in>
@@ -92,33 +137,45 @@
                 </dtml-if>
                </dtml-in> 
              </dtml-if>
-     <dtml-if expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma) or zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)"> 
+     <dtml-if expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma) or zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)">
+      <div class="vinculadasContainer">
+      <div class="header"><span>Normas Vinculadas [+]</span></div>
+      <div class="content">
        <dtml-in expr="zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)">
          <dtml-if sequence-start>
-            <br /><b>Vinculação Ativa<dtml-if expr="_['sequence-length'] > 1"> (<dtml-var sequence-length>)</dtml-if>:</b><br />
-         </dtml-if> <dtml-var sequence-number> - <dtml-var des_vinculo>
-           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
-            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
-           <dtml-else>
-            <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
-           </dtml-if>
-              <b><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b>
-            </a>
-           <dtml-unless sequence-end><br /></dtml-unless>
+            <ul>
+              <li><b>Vinculação Ativa<dtml-if expr="_['sequence-length'] > 0"> (<dtml-var sequence-length>)</dtml-if>:</b></li>   
+         </dtml-if> 
+              <li>
+                <dtml-var sequence-number> - <dtml-var des_vinculo>
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+                  <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
+                <dtml-else>
+                  <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
+                </dtml-if>
+                  <b><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b>
+                </a>
+              </li>
+           <dtml-if sequence-end></ul></dtml-if>
        </dtml-in>
        <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
          <dtml-if sequence-start>
-            <br /><b>Vinculação Passiva<dtml-if expr="_['sequence-length'] > 1"> (<dtml-var sequence-length>)</dtml-if>:</b><br />
-         </dtml-if> <dtml-var sequence-number> - <dtml-var des_vinculo_passivo>
-           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
-            <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
-           <dtml-else>
-            <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
-           </dtml-if>
-              <b><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b>
-            </a>
-           <dtml-unless sequence-end><br /></dtml-unless>
+            <ul>
+              <li><b>Vinculação Passiva<dtml-if expr="_['sequence-length'] > 0"> (<dtml-var sequence-length>)</dtml-if>:</b></li>
+         </dtml-if>
+              <li>
+                <dtml-var sequence-number> - <dtml-var des_vinculo_passivo>
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+                  <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
+                <dtml-else>
+                  <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
+                </dtml-if>
+                  <b><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b>
+                </a>
+              </li>
+           <dtml-if sequence-end></ul></dtml-if>
        </dtml-in>
+      </div>
      </dtml-if>
          </td>   
           <td width="10%">
@@ -138,6 +195,7 @@
                 <dtml-else>
                   <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                 </dtml-if> 
+            </div>
             </div>
           </td>
        </tr>
