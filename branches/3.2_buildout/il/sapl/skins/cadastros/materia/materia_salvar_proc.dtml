@@ -14,7 +14,7 @@
     <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao)">
       <dtml-if expr="tip_mat_ou_doc!=_.int(lst_tip_id_basica)">
         <dtml-call expr="REQUEST.set('erro', 1)">
-        <dtml-let mensagem="'O tipo da matéria não é compatível com o tipo de proposição eletrônica. Corrija um dos campos e tente novamente.'">
+        <dtml-let mensagem="'O tipo da matéria não é compatível com o tipo de proposição. Corrija um dos campos e tente novamente.'">
           <dtml-var mensagem_emitir>
         </dtml-let>
       </dtml-if>
@@ -80,8 +80,6 @@
           <dtml-call expr="REQUEST.set('hdn_cod_materia', cod_materia)">
         </dtml-in>
 
-        <dtml-call expr="sapl_documentos.materia.Catalog.atualizarCatalogo(hdn_cod_materia)">
-
         <dtml-if hdn_cod_autor>
             <dtml-try>
                 <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor          = _.int(hdn_cod_autor),
@@ -132,7 +130,6 @@
 
           <dtml-let ok="pysc.proposicao_salvar_como_texto_integral_materia_pysc(hdn_cod_proposicao,hdn_cod_materia,0)">
             <dtml-if ok>
-              <dtml-call expr="sapl_documentos.materia.Catalog.atualizarCatalogo(hdn_cod_materia)">
             <dtml-else>
               <dtml-call expr="REQUEST.set('erro', 1)">
               <dtml-let mensagem="'Ocorreu erro ao salvar texto integral'+hdn_cod_materia">
@@ -193,7 +190,6 @@
               <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">
                 <dtml-let ok="pysc.protocolo_salvar_como_texto_integral_materia_pysc(cod_protocolo,hdn_cod_materia,0)">
                   <dtml-if ok>
-                    <dtml-call expr="sapl_documentos.materia.Catalog.atualizarCatalogo(hdn_cod_materia)">
                   <dtml-else>
                     <dtml-call expr="REQUEST.set('erro', 1)">
                     <dtml-let mensagem="'Ocorreu erro ao salvar texto integral'+hdn_cod_materia">
@@ -229,7 +225,6 @@
             <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
             <dtml-try>
                 <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
-                <dtml-call expr="sapl_documentos.materia.Catalog.atualizarCatalogo(hdn_cod_materia)">
             <dtml-except>
               <dtml-call expr="REQUEST.set('erro', 1)">
               <dtml-let mensagem="'Ocorreu erro ao tentar salvar texto integral'+hdn_cod_materia">
@@ -244,7 +239,6 @@
         <dtml-call expr="REQUEST.set('erro',0)">
         <dtml-try>
             <dtml-call expr="sapl_documentos.materia.manage_addFile(id=id_documento,file=file_nom_arquivo)">
-            <dtml-call expr="sapl_documentos.materia.Catalog.atualizarCatalogo(hdn_cod_materia)">
         <dtml-except> 
         </dtml-try>
       </dtml-if>
@@ -254,6 +248,7 @@
 	  	<dtml-var mensagem_emitir>
   	  </dtml-let>
      <dtml-else>
+      <dtml-call expr="sapl_documentos.materia.Catalog.atualizarCatalogo(hdn_cod_materia)">
       <dtml-let mensagem="'Matéria salva com sucesso!'" sucesso="1" url="hdn_url" >
             <dtml-var mensagem_emitir>
       </dtml-let>
