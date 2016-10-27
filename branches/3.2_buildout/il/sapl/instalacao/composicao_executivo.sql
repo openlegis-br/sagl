@@ -66,3 +66,12 @@ CREATE TABLE `composicao_executivo` (
 ALTER TABLE `usuario_unid_tram` ADD `ind_responsavel` TINYINT(4) NOT NULL DEFAULT '0' AFTER `cod_unid_tramitacao`;
 
 
+-- Corrige num_ordem tabelas sessão
+
+ALTER TABLE `expediente_materia` CHANGE `num_ordem` `num_ordem` INT(10) NULL DEFAULT NULL;
+
+ALTER TABLE `materia_apresentada_sessao` CHANGE `num_ordem` `num_ordem` INT(10) NULL DEFAULT NULL;
+
+ALTER TABLE `ordem_dia` CHANGE `num_ordem` `num_ordem` INT(10) NULL DEFAULT NULL;
+
+
