@@ -13,7 +13,7 @@
   Argumentos: txt_dat_apresentacao e cod_parlamentar  --> retorna 1-verdadeiro ou 0-falso.
 
 """  
-dat_apresentacao = DateTime (context.pysc.data_converter_pysc(txt_dat_apresentacao))
+dat_apresentacao = DateTime(context.pysc.data_converter_pysc(txt_dat_apresentacao))
 codigo = str(cod_parlamentar)
 autores = context.zsql.autores_obter_zsql(txt_dat_apresentacao=txt_dat_apresentacao) or []
 
