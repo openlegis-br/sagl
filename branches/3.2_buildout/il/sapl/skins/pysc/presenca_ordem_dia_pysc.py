@@ -27,4 +27,8 @@ for p in cod_parlamentar:
     else:
         context.zsql.presenca_ordem_dia_alterar_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=p,tip_frequencia=dic.get(p),txt_justif_ausencia=dic2.get(p))
 
+for p in parlamentares:
+     if p not in cod_parlamentar:
+        context.zsql.presenca_ordem_dia_excluir_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=p)
+
 return 1
