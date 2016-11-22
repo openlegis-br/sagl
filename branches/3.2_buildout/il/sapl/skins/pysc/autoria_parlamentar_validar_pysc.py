@@ -20,11 +20,8 @@ autores = context.zsql.autores_obter_zsql(txt_dat_apresentacao=txt_dat_apresenta
 for p in autores:
   s = str(p.cod_parlamentar)
   if s == codigo:
-    for item in context.zsql.afastamento_obter_zsql(cod_parlamentar=codigo):
-     dat_inicio = DateTime(item.dat_inicio)
-     dat_fim = DateTime(item.dat_fim)
-     if dat_inicio < dat_apresentacao < dat_fim:
-       return 0
+    for item in context.zsql.afastamento_obter_zsql(cod_parlamentar=codigo,data=dat_apresentacao):
+     return 0
     else: 
      return 1
 
