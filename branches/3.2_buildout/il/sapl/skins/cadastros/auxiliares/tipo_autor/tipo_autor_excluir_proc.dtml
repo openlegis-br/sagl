@@ -1,18 +1,23 @@
-<dtml-comment> 
-  Função: Exclui o tipo de autor.
-  Argumentos: tip_autor: int - código do tipo de autor a ser excluído.
-  Retorno: Mensagem de sucesso ou erro.                       
-  Rommel Carvalho e Danilo Custódio em 09/04/2001
-</dtml-comment>   
+<dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor_ant, ind_excluido=0)">
+  <dtml-call expr="REQUEST.set('des_tipo_autor', des_tipo_autor)">
+</dtml-in>
 
-<dtml-try>
-  <dtml-call expr="zsql.tipo_autor_excluir_zsql(tip_autor = tip_autor_ant)">
-<dtml-except>
-  <dtml-let mensagem="'Não foi possível excluir o Tipo de Autor. Tente novamente!'">
-     <dtml-var mensagem_emitir>
-  </dtml-let>
-<dtml-else>   
-  <dtml-let mensagem="'Tipo de Autor excluído com sucesso!'" sucesso="1">
+<dtml-if expr="zsql.autor_obter_zsql(des_tipo_autor=des_tipo_autor, ind_excluido=0)">
+  <dtml-let mensagem="'Não foi possível excluir ! Existem autores cadastrados com este Tipo.'">
     <dtml-var mensagem_emitir>
   </dtml-let>
-</dtml-try>
+<dtml-else>
+
+  <dtml-try>
+    <dtml-call expr="zsql.tipo_autor_excluir_zsql(tip_autor = tip_autor_ant)">
+  <dtml-except>
+    <dtml-let mensagem="'Não foi possível excluir o Tipo de Autor. Tente novamente!'">
+       <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>   
+    <dtml-let mensagem="'Tipo de Autor excluído com sucesso!'" sucesso="1">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+
+</dtml-if>

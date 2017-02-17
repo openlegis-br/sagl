@@ -75,3 +75,16 @@ ALTER TABLE `materia_apresentada_sessao` CHANGE `num_ordem` `num_ordem` INT(10) 
 ALTER TABLE `ordem_dia` CHANGE `num_ordem` `num_ordem` INT(10) NULL DEFAULT NULL;
 
 
+-- 17/02/2017
+
+-- Natureza de matérias 
+ALTER TABLE `tipo_materia_legislativa` ADD `tip_natureza` CHAR(1) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL AFTER `des_tipo_materia`;
+
+-- Corrige datas zeradas no cadastro das matérias
+UPDATE materia_legislativa SET dat_apresentacao = NULL WHERE `dat_apresentacao` = 0000-00-00
+
+-- Adiciona coluna para matéria prncipal no cadastro de matérias aessórias
+ALTER TABLE `materia_legislativa` ADD `cod_materia_principal` INT(11) NULL DEFAULT NULL AFTER `cod_situacao`, ADD INDEX `idx_mat_principal` (`cod_materia_principal`);
+
+-- Adiciona coluna para proposições permitidas por tipo de autor
+ALTER TABLE `tipo_autor` ADD `tip_proposicao` VARCHAR(32) NULL DEFAULT NULL AFTER `des_tipo_autor`;

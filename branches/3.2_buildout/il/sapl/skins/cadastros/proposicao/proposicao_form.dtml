@@ -192,6 +192,14 @@ $(document).ready(function() {
 </dtml-if>
 
 <dtml-if usr_eh_autor>
+  <dtml-in expr="zsql.autor_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+    <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
+      <dtml-call expr="REQUEST.set('tip_proposicao_perm',tip_proposicao_sel)">
+    </dtml-in>
+  </dtml-in>
+</dtml-if>
+
+<dtml-if usr_eh_autor>
   <h1 class="firstHeading">Proposição Eletrônica</h1>
 <dtml-else>
   <h1 class="firstHeading">Protocolo Eletrônico de Proposição</h1>
@@ -241,16 +249,29 @@ $(document).ready(function() {
                                   disabled 
                                 </dtml-if>>                                 
                                 <option value="-1"> </option>
-                                    <dtml-in expr="zsql.tipo_proposicao_obter_zsql()">
-                                <option
-                                    <dtml-if tip_proposicao_sel>
-                                      <dtml-if expr="_.int(tip_proposicao) == _.int(tip_proposicao_sel)">
-                                        selected
+                                   <dtml-in expr="zsql.tipo_proposicao_obter_zsql()">
+                                     <dtml-if expr="usr_eh_autor">
+                                      <dtml-if expr="_.str(tip_proposicao) in _.string.split(_.str(tip_proposicao_perm),',')">
+                                       <option
+                                        <dtml-if tip_proposicao_sel>
+                                          <dtml-if expr="_.int(tip_proposicao) == _.int(tip_proposicao_sel)">
+                                            selected
+                                          </dtml-if>
+                                        </dtml-if>
+                                            value="<dtml-var tip_proposicao>&<dtml-var ind_mat_ou_doc>&<dtml-var nom_modelo url_quote>"><dtml-var des_tipo_proposicao>
+                                       </option>
                                       </dtml-if>
-                                    </dtml-if>
-                                        value="<dtml-var tip_proposicao>&<dtml-var ind_mat_ou_doc>&<dtml-var nom_modelo url_quote>"><dtml-var des_tipo_proposicao>
-                                </option>
-                                    </dtml-in>
+                                      <dtml-else>
+                                       <option
+                                        <dtml-if tip_proposicao_sel>
+                                          <dtml-if expr="_.int(tip_proposicao) == _.int(tip_proposicao_sel)">
+                                            selected
+                                          </dtml-if>
+                                        </dtml-if>
+                                            value="<dtml-var tip_proposicao>&<dtml-var ind_mat_ou_doc>&<dtml-var nom_modelo url_quote>"><dtml-var des_tipo_proposicao>
+                                       </option>
+                                      </dtml-if>
+                                  </dtml-in>
                             </select>
                         </td>
                         <td width="28%" class="form-text" valign="top">
@@ -310,7 +331,7 @@ $(document).ready(function() {
                               disabled
                             </dtml-if> >   
                             <option value="0">Selecione</option>
-                               <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+                               <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0,tip_natureza='P')">
                                 <option
                                  <dtml-if tip_id_basica_sel>
                                    <dtml-if expr="_.int(tip_materia) == _.int(tip_id_basica_sel)">
