@@ -1,9 +1,16 @@
-<dtml-comment> 
-  Função: Exclui a legislatura.
-  Argumentos: num_legislatura: int - código da legislatura a ser excluída.
-  Retorno: Mensagem de sucesso ou erro.                       
-  Michael em 19/03/2001
-</dtml-comment>   
+<dtml-if expr="zsql.sessao_legislativa_obter_zsql(num_legislatura=num_legislatura, ind_excluido=0)">
+  <dtml-let mensagem="'Não foi possível excluir ! Existem Sessões Legislativas cadastradas nesta Legislatura.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-elif expr="zsql.bancada_obter_zsql(num_legislatura=num_legislatura, ind_excluido=0)">
+  <dtml-let mensagem="'Não foi possível excluir ! Existem Bancadas cadastradas nesta Legislatura.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-elif expr="zsql.mandato_obter_zsql(num_legislatura=num_legislatura, ind_excluido=0)">
+  <dtml-let mensagem="'Não foi possível excluir ! Existem mandatos de Parlamentares cadastrados nesta Legislatura.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
 
 <dtml-try>
   <dtml-call expr="zsql.legislatura_excluir_zsql(num_legislatura = num_legislatura)">
@@ -16,3 +23,5 @@
      <dtml-var mensagem_emitir>
   </dtml-let>
 </dtml-try>
+
+</dtml-if>
