@@ -9,6 +9,50 @@
     <dtml-var materia_menu>
     <dtml-var materia_header>
 
+<dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+  <dtml-if sequence-start>   
+    <fieldset><legend>Documentos Vinculados</legend>
+    <table>
+      <tr>
+        <th class="form-label">Documento</th>
+        <th class="form-label">Data</th>
+        <th class="form-label">Descrição</th>
+        <th width="17%" class="form-label">Arquivo</th>
+      </tr>
+  </dtml-if sequence-start>
+    <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
+      <tr>
+        <td class="texto">
+              <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                 <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                     <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+                 </a>
+              <dtml-else>
+                 <a href="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                     <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+                 </a>
+              </dtml-if>
+        </td>
+        <td class="texto"><dtml-var dat_documento></td>
+        <td class="texto"><dtml-var txt_assunto><br /><b>Autor:</b> <dtml-var txt_interessado></td>
+        <td class="texto">
+           <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_texto_integral.pdf')">
+           <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
+                <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
+                  <a target="_blank" href="<dtml-var documento>">
+                     <img align="top" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral" title="Texto integral">
+                  </a>
+                </dtml-let>
+           </dtml-if>
+        </td>
+      </tr>
+    </dtml-in>
+  <dtml-if sequence-end>
+    </table>
+   </fieldset>
+  </dtml-if sequence-end>   
+</dtml-in>
+
 <fieldset><legend>Documentos Acessórios</legend>
 <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia,ind_excluido=0)" size=20 start=query_start orphan=2>
   <dtml-if previous-sequence>
