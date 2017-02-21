@@ -83,8 +83,24 @@ ALTER TABLE `tipo_materia_legislativa` ADD `tip_natureza` CHAR(1) CHARACTER SET 
 -- Corrige datas zeradas no cadastro das matérias
 UPDATE materia_legislativa SET dat_apresentacao = NULL WHERE `dat_apresentacao` = 0000-00-00
 
--- Adiciona coluna para matéria prncipal no cadastro de matérias aessórias
+-- Adiciona coluna para matéria prncipal no cadastro de matérias acessórias
 ALTER TABLE `materia_legislativa` ADD `cod_materia_principal` INT(11) NULL DEFAULT NULL AFTER `cod_situacao`, ADD INDEX `idx_mat_principal` (`cod_materia_principal`);
 
 -- Adiciona coluna para proposições permitidas por tipo de autor
 ALTER TABLE `tipo_autor` ADD `tip_proposicao` VARCHAR(32) NULL DEFAULT NULL AFTER `des_tipo_autor`;
+
+-- 20/02/2017 
+
+-- Desfragmentar tabela 
+ALTER TABLE `documento_administrativo` ENGINE = InnoDB;
+
+-- Adiciona tabela documento_administrativo_materia
+
+CREATE TABLE `documento_administrativo_materia` ( 
+   `cod_vinculo` INT(11) NOT NULL AUTO_INCREMENT ,
+   `cod_documento` INT(11) NOT NULL ,
+   `cod_materia` INT(11) NOT NULL ,
+   `ind_excluido` TINYINT(4) NOT NULL , 
+   PRIMARY KEY (`cod_vinculo`), 
+   INDEX `idx_cod_documento` (`cod_documento`), 
+   INDEX `idx_cod_materia` (`cod_materia`)) ENGINE = InnoDB;

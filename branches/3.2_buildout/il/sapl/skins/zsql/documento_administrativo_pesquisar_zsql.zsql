@@ -5,7 +5,7 @@ max_rows : 5000
 max_cache : 100
 </dtml-comment>
 
-SELECT DISTINCT
+SELECT
        REPLACE(documento_administrativo.cod_documento, 'L', '') as cod_documento,
        documento_administrativo.num_documento,
        documento_administrativo.ano_documento,
@@ -19,7 +19,6 @@ SELECT DISTINCT
        tipo_documento_administrativo.sgl_tipo_documento,
        tipo_documento_administrativo.des_tipo_documento
 
-
        <dtml-if cod_status>
          ,REPLACE(tramitacao_administrativo.cod_status, 'L', '') as cod_status
          ,tramitacao_administrativo.dat_tramitacao
@@ -31,9 +30,10 @@ SELECT DISTINCT
          ,DATE_FORMAT(tramitacao_administrativo.dat_fim_prazo, '%d/%m/%y') as dat_fim_prazo_processo
        </dtml-if>
 
-FROM documento_administrativo LEFT JOIN tipo_documento_administrativo ON
-documento_administrativo.tip_documento=tipo_documento_administrativo.tip_documento, 
-tipo_documento_administrativo as tipo_documento
+FROM 
+     documento_administrativo 
+     LEFT JOIN tipo_documento_administrativo ON
+     documento_administrativo.tip_documento=tipo_documento_administrativo.tip_documento
 
     <dtml-comment>se o campo Situação Atual estiver preenchido.</dtml-comment>
     <dtml-if expr="cod_status!='' or cod_unid_tramitacao">
@@ -96,8 +96,8 @@ tipo_documento_administrativo as tipo_documento
     </dtml-if>
 
 <dtml-if expr="rd_ordem == '1'">
-ORDER BY  tipo_documento_administrativo.sgl_tipo_documento, documento_administrativo.ano_documento DESC, LPAD(documento_administrativo.num_documento, 5, '0') DESC
+  ORDER BY  tipo_documento_administrativo.sgl_tipo_documento, documento_administrativo.ano_documento DESC, LPAD(documento_administrativo.num_documento, 5, '0') DESC
 <dtml-else>
-ORDER BY  tipo_documento_administrativo.sgl_tipo_documento, documento_administrativo.ano_documento ASC, LPAD(documento_administrativo.num_documento, 5, '0') ASC
+  ORDER BY  tipo_documento_administrativo.sgl_tipo_documento, documento_administrativo.ano_documento ASC, LPAD(documento_administrativo.num_documento, 5, '0') ASC
 </dtml-if>
 
