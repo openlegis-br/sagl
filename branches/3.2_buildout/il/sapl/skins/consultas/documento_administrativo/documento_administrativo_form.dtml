@@ -78,6 +78,51 @@
   </table>
  </fieldset>
 
+<dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
+  <dtml-if sequence-start>   
+    <fieldset><legend>Matéria<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculada<dtml-if expr="_['sequence-length'] > 1">s</dtml-if></legend>
+    <table>
+      <tr>
+        <th width="15%" class="form-label">Matéria</th>
+        <th class="form-label">Data</th>
+        <th class="form-label">Descrição</th>
+        <th width="10%" class="form-label">Arquivo</th>
+      </tr>
+  </dtml-if sequence-start>
+    <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+      <tr>
+        <td class="texto">
+           <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+               <dtml-var sgl_tipo_materia>-<dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+           </a>
+        </td>
+        <td class="texto"><dtml-var dat_apresentacao></td>
+        <td class="texto"><dtml-var txt_ementa><br />
+         <b>Autoria:</b>
+                <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                   <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                 </dtml-in>
+        </td>
+        <td class="texto">
+          <div align="center">
+           <dtml-call expr="REQUEST.set('id_materia', _.str(cod_materia)+'_texto_integral.pdf')">
+           <dtml-if "_.hasattr(sapl_documentos.materia,id_materia)">
+                <dtml-let materia="_.getattr(sapl_documentos.materia,id_materia).absolute_url">
+                  <a target="_blank" href="<dtml-var materia>">
+                     <img align="top" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral" title="Texto integral">
+                  </a>
+                </dtml-let>
+           </dtml-if>
+          </div>
+        </td>
+      </tr>
+    </dtml-in>
+  <dtml-if sequence-end>
+    </table>
+   </fieldset>
+  </dtml-if sequence-end>  
+</dtml-in>
+
 <fieldset>
 <legend>Outras Informações</legend>
   <table>
@@ -113,7 +158,6 @@
    </dtml-if>
   </table>
 </fieldset>
-
 
 <dtml-if expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
 <fieldset>
