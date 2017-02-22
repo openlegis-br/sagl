@@ -92,46 +92,45 @@ if context.REQUEST['data']!='':
         for expediente_materia in context.zsql.votacao_expediente_materia_obter_zsql(dat_ordem = data, cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):
         
             # seleciona os detalhes de uma matéria
-            materia = context.zsql.materia_obter_zsql(cod_materia=expediente_materia.cod_materia)[0]
-
             dic_expediente_materia = {}
-            dic_expediente_materia["num_ordem"] = expediente_materia.num_ordem
-            dic_expediente_materia["id_materia"] = materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
-       	    dic_expediente_materia["des_numeracao"]=""
-            numeracao = context.zsql.numeracao_obter_zsql(cod_materia=expediente_materia.cod_materia)
-            if len(numeracao):
-               numeracao = numeracao[0]
-               dic_expediente_materia["des_numeracao"] = str(numeracao.num_materia)+"/"+str(numeracao.ano_materia)
-            tram = context.zsql.tramitacao_turno_obter_zsql(cod_materia=materia.cod_materia)
-            if len(tram):
-               tram_turno = tram[0]
-               if tram_turno.sgl_turno != "":           
-                  for turno in [("P","Primeiro"), ("S","Segundo"), ("U","Unico"), ("L","Suplementar"), ("A","Votacao Unica em Regime de Urgencia"), ("B","1ª Votacao"), ("C","2ª e 3ª Votacoes")]:
-                    if tram_turno.sgl_turno == turno[0]:
-                        dic_expediente_materia["des_turno"] = turno[1]
-            dic_expediente_materia["txt_ementa"] = materia.txt_ementa
-            dic_expediente_materia["ordem_observacao"] = expediente_materia.ordem_observacao
+            for materia in context.zsql.materia_obter_zsql(cod_materia=expediente_materia.cod_materia):
+              dic_expediente_materia["num_ordem"] = expediente_materia.num_ordem
+              dic_expediente_materia["id_materia"] = materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+       	      dic_expediente_materia["des_numeracao"]=""
+              numeracao = context.zsql.numeracao_obter_zsql(cod_materia=expediente_materia.cod_materia)
+              if len(numeracao):
+                 numeracao = numeracao[0]
+                 dic_expediente_materia["des_numeracao"] = str(numeracao.num_materia)+"/"+str(numeracao.ano_materia)
+              tram = context.zsql.tramitacao_turno_obter_zsql(cod_materia=materia.cod_materia)
+              if len(tram):
+                 tram_turno = tram[0]
+                 if tram_turno.sgl_turno != "":           
+                    for turno in [("P","Primeiro"), ("S","Segundo"), ("U","Unico"), ("L","Suplementar"), ("A","Votacao Unica em Regime de Urgencia"), ("B","1ª Votacao"), ("C","2ª e 3ª Votacoes")]:
+                      if tram_turno.sgl_turno == turno[0]:
+                          dic_expediente_materia["des_turno"] = turno[1]
+              dic_expediente_materia["txt_ementa"] = materia.txt_ementa
+              dic_expediente_materia["ordem_observacao"] = expediente_materia.ordem_observacao
 
-            dic_expediente_materia["nom_autor"] = ""
-            autores = context.zsql.autoria_obter_zsql(cod_materia=expediente_materia.cod_materia)
-            fields = autores.data_dictionary().keys()
-            lista_autor = []
-            for autor in autores:
-	      for field in fields:
-                      nome_autor = autor['nom_autor_join']
-	      lista_autor.append(nome_autor)
-            dic_expediente_materia["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+              dic_expediente_materia["nom_autor"] = ""
+              autores = context.zsql.autoria_obter_zsql(cod_materia=expediente_materia.cod_materia)
+              fields = autores.data_dictionary().keys()
+              lista_autor = []
+              for autor in autores:
+  	        for field in fields:
+                        nome_autor = autor['nom_autor_join']
+	        lista_autor.append(nome_autor)
+              dic_expediente_materia["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
             
-            if expediente_materia.tip_resultado_votacao:
-                resultado = context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=expediente_materia.tip_resultado_votacao, ind_excluido=0)
-                for i in resultado:
-                    dic_expediente_materia["nom_resultado"] = i.nom_resultado
-                    if expediente_materia.votacao_observacao:
-                        dic_expediente_materia["votacao_observacao"] = expediente_materia.votacao_observacao
-            else:
-                dic_expediente_materia["nom_resultado"] = "Materia nao votada"
-                dic_expediente_materia["votacao_observacao"] = ""
-            lst_expediente_materia.append(dic_expediente_materia)
+              if expediente_materia.tip_resultado_votacao:
+                  resultado = context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=expediente_materia.tip_resultado_votacao, ind_excluido=0)
+                  for i in resultado:
+                      dic_expediente_materia["nom_resultado"] = i.nom_resultado
+                      if expediente_materia.votacao_observacao:
+                          dic_expediente_materia["votacao_observacao"] = expediente_materia.votacao_observacao
+              else:
+                  dic_expediente_materia["nom_resultado"] = "Materia nao votada"
+                  dic_expediente_materia["votacao_observacao"] = ""
+              lst_expediente_materia.append(dic_expediente_materia)
 
         # Lista dos oradores do Pequeno Expediente
         lst_oradores_expediente = []
