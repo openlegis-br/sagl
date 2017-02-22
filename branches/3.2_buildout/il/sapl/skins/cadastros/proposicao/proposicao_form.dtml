@@ -181,7 +181,13 @@ $(document).ready(function() {
     <dtml-call expr="REQUEST.set('dat_envio',None)">
 </dtml-unless>
 
+<dtml-unless dat_recebimento>
+    <dtml-call expr="REQUEST.set('dat_recebimento',None)">
+</dtml-unless>
+
 <dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!=None))">
+
+<dtml-call expr="REQUEST.set('prop_recebida',(dat_recebimento!=None))">
 
 <dtml-if cod_proposicao>
     <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
@@ -205,7 +211,7 @@ $(document).ready(function() {
   <h1 class="firstHeading">Protocolo Eletrônico de Proposição</h1>
 </dtml-if>
 
-<dtml-if expr="usr_eh_autor or (AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']))"> 
+<dtml-if expr="usr_eh_autor or (AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']) and prop_enviada)"> 
           <dtml-if cod_proposicao>
             <dtml-if expr="not (prop_enviada)">
             <dtml-else>
@@ -245,8 +251,10 @@ $(document).ready(function() {
                         <td width="44%" class="form-element" valign="top">
                           Tipo <span class="campoObrigatorio">&nbsp;</span> <br />   
                             <select name="lst_tip_proposicao" onChange="javascript:tipo_proposicao_mudou()"
-                                <dtml-if "prop_enviada">
-                                  disabled 
+                                <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor']) and prop_enviada)">
+                                  disabled
+                                <dtml-elif expr="(AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']) and prop_recebida)">
+                                  disabled
                                 </dtml-if>>                                 
                                 <option value="-1"> </option>
                                    <dtml-in expr="zsql.tipo_proposicao_obter_zsql()">
@@ -596,6 +604,21 @@ $(document).ready(function() {
               </dtml-unless usr_eh_autor>
                 </table>
                     <p align="center">
+                    <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor']) and not prop_enviada)">
+                           <input class="botao"
+                               type="button"
+                               id="btn_proposicao_salvar"
+                               name="btn_proposicao_salvar"
+                               value="Salvar"
+                               onClick="campos_criticar(document.proposicao_form)" />
+                    <dtml-elif expr="(AUTHENTICATED_USER.has_role(['Operador','Operador Materia']) and not prop_recebida)">
+                           <input class="botao"
+                               type="button"
+                               id="btn_proposicao_salvar"
+                               name="btn_proposicao_salvar"
+                               value="Salvar"
+                               onClick="campos_criticar(document.proposicao_form)" />
+                     </dtml-if>
                       <dtml-if usr_eh_autor>
                         <dtml-if cod_proposicao>
                           <dtml-if prop_enviada>
@@ -615,12 +638,6 @@ $(document).ready(function() {
                               </dtml-if>
                             </dtml-unless>
                           <dtml-else>
-                           <input class="botao"
-                               type="button"
-                               id="btn_proposicao_salvar"
-                               name="btn_proposicao_salvar"
-                               value="Salvar"
-                               onClick="campos_criticar(document.proposicao_form)" />
                         <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
                         <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento_assinado)">
                           <input class="botao"
