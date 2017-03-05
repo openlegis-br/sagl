@@ -509,8 +509,6 @@ CREATE TABLE `cargo_comissao` (
 
 -- --------------------------------------------------------
 
--- --------------------------------------------------------
-
 --
 -- Estrutura da tabela `cargo_executivo`
 --
@@ -542,7 +540,7 @@ CREATE TABLE `cargo_mesa` (
 -- Estrutura da tabela `coautoria_proposicao`
 --
 
-CREATE TABLE `coautoria_proposicao` (
+CREATE TABLE IF NOT EXISTS `coautoria_proposicao` (
   `cod_proposicao` int(11) NOT NULL,
   `cod_autor` int(11) NOT NULL,
   `ind_aderido` tinyint(4) NOT NULL DEFAULT '0',
@@ -740,15 +738,6 @@ CREATE TABLE `composicao_executivo` (
 --   `cod_partido`
 --       `partido` -> `cod_partido`
 --
-
---
--- Limitadores para a tabela `composicao_executivo`
---
-ALTER TABLE `composicao_executivo`
-  ADD CONSTRAINT `cod_cargo_ibfk` FOREIGN KEY (`cod_cargo`) REFERENCES `cargo_executivo` (`cod_cargo`) ON UPDATE NO ACTION,
-  ADD CONSTRAINT `cod_partido_ibfk` FOREIGN KEY (`cod_partido`) REFERENCES `partido` (`cod_partido`) ON UPDATE NO ACTION,
-  ADD CONSTRAINT `num_legislatura_ibfk` FOREIGN KEY (`num_legislatura`) REFERENCES `legislatura` (`num_legislatura`) ON UPDATE NO ACTION;
-
 -- --------------------------------------------------------
 
 --
@@ -960,6 +949,29 @@ CREATE TABLE `documento_administrativo` (
 --       `tipo_documento_administrativo` -> `tip_documento`
 --   `cod_autor`
 --       `autor` -> `cod_autor`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `documento_administrativo_materia`
+--
+
+CREATE TABLE `documento_administrativo_materia` ( 
+   `cod_vinculo` INT(11) NOT NULL AUTO_INCREMENT ,
+   `cod_documento` INT(11) NOT NULL ,
+   `cod_materia` INT(11) NOT NULL ,
+   `ind_excluido` TINYINT(4) NOT NULL , 
+   PRIMARY KEY (`cod_vinculo`), 
+   INDEX `idx_cod_documento` (`cod_documento`), 
+   INDEX `idx_cod_materia` (`cod_materia`)) ENGINE = InnoDB;
+
+--
+-- RELACIONAMENTOS PARA A TABELA `documento_administrativo_materia`:
+--   `cod_documento`
+--       `documento_administrativo` -> `cod_documento`
+--   `cod_materia`
+--       `materia_legislativa` -> `cod_materia`
 --
 
 -- --------------------------------------------------------
@@ -1390,6 +1402,7 @@ CREATE TABLE `materia_legislativa` (
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `tip_quorum` int(11) DEFAULT NULL,
   `cod_situacao` int(11) DEFAULT NULL,
+  `cod_materia_principal` int(11) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_materia`),
   KEY `idx_matleg_ident` (`ind_excluido`,`tip_id_basica`,`ano_ident_basica`,`num_ident_basica`),
@@ -1400,6 +1413,7 @@ CREATE TABLE `materia_legislativa` (
   KEY `idx_dat_apresentacao` (`dat_apresentacao`,`tip_id_basica`,`ind_excluido`),
   KEY `idx_matleg_dat_publicacao` (`dat_publicacao`,`tip_id_basica`,`ind_excluido`),
   KEY `cod_situacao` (`cod_situacao`),
+  KEY `idx_mat_principal` (`cod_materia_principal`),
   FULLTEXT KEY `idx_busca` (`txt_ementa`,`txt_observacao`,`txt_indexacao`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
@@ -2290,6 +2304,7 @@ CREATE TABLE `tipo_afastamento` (
 CREATE TABLE `tipo_autor` (
   `tip_autor` tinyint(4) NOT NULL,
   `des_tipo_autor` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `tip_proposicao` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_autor`),
   KEY `des_tipo_autor` (`des_tipo_autor`)
@@ -2421,6 +2436,7 @@ CREATE TABLE `tipo_materia_legislativa` (
   `tip_materia` int(11) NOT NULL AUTO_INCREMENT,
   `sgl_tipo_materia` varchar(5) COLLATE utf8_unicode_ci DEFAULT NULL,
   `des_tipo_materia` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `tip_natureza` CHAR(1) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_num_automatica` tinyint(4) NOT NULL DEFAULT '0',
   `quorum_minimo_votacao` tinyint(4) NOT NULL DEFAULT '1',
   `ind_excluido` tinyint(4) NOT NULL,

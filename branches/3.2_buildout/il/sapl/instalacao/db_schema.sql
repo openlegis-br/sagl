@@ -954,6 +954,29 @@ CREATE TABLE `documento_administrativo` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `documento_administrativo_materia`
+--
+
+CREATE TABLE `documento_administrativo_materia` ( 
+   `cod_vinculo` INT(11) NOT NULL AUTO_INCREMENT ,
+   `cod_documento` INT(11) NOT NULL ,
+   `cod_materia` INT(11) NOT NULL ,
+   `ind_excluido` TINYINT(4) NOT NULL , 
+   PRIMARY KEY (`cod_vinculo`), 
+   INDEX `idx_cod_documento` (`cod_documento`), 
+   INDEX `idx_cod_materia` (`cod_materia`)) ENGINE = InnoDB;
+
+--
+-- RELACIONAMENTOS PARA A TABELA `documento_administrativo_materia`:
+--   `cod_documento`
+--       `documento_administrativo` -> `cod_documento`
+--   `cod_materia`
+--       `materia_legislativa` -> `cod_materia`
+--
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `emenda`
 --
 
@@ -1379,6 +1402,7 @@ CREATE TABLE `materia_legislativa` (
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `tip_quorum` int(11) DEFAULT NULL,
   `cod_situacao` int(11) DEFAULT NULL,
+  `cod_materia_principal` int(11) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_materia`),
   KEY `idx_matleg_ident` (`ind_excluido`,`tip_id_basica`,`ano_ident_basica`,`num_ident_basica`),
@@ -1389,6 +1413,7 @@ CREATE TABLE `materia_legislativa` (
   KEY `idx_dat_apresentacao` (`dat_apresentacao`,`tip_id_basica`,`ind_excluido`),
   KEY `idx_matleg_dat_publicacao` (`dat_publicacao`,`tip_id_basica`,`ind_excluido`),
   KEY `cod_situacao` (`cod_situacao`),
+  KEY `idx_mat_principal` (`cod_materia_principal`),
   FULLTEXT KEY `idx_busca` (`txt_ementa`,`txt_observacao`,`txt_indexacao`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
@@ -2279,6 +2304,7 @@ CREATE TABLE `tipo_afastamento` (
 CREATE TABLE `tipo_autor` (
   `tip_autor` tinyint(4) NOT NULL,
   `des_tipo_autor` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `tip_proposicao` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`tip_autor`),
   KEY `des_tipo_autor` (`des_tipo_autor`)
@@ -2410,6 +2436,7 @@ CREATE TABLE `tipo_materia_legislativa` (
   `tip_materia` int(11) NOT NULL AUTO_INCREMENT,
   `sgl_tipo_materia` varchar(5) COLLATE utf8_unicode_ci DEFAULT NULL,
   `des_tipo_materia` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `tip_natureza` CHAR(1) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_num_automatica` tinyint(4) NOT NULL DEFAULT '0',
   `quorum_minimo_votacao` tinyint(4) NOT NULL DEFAULT '1',
   `ind_excluido` tinyint(4) NOT NULL,
@@ -2752,7 +2779,6 @@ CREATE TABLE `usuario_unid_tram` (
 --       `usuario` -> `cod_usuario`
 --
 -- --------------------------------------------------------
-
 
 --
 -- Estrutura da tabela `vinculo_norma_juridica`
