@@ -74,6 +74,12 @@
          return false;
       }
 
+      if (form.txa_txt_ementa.value == "") {
+         alert("A ementa deve ser preenchida!");
+         form.txa_txt_ementa.focus();
+         return false;
+      }
+
       if (form.lst_cod_regime_tramitacao.selectedIndex == 0){
           alert("O regime de tramitação deve ser selecionado!");
           form.lst_cod_regime_tramitacao.focus();
@@ -84,12 +90,6 @@
             form.rad_ind_tramitacao[1].checked)){
          alert("O status da tramitação deve ser informado!");
          form.rad_ind_tramitacao[0].focus();
-         return false;
-      }
-
-      if (form.txa_txt_ementa.value == "") {
-         alert("A ementa deve ser preenchida!");
-         form.txa_txt_ementa.focus();
          return false;
       }
 
@@ -143,18 +143,18 @@
        return;
   }
 
-function texto_pdf_gerar(){
-    if (confirm("Confirma a geração do arquivo PDF?")) {
-       location.href="&dtml-portal_url;/modelo_proposicao/materia_gerar_pdf?cod_materia=<dtml-var cod_materia missing>";
-       setTimeout(function(){window.location.reload(true)},2500);
-       return true;
-     }
-return;
-}
+  function texto_pdf_gerar(){
+      if (confirm("Confirma a geração do texto original em PDF?")) {
+         location.href="&dtml-portal_url;/modelo_proposicao/materia_gerar_pdf?cod_materia=<dtml-var cod_materia missing>";
+         setTimeout(function(){window.location.reload(true)},3000);
+         return true;
+       }
+  return;
+  }
 
   function texto_integral_excluir(){
 
-       if (confirm("Deseja realmente excluir o arquivo PDF?")) {
+       if (confirm("Deseja realmente excluir o texto original em PDF?")) {
           location.href="texto_materia_excluir_proc?cod_materia=<dtml-var cod_materia missing>";
        }
        return;
@@ -168,9 +168,9 @@ return;
          alert("É necessário selecionar um modelo!");
       }
 
-      if ((lst_modelo.selectedIndex != 0) && confirm("Confirma a geração do arquivo ODT?")) {
+      if ((lst_modelo.selectedIndex != 0) && confirm("Confirma a geração do texto original em ODT?")) {
          location.href="&dtml-portal_url;/modelo_proposicao/materia?cod_materia=<dtml-var cod_materia missing>&modelo_proposicao="+lst_modelo.options[lst_modelo.selectedIndex].value;
-         setTimeout(function(){window.location.reload(true)},2500);
+         setTimeout(function(){window.location.reload(true)},3000);
          return true;
        }
          return;
@@ -178,8 +178,43 @@ return;
 
   function texto_integral_odt_excluir(){
 
-       if (confirm("Deseja realmente excluir o arquivo ODT?")) {
+       if (confirm("Deseja realmente excluir o texto original em ODT?")) {
           location.href="texto_odt_materia_excluir_proc?cod_materia=<dtml-var cod_materia missing>";
+       }
+       return;
+  }
+
+  function redacao_final_pdf_gerar(){
+      if (confirm("Confirma a geração da redação final em PDF?")) {
+         location.href="&dtml-portal_url;/modelo_proposicao/redacao_final_gerar_pdf?cod_materia=<dtml-var cod_materia missing>";
+         setTimeout(function(){window.location.reload(true)},3000);
+         return true;
+       }
+  return;
+  }
+
+  function redacao_final_excluir(){
+
+       if (confirm("Deseja realmente excluir a redação final em PDF?")) {
+          location.href="redacao_final_excluir_proc?cod_materia=<dtml-var cod_materia missing>";
+       }
+       return;
+  }
+
+  function texto_original_materia_obter(){
+
+      if (confirm("Copiar conteúdo do texto original em ODT?")) {
+         location.href="pysc/texto_original_materia_obter_pysc?cod_materia=<dtml-var cod_materia missing>";
+         setTimeout(function(){window.location.reload(true)},1500);
+         return true;
+       }
+         return;
+  }
+
+  function redacao_final_odt_excluir(){
+
+       if (confirm("Deseja realmente excluir a redação final em ODT?")) {
+          location.href="redacao_final_odt_excluir_proc?cod_materia=<dtml-var cod_materia missing>";
        }
        return;
   }
@@ -239,8 +274,11 @@ $(document).ready(function() {
 <a id="ajuda" target="_blank" href="&dtml-portal_url;/relatorios/pdf_detalhe_materia_preparar_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">PDF Textual</a>
 </dtml-if>
 
-
-<h1 class="firstHeading">Cadastro de Matéria Legislativa</h1> 
+<dtml-if cod_materia>
+  <h1 class="firstHeading"><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></h1>
+<dtml-else>
+  <h1 class="firstHeading">Cadastro de Matéria Legislativa</h1> 
+</dtml-if>
 
 <dtml-call expr="REQUEST.set('temProposicao',REQUEST.has_key('hdnCodProposicao'))">
 <dtml-if temProposicao>
@@ -295,7 +333,7 @@ $(document).ready(function() {
                 <input type="hidden" name="hdn_url" value="materia_mostrar_proc?cod_materia=<dtml-var cod_materia missing>" />
                 <input type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('mudou')">1<dtml-else>0</dtml-if>" />
                         <tr>
-                          <td colspan="2"><label for="lst_tip_id_basica">Tipo <span class="campoObrigatorio">&nbsp;</span></label><br />
+                          <td width="33%"><label for="lst_tip_id_basica">Tipo <span class="campoObrigatorio">&nbsp;</span></label><br />
                         <dtml-if temProposicao>
 
                             <select id="lst_tip_id_basica" name="lst_tip_id_basica" onChange="numero_materia_buscar(document.materia_form)" <dtml-if propTipoMat>disabled</dtml-if>>
@@ -350,11 +388,11 @@ $(document).ready(function() {
                               </dtml-if>
                         </dtml-if>
                           </td>
-                          <td><label for="txt_num_ident_basica">Número <span class="campoObrigatorio">&nbsp;</span></label><br />
+                          <td width="33%"><label for="txt_num_ident_basica">Número <span class="campoObrigatorio">&nbsp;</span></label><br />
                             <input type="hidden" name="hdn_num_ident_basica" value="" />
                             <input type="text" id="txt_num_ident_basica" name="txt_num_ident_basica" size="6" maxlength="6" value="<dtml-var num_ident_basica missing null="1">" />
                           </td>
-                          <td><label for="txt_ano_ident_basica">Ano <span class="campoObrigatorio">&nbsp;</span></label><br />
+                          <td width="33%"><label for="txt_ano_ident_basica">Ano <span class="campoObrigatorio">&nbsp;</span></label><br />
 <dtml-unless ano_ident_basica>
   <dtml-call expr="REQUEST.set('ano_ident_basica', _.DateTime.year(_.DateTime()))">
 </dtml-unless>
@@ -362,7 +400,7 @@ $(document).ready(function() {
                           </td>
                         </tr>
                         <tr>
-                          <td colspan="2"><label for="txt_dat_apresentacao">Data Apresentação <span class="campoObrigatorio">&nbsp;</span></label><br />
+                          <td><label for="txt_dat_apresentacao">Data Apresentação <span class="campoObrigatorio">&nbsp;</span></label><br />
 <dtml-unless dat_apresentacao>
   <dtml-call expr="REQUEST.set('dat_apresentacao', _.DateTime().strftime('%d/%m/%Y'))">
 </dtml-unless>
@@ -386,15 +424,22 @@ $(document).ready(function() {
                           </td>
                         </tr>
                         <tr>
-                          <td colspan="2"><label for="radTipTxtIntegral">Texto digitalizado (PDF)</label><br />
+                          <td colspan="3"><label for="txa_txt_ementa">Ementa </label> <span class="campoObrigatorio">&nbsp;</span>
+                            <textarea id="txa_txt_ementa" name="txa_txt_ementa" rows="4" cols="75" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_ementa missing></textarea>
+                          </td>
+                        </tr>
+             </table>
+             <legend>Textos Integrais</legend>
+              <table>
+                        <tr>
+                          <td width="50%"><label for="radTipTxtIntegral">Texto Original (PDF)</label><br />
                         <dtml-if expr="_.has_key('cod_materia')">
                            <dtml-call expr="REQUEST.set('id_documento', _.str(cod_materia)+'_texto_integral.pdf')">
                            <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
                              <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
                                <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
                                  <img align="top" style="float: left; margin-top: 2px; margin-right: 2px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" /></a>
-                               <a class="botao-link" href="javascript:texto_integral_excluir()">
-                                 Excluir</a>
+                              <input type="button" class="botao" value="Excluir" onclick="javascript:texto_integral_excluir()" />
                              </dtml-let>
                            <dtml-else>
                              <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="15" maxlength="100" />
@@ -404,7 +449,7 @@ $(document).ready(function() {
                            </dtml-if>
                           </dtml-let>
                           <dtml-if expr="_.has_key('temODT')">
-                            <a class="botao-link" href="javascript:texto_pdf_gerar()">Gerar PDF</a>
+                           <input type="button" class="botao" value="Gerar" onclick="javascript:texto_pdf_gerar()" />
                           </dtml-if>
                            </dtml-if>
                         <dtml-else>
@@ -415,14 +460,14 @@ $(document).ready(function() {
                            </dtml-if>
                           </dtml-let>
                           <dtml-if expr="_.has_key('temODT')">
-                            <a class="botao-link" href="javascript:texto_pdf_gerar()">Gerar PDF</a>
+                           <input type="button" class="botao" value="Gerar" onclick="javascript:texto_pdf_gerar()" />
                           </dtml-if>
                          </dtml-if>
                         </dtml-if>
                           </td>
-                          <td colspan="2" valign="top">
+                          <td width="50%" valign="top">
                         <dtml-if expr="_.has_key('cod_materia')">
-                          <label for="radTipTxtIntegral">Texto editável (ODT)</label><br />
+                          <label for="radTipTxtIntegral">Texto Original (ODT)</label><br />
                           <dtml-let id_documento_odt="_.str(cod_materia)+'_texto_integral.odt'">
                            <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_documento_odt)">
                             <dtml-call expr="REQUEST.set('temODT', 1)">
@@ -430,8 +475,8 @@ $(document).ready(function() {
                                <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_materia)+'_texto_integral.odt')">
                                  <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
                                    <img align="top" style="float: left; margin-top: 2px; margin-right: 2px;" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
-                                 <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/materia_odt/externalEdit_/<dtml-var nome_arquivo_odt>.zem">Editor Externo</a>
-                               <a class="botao-link" href="javascript:texto_integral_odt_excluir()">Excluir</a>
+                                 <input type="button" class="botao" value="Editor Externo" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/materia_odt/externalEdit_/<dtml-var nome_arquivo_odt>.zem'" />
+                               <input type="button" class="botao" value="Excluir" onclick="javascript:texto_integral_odt_excluir()" />
                              </dtml-let>
                            <dtml-else>
                             <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_materia)+'-')">
@@ -445,7 +490,67 @@ $(document).ready(function() {
                                   </dtml-in>
                                 </dtml-with>
                               </select>
-                               <a class="botao-link" href="javascript:texto_odt_gerar();">Gerar ODT</a>
+                               <input type="button" class="botao" value="Gerar" onclick="javascript:texto_odt_gerar();" />
+                           </dtml-if>
+                          </dtml-let>
+                        </dtml-if>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><label for="radTipTxtIntegral">Redação Final (PDF)</label><br />
+                        <dtml-if expr="_.has_key('cod_materia')">
+                           <dtml-call expr="REQUEST.set('id_documento', _.str(cod_materia)+'_redacao_final.pdf')">
+                           <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
+                             <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
+                               <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
+                                 <img align="top" style="float: left; margin-top: 2px; margin-right: 2px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" /></a>
+                               <input type="button" class="botao" value="Excluir" onclick="javascript:redacao_final_excluir()" />
+                             </dtml-let>
+                           <dtml-else>
+                             <input type="file" id="file_redacao" name="file_redacao" accept="application/pdf" size="15" maxlength="100" />
+                          <dtml-let id_documento_odt="_.str(cod_materia)+'_redacao_final.odt'">
+                           <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_documento_odt)">
+                            <dtml-call expr="REQUEST.set('temODTred', 1)">
+                           </dtml-if>
+                          </dtml-let>
+                          <dtml-if expr="_.has_key('temODTred')">
+                            <input type="button" class="botao" value="Gerar" onclick="javascript:redacao_final_pdf_gerar()" />
+                          </dtml-if>
+                           </dtml-if>
+                        <dtml-else>
+                           <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="15" maxlength="100" />        <dtml-if expr="_.has_key('cod_materia')">
+                          <dtml-let id_documento_odt="_.str(cod_materia)+'_redacao_final.odt'">
+                           <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_documento_odt)">
+                            <dtml-call expr="REQUEST.set('temODT', 1)">
+                           </dtml-if>
+                          </dtml-let>
+                          <dtml-if expr="_.has_key('temODTred')">
+                            <input type="button" class="botao" value="Gerar" onclick="javascript:redacao_final_pdf_gerar()" />
+                          </dtml-if>
+                         </dtml-if>
+                        </dtml-if>
+                          </td>
+                          <td valign="top">
+                        <dtml-if expr="_.has_key('cod_materia')">
+                          <label for="radTipTxtIntegral">Redação Final (ODT)</label><br />
+                          <dtml-let id_documento_odt="_.str(cod_materia)+'_redacao_final.odt'">
+                           <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_documento_odt)">
+                            <dtml-call expr="REQUEST.set('temODT', 1)">
+                             <dtml-let documento_odt="_.getattr(sapl_documentos.materia_odt,id_documento_odt).absolute_url">
+                               <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_materia)+'_redacao_final.odt')">
+                                 <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                                   <img align="top" style="float: left; margin-top: 2px; margin-right: 2px;" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
+                                 <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/materia_odt/externalEdit_/<dtml-var nome_arquivo_odt>.zem">Editor Externo</a>
+                               <input type="button" class="botao" value="Excluir" onclick="javascript:redacao_final_odt_excluir()" />
+                             </dtml-let>
+                           <dtml-else>
+                            <dtml-let id_documento_odt="_.str(cod_materia)+'_texto_integral.odt'">
+                             <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_documento_odt)">
+                               <input type="button" class="botao" value="Copiar Texto Original" onclick="javascript:texto_original_materia_obter()" />
+                             <dtml-else>
+                               <i>Texto original ODT não disponível</i>
+                             </dtml-if>
+                            </dtml-let>
                            </dtml-if>
                           </dtml-let>
                         </dtml-if>
@@ -701,11 +806,6 @@ $(document).ready(function() {
                    <fieldset>
                      <legend>Dados Textuais</legend>
                        <table>
-                        <tr>
-                          <td><label for="txa_txt_ementa">Ementa </label> <span class="campoObrigatorio">&nbsp;</span>
-                            <textarea id="txa_txt_ementa" name="txa_txt_ementa" rows="4" cols="75" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_ementa missing></textarea>
-                          </td>
-                        </tr>
                         <tr>
                           <td colspan="4"><label for="txa_txt_indexacao">Indexação </label>
                             <textarea id="txa_txt_indexacao" name="txa_txt_indexacao" rows="4" cols="75"  onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_indexacao missing null></textarea>

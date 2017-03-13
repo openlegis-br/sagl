@@ -588,6 +588,19 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.materia.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
+    def redacao_final_gerar_pdf(self, cod_materia):
+        nom_arquivo_odt = "%s"%cod_materia+'_redacao_final.odt'
+        nom_arquivo_pdf1 = "%s"%cod_materia+'_redacao_final.pdf'
+        url = self.sapl_documentos.materia_odt.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.materia.manage_addFile(id=nom_arquivo_pdf1, file=data)
+
     def norma_gerar_odt(self, inf_basicas_dic, nom_arquivo, des_tipo_norma, num_norma, ano_norma, dat_norma, data_norma, txt_ementa, modelo_norma):
         url = self.sapl_documentos.modelo.norma.absolute_url() + "/%s" % modelo_norma
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
