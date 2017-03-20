@@ -52,7 +52,6 @@ FROM
     </dtml-if>
 
 <dtml-sqlgroup where>
-    <dtml-sqltest tip_id_basica     column="materia_legislativa.tip_id_basica"    op="="  type="int"   optional> <dtml-and>
     <dtml-sqltest num_ident_basica  column="materia_legislativa.num_ident_basica" op="="  type="int"   optional> <dtml-and>
     <dtml-sqltest ano_ident_basica  column="materia_legislativa.ano_ident_basica" op="="  type="int"   optional> <dtml-and>
     <dtml-sqltest num_protocolo     column="materia_legislativa.num_protocolo"    op="="  type="int"   optional> <dtml-and>
@@ -88,8 +87,18 @@ FROM
 
 </dtml-sqlgroup>
 
+   <dtml-if expr="tip_id_basica!=''">
+    AND (
+        <dtml-if expr="pysc.verifica_lista_pysc(tip_id_basica)">
+           materia_legislativa.tip_id_basica in (<dtml-var "tip_id_basica" sql_quote>)
+         <dtml-else>
+           materia_legislativa.tip_id_basica in (<dtml-var expr="tip_id_basica[1:-1]">)
+        </dtml-if>
+      )
+   </dtml-if>
+
    <dtml-if des_assunto>
-     and (MATCH(materia_legislativa.txt_ementa,materia_legislativa.txt_indexacao,materia_legislativa.txt_observacao)
+     AND (MATCH(materia_legislativa.txt_ementa,materia_legislativa.txt_indexacao,materia_legislativa.txt_observacao)
       against (<dtml-sqlvar des_assunto type="string"> IN BOOLEAN MODE)
       <dtml-let des_assunto="'%'+des_assunto+'%'">
         OR <dtml-sqltest des_assunto column="materia_legislativa.txt_ementa" type="string" op="like">
@@ -99,26 +108,26 @@ FROM
    </dtml-if>
 
     <dtml-if cod_relator>
-      and relatoria.ind_excluido = 0 and
+      and relatoria.ind_excluido = 0 AND
       parlamentar.cod_parlamentar = <dtml-sqlvar cod_relator type="string">   
     </dtml-if>
 
    <dtml-if cod_status>
-     and materia_legislativa.cod_materia = tramitacao.cod_materia and
-     tramitacao.ind_ult_tramitacao = 1 and
-     tramitacao.ind_excluido = 0 and
+     AND materia_legislativa.cod_materia = tramitacao.cod_materia and
+     tramitacao.ind_ult_tramitacao = 1 AND
+     tramitacao.ind_excluido = 0 AND
      tramitacao.cod_status = <dtml-sqlvar cod_status type="int">
    </dtml-if>
 
    <dtml-if cod_unid_tramitacao>
-     and materia_legislativa.cod_materia = tramitacao.cod_materia
-     and tramitacao.ind_ult_tramitacao = 1
-     and tramitacao.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao type="int">
+     AND materia_legislativa.cod_materia = tramitacao.cod_materia
+     AND tramitacao.ind_ult_tramitacao = 1
+     AND tramitacao.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao type="int">
    </dtml-if>
 
    <dtml-if expr="cod_autor!=''">
-     and autoria.cod_autor = <dtml-sqlvar cod_autor type="int">
-     and autoria.ind_excluido = 0
+     AND autoria.cod_autor = <dtml-sqlvar cod_autor type="int">
+     AND autoria.ind_excluido = 0
    </dtml-if>
 
   <dtml-if expr="rd_ordem == '1'">

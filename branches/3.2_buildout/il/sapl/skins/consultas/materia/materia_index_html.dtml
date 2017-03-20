@@ -1,19 +1,47 @@
 <dtml-var standard_html_header>
 
+<link href="&dtml-portal_url;/generico/multiple-select.css" media="all" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="&dtml-portal_url;/javascript/multiple-select.js"></script>
+
 <script type="text/javascript">
 
 (function ($) {
   $(function () {
-    //$('input[type=submit]').hide();
     document.onkeypress = function (event) {
-      var form = pesq_basica_form;
-      form.action = "materia_pesquisar_proc";
+      var form = materia_form;
       if (event.keyCode === 13) {
-        form.submit();
+        campos_criticar();
       }
     };
   });
 }(jQuery));
+
+$(function() {
+        $('#txt_dat_apresentacao').datepick();
+});
+
+jQuery.fn.multiselect = function() {
+    $(this).each(function() {
+        var checkboxes = $(this).find("input:checkbox");
+        checkboxes.each(function() {
+            var checkbox = $(this);
+            // Highlight pre-selected checkboxes
+            if (checkbox.prop("checked"))
+                checkbox.parent().addClass("multiselect-on");
+ 
+            // Highlight checkboxes that the user selects
+            checkbox.click(function() {
+                if (checkbox.prop("checked"))
+                    checkbox.parent().addClass("multiselect-on");
+                else
+                    checkbox.parent().removeClass("multiselect-on");
+            });
+        });
+    });
+};
+$(function() {
+     $(".multiselect").multiselect();
+});
 
 $(function() {
 	$('#dt_apres').datepick();
@@ -24,7 +52,7 @@ $(function() {
 </script>
 
   <dtml-let isAnon="portal_membership.isAnonymousUser()">
-   <dtml-if expr="isAnon">
+   <dtml-if expr="isAnon and sapl_documentos.props_sapl.recaptcha_key">
     <script src='https://www.google.com/recaptcha/api.js?hl=pt-BR' async defer></script>
    </dtml-if>
   </dtml-let>
@@ -53,21 +81,28 @@ $(function() {
  </dtml-if>
      <div class="pf-element pf-full-width">
         <label for="lst_tip_materia"><span class="pf-label">Tipo de Matéria</span></label>
-          <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia" title="Selecione um tipo de matéria ou mantenha a opção 'Todos' pesquisar qualquer tipo"
-           <dtml-if expr="_.has_key('tip_materia_sel')">
-             disabled
-           </dtml-if> style="max-width: 240px; width: 100%;">
-            <option value="">Todos</option>
-            <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
-              <option 
-               <dtml-if expr="_.has_key('tip_materia_sel') and _.int(tip_materia)==_.int(tip_materia_sel)">
+
+      <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia" multiple="multiple">
+         <optgroup label="Matérias Principais">
+              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)">
+                <option <dtml-if expr="_.has_key('tip_materia_sel') and _.int(tip_materia)==_.int(tip_materia_sel)">
                 selected</dtml-if>
-                 value="<dtml-var tip_materia missing>">
-                <dtml-var des_tipo_materia>
-              </option>
-            </dtml-in>
-          </select>
+                   value="<dtml-var tip_materia>"><dtml-var des_tipo_materia>
+                </option>
+              </dtml-in>
+         </optgroup>
+         <optgroup label="Matérias Acessórias">
+              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='A', ind_excluido=0)">
+                <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia></option>
+              </dtml-in>
+         </optgroup>
+      </select>
+      <script>
+        $("#lst_tip_materia").multipleSelect({
+                width: 240, filter: true});
+      </script>
      </div>
+
      <div class="pf-element pf-full-width">
         <label for="txt_numero"><span class="pf-label">Número</span></label>
         <div class="pf-group">

@@ -56,7 +56,8 @@ else:
 
 materias=[]
 REQUEST=context.REQUEST
-for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=REQUEST['lst_tip_materia'], num_ident_basica=REQUEST['txt_numero'],
+tipo_materia = REQUEST[str('tipo_materia')]
+for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia, num_ident_basica=REQUEST['txt_numero'],
                                                    ano_ident_basica=REQUEST['txt_ano'], ind_tramitacao=REQUEST['rad_tramitando'],
                                                    des_assunto=REQUEST['txt_assunto'],
                                                    cod_status=REQUEST['lst_status'], des_tipo_autor=REQUEST['lst_tip_autor'],
@@ -132,9 +133,6 @@ if REQUEST.hdn_txt_autor=='  ':
     filtro['autor']=''
 
 filtro['tipo_materia']=''
-if REQUEST.lst_tip_materia!='':
-    for tipo_materia in context.zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0, tip_materia=REQUEST.lst_tip_materia):
-        filtro['tipo_materia']= tipo_materia.sgl_tipo_materia + ' - ' + tipo_materia.des_tipo_materia
 
 filtro['partido']=''
 if REQUEST.lst_cod_partido!='':
