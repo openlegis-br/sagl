@@ -5,64 +5,55 @@ max_rows : 1000
 max_cache : 100
 </dtml-comment>
 SELECT DISTINCT 
-     a.*, 
-     c.nom_comissao,
-     b.nom_bancada, 
-     p.nom_completo
-     <dtml-if tramLocal>
-      , if (ut.cod_orgao is not null,o.nom_orgao, c.nom_comissao) as nom_unidade
-     </dtml-if>
-     <dtml-if status>
-      , st.des_status as nom_status
-     </dtml-if>
+     DISTINCT autor.cod_autor,
+     autor.cod_comissao,
+     autor.cod_bancada,
+     autor.cod_parlamentar, 
+     comissao.nom_comissao,
+     bancada.nom_bancada, 
+     parlamentar.nom_completo
+   <dtml-if tramLocal>
+     , if (ut.cod_orgao is not null,orgao.nom_orgao, comissao.nom_comissao) as nom_unidade
+   </dtml-if>
+   <dtml-if status>
+    , st.des_status as nom_status
+   </dtml-if>
 
 FROM
-     autoria au
-     <dtml-if expr="status or tramLocal or dat_prazofim">
-      , tramitacao tra
-     </dtml-if>
-     <dtml-if status>
-      , status_tramitacao st
-     </dtml-if>
-      , materia_legislativa m,
-      (autor a
-     <dtml-if tramLocal>
-      , unidade_tramitacao ut
-     </dtml-if>
-     ) LEFT JOIN comissao c ON a.cod_comissao = c.cod_comissao
-     <dtml-if tramLocal>
-      AND ut.cod_comissao = c.cod_comissao 
-      LEFT JOIN orgao o ON ut.cod_orgao = o.cod_orgao
-     </dtml-if>
-     LEFT JOIN bancada b ON a.cod_bancada = b.cod_bancada
-     LEFT JOIN parlamentar p ON a.cod_parlamentar = p.cod_parlamentar
+    tramitacao tra
+    LEFT JOIN status_tramitacao st ON tra.cod_status = st.cod_status
+    LEFT JOIN unidade_tramitacao ut ON tra.cod_unid_tram_dest = ut.cod_unid_tramitacao
+    LEFT JOIN materia_legislativa ON tra.cod_materia = materia_legislativa.cod_materia
+    LEFT JOIN autoria ON autoria.cod_materia = materia_legislativa.cod_materia
+    LEFT JOIN autor ON autor.cod_autor = autoria.cod_autor
+    LEFT JOIN comissao ON autor.cod_comissao = comissao.cod_comissao
+    LEFT JOIN bancada ON autor.cod_bancada = bancada.cod_bancada
+    LEFT JOIN parlamentar ON autor.cod_parlamentar = parlamentar.cod_parlamentar
+    LEFT JOIN materia_legislativa m ON autoria.cod_materia = m.cod_materia 
+    LEFT JOIN orgao ON ut.cod_orgao = orgao.cod_orgao
+
 
 WHERE
-     a.cod_autor = au.cod_autor and
-     au.cod_materia = m.cod_materia and
-     a.ind_excluido = 0 and
-     au.ind_excluido = 0 and
-     m.ind_excluido = 0 and
-     au.ind_primeiro_autor = 1 and
-     m.ano_ident_basica = <dtml-sqlvar ano type="int"> 
-     <dtml-if expr="status or tramLocal or dat_prazofim">
-      and tra.ind_ult_tramitacao = 1
-      and tra.ind_excluido = 0     
-      and m.cod_materia = tra.cod_materia
-     </dtml-if> 
-     <dtml-if tipo>
-      and m.tip_id_basica = <dtml-sqlvar tipo type="int"> 
-     </dtml-if>
-     <dtml-if status>
-      and tra.cod_status = st.cod_status 
-      and tra.cod_status = <dtml-sqlvar status type="int">  
-     </dtml-if>
-     <dtml-if tramLocal>
-      and tra.cod_unid_tram_dest = ut.cod_unid_tramitacao
-      and tra.cod_unid_tram_dest = <dtml-sqlvar tramLocal type="int">
-     </dtml-if> 
-     <dtml-if dat_prazofim>
-      and tra.dat_fim_prazo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_prazofim)" type="nb">
-     </dtml-if> 
+     autor.ind_excluido = 0 
+     and autoria.ind_excluido = 0 
+     and materia_legislativa.ind_excluido = 0 
+     and materia_legislativa.ano_ident_basica = <dtml-sqlvar ano type="int"> 
+   <dtml-if expr="status or tramLocal or dat_prazofim">
+     and tra.ind_ult_tramitacao = 1
+     and tra.ind_excluido = 0     
+   </dtml-if>
+   <dtml-if tipo>
+     and materia_legislativa.tip_id_basica = <dtml-sqlvar tipo type="int">
+   </dtml-if>
+   <dtml-if status>
+     and tra.cod_status = <dtml-sqlvar status type="int">
+   </dtml-if> 
+   <dtml-if tramLocal>
+     and tra.cod_unid_tram_dest = <dtml-sqlvar tramLocal type="int">
+   </dtml-if>
+   <dtml-if dat_prazofim>
+     and tra.dat_fim_prazo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_prazofim)" type="nb">
+   </dtml-if>
+
 
 ORDER BY tip_autor, nom_completo, nom_comissao, nom_bancada, nom_autor
