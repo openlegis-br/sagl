@@ -1,12 +1,37 @@
 <dtml-var standard_html_header>
 
+<script type="text/javascript" src="&dtml-portal_url;/javascript/multiple-select.js"></script>
+<link href="&dtml-portal_url;/generico/multiple-select.css" media="all" rel="stylesheet" type="text/css" />
+
 <script type="text/javascript">
-$(function() {
+  $(function() {
 	$('#dt_norma').datepick();
 	$('#dt_norma2').datepick();
         $('#dt_public').datepick();
         $('#dt_public2').datepick();
-});
+  });
+  jQuery.fn.multiselect = function() {
+    $(this).each(function() {
+        var checkboxes = $(this).find("input:checkbox");
+        checkboxes.each(function() {
+            var checkbox = $(this);
+            // Highlight pre-selected checkboxes
+            if (checkbox.prop("checked"))
+                checkbox.parent().addClass("multiselect-on");
+ 
+            // Highlight checkboxes that the user selects
+            checkbox.click(function() {
+                if (checkbox.prop("checked"))
+                    checkbox.parent().addClass("multiselect-on");
+                else
+                    checkbox.parent().removeClass("multiselect-on");
+            });
+        });
+    });
+  };
+  $(function() {
+     $(".multiselect").multiselect();
+  });
 </script>
 
 <script type="text/javascript" src="javascript/poshytips.js"></script>
@@ -71,21 +96,12 @@ $(function(){
 	offsetX: 5,
 	showTimeout: 100
   });
-  $('#lst_tip_norma').poshytip({
-	className: 'tip-twitter',
-	showOn: 'focus',
-	alignTo: 'target',
-	alignX: 'right',
-	alignY: 'center',
-	offsetX: 5,
-	showTimeout: 100
-  });
 });
 //]]>
 </script>
 
   <dtml-let isAnon="portal_membership.isAnonymousUser()">
-   <dtml-if expr="isAnon">
+   <dtml-if expr="isAnon and sapl_documentos.props_sapl.recaptcha_key">
     <script src='https://www.google.com/recaptcha/api.js?hl=pt-BR' async defer></script>
    </dtml-if>
   </dtml-let>
@@ -113,19 +129,20 @@ $(function(){
 	</script>
 </dtml-if>
 
-<form class="pf-form" name="norma_pesquisar" action="norma_juridica_pesquisar_proc" onChange="ordem()">
+<form class="pf-form" name="norma_pesquisar" action="norma_juridica_pesquisar_proc">
 <fieldset>
    <input type="hidden" name="incluir" value="<dtml-var incluir missing>"/>
     <div class="pf-element pf-full-width">
       <label for="lst_tip_norma"><span class="pf-label">Tipo de Norma</span></label>
-       <select class="pf-field" id="lst_tip_norma" name="lst_tip_norma" style="max-width: 236px; width: 100%;" title="Selecione um tipo de norma ou mantenha a opção 'Todos' pesquisar qualquer tipo"> 
-          <option value="">Todos</option>
-          <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
-            <option value="<dtml-var tip_norma missing>">
-              <dtml-var des_tipo_norma>
-            </option>
-          </dtml-in>
-        </select>
+      <select class="pf-field" id="lst_tip_norma" name="lst_tip_norma" multiple="multiple">
+           <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
+             <option value="<dtml-var tip_norma>"><dtml-var des_tipo_norma></option>
+           </dtml-in>
+      </select>
+      <script>
+        $("#lst_tip_norma").multipleSelect({
+                width: 235});
+      </script>
     </div>
     <div class="pf-element pf-full-width">
      <label for="txt_numero"><span class="pf-label">Número</span></label>
@@ -166,7 +183,7 @@ $(function(){
      </div>
     <div class="pf-element pf-full-width">
         <label for="txt_assunto"><span class="pf-label">Termos da Pesquisa</span></label>
-          <input class="pf-field" id="txt_assunto" type="text" name="txt_assunto" title="DICA: A frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no texto. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do texto." null="" style="min-width: 225px; max-width: 225px; width: 85%;" onKeyUp="ordem()" onBlur="relevancia()" />
+          <input class="pf-field" id="txt_assunto" type="text" name="txt_assunto" title="DICA: A frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no texto. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do texto." null="" style="min-width: 227px; max-width: 227px; width: 85%;" onKeyUp="ordem()" onBlur="relevancia()" />
     </div>
     <div class="pf-element pf-full-width">
         <label for="chk_textual"><span class="pf-label">Pesquisa Textual?</span>

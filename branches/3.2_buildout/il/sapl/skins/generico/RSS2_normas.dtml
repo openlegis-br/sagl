@@ -4,7 +4,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
 <channel>
      <title>Normas Juridicas - <dtml-var "sapl_documentos.props_sapl.nom_casa" missing></title>
-     <link>&dtml-portal_url;/generico/norma_juridica_pesquisar_proc?incluir=0</link>
+     <link>&dtml-portal_url;/consultas/norma_juridica</link>
      <description>OpenLegis - Processo Legislativo Eletrônico</description>
      <image>
       <dtml-call expr="REQUEST.set('existe_logo', 0)">
@@ -20,11 +20,16 @@
 <url>&dtml-portal_url;/sapl_documentos/props_sapl/logo_casa.gif</url>
        </dtml-if>
 <title>Normas Juridicas - <dtml-var "sapl_documentos.props_sapl.nom_casa" missing></title>
-     <link>&dtml-portal_url;/generico/norma_juridica_pesquisar_proc?incluir=0</link>
+     <link>&dtml-portal_url;/consultas/norma_juridica</link>
      </image>
      <dc:language>pt-BR</dc:language>
      <ttl>10</ttl>
-     <dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=lst_tip_norma, num_norma=pysc.extrai_id_pysc(id=txt_numero), ano_norma=txt_ano, des_assunto=txt_assunto, cod_assunto=lst_assunto_norma, dat_norma=dt_norma, dat_norma2=dt_norma2, dat_publicacao=dt_public, dat_publicacao2=dt_public2, rd_ordem=rd_ordenacao)">
+<dtml-if expr="tipo_norma!='None'">
+    <dtml-call expr="REQUEST.set('tipo_norma', str(tipo_norma))">
+<dtml-else>
+    <dtml-call expr="REQUEST.set('tipo_norma', '')">
+</dtml-if>
+     <dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=tipo_norma, num_norma=pysc.extrai_id_pysc(id=txt_numero), ano_norma=txt_ano, des_assunto=txt_assunto, cod_assunto=lst_assunto_norma, dat_norma=dt_norma, dat_norma2=dt_norma2, dat_publicacao=dt_public, dat_publicacao2=dt_public2, rd_ordem=rd_ordenacao)">
     <item>
      <title>
       <dtml-var des_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma>
@@ -41,7 +46,7 @@
      </dtml-if>
    </dtml-let>
 <category><dtml-var des_tipo_norma></category>
-     <pubDate><dtml-var expr="DateTime(dat_norma).rfc822()" missing null=""></pubDate>
+     <pubDate><dtml-var dat_norma></pubDate>
      </item>
 
   </dtml-in>

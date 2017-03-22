@@ -56,7 +56,11 @@ else:
 
 materias=[]
 REQUEST=context.REQUEST
-tipo_materia = REQUEST[str('tipo_materia')]
+if REQUEST[str('tipo_materia')] != 'None':
+  tipo_materia = REQUEST[str('tipo_materia')]
+else: 
+  tipo_materia = '' 
+
 for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia, num_ident_basica=REQUEST['txt_numero'],
                                                    ano_ident_basica=REQUEST['txt_ano'], ind_tramitacao=REQUEST['rad_tramitando'],
                                                    des_assunto=REQUEST['txt_assunto'],

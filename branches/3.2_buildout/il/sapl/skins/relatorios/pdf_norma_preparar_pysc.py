@@ -56,7 +56,12 @@ else:
 
 normas=[]
 REQUEST=context.REQUEST
-for norma in context.zsql.norma_juridica_obter_zsql(tip_norma=REQUEST['lst_tip_norma'], num_norma=REQUEST['txt_numero'],
+if REQUEST[str('tipo_norma')] != 'None':
+  tipo_norma= REQUEST[str('tipo_norma')]
+else: 
+  tipo_norma = '' 
+REQUEST=context.REQUEST
+for norma in context.zsql.norma_juridica_obter_zsql(tip_norma=tipo_norma, num_norma=REQUEST['txt_numero'],
                                            ano_norma=REQUEST['txt_ano'], des_assunto=REQUEST['txt_assunto'], 
                                            cod_assunto=REQUEST['lst_assunto_norma'], dat_norma=REQUEST['dt_norma'],
                                            dat_norma2=REQUEST['dt_norma2'], dat_publicacao=REQUEST['dt_public'],
@@ -88,9 +93,6 @@ filtro['ano']=REQUEST.txt_ano
 filtro['assunto']=REQUEST.txt_assunto
 
 filtro['tipo_norma']=''
-if REQUEST.lst_tip_norma!='':
-    for tipo_norma in context.zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0, tip_norma=REQUEST.lst_tip_norma):
-        filtro['tipo_norma']= tipo_norma.sgl_tipo_norma + ' - ' + tipo_norma.des_tipo_norma
 
 filtro['situacao_norma']=''
 if REQUEST.lst_tip_situacao_norma!='':

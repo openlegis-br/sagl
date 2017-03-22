@@ -37,17 +37,24 @@ max_cache : 100
        assunto_norma  
 
   <dtml-sqlgroup where>      
-         norma_juridica.tip_norma = tipo_norma_juridica.tip_norma
-     and norma_juridica.cod_assunto = assunto_norma.cod_assunto
+     norma_juridica.cod_assunto = assunto_norma.cod_assunto
      and norma_juridica.ind_excluido = 0
      and tipo_norma_juridica.ind_excluido = 0
-
      <dtml-and> <dtml-sqltest cod_norma column="norma_juridica.cod_norma" op="=" type="int" optional>
-     <dtml-and> <dtml-sqltest tip_norma column="norma_juridica.tip_norma" op="=" type="int" optional>
      <dtml-and> <dtml-sqltest num_norma column="norma_juridica.num_norma" op="=" type="int" optional>
      <dtml-and> <dtml-sqltest ano_norma column="norma_juridica.ano_norma" op="=" type="int" optional>
      <dtml-and> <dtml-sqltest cod_situacao column="norma_juridica.cod_situacao" op="=" type="int" optional>
      </dtml-sqlgroup>
+
+   <dtml-if expr="tip_norma!=''">
+    AND (
+        <dtml-if expr="pysc.verifica_lista_pysc(tip_norma)">
+           norma_juridica.tip_norma in (<dtml-var "tip_norma" sql_quote>)
+         <dtml-else>
+           norma_juridica.tip_norma in (<dtml-var expr="tip_norma[1:-1]">)
+        </dtml-if>
+      )
+   </dtml-if>
 
    <dtml-if dat_norma>
      <dtml-if dat_norma2>
