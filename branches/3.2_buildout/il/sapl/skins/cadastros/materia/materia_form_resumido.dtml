@@ -1,5 +1,8 @@
 <dtml-var standard_html_header>
 
+<script type="text/javascript" src="&dtml-portal_url;/javascript/multiple-select.js"></script>
+<link href="&dtml-portal_url;/generico/multiple-select.css" media="all" rel="stylesheet" type="text/css" />
+
 <script type="text/javascript" src="javascript/data_validar_jvsc"></script>
 <script type="text/javascript">
 <!--
@@ -79,10 +82,10 @@
          return false;
       }
 
-      if ($(".chk_cod_autor:checked").length < 1) {
-         alert("Ao menos um autor deve ser selecionado!");
-         form.lst_tip_autor.focus();
-         return false; 
+      checked = $("input[type=checkbox]:checked").length;
+      if(!checked) {
+        alert("Ao menos um autor deve ser selecionado!");
+        return false;
       }
 
       if (form.txa_txt_ementa.value == "") {
@@ -166,29 +169,6 @@
 
 $(function() {
         $('#txt_dat_apresentacao').datepick();
-});
-
-jQuery.fn.multiselect = function() {
-    $(this).each(function() {
-        var checkboxes = $(this).find("input:checkbox");
-        checkboxes.each(function() {
-            var checkbox = $(this);
-            // Highlight pre-selected checkboxes
-            if (checkbox.prop("checked"))
-                checkbox.parent().addClass("multiselect-on");
- 
-            // Highlight checkboxes that the user selects
-            checkbox.click(function() {
-                if (checkbox.prop("checked"))
-                    checkbox.parent().addClass("multiselect-on");
-                else
-                    checkbox.parent().removeClass("multiselect-on");
-            });
-        });
-    });
-};
-$(function() {
-     $(".multiselect").multiselect();
 });
 </script>
 
@@ -332,40 +312,51 @@ $(function() {
               </dtml-in>
              </select>
              </td>
-             <td colspan="2"><label for="des_tip_autor">Nome Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
+             <td colspan="2"><label for="des_tip_autor">Nome do Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
               <dtml-if expr="_.has_key('des_tipo_autor')">
-                <div class="multiselect">
 
                   <dtml-if expr="des_tipo_autor=='Parlamentar'">
-                    <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_apresentacao)">
-                        <label><input type="checkbox" id="chk_cod_autor" class="chk_cod_autor" name="chk_cod_autor:list:int" value="<dtml-var cod_autor>" /><dtml-var nom_completo></label>
-                    </dtml-in>
+                   <select class="pf-field chk_cod_autor" id="chk_cod_autor" name="chk_cod_autor:list:int" multiple="multiple">
+                     <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_apresentacao)">
+                        <option value="<dtml-var cod_autor>"><dtml-var nom_completo></option>
+                     </dtml-in>
+                   </select>
 
                   <dtml-elif expr="des_tipo_autor=='Comissao'">
+                   <select class="pf-field chk_cod_autor" id="chk_cod_autor" name="chk_cod_autor:list:int" multiple="multiple">
                     <dtml-in expr="zsql.autor_obter_zsql(comissao='1')">
                      <dtml-call expr="REQUEST.set('cod_autor_comissao', cod_autor)">
-                     <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
-                       <dtml-if expr="dat_extincao is None">
-                        <label><input type="checkbox" id="chk_cod_autor" class="chk_cod_autor" name="chk_cod_autor:list:int" value="<dtml-var cod_autor_comissao>" /><dtml-var nom_comissao></label>
-                       </dtml-if>
-                     </dtml-in>
+                       <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
+                         <dtml-if expr="dat_extincao is None">
+                           <option value="<dtml-var cod_autor_comissao>"><dtml-var nom_comissao></option>
+                         </dtml-if>
+                       </dtml-in>
                     </dtml-in>
+                   </select>
 
                   <dtml-elif expr="des_tipo_autor=='Bancada'">
+                   <select class="pf-field chk_cod_autor" id="chk_cod_autor" name="chk_cod_autor:list:int" multiple="multiple">
                     <dtml-in expr="zsql.autor_obter_zsql(bancada='1')">
                      <dtml-call expr="REQUEST.set('cod_autor_bancada', cod_autor)">
                      <dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=num_legislatura_sel,cod_bancada=cod_bancada,ind_excluido=0)">
-                      <label><input type="checkbox" id="chk_cod_autor" class="chk_cod_autor" name="chk_cod_autor:list:int" value="<dtml-var cod_autor_bancada>" /><dtml-var nom_bancada></label>
+                       <option value="<dtml-var cod_autor_bancada>"><dtml-var nom_bancada></option>
                      </dtml-in>
                     </dtml-in>
+                   </select>
 
-                  <dtml-else>                                    
+                  <dtml-else>
+                   <select class="pf-field chk_cod_autor" id="chk_cod_autor" name="chk_cod_autor:list:int" multiple="multiple">                                 
                     <dtml-in expr="zsql.autor_obter_zsql(des_tipo_autor=des_tipo_autor)">
                      <dtml-call expr="REQUEST.set('cod_autor_geral', cod_autor)">
-                      <label><input type="checkbox" id="chk_cod_autor" class="chk_cod_autor" name="chk_cod_autor:list:int" value="<dtml-var cod_autor_geral>" /><dtml-var nom_autor></label>
+                       <option value="<dtml-var cod_autor_geral>"><dtml-var nom_autor></option>
                     </dtml-in>
                   </dtml-if>
                 </div>
+
+               <script>
+                 $("#chk_cod_autor").multipleSelect({
+                  width: 380});
+               </script>
               <dtml-else>
                  <input type="text" name="txt_nom_autor" size="30" value="<dtml-var nom_autor missing>" disabled>
               </dtml-if>

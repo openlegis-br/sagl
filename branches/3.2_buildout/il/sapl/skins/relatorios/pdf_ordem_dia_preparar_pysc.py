@@ -30,26 +30,21 @@ if context.REQUEST['cod_sessao_plen']!='':
         dic["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+ordem.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
         dic["id_materia"] = materia.des_tipo_materia.upper()+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica) 
         dic["txt_ementa"] = ordem.txt_observacao
-        # numeracao do processo 26/02/2011
         dic["des_numeracao"]=""
         numeracao = context.zsql.numeracao_obter_zsql(cod_materia=ordem.cod_materia)
         if len(numeracao):
            numeracao = numeracao[0]
            dic["des_numeracao"] = str(numeracao.num_materia)+"/"+str(numeracao.ano_materia) 
         dic["des_turno"]=""
+        for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=ordem.tip_turno):
+           dic["des_turno"] = turno.des_turno
+        dic["des_quorum"]=""
+        for quorum in context.zsql.quorum_votacao_obter_zsql(cod_qurum=ordem.tip_quorum):
+           dic["des_quorum"] = quorum.des_quorum
+        dic["tip_votacao"]=""
+        for tip_votacao in context.zsql.tipo_votacao_obter_zsql(tip_votacao=ordem.tip_votacao):
+           dic["tip_votacao"] = tip_votacao.des_tipo_votacao
         dic["des_situacao"] = ""
-        tramitacao = context.zsql.tramitacao_obter_zsql(cod_materia=ordem.cod_materia, ind_ult_tramitacao=1)
-        if len(tramitacao):
-            tramitacao = tramitacao[0]
-            if tramitacao.sgl_turno != "":            
-                for turno in [("P","Primeiro"), ("S","Segundo"), ("U","Único"), ("L","Suplementar"), ("A","Votação Única em Regime de Urgência"), ("B","1ª Votação"), ("C","2ª e 3ª Votações")]:
-                    if tramitacao.sgl_turno == turno[0]:
-                        dic["des_turno"] = turno[1]
-
-            dic["des_situacao"] = tramitacao.des_status
-            if dic["des_situacao"]==None:
-                 dic["des_situacao"] = " "
-
         dic["nom_autor"] = ""
         autores = context.zsql.autoria_obter_zsql(cod_materia=ordem.cod_materia)
         fields = autores.data_dictionary().keys()

@@ -104,6 +104,10 @@ def pauta(lst_splen, lst_pauta):
             tmp+='\t\t<para style="P2" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
+            tmp+='\t\t<para style="P3"><b>Turno</b>: '+ dic['des_turno'] +' | <b>Quorum</b>: '+ dic['des_quorum']+' | <b>Tipo de Votação</b>: '+ dic['tip_votacao'] + '' + '</para>\n'
+            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+            tmp+='\t\t\t<font color="white"> </font>\n'
+            tmp+='\t\t</para>\n'
 
     return tmp
 
