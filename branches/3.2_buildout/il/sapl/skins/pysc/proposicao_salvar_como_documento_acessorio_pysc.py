@@ -14,12 +14,12 @@ try:
     if (int(ind_sobrescrever)==1):
         doc=''     
         context.sapl_documentos.materia_odt.manage_delObjects(id)
-        tmp_copy = context.sapl_documentos.proposicao.manage_copyObjects(ids=str(cod_proposicao)+'.odt')
+        tmp_copy = context.sapl_documentos.proposicao.manage_cutObjects(ids=str(cod_proposicao)+'.odt')
         tmp_id = context.sapl_documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
         context.sapl_documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
         ok = 1
 except KeyError:
-    tmp_copy = context.sapl_documentos.proposicao.manage_copyObjects(ids=str(cod_proposicao)+ '.odt')
+    tmp_copy = context.sapl_documentos.proposicao.manage_cutObjects(ids=str(cod_proposicao)+ '.odt')
     tmp_id = context.sapl_documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
     context.sapl_documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
     ok = 1
