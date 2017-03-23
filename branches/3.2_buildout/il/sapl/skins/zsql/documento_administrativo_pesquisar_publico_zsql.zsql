@@ -44,7 +44,6 @@ FROM
     <dtml-sqltest num_documento     column="documento_administrativo.num_documento"    op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ano_documento     column="documento_administrativo.ano_documento"    op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ind_tramitacao    column="documento_administrativo.ind_tramitacao"   op="="  type="int"    optional> <dtml-and>
-    <dtml-sqltest tip_documento     column="documento_administrativo.tip_documento"    op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest num_protocolo     column="documento_administrativo.num_protocolo"    op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ind_publico       column="tipo_documento_administrativo.ind_publico" op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ind_excluido      column="documento_administrativo.ind_excluido"     op="="  type="int"    optional> <dtml-and>
@@ -63,6 +62,16 @@ FROM
 </dtml-if>
 
 </dtml-sqlgroup>
+
+   <dtml-if expr="tip_documento!=''">
+    AND (
+        <dtml-if expr="pysc.verifica_lista_pysc(tip_documento)">
+           documento_administrativo.tip_documento in (<dtml-var "tip_documento" sql_quote>)
+         <dtml-else>
+           documento_administrativo.tip_documento in (<dtml-var expr="tip_documento[1:-1]">)
+        </dtml-if>
+      )
+   </dtml-if>
 
     <dtml-if des_assunto>
       and match(documento_administrativo.txt_assunto,documento_administrativo.txt_observacao)

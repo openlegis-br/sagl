@@ -1,7 +1,7 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
 arguments : num_documento="" ano_documento="" tip_documento="" num_protocolo="" ind_tramitacao="" cod_status="" des_assunto="" txt_interessado="" dat_apres1="" dat_apres2="" cod_unid_tramitacao="" rd_ordem="" ind_excluido="0"
-max_rows : 5000
+max_rows : 10000
 max_cache : 100
 </dtml-comment>
 
@@ -44,7 +44,6 @@ FROM
     <dtml-sqltest num_documento     column="documento_administrativo.num_documento"    op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ano_documento     column="documento_administrativo.ano_documento"    op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ind_tramitacao    column="documento_administrativo.ind_tramitacao"   op="="  type="int"    optional> <dtml-and>
-    <dtml-sqltest tip_documento     column="documento_administrativo.tip_documento"    op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest num_protocolo     column="documento_administrativo.num_protocolo"    op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ind_excluido      column="documento_administrativo.ind_excluido"     op="="  type="int"    optional> <dtml-and>
 
@@ -62,6 +61,16 @@ FROM
 </dtml-if>
 
 </dtml-sqlgroup>
+
+   <dtml-if expr="tip_documento!=''">
+    AND (
+        <dtml-if expr="pysc.verifica_lista_pysc(tip_documento)">
+           documento_administrativo.tip_documento in (<dtml-var "tip_documento" sql_quote>)
+         <dtml-else>
+           documento_administrativo.tip_documento in (<dtml-var expr="tip_documento[1:-1]">)
+        </dtml-if>
+      )
+   </dtml-if>
 
     <dtml-if des_assunto>
       and match(documento_administrativo.txt_assunto,documento_administrativo.txt_observacao)

@@ -1,5 +1,8 @@
 <dtml-var standard_html_header>
 
+<script type="text/javascript" src="&dtml-portal_url;/javascript/multiple-select.js"></script>
+<link href="&dtml-portal_url;/generico/multiple-select.css" media="all" rel="stylesheet" type="text/css" />
+
 <script type="text/javascript">
 $(function() {
         $('#dt_apres1').datepick();
@@ -23,7 +26,7 @@ $(function() {
 </script>
 
   <dtml-let isAnon="portal_membership.isAnonymousUser()">
-   <dtml-if expr="isAnon">
+   <dtml-if expr="isAnon and sapl_documentos.props_sapl.recaptcha_key">
     <script src='https://www.google.com/recaptcha/api.js?hl=pt-BR' async defer></script>
    </dtml-if>
   </dtml-let>
@@ -49,23 +52,24 @@ $(function() {
 
     <div id="inputs">
      <div class="pf-element pf-full-width">
-        <label for="lst_tip_documento"><span class="pf-label">Tipo de Documento</span></label>
-          <select class="pf-field" id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
-            <option value="">Todos</option>
-            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
-              <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
-                <option value="<dtml-var tip_documento missing>">
-                  <dtml-var des_tipo_documento>
-                </option>
-              </dtml-in>
-            <dtml-else>
-                <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
-                  <option value="<dtml-var tip_documento missing>">
-                    <dtml-var des_tipo_documento>
-                  </option>
-                </dtml-in>
-            </dtml-if>
-          </select>
+      <label for="lst_tip_documento"><span class="pf-label">Tipo de Documento</span></label>
+     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+      <select class="pf-field" id="lst_tip_documento" name="lst_tip_documento" multiple="multiple">
+           <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
+             <option value="<dtml-var tip_documento>" selected><dtml-var des_tipo_documento></option>
+           </dtml-in>
+      </select>
+     <dtml-else>
+      <select class="pf-field" id="lst_tip_documento" name="lst_tip_documento" multiple="multiple">
+           <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
+             <option value="<dtml-var tip_documento>" selected><dtml-var des_tipo_documento></option>
+           </dtml-in>
+      </select>
+     </dtml-if>
+      <script>
+        $("#lst_tip_documento").multipleSelect({
+                width: 240});
+      </script>
      </div>
 
      <div class="pf-element pf-full-width">

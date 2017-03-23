@@ -56,7 +56,11 @@ else:
 
 documentos=[]
 REQUEST=context.REQUEST
-for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_documento=REQUEST['lst_tip_documento'], 
+if REQUEST[str('tipo_documento')] != 'None':
+  tipo_documento= REQUEST[str('tipo_documento')]
+else: 
+  tipo_documento = '' 
+for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_documento=tipo_documento, 
                                                     num_documento=REQUEST['txt_num_documento'], ano_documento=REQUEST['txt_ano_documento'], 
                                                     num_protocolo=REQUEST['txt_num_protocolo'], ind_tramitacao=REQUEST['rad_tramitando'], 
                                                     des_assunto=REQUEST['txa_txt_assunto'], cod_status=REQUEST['lst_status'], 
@@ -108,9 +112,6 @@ filtro['interessado']=REQUEST.txa_txt_interessado
 filtro['assunto']=REQUEST.txa_txt_assunto
 
 filtro['tipo_documento']=''
-if REQUEST.lst_tip_documento!='':
-    for tipo_documento in context.zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0, tip_documento=REQUEST.lst_tip_documento):
-        filtro['tipo_documento']= tipo_documento.sgl_tipo_documento + ' - ' + tipo_documento.des_tipo_documento
 
 filtro['tramitando']=''
 if REQUEST.rad_tramitando=='1':

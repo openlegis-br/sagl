@@ -60,7 +60,6 @@ if REQUEST[str('tipo_norma')] != 'None':
   tipo_norma= REQUEST[str('tipo_norma')]
 else: 
   tipo_norma = '' 
-REQUEST=context.REQUEST
 for norma in context.zsql.norma_juridica_obter_zsql(tip_norma=tipo_norma, num_norma=REQUEST['txt_numero'],
                                            ano_norma=REQUEST['txt_ano'], des_assunto=REQUEST['txt_assunto'], 
                                            cod_assunto=REQUEST['lst_assunto_norma'], dat_norma=REQUEST['dt_norma'],
