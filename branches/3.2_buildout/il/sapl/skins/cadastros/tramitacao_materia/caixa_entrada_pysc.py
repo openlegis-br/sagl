@@ -23,4 +23,12 @@ for unidade in unidades:
     for tramitacao in context.zsql.tramitacao_obter_zsql(cod_unid_tram_destino= dic["cod_unid_tramitacao"],cod_usuario_dest=cod_usuario,ind_ult_tramitacao=1,ind_encaminha=1,ind_recebido=0,ind_retorno_tramitacao=1,ind_tramitacao=1):
       tramitacoes.append(int(tramitacao.cod_tramitacao))
 
+tramitacoes = [
+    e
+    for i, e in enumerate(tramitacoes)
+    if tramitacoes.index(e) == i
+    ]
+
+tramitacoes.sort()
+
 return tramitacoes
