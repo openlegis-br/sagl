@@ -27,6 +27,5 @@ tramitacoes = [
     if tramitacoes.index(e) == i
     ]
 
-tramitacoes.sort()
 
 return tramitacoes
