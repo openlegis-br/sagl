@@ -80,7 +80,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
   # unidade de origem
   for unid_origem in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tramitacao.cod_unid_tram_local):
    tramitacao_dic['unidade_origem'] = unid_origem.nom_unidade_join 
-   if unid_origem.nom_orgao == "Poder Executivo" or unid_origem.nom_orgao == "Poder Executivo - Gabinete":
+   if unid_origem.nom_orgao == "Poder Executivo" or unid_origem.nom_orgao == "Poder Executivo - Protocolo" or unid_origem.nom_orgao == "Poder Executivo - Gabinete":
      inf_basicas_dic['nom_camara']= 'Prefeitura Municipal de ' + local.nom_localidade
 
   # usuario de origem
