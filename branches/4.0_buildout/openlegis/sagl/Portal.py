@@ -52,7 +52,7 @@ manage_addSAGLForm = PageTemplateFile('www/addSAGL', globals())
 manage_addSAGLForm.__name__ = 'addSAGL'
 
 
-def manage_addSAGL(context, id, title='OpenLegis - Processo Legislativo Eletrônico', description='',
+def manage_addSAGL(context, id, title='SAGL-OpenLegis', description='',
                    database='MySQL', profile_id=_DEFAULT_PROFILE, RESPONSE=None):
     """ Adicionar uma instancia do SAGL-OpenLegis.
     """
@@ -79,16 +79,16 @@ def manage_addSAGL(context, id, title='OpenLegis - Processo Legislativo Eletrôn
 
     if database == 'MySQL':
         site.manage_addProduct['ZMySQLDA'].manage_addZMySQLConnection(
-            id='dbcon_interlegis',
+            id='dbcon_openlegis',
             title='Banco de Dados do SAGL-OpenLegis (MySQL)',
             use_unicode=True,
-            connection_string='interlegis sagl sagl'
+            connection_string='openlegis sagl sagl'
         )
     else:
         site.manage_addProduct['ZPsycopgDA'].manage_addZPsycopgConnection(
-            id='dbcon_interlegis',
+            id='dbcon_openlegis',
             title='Banco de Dados do SAGL-OpenLegis (PostgreSQL)',
-            connection_string='dbname=interlegis user=sagl password=sagl host=localhost'
+            connection_string='dbname=openlegis user=sagl password=sagl host=localhost'
         )
 
     if RESPONSE is not None:
