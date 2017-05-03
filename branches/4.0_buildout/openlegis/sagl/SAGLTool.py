@@ -62,7 +62,7 @@ class ISAGLTool(Interface):
     """
     pass
 
-class SAPGTool(UniqueObject, SimpleItem, ActionProviderBase):
+class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     __implements__ = (ISAGLTool)
 
