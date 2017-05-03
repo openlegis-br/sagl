@@ -1,0 +1,54 @@
+<dtml-if hdn_cod_comissao>
+    <dtml-call expr="REQUEST.set('metodo', zsql.comissao_atualizar_zsql)">
+<dtml-else>
+    <dtml-call expr="REQUEST.set('metodo', zsql.comissao_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(   
+        cod_comissao            = hdn_cod_comissao,     
+        nom_comissao            = txt_nom_comissao,
+        sgl_comissao            = txt_sgl_comissao,
+        tip_comissao            = hdn_tip_comissao,
+        ind_unid_deliberativa   = rad_ind_unidade_deliberativa,
+        dat_criacao             = pysc.data_converter_pysc(data=txt_dat_criacao),
+        dat_extincao            = pysc.data_converter_pysc(data=txt_dat_extincao),
+        nom_apelido_temp        = txt_nom_apelido_temp,
+        dat_instalacao_temp     = pysc.data_converter_pysc(data=txt_dat_instalacao_temp),
+        dat_final_prevista_temp = pysc.data_converter_pysc(data=txt_dat_final_prevista_temp),
+        dat_prorrogada_temp     = pysc.data_converter_pysc(data=txt_dat_prorrogada_temp),
+        dat_fim_comissao        = pysc.data_converter_pysc(data=txt_dat_fim_comissao),
+        nom_secretario          = txt_nom_secretario,
+        num_tel_reuniao         = txt_num_tel_reuniao,
+        num_tel_secretaria      = txt_num_tel_secretaria,
+        num_fax_secretaria      = txt_num_fax_secretaria,
+        end_secretaria          = txt_end_secretaria,
+        des_agenda_reuniao      = txt_des_agenda_reuniao,
+        loc_reuniao             = txt_loc_reuniao,
+        txt_finalidade          = txa_txt_finalidade,
+        end_email               = txt_end_email)">
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar os dados da comissão. Tente novamente!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>  
+<dtml-else>
+  <dtml-if expr="hdn_url[-1:]=='='">
+    <dtml-in expr="zsql.comissao_incluida_codigo_obter_zsql()">
+      <dtml-call expr="REQUEST.set('cod_comissao', _.str(_.int(cod_comissao)))">
+    </dtml-in> 
+  </dtml-if>
+
+  <dtml-if expr="metodo==zsql.comissao_incluir_zsql">
+    <dtml-let mensagem="'Comissão salva com sucesso.<br>
+                       Clique <a href=\'cadastros/auxiliares/autor/autor_form?cod_comissao='+cod_comissao+'&ind_unidade_deliberativa='+rad_ind_unidade_deliberativa+'\'><b>AQUI</b></a> para cadastrar essa comissão como autora,<br>
+                       ou clique em <b>Continuar</b> para não efetuar esse cadastro agora.<br>'"
+            sucesso="1"
+            url="'unidade_tramitacao_confirmar_proc?cod_comissao='+cod_comissao+'&ind_unidade_deliberativa='+rad_ind_unidade_deliberativa">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-let mensagem="'Comissão salva com sucesso'" sucesso="1" url="hdn_url">
+      <dtml-var mensagem_emitir>
+    </dtml-let>  
+  </dtml-if>
+</dtml-try>

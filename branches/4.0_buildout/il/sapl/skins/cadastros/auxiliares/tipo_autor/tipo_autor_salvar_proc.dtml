@@ -1,0 +1,65 @@
+<dtml-if expr="rad_des_tipo_autor=='Outros'">
+  <dtml-call expr="REQUEST.set('des_tipo_autor', txt_des_tipo_autor)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('des_tipo_autor', rad_des_tipo_autor)">
+</dtml-if>
+
+        <dtml-if chk_tip_proposicao>
+           <dtml-call expr="REQUEST.set('lst_tip_proposicao', _.string.join(chk_tip_proposicao,','))">
+        </dtml-if>
+
+        <dtml-unless chk_tip_proposicao>
+            <dtml-call expr="REQUEST.set('lst_tip_proposicao', '1')">
+        </dtml-unless>
+
+<dtml-if tip_autor_ant>
+  <dtml-in expr="zsql.tipo_autor_obter_zsql(des_tipo_autor=des_tipo_autor, ntip_autor=tip_autor_ant)">
+    <dtml-let mensagem="'Tipo de Autor já existe!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('metodo', zsql.tipo_autor_atualizar_zsql)">
+    <dtml-call expr="REQUEST.set('continuar', 1)">
+  </dtml-in>
+<dtml-else> 
+  <dtml-in expr="zsql.tipo_autor_obter_zsql(des_tipo_autor=des_tipo_autor)">
+    <dtml-let mensagem="'Tipo de Autor já existe!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('continuar', 1)">
+    <dtml-call expr="REQUEST.set('tip_autor', pysc.tipo_autor_prox_obter_pysc())">
+    <dtml-call expr="REQUEST.set('metodo', zsql.tipo_autor_incluir_zsql)">
+  </dtml-in>
+</dtml-if>
+<dtml-if continuar>
+  <dtml-if tip_autor> <dtml-comment> ---- inclusao de outros ---- </dtml-comment>
+     <dtml-try>
+         <dtml-call expr="metodo(tip_autor=tip_autor, des_tipo_autor=des_tipo_autor, tip_proposicao=lst_tip_proposicao)">
+     <dtml-except>
+         <dtml-let mensagem="'Houve um erro ao tentar atualizar Tipo de Autor. Contactar suporte!'">
+         <dtml-var mensagem_emitir>     
+         </dtml-let>  
+     <dtml-else>
+         <dtml-let mensagem="'Tipo de Autor incluído com sucesso!'" sucesso="1">
+         <dtml-var mensagem_emitir>
+         </dtml-let>
+     </dtml-try>
+  <dtml-else>
+   <dtml-try>
+     <dtml-call expr="metodo(tip_autor_ant  = tip_autor_ant,
+                             des_tipo_autor = des_tipo_autor,
+                             tip_proposicao  = lst_tip_proposicao)">
+     <dtml-except>   
+          <dtml-let mensagem="'Houve um erro ao tentar salvar o Tipo de Autor. Tente novamente!'">
+          <dtml-var mensagem_emitir>
+      </dtml-let>
+    <dtml-else>   
+      <dtml-let mensagem="'Tipo de Autor salvo com sucesso!'" sucesso="1">
+          <dtml-var mensagem_emitir>
+      </dtml-let>
+    </dtml-try>
+   </dtml-if>
+ </dtml-if>
+
+<dtml-var REQUEST>

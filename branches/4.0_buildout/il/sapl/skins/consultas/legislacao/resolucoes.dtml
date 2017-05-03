@@ -1,0 +1,63 @@
+<dtml-var standard_html_header>
+
+<link href="legislacao.css" media="all" rel="stylesheet" type="text/css" />
+
+<dtml-var legislacao_header_html>
+
+<div class="legis_container">
+
+<h1 class="firstHeading" style="display: none;">Resoluções</h1>
+
+<h1 class="legislacao" id="indice">Resoluções</h1>
+
+<span class="texto"><b>Espécie normativa utilizada nas hipóteses de competência privativa da Câmara Municipal. As regras sobre seu procedimento estão previstas no Regimento Interno. A resolução gera, em regra, efeitos internos, porém, há exceções nas quais os efeitos gerados são externos.
+</b></span>
+
+<ul class="ano-lei">
+  <dtml-in expr="ano_tipo_obter_zsql(des_tipo_norma='Resolução')">
+     <li class="ano_lei
+      <dtml-if expr="REQUEST.has_key('ano_norma') and int(REQUEST.form['ano_norma'])==int(_['sequence-key'])">
+       selecionado
+      </dtml-if>
+      "><a href="?ano_norma=<dtml-var ano_norma>#lista"><dtml-var ano_norma></a></li>
+  </dtml-in>
+</ul>
+
+<dtml-if ano_norma>
+<p class="texto" id="lista" style="font-size: 16px; text-align:center"><b>Resoluções - <dtml-var ano_norma></b></p>
+  <dtml-in expr="zsql.norma_juridica_obter_zsql(des_tipo_norma='Resolução',ano_norma=ano_norma)">
+    <dtml-if sequence-start>
+     <table>
+      <tr>
+       <th width="30%" style="text-align:center">Número</th>
+       <th>Ementa</th>
+      </tr>
+    </dtml-if sequence-start>
+      <tr>
+       <td style="text-align:center">
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+           <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
+         <dtml-else>
+           <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma missing>">
+         </dtml-if>
+         <dtml-var num_norma>, de <dtml-var dat_norma></a>
+         <dtml-if dat_publicacao>
+           <br /><span style="font-size:11px">Publicada <dtml-if des_veiculo_publicacao> no <dtml-var des_veiculo_publicacao></dtml-if> em <dtml-var dat_publicacao missing null=""></span>
+         </dtml-if>
+       </td>
+       <td style="text-align:justify"><dtml-var txt_ementa></td>
+      </tr>
+    <dtml-if sequence-end>
+      <tr>
+       <th colspan="2" style="text-align:center">
+        Total de Registros: <dtml-var sequence-length>
+       </th>
+      </tr>
+     </table>
+    </dtml-if sequence-end>
+  </dtml-in>
+</dtml-if>
+
+</div>
+
+<dtml-var standard_html_footer>

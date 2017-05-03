@@ -1,0 +1,61 @@
+<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/assunto_norma_juridica">Ajuda</a>
+<h1 class="firstHeading">Tabelas Auxiliares</h1> 
+
+<table>
+  <tr> 
+    <td align="left" class="form-label"> 
+      | <a href="assunto_norma_juridica_form">Incluir Assunto</a> |</td>
+   </tr>
+</table>
+
+<fieldset><legend>Assunto / Classificação de Norma Jurídica</legend>
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 16)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+  <dtml-in expr="zsql.assunto_norma_juridica_obter_zsql()" size="step" start="start" orphan=0>
+    <dtml-if sequence-start>
+   <table>
+     <tr>
+       <th class="form-element">Descrição</th>
+     </tr>
+      <dtml-if previous-sequence>
+	<dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+      </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+          <tr> 
+            <td width="60%" height="17" class="form-element">
+             <a href="assunto_norma_juridica_mostrar_proc?cod_assunto=<dtml-var cod_assunto>"><dtml-var des_assunto></a></td>
+           </tr>
+    <dtml-if sequence-end>
+       </table>
+      <dtml-if next-sequence>
+	<dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+      </dtml-if next-sequence>
+<dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+      <p align="center" class="texto"><b>          
+          <dtml-var "pysc.PageListOutput_pysc('assunto_norma_juridica_index_html', page, step, _['sequence-length'])">
+      </b></p>
+    </dtml-if>
+    </dtml-if sequence-end>
+ <dtml-else>
+<table>
+  <tr>
+    <td>
+       <table>
+          <tr><td class="form-text">Nenhum assunto cadastrado.</td></tr>
+       </table>
+   </dtml-in>
+</fieldset>
+<dtml-var standard_html_footer>

@@ -1,0 +1,366 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.xhtml.min.js"></script>
+<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+<script type="text/javascript">
+<!--
+  function campos_criticar(form){
+
+      var form = document.tramitacao_form;
+
+      var dat_tramitacao = form.txt_dat_tramitacao.value.substring(6,10) + form.txt_dat_tramitacao.value.substring(3,5) + form.txt_dat_tramitacao.value.substring(0,2);
+
+      if (form.lst_cod_unid_tram_dest.value==""){
+          alert("A unidade de destino deve ser selecionada!");
+          form.lst_cod_unid_tram_dest.focus();
+          return false;
+      }
+
+      if (form.hdn_cod_unid_tram_local.value==form.lst_cod_unid_tram_dest.value){
+          alert("A unidade de destino deve ser diferente da unidade local!");
+          form.lst_cod_unid_tram_dest.focus();
+          return false;
+      }
+ <dtml-comment>
+      if (form.lst_cod_usuario_dest.value==form.hdn_cod_usuario_local.value){
+          alert("O usuário de destino deve ser diferente do usuário local!");
+          form.lst_cod_usuario_dest.focus();
+          return false;
+      }
+ </dtml-comment>
+
+      if (form.lst_cod_status.selectedIndex == 0){
+          alert("O status da tramitação deve ser selecionado!");
+          form.lst_cod_status.focus();
+          return false;
+      }
+
+    
+      if (!(form.rad_ind_urgencia[0].checked ||
+            form.rad_ind_urgencia[1].checked)){
+         alert("O índice de urgência deve ser preenchido!");
+         form.rad_ind_urgencia[0].focus();
+         return false;
+      }
+
+  
+      if (form.txt_dat_fim_prazo.value!="") {
+         if (!IsValidDate(form.txt_dat_fim_prazo.value)){
+           alert("Digite uma data de fim de prazo válida!");
+           form.txt_dat_fim_prazo.focus();
+           form.txt_dat_fim_prazo.select();
+           return false;
+         }
+
+         var dat_fim_prazo = form.txt_dat_fim_prazo.value.substring(6,10) + form.txt_dat_fim_prazo.value.substring(3,5) + form.txt_dat_fim_prazo.value.substring(0,2);
+
+         if (dat_fim_prazo < dat_tramitacao) {
+           alert("A data de fim de prazo tem que ser maior ou igual à data de tramitação!");
+           form.txt_dat_fim_prazo.focus();
+           form.txt_dat_fim_prazo.select();
+           return false;
+           }
+         }
+
+      form.hdn_dat_tramitacao.value = form.txt_dat_tramitacao.value;
+      form.submit();
+   }
+    
+//-->
+</script>
+
+<script type="text/javascript">
+
+(function ($) {
+  $(function () {
+    //$('input[type=submit]').hide();
+    document.onkeypress = function (event) {
+      var form = tramitacao_form;
+      form.action = "tramitacao_salvar_proc";
+      if (event.keyCode === 13) {
+        campos_criticar(form);
+      }
+    };
+  });
+}(jQuery));
+</script>
+
+<script type="text/javascript">
+$(function() {
+        $('#txt_dat_fim_prazo').datepick();
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
+$("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0].focus();
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup1").fancybox({
+		maxWidth	: 1024,
+		maxHeight	: 800,
+		fitToView	: false,
+		width		: '95%',
+		height		: '93%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<h1 class="firstHeading">Tramitação Eletrônica</h1>
+
+  <table>
+    <tr>
+       <td class="form-label">
+          <dtml-in expr="zsql.materia_obter_zsql(cod_materia=hdn_cod_materia)"><div align="center">
+             <h2>
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                  <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var hdn_cod_materia>" target="_blank">
+                <dtml-else>
+                  <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=hdn_cod_materia)">" target="_blank">
+                </dtml-if>
+                <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - 
+                <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=hdn_cod_materia)">
+                  <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                </dtml-in></a></h2>
+             <dtml-var txt_ementa>
+          </dtml-in></div>
+       </td>
+    </tr>
+  </table>
+
+<form name="tramitacao_form" method="post" action="tramitacao_salvar_proc">
+  <input type="hidden" name="cod_usuario_corrente" value="<dtml-var cod_usuario_corrente missing>" />
+  <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var hdn_cod_tramitacao missing>" />
+  <input type="hidden" name="hdn_cod_materia" value="<dtml-var hdn_cod_materia missing>" />
+  <input type="hidden" name="hdn_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" />
+
+           <dtml-if hdn_cod_tramitacao>
+             <dtml-call expr="REQUEST.SESSION.set('hdn_cod_tramitacao', hdn_cod_tramitacao)">
+             <dtml-in expr="zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tramitacao)">
+                  <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_local', int(cod_unid_tram_local))">
+                  <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_dest', int(cod_unid_tram_dest))">
+                  <dtml-call expr="REQUEST.set('hdn_cod_status', int(cod_status))">
+                  <dtml-call expr="REQUEST.set('ind_urgencia', ind_urgencia)">
+                  <dtml-call expr="REQUEST.set('hdn_txt_tramitacao', txt_tramitacao)">
+                  <dtml-call expr="REQUEST.set('dat_encaminha', dat_encaminha)">
+                  <dtml-call expr="REQUEST.set('dat_fim_prazo', dat_fim_prazo)">
+              <dtml-if expr="hdn_cod_tramitacao and cod_usuario_dest">
+                <dtml-call expr="REQUEST.set('cod_usuario_dest', int(cod_usuario_dest))">
+              <dtml-else>
+                <dtml-call expr="REQUEST.set('cod_usuario_dest', '')">
+              </dtml-if>
+             </dtml-in>
+           </dtml-if>
+
+ <table>
+      <tr>
+             <dtml-unless dat_tramitacao>
+               <dtml-call expr="REQUEST.set('dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
+             </dtml-unless>
+            <dtml-if cod_tramitacao>             
+              <dtml-if expr="pysc.browser_verificar_pysc(HTTP_USER_AGENT)"> 
+                <input type="text" name="txt_dat_tramitacao" id="txt_dat_tramitacao" size="10" maxlength="10" value="<dtml-var dat_tramitacao missing>"
+                  disabled />
+              <dtml-else>
+                <span class="form-optional"><dtml-var dat_tramitacao missing></span>
+                  <td><input type="hidden" name="txt_dat_tramitacao" id="txt_dat_tramitacao" size="10" maxlength="10" value="<dtml-var dat_tramitacao missing>" />
+              </dtml-if>
+            <dtml-else>
+              <input type="hidden" name="txt_dat_tramitacao" id="txt_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" />
+            </dtml-if>
+
+        <td  class="form-element" width="50%">Unidade de Origem</br>
+         <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=hdn_cod_unid_tram_local)">
+           <dtml-if cod_orgao><input type="text" size="50" value="<dtml-var nom_orgao>" readonly>
+           <dtml-elif cod_comissao><input type="text" size="50" value="<dtml-var nom_comissao>" readonly>
+           <dtml-else><input type="text" size="50" value="<dtml-var nom_parlamentar>" readonly>
+           </dtml-if>
+             <input type="hidden" name="hdn_cod_unid_tram_local" value="<dtml-var cod_unid_tramitacao>">
+         </dtml-in>
+        </td>
+        <td class="form-element" width="25%">Usuário de Origem</br>
+           <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+             <input type="text" size="12" value="<dtml-var col_username>" readonly>
+             <dtml-call expr="REQUEST.set('cod_usuario_local', cod_usuario)">
+             <input type="hidden" name="hdn_cod_usuario_local" id="hdn_cod_usuario_local" value="<dtml-var cod_usuario>">
+           </dtml-in>
+       </td>
+       <td class="form-element" width="25%">Encaminhamento</br>
+         <dtml-if dat_encaminha>
+           <input type="text" name="txt_dat_encaminha" size="13" value="<dtml-var dat_encaminha missing null>" readonly>
+         <dtml-else>
+           <input type="text" name="txt_dat_encaminha" size="13" value="" readonly>
+         </dtml-if>
+       </td>
+      </tr>
+      <tr>
+        <td  class="form-element" width="50%">Unidade de Destino </label><span class="campoObrigatorio">&nbsp;</span></br>
+          <style scoped>div.dhxcombo_dhx_skyblue{margin-left: 0;}</style>
+          <select name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" style="max-width: 338px; width: 100%;">
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
+              <dtml-if expr="not dat_extincao">
+                <option 
+                  <dtml-if expr="_.has_key('hdn_cod_unid_tram_dest') and hdn_cod_unid_tram_dest==int(cod_unid_tramitacao)"> selected
+                  </dtml-if>
+                  value="<dtml-var cod_unid_tramitacao>">
+                <dtml-if cod_orgao><dtml-var nom_orgao>
+                <dtml-elif cod_comissao><dtml-var nom_comissao> 
+                <dtml-else><dtml-var nom_parlamentar> 
+                </dtml-if></option>
+               </dtml-if>
+            </dtml-in>
+          </select>
+        </td>
+        <style scoped>div.dhxcombo_dhx_skyblue{margin-left: 0;}</style>
+        <td class="form-element">Usuário de Destino</br>
+             <select name="lst_cod_usuario_dest" id="lst_cod_usuario_dest" style="max-width: 110.25px; width: 100%;">
+               <option value="<dtml-var cod_usuario_dest missing>">
+                <dtml-if cod_usuario_dest>
+                 <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario_dest)">
+                   <dtml-var col_username missing>
+                 </dtml-in>
+                </dtml-if>
+               </option>
+             </select>
+		<script type="text/javascript">
+			myCombo = dhtmlXComboFromSelect("lst_cod_unid_tram_dest");
+			myCombo.enableFilteringMode(true);
+			myCombo2 = dhtmlXComboFromSelect("lst_cod_usuario_dest")
+			myCombo2.enableFilteringMode(true);
+			myCombo2.disable()
+			myCombo.attachEvent("onChange", function(value){
+    			myCombo2.clearAll();
+    			myCombo2.setComboValue(null);
+    			myCombo2.setComboText("");
+    			if (value == null) {
+       			 myCombo2.disable();
+    			} else {
+        			myCombo2.enable();
+        			myCombo2.load("usuarios_carregar_pysc?svalue="+value);
+    			}
+			});
+		</script>
+        </td>
+        <td class="form-element" width="25%">Recebimento</br>
+         <dtml-if dat_recebimento>
+           <input type="text" name="txt_dat_recebimento" size="13" value="<dtml-var dat_recebimento missing null>" readonly>
+         <dtml-else>
+           <input type="text" name="txt_dat_recebimento" size="13" value="" readonly>
+         </dtml-if>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="lst_cod_status">Status </label><span class="campoObrigatorio">&nbsp;</span><br/>
+          <select name="lst_cod_status" style="max-width: 338px; width: 100%;">
+            <option>Selecione</option>
+            <dtml-in expr="zsql.status_tramitacao_obter_zsql()">
+              <option 
+                 <dtml-if expr="_.has_key('hdn_cod_status') and int(hdn_cod_status)==int(cod_status)"> selected
+                 </dtml-if>
+                value="<dtml-var cod_status>">
+              <dtml-var sgl_status> - <dtml-var des_status></option>
+            </dtml-in>
+          </select>
+        </td>
+        <td>
+          <label for="txt_dat_fim_prazo">Data Fim Prazo </label><br />
+          <input type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" size="10" maxlength="10" value="<dtml-var dat_fim_prazo missing null="">" />
+        </td>
+        <td>
+          <label for="rad_ind_urgencia">Urgente ? </label><span class="campoObrigatorio">&nbsp;</span><br/>
+             <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+              <input type="radio" name="rad_ind_urgencia" value="<dtml-var sequence-key>" 
+                 <dtml-if expr="_.has_key('cod_tramitacao') and ind_urgencia==_['sequence-key']">checked=1</dtml-if>
+                 <dtml-if expr="_['sequence-item']=='Não'">checked=1</dtml-if> onChange="javascript:form.hdn_alterou.value=1" />
+              <span class="texto"><dtml-var sequence-item></span>
+            </dtml-in>
+        </td>
+      </tr>
+
+  <dtml-if hdn_cod_tramitacao>
+      <dtml-call expr="REQUEST.set('cod_tramitacao', hdn_cod_tramitacao)">
+      <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+      <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+         <tr>
+           <td class="form-element">
+                Texto PDF
+           </td>
+           <td valign="top" class="form-element" colspan="2">
+                 <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+                   <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+                     <a class="popup1" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                       <img align="top" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF">
+                     <dtml-if expr="int(cod_usuario_corrente)==int(cod_usuario_local)" >
+                       </a><div class="assinar-pdf" style="cursor: pointer; float:left; padding-right: 4px;"><a class="botao">Assinar Digitalmente</a></div>
+                     </dtml-if>
+                   </dtml-let>
+			         <script type="text/javascript">
+			           $('.assinar-pdf').click(function () {
+    			           $.fancybox({
+        			   type: 'iframe',
+        			   href: 'assinador/tramitacao-signature_html?cod_tramitacao=<dtml-var cod_tramitacao>',
+				   width	   : '70%',
+				   height	   : '50%',
+                                   minHeight	   : 320,
+        			   preload         : true,
+                                   afterClose      : function() {
+                                     window.location.href = "tramitacao_mostrar_proc?hdn_cod_tramitacao=<dtml-var cod_tramitacao>";},
+		                   closeEffect	: 'fade'
+    			           });
+			           });
+			         </script>
+                 </dtml-if>
+
+                 <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+                   <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
+                     <a class="popup1" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                       <img height="22" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada">Tramitação com Assinatura Digital
+                     </a>
+                   </dtml-let>
+                 </dtml-if>
+           </td>
+         </tr>
+      </dtml-if>
+   </dtml-if>
+      <tr>
+        <td colspan="3">
+          <label for="txa_txt_tramitacao">Texto da Ação </label><br/>
+          <textarea name="txa_txt_tramitacao" id="txa_txt_tramitacao" cols="65" rows="4"><dtml-var hdn_txt_tramitacao missing></textarea>
+        </td>
+      </tr>
+ </table>
+</form>
+
+  <dtml-if dat_encaminha>
+      <p align="center">
+        <input class="botao" type="button" value="Voltar" onClick="location.href='rascunhos_html'">
+      </p>
+  <dtml-else>
+     <form name="encaminhamento_registrar" method="post" action="encaminhamento_registrar_proc">
+      <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+        <input type="hidden" name="cod_usuario_corrente" value="<dtml-var cod_usuario missing>" />
+      </dtml-in>
+      <p align="center">
+        <input type="hidden" name="cod_tramitacao" value="<dtml-var hdn_cod_tramitacao missing>" />
+        <input type="button" class="botao" name="btn_tramitacao_salvar" value="Salvar" onClick="campos_criticar(document.tramitacao_form)" />
+        <dtml-if hdn_cod_tramitacao>
+          <input class="botao" type="submit" name="button" value="Encaminhar" />
+        </dtml-if>
+        <input class="botao" type="button" value="Voltar" onClick="location.href='rascunhos_html'">
+      </p>
+     </form>
+  </dtml-if>
+<dtml-var standard_html_footer>

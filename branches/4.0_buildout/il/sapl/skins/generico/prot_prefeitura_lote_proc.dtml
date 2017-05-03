@@ -1,0 +1,45 @@
+<dtml-if expr="int(_['txt_check']) == 1">
+ <dtml-call expr="REQUEST.set('cod_materia', check_tram)">
+ <dtml-try>
+  <dtml-call expr="zsql.npc_lote_zsql(cod_materia = cod_materia, num_origem_externa = txt_prot_pref,
+                                      dat_origem_externa = pysc.data_converter_pysc(txt_data_prot_pref),
+                                      ano_origem_externa = txt_ano_prot_pref)">
+ <dtml-except>
+  <dtml-let mensagem="'Houve um erro no banco de dados.'">
+   <dtml-var mensagem_emitir>
+  </dtml-let>
+ <dtml-else>
+  <dtml-let mensagem="'Operação realizada com sucesso!'" sucesso="1" url="'prot_prefeitura_lote_form'">
+   <dtml-var mensagem_emitir>
+  </dtml-let>
+ </dtml-try>
+
+<dtml-else>
+ <dtml-try>
+  <dtml-call expr="REQUEST.set('indice', 0)">
+
+    <dtml-in check_tram>
+     <dtml-call expr="REQUEST.set('cod_materia', int(_['sequence-item']))">
+      <dtml-if expr="pysc.item_obter_pysc(txt_prot_pref, indice)">
+       <dtml-call expr="REQUEST.set('cod_materia', int(_['sequence-item']))">
+       <dtml-call expr="REQUEST.set('prot_pref', pysc.item_obter_pysc(txt_prot_pref, indice))">
+       <dtml-call expr="REQUEST.set('data_prot_pref', pysc.item_obter_pysc(txt_data_prot_pref, indice))">
+       <dtml-call expr="REQUEST.set('ano_prot_pref', pysc.item_obter_pysc(txt_ano_prot_pref, indice))">
+       <dtml-call expr="zsql.npc_lote_zsql(cod_materia = cod_materia, num_origem_externa = prot_pref,
+                                           dat_origem_externa = pysc.data_converter_pysc(data_prot_pref),
+                                           ano_origem_externa = ano_prot_pref)">
+      </dtml-if>
+      <dtml-call expr="REQUEST.set('indice', indice + 1)">
+    </dtml-in>
+
+ <dtml-except>
+  <dtml-let mensagem="'Houve um erro no banco de dados.'">
+   <dtml-var mensagem_emitir>
+  </dtml-let>
+ <dtml-else>
+  <dtml-let mensagem="'Operação realizada com sucesso!'" sucesso="1" url="'prot_prefeitura_lote_form'">
+   <dtml-var mensagem_emitir>
+  </dtml-let>
+ </dtml-try>
+  
+</dtml-if>

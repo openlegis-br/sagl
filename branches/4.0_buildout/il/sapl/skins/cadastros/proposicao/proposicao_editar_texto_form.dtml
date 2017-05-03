@@ -1,0 +1,71 @@
+<dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao)">
+    <dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!='00/00/0000 00:00:00'))">
+    <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
+</dtml-in>
+<dtml-call expr="REQUEST.set('tipo_txtint',(pysc.proposicao_tipo_texto_integral_pysc(cod_proposicao)))">
+
+<dtml-if expr="usr_eh_autor or (AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']))"> 
+<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/proposicao#editar_xml">Ajuda</a>
+
+<h1 class="firstHeading">Proposição</h1>
+
+<ul>
+    <li>
+        <a href="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">Dados Básicos</a>
+    </li>
+    <dtml-unless expr="prop_enviada or (not usr_eh_autor) or (tipo_txtint!='XML')">
+    <li>
+        <a href="proposicao_validar_texto_form?cod_proposicao=<dtml-var cod_proposicao>">Verificar Validade e Enviar Proposição</a>
+    </li>
+    </dtml-unless>
+</ul>
+
+<form name ="proposicao_form" method="post" action="proposicao_salvar_proc">
+    <fieldset>
+              <table>
+                <tr class="fundo">
+                  <td class="form-label">
+                    | <a href="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">Dados Básicos</a> | &nbsp;
+  <dtml-unless expr="prop_enviada or (not usr_eh_autor) or (tipo_txtint!='XML')">
+                    | <a href="proposicao_validar_texto_form?cod_proposicao=<dtml-var cod_proposicao>">Verificar Validade e Enviar Proposição</a> |
+  </dtml-unless>
+                  </td>                  
+                </tr>
+              <tr align="center">
+                <td><fieldset><legend>Texto Integral</legend>
+                    <form name ="proposicao_form" method="post" action="proposicao_salvar_proc">
+                      <table>
+                        <tr>
+                          <td>
+            <dtml-if prop_enviada>
+                <iframe frameborder="0"
+                        width="100%"
+                        height="400"
+                        src="sapl_documentos/proposicao/<dtml-var cod_proposicao>/renderXML?xsl=__default__" scrolling="yes">
+            <dtml-else>
+                <iframe frameborder="0"
+                        width="100%"
+                        height="400"
+                        src="sapl_documentos/proposicao/<dtml-var cod_proposicao>/renderXMLforEditing?xslt=__default__" scrolling="yes">
+            </dtml-if>
+                Este <b>navegador</b> não é compatível com esta versão do sistema.
+               </iframe>
+			  </td>
+                        </tr>                        
+                      </table>
+                    </form></fieldset>
+                  </td>
+               </tr>
+              </table>
+    </fieldset>
+  </form>
+  <br />
+  <table><tr><td height="10"></td></tr></table> 
+  <dtml-var standard_html_footer>
+<dtml-else>
+  <dtml-let mensagem="'Você não tem permissão para ver esta proposição!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-if>

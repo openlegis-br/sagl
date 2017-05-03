@@ -1,0 +1,59 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_materia="" num_ordem="" num_ordem_atual="" tip_materia="" num_materia="" ano_materia="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT 
+       REPLACE(numeracao.cod_materia,  'L', '') as cod_materia,
+       REPLACE(numeracao.num_ordem, 'L', '') as num_ordem,
+       REPLACE(numeracao.tip_materia, 'L', '') as tip_materia,
+       numeracao.num_materia,
+       REPLACE(numeracao.ano_materia, 'L', '') as ano_materia,
+       DATE_FORMAT(numeracao.dat_materia, '%d/%m/%Y') as dat_materia,
+       tipo_materia.sgl_tipo_materia,
+       tipo_materia.des_tipo_materia
+
+FROM   
+       numeracao, tipo_materia_legislativa as tipo_materia
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_materia column="numeracao.cod_materia" op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_ordem column="numeracao.num_ordem" op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_ordem_atual column="numeracao.num_ordem" op="!=" type="int" optional><dtml-and>
+    <dtml-sqltest tip_materia column="numeracao.tip_materia" op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_materia column="numeracao.num_materia" op="=" type="nb" optional><dtml-and>
+    <dtml-sqltest ano_materia column="numeracao.ano_materia" op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ind_excluido column="numeracao.ind_excluido" op="=" type="int" optional><dtml-and>
+    numeracao.tip_materia = tipo_materia.tip_materia    
+  </dtml-sqlgroup>
+  
+<dtml-else>
+
+SELECT 
+       numeracao.cod_materia as cod_materia,
+       numeracao.num_ordem as num_ordem,
+       numeracao.tip_materia as tip_materia,
+       numeracao.num_materia,
+       numeracao.ano_materia as ano_materia,
+       TO_CHAR(numeracao.dat_materia, 'DD/MM/YYYY') as dat_materia,
+       tipo_materia.sgl_tipo_materia,
+       tipo_materia.des_tipo_materia
+
+FROM   
+       numeracao, tipo_materia_legislativa as tipo_materia
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_materia column="numeracao.cod_materia" op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_ordem column="numeracao.num_ordem" op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_ordem_atual column="numeracao.num_ordem" op="!=" type="int" optional><dtml-and>
+    <dtml-sqltest tip_materia column="numeracao.tip_materia" op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_materia column="numeracao.num_materia" op="=" type="nb" optional><dtml-and>
+    <dtml-sqltest ano_materia column="numeracao.ano_materia" op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ind_excluido column="numeracao.ind_excluido" op="=" type="int" optional><dtml-and>
+    numeracao.tip_materia = tipo_materia.tip_materia    
+  </dtml-sqlgroup>
+  
+
+</dtml-if>

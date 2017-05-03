@@ -1,0 +1,149 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+(function ($) {
+  $(function () {
+    //$('input[type=submit]').hide();
+    document.onkeypress = function (event) {
+      var form = pesq_avancada_form;
+      form.action = "protocolo_pesquisar_proc";
+      if (event.keyCode === 13) {
+        form.submit();
+      }
+    };
+  });
+}(jQuery));
+
+$(function() {
+        $('#dt_apres').datepick();
+        $('#dt_apres2').datepick();
+});
+</script>
+
+<h1 class="firstHeading">Pesquisa de Protocolo</h1> 
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
+<div id="barra-conteudo">
+    <ul>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_rapido_form">Protocolo Rápido</a>
+        </li>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form">Protocolar Documento</a>
+        </li>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form">Protocolar Matéria</a>
+        </li>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form">Anular Protocolo</a>
+        </li>
+    </ul>
+</div>
+</dtml-if>
+
+<form class="pf-form" name="pesq_avancada_form" id="pesq_avancada_form" action="protocolo_pesquisar_proc">
+  <input type="hidden" name="incluir" value="<dtml-var incluir missing>" />
+  <input type="hidden" name="existe_ocorrencia" value="0" />
+  <fieldset>
+  <div id="inputs">
+     <div class="pf-element pf-full-width">
+        <label><span class="pf-label">Tipo de Protocolo</span></label>
+        <div class="pf-group">
+          <dtml-in expr="[('Recebido', '0'), ('Enviado', '1'), ('Ambos', '')]">     
+           <input type="radio" name="rad_tip_protocolo" value="<dtml-var expr="_['sequence-item']">"
+                  id="rad_tip_protocolo<dtml-var expr="_['sequence-item']">"
+                <dtml-if expr="_['sequence-item']=='0'">checked="1"</dtml-if> />
+             <label style="vertical-align: top;" for="rad_tip_protocolo<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"> &nbsp;</label>
+          </dtml-in>
+        </div>
+     </div>
+
+     <div class="pf-element pf-full-width">
+        <label for="txt_num_protocolo"><span class="pf-label">Número</span></label>
+        <div class="pf-group">
+          <input class="pf-field" id="txt_num_protocolo" type="text" name="txt_num_protocolo" null="" missing="" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="6" />
+          <label for="txt_ano_protocolo">&nbsp;Ano
+            <input class="pf-field" id="txt_ano_protocolo" type="text" name="txt_ano_protocolo" null="" style="min-width: 86px; max-width: 86px; width: 20%;" maxlength="4" />
+          </label>
+        </div>
+     </div> 
+
+     <div class="pf-element pf-full-width">
+       <label><span class="pf-label">Período de Protocolo:</span></label>
+        <div class="pf-group">
+          <label for="dt_apres">
+            <input class="pf-field" type="text" id="dt_apres" name="dt_apres" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength=10 onblur="formata_data(form.dt_apres)" />
+          </label>
+          <label for="dt_apres2">&nbsp;a&nbsp;
+            <input class="pf-field" type="text" id="dt_apres2" name="dt_apres2" style="min-width: 102px; max-width: 102px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_apres2)" />
+          </label>
+        </div>
+     </div> 
+
+     <div class="pf-element pf-full-width">
+        <label><span class="pf-label">Natureza do Processo</span></label>
+        <div class="pf-group">
+             <input name="rad_tip_processo" value="0" id="rad_tip_processo0" type="radio" >
+             <label for="rad_tip_processo0">Administrativo</label>
+             <input name="rad_tip_processo" value="1" id="rad_tip_processo1" type="radio" >
+             <label for="rad_tip_processo1">Legislativo</label>
+             <input name="rad_tip_processo" value="" id="rad_tip_processoN" checked="1" type="radio" >
+             <label for="rad_tip_processo">Ambos</label>
+        </div>
+     </div>
+
+     <div class="pf-element pf-full-width">
+        <label for="lst_tip_documento"><span class="pf-label">Tipo de Documento</span></label>
+          <select class="pf-field" id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
+            <option value="">Selecione</option>
+            <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var tip_documento missing>">
+                <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+              </option>
+            </dtml-in>
+          </select>
+     </div>
+
+     <div class="pf-element pf-full-width">
+        <label for="txa_txt_interessado"><span class="pf-label">Interessado / Autor</span></label></th>
+          <input class="pf-field" id="txa_txt_interessado" type="text" name="txa_txt_interessado" null="" style="max-width: 230px; width: 100%;" onBlur="interessado()" />
+     </div>
+
+     <div class="pf-element pf-full-width">
+        <label for="lst_tip_materia"><span class="pf-label">Tipo de Matéria</span></label>
+          <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia" style="max-width: 240px; width: 100%;">
+            <option value="">Selecione</option>
+            <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var tip_materia missing>">
+                <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+              </option>
+            </dtml-in>
+          </select>
+     </div>
+
+     <div class="pf-element pf-full-width">
+       <label for="txt_autor"><span class="pf-label">Autor da Matéria</span></label>
+       <div class="pf-group">
+ 	<div id="combo_zone" style="width:235px;"></div>
+      </div>
+     </div> 
+		<script type="text/javascript">
+			myCombo = new dhtmlXCombo("combo_zone", "hdn_cod_autor", 240);
+                        myCombo.load("&dtml-portal_url;/pysc/autores_pesquisar_pysc");
+			myCombo.enableFilteringMode(true);
+		</script>  
+     <div class="pf-element pf-full-width">
+        <label for="txt_assunto"><span class="pf-label">Assunto</span></label></th>
+          <input class="pf-field" id="txt_assunto" type="text" name="txt_assunto" null="" style="max-width: 230px; width: 100%;" />
+     </div>
+
+     <div class="pf-element pf-buttons">
+          <input class="pf-button btn botao" type="submit" name="btn_protocolo_pesquisar" value="Pesquisar" />
+          <input class="pf-button btn botao" type="reset" name="btn_protocolo_limpar" value="Limpar" />
+     </div>
+
+   </div>
+  </fieldset>
+</form>
+<dtml-var standard_html_footer>

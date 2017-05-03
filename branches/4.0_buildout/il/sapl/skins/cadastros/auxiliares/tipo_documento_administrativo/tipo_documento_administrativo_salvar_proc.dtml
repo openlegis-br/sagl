@@ -1,0 +1,50 @@
+<dtml-comment> 
+*****************************************************************
+*    Função: Salva os dados do tipo de documento administrativo *
+*        vindos do formulário, seja uma inclusão/atualização.   *
+*    Argumentos: hdn_tip_documento: int - argumento que determi-*
+*      na se esse método será uma inclusão/atualização.         * 
+*    Retorno: Mensagem de sucesso ou erro.                      *
+*    Luciano De Fazio em 04/08/2016                             *
+*****************************************************************
+</dtml-comment>   
+
+<dtml-if hdn_tip_documento>
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_documento_administrativo_atualizar_zsql)">
+<dtml-elif expr="zsql.tipo_documento_administrativo_obter_zsql(sgl_tipo_documento=txt_sgl_tipo_documento)">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+  <dtml-let mensagem="'Já existe um tipo de Documento Administrativo com essa sigla.'">    
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_documento_administrativo_incluir_zsql)">
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="metodo(tip_documento      = hdn_tip_documento,
+                            sgl_tipo_documento = txt_sgl_tipo_documento,
+                            des_tipo_documento = txt_des_tipo_documento,
+                            ind_publico        = rad_ind_publico
+                            )">
+
+    <dtml-unless hdn_tip_documento>
+           <dtml-in expr="zsql.documento_administrativo_incluido_codigo_obter_zsql()">
+             <dtml-call "REQUEST.set('hdn_tip_documento', cod_documento)">
+           </dtml-in>
+    </dtml-unless>
+
+  <dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar o tipo de Documento Administrativo. Tente novamente!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let> 
+
+  <dtml-else>
+    <dtml-let mensagem="'Tipo de Documento Administrativo salvo com sucesso!'" sucesso="1">
+      <dtml-var mensagem_emitir>
+    </dtml-let> 
+  </dtml-try>
+    <dtml-call expr="REQUEST.set('tip_documento', _.int(hdn_tip_documento))">
+    <dtml-call expr="REQUEST.set('ind_publico', _.int(rad_ind_publico))">
+    <dtml-call expr="ajusta_permissao(tip_documento=tip_documento,ind_publico=ind_publico)">
+</dtml-unless>

@@ -1,0 +1,71 @@
+<dtml-comment>
+*****************************************************************
+*     O metodo abaixo chama o metodo de inserção de dados       *
+*  no banco chamado legislacao_citada_incluir_zsql e redireciona*
+*  para a pagina onde o index esta sendo chamado.               *
+*  by Rommel Carvalho e Danilo Custódio em 20/04/2001           *
+*****************************************************************
+</dtml-comment> 
+
+<dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=lst_tip_norma, num_norma=txt_num_norma, ano_norma=txt_ano_norma)">
+  <dtml-call expr="REQUEST.set('cod_norma', cod_norma)">
+</dtml-in>
+
+<dtml-if cod_norma>
+  <dtml-if expr="(hdn_tip_norma_ant!=lst_tip_norma or hdn_num_norma_ant!=txt_num_norma or hdn_ano_norma_ant!=txt_ano_norma) and zsql.legislacao_citada_obter_zsql(cod_norma=cod_norma, cod_materia=cod_materia, ind_excluido=0)">
+    <dtml-let mensagem="'Já existe uma legislação citada idêntica!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+
+  <dtml-else>
+    <dtml-if expr="zsql.legislacao_citada_obter_zsql(cod_norma=cod_norma, cod_materia=cod_materia, ind_excluido=1)">
+      <dtml-call expr="REQUEST.set('metodo', zsql.legislacao_citada_atualizar_zsql)">
+      <dtml-if hdn_cod_norma>
+        <dtml-call expr="REQUEST.set('cod_norma_ant', cod_norma)">
+        <dtml-call expr="zsql.legislacao_citada_excluir_zsql(cod_norma=hdn_cod_norma, cod_materia=cod_materia)">
+        <dtml-call expr="REQUEST.set('hdn_cod_norma', cod_norma_ant)">
+      <dtml-else>
+        <dtml-call expr="REQUEST.set('hdn_cod_norma', cod_norma)">
+      </dtml-if>
+    <dtml-elif hdn_cod_norma>
+      <dtml-call expr="REQUEST.set('metodo', zsql.legislacao_citada_atualizar_zsql)">
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('metodo', zsql.legislacao_citada_incluir_zsql)">
+    </dtml-if>
+
+    <dtml-try>
+      <dtml-call expr="metodo(cod_norma            = cod_norma,
+                              cod_norma_ant        = hdn_cod_norma,
+                              cod_materia          = cod_materia,
+                              des_disposicoes      = lst_des_disposicoes,
+                              des_parte            = txt_des_parte,
+                              des_livro            = txt_des_livro,
+                              des_titulo           = txt_des_titulo,
+                              des_capitulo         = txt_des_capitulo,
+                              des_secao            = txt_des_secao,
+                              des_subsecao         = txt_des_subsecao,
+                              des_artigo           = txt_des_artigo,
+                              des_paragrafo        = txt_des_paragrafo, 
+                              des_inciso           = txt_des_inciso,
+                              des_alinea           = txt_des_alinea,
+                              des_item             = txt_des_item,
+                              ind_excluido         = 0)">
+  
+    <dtml-except>
+      <dtml-let mensagem="'Não foi possível salvar a legislação citada. Tente novamente!'">
+         <dtml-var mensagem_emitir>
+      </dtml-let>       
+
+    <dtml-else>
+      <dtml-let mensagem="'Legislação Citada salva com sucesso!'" sucesso="1" url=hdn_url>
+         <dtml-var mensagem_emitir>
+      </dtml-let>
+    </dtml-try>
+
+  </dtml-if>
+
+<dtml-else>
+  <dtml-let mensagem="'A Legislação Citada escolhida não existe!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-if>

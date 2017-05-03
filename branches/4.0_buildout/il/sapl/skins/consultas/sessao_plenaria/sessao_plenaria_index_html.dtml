@@ -1,0 +1,297 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+    function atualiza_sessao_plenaria(dat_inicio_sessao){
+        location.href = "&dtml-portal_url;/consultas/sessao_plenaria/index_html?dat_sessao_sel="+dat_inicio_sessao;
+    }
+
+    function atualiza_ano_sessao(ano_sessao){  
+        location.href = "&dtml-portal_url;/consultas/sessao_plenaria/index_html?ano_sessao_sel="+ano_sessao;
+    }   
+
+    function atualiza_mes_sessao(ano_sessao, mes_sessao){    
+        location.href = "&dtml-portal_url;/consultas/sessao_plenaria/index_html?ano_sessao_sel="+ano_sessao+"&mes_sessao_sel="+mes_sessao;
+    }
+
+    function atualiza_dia_sessao(ano_sessao, mes_sessao, dia_sessao){    
+        location.href = "&dtml-portal_url;/consultas/sessao_plenaria/index_html?ano_sessao_sel="+ano_sessao+"&mes_sessao_sel="+mes_sessao+"&dia_sessao_sel="+dia_sessao;
+    }
+
+    function atualiza_tip_sessao(ano_sessao, mes_sessao, dia_sessao, tip_sessao){    
+        location.href = "&dtml-portal_url;/consultas/sessao_plenaria/index_html?ano_sessao_sel="+ano_sessao+"&mes_sessao_sel="+mes_sessao+"&dia_sessao_sel="+dia_sessao+"&tip_sessao_sel="+tip_sessao;
+    }
+
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 1024,
+		maxHeight	: 800,
+		fitToView	: false,
+		width		: '95%',
+		height		: '93%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<script type="text/javascript">
+   function ordem_dia_pdf_gerar(cod_sessao_plen){
+     if (confirm("Confirma a geração do arquivo PDF da Ordem do Dia?")) {
+         window.open('&dtml-portal_url;/relatorios/pdf_ordem_dia_preparar_pysc?cod_sessao_plen='+cod_sessao_plen, '_newtab');
+         setTimeout(function(){window.location.reload(true)},2000);
+         return true;
+         }
+     return;
+   }
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria">Ajuda</a>
+
+<h1 class="firstHeading">Sessões Plenárias</h1>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria', 'Operador Ordem Dia'])">
+<div id="barra-conteudo">
+   <ul>
+      <li>
+         <a href="&dtml-portal_url;/cadastros/sessao_plenaria/sessao_plenaria_form">Incluir Sessão Plenária</a> 
+      </li>
+   </ul>
+</div>
+</dtml-if>
+
+<form name="sessao_plen_form" method="post" action="sessao_plen_form">
+
+<div class="section group">
+   <div class="col span_1_of_2">
+    <label for="lst_ano_sessao">Ano:</label>
+                <select id="lst_ano_sessao" name="lst_ano_sessao" size="1" onChange="atualiza_ano_sessao(document.sessao_plen_form.lst_ano_sessao[document.sessao_plen_form.lst_ano_sessao.selectedIndex].value)">
+                    <dtml-in expr="zsql.sessao_plenaria_listar_ano_zsql()">
+                        <option value="<dtml-var ano_sessao missing>" 
+                          <dtml-if expr="((not _.has_key('ano_sessao_sel') and (_.DateTime().year() == ano_sessao)))
+                                           or (not _.has_key('ano_sessao_sel') and (_.DateTime().year() > ano_sessao))
+                                           or (_.has_key('ano_sessao_sel') and ano_sessao == _.int(ano_sessao_sel))">
+                            selected
+                          <dtml-call expr="REQUEST.set('ano_sessao_sel', ano_sessao)">
+                         </dtml-if>>
+                           <dtml-var ano_sessao missing>
+                        </option>
+                    </dtml-in>
+                </select>
+
+    <label for="lst_mes_sessao"> / Mês:</label>
+                <select id="lst_mes_sessao" name="lst_mes_sessao" size="1" onChange="atualiza_mes_sessao(document.sessao_plen_form.lst_ano_sessao[document.sessao_plen_form.lst_ano_sessao.selectedIndex].value, document.sessao_plen_form.lst_mes_sessao[document.sessao_plen_form.lst_mes_sessao.selectedIndex].value)">
+                        <dtml-if expr="not _.has_key('ano_sessao_sel')">
+                            <dtml-call expr="REQUEST.set('ano_sessao_sel', DateTime().year())">
+                        </dtml-if>
+                    <option value="-1"></option>
+                    <dtml-in expr="zsql.sessao_plenaria_listar_mes_zsql(ano_sessao=ano_sessao_sel)">
+                        <option value="<dtml-var mes_sessao missing>"
+                          <dtml-if expr="(_.has_key('mes_sessao_sel') and mes_sessao == _.int(mes_sessao_sel))">
+                            selected
+                          <dtml-call expr="REQUEST.set('mes_sessao_sel', mes_sessao)">
+                         </dtml-if>>
+                           <dtml-var nome_mes missing capitalize>
+                        </option>
+                    </dtml-in>
+                </select>
+
+    <label for="lst_dia_sessao"> / Dia:</label>
+                <select id="lst_dia_sessao" name="lst_dia_sessao" size="1" onChange="atualiza_dia_sessao(document.sessao_plen_form.lst_ano_sessao[document.sessao_plen_form.lst_ano_sessao.selectedIndex].value, document.sessao_plen_form.lst_mes_sessao[document.sessao_plen_form.lst_mes_sessao.selectedIndex].value,document.sessao_plen_form.lst_dia_sessao[document.sessao_plen_form.lst_dia_sessao.selectedIndex].value)">
+                  <option value="-1"></option>
+                  <dtml-if expr="_.has_key('mes_sessao_sel')">
+                    <dtml-in expr="zsql.sessao_plenaria_listar_dia_zsql(ano_sessao=ano_sessao_sel,mes_sessao=mes_sessao_sel)">
+                        <option value="<dtml-var dia_sessao missing>"
+                          <dtml-if expr="(_.has_key('dia_sessao_sel') and dia_sessao == dia_sessao_sel)">
+                            selected
+                          <dtml-call expr="REQUEST.set('dia_sessao_sel', dia_sessao)">
+                         </dtml-if>>
+                           <dtml-var dia_sessao missing>
+                        </option>
+                    </dtml-in>
+                  </dtml-if>
+                </select>
+   </div>
+   <div class="col span_1_of_3">
+    <label for="lst_tip_sessao"> Tipo:</label>
+                <select id="lst_tip_sessao" name="lst_tip_sessao" size="1" onChange="atualiza_tip_sessao(document.sessao_plen_form.lst_ano_sessao[document.sessao_plen_form.lst_ano_sessao.selectedIndex].value, document.sessao_plen_form.lst_mes_sessao[document.sessao_plen_form.lst_mes_sessao.selectedIndex].value,document.sessao_plen_form.lst_dia_sessao[document.sessao_plen_form.lst_dia_sessao.selectedIndex].value,document.sessao_plen_form.lst_tip_sessao[document.sessao_plen_form.lst_tip_sessao.selectedIndex].value)">
+                  <option value="-1"></option>
+                    <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql()">
+                        <option value="<dtml-var tip_sessao missing>"
+                          <dtml-if expr="(_.has_key('tip_sessao_sel') and tip_sessao == _.int(tip_sessao_sel))">
+                            selected
+                          <dtml-call expr="REQUEST.set('tip_sessao_sel', tip_sessao)">
+                         </dtml-if>>
+                           <dtml-var nom_sessao missing>
+                        </option>
+                    </dtml-in>
+                </select>
+   </div>
+</div>
+
+  <dtml-if expr="not _.has_key('mes_sessao_sel')">
+        <dtml-call "REQUEST.set('mes_sessao_sel', '-1')">
+  </dtml-if>
+
+  <dtml-if expr="not _.has_key('dia_sessao_sel')">
+        <dtml-call "REQUEST.set('dia_sessao_sel', '-1')">
+  </dtml-if>
+
+  <dtml-if expr="not _.has_key('tip_sessao_sel')">
+        <dtml-call "REQUEST.set('tip_sessao_sel', '-1')">
+  </dtml-if>
+
+  <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+  <dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+  <dtml-if page>
+    <dtml-call "REQUEST.set('page', _.int(page))">
+  <dtml-else>
+    <dtml-call "REQUEST.set('page', 1)">
+  </dtml-if>
+  <dtml-if step>
+    <dtml-call "REQUEST.set('step', _.int(step))">
+  <dtml-else>
+    <dtml-call "REQUEST.set('step', 6)">
+  </dtml-if>
+  <dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+     <dtml-in expr="zsql.sessao_plenaria_obter_zsql(ano_sessao=ano_sessao_sel,mes_sessao=mes_sessao_sel,dia_sessao=dia_sessao_sel,tip_sessao=tip_sessao_sel)" size="step" start="start" orphan=0>
+        <dtml-if sequence-start>
+<fieldset>
+        <dtml-if previous-sequence>
+          <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+        </dtml-if previous-sequence>
+        </dtml-if sequence-start>
+   <table>
+                <tr>
+                    <th class="form-element" colspan="4"><h2 align="center">
+                        <dtml-var num_sessao missing>
+                        <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria', 'Operador Ordem Dia'])">
+                      <a href="&dtml-portal_url;/cadastros/sessao_plenaria/sessao_plenaria_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_
+inicio_sessao=<dtml-var dat_inicio_sessao missing>&num_legislatura=<dtml-var num_legislatura missing>">
+                    <dtml-else>
+                      <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">
+                         <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
+                           <a href="agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>"
+>
+                         <dtml-else>
+                           <a href="#" style="color:#444;">
+                         </dtml-if>
+                      </dtml-let>
+                    </dtml-if>
+                            <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> da <dtml-var num_sessao_leg>ª Sessão Legislativa da <dtml-var num_legislatura>ª Legislatura<br /></h2></a>
+                          <h4 align="center"><dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_inicio_sessao)"> (<dtml-var dia_sessao>) - <dtml-var expr="pysc.hora_formatar_pysc(hora=hr_inicio_sessao)">
+                        </dtml-in>
+                   </h4> </th>
+                </tr>
+
+                <tr>
+                  <td class="texto" align="center" width="33%">
+                    <div align="center">
+                      <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">
+                         <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
+                           <dtml-let pauta="_.getattr(sapl_documentos.pauta_sessao,id_pauta).absolute_url">
+                             <a target="_blank" href="<dtml-var pauta>"><img align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Pauta da Ordem do Dia" /></a>
+                             <b>Ordem do Dia</b>
+                           </dtml-let>
+                         <dtml-else>
+                          <img class="img-disabled" align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível" />
+                          <b>Ordem do Dia</b>
+                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria'])">
+                              &nbsp;&nbsp;<a class="botao-link" target="_blank" href="javascript:ordem_dia_pdf_gerar(<dtml-var cod_sessao_plen>)">Gerar</a>
+                            </dtml-if>
+                         </dtml-if>
+                       </dtml-let>
+                            <dtml-if expr="ZopeTime().strftime('%Y%m%d') > dat_inicio">
+                              <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+                                <dtml-if sequence-start>
+                                 &nbsp;&nbsp;| <a class="popup" data-fancybox-type="iframe" href="materias_ordem_dia_sessao_form?cod_sessao_plen=<dtml-var cod_sessao_plen>">Votação</a> |
+                                </dtml-if>
+                              </dtml-in>
+                            </dtml-if>
+                    </div>
+                  </td>
+                  <td class="texto" align="center" width="33%">
+                    <div align="center">
+                      <dtml-in expr="zsql.expediente_materia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+                       <dtml-if sequence-start>
+                       <a target="_blank" href="&dtml-portal_url;/relatorios/pdf_expediente_preparar_pysc?data=<dtml-var dat_inicio_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>"><img align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Matérias do Expediente" title="Matérias do Expediente"></a>
+                       </dtml-if>
+                       <dtml-else>
+                          <img class="img-disabled" align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                      </dtml-in>
+                       <b>Matérias do Expediente</b>
+                    </div>
+                  </td>
+                  <td class="texto" align="center" width="33%">
+                  <div align="center">
+                   <dtml-let id_ata="_.str(cod_sessao_plen)+'_ata_sessao.pdf'">
+                     <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_ata)">
+                       <dtml-let ata="_.getattr(sapl_documentos.ata_sessao,id_ata).absolute_url">
+                         <a target="_blank" href="<dtml-var ata>"><img align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Ata da Sessão" /></a>
+                         <b>Ata</b>
+                       </dtml-let>
+                     <dtml-else>
+                     <img class="img-disabled" align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível"> <b>Ata</b>
+                     </dtml-if>
+                   </dtml-let>
+                  </div>
+                  </td>
+                </tr>
+           <dtml-if expr="url_audio or url_video">
+                <tr>
+           <dtml-if expr="url_audio">
+                  <td colspan="3" class="texto">
+                  <div align="center">
+                  <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_audio.png">
+                  <dtml-if url_audio>
+                     <a href="#" onClick="javascript:window.open('sessao_plenaria_player_audio?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_audio=<dtml-var url_audio>','PlayerAudio','width=540,height=435,top=200,left=200,scrollbars=no');"/>
+                     <b>Gravação em Áudio</b></a>
+                  <dtml-else> Áudio não disponível
+                  </dtml-if>
+                  </div>
+                  </td>
+           </dtml-if>
+           <dtml-if expr="url_video">
+                  <td></td>
+                  <td colspan="3" class="texto">
+                  <div align="center">
+                  <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_video.png">
+                  <dtml-if url_video>
+                     <a href="#" onClick="javascript:window.open('sessao_plenaria_player_video?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_video=<dtml-var url_video>','PlayerVideo','width=540,height=435,top=200,left=200,scrollbars=no');"/>
+                     <b>Gravação em Vídeo</b></a>
+                  <dtml-else> Vídeo não disponível
+                  </dtml-if>
+                  </div>
+                  </td>
+           </dtml-if>
+                </tr>
+           </dtml-if>
+   </table>
+<br />
+        <dtml-if sequence-end>
+</fieldset>
+        <dtml-if next-sequence>
+          <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+        </dtml-if next-sequence>
+        <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+          <p align="center" class="texto">
+          <b><dtml-var "pysc.PageListOutput_pysc('sessao_plenaria_index_html', page, step, _['sequence-length'], ano_sessao_sel=ano_sessao_sel,mes_sessao_sel=mes_sessao_sel,dia_sessao_sel=dia_sessao_sel,tip_sessao_sel=tip_sessao_sel)">
+         </b></p>
+        </dtml-if>
+        </dtml-if sequence-end>
+<dtml-else>
+<fieldset>
+    <p class="texto">Nenhuma sessão plenária cadastrada.</p>
+</fieldset>
+</dtml-in>
+</form>
+<dtml-var standard_html_footer>
