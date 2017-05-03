@@ -5,7 +5,7 @@ version = '4.0'
 
 setup(name='openlegis.sagl',
       version=version,
-      description="Sistema Aberto de Gestão Legislativa",
+      description="SAGL-OpenLegis",
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from
