@@ -1,0 +1,44 @@
+<dtml-try>
+   <dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento = cod_documento, ind_excluido=0)">
+      <dtml-let silent="1">
+         <dtml-call expr="zsql.documento_acessorio_administrativo_excluir_zsql(cod_documento_acessorio=cod_documento_acessorio)">
+         <dtml-call expr="REQUEST.set('id_doc', _.str(cod_documento_acessorio)+'.pdf')">
+         <dtml-if "_.hasattr(documentos.administrativo,id_doc)">
+            <dtml-call expr="documentos.administrativo.manage_delObjects(id_doc)">
+         </dtml-if>
+      </dtml-let>
+   </dtml-in>
+
+   <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento = cod_documento, ind_excluido=0)">
+      <dtml-let silent="1">
+         <dtml-call expr="zsql.tramitacao_administrativo_excluir_zsql(cod_tramitacao=cod_tramitacao)">
+      </dtml-let>
+   </dtml-in>
+
+   <dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_documento = cod_documento, ind_excluido=0)">
+      <dtml-let silent="1">
+         <dtml-call expr="zsql.documento_administrativo_materia_excluir_zsql(cod_documento=cod_documento)">
+      </dtml-let>
+   </dtml-in>
+
+   <dtml-call expr="zsql.documento_administrativo_excluir_zsql(cod_documento = cod_documento)">
+
+   <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_documento)+'_texto_integral.pdf')">
+   <dtml-if "_.hasattr(documentos.administrativo,id_pdf)">
+      <dtml-call expr="documentos.administrativo.manage_delObjects(id_pdf)">
+   </dtml-if>
+
+   <dtml-call expr="REQUEST.set('id_odt', _.str(cod_documento)+'_texto_integral.odt')">
+   <dtml-if "_.hasattr(documentos.administrativo,id_odt)">
+      <dtml-call expr="documentos.administrativo.manage_delObjects(id_odt)">
+   </dtml-if>
+
+<dtml-except>
+   <dtml-let mensagem="'Houve um erro! Não foi possível excluir o Documento Administrativo!'">
+      <dtml-var mensagem_emitir>
+   </dtml-let>
+<dtml-else>
+   <dtml-let mensagem="'Documento Administrativo excluído com sucesso!'" sucesso="1" url="url">
+      <dtml-var mensagem_emitir>
+   </dtml-let>
+</dtml-try>

@@ -1,0 +1,51 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : cod_parlamentar="" cod_sessao_plen="" ind_ativo="" num_legislatura="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+SELECT DISTINCT
+        REPLACE(parlamentar.cod_parlamentar, 'L', '') as cod_parlamentar,
+        parlamentar.nom_parlamentar,
+        parlamentar.nom_completo,
+        partido.sgl_partido
+FROM
+        parlamentar
+
+LEFT JOIN oradores on
+        oradores.cod_parlamentar=parlamentar.cod_parlamentar and
+        oradores.ind_excluido=0 and
+        <dtml-if cod_sessao_plen>
+            oradores.cod_sessao_plen=<dtml-var cod_sessao_plen> and
+        </dtml-if>
+        parlamentar.ind_excluido=0
+
+LEFT JOIN filiacao on
+        parlamentar.cod_parlamentar = filiacao.cod_parlamentar and
+        filiacao.dat_desfiliacao is null and
+        filiacao.ind_excluido = 0
+
+LEFT JOIN partido ON
+        filiacao.cod_partido = partido.cod_partido
+
+LEFT JOIN localidade ON
+    parlamentar.cod_localidade_resid=localidade.cod_localidade
+
+<dtml-if expr="num_legislatura != '-1' and num_legislatura != ''">
+LEFT JOIN mandato ON
+    parlamentar.cod_parlamentar=mandato.cod_parlamentar
+</dtml-if>
+
+<dtml-sqlgroup where>
+    oradores.cod_parlamentar is null<dtml-and>
+    <dtml-sqltest cod_parlamentar  column="parlamentar.cod_parlamentar" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest ind_excluido     column="parlamentar.ind_excluido"    op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest ind_ativo        op="=" type="nb" optional> <dtml-and>
+    <dtml-if expr="num_legislatura != '-1' and num_legislatura != ''">
+        <dtml-sqltest num_legislatura  column="mandato.num_legislatura"     op="="  type="int"  optional> and
+        <dtml-sqltest ind_excluido     column="mandato.ind_excluido"        op="="  type="int"  optional>
+    </dtml-if>
+</dtml-sqlgroup>
+
+ORDER BY nom_completo

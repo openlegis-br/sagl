@@ -1,0 +1,502 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src='&dtml-portal_url;/javascript/jwplayer.js'></script>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/data_validar_jvsc"></script>
+
+<script type="text/javascript">
+<!--
+function atualiza_num_leg(num_legislatura,cod_sessao_plen){
+    if (cod_sessao_plen=="-1"){
+        location.href = "sessao_plenaria_form?num_legislatura_sel="+num_legislatura;
+        }
+    else {
+        location.href = "sessao_plenaria_mostrar_proc?cod_sessao_plen="+cod_sessao_plen+"&num_legislatura_sel="+num_legislatura;
+       }
+}
+
+function campos_criticar(){
+
+    var form = document.sessao_plenaria_form;
+    var regexp_digitos = /\D+/;
+
+    if (form.lst_tip_sessao_plen.selectedIndex == 0){
+          alert("Escolha o tipo de sessão plenaria!");
+          form.lst_tip_sessao_plen.focus();
+          return false;
+    }
+
+    if (form.lst_num_legislatura.selectedIndex == -1) {
+         alert("Escolha legislatura!");
+         form.lst_num_legislatura.focus();
+         return false;
+    }
+
+    if (form.lst_sessao_leg.selectedIndex == -1) {
+         alert("Escolha a sessão legislativa!");
+         form.lst_sessao_leg.focus();
+         return false;
+    }
+
+    if (form.txt_dat_inicio_sessao.value == "") {
+         alert("A data da sessão plenária deve ser preenchida!");
+         form.txt_dat_inicio_sessao.focus();
+         return false;
+    }
+
+    if (form.txt_hr_inicio_sessao.value == "") {
+         alert("A hora de início da sessão plenária deve ser preenchida!");
+         form.txt_hr_inicio_sessao.focus();
+         return false;
+    }
+
+    if (form.txt_num_sessao_plen.value == "") {
+         alert("O número da sessão plenaria deve ser preenchido!");
+         form.txt_num_sessao_plen.focus();
+         return false;
+    }
+
+    if (form.file_nom_arquivo_ata.value != "") {
+    form.hdn_file_ata.value = 1;
+    }
+
+      form.submit();
+  }
+
+    function submeter(endereco){
+
+        var form = document.sessao_plenaria_form;
+        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
+        endereco += '&cod_sessao_leg='+ form.lst_sessao_leg[form.lst_sessao_leg.selectedIndex].value;
+        endereco += '&cod_num_legislatura=' + form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value;
+        endereco += '&dat_sessao=' + form.txt_dat_inicio_sessao.value;
+        endereco += '&tip_sessao=' + form.lst_tip_sessao_plen[form.lst_tip_sessao_plen.selectedIndex].value;
+
+        if (form.hdn_alterou.value=="1"){
+            if (confirm("Deseja salvar os dados?")){
+                form.hdn_url.value = endereco;
+                campos_criticar(form);
+            }
+        }
+
+        if (form.hdn_cod_sessao_plen.value!=""){
+            location.href = endereco;
+        }
+        return;
+    }
+
+    function retornar(){
+       location.href="sessao_plenaria_index_html"
+    }  
+
+    function ativa_desativa_file_field_ata(form) {
+       form.file_nom_arquivo_ata.disabled = !(form.radTI2[2].checked);
+    }
+
+    function pauta_odt_gerar(){
+        if (confirm("Confirma a geração da ordem do dia em formato ODT?")) {
+           location.href="&dtml-portal_url;/modelo_proposicao/ordem_dia?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           setTimeout(function(){window.location.reload(true)},2500);
+           return true;
+         }
+    return;
+    }
+
+    function pauta_odt_excluir(){
+        if (confirm("Deseja realmente excluir a pauta da ordem do dia em formato ODT?")) {
+           location.href="pauta_odt_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+        }
+    return;
+    }
+
+    function pauta_pdf_gerar(){
+        if (confirm("Confirma a geração da pauta da ordem do dia em formato PDF?")) {
+           location.href="&dtml-portal_url;/modelo_proposicao/ordem_dia_pdf?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           setTimeout(function(){window.location.reload(true)},2500);
+           return true;
+         }
+    return;
+    }
+
+    function pauta_pdf_excluir(){
+        if (confirm("Deseja realmente excluir a pauta da ordem do dia em formato PDF?")) {
+           location.href="pauta_pdf_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+        }
+    return;
+    }
+
+    function oradores_odt_gerar(){
+        if (confirm("Confirma a geração da lista de oradores em formato ODT?")) {
+           location.href="&dtml-portal_url;/modelo_proposicao/oradores?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           setTimeout(function(){window.location.reload(true)},2500);
+           return true;
+         }
+    return;
+    }
+
+    function oradores_odt_excluir(){
+        if (confirm("Deseja realmente excluir a lista de oradores em formato ODT?")) {
+           location.href="oradores_odt_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+        }
+    return;
+    }
+
+    function oradores_pdf_gerar(){
+        if (confirm("Confirma a geração da lista de oradores em formato PDF?")) {
+           location.href="&dtml-portal_url;/modelo_proposicao/oradores_gerar_pdf?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           setTimeout(function(){window.location.reload(true)},2500);
+           return true;
+         }
+    return;
+    }
+
+    function oradores_pdf_excluir(){
+        if (confirm("Deseja realmente excluir a lista de oradores em formato PDF?")) {
+           location.href="oradores_pdf_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+        }
+    return;
+    }
+
+    function ata_odt_gerar(){
+        if (confirm("Confirma a geração da Ata em formato ODT?")) {
+           location.href="&dtml-portal_url;/modelo_proposicao/ata_gerar?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           setTimeout(function(){window.location.reload(true)},2500);
+           return true;
+         }
+    return;
+    }
+
+    function ata_odt_excluir(){
+        if (confirm("Deseja realmente excluir a Ata em formato ODT?")) {
+           location.href="ata_odt_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+        }
+    return;
+    }
+
+    function ata_pdf_gerar(){
+        if (confirm("Confirma a geração da Ata em formato PDF?")) {
+           location.href="&dtml-portal_url;/modelo_proposicao/ata_gerar_pdf?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           setTimeout(function(){window.location.reload(true)},2500);
+           return true;
+         }
+    return;
+    }
+
+//-->
+</script>
+
+<script type="text/javascript">
+$(function() {
+        $('#txt_dat_inicio_sessao').datepick();
+        $('#txt_dat_fim_sessao').datepick();
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup1").fancybox({
+		maxWidth	: 1024,
+		maxHeight	: 800,
+		fitToView	: false,
+		width		: '95%',
+		height		: '93%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria">Ajuda</a>
+
+<h1 class="firstHeading">Sessão Plenária</h1>
+
+<dtml-if cod_sessao_plen>
+ <h3 align="center"><dtml-var sessao_plenaria_header></h3>
+ <dtml-var sessao_plenaria_menu>
+</dtml-if>
+
+<form action="sessao_plenaria_salvar_proc" name="sessao_plenaria_form" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+  <input type="hidden" name="hdn_dat_sessao" value="<dtml-var dat_inicio missing>" />
+  <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura missing>" />
+  <input type="hidden" name="hdn_url" value="sessao_plenaria_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>&dat_inicio_sessao=<dtml-var dat_inicio missing>&num_legislatura=<dtml-var num_legislatura missing>" />
+  <input type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('mudou')">1<dtml-else>0</dtml-if>" />
+    
+<fieldset>
+        <legend>Dados Básicos</legend>
+        <table>
+            <tr>
+                <td>
+                    <label for="txt_num_sessao_plen">Número </label><span class="campoObrigatorio">&nbsp;</span><br />
+                        <dtml-in expr="zsql.numero_sessao_plenaria_obter_zsql()">
+                            <dtml-call expr="REQUEST.set('num_sessao_plen', novo_numero)">
+                        </dtml-in>
+                        <dtml-unless num_sessao_plen>
+                            <dtml-call num_sessao_plen>
+                        </dtml-unless>
+                        <input type="text" id="txt_num_sessao_plen" name="txt_num_sessao_plen" size="3" maxlength="3" value="<dtml-var num_sessao_plen missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                 </td>
+                 <td>
+                    <label for="lst_tip_sessao_plen">Tipo </label> <span class="campoObrigatorio">&nbsp;</span><br />
+                    <select id="lst_tip_sessao_plen" name="lst_tip_sessao_plen">
+                        <option value="0">
+                          Selecione
+                        </option>
+                        <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql()">
+                            <option
+                            <dtml-if expr="_.has_key('cod_sessao_plen') and _.int(tip_sessao)==_.int(sessao_plenaria_form.tip_sessao)">
+                                selected
+                            </dtml-if>
+                                value="<dtml-var tip_sessao>"><dtml-var nom_sessao>
+                            </option>
+                        </dtml-in>
+                    </select>
+                </td>
+                <td>
+                    <label for="lst_num_legislatura">Legislatura <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <select name="lst_num_legislatura" size="1"
+                            onChange="atualiza_num_leg(document.sessao_plenaria_form.lst_num_legislatura[document.sessao_plenaria_form.lst_num_legislatura.selectedIndex].value,<dtml-var cod_sessao_plen missing="-1">)">
+                        <option <dtml-if expr="_.has_key('num_legislatura')">
+                                   <dtml-call expr="REQUEST.set('num_legislatura_sel', num_legislatura)">
+                                   selected
+                                   value="<dtml-var num_legislatura>">
+                               <dtml-else>
+                                   value="0">
+                                </dtml-if>
+                        </option>      
+                         <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
+                            <option 
+                            <dtml-if expr="(not _.has_key('num_legislatura_sel')) and _.has_key('cod_sessao_plen') and _.int(num_legislatura) == _.int(sessao_plenaria_form.num_legislatura)">
+                                selected
+                                <dtml-call expr="REQUEST.set('num_legislatura_sel', num_legislatura)">
+                            </dtml-if>
+                            <dtml-if expr="(not _.has_key('num_legislatura_sel') and (_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim))
+                                        or (_.has_key('num_legislatura_sel') and num_legislatura == _.int(num_legislatura_sel))">
+                                selected
+                                <dtml-call expr="REQUEST.set('num_legislatura_sel', num_legislatura)">
+                            </dtml-if>
+                            value="<dtml-var num_legislatura>">
+                            <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura, dat_inicio, dat_fim)">
+                            <dtml-if expr="(_.DateTime() >= dat_inicio) and (_.DateTime() <= dat_fim)"> (Atual) </dtml-if>
+                            </option>
+                         <dtml-else>
+                            <option selected value="0">Selecione </option>
+                                   <dtml-call expr="REQUEST.set('num_legislatura_sel', '-1')">
+                         </dtml-in>
+                    </select>
+                </td>
+                <td>
+                    <label for="lst_sessao_leg">Sessão Legislativa </label><span class="campoObrigatorio">&nbsp;</span><br />
+                    <select name="lst_sessao_leg" size="1">
+                    <dtml-in expr="zsql.sessao_legislativa_obter_zsql(num_legislatura=num_legislatura_sel, ind_excluido=0)">
+                        <option
+                        <dtml-if expr="_.has_key('cod_sessao_plen') and _.int(cod_sessao_leg) == _.int(sessao_plenaria_form.cod_sessao_leg)">
+                        selected
+                        <dtml-call expr="REQUEST.set('prim_sel', cod_sessao_leg)">
+                        <dtml-call expr="REQUEST.set('cod_sessao_leg_sel', cod_sessao_leg)">
+                        </dtml-if>
+                        <dtml-if expr="(not _.has_key('cod_sessao_leg_sel') and (_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim))
+                                or (_.has_key('cod_sessao_leg_sel') and cod_sessao_leg == cod_sessao_leg_sel)">
+                        selected
+                        <dtml-call expr="REQUEST.set('prim_sel', cod_sessao_leg)">
+                        <dtml-call expr="REQUEST.set('cod_sessao_leg_sel', cod_sessao_leg)">
+                        </dtml-if>
+                            value="<dtml-var cod_sessao_leg>"> 
+                        <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_sessao_leg, dat_inicio, dat_fim)">
+                        <dtml-if expr="(_.DateTime() >= dat_inicio) and (_.DateTime() <= dat_fim)">
+                        (Atual)
+                        </dtml-if>
+                        </option>
+                        <dtml-else>
+                        <option selected value="0"></option>
+                    </dtml-in>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td width="50%" colspan="2">
+                    <label for="txt_dat_inicio_sessao">Abertura </label> <span class="campoObrigatorio">&nbsp;</span><br />
+                    <dtml-unless cod_sessao_plen>
+                        <dtml-call expr="REQUEST.set('dat_inicio_sessao', _.DateTime().strftime('%d/%m/%Y'))">
+                    </dtml-unless>
+                    <span class="texto">Data:</span> <input type="text" id="txt_dat_inicio_sessao" name="txt_dat_inicio_sessao" size="10" maxlength="10" value="<dtml-var dat_inicio_sessao missing null="">" onBlur="formata_data(form.txt_dat_inicio_sessao)" onChange="javascript:form.hdn_alterou.value=1" />
+                    <dtml-if expr="not _.has_key('cod_sessao_plen')">
+                    </dtml-if>
+                    <label for="txt_hr_inicio_sessao"></label>
+                    <dtml-unless hr_inicio_sessao>
+                        <dtml-call hr_inicio_sessao>
+                    </dtml-unless>
+                    &nbsp;<span class="texto">Horário:</span> <input type="text" id="txt_hr_inicio_sessao" name="txt_hr_inicio_sessao" size="5" maxlength="5" value="<dtml-var hr_inicio_sessao missing null="">" onChange="javascript:form.hdn_alterou.value=1" /> <span class="texto">(hh:mm)</span>
+                </td>
+                <td colspan="2">
+                    <label for="txt_dat_fim_sessao">Encerramento </label><br />
+                    <dtml-unless dat_fim_sessao>
+                        <dtml-call expr="REQUEST.set('dat_fim_sessao', _.DateTime().strftime('%d/%m/%Y'))">
+                    </dtml-unless>
+                    <span class="texto">Data:</span> <input type="text" id="txt_dat_fim_sessao" name="txt_dat_fim_sessao" size="10" maxlength="10" value="<dtml-var dat_fim_sessao missing null="">" onBlur="formata_data(form.txt_dat_fim_sessao)" onChange="javascript:form.hdn_alterou.value=1" />
+                    <label for="txt_hr_fim_sessao"></label>
+                    <dtml-unless hr_fim_sessao>
+                        <dtml-call hr_fim_sessao>
+                    </dtml-unless>
+                    &nbsp;<span class="texto">Horário:</span> <input type="text" id="txt_hr_fim_sessao" name="txt_hr_fim_sessao" size="5" maxlength="5" value="<dtml-var hr_fim_sessao missing null="">" onChange="javascript:form.hdn_alterou.value=1" /> <span class="texto">(hh:mm)</span>
+                </td>
+            </tr>
+   <dtml-if cod_sessao_plen>
+         <tr>
+          <td colspan="2"><label for="txt_texto_odt">Pauta da Ordem do Dia (ODT)</label><br />
+               <dtml-let id_documento_odt="_.str(cod_sessao_plen)+'_pauta_sessao.odt'">
+               <dtml-if "_.hasattr(documentos.pauta_sessao,id_documento_odt)">
+                  <dtml-let documento_odt="_.getattr(documentos.pauta_sessao,id_documento_odt).absolute_url">
+                  <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_sessao_plen)+'_pauta_sessao.odt')">
+                  <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                    <img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
+                    <a class="botao-link" target="_blank" href="&dtml-URL1;/documentos/pauta_sessao/externalEdit_/<dtml-var nome_arquivo_odt>.zem">Editor Externo</a>
+                    <a class="botao-link" href="javascript:pauta_odt_excluir()">Excluir</a>
+                  </dtml-let>
+               <dtml-else>
+                  <a class="botao-link" href="javascript:pauta_odt_gerar();">Gerar ODT</a>
+               </dtml-if>
+               </dtml-let>
+          </td>
+          <td colspan="2"><label>Pauta da Ordem do Dia (PDF)</label><br/>
+            <dtml-let documento_odt="_.str(cod_sessao_plen)+'_pauta_sessao.odt'">
+              <dtml-if "_.hasattr(documentos.pauta_sessao,documento_odt)">
+                 <dtml-call expr="REQUEST.set('temODT', 1)">
+              </dtml-if>
+            </dtml-let>
+
+            <input type="hidden" name="hdn_file_pauta" value="0"/>
+             <dtml-call expr="REQUEST.set('id_pauta', _.str(cod_sessao_plen)+'_pauta_sessao.pdf')">
+             <dtml-if "_.hasattr(documentos.pauta_sessao,id_pauta)">
+              <dtml-let pauta="_.getattr(documentos.pauta_sessao,id_pauta).absolute_url">
+               <a href="<dtml-var pauta>" target="_blank"><img align="top" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral"></a>
+                    <a class="botao-link" href="javascript:pauta_pdf_excluir()">Excluir</a>
+              </dtml-let>
+             <dtml-else>
+                  <dtml-if expr="_.has_key('temODT')">
+                    <a class="botao-link" href="javascript:pauta_pdf_gerar()">Gerar PDF</a>
+                  <dtml-else>
+                    <span class="texto"><i>Geração vinculada à existência do arquivo ODT</i></span>
+                  </dtml-if>
+             </dtml-if>
+          </td>
+         </tr>
+
+          <td colspan="2"><label for="txt_texto_odt">Lista de Oradores (ODT)</label><br />
+               <dtml-let id_documento_odt="_.str(cod_sessao_plen)+'_oradores_expediente.odt'">
+               <dtml-if "_.hasattr(documentos.oradores_expediente,id_documento_odt)">
+                  <dtml-let documento_odt="_.getattr(documentos.oradores_expediente,id_documento_odt).absolute_url">
+                  <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_sessao_plen)+'_oradores_expediente.odt')">
+                  <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                    <img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
+                    <a class="botao-link" target="_blank" href="&dtml-URL1;/documentos/oradores_expediente/externalEdit_/<dtml-var nome_arquivo_odt>.zem">Editor Externo</a>
+                    <a class="botao-link" href="javascript:oradores_odt_excluir()">Excluir</a>
+                  </dtml-let>
+               <dtml-else>
+                  <a class="botao-link" href="javascript:oradores_odt_gerar();">Gerar ODT</a>
+               </dtml-if>
+               </dtml-let>
+          </td>
+          <td colspan="2"><label>Lista de Oradores (PDF)</label><br/>
+             <dtml-let documento_odt="_.str(cod_sessao_plen)+'_oradores_expediente.odt'">
+              <dtml-if "_.hasattr(documentos.oradores_expediente,documento_odt)">
+                 <dtml-call expr="REQUEST.set('temODTorador', 1)">
+              </dtml-if>
+             </dtml-let>
+             <dtml-call expr="REQUEST.set('id_oradores', _.str(cod_sessao_plen)+'_oradores_expediente.pdf')">
+             <dtml-if "_.hasattr(documentos.oradores_expediente,id_oradores)">
+              <dtml-let oradores="_.getattr(documentos.oradores_expediente,id_oradores).absolute_url">
+               <a href="<dtml-var oradores>" target="_blank"><img align="top" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral"></a>
+                  <a class="botao-link" href="javascript:oradores_pdf_excluir()">Excluir</a>
+              </dtml-let>
+            <dtml-else>
+                  <dtml-if expr="_.has_key('temODTorador')">
+                    <a class="botao-link" href="javascript:oradores_pdf_gerar()">Gerar PDF</a>
+                  <dtml-else>
+                    <span class="texto"><i>Geração vinculada à existência do arquivo ODT</i></span>
+                  </dtml-if>
+            </dtml-if>
+          </td>
+         </tr>
+   </dtml-if>
+         <tr>
+   <dtml-if cod_sessao_plen>
+          <td colspan="2"><label for="txt_texto_odt">Ata da Sessão (ODT)</label><br />
+               <dtml-let id_documento_odt="_.str(cod_sessao_plen)+'_ata_sessao.odt'">
+               <dtml-if "_.hasattr(documentos.ata_sessao,id_documento_odt)">
+                  <dtml-call expr="REQUEST.set('temAtaODT', 1)">
+                  <dtml-let documento_odt="_.getattr(documentos.ata_sessao,id_documento_odt).absolute_url">
+                  <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_sessao_plen)+'_ata_sessao.odt')">
+                  <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                    <img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
+                    <a class="botao-link" target="_blank" href="&dtml-URL1;/documentos/ata_sessao/externalEdit_/<dtml-var nome_arquivo_odt>.zem">Editor Externo</a>
+                    <a class="botao-link" href="javascript:ata_odt_excluir()">Excluir</a>
+                  </dtml-let>
+               <dtml-else>
+                  <a class="botao-link" href="javascript:ata_odt_gerar();">Gerar ODT</a>
+               </dtml-if>
+               </dtml-let>
+          </td>
+   </dtml-if>
+           <td <dtml-if cod_sessao_plen>colspan="2"<dtml-else>colspan="4"</dtml-if>><label>Ata da Sessão (PDF)</label><br/>
+            <input type="hidden" name="hdn_file_ata" value="0"/>
+            <dtml-if cod_sessao_plen>
+             <dtml-call expr="REQUEST.set('id_ata', _.str(cod_sessao_plen)+'_ata_sessao.pdf')">
+             <dtml-if "_.hasattr(documentos.ata_sessao,id_ata)">
+              <dtml-let ata="_.getattr(documentos.ata_sessao,id_ata).absolute_url">
+               <a href="<dtml-var ata>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral"></a>
+              </dtml-let>
+               <input type="radio" name="radTI2" value="M" checked="true" onClick="ativa_desativa_file_field_ata(document.sessao_plenaria_form)"/><span class="texto">Manter</span>
+               <input type="radio" name="radTI2" value="E" onClick="ativa_desativa_file_field_ata(document.sessao_plenaria_form)"/><span class="texto">Excluir</span>
+               <input type="radio" name="radTI2" value="S" onClick="ativa_desativa_file_field_ata(document.sessao_plenaria_form)"/><span class="texto">Substituir</span>
+               <input type="file" id="file_nom_arquivo_ata" name="file_nom_arquivo_ata" accept="application/pdf" size="40" maxlength="100" disabled="1" />
+             <dtml-else>
+               <input type="file" id="file_nom_arquivo_ata" name="file_nom_arquivo_ata" accept="application/pdf" size="40" maxlength="100" />
+               <input type="hidden" name="radTI2" value="I"/>
+               <dtml-if expr="_.has_key('temAtaODT')">
+                 <a class="botao-link" href="javascript:ata_pdf_gerar()">Gerar PDF</a>
+               </dtml-if>
+             </dtml-if>
+            <dtml-else>
+              <input type="file" id="file_nom_arquivo_ata" name="file_nom_arquivo_ata" accept="application/pdf" size="40" maxlength="100" />
+              <input type="hidden" name="radTI2" value="I"/>
+               <dtml-if expr="_.has_key('temAtaODT')">
+                 <a class="botao-link" href="javascript:ata_pdf_gerar()">Gerar PDF</a>
+               </dtml-if>
+            </dtml-if>
+          </td>
+        </tr>
+            <tr>
+                 <td colspan="2">
+                    <label for="txt_url_audio">URL Arquivo Áudio <span class="texto">(Formatos MP3 / AAC)</span> </label> <br />
+                    <input type="text" id="txt_url_audio" name="txt_url_audio" size="40"maxlength="150" value="<dtml-var url_audio missing null="">" /> <br />
+               <dtml-if url_audio>
+                 <input class="botao" type="button" value="Visualizar" onClick="javascript:window.open('sessao_plenaria_player_audio?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_audio=<dtml-var url_audio>','PlayerAudio','width=540,height=435,top=200,left=200,scrollbars=no');"/>
+                </dtml-if>
+                </td>
+
+                 <td colspan="2">
+                    <label for="txt_url_video">URL Arquivo Vídeo <span class="texto">(Formatos MP4 / FLV / WebM)</span> </label> <br />
+                    <input type="text" id="txt_url_video" name="txt_url_video" size="40" maxlength="150" value="<dtml-var url_video missing null="">" /> <br />
+                <dtml-if url_video>
+                 <input class="botao" type="button" value="Visualizar" onClick="javascript:window.open('sessao_plenaria_player_video?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_video=<dtml-var url_video>','PlayerVideo','width=540,height=435,top=200,left=200,scrollbars=no');"/>
+                </dtml-if>
+                </td>         
+            </tr>
+</table>
+
+<p align="center">
+  <input type="hidden" name="dat_sessao" value="<dtml-var dat_inicio_sessao missing>" />
+  <input class="botao" type="button" name="button" value="Salvar" onClick="campos_criticar()" />
+  <input class="botao" type="button" value="Voltar" OnClick="history.go(-1)" />
+</p>
+
+</fieldset>
+</form>
+
+<dtml-var standard_html_footer> 

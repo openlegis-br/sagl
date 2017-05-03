@@ -1,0 +1,29 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : cod_composicao cod_cargo num_legislatura ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT 
+  cod_composicao,
+  num_legislatura,
+  nom_completo,
+  cod_cargo,
+  cod_partido,
+  DATE_FORMAT(dat_inicio_mandato, '%d/%m/%Y') dat_inicio_mandato,
+  DATE_FORMAT(dat_fim_mandato, '%d/%m/%Y') as dat_fim_mandato,
+  txt_observacao,
+  ind_excluido
+
+FROM 
+  composicao_executivo 
+
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_composicao   op="=" type="int"  optional> <dtml-and>
+  <dtml-sqltest cod_cargo        op="=" type="int"  optional> <dtml-and>
+  <dtml-sqltest num_legislatura  op="=" type="int"  optional> <dtml-and>
+  <dtml-sqltest ind_excluido     op="=" type="int">
+</dtml-sqlgroup>
+
+ORDER BY
+  cod_cargo

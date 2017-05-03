@@ -1,0 +1,18 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments :  tipo="" ind_excluido="0"
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+  select distinct tip_materia, sgl_tipo_materia, des_tipo_materia
+    from tipo_materia_legislativa t left join materia_legislativa m on (t.tip_materia=m.tip_id_basica)
+                                    left join tramitacao tr         on (m.cod_materia=tr.cod_materia)  
+    <dtml-sqlgroup where>
+       <dtml-sqltest ind_excluido column="t.ind_excluido" op="="  type="int" optional> <dtml-and>
+       <dtml-sqltest ind_excluido column="m.ind_excluido" op="="  type="int" optional> <dtml-and>
+       <dtml-sqltest ind_excluido column="tr.ind_excluido" op="="  type="int" optional> <dtml-and>
+       <dtml-sqltest         tipo column="tip_materia"  op="="  type="int" optional>
+    </dtml-sqlgroup>
+    order by 1,2,3
+

@@ -1,0 +1,138 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : tip_id_basica="" num_ident_basica="" ano_ident_basica="" num_protocolo="" dat_apresentacao="" dat_apresentacao2="" dat_publicacao="" dat_publicacao2="" cod_autor="" cod_relator="" des_tipo_autor="" des_assunto="" ind_tramitacao="" cod_unid_tramitacao="" cod_status="" cod_materia_principal="" rd_ordem="" ind_excluido=0
+max_rows : 5000
+max_cache : 100
+</dtml-comment>
+
+SELECT
+       REPLACE(materia_legislativa.cod_materia, 'L', '') as cod_materia,
+       REPLACE(materia_legislativa.tip_id_basica, 'L', '') as tip_id_basica,
+       materia_legislativa.num_ident_basica,
+       materia_legislativa.ano_ident_basica,
+       materia_legislativa.num_protocolo,
+       materia_legislativa.txt_ementa,
+       materia_legislativa.dat_apresentacao,
+       materia_legislativa.dat_publicacao,
+       materia_legislativa.ind_tramitacao,
+       materia_legislativa.cod_situacao,
+       materia_legislativa.txt_indexacao,
+       materia_legislativa.num_origem_externa,
+       materia_legislativa.ano_origem_externa,
+       materia_legislativa.cod_materia_principal,
+       tipo_materia_legislativa.sgl_tipo_materia,
+       tipo_materia_legislativa.des_tipo_materia,
+       tipo_materia_legislativa.tip_natureza
+       <dtml-if cod_relator>
+         ,parlamentar.nom_completo
+       </dtml-if>
+       <dtml-if cod_status>
+         ,REPLACE(tramitacao.cod_status, 'L', '') as cod_status
+         ,tramitacao.dat_tramitacao
+       </dtml-if>
+       <dtml-if cod_unid_tramitacao>
+         ,REPLACE(tramitacao.cod_unid_tram_dest, 'L', '') as cod_unid_tram_dest
+       </dtml-if>
+       <dtml-if dat_fim_prazo>
+         ,DATE_FORMAT(materia_legislativa.dat_fim_prazo, '%d/%m/%y') as dat_fim_prazo
+       </dtml-if>
+
+FROM 
+     materia_legislativa
+     LEFT JOIN tipo_materia_legislativa ON materia_legislativa.tip_id_basica = tipo_materia_legislativa.tip_materia
+    <dtml-if expr="cod_autor!=''">
+     LEFT JOIN autoria ON materia_legislativa.cod_materia = autoria.cod_materia
+    </dtml-if>
+    <dtml-if expr="cod_status!='' or cod_unid_tramitacao">
+     LEFT JOIN tramitacao ON materia_legislativa.cod_materia = tramitacao.cod_materia
+    </dtml-if>
+    <dtml-if cod_relator>
+     LEFT JOIN relatoria ON materia_legislativa.cod_materia = relatoria.cod_materia
+     LEFT JOIN parlamentar ON relatoria.cod_parlamentar = parlamentar.cod_parlamentar
+    </dtml-if>
+
+<dtml-sqlgroup where>
+    <dtml-sqltest num_ident_basica  column="materia_legislativa.num_ident_basica" op="="  type="int"   optional> <dtml-and>
+    <dtml-sqltest ano_ident_basica  column="materia_legislativa.ano_ident_basica" op="="  type="int"   optional> <dtml-and>
+    <dtml-sqltest num_protocolo     column="materia_legislativa.num_protocolo"    op="="  type="int"   optional> <dtml-and>
+    <dtml-sqltest ind_tramitacao    column="materia_legislativa.ind_tramitacao"   op="="  type="int"   optional> <dtml-and>
+    <dtml-sqltest ind_excluido      column="materia_legislativa.ind_excluido"     op="="  type="int"> <dtml-and>
+    DATE_ADD(dat_apresentacao,INTERVAL 18 HOUR) <= NOW()
+
+   <dtml-if expr="dat_apresentacao and dat_apresentacao2">
+     AND materia_legislativa.dat_apresentacao >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apresentacao)"  type="nb"> 
+     AND materia_legislativa.dat_apresentacao <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apresentacao2)" type="nb">
+   </dtml-if>
+
+   <dtml-if expr="dat_apresentacao and (not dat_apresentacao2)">
+     AND materia_legislativa.dat_apresentacao = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apresentacao)" type="nb">
+   </dtml-if>
+
+   <dtml-if expr="dat_apresentacao2 and (not dat_apresentacao)">
+     AND materia_legislativa.dat_apresentacao = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apresentacao2)" type="nb">
+   </dtml-if>
+
+   <dtml-if expr="dat_publicacao and dat_publicacao2">
+     AND materia_legislativa.dat_publicacao >= <dtml-sqlvar dat_publicacao type="nb">
+     AND materia_legislativa.dat_publicacao <= <dtml-sqlvar dat_publicacao2 type="nb">
+   </dtml-if>
+
+   <dtml-if expr="dat_publicacao and (not dat_publicacao2)">
+     AND materia_legislativa.dat_publicacao = <dtml-sqlvar dat_publicacao type="nb">
+   </dtml-if>
+
+   <dtml-if expr="dat_publicacao2 and (not dat_publicacao)">
+     AND and materia_legislativa.dat_publicacao = <dtml-sqlvar dat_publicacao2 type="nb"> 
+   </dtml-if>
+
+</dtml-sqlgroup>
+
+   <dtml-if expr="tip_id_basica!=''">
+    AND (
+        <dtml-if expr="pysc.verifica_lista_pysc(tip_id_basica)">
+           materia_legislativa.tip_id_basica in (<dtml-var "tip_id_basica" sql_quote>)
+         <dtml-else>
+           materia_legislativa.tip_id_basica in (<dtml-var expr="tip_id_basica[1:-1]">)
+        </dtml-if>
+      )
+   </dtml-if>
+
+   <dtml-if des_assunto>
+     AND (MATCH(materia_legislativa.txt_ementa,materia_legislativa.txt_indexacao,materia_legislativa.txt_observacao)
+      against (<dtml-sqlvar des_assunto type="string"> IN BOOLEAN MODE)
+      <dtml-let des_assunto="'%'+des_assunto+'%'">
+        OR <dtml-sqltest des_assunto column="materia_legislativa.txt_ementa" type="string" op="like">
+        OR <dtml-sqltest des_assunto column="materia_legislativa.txt_indexacao" type="string" op="like">
+        OR <dtml-sqltest des_assunto column="materia_legislativa.txt_observacao" type="string" op="like">)
+      </dtml-let>
+   </dtml-if>
+
+    <dtml-if cod_relator>
+      and relatoria.ind_excluido = 0 AND
+      parlamentar.cod_parlamentar = <dtml-sqlvar cod_relator type="string">   
+    </dtml-if>
+
+   <dtml-if cod_status>
+     AND materia_legislativa.cod_materia = tramitacao.cod_materia and
+     tramitacao.ind_ult_tramitacao = 1 AND
+     tramitacao.ind_excluido = 0 AND
+     tramitacao.cod_status = <dtml-sqlvar cod_status type="int">
+   </dtml-if>
+
+   <dtml-if cod_unid_tramitacao>
+     AND materia_legislativa.cod_materia = tramitacao.cod_materia
+     AND tramitacao.ind_ult_tramitacao = 1
+     AND tramitacao.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao type="int">
+   </dtml-if>
+
+   <dtml-if expr="cod_autor!=''">
+     AND autoria.cod_autor = <dtml-sqlvar cod_autor type="int">
+     AND autoria.ind_excluido = 0
+   </dtml-if>
+
+  <dtml-if expr="rd_ordem == '1'">
+     ORDER BY tipo_materia_legislativa.sgl_tipo_materia, materia_legislativa.ano_ident_basica DESC, LPAD(materia_legislativa.num_ident_basica, 5, '0') DESC
+  <dtml-else>
+      ORDER BY tipo_materia_legislativa.sgl_tipo_materia, materia_legislativa.ano_ident_basica ASC, LPAD(materia_legislativa.num_ident_basica, 5, '0') ASC
+  </dtml-if>
+

@@ -1,0 +1,149 @@
+<dtml-var standard_html_header>
+<script type="text/javascript">
+<!--
+    function atualiza_ano_sessao(ano_sessao){
+            location.href = "&dtml-portal_url;/consultas/ata_sessao/index_html?ano_sessao_sel="+ano_sessao;
+            }
+
+    function atualiza_tip_sessao(ano_sessao, tip_sessao){    
+             location.href = "&dtml-portal_url;/consultas/ata_sessao/index_html?ano_sessao_sel="+ano_sessao+"&tip_sessao_sel="+tip_sessao;
+             }
+
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/ata_sessao">Ajuda</a>
+
+<h1 class="firstHeading">Atas das Sessões</h1>
+
+<form name="ata_form" method="post" action="ata_mostrar">
+
+<div class="section group">
+  <div class="col span_1_of_3">
+     <label for="lst_ano_sessao">Ano:</label>
+                <select id="lst_ano_sessao" name="lst_ano_sessao" size="1" onChange="atualiza_ano_sessao(document.ata_form.lst_ano_sessao[document.ata_form.lst_ano_sessao.selectedIndex].value)">
+                    <dtml-in expr="zsql.sessao_plenaria_listar_ano_zsql()">
+                        <option value="<dtml-var ano_sessao missing>" 
+                          <dtml-if expr="((not _.has_key('ano_sessao_sel') and (_.DateTime().year() == ano_sessao)))
+                                           or (not _.has_key('ano_sessao_sel') and (_.DateTime().year() > ano_sessao))
+                                           or (_.has_key('ano_sessao_sel') and ano_sessao == _.int(ano_sessao_sel))">
+                            selected
+                          <dtml-call expr="REQUEST.set('ano_sessao_sel', ano_sessao)">
+                         </dtml-if>>
+                           <dtml-var ano_sessao missing>
+                        </option>
+                    </dtml-in>
+                </select>
+   </div>
+
+   <div class="col span_2_of_3">
+    <label for="lst_tip_sessao">Tipo:</label>
+                <select id="lst_tip_sessao" name="lst_tip_sessao" size="1" onChange="atualiza_tip_sessao(document.ata_form.lst_ano_sessao[document.ata_form.lst_ano_sessao.selectedIndex].value,document.ata_form.lst_tip_sessao[document.ata_form.lst_tip_sessao.selectedIndex].value)">
+                  <option value="-1"></option>
+                    <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql()">
+                        <option value="<dtml-var tip_sessao missing>"
+                          <dtml-if expr="(_.has_key('tip_sessao_sel') and tip_sessao == _.int(tip_sessao_sel))">
+                            selected
+                          <dtml-call expr="REQUEST.set('tip_sessao_sel', tip_sessao)">
+                         </dtml-if>>
+                           <dtml-var nom_sessao missing>
+                        </option>
+                    </dtml-in>
+                </select>
+   </div>
+</div>
+
+  <dtml-if expr="not _.has_key('tip_sessao_sel')">
+        <dtml-call "REQUEST.set('tip_sessao_sel', '-1')">
+  </dtml-if>
+
+  <dtml-if expr="not _.has_key('ano_sessao_sel')">
+        <dtml-call "REQUEST.set('ano_sessao_sel', '')">
+  </dtml-if>
+
+<fieldset>
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+<dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+<dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+<dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+<dtml-call "REQUEST.set('step', 12)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+  <dtml-in expr="zsql.sessao_plenaria_obter_zsql(ano_sessao=ano_sessao_sel, tip_sessao=tip_sessao_sel, ind_excluido=0)" size="step" start="start" orphan=0>
+    <dtml-if sequence-start>
+    <table>
+     <thead>
+        <tr>
+          <th width="13%" class="form-label">Data</th>
+          <th width="10%" class="form-label">Número</th>
+          <th class="form-label">Tipo</th>
+          <th class="form-label">Arquivo</th>
+        </tr>
+     </thead>
+     <tbody>
+  <dtml-if previous-sequence>
+     <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+  </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+       <dtml-if sequence-even>
+        <tr>
+       <dtml-else>
+        <tr class="even">
+       </dtml-if>
+         <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+          <td class="texto">
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria'])">
+            <a href="&dtml-portal_url;/cadastros/sessao_plenaria/sessao_plenaria_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
+            <strong><dtml-var dat_inicio_sessao></strong>
+            </a>
+           <dtml-else>
+            <strong><dtml-var dat_inicio_sessao></strong>
+           </dtml-if>
+          </td>
+          <td align="center" class="label">
+            <dtml-var num_sessao_plen>ª
+          </td>
+          <td class="texto">
+            <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao>
+          </td>
+          </td>
+          <td width="10%">
+           <div align="center">
+                <dtml-let id_ata="_.str(cod_sessao_plen)+'_ata_sessao.pdf'">
+                  <dtml-if "_.hasattr(documentos.ata_sessao,id_ata)">
+                    <dtml-let ata="_.getattr(documentos.ata_sessao,id_ata).absolute_url">
+                      <a target="_blank" href="<dtml-var ata>"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                    </dtml-let>
+                  <dtml-else>
+                  <img class="img-disabled" align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                  </dtml-if>
+                </dtml-let>
+           </div>
+          </td>
+         </dtml-in>
+        </tr>
+  <dtml-if sequence-end>
+     </tbody>
+    </table>
+  <dtml-if next-sequence>
+    <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+ </dtml-if next-sequence>
+ <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+  <p align="center" class="form-text"><b> 
+   <dtml-var "pysc.PageListOutput_pysc('ata_sessao_index_html', page, step, _['sequence-length'], ano_sessao_sel=ano_sessao_sel, tip_sessao_sel=tip_sessao_sel, ind_excluido=ind_excluido)">
+  </p>
+  </dtml-if>
+  </dtml-if sequence-end>
+<dtml-else>
+       <span class="texto">Nenhuma sessão plenária cadastrada.</span>
+</dtml-in>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>
+

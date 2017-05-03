@@ -1,0 +1,42 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : cod_tramitacao="" cod_documento="" ind_ult_tramitacao="" cod_unid_tram_origem="" cod_usuario_local="" cod_unid_tram_destino="" cod_usuario_dest="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT 
+       REPLACE(tramitacao_administrativo.cod_tramitacao, 'L', '') as cod_tramitacao,
+       REPLACE(tramitacao_administrativo.cod_documento, 'L', '') as cod_documento,
+       DATE_FORMAT(tramitacao_administrativo.dat_tramitacao, '%d/%m/%Y') as dat_tramitacao,
+       REPLACE(tramitacao_administrativo.cod_unid_tram_local, 'L', '') as cod_unid_tram_local,
+       REPLACE(tramitacao_administrativo.cod_usuario_local, 'L', '') as cod_usuario_local,
+       DATE_FORMAT(tramitacao_administrativo.dat_encaminha, '%d/%m/%Y') as dat_encaminha,
+       REPLACE(tramitacao_administrativo.cod_unid_tram_dest, 'L', '') as cod_unid_tram_dest,
+       REPLACE(tramitacao_administrativo.cod_usuario_dest, 'L', '') as cod_usuario_dest,
+       REPLACE(tramitacao_administrativo.cod_status, 'L', '') as cod_status,
+       tramitacao_administrativo.txt_tramitacao,       
+       DATE_FORMAT(tramitacao_administrativo.dat_fim_prazo, '%d/%m/%Y') as dat_fim_prazo,
+       tramitacao_administrativo.ind_ult_tramitacao, 
+       status.sgl_status,
+       status.des_status       
+FROM   
+     tramitacao_administrativo 
+       LEFT JOIN status_tramitacao_administrativo as status ON 
+       tramitacao_administrativo.cod_status = status.cod_status 
+       LEFT JOIN unidade_tramitacao as unidade1 ON
+       tramitacao_administrativo.cod_unid_tram_local = unidade1.cod_unid_tramitacao 
+       LEFT JOIN unidade_tramitacao as unidade2 ON
+       tramitacao_administrativo.cod_unid_tram_dest = unidade2.cod_unid_tramitacao          
+       
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_tramitacao op="=" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_documento    op="=" type="int" optional> <dtml-and>
+    <dtml-sqltest ind_ult_tramitacao op="=" column="ind_ult_tramitacao" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_unid_tram_origem op="=" column="tramitacao_administrativo.cod_unid_tram_local" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_usuario_local op="=" column="tramitacao_administrativo.cod_usuario_local" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_unid_tram_destino op="=" column="tramitacao_administrativo.cod_unid_tram_dest" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_usuario_dest op="=" column="tramitacao_administrativo.cod_usuario_dest" type="int" optional> <dtml-and>
+    <dtml-sqltest ind_excluido   op="=" column="tramitacao_administrativo.ind_excluido" type="int" optional>
+  </dtml-sqlgroup>
+
+ORDER BY tramitacao_administrativo.cod_documento DESC, tramitacao_administrativo.dat_tramitacao DESC, tramitacao_administrativo.cod_tramitacao DESC

@@ -1,0 +1,120 @@
+<dtml-call expr="REQUEST.set('save_ok', '1')">
+
+<dtml-comment> Verifica se a matéria legislativa existe no cadastro.</dtml-comment>
+<dtml-if expr="_.has_key('lst_tip_id_basica')">
+    <dtml-in expr="zsql.materia_obter_zsql(tip_id_basica=lst_tip_id_basica, num_ident_basica=txt_num_ident_basica, ano_ident_basica=txt_ano_ident_basica)">
+        <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+        <dtml-else>
+        <dtml-call expr="REQUEST.set('save_ok', '0')">
+        <dtml-let mensagem="'A matéria legislativa a qual esta proposição será vinculada não existe no cadastro!'" url="'proposicao_form?tip_proposicao_sel='+hdn_tip_proposicao+'&txt_descricao='+txt_descricao+'&tip_id_basica_sel='+lst_tip_id_basica+'&num_ident_basica_sel='+txt_num_ident_basica+'&ano_ident_basica_sel='+txt_ano_ident_basica">
+            <dtml-var mensagem_emitir>
+        </dtml-let>
+    </dtml-in>
+    <dtml-else>
+    <dtml-call expr="REQUEST.set('cod_materia', '')">
+</dtml-if>
+
+<dtml-if expr="save_ok=='1'">
+    <dtml-if hdn_cod_proposicao>
+        <dtml-call expr="REQUEST.set('metodo', zsql.proposicao_atualizar_zsql)">
+        <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao)">
+            <dtml-call expr="REQUEST.set('cod_autor', cod_autor)">
+            <dtml-call expr="REQUEST.set('col_username', col_username)">
+            <dtml-call expr="REQUEST.set('dat_envio', dat_envio)">
+            <dtml-call expr="REQUEST.set('dat_recebimento', dat_recebimento)">
+        </dtml-in>
+      <dtml-comment>
+        <dtml-if expr="col_username!=AUTHENTICATED_USER.getUserName()">
+            <dtml-call expr="REQUEST.set('save_ok', '0')">
+            <dtml-let mensagem="'Você não tem permissão para modificar esta Proposição!'">
+                <dtml-var mensagem_emitir>
+            </dtml-let>
+        </dtml-if>
+      </dtml-comment>
+      <dtml-comment>
+        <dtml-if expr="dat_envio!=None">
+            <dtml-call expr="REQUEST.set('save_ok', '0')">
+            <dtml-let mensagem="'Você não pode modificar proposição já enviada!'">
+                <dtml-var mensagem_emitir>
+            </dtml-let>
+        </dtml-if>
+      </dtml-comment>
+
+        <dtml-if expr="dat_recebimento!=None">
+            <dtml-call expr="REQUEST.set('save_ok', '0')">
+            <dtml-let mensagem="'Você não pode modificar proposição já incorporada!'">
+                <dtml-var mensagem_emitir>
+            </dtml-let>
+        </dtml-if>
+
+    <dtml-else>
+        <dtml-in expr="zsql.autor_obter_zsql(ind_excluido=0, col_username=AUTHENTICATED_USER.getUserName())">
+            <dtml-call expr="REQUEST.set('cod_autor', cod_autor)">
+        </dtml-in>
+        <dtml-call expr="REQUEST.set('metodo', zsql.proposicao_incluir_zsql)">
+    </dtml-if>
+</dtml-if>
+
+<dtml-if expr="save_ok=='1'">
+    <dtml-try>
+      <dtml-call expr="metodo(
+         cod_proposicao     = hdn_cod_proposicao,
+         cod_autor          = int(cod_autor),
+         tip_proposicao     = hdn_tip_proposicao,
+         cod_materia        = cod_materia,
+         txt_descricao      = txt_descricao)">
+    <dtml-except>
+      <dtml-let mensagem="'Não foi possível salvar a Proposição! Tente novamente.'">
+        <dtml-call expr="REQUEST.set('save_ok', '0')">
+        <dtml-var mensagem_emitir>
+      </dtml-let>
+<dtml-var REQUEST>
+    <dtml-else>
+    <dtml-if expr="metodo==zsql.proposicao_atualizar_zsql">
+      <dtml-call expr="REQUEST.set('cod_proposicao', hdn_cod_proposicao)">
+    <dtml-else>
+      <dtml-in expr="zsql.proposicao_incluida_codigo_obter_zsql()">
+        <dtml-call expr="REQUEST.set('cod_proposicao', cod_proposicao)">
+        <dtml-call expr="REQUEST.set('hdn_url', hdn_url + str(cod_proposicao))">
+      </dtml-in>
+    </dtml-if>
+      <dtml-if lst_modelo>
+        <dtml-if expr="lst_modelo!='0'">
+           <dtml-call expr="modelo_proposicao.proposicao(cod_proposicao=cod_proposicao,modelo_proposicao=lst_modelo)">
+        </dtml-if>
+      </dtml-if>
+    </dtml-try>
+</dtml-if>
+
+<dtml-if expr="save_ok=='1'">
+    <dtml-if file_nom_arquivo>
+      <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.pdf')">
+        <dtml-try>
+            <dtml-call expr="documentos.proposicao.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+        <dtml-except> 
+        </dtml-try>
+    </dtml-if>
+</dtml-if>
+
+<dtml-if expr="save_ok=='1'">
+    <dtml-if cod_proposicao>
+        <dtml-let mensagem="'Proposição salva com sucesso!'" sucesso="1" url="hdn_url">
+            <dtml-var mensagem_emitir>
+        </dtml-let>
+    </dtml-if>
+</dtml-if>
+
+<dtml-comment>
+<dtml-if hdn_cod_proposicao>
+    <dtml-if expr="save_ok=='1'">
+        <dtml-if hdn_cod_proposicao>
+            <dtml-call expr="REQUEST.set('hdn_cod_proposicao',hdn_cod_proposicao)">
+            <dtml-else>
+            <dtml-call expr="REQUEST.set('hdn_cod_proposicao',cod_proposicao)">
+        </dtml-if>
+        <dtml-if expr="save_ok=='1'">
+            <dtml-var proposicao_enviar_proc>
+        </dtml-if>
+    </dtml-if>
+</dtml-if>
+</dtml-comment>

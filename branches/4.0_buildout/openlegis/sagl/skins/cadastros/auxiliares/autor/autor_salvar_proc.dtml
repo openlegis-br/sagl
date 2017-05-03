@@ -1,0 +1,113 @@
+<dtml-if cod_autor>
+  <dtml-call expr="REQUEST.set('metodo', zsql.autor_atualizar_zsql)">
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.autor_incluir_zsql)">
+</dtml-if>
+
+<dtml-if expr="(cod_parlamentar!='' or cod_comissao!='' or cod_bancada!='')">
+  <dtml-in expr="zsql.autor_obter_zsql(ncod_autor=cod_autor, cod_parlamentar=cod_parlamentar, cod_comissao=cod_comissao, cod_bancada=cod_bancada)">
+     <dtml-let mensagem="'Já existe este autor.'">
+        <dtml-var mensagem_emitir>
+     </dtml-let>
+     <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-in>
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-call expr="REQUEST.set('old_username', None)">
+  <dtml-call expr="REQUEST.set('login_criado',0)">
+  <dtml-call expr="REQUEST.set('login_excluido',0)">
+  <dtml-if cod_autor>
+    <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+      <dtml-call expr="REQUEST.set('old_username', col_username)">
+    </dtml-in>   
+  </dtml-if>  
+  <dtml-if expr="(old_username!=None) and (txt_login=='')">
+    <dtml-in expr="zsql.usuario_obter_zsql(col_username=old_username)">
+       <dtml-call expr="zsql.usuario_excluir_zsql(cod_usuario=cod_usuario)"> 
+    </dtml-in>
+    <dtml-call expr="pysc.username_excluir_pysc(old_username)">
+    <dtml-call expr="REQUEST.set('login_excluido',1)">
+  <dtml-elif expr="(txt_login!='') and (old_username==None)">    
+    <dtml-unless expr="pysc.username_criar_pysc(txt_login)">
+      <dtml-let mensagem="'O username informado já está em uso. Escolha outro e tente novamente!'">        
+        <dtml-var mensagem_emitir>
+      </dtml-let>
+      <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-unless>
+    <dtml-unless erro>
+      <dtml-call expr="REQUEST.set('login_criado',1)">
+    </dtml-unless>
+  </dtml-if>
+</dtml-unless>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="metodo(cod_autor       = cod_autor,
+                            tip_autor       = tip_autor,
+                            cod_parlamentar = cod_parlamentar,
+                            cod_comissao    = cod_comissao,
+                            cod_bancada     = cod_bancada,
+                            nom_autor       = txt_nom_autor,
+                            des_cargo       = txt_des_cargo,
+                            cod_partido     = lst_cod_partido,
+                            end_email       = txt_end_email,
+                            col_username    = txt_login)">
+  <dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar os dados do autor. Tente novamente!'">
+       <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-if eh_inclusao_de_parlamentar>
+      <dtml-if login_criado>
+        <dtml-let mensagem="'Parlamentar incluído como Autor! Criada conta para acesso ao Sistema com as seguintes credenciais: Login: ' + txt_login + ' Senha: ' + documentos.propriedades.txt_senha_inicial" sucesso="1" url="'cadastros/parlamentar/unidade_tramitacao_confirmar_proc?cod_parlamentar='+cod_parlamentar+'&ind_unidade_deliberativa='+ind_unidade_deliberativa">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+      <dtml-elif login_excluido>
+        <dtml-let mensagem="'Dados do autor salvos com sucesso! Excluída a conta para acesso ao Sistema'"
+                  sucesso="1"
+                  url="'cadastros/parlamentar/parlamentar_mostrar_proc?cod_parlamentar='+cod_parlamentar">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+      <dtml-else>
+        <dtml-let mensagem="'Parlamentar incluído como Autor!'"
+                  sucesso="1"
+                  url="'cadastros/parlamentar/parlamentar_mostrar_proc?cod_parlamentar='+cod_parlamentar">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+      </dtml-if>
+    <dtml-elif eh_inclusao_de_comissao>
+      <dtml-if login_criado>
+        <dtml-let mensagem="'Comissão incluída como Autor!<br><br>Criada conta para acesso ao Sistema com as seguintes credenciais: Login: ' + txt_login + ' Senha: ' + documentos.propriedades.txt_senha_inicial" sucesso="1" url="'cadastros/comissao/unidade_tramitacao_confirmar_proc?cod_comissao='+cod_comissao+'&ind_unidade_deliberativa='+ind_unidade_deliberativa">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+      <dtml-elif login_excluido>
+        <dtml-let mensagem="'Dados do autor salvos com sucesso! Excluída a conta para acesso ao Sistema.'"
+                  sucesso="1"
+                  url="'cadastros/comissao/unidade_tramitacao_confirmar_proc?cod_comissao='+cod_comissao+'&ind_unidade_deliberativa='+ind_unidade_deliberativa">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+      <dtml-else>
+        <dtml-let mensagem="'Comissão incluída como Autor!'"
+                  sucesso="1"
+                  url="'cadastros/comissao/unidade_tramitacao_confirmar_proc?cod_comissao='+cod_comissao+'&ind_unidade_deliberativa='+ind_unidade_deliberativa">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+      </dtml-if>
+    <dtml-else>
+      <dtml-if login_criado>
+        <dtml-let mensagem="'Autor salvo com sucesso! Criada conta para acesso ao Sistema com as seguintes credenciais: Login: ' + txt_login + ' Senha: ' + documentos.propriedades.txt_senha_inicial" sucesso="1">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+      <dtml-elif login_excluido>
+        <dtml-let mensagem="'Dados do autor salvos com sucesso! Excluída a conta para acesso ao Sistema.'" sucesso="1">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+      <dtml-else>
+        <dtml-let mensagem="'Autor salvo com sucesso!'" sucesso="1">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+      </dtml-if>
+    </dtml-if>
+  </dtml-try>
+</dtml-unless>

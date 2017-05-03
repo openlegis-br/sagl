@@ -1,0 +1,106 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup1").fancybox({
+		maxWidth	: 1024,
+		maxHeight	: 800,
+		fitToView	: false,
+		width		: '95%',
+		height		: '93%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+  <h1 class="firstHeading">Aposição de Assinatura Digital</h1>
+
+  <dtml-call expr="REQUEST.set('username', AUTHENTICATED_USER.getUserName())">
+
+  <dtml-in expr="zsql.autor_obter_zsql(col_username=username, ind_excluido=0)">
+  <dtml-call expr="REQUEST.set('cod_autor_atual', cod_autor)">
+  </dtml-in>
+
+ <fieldset>
+  <dtml-in expr="zsql.coautoria_proposicao_obter_zsql(cod_autor=cod_autor_atual, ind_excluido=0)">
+   <dtml-if expr="dat_envio=='00/00/0000 00:00:00'">
+    <dtml-if sequence-start>
+     <table>
+      <tr>
+       <th width="20%">Tipo de Proposição</th>
+       <th>Descrição</th>
+       <th width="25%">Autoria</th>
+       <th width="21%">Ações</th>
+      </tr>
+    </dtml-if>
+      <tr>
+       <td><dtml-var des_tipo_proposicao></td>
+       <td><dtml-var txt_descricao></td>
+      <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor_proposicao, ind_excluido=0)">
+       <td><dtml-var nom_autor_join></td>
+      </dtml-in>
+       <td>
+           <div id="toolbar" class="ui-widget ui-corner-all"><p></p>
+              <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
+              <dtml-if "_.hasattr(documentos.proposicao,id_documento_assinado)">
+                 <dtml-let documento_assinado="_.getattr(documentos.proposicao,id_documento_assinado).absolute_url">
+                   <a class="popup1 signed_pdf" style="cursor: pointer; float:left; margin-right: 2px;" href="<dtml-var documento_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">Texto</a>
+                 </dtml-let>
+               <dtml-if expr="ind_aderido==0">
+                 <div id="menuitem2" style="cursor: pointer; float:left;">
+                   <a class="pdf">Assinar</a>
+                 </div>
+			         <script type="text/javascript">
+			           $('#menuitem2').click(function () {
+    			           $.fancybox({
+        			   type: 'iframe',
+        			   href: '&dtml-portal_url;/cadastros/proposicao/assinador/pades-cosignature_html?cod_proposicao=<dtml-var cod_proposicao>',
+				   width	   : '70%',
+				   height	   : '50%',
+                                   minHeight	   : 320,
+        			   preload         : true,
+                                   afterClose      : function() {
+                                   window.location.href = "&dtml-portal_url;/cadastros/proposicao/aposicao_assinatura_form";},
+		                   closeEffect	: 'fade'
+    			           });
+			           });
+			         </script>
+             <dtml-else>
+                ** Assinado **
+             </dtml-if>
+              </dtml-if>
+           </div>
+       </td>
+      </tr>
+    <dtml-if sequence-end>
+     </table>
+    </dtml-if>
+  </dtml-if>
+  <dtml-else>
+    <p align="left">Não há nenhuma proposição de outro autor disponivel para assinatura</p>
+  </dtml-in>
+ </fieldset>
+
+	<script>
+  	$(function() {
+ 	   $( ".pdf" )
+ 	     .button({
+ 	     icons: {
+ 	       primary: "ui-icon-pencil"
+	      }
+	    })
+ 	   $( ".signed_pdf" )
+ 	     .button({
+ 	     icons: {
+ 	       primary: "ui-icon-locked"
+	      }
+	    })
+ 	 });
+	</script>
+
+<dtml-var standard_html_footer>

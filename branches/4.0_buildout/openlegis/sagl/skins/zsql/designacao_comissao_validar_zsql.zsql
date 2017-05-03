@@ -1,0 +1,20 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : cod_comissao=""  cod_periodo_comp="" dat_designacao="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+SELECT
+      pc.*
+FROM
+      comissao co left join composicao_comissao cc   on (co.cod_comissao=cc.cod_comissao) 
+                  left join periodo_comp_comissao pc on (cc.cod_comp_comissao=pc.cod_comp_comissao) 
+<dtml-sqlgroup where>
+  <dtml-sqltest ind_excluido       op="="  type="int" column="co.ind_excluido">    <dtml-and>
+  <dtml-sqltest ind_excluido       op="="  type="int" column="cc.ind_excluido">    <dtml-and>
+  <dtml-sqltest ind_excluido       op="="  type="int" column="pc.ind_excluido">    <dtml-and>
+  <dtml-sqltest dat_designacao     op=">=" type="string" column="pc.dat_inicio_periodo"> <dtml-and>
+  <dtml-sqltest dat_designacao     op="=<" type="string"column="pc.dat_fim_periodo">
+</dtml-sqlgroup>  
+

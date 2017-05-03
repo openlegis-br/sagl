@@ -1,0 +1,202 @@
+<dtml-var standard_html_header>
+
+<dtml-comment>
+   ******************************************************************************
+   * INSERIDO NO FORMULÁRIO O CHECKBOX CHECK_NUMERACAO PARA QUE MATÉRIAS QUE    *
+   * NÃO POSSUEM NUMERACAO(TABELA NUMERACAO) POSSAM EXECUTAR TRAMITACAO EM LOTE *
+   * 									        *
+   * Alterado em 15/03/2007 por Sérgio Damiati				        *
+   ******************************************************************************
+</dtml-comment>
+
+<SCRIPT LANGUAGE = "JavaScript" src="javascript/data_validar_jvsc"></SCRIPT>
+<SCRIPT LANGUAGE = "JavaScript">
+<!--
+  
+  function campos_criticar(form) {
+      /*-----------------------------
+         Função: Critica os campos obrigatórios do formulário.
+         Argumentos: form : formulário - é o formulário em si.
+         Retorno: Invoca o SUBMIT do formulário ou retorna valor booleano 
+                falso ,caso haja algum campo incorreto, juntamente com uma
+                uma mensagem de erro e o cursor no campo a ser corrigido.
+         Sérgio Roberto Damiati em 24/02/2009.
+      ------------------------------*/ 
+
+      
+      var check = 0;
+      if (form.txt_tamanho.value == 1) {
+        if (form.check_ind.checked) check++;
+      }      
+
+      else {
+        for (var i = 0; i < form.txt_tamanho.value; i++)
+          if (form.check_ind[i].checked) check++;
+      }
+
+      if (check == 0) {
+         alert("Nenhuma propositura foi selecionada!");
+         return false;
+      }
+
+      form.txt_check.value = check;
+
+    form.submit();
+  }
+
+
+  function Limpa(form) {
+
+     var check = 0;
+     for (var i = 0; i < form.txt_tamanho.value; i++) {
+        form.check_ind[i].checked = false;
+     }
+     form.reset();
+  }
+
+  function selecao(form) {
+     if (form.select_all.value == 'Selecionar Tudo') {
+	form.select_all.value = 'Desfazer';
+	if (form.txt_tamanho.value != 1) {
+	  for (var i = 0; i < form.txt_tamanho.value; i++) {
+	    form.check_ind[i].checked = true;
+	  }
+        }
+        else form.check_ind.checked = true;
+      }
+      else {
+	form.select_all.value = 'Selecionar Tudo';
+	if (form.txt_tamanho.value != 1) {
+	  for (var i = 0; i < form.txt_tamanho.value; i++) {
+	    form.check_ind[i].checked = false;
+	  }
+        }
+        else form.check_ind.checked = false;
+      }
+  }
+
+//-->
+</SCRIPT>
+
+<a id="ajuda" href="<dtml-var sagl url>/ajuda/tramitacao_lote">Ajuda</a>
+<h1 class="firstHeading"> Espelho de Indica&ccedil;&atilde;o </h1>
+
+ <dtml-call expr="REQUEST.set('check_ocorrencia', 0)">
+ <dtml-call expr="REQUEST.set('contador', 0)">
+
+ <dtml-if check_numeracao>
+  <dtml-call expr="REQUEST.set('npc', 1)">
+ <dtml-else>
+  <dtml-call expr="REQUEST.set('npc', '')">
+ </dtml-if>
+
+ <dtml-in expr="zsql.materia_espelho_pesquisar_zsql(tip_id_basica=9, dat_apresentacao=txt_data)">
+
+  <dtml-if sequence-start>
+  
+   <form name="espelho_form" method="post" action="../../relatorios/pdf_espelho_preparar_pysc">
+    <input type="hidden" name="txt_check" value="">
+    <input type="hidden" name="data" value="<dtml-var txt_data>">
+  
+    <table width="95%" border="1" cellspacing="0" cellpadding="0" align="center" class="borda">
+     <tr>
+      <td>
+        <table width="98%" border="0" cellspacing="0" cellpadding="0" align="center">
+	 <tr><td align="center"><h3>Indica&ccedil;&otilde;es de <dtml-var txt_data>	</h3> </td></tr>
+    </table><br>
+
+	   <table width="98%" border="1" cellpadding="0" cellspacing="0" class="borda" align="center">
+            <tr>
+             <td>
+              <table width="98%" border="0" align="center" cellspacing="0" cellpadding="0">
+               <tr>
+                <td> 
+                 <table width="98%" border="0" align="center" cellspacing="0" cellpadding="0">
+                  <tr class="fundo">
+                   <td colspan="3" class="form-label">
+	            &nbsp;Resultado da Pesquisa: <dtml-var sequence-length> matéria(s) encontrada(s).
+                   </td>
+                  </tr>
+	          <tr>
+	           <td><br></td>
+                  </tr>
+                 </table>
+	        </td>
+	       </tr>
+	      </table>
+  </dtml-if sequence-start>
+
+   <table>
+    <tr>
+     <td>
+      <input type="checkbox" name="check_ind" value="<dtml-var cod_materia>">
+
+       <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var des_tipo_materia><br>      
+     </td></tr>
+
+<dtml-comment> 
+      <dtml-if expr="zsql.num_prot_pref_obter_zsql(cod_materia = cod_materia)">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        Prot. Prefeitura <input type="text" name="txt_prot_pref" size="15" maxlength="15" disabled>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        Data <input type="text" name="txt_data_prot_pref" size="9" maxlength="10" disabled>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        Ano <input type="text" name="txt_ano_prot_pref" size="4" maxlength="4" disabled>
+       </dtml-if>
+</dtml-comment>
+
+        </td>
+       </tr>
+       <tr>
+        <td colspan="3"><hr width="50%" height="1" align="center"></td>
+       </tr></table>
+
+   <dtml-call expr="REQUEST.set('contador' , contador + 1)">
+
+  <dtml-if sequence-end>
+   <table width="100%">
+     <tr>
+       <td width="26%" align="center" valign="bottom"><br>
+         <input type="button" name="btn_gerar" value="Gerar" 
+          onClick="campos_criticar(document.espelho_form)">&nbsp;&nbsp;
+         <input type="button" name="btn_limpar" value="Limpar" onClick="Limpa(document.espelho_form)">
+	 <input type="button" name="select_all" value="Selecionar Tudo" onClick="selecao(this.form)">
+       </td>
+     </tr>
+   </table>
+  </dtml-if sequence-end>
+
+<dtml-else>
+                <br>
+                <table width="95%" border="1" cellpadding="0" cellspacing="0" class="borda" align="center"> 
+                  <tr>
+                    <td> 
+                      <table width="98%" border="0" align="center" cellspacing="0" cellpadding="0">
+                        <tr class="borda">
+                          <td class="form-label">&nbsp;Resultado da Pesquisa</td>
+                        </tr>
+                        <tr>
+                          <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                          <td align="left" class="form-text">Nenhuma ocorrência encontrada.</td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>   
+                </table>
+      <table width="100%">
+       <tr>
+        <td width="26%" align="center" valign="bottom"><br>
+          <input type="button" name="btn_voltar" value="Voltar" onClick="javascript:history.back();" />
+        </td>
+       </tr>
+     </table>
+ </table>
+</dtml-in>
+
+<input type="hidden" name="txt_tamanho" value="<dtml-var contador>">
+</table></table></table>
+</form>
+
+<dtml-var standard_html_footer>

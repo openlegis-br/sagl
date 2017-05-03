@@ -1,0 +1,70 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : cod_materia="" ind_ult_tramitacao=1 ind_titular=1 ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT
+       REPLACE(p.cod_parlamentar, 'L', '')        as cod_parlamentar,
+       p.nom_parlamentar                          as nom_parlamentar,
+       DATE_FORMAT(cc.dat_designacao, '%d/%m/%Y') as dat_designacao,
+       CONCAT_WS(" - ", REPLACE(p.cod_parlamentar, 'L', ''), DATE_FORMAT(cc.dat_designacao, '%d/%m/%Y')) as hdn_dados
+FROM 
+     unidade_tramitacao ut
+       LEFT JOIN  tramitacao t              ON ( ut.cod_unid_tramitacao =   t.cod_unid_tram_dest) 
+       LEFT JOIN  comissao c                ON ( ut.cod_comissao        =   c.cod_comissao)
+       LEFT JOIN  composicao_comissao cc    ON (  c.cod_comissao        =  cc.cod_comissao)
+       LEFT JOIN  periodo_comp_comissao pcc ON ( cc.cod_periodo_comp    = pcc.cod_periodo_comp)
+       LEFT JOIN  parlamentar p             ON ( cc.cod_parlamentar     =   p.cod_parlamentar) 
+       
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_materia           op="=" column="t.cod_materia"        type="int"> <dtml-and>
+    <dtml-sqltest ind_ult_tramitacao    op="=" column="t.ind_ult_tramitacao" type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="t.ind_excluido"       type="int"> <dtml-and>
+    <dtml-sqltest ind_titular           op="=" column="cc.ind_titular"       type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="ut.ind_excluido"      type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="c.ind_excluido"       type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="cc.ind_excluido"      type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="pcc.ind_excluido"     type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="p.ind_excluido"       type="int"> <dtml-and>
+                  ut.cod_comissao       is not null                                      and
+                  cc.dat_desligamento   is null                                          and
+                  t.dat_tramitacao      between pcc.dat_inicio_periodo and pcc.dat_fim_periodo
+  </dtml-sqlgroup>
+
+ORDER BY 2 
+
+<dtml-else>
+
+SELECT 
+       p.cod_parlamentar as cod_parlamentar,
+       p.nom_parlamentar as nom_parlamentar,
+       TO_CHAR(cc.dat_designacao, 'DD/MM/YYYY') as dat_designacao
+FROM 
+       
+     unidade_tramitacao ut
+       LEFT JOIN  tramitacao t              ON ( ut.cod_unid_tramitacao =   t.cod_unid_tram_dest) 
+       LEFT JOIN  comissao c                ON ( ut.cod_comissao        =   c.cod_comissao)
+       LEFT JOIN  composicao_comissao cc    ON (  c.cod_comissao        =  cc.cod_comissao)
+       LEFT JOIN  periodo_comp_comissao pcc ON ( cc.cod_periodo_comp    = pcc.cod_periodo_comp)
+       LEFT JOIN  parlamentar p             ON (pcc.cod_parlamentar     =   p.cod_parlamentar) 
+  <dtml-sqlgroup where>
+  
+    <dtml-sqltest cod_materia           op="=" column="t.cod_materia"        type="int"> <dtml-and>
+    <dtml-sqltest cod_unid_tram_destino op="=" column="t.cod_unid_tram_dest" type="int"> <dtml-and>
+    <dtml-sqltest ind_ult_tramitacao    op="=" column="t.ind_ult_tramitacao" type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="t.ind_excluido"       type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="ut.ind_excluido"      type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="c.ind_excluido"       type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="cc.ind_excluido"      type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="pcc.ind_excluido"     type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido          op="=" column="p.ind_excluido"       type="int"> <dtml-and>
+                  ut.cod_comissao       is not null                                      and
+                  cc.dat_desligamento   is null                                          and
+                  t.dat_tramitacao between pcc.dat_inicio_periodo and pcc.dat_fim_periodo
+  </dtml-sqlgroup>
+
+ORDER BY 2
+
+</dtml-if>

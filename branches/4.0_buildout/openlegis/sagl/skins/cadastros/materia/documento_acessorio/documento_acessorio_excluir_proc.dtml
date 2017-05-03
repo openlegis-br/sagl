@@ -1,0 +1,29 @@
+<dtml-call expr="REQUEST.set('erro', 0)">
+<dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
+<dtml-if expr="_.hasattr(documentos.materia,id_documento)">
+  <dtml-try>
+    <dtml-call "documentos.materia.manage_delObjects(id_documento)">
+  </dtml-try>
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="zsql.proposicao_desincorporar_zsql(cod_mat_ou_doc = cod_documento)">
+  <dtml-call expr="zsql.documento_acessorio_excluir_zsql(cod_documento = cod_documento,
+                   ind_excluido = 0)">
+    <dtml-except>   
+      <dtml-call expr="REQUEST.set('erro', 1)">
+</dtml-try>
+
+<dtml-if silent>
+    <dtml-return erro>
+  <dtml-else>
+    <dtml-if erro>  
+      <dtml-let mensagem="'Ocorreu um erro ao tentar excluir esse documento acessório!'">
+        <dtml-var mensagem_emitir>
+      </dtml-let>
+    <dtml-else>
+      <dtml-let mensagem="'Documento acessório excluído com sucesso!'" sucesso="1" url="'index_html?cod_documento='+cod_documento+'&cod_materia='+cod_materia">
+        <dtml-var mensagem_emitir>
+      </dtml-let>
+    </dtml-if>
+</dtml-if>

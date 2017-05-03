@@ -1,0 +1,58 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : cod_sessao_leg="" num_legislatura="" num_sessao_leg="" data="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT 
+  REPLACE(cod_sessao_leg, 'L', '') as cod_sessao_leg,
+  num_sessao_leg,
+  tip_sessao_leg,
+  dat_inicio,
+  dat_fim,
+  DATE_FORMAT(dat_inicio, '%d/%m/%Y') as dat_inicio_conv,
+  DATE_FORMAT(dat_fim, '%d/%m/%Y') as dat_fim_conv,
+  DATE_FORMAT(dat_inicio_intervalo, '%d/%m/%Y') as dat_inicio_intervalo,
+  DATE_FORMAT(dat_fim_intervalo, '%d/%m/%Y') as dat_fim_intervalo,
+  num_legislatura,
+  ind_excluido
+
+FROM
+  sessao_legislativa
+
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_sessao_leg   op="="  type="int"  optional> <dtml-and>
+  <dtml-sqltest num_sessao_leg   op="="  type="int"  optional> <dtml-and>
+  <dtml-sqltest num_legislatura  op="="  type="int"  optional> <dtml-and>    
+  <dtml-sqltest ind_excluido     op="="  type="int"  optional>
+  <dtml-if data>
+    and <dtml-sqlvar data type="nb"> BETWEEN dat_inicio and dat_fim 
+  </dtml-if>
+</dtml-sqlgroup>
+ORDER BY num_sessao_leg desc
+<dtml-else>
+SELECT 
+  cod_sessao_leg,
+  num_sessao_leg,
+  tip_sessao_leg,
+  dat_inicio,
+  dat_fim,
+  TO_CHAR(dat_inicio, 'DD/MM/YYYY') as dat_inicio_conv,
+  TO_CHAR(dat_fim, 'DD/MM/YYYY') as dat_fim_conv,
+  TO_CHAR(dat_inicio_intervalo, 'DD/MM/YYYY') as dat_inicio_intervalo,
+  TO_CHAR(dat_fim_intervalo, 'DD/MM/YYYY') as dat_fim_intervalo,
+  num_legislatura,
+  ind_excluido
+
+FROM
+  sessao_legislativa
+
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_sessao_leg   op="="  type="int"  optional> <dtml-and>
+  <dtml-sqltest num_sessao_leg   op="="  type="int"  optional> <dtml-and>
+  <dtml-sqltest num_legislatura  op="="  type="int"  optional> <dtml-and>
+  <dtml-sqltest ind_excluido     op="="  type="int"  optional>  
+</dtml-sqlgroup>
+ORDER BY num_sessao_leg desc
+</dtml-if>

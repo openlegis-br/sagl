@@ -1,0 +1,23 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : dat_inicio="" dat_fim="" ind_excluido="0"
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+ 
+select u.cod_unid_tramitacao, c.nom_comissao, o.nom_orgao, p.nom_parlamentar, count(*) as qtde 
+
+from unidade_tramitacao u left join tramitacao t on (u.cod_unid_tramitacao=t.cod_unid_tram_dest)  
+                          left join comissao c   on (u.cod_comissao=c.cod_comissao)
+                          left join orgao o      on (u.cod_orgao=o.cod_orgao)
+                          left join parlamentar p on (u.cod_parlamentar=p.cod_parlamentar)
+
+<dtml-sqlgroup where>
+    <dtml-sqltest dat_inicio   column="t.dat_tramitacao"     op=">=" type="string" optional> <dtml-and>
+    <dtml-sqltest dat_fim      column="t.dat_tramitacao"     op="<=" type="string" optional> <dtml-and>
+    <dtml-sqltest ind_excluido column="u.ind_excluido"       op="="  type="int"    optional> <dtml-and>
+    <dtml-sqltest ind_excluido column="t.ind_excluido"       op="="  type="int"    optional> <dtml-and>
+</dtml-sqlgroup>
+group by 1,2,3,4
+order by 1,2,3,4
+

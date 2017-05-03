@@ -1,0 +1,199 @@
+<dtml-var standard_html_header>
+
+<link href="&dtml-portal_url;/generico/multiple-select.css" media="all" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="&dtml-portal_url;/javascript/multiple-select.js"></script>
+
+<script type="text/javascript">
+
+(function ($) {
+  $(function () {
+    document.onkeypress = function (event) {
+      var form = materia_form;
+      if (event.keyCode === 13) {
+        form.submit();
+      }
+    };
+  });
+}(jQuery));
+
+$(function() {
+        $('#txt_dat_apresentacao').datepick();
+});
+
+$(function() {
+	$('#dt_apres').datepick();
+	$('#dt_apres2').datepick();
+        $('#dt_public').datepick();
+        $('#dt_public2').datepick();
+});
+</script>
+
+  <dtml-let isAnon="portal_membership.isAnonymousUser()">
+   <dtml-if expr="isAnon and documentos.propriedades.recaptcha_key">
+    <script src='https://www.google.com/recaptcha/api.js?hl=pt-BR' async defer></script>
+   </dtml-if>
+  </dtml-let>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_materia">Ajuda</a>
+
+<h1 class="firstHeading">Matérias Legislativas</h1> 
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+<div id="barra-conteudo">
+    <ul>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/materia/materia_form_resumido">Incluir Matéria</a>
+        </li>
+    </ul>
+</div>
+</dtml-if>
+
+<form class="pf-form" id="pesq_basica_form" name="pesq_basica_form" action="materia_pesquisar_proc">
+  <fieldset>
+  <div id="inputs">
+    <input type="hidden" name="incluir" value="<dtml-var incluir missing="">" />
+    <input type="hidden" name="existe_ocorrencia" value="0" />
+ <dtml-if expr="_.has_key('tip_materia_sel')">
+    <input type="hidden" name="lst_tip_materia" value="<dtml-var tip_materia_sel>" />
+ </dtml-if>
+     <div class="pf-element pf-full-width">
+      <label for="lst_tip_materia"><span class="pf-label">Tipo de Matéria</span></label>
+      <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia" placeholder="Selecione" multiple="multiple">
+         <optgroup label="Matérias Principais">
+              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)">
+                <dtml-if expr="_.has_key('tip_materia_sel')">
+                  <option <dtml-if expr="_.int(tip_materia)==_.int(tip_materia_sel)">selected</dtml-if>
+                   value="<dtml-var tip_materia>"><dtml-var des_tipo_materia>
+                <dtml-else>
+                  <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia>
+                  </option>
+                </dtml-if>
+              </dtml-in>
+         </optgroup>
+         <optgroup label="Matérias Acessórias">
+              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='A', ind_excluido=0)">
+                <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia></option>
+              </dtml-in>
+         </optgroup>
+      </select>
+      <script>
+        $("#lst_tip_materia").multipleSelect({
+                width: 240, filter: true});
+      </script>
+     </div>
+     <div class="pf-element pf-full-width">
+        <label for="txt_numero"><span class="pf-label">Número</span></label>
+        <div class="pf-group">
+          <input class="pf-field" id="txt_numero" type="text" name="txt_numero" null="" missing="" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="6" />
+          <label for="txt_ano">&nbsp;Ano
+            <input class="pf-field" id="txt_ano" type="text" name="txt_ano" null="" style="min-width: 86px; max-width: 86px; width: 20%;" maxlength="4" />
+          </label>
+        </div>
+     </div>      
+     <div class="pf-element pf-full-width">
+        <label for="txt_npc"><span class="pf-label">Processo Eletrônico</span></label>
+        <div class="pf-group">
+            <input class="pf-field"  id="txt_npc" type="text" name="txt_npc" null="" missing="" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="6" />
+          <label for="txt_num_protocolo">&nbsp;Protocolo
+            <input class="pf-field" id="txt_num_protocolo" type="text" name="txt_num_protocolo" null="" missing="" style="min-width: 52px; max-width: 52px; width: 20%;" maxlength="7" />
+          </label>
+        </div>
+     </div>
+     <div class="pf-element pf-full-width">
+       <label><span class="pf-label">Período de Apresentação:</span></label>
+        <div class="pf-group">
+          <label for="dt_apres">
+            <input class="pf-field" type="text" id="dt_apres" name="dt_apres" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength=10 onblur="formata_data(form.dt_apres)" />
+          </label>
+          <label for="dt_apres2">&nbsp;a&nbsp;
+            <input class="pf-field" type="text" id="dt_apres2" name="dt_apres2" style="min-width: 102px; max-width: 102px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_apres2)" />
+          </label>
+        </div>
+     </div> 
+    <input type="hidden" name="dt_public" value="" />
+    <input type="hidden" name="dt_public2" value="" />
+     <div class="pf-element pf-full-width">
+       <label for="txt_autor"><span class="pf-label">Autor</span></label>
+       <div class="pf-group">
+ 	<div id="combo_zone" style="width:235px;"></div>
+      </div>
+     </div>
+		<script type="text/javascript">
+			myCombo = new dhtmlXCombo("combo_zone", "hdn_cod_autor", 240);
+                        myCombo.load("&dtml-portal_url;/pysc/autores_pesquisar_pysc");
+			myCombo.enableFilteringMode(true);
+		</script>  
+   <dtml-comment>
+     <div class="pf-element pf-full-width">
+        <label for="txt_relator"><span class="pf-label">Relator</span></label>
+           <input class="pf-field" id="txt_relator" type="text" name="txt_relator" null="" style="max-width: 224px; width: 100%;" maxlength="50" />
+     </div>
+   </dtml-comment> 
+     <div class="pf-element pf-full-width">
+        <label for="txt_assunto"><span class="pf-label">Assunto / Ementa</span></label></th>
+          <input class="pf-field" id="txt_assunto" type="text" name="txt_assunto" null="" style="max-width: 230px; width: 100%;" title="DICA: A frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no texto. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do texto." />
+     </div>
+     <div class="pf-element pf-full-width">
+        <label><span class="pf-label">Tramitando?</span></label>
+        <div class="pf-group">
+          <dtml-in expr="[('Sim', '1'), ('Não', '0'), ('Tanto Faz', '')]">
+            <input type="radio" name="rad_tramitando" value="<dtml-var expr="_['sequence-item']">"
+              id="rad_tramitando<dtml-var expr="_['sequence-item']">"
+              <dtml-if expr="_['sequence-item']==''">checked="1"</dtml-if> />
+             <label style="vertical-align: top;" for="rad_tramitando<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"></label>
+           </dtml-in>
+        </div>
+     </div>
+     <div class="pf-element pf-full-width">
+        <label for="lst_localizacao"><span class="pf-label">Localização Atual</span></label>
+          <select class="pf-field" id="lst_localizacao" name="lst_localizacao" style="max-width: 240px; width: 100%;">
+            <option value="">Todas</option>
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
+              <option value="<dtml-var cod_unid_tramitacao missing>">                
+                <dtml-var nom_unidade_join>
+              </option>
+            </dtml-in>
+          </select>
+     </div>
+     <div class="pf-element pf-full-width">
+        <label for="lst_status"><span class="pf-label">Situação</span></label>
+          <select class="pf-field" id="lst_status" name="lst_status" style="max-width: 240px; width: 100%;">
+            <option value="">Todas</option>
+            <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var cod_status missing>">
+                <dtml-var sgl_status> - <dtml-var des_status>
+              </option>
+            </dtml-in>
+          </select>
+     </div>
+     <div class="pf-element pf-full-width">
+        <label><span class="pf-label">Ordenação do Resultado</span></label>
+        <div class="pf-group">
+          <dtml-in expr="[('Descendente', '1'), ('Ascendente', '2')]">     
+           <input type="radio" name="rd_ordenacao" value="<dtml-var expr="_['sequence-item']">"
+                  id="rd_ordenacao<dtml-var expr="_['sequence-item']">"
+                <dtml-if expr="_['sequence-item']=='1'">checked="1"</dtml-if> />
+             <label style="vertical-align: top;" for="rd_ordenacao_t<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"> &nbsp;</label>
+          </dtml-in>
+        </div>
+     </div>
+  <dtml-let isAnon="portal_membership.isAnonymousUser()">
+   <dtml-if expr="isAnon and documentos.propriedades.recaptcha_key">
+     <div class="pf-element pf-full-width" style="height: 78px !important;">
+       <div class="g-recaptcha" data-sitekey="<dtml-var "documentos.propriedades.recaptcha_key">"></div>
+     </div>
+   </dtml-if>
+  </dtml-let>
+     <input type="hidden" name="txt_relator" value="" />
+     <input type="hidden" name="lst_cod_partido" value="" />
+     <input type="hidden" name="lst_tip_autor" value="" />
+     <input type="hidden" name="hdn_txt_autor" value="" />
+     <input type="hidden" name="chk_coautor" value="" />
+     <div class="pf-element pf-buttons">
+          <input class="pf-button btn botao" type="submit" name="btn_materia_pesquisar" value="Pesquisar" />
+          <input class="pf-button btn botao" type="reset" name="btn_materia_limpar" value="Limpar" />
+     </div>
+   </div>
+  </fieldset>
+</form>
+<dtml-var standard_html_footer>

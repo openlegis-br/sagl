@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Assinador OpenLegis</title>
+  <dtml-var standard_css_slot>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+  <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery-ui.min.js"></script>
+  <script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+</head>
+<html>
+  <body class="modal" onload="carregaAlias()">
+	<object id="signaturePdf" type="application/x-java-applet;version=1.7"
+		height="0" width="0">
+		<param name="code" value="br.com.arabella.figg.applet.AppletSignaturePdf.class" />
+		<param name="archive" value="figg-1.0.0.jar" />
+		<param name="reason" value="Autoria de Proposição">
+		<param name="time" value="first">
+		<param name="location" value="<dtml-var "documentos.propriedades.nom_casa"><dtml-call expr="REQUEST.set('cod_localidade', documentos.propriedades.cod_localidade)"><dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade)"> - <dtml-var sgl_uf></dtml-in>">
+	</object>
+
+        <h1 class="firstHeading">Assinatura Digital</h1>
+
+
+        <div id="inner">
+        <div class="ui-state-error ui-corner-all" style="padding: 0.3em 1em; margin-bottom: 10px">
+           <p>
+           <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+	      <strong>Nenhum Certificado Digital foi encontrado em seu computador.</strong><br />
+              Certifique-se de que a URL do sistema conste da Lista de Exceções de Sites do Java.
+              Em seguida, insira seu token ou leitor de cartão em uma conexão USB e tente novamente.
+           </span>
+           </p>
+        </div>
+        </div>
+        <br />
+	<button class="btn_assinar" onclick="assinaDoc()">Assinar Proposição</button>
+        <input type="button" class="btn_fechar" name="btn_fechar" value="Fechar" onclick="javascript:parent.jQuery.fancybox.close();" />
+
+	<script type="text/javascript">
+		var signaturePdf = document.getElementById('signaturePdf');
+		function assinaDoc() {
+			var alias = getRadioValor('alias');
+			signaturePdf.downloadFile(getParameter('urldownload'));
+			signaturePdf.signatureFile(alias);
+			signaturePdf.getPath(getParameter('uploadFile'));
+			signaturePdf.deletefile();
+			console.log(signaturePdf.error());
+		}
+		function carregaAlias() {
+			var aliasJson = JSON.parse(signaturePdf.getAlias());
+			var radioAlias = '';
+			for (var i = 0; i < aliasJson.length; i++) {
+				var obj = aliasJson[i];
+				var al = '<input type="radio" name="alias" value="#alias">'
+						.replace('#alias', obj.alias);
+				radioAlias = al + 'Alias: ' + obj.alias + ' - Data Exp:'
+						+ obj.notAfter;
+			}
+			radioAlias = radioAlias + '<br /><button class="btn_assinar" onclick="assinaDoc()">Assinar Proposição</button>';
+			document.getElementById("inner").innerHTML = radioAlias;
+		}
+
+		function getParameter(theParameter) {
+			var params = window.location.search.substr(1).split('&');
+			for (var i = 0; i < params.length; i++) {
+				var p = params[i].split('=');
+				if (p[0] == theParameter) {
+					return decodeURIComponent(p[1]);
+				}
+			}
+			return false;
+		}
+		function getRadioValor(name) {
+			var rads = document.getElementsByName(name);
+			for (var i = 0; i < rads.length; i++) {
+				if (rads[i].checked) {
+					return rads[i].value;
+				}
+			}
+			return null;
+		}
+		
+		function deleteFile(){
+			var deletado = signaturePdf.deletefile();
+			if(deletado){
+				alert("Arquivo temporario foi removido");
+			}
+		}
+	</script>
+	<script>
+  	$(function() {
+ 	   $( ".btn_assinar" )
+ 	     .button({
+ 	     icons: {
+ 	       primary: "ui-icon-pencil"
+	      }
+	    })
+ 	   $( ".btn_fechar" )
+ 	     .button({
+ 	     icons: {
+ 	       primary: "ui-icon-close"
+	      }
+	    });
+ 	 });
+	</script>
+  </body>
+</html>

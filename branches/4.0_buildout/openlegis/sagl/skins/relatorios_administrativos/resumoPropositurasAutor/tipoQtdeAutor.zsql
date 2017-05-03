@@ -1,0 +1,28 @@
+<dtml-comment>
+connection_id : dbcon_openlegis
+arguments : autor tip_materia_sel dat_apresentacao dat_apresentacao2
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT 
+     t.*,
+     count(*) as "qtde"
+
+FROM
+     tipo_materia_legislativa t,
+     materia_legislativa m,
+     autoria au
+
+WHERE
+     au.ind_excluido = 0 and
+     au.cod_autor = <dtml-sqlvar autor type="int"> and
+     au.cod_materia = m.cod_materia and
+     m.ind_excluido = 0 and
+     m.tip_id_basica = t.tip_materia and
+     m.dat_apresentacao >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apresentacao)"  type="nb"> and
+     m.dat_apresentacao <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apresentacao2)" type="nb">
+   <dtml-if expr="tip_materia_sel!='0'">
+     and m.tip_id_basica = <dtml-sqlvar tip_materia_sel type="int">
+   </dtml-if>
+
+GROUP BY t.des_tipo_materia
