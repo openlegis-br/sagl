@@ -2633,7 +2633,7 @@ CREATE TABLE `tramitacao_administrativo` (
   `dat_fim_prazo` date DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_tramitacao`),
-  UNIQUE KEY `cod_unid_tram_dest` (`cod_unid_tram_dest`),
+  KEY `cod_unid_tram_dest` (`cod_unid_tram_dest`),
   KEY `tramitacao_ind1` (`ind_ult_tramitacao`),
   KEY `cod_unid_tram_local` (`cod_unid_tram_local`),
   KEY `cod_status` (`cod_status`),
