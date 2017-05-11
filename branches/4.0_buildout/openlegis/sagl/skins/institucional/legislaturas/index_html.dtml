@@ -61,13 +61,14 @@
   </form>
  </div>
 
- <div class="mb20"></div>
+<div class="mb20"></div>
 
 <dtml-call expr="REQUEST.set('existe_ocorrencia', 0)">
 <dtml-call expr="REQUEST.set('listar', 1)">
 <dtml-call expr="REQUEST.set('primeiro_listado', 1)">
 
-<fieldset>
+<dtml-if hdn_num_legislatura>
+
 <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=hdn_num_legislatura,ind_titular=1)">
   <dtml-if expr="hdn_num_legislatura == '-1'"> 
     <dtml-in expr="zsql.mandato_obter_zsql(cod_parlamentar=cod_parlamentar, nom_parlamentar=nom_parlamentar)">
@@ -112,7 +113,7 @@
            <dtml-var nom_completo> <dtml-if expr="nom_completo!=nom_parlamentar">(<dtml-var nom_parlamentar>)</dtml-if>
          </a>
       </td>
-        <dtml-if expr="hdn_num_legislatura!='-1'">
+        <dtml-if expr="hdn_num_legislatura and hdn_num_legislatura!='-1'">
           <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=hdn_num_legislatura, cod_parlamentar=cod_parlamentar)">
             <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
               <td><dtml-var sgl_partido null=""></td>
@@ -141,7 +142,7 @@
 <dtml-call expr="REQUEST.set('suplente_listado', 1)">
 
 <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=hdn_num_legislatura,ind_titular='0')" >
-  <dtml-if expr="hdn_num_legislatura == '-1'"> 
+  <dtml-if expr="hdn_num_legislatura and hdn_num_legislatura == '-1'"> 
     <dtml-in expr="zsql.mandato_obter_zsql(cod_parlamentar=cod_parlamentar,num_legislatura=hdn_num_legislatura)">
       <dtml-call expr="REQUEST.set('listar_suplente', 1)">
     <dtml-else>
@@ -181,7 +182,7 @@
                <span><dtml-var dat_inicio_mandato null=""> - <dtml-var dat_fim_mandato null=""></span><dtml-unless sequence-end>,</dtml-unless></span>
           </dtml-in>
       </td>
-        <dtml-if expr="hdn_num_legislatura!='-1'">
+        <dtml-if expr="hdn_num_legislatura and hdn_num_legislatura!='-1'">
           <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=hdn_num_legislatura, cod_parlamentar=cod_parlamentar)">
             <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
               <td><dtml-var sgl_partido null=""></td>
@@ -291,6 +292,7 @@
         </dtml-in>
     </table>
     </div>
+</dtml-if>
 
     </div>
   </div>
