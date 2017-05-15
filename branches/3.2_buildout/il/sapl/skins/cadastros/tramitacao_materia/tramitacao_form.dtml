@@ -29,22 +29,17 @@
           return false;
       }
  </dtml-comment>
-
       if (form.lst_cod_status.selectedIndex == 0){
           alert("O status da tramitação deve ser selecionado!");
           form.lst_cod_status.focus();
           return false;
       }
-
-    
       if (!(form.rad_ind_urgencia[0].checked ||
             form.rad_ind_urgencia[1].checked)){
          alert("O índice de urgência deve ser preenchido!");
          form.rad_ind_urgencia[0].focus();
          return false;
       }
-
-  
       if (form.txt_dat_fim_prazo.value!="") {
          if (!IsValidDate(form.txt_dat_fim_prazo.value)){
            alert("Digite uma data de fim de prazo válida!");
@@ -52,7 +47,6 @@
            form.txt_dat_fim_prazo.select();
            return false;
          }
-
          var dat_fim_prazo = form.txt_dat_fim_prazo.value.substring(6,10) + form.txt_dat_fim_prazo.value.substring(3,5) + form.txt_dat_fim_prazo.value.substring(0,2);
 
          if (dat_fim_prazo < dat_tramitacao) {
@@ -62,9 +56,14 @@
            return false;
            }
          }
-
+      if (form.file_nom_arquivo.value != "") {
+         form.hdn_file.value = 1;
+         }
       form.hdn_dat_tramitacao.value = form.txt_dat_tramitacao.value;
       form.submit();
+   }
+   function ativa_desativa_file_field(form) {
+      form.file_nom_arquivo.disabled = !(form.radTI[1].checked);
    }
     
 //-->
@@ -88,14 +87,14 @@
 
 <script type="text/javascript">
 $(function() {
-        $('#txt_dat_fim_prazo').datepick();
+  $('#txt_dat_fim_prazo').datepick();
 });
 </script>
 
 <script type="text/javascript">
 $(document).ready(function() {
-$.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
-$("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0].focus();
+  $.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
+  $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0].focus();
 });
 </script>
 
@@ -139,11 +138,12 @@ $(document).ready(function() {
     </tr>
   </table>
 
-<form name="tramitacao_form" method="post" action="tramitacao_salvar_proc">
+<form name="tramitacao_form" method="post" action="tramitacao_salvar_proc" enctype="multipart/form-data">
   <input type="hidden" name="cod_usuario_corrente" value="<dtml-var cod_usuario_corrente missing>" />
   <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var hdn_cod_tramitacao missing>" />
   <input type="hidden" name="hdn_cod_materia" value="<dtml-var hdn_cod_materia missing>" />
   <input type="hidden" name="hdn_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" />
+  <input type="hidden" name="hdn_file" value="0"/>
 
            <dtml-if hdn_cod_tramitacao>
              <dtml-call expr="REQUEST.SESSION.set('hdn_cod_tramitacao', hdn_cod_tramitacao)">
@@ -205,7 +205,7 @@ $(document).ready(function() {
        </td>
       </tr>
       <tr>
-        <td  class="form-element" width="50%">Unidade de Destino </label><span class="campoObrigatorio">&nbsp;</span></br>
+        <td  class="form-element">Unidade de Destino </label><span class="campoObrigatorio">&nbsp;</span></br>
           <style scoped>div.dhxcombo_dhx_skyblue{margin-left: 0;}</style>
           <select name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" style="max-width: 338px; width: 100%;">
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
@@ -252,7 +252,7 @@ $(document).ready(function() {
 			});
 		</script>
         </td>
-        <td class="form-element" width="25%">Recebimento</br>
+        <td class="form-element">Recebimento</br>
          <dtml-if dat_recebimento>
            <input type="text" name="txt_dat_recebimento" size="13" value="<dtml-var dat_recebimento missing null>" readonly>
          <dtml-else>
@@ -294,12 +294,12 @@ $(document).ready(function() {
       <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
       <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
       <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+       <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
          <tr>
            <td class="form-element">
                 Texto PDF
            </td>
            <td valign="top" class="form-element" colspan="2">
-                 <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
                    <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
                      <a class="popup1" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
                        <img align="top" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF">
@@ -322,19 +322,59 @@ $(document).ready(function() {
     			           });
 			           });
 			         </script>
-                 </dtml-if>
+           </td>
+         </tr>
+         <tr>
+           <td colspan="3">
+                      <input type="radio" name="radTI" value="G" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Gerar PDF</b></span>
+                      <input type="radio" name="radTI" value="S" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Substituir Arquivo</b></span>
+                      <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="45" maxlength="100" disabled="1" />
+                      <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Manter</b></span>
+           </td>
+         </tr>
+       </dtml-if>
 
-                 <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+       <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+         <tr>
+           <td class="form-element">
+                Texto PDF
+           </td>
+           <td colspan="2">
                    <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
                      <a class="popup1" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
                        <img height="22" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada">Tramitação com Assinatura Digital
                      </a>
                    </dtml-let>
-                 </dtml-if>
            </td>
          </tr>
+         <tr>
+           <td colspan="3">
+              <input type="radio" name="radTI" value="M" checked="true" /><span class="texto"><b>Manter</b></span>
+              <input type="radio" name="radTI" value="E" /><span class="texto"><b>Excluir</b></span>
+              <input type="hidden" name="file_nom_arquivo" value=""/>
+           </td>
+         </tr>
+       </dtml-if>
+
+      <dtml-else>
+                 <tr>
+                   <td colspan="3">
+                      <input type="radio" name="radTI" value="G" checked="true" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Gerar PDF</b></span>
+                      <input type="radio" name="radTI" value="U" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Carregar Arquivo</b></span>
+                      <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="45" maxlength="100" disabled="1" />
+                   </td>
+                 </tr>
       </dtml-if>
+   <dtml-else>
+         <tr>
+           <td valign="top" class="form-element" colspan="3">
+              <input type="radio" name="radTI" value="G" checked="true" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Gerar PDF</b></span>
+              <input type="radio" name="radTI" value="U" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Carregar Arquivo</b></span>
+              <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="45" maxlength="100" disabled="1" />
+           </td>
+         </tr>
    </dtml-if>
+
       <tr>
         <td colspan="3">
           <label for="txa_txt_tramitacao">Texto da Ação </label><br/>
