@@ -26,6 +26,8 @@ from zope.interface import Interface
 
 from Products.CMFCore.utils import getToolByName
 
+from PIL import Image
+
 #imports para a geracao dos documentos
 import urllib
 import urllib2
@@ -310,6 +312,57 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def url(self):
         utool = getToolByName(self, 'portal_url')
         return utool.portal_url()
+
+    def resize_and_crop(self,cod_parlamentar):
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()
+        image_file = '%s' % (cod_parlamentar) + "_foto_parlamentar"
+        url = self.url() + '/sapl_documentos/parlamentar/fotos/' + image_file
+        opener = urllib.urlopen(url)
+        img_path = open('/tmp/' + image_file, 'wb').write(opener.read())
+        foto_parlamentar = str(cod_parlamentar) + "_foto_parlamentar.jpg"
+        modified_path = '/tmp/' + str(cod_parlamentar) + "_foto_parlamentar.jpg"
+        crop_type='top'
+        size = (400, 300)
+        img = Image.open('/tmp/' + image_file)
+        img_ratio = img.size[0] / float(img.size[1])
+        ratio = size[0] / float(size[1])
+        if ratio > img_ratio:
+            img = img.resize((size[0], int(round(size[0] * img.size[1] / img.size[0]))),
+                Image.ANTIALIAS)
+            if crop_type == 'top':
+                box = (0, 0, img.size[0], size[1])
+            elif crop_type == 'middle':
+                box = (0, int(round((img.size[1] - size[1]) / 2)), img.size[0],
+                    int(round((img.size[1] + size[1]) / 2)))
+            elif crop_type == 'bottom':
+                box = (0, img.size[1] - size[1], img.size[0], img.size[1])
+            else :
+                raise ValueError('ERROR: invalid value for crop_type')
+            img = img.crop(box)
+        elif ratio < img_ratio:
+            img = img.resize((int(round(size[1] * img.size[0] / img.size[1])), size[1]),
+                Image.ANTIALIAS)
+            if crop_type == 'top':
+                box = (0, 0, size[0], img.size[1])
+            elif crop_type == 'middle':
+                box = (int(round((img.size[0] - size[0]) / 2)), 0,
+                    int(round((img.size[0] + size[0]) / 2)), img.size[1])
+            elif crop_type == 'bottom':
+                box = (img.size[0] - size[0], 0, img.size[0], img.size[1])
+            else :
+                raise ValueError('ERROR: invalid value for crop_type')
+            img = img.crop(box)
+        else :
+            img = img.resize((size[0], size[1]),
+                Image.ANTIALIAS)
+
+        img.save(modified_path)
+        data = open(modified_path, "rb").read()
+        foto = getattr(self.sapl_documentos.parlamentar.fotos,image_file) 
+        foto.manage_upload(file=data)
+        os.unlink('/tmp/'+image_file)
+        os.unlink('/tmp/'+foto_parlamentar)
 
     def get_brasao(self):
         utool = getToolByName(self, 'portal_url')
