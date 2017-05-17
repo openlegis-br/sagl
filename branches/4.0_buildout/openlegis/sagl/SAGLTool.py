@@ -699,6 +699,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             self.documentos.proposicao.manage_addFile(id=nom_arquivo,file=data)
 
     def proposicao_gerar_pdf(self, cod_proposicao):
+        writer = PdfFileWriter()
+        merger = PdfFileMerger()
         nom_arquivo_odt = "%s"%cod_proposicao+'.odt'
         nom_arquivo_pdf1 = "%s"%cod_proposicao+'.pdf'
         url = self.documentos.proposicao.absolute_url() + "/%s"%nom_arquivo_odt
@@ -708,8 +710,27 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         renderer.run()
         data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
+            merger.append(file)
             os.unlink(file)
-            self.documentos.proposicao.manage_addFile(id=nom_arquivo_pdf1, file=data)
+
+        lst_anexos = []
+        for anexo in self.pysc.anexo_proposicao_pysc(cod_proposicao,listar=True):
+            dic_anexos={}
+            dic_anexos['pdf_anexo'] = self.documentos.proposicao.absolute_url()+ "/" + anexo
+            lst_anexos.append(dic_anexos)
+        for dic_anexos in lst_anexos:
+            texto_anexo = cStringIO.StringIO(urllib.urlopen(dic_anexos['pdf_anexo']).read())
+            merger.append(texto_anexo)
+        
+        final_output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
+        f = open(final_output_file_pdf, "wb")
+        merger.write(f)
+        f.close()
+        readin = open(final_output_file_pdf, 'r' )
+        contents = readin.read()
+        for file in [final_output_file_pdf]:
+            os.unlink(file)
+            self.documentos.proposicao.manage_addFile(id=nom_arquivo_pdf1, file=contents)
 
     def substitutivo_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
         url = self.documentos.modelo.materia.absolute_url() + "/%s"%modelo_proposicao

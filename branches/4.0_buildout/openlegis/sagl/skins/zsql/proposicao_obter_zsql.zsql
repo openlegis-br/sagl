@@ -20,6 +20,7 @@ SELECT
     DATE_FORMAT(p.dat_recebimento, '%d/%m/%Y %T') as dat_recebimento,
     p.ind_excluido,
     a.col_username,
+    ta.des_tipo_autor,
     if (a.cod_parlamentar is not null, parlamentar.nom_completo, if(a.cod_comissao is not null, comissao.nom_comissao, a.nom_autor)) as nom_autor,
     t.ind_mat_ou_doc,
     t.tip_mat_ou_doc,
@@ -28,12 +29,13 @@ SELECT
     p.cod_substitutivo
 FROM 
     proposicao p    
-    left join tipo_proposicao t on p.tip_proposicao = t.tip_proposicao,
-    autor a left join parlamentar on a.cod_parlamentar=parlamentar.cod_parlamentar,
-    autor left join comissao on autor.cod_comissao=comissao.cod_comissao
+     LEFT JOIN tipo_proposicao t on p.tip_proposicao = t.tip_proposicao,
+    autor a 
+     LEFT JOIN parlamentar on a.cod_parlamentar=parlamentar.cod_parlamentar
+     LEFT JOIN comissao on a.cod_comissao=comissao.cod_comissao
+     LEFT JOIN tipo_autor ta ON a.tip_autor = ta.tip_autor
 <dtml-sqlgroup where>
-    autor.cod_autor = a.cod_autor <dtml-and>
-    autor.ind_excluido = 0 <dtml-and>
+    a.ind_excluido = 0 <dtml-and>
     p.tip_proposicao = t.tip_proposicao <dtml-and>  
     a.cod_autor = p.cod_autor <dtml-and>
     <dtml-sqltest cod_proposicao    op="=" type="int" optional> <dtml-and>

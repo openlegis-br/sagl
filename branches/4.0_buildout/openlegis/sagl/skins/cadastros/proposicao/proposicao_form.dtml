@@ -20,7 +20,6 @@ $(document).ready(function() {
 		closeEffect	: 'fade'
 	});
 });
-
 </script>
 
 <script type="text/javascript">
@@ -40,13 +39,13 @@ $(document).ready(function() {
           return false;
       }
 
-   <dtml-unless cod_proposicao>
+   <dtml-comment>
       if (lst_modelo.options[lst_modelo.selectedIndex].value==0) {
          alert("É necessário selecionar um modelo!");
          form.lst_modelo.focus();
          return false;
       }
-  </dtml-unless>
+  </dtml-comment>
 
       var tipo_proposicao = form.lst_tip_proposicao[form.lst_tip_proposicao.selectedIndex].value;
       var separador = tipo_proposicao.indexOf("&");
@@ -90,7 +89,7 @@ $(document).ready(function() {
 
   function texto_integral_excluir(){
        var form = document.proposicao_form;
-       if (confirm("Deseja realmente excluir o texto integral?")) {
+       if (confirm("Deseja realmente excluir o texto editável desta proposição?")) {
           location.href="texto_proposicao_excluir_proc?cod_proposicao=<dtml-var cod_proposicao missing>";
        }
        return;
@@ -111,7 +110,7 @@ $(document).ready(function() {
   }
 
   function proposicao_excluir(){
-       if (confirm("Deseja realmente excluir?")) {  
+       if (confirm("Deseja realmente excluir esta proposição?")) {  
           location.href="proposicao_excluir_proc?cod_proposicao=<dtml-var cod_proposicao missing>";
        }
   }
@@ -171,7 +170,20 @@ $(document).ready(function() {
       form.txt_ano_ident_basica.disabled = 1;
     }
     return;
-  } 
+  }
+
+    function addFileField() {
+        var f = document.createElement("input");
+        f.type = "file";
+        f.name = "file_nom_anexo";
+        f.accept="application/pdf";
+        f.size = 30;
+        p = document.getElementById("arquivos_anexos");
+        p.appendChild(f);
+        p.appendChild(document.createElement("br"));
+        p.appendChild(document.createElement("br"));
+    }
+
 //-->
 </script>
 
@@ -208,7 +220,7 @@ $(document).ready(function() {
 <dtml-if usr_eh_autor>
   <h1 class="firstHeading">Proposição Eletrônica</h1>
 <dtml-else>
-  <h1 class="firstHeading">Protocolo Eletrônico de Proposição</h1>
+  <h1 class="firstHeading">Protocolo Eletrônico de Proposições</h1>
 </dtml-if>
 
 <dtml-if expr="usr_eh_autor or (AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']) and prop_enviada)"> 
@@ -241,15 +253,18 @@ $(document).ready(function() {
                 </dtml-if>
                 <table id="proposicoes">
                   <dtml-if cod_proposicao>
-                    <tr> 
-                       <th colspan=3 class="form-element">
+                    <tr>
+                      <th colspan=1 class="form-element">
+                          Dados Básicos
+                       </th>
+                       <th colspan=2 class="form-element">
                           Código de Autenticidade: <dtml-var expr="pysc.proposicao_calcular_checksum_pysc(cod_proposicao)">
                        </th>
                     </tr>
                   </dtml-if>
                     <tr>
                         <td width="44%" class="form-element" valign="top">
-                          Tipo <span class="campoObrigatorio">&nbsp;</span> <br />   
+                          Tipo de Proposição <span class="campoObrigatorio">&nbsp;</span> <br />   
                             <select name="lst_tip_proposicao" onChange="javascript:tipo_proposicao_mudou()"
                                 <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor']) and prop_enviada)">
                                   disabled
@@ -331,14 +346,26 @@ $(document).ready(function() {
                           <textarea name="txt_descricao" cols="65" rows="5" maxlength="400" <dtml-if prop_enviada>readonly</dtml-if>><dtml-var txt_descricao missing></textarea>
                         </td>
                     </tr>
-                   <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor']) or cod_materia)"> 
+                <dtml-if cod_proposicao>
+                    <tr>
+                        <td colspan="1" class="form-element" valign="top">
+                          Autor <br /> 
+                          <input type="text" name="txt_nom_autor" size="50" value="<dtml-var nom_autor missing>" disabled />
+                        </td>
+                        <td colspan="2" class="form-element" valign="top">
+                          Tipo de Autor <br /> 
+                          <input type="text" name="txt_nom_autor" size="30" value="<dtml-var des_tipo_autor missing>" disabled />
+                        </td>
+                    </tr>
+                </dtml-if>
+                   <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor']) or _.has_key('cod_materia')) and not prop_enviada"> 
                     <tr> 
-                        <td width="44%" class="form-element">Matéria Vinculada<br />
+                        <td width="44%" class="form-element">Matéria a Vincular<br />
                           <select name="lst_tip_id_basica" 
                             <dtml-if "not _.has_key('tip_id_basica_sel') or prop_enviada">                                       
                               disabled
                             </dtml-if> >   
-                            <option value="0">Selecione</option>
+                            <option value="0"></option>
                                <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0,tip_natureza='P')">
                                 <option
                                  <dtml-if tip_id_basica_sel>
@@ -366,16 +393,39 @@ $(document).ready(function() {
                         </td>
                     </tr>
                 </dtml-if>
-                <dtml-if cod_proposicao>
-                        <td colspan="3" class="form-element" valign="top">
-                          Autoria da Proposição <br /> 
-                          <input type="text" name="txt_nom_autor" size="50" value="<dtml-var nom_autor missing>" disabled />
+
+                  <dtml-if usr_eh_autor>
+                    <dtml-if dat_devolucao>
+		    <tr>
+                        <td colspan=2 class="form-element">Justificativa da Devolução <span class="campoObrigatorio">&nbsp;</span>
+                         <textarea name="txa_txt_justificativa" cols="70" rows="5" onChange="javascript:form.hdn_alterou.value=1"<dtml-if txt_justif_devolucao>readonly</dtml-if>><dtml-if txt_justif_devolucao><dtml-var txt_justif_devolucao missing></dtml-if></textarea>
                         </td>
+                        <td colspan=1 class="form-element">
+                          <b>Data de devolução</b><br />
+                          <input type="text" name="txt_dat_devolucao" value="<dtml-var dat_devolucao missing>" size="19"maxlength="19" onChange="javascript:form.hdn_alterou.value=1" readonly>
+                        </td>
+                    </tr>
+                    </dtml-if>
+                  </dtml-if>
+              <dtml-unless usr_eh_autor>
+                  <dtml-unless cod_mat_ou_doc>
+                    <tr>
+                        <td colspan=3 class="form-element">Justificativa da Devolução <span class="campoObrigatorio">&nbsp;</span>
+                           <textarea name="txa_txt_justificativa"cols="70" rows="5" onChange="javascript:form.hdn_alterou.value=1" <dtml-if txt_justif_devolucao>readonly</dtml-if>><dtml-if txt_justif_devolucao><dtml-var txt_justif_devolucao missing></dtml-if></textarea>
+                         </td>
+                    </tr>
+                  </dtml-unless cod_mat_ou_doc>			
+              </dtml-unless usr_eh_autor>
+                </table>
+
+               <dtml-if cod_proposicao>
+                <table>
+                    <tr>
+                      <th class="form-element" colspan="2">Texto da Proposição <span class="campoObrigatorio">&nbsp;</span></th>
                     </tr>
                   <dtml-if expr="usr_eh_autor">
                     <tr>
-                        <td colspan="1" valign="top" class="form-text">
-                         <b>Texto Editável (ODT)</b>
+                        <td width="50%" colspan="1" valign="top" class="form-text">
                          <div id="toolbar" class="ui-widget ui-corner-all"><p></p>
                          <dtml-let id_documento="_.str(cod_proposicao)+'.odt'">
                            <dtml-if "_.hasattr(documentos.proposicao,id_documento)">
@@ -406,7 +456,7 @@ $(document).ready(function() {
                            </dtml-if>
                              </dtml-let>
                            <dtml-else>
-                            <dtml-if expr="(not dat_devolucao)">
+                            <dtml-if expr="(not dat_devolucao and not prop_recebida)">
                                   <select name="lst_modelo" id="lst_modelo">
                                      <option value="0">Selecione um modelo</option>
                                      <dtml-with expr="documentos.modelo.materia">
@@ -424,7 +474,7 @@ $(document).ready(function() {
                         </div>
                         </td>
                         <td colspan="2" class="form-text" valign="top">
-                          <b>Texto Final (PDF)</b> 
+                          <b>Texto Final em PDF</b> 
                           <div id="toolbar" class="ui-widget ui-corner-all"><p></p>
                           <dtml-if expr="_.has_key('cod_proposicao')">
                             <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.pdf')">
@@ -461,7 +511,7 @@ $(document).ready(function() {
                             <dtml-elif "_.hasattr(documentos.proposicao,id_documento)">
                              <dtml-let documento="_.getattr(documentos.proposicao,id_documento).absolute_url">
                                <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
-                                <img align="top" src="sagl/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" />
+                                <img align="top" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" />
                                </a>
                                 <div id="menuitem1" style="cursor: pointer; float:left; padding-right: 4px;">
                                  <a class="pdf">Assinar Digitalmente</a>
@@ -501,15 +551,39 @@ $(document).ready(function() {
                           </div>
                           </dtml-if>
                         </td> 
+                    </tr>
+                 <dtml-if expr="(not prop_recebida)">
                     <tr>
+                      <th class="form-element" colspan="2">Anexos em PDF</th>
+                    </tr>
+                    <tr>
+                      <td class="form-element" colspan="2">
+                        <dtml-in expr="pysc.anexo_proposicao_pysc(cod_proposicao, listar=True)" prefix="file">
+                          <dtml-if expr="_.hasattr(documentos.proposicao, file_item)">
+                              <dtml-let documento="_.getattr(documentos.proposicao,file_item).absolute_url">
+                                  <a target="_blank" href="<dtml-var documento>">
+                                    <img align="top" src="&dtml-portal_url;/imagens/archiv.gif" alt="<dtml-var file_item>" />
+                                  </a>
+                                 &nbsp;<a class="botao_excluir" href="javascript:void(0)" onclick="location.href='anexo_excluir?anexo=<dtml-var file_item>&cod_proposicao=<dtml-var cod_proposicao>'">Excluir</a>&nbsp;&nbsp;&nbsp;
+                              </dtml-let>
+                          </dtml-if>
+                        </dtml-in>
+                        <br /><br />
+	                <span id="arquivos_anexos"></span>
+	                <small id="link_add_file">
+	                    <a onclick="addFileField(); return false;" href="#">+ Adicionar arquivo</a>
+	                </small>
+                     </td>
+                    </tr>
+                </dtml-if>
                   <dtml-else>
                     <tr>
-                        <td colspan="1" class="form-text">
+                        <td width="50%" colspan="1" class="form-text">
                          <div id="toolbar" class="ui-widget ui-corner-all">
                          <dtml-let id_documento="_.str(cod_proposicao)+'.odt'">
                            <dtml-if "_.hasattr(documentos.proposicao,id_documento)">
                              <dtml-let documento="_.getattr(documentos.proposicao,id_documento).absolute_url">
-                               <b>Texto da Proposição (ODT)</b><p></p>  
+                               <b>Texto Editável em ODT</b><p></p>  
                                <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'.odt')">
                                <dtml-if expr="(prop_enviada and (dat_recebimento==None)) and (not dat_devolucao)">
                                 <div id="menuitem" style="cursor: pointer; float:left; padding-right: 4px;">
@@ -533,6 +607,7 @@ $(document).ready(function() {
                                </dtml-if>
                              </dtml-let>
                            <dtml-else>
+                           <dtml-if expr="(not prop_recebida)">
                              <b>Modelo ODT</b> <span class="campoObrigatorio">&nbsp;</span><br />
                                   <select name="lst_modelo" id="lst_modelo">
                                      <option value="0">Selecione um modelo</option>
@@ -544,14 +619,15 @@ $(document).ready(function() {
                                     </select>
                               <dtml-if expr="_.has_key('cod_proposicao')">
                                <a class="botao_gerar" href="javascript:void(0)" onclick="javascript:texto_odt_gerar()">Gerar</a> 
-                              </dtml-if> 
+                              </dtml-if>
+                            </dtml-if> 
                            </dtml-if>
                          </dtml-let>
                         </div>
                         </td>
                         <td colspan="2" class="form-text" valign="top">
                          <div id="toolbar" class="ui-widget ui-corner-all">
-                          <b>Texto Final (PDF)</b><p></p>
+                          <b>Texto Final em PDF</b><p></p>
                             <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.pdf')">
                             <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
                             <dtml-if "_.hasattr(documentos.proposicao,id_documento_assinado)">
@@ -563,47 +639,11 @@ $(document).ready(function() {
                             </dtml-if>
                           </div>
                         </td>
-                    <tr>
-                  </dtml-if>
-                <dtml-else>
-                    <tr>
-                        <td colspan="3" class="form-text">
-                             <b>Modelo ODT</b> <span class="campoObrigatorio">&nbsp;</span><br />
-                                  <select name="lst_modelo" id="lst_modelo">
-                                     <option value="0">Selecione um modelo</option>
-                                     <dtml-with expr="documentos.modelo.materia">
-                                       <dtml-in expr="objectValues('File')" sort="id">
-                                         <option value="<dtml-var id>"><dtml-var id> - <dtml-var title></option>
-                                       </dtml-in>
-                                      </dtml-with> 
-                                    </select> 
-                        </td>   
-                    <tr>
-                </dtml-if cod_proposicao>
-                  <dtml-if usr_eh_autor>
-                    <dtml-if dat_devolucao>
-		    <tr>
-                        <td colspan=2 class="form-element">Justificativa da Devolução <span class="campoObrigatorio">&nbsp;</span>
-                         <textarea name="txa_txt_justificativa" cols="70" rows="5" onChange="javascript:form.hdn_alterou.value=1"<dtml-if txt_justif_devolucao>readonly</dtml-if>><dtml-if txt_justif_devolucao><dtml-var txt_justif_devolucao missing></dtml-if></textarea>
-                        </td>
-                        <td colspan=1 class="form-element">
-                          <b>Data de devolução</b><br />
-                          <input type="text" name="txt_dat_devolucao" value="<dtml-var dat_devolucao missing>" size="19"maxlength="19" onChange="javascript:form.hdn_alterou.value=1" readonly>
-                        </td>
                     </tr>
-                    </dtml-if>
                   </dtml-if>
-              <dtml-unless usr_eh_autor>
-                  <dtml-unless cod_mat_ou_doc>
-                    <tr>
-                        <td colspan=3 class="form-element">Justificativa da Devolução <span class="campoObrigatorio">&nbsp;</span>
-                           <textarea name="txa_txt_justificativa"cols="70" rows="5" onChange="javascript:form.hdn_alterou.value=1" <dtml-if txt_justif_devolucao>readonly</dtml-if>><dtml-if txt_justif_devolucao><dtml-var txt_justif_devolucao missing></dtml-if></textarea>
-                         </td>
-                    </tr>
-                  </dtml-unless cod_mat_ou_doc>			
-              </dtml-unless usr_eh_autor>
                 </table>
-                    <p align="center">
+               </dtml-if cod_proposicao>
+                     <p align="center">
                     <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor']) and not prop_enviada)">
                            <input class="botao"
                                type="button"
@@ -653,17 +693,19 @@ $(document).ready(function() {
                                value="Excluir"
                                onClick="proposicao_excluir()" />
                           </dtml-if>
-
                          </dtml-if>
                         <input class="botao" type="button" value="Voltar" onClick="location.href='index_html'" />
                       <dtml-else>
                          <dtml-unless cod_mat_ou_doc> 
                            <dtml-unless dat_devolucao>
+                             <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
+                             <dtml-if "_.hasattr(documentos.proposicao,id_documento_assinado)">
                              <input class="botao"
                                type="button"
                                name="btn_proposicao_incorporar"
                                value="Incorporar Proposição"
                                onClick="proposicao_incorporar(document.proposicao_form)" />
+                             </dtml-if>
                              <input class="botao"
                                type="button"
                                name="btn_proposicao_devolver"
@@ -675,8 +717,7 @@ $(document).ready(function() {
                       </dtml-if>
                     </p>  
         </form>
-         <br />
-     <dtml-if cod_proposicao>
+      <dtml-if cod_proposicao>
         <form name="observacao_form" method="post" action="proposicao_salvar_observacao_proc">
                   <table>
                     <tr>
