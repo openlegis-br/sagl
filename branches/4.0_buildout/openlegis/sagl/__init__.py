@@ -64,6 +64,7 @@ def initialize(context):
     allow_module('datetime.datetime.timetuple')
     allow_module('PyPDF2')
     allow_module('StringIO')
+    allow_module('PIL')
 
     tools = (SAGLTool.SAGLTool,)
     ToolInit('SAGL Tool',
