@@ -83,59 +83,41 @@
 
   <dtml-if expr="hdn_url[-1:]=='='">
     <dtml-comment>
-    <dtml-in expr="zsql.parlamentar_obter_zsql(num_cpf=txt_num_cpf, ind_excluido=0)"></dtml-in>
+      <dtml-in expr="zsql.parlamentar_obter_zsql(num_cpf=txt_num_cpf, ind_excluido=0)"></dtml-in>
     </dtml-comment>
-
     <dtml-in expr="zsql.parlamentar_incluido_codigo_obter_zsql()">
       <dtml-call expr="REQUEST.set('cod_parlamentar', _.str(_.int(cod_parlamentar)))">
     </dtml-in>
   </dtml-if>
 
-      <dtml-call expr="REQUEST.set('existe_arquivo', 0)">       
+ <dtml-if expr="(_.int(hdn_file)==1)">
+  <dtml-if hdn_cod_parlamentar>
+     <dtml-call expr="REQUEST.set('id_foto', _.str(hdn_cod_parlamentar)+'_foto_parlamentar')">
+  <dtml-else>
+     <dtml-in expr="zsql.parlamentar_incluido_codigo_obter_zsql()">
+       <dtml-call expr="REQUEST.set('id_foto', _.str(cod_parlamentar)+'_foto_parlamentar')">
+     </dtml-in>
+  </dtml-if>
+  <dtml-call expr="REQUEST.set('id_foto', _.str(hdn_cod_parlamentar)+'_foto_parlamentar')">
+  <dtml-unless "_.hasattr(sapl_documentos.parlamentar.fotos,id_foto)">
+     <dtml-try>
+       <dtml-call "sapl_documentos.parlamentar.fotos.manage_addImage(id_foto, file=file_nom_imagem)">
+     <dtml-except>
+       <dtml-call expr="REQUEST.set('erro1', 1)">             
+     </dtml-try>     
+  </dtml-unless>
+ </dtml-if>
 
-      <dtml-if expr="(_.int(hdn_file)==1)">
-        <dtml-if hdn_cod_parlamentar>
-          <dtml-call expr="REQUEST.set('id_foto', _.str(hdn_cod_parlamentar)+'_foto_parlamentar')">
-
-          <dtml-in expr="sapl_documentos.parlamentar.fotos.objectValues('Image')">
-            <dtml-if expr="id() == id_foto">
-              <dtml-call expr="REQUEST.set('existe_arquivo', 1)">             
-              <dtml-try>
-              <dtml-call "sapl_documentos.parlamentar.fotos.manage_delObjects(id_foto)">
-              <dtml-except>
-              <dtml-else>
-              <dtml-call "sapl_documentos.parlamentar.fotos.manage_addImage(id_foto, file=file_nom_imagem)"> 
-                <dtml-call expr="REQUEST.set('erro1', 1)">          
-              </dtml-try>
-            </dtml-if>
-          </dtml-in>
-             
-        <dtml-else>
-          <dtml-in expr="zsql.parlamentar_incluido_codigo_obter_zsql()">
-            <dtml-call expr="REQUEST.set('id_foto', _.str(cod_parlamentar)+'_foto_parlamentar')">
-          </dtml-in>
-        </dtml-if>
-
-        <dtml-if "not existe_arquivo">
-          <dtml-try>
-            <dtml-call "sapl_documentos.parlamentar.fotos.manage_addImage(id_foto, file=file_nom_imagem)">           
-          <dtml-except>
-            <dtml-call expr="REQUEST.set('erro1', 1)">             
-          </dtml-try>     
-        </dtml-if>
-      </dtml-if>
 
   <dtml-if expr="(metodo==zsql.parlamentar_incluir_zsql)">
     <dtml-call expr="REQUEST.set('hdn_url', 'mandato_salvar_proc?cod_parlamentar=' + cod_parlamentar + '&amp;num_leg='+hdn_num_leg)">
     <dtml-let mensagem="'Parlamentar salvo com sucesso.<br />Será incluído um mandato para esse parlamentar na '+hdn_num_leg+'ª legislatura.<br />'" sucesso="1" url=hdn_url>
       <dtml-var mensagem_emitir>
     </dtml-let> 
-
   <dtml-else>
     <dtml-let mensagem="'Parlamentar salvo com sucesso.'" sucesso="1" url=hdn_url>
       <dtml-var mensagem_emitir>
     </dtml-let>
   </dtml-if>
-
 </dtml-try>
 </dtml-unless>

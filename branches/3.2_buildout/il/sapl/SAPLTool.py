@@ -323,7 +323,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         foto_parlamentar = str(cod_parlamentar) + "_foto_parlamentar.jpg"
         modified_path = '/tmp/' + str(cod_parlamentar) + "_foto_parlamentar.jpg"
         crop_type='top'
-        size = (400, 300)
+        size = (350, 380)
         img = Image.open('/tmp/' + image_file)
         img_ratio = img.size[0] / float(img.size[1])
         ratio = size[0] / float(size[1])

@@ -63,6 +63,7 @@ def initialize(context):
     allow_module('datetime.datetime.timetuple')
     allow_module('PyPDF2')
     allow_module('StringIO')
+    allow_module('PIL')
 
     tools = (SAPLTool.SAPLTool,)
     ToolInit('SAPL Tool',
