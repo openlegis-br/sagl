@@ -19,7 +19,8 @@ try:
         tmp_copy = context.documentos.proposicao.manage_cutObjects(ids=str(cod_proposicao)+'.odt')
         tmp_id = context.documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
         context.documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
-        context.documentos.proposicao.manage_delObjects(pdf_proposicao)
+        if hasattr(context.documentos.proposicao,pdf_proposicao):
+           context.documentos.proposicao.manage_delObjects(pdf_proposicao)
         for anexo in context.pysc.anexo_proposicao_pysc(cod_proposicao,listar=True):
            context.documentos.proposicao.manage_delObjects(anexo)
         ok = 1
@@ -27,7 +28,8 @@ except KeyError:
     tmp_copy = context.documentos.proposicao.manage_cutObjects(ids=str(cod_proposicao)+ '.odt')
     tmp_id = context.documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
     context.documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
-    context.documentos.proposicao.manage_delObjects(pdf_proposicao)
+    if hasattr(context.documentos.proposicao,pdf_proposicao):
+       context.documentos.proposicao.manage_delObjects(pdf_proposicao)
     for anexo in context.pysc.anexo_proposicao_pysc(cod_proposicao,listar=True):
        context.documentos.proposicao.manage_delObjects(anexo)
     ok = 1
