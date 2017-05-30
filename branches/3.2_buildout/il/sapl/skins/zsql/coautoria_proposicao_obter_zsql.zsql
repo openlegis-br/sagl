@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_proposicao cod_autor ind_aderido ind_excluido
+arguments : cod_proposicao cod_autor ind_aderido
 max_rows : 50
 max_cache : 100
 </dtml-comment>
@@ -29,22 +29,10 @@ FROM
     LEFT JOIN tipo_proposicao on proposicao.tip_proposicao = tipo_proposicao.tip_proposicao
 
 <dtml-sqlgroup where>  
- ((parlamentar.cod_parlamentar is not null AND tipo_autor.des_tipo_autor='Parlamentar') OR
-  (bancada.cod_bancada         is not null AND (tipo_autor.des_tipo_autor='Bancada')) OR  
-  (comissao.cod_comissao       is not null AND (tipo_autor.des_tipo_autor='Comissao')) OR 
-  (tipo_autor.des_tipo_autor!='Parlamentar' AND tipo_autor.des_tipo_autor!='Bancada' and tipo_autor.des_tipo_autor!='Comissao')) <dtml-and>
-  <dtml-sqltest cod_parlamentar    column="autor.cod_parlamentar"                    op="="  type="int"  optional><dtml-and>
-  <dtml-sqltest cod_comissao       column="autor.cod_comissao"                       op="="  type="int"  optional><dtml-and>
-  <dtml-sqltest cod_bancada        column="autor.cod_bancada"                        op="="  type="int"  optional><dtml-and>
-  <dtml-sqltest nom_autor          column="autor.nom_autor"                          op="="  type="nb"   optional><dtml-and>
-  <dtml-sqltest col_username       column="autor.col_username"                       op="="  type="nb"   optional><dtml-and>
-  <dtml-sqltest cod_autor          column="autor.cod_autor"                          op="="  type="int"  optional><dtml-and>
-  <dtml-sqltest des_tipo_autor     column="tipo_autor.des_tipo_autor"                op="="  type="nb"   optional><dtml-and>
   <dtml-sqltest cod_proposicao     column="coautoria_proposicao.cod_proposicao"      op="="  type="int"  optional><dtml-and>
   <dtml-sqltest cod_autor          column="coautoria_proposicao.cod_autor"           op="="  type="int"  optional><dtml-and>
   <dtml-sqltest ind_aderido        column="coautoria_proposicao.ind_aderido"         op="="  type="int"  optional><dtml-and>
-  <dtml-sqltest ind_excluido       column="coautoria_proposicao.ind_excluido"        op="="  type="int"  optional><dtml-and>
-  proposicao.ind_excluido = 0
+  coautoria_proposicao.ind_excluido = 0
 </dtml-sqlgroup>
 
 ORDER BY
