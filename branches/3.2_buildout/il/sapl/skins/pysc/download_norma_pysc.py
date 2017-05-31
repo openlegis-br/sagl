@@ -7,7 +7,6 @@
 ##parameters=cod_norma,texto_original=None,texto_consolidado=None
 ##title=
 ##
-
 request=context.REQUEST
 response=request.RESPONSE
 
@@ -22,7 +21,6 @@ for norma in context.zsql.norma_juridica_obter_zsql(cod_norma=cod_norma):
 
 context.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
 context.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; Filename=%s' % download_name)
-#context.REQUEST.RESPONSE.setHeader('Content-Disposition','Attachment; Filename=%s' % download_name)
 
 return arquivo
 

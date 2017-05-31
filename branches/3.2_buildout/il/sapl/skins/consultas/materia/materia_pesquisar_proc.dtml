@@ -163,10 +163,10 @@ $(document).ready(function() {
                </dtml-in>
 
                <dtml-if num_protocolo>
-                 <b>Protocolo Geral:</b>&nbsp;<dtml-var num_protocolo>/<dtml-var ano_ident_basica>  
+                 <b>Protocolo Geral:</b>&nbsp;<dtml-var num_protocolo>/<dtml-var ano_ident_basica> <br />
                </dtml-if>
 
-                 <b>Data de apresentação:</b> <dtml-var "pysc.iso_to_port_pysc(dat_apresentacao)"><br />
+               <b>Data de apresentação:</b> <dtml-var "pysc.iso_to_port_pysc(dat_apresentacao)"><br />
 
                 <dtml-call expr="REQUEST.set('temSubstitutivo', '0')">
                 <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia)">
@@ -240,7 +240,7 @@ $(document).ready(function() {
                 <dtml-if des_status>
                   <b>Situação:</b> <dtml-var des_status null="">
                   <dtml-if dat_fim_prazo>
-                    - <b>Prazo: </b> <dtml-var dat_fim_prazo>
+                    | <b>Prazo: </b> <dtml-var dat_fim_prazo>
                   </dtml-if><br />
                   <dtml-if txt_tramitacao>
                     <b>Texto da ação: </b> <dtml-var txt_tramitacao></br>
@@ -259,7 +259,7 @@ $(document).ready(function() {
                  <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_anexada, ind_excluido = 0)">
                     <b>Matéria Anexada:</b>
                      <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-                     <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica></b></a> -
+                     <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica></b></a> |
                      <b>Data Anexação:</b> <dtml-var dat_anexacao missing><br />
                  </dtml-in>
                </dtml-in>
@@ -273,7 +273,7 @@ $(document).ready(function() {
          	<dtml-if txt_observacao>
 	        <dtml-elif expr="cod_situacao and not _.has_key('com_tramitacao')">
                    <dtml-in expr="zsql.tipo_situacao_materia_obter_zsql(tip_situacao_materia=cod_situacao)">
-                       <b>Situação:</b> <dtml-var des_tipo_situacao missing> <br />
+                       <b>Situação:</b> <dtml-var des_tipo_situacao missing><br />
                    </dtml-in>
                 </dtml-if>
 
@@ -296,25 +296,21 @@ $(document).ready(function() {
               </td>
               <td width="17%">
                <div align="center">
-                <dtml-let id_documento="_.str(cod_materia)+'_redacao_final.pdf'">
-                  <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
-                    <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-                      <a target="_blank" href="<dtml-var documento>"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Redação Final" title="Redação Final">
+                <dtml-call expr="REQUEST.set('redacao_final', _.str(cod_materia)+'_redacao_final.pdf')">
+                <dtml-call expr="REQUEST.set('texto_original', _.str(cod_materia)+'_texto_integral.pdf')">
+                <dtml-if "_.hasattr(sapl_documentos.materia,redacao_final)">
+                   <a target="_blank" href="&dtml-portal_url;/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">&redacao_final=1" alt="Redação Final" title="Redação Final">
+                      <img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Redação Final" title="Redação Final" />
                       <p style="line-height: 1.3em; font-size:11px"><b>Redação Final</b></p>
-                      </a>
-                    </dtml-let>
-                  <dtml-else>
-                   <dtml-let id_documento="_.str(cod_materia)+'_texto_integral.pdf'">
-                     <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
-                       <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-                         <a target="_blank" href="<dtml-var documento>"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral">
-                         <p style="line-height: 1.3em; font-size:11px"><b>Texto Integral</b></p>
-                         </a>
-                       </dtml-let>
-                     </dtml-if>
-                   </dtml-let>
-                  </dtml-if>
-                </dtml-let>
+                   </a>
+                <dtml-elif "_.hasattr(sapl_documentos.materia,texto_original)">
+                   <a target="_blank" href="&dtml-portal_url;/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">&texto_original=1" alt="Texto Integral" title="Texto Integral">
+                      <img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral" />
+                      <p style="line-height: 1.3em; font-size:11px"><b>Texto Integral</b></p>
+                   </a>
+                <dtml-else>
+                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                </dtml-if>
                </div>
               </td>
             </tr>
