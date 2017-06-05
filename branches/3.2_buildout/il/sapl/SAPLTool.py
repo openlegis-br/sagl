@@ -1211,8 +1211,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         data = open('/tmp/' + filename, "rb").read()
 
+        for old_file in [old_filename]:
+            if old_filename in self.sapl_documentos.proposicao:
+              self.sapl_documentos.proposicao.manage_delObjects(ids=old_filename)
+              os.unlink(old_file)
+
         for file in [filename]:
-            self.sapl_documentos.proposicao.manage_delObjects(ids=old_filename)
             os.unlink(file)
             if filename in self.sapl_documentos.proposicao:
               documento = getattr(self.sapl_documentos.proposicao,filename)
@@ -1322,8 +1326,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         data = open('/tmp/' + filename, "rb").read()
 
+        for old_file in [old_filename]:
+            if old_filename in self.sapl_documentos.materia.tramitacao:
+              self.sapl_documentos.materia.tramitacao.manage_delObjects(ids=old_filename)
+            os.unlink(old_file)
+
         for file in [filename]:
-            self.sapl_documentos.materia.tramitacao.manage_delObjects(ids=old_filename)
             os.unlink(file)
             if filename in self.sapl_documentos.materia.tramitacao:
               documento = getattr(self.sapl_documentos.materia.tramitacao,filename)
