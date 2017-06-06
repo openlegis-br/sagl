@@ -1214,10 +1214,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for old_file in [old_filename]:
             if old_filename in self.sapl_documentos.proposicao:
               self.sapl_documentos.proposicao.manage_delObjects(ids=old_filename)
-              os.unlink(old_file)
+            os.unlink("/tmp/"+old_file)
 
         for file in [filename]:
-            os.unlink(file)
+            os.unlink("/tmp/"+file)
             if filename in self.sapl_documentos.proposicao:
               documento = getattr(self.sapl_documentos.proposicao,filename)
               documento.manage_upload(file=data)
@@ -1329,10 +1329,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for old_file in [old_filename]:
             if old_filename in self.sapl_documentos.materia.tramitacao:
               self.sapl_documentos.materia.tramitacao.manage_delObjects(ids=old_filename)
-            os.unlink(old_file)
+            os.unlink("/tmp/"+old_file)
 
         for file in [filename]:
-            os.unlink(file)
+            os.unlink("/tmp/"+file)
             if filename in self.sapl_documentos.materia.tramitacao:
               documento = getattr(self.sapl_documentos.materia.tramitacao,filename)
               documento.manage_upload(file=data)
