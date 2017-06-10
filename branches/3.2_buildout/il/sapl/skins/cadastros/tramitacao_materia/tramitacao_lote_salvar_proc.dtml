@@ -45,6 +45,10 @@
     <dtml-let mensagem="'Tramitação em lote realizada com sucesso! Verifique no menu Caixa de Saída.'" sucesso="1" url="'tramitacao_lote_form'">
         <dtml-var mensagem_emitir>
     </dtml-let>
+    <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+       <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', cod_tramitacao)">
+    </dtml-in>
+    <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=hdn_cod_tramitacao)">
   </dtml-try>
 
 <dtml-else>
@@ -83,9 +87,7 @@
      <dtml-if chk_encerrar_tramitacao>
        <dtml-call expr="zsql.tramitacao_fim_processo_zsql(cod_materia=cod_materia)">
      </dtml-if>
-
       <dtml-call expr="REQUEST.set('indice', indice + 1)">
-
     </dtml-in>
 
   <dtml-except>
@@ -98,6 +100,10 @@
     </dtml-let>
 
     <dtml-in check_tram>
+      <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=_['sequence-item'], ind_ult_tramitacao=1)">
+         <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
+      </dtml-in>
+      <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=cod_ult_tramitacao)">
       <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=_['sequence-item'])">
       <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=_['sequence-item'])">
       <dtml-if sequence-end>
