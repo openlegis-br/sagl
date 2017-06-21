@@ -104,3 +104,11 @@ CREATE TABLE `documento_administrativo_materia` (
    PRIMARY KEY (`cod_vinculo`), 
    INDEX `idx_cod_documento` (`cod_documento`), 
    INDEX `idx_cod_materia` (`cod_materia`)) ENGINE = InnoDB;
+
+-- 21/06/2017 
+
+-- Adiciona campos para workflow básico na tabela unidade_tramitacao
+
+ALTER TABLE `unidade_tramitacao` ADD `unid_dest_permitidas` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL AFTER `cod_parlamentar`;
+
+ALTER TABLE `unidade_tramitacao` ADD `status_permitidos` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL AFTER `unid_dest_permitidas`;

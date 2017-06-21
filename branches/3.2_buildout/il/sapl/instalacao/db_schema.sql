@@ -2696,10 +2696,12 @@ CREATE TABLE `turno_discussao` (
 --
 
 CREATE TABLE `unidade_tramitacao` (
-  `cod_unid_tramitacao` int(11) NOT NULL AUTO_INCREMENT,
+  `cod_unid_tramitacao` int(11) NOT NULL,
   `cod_comissao` int(11) DEFAULT NULL,
   `cod_orgao` int(11) DEFAULT NULL,
   `cod_parlamentar` int(11) DEFAULT NULL,
+  `unid_dest_permitidas` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status_permitidos` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_unid_tramitacao`),
   KEY `idx_unidtramit_orgao` (`cod_orgao`,`ind_excluido`),
