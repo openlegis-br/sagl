@@ -63,11 +63,10 @@ else:
 
 for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia, num_ident_basica=REQUEST['txt_numero'],
                                                    ano_ident_basica=REQUEST['txt_ano'], ind_tramitacao=REQUEST['rad_tramitando'],
-                                                   des_assunto=REQUEST['txt_assunto'],
-                                                   cod_status=REQUEST['lst_status'], des_tipo_autor=REQUEST['lst_tip_autor'],
+                                                   des_assunto=REQUEST['txt_assunto'], cod_status=REQUEST['lst_status'], 
                                                    dat_apresentacao=REQUEST['dt_apres'], dat_apresentacao2=REQUEST['dt_apres2'],
                                                    dat_publicacao=REQUEST['dt_public'], dat_publicacao2=REQUEST['dt_public2'],
-                                                   cod_partido=REQUEST['lst_cod_partido'],cod_autor=REQUEST['hdn_cod_autor'],
+                                                   cod_autor=REQUEST['hdn_cod_autor'],
                                                    cod_unid_tramitacao=REQUEST['lst_localizacao'], rd_ordem=REQUEST['rd_ordenacao']):
 
         dic={}
@@ -138,10 +137,10 @@ if REQUEST.hdn_txt_autor=='  ':
 
 filtro['tipo_materia']=''
 
-filtro['partido']=''
-if REQUEST.lst_cod_partido!='':
-    for partido in context.zsql.partido_obter_zsql(ind_excluido=0,cod_partido=REQUEST.lst_cod_partido):
-        filtro['partido']=partido.sgl_partido + ' - ' + partido.nom_partido
+#filtro['partido']=''
+#if REQUEST.lst_cod_partido!='':
+#    for partido in context.zsql.partido_obter_zsql(ind_excluido=0,cod_partido=REQUEST.lst_cod_partido):
+#        filtro['partido']=partido.sgl_partido + ' - ' + partido.nom_partido
 
 filtro['tramitando']=''
 if REQUEST.rad_tramitando=='1':
