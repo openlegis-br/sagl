@@ -9,18 +9,31 @@
 ##
 ok = 0
 id = str(cod_emenda) + '_emenda.odt'
+odt_proposicao = str(cod_proposicao) + '.odt'
+pdf_proposicao = str(cod_proposicao) + '.pdf'
+
 try:
     doc = context.sapl_documentos.emenda[id]
     if (int(ind_sobrescrever)==1):
         doc=''     
         context.sapl_documentos.emenda.manage_delObjects(id)
-        tmp_copy = context.sapl_documentos.proposicao.manage_copyObjects(ids=str(cod_proposicao)+'.odt')
-        tmp_id = context.sapl_documentos.emenda.manage_pasteObjects(tmp_copy)[0]['new_id']
-        context.sapl_documentos.emenda.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
+        if hasattr(context.sapl_documentos.proposicao,odt_proposicao):
+           tmp_copy = context.sapl_documentos.proposicao.manage_copyObjects(ids=str(cod_proposicao)+'.odt')
+           tmp_id = context.sapl_documentos.emenda.manage_pasteObjects(tmp_copy)[0]['new_id']
+           context.sapl_documentos.emenda.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
+        if hasattr(context.sapl_documentos.proposicao,pdf_proposicao):
+           context.sapl_documentos.proposicao.manage_delObjects(pdf_proposicao)
+        for anexo in context.pysc.anexo_proposicao_pysc(cod_proposicao,listar=True):
+           context.sapl_documentos.proposicao.manage_delObjects(anexo)
         ok = 1
 except KeyError:
-    tmp_copy = context.sapl_documentos.proposicao.manage_copyObjects(ids=str(cod_proposicao)+ '.odt')
-    tmp_id = context.sapl_documentos.emenda.manage_pasteObjects(tmp_copy)[0]['new_id']
-    context.sapl_documentos.emenda.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
+    if hasattr(context.sapl_documentos.proposicao,odt_proposicao):
+       tmp_copy = context.sapl_documentos.proposicao.manage_copyObjects(ids=str(cod_proposicao)+ '.odt')
+       tmp_id = context.sapl_documentos.emenda.manage_pasteObjects(tmp_copy)[0]['new_id']
+       context.sapl_documentos.emenda.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
+    if hasattr(context.sapl_documentos.proposicao,pdf_proposicao):
+       context.sapl_documentos.proposicao.manage_delObjects(pdf_proposicao)
+    for anexo in context.pysc.anexo_proposicao_pysc(cod_proposicao,listar=True):
+       context.sapl_documentos.proposicao.manage_delObjects(anexo)
     ok = 1
 return ok
