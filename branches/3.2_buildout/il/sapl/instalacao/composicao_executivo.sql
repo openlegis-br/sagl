@@ -109,6 +109,6 @@ CREATE TABLE `documento_administrativo_materia` (
 
 -- Adiciona campos para workflow básico na tabela unidade_tramitacao
 
-ALTER TABLE `unidade_tramitacao` ADD `unid_dest_permitidas` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL AFTER `cod_parlamentar`;
+ALTER TABLE `unidade_tramitacao` ADD `unid_dest_permitidas` VARCHAR(128) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL AFTER `cod_parlamentar`;
 
-ALTER TABLE `unidade_tramitacao` ADD `status_permitidos` VARCHAR(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL AFTER `unid_dest_permitidas`;
+ALTER TABLE `unidade_tramitacao` ADD `status_permitidos` VARCHAR(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL AFTER `unid_dest_permitidas`;
