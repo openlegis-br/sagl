@@ -1174,7 +1174,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 'horizontalAlign': 'Right'
             },
 
-            'position': self.get_visual_representation_position(2)
+            'position': self.get_visual_representation_position(3)
         })
 
         token = signature_starter.start_with_webpki()
