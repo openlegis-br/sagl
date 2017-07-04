@@ -1372,8 +1372,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             visual_position['auto']['container']['left'] = 2.54
             visual_position['auto']['container']['top'] = 2.54
             visual_position['auto']['container']['right'] = 2.54
-            visual_position['auto']['signatureRectangleSize']['width'] = 5
-            visual_position['auto']['signatureRectangleSize']['height'] = 3
             return visual_position
         elif sample_number == 5:
             # Example #5: manual positioning
