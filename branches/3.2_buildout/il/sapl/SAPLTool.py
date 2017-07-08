@@ -1359,7 +1359,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             # Example #2: get the footnote positioning preset and customize it
             visual_position = PadesVisualPositioningPresets.get_footnote(self.restpki_client())
             visual_position['auto']['container']['left'] = 2.54
-            visual_position['auto']['container']['bottom'] = 2.54
+            visual_position['auto']['container']['bottom'] = 1.54
             visual_position['auto']['container']['right'] = 2.54
             return visual_position
         elif sample_number == 3:
@@ -1382,7 +1382,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 # define a manual position of 5cm x 3cm, positioned at 1 inch from the left and bottom margins
                 'manual': {
                     'left': 2.54,
-                    'bottom': 2.54,
+                    'bottom': 1.54,
                     'width': 5,
                     'height': 3
                 }
