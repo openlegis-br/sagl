@@ -66,8 +66,18 @@
   <dtml-call expr="REQUEST.set('ind_enviado', '0')">
 </dtml-unless>
 
+  <dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+          <dtml-call expr="REQUEST.set('col_username', col_username)">
+      </dtml-in>
+    </dtml-in>
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('col_username',AUTHENTICATED_USER.getUserName())">
+  </dtml-if>
+
 <dtml-if expr="ind_enviado=='0'">
-<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, col_username=AUTHENTICATED_USER.getUserName())">
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, col_username=col_username)">
     <dtml-if sequence-start>    
         <fieldset>
             <table id="enviadas" class="tablesorter">    
@@ -117,7 +127,7 @@
 </dtml-if>
 
 <dtml-if expr="ind_enviado=='1'">
-<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, col_username=AUTHENTICATED_USER.getUserName())">
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, col_username=col_username)">
     <dtml-if sequence-start>    
         <fieldset>
             <table id="enviadas" class="tablesorter">    

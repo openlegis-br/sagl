@@ -89,6 +89,14 @@ function campos_criticar(form){
      }
   }
 
+  if ((form.rad_assessor_eh_usuario[0].checked) && (!form.txt_login.disabled) && (form.txt_login.value == '')) {
+     alert ("Informe um Login para o Assessor, ou marque 'Não' caso não queira credenciá-lo como usuário do sistema!");
+     form.txt_login.focus();
+     return false;
+  }
+
+  form.txt_login.disabled=0;
+
   form.submit();
 }
 
@@ -96,8 +104,31 @@ function assessor_excluir() {
        
   if (confirm("Deseja realmente excluir?")) {  
     location.href = "assessor_excluir_proc?cod_assessor=<dtml-var cod_assessor missing>&hdn_cod_parlamentar=<dtml-var cod_parlamentar missing>";
-  }
-  
+  } 
+}
+
+function login_excluir(form) {
+ if (confirm("Excluir o Login impedirá o acesso do Assessor ao sistema. Deseja realmente excluir?")){
+    form.txt_login.value = ''; 
+    form.btn_login_excluir.readonly = 1
+ }
+}
+
+function setLogin (form, allowLogin, previousLogin) {
+   if (allowLogin) {
+      if (previousLogin) {
+         form.txt_login.value = previousLogin;
+         form.txt_login.disabled = 1
+      } else {
+         alert ("Informe um Login para o Assessor");
+         form.txt_login.disabled = 0;
+         form.txt_login.focus()
+      }
+   } else {
+      if (previousLogin) 
+         form.txt_login.value = ''; 
+      form.txt_login.disabled = 1
+   }        
 }
 
 //-->
@@ -130,7 +161,7 @@ $(function() {
 <dtml-var parlamentar_menu>
 
 <fieldset>
- <legend>Assessoria Parlamentar</legend>
+ <legend>Cadastro de Assessoria Parlamentar</legend>
   <table>
     <tr>
       <td class="form-element">Nome<span class="campoObrigatorio">&nbsp;</span> <br />
@@ -196,6 +227,28 @@ $(function() {
        </td>
     </tr>
    </table>
+
+  <dtml-unless expr="_.has_key('col_username')">
+    <dtml-call expr="REQUEST.set('col_username',None)">
+  </dtml-unless>
+  <fieldset><legend>Acesso ao Sistema</legend>
+  <table align="center">
+    <tr>
+      <td class="form-element">
+              Conceder ao Assessor Parlamentar acesso ao sistema para elaboração de proposições?<br />
+              <input type="radio" name="rad_assessor_eh_usuario" value="Sim" <dtml-unless expr="col_username==None">checked</dtml-unless> onClick="setLogin(document.assessor_form,1,'<dtml-var col_username null="">')" />Sim
+              <input type="radio" name="rad_assessor_eh_usuario" value="Não" <dtml-if expr="col_username==None">checked</dtml-if> onClick="setLogin(document.assessor_form,0,'<dtml-var col_username null="">')"  />Não
+            </td>
+          </tr>
+          <tr>
+            <td class="form-element">
+              Login: <input type="text" name="txt_login" maxlength="20" size="20" value="<dtml-var col_username null="">" disabled />
+            </td>
+          </tr>
+      </td>
+    </tr>
+  </table>
+
    </fieldset>
   <p align="center"> 
   <input type="button" name="btn_assessor_salvar" class="botao" value="Salvar" onClick="campos_criticar(document.assessor_form)"/>

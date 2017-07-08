@@ -116,11 +116,7 @@ $(document).ready(function() {
   }
 
   function observacao_salvar(form_observacao){
-        if((form_observacao.txa_txt_observacao.value=="")||(form_observacao.txa_txt_observacao.value=="None")){
-  	 	alert('O campo para observações não pode estar em branco');
-	}
-      form_observacao.submit();
-  
+     form_observacao.submit();
   }
 
   function proposicao_devolver(form){
@@ -201,20 +197,40 @@ $(document).ready(function() {
 
 <dtml-call expr="REQUEST.set('prop_recebida',(dat_recebimento!=None))">
 
-<dtml-if cod_proposicao>
+<dtml-if expr="_.has_key('cod_proposicao') and AUTHENTICATED_USER.has_role(['Autor'])">
     <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
     <dtml-call expr="REQUEST.set('estah_alterando','1')">
+
+<dtml-elif expr="_.has_key('cod_proposicao') and AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+          <dtml-call expr="REQUEST.set('usr_eh_autor', (col_username==col_username_sel))">
+      </dtml-in>
+    </dtml-in>
+    <dtml-call expr="REQUEST.set('estah_alterando','1')">
+
 <dtml-else>
     <dtml-call expr="REQUEST.set('usr_eh_autor',(1==1))">
     <dtml-call expr="REQUEST.set('estah_alterando','0')">
+
 </dtml-if>
 
 <dtml-if usr_eh_autor>
-  <dtml-in expr="zsql.autor_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
-    <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
-      <dtml-call expr="REQUEST.set('tip_proposicao_perm',tip_proposicao_sel)">
+  <dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+        <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
+           <dtml-call expr="REQUEST.set('tip_proposicao_perm',tip_proposicao_sel)">
+        </dtml-in>
+      </dtml-in>
     </dtml-in>
-  </dtml-in>
+  <dtml-else>
+    <dtml-in expr="zsql.autor_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
+        <dtml-call expr="REQUEST.set('tip_proposicao_perm',tip_proposicao_sel)">
+      </dtml-in>
+    </dtml-in>
+  </dtml-if>
 </dtml-if>
 
 <dtml-if usr_eh_autor>
@@ -358,7 +374,7 @@ $(document).ready(function() {
                         </td>
                     </tr>
                 </dtml-if>
-                   <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor']) or _.has_key('cod_materia')) and not prop_enviada"> 
+                   <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar']) or _.has_key('cod_materia')) and not prop_enviada"> 
                     <tr> 
                         <td width="44%" class="form-element">Matéria a Vincular<br />
                           <select name="lst_tip_id_basica" 
@@ -421,11 +437,12 @@ $(document).ready(function() {
                <dtml-if cod_proposicao>
                 <table>
                     <tr>
-                      <th class="form-element" colspan="2">Texto da Proposição <span class="campoObrigatorio">&nbsp;</span></th>
+                      <th class="form-element" colspan="2">Textos da Proposição <span class="campoObrigatorio">&nbsp;</span></th>
                     </tr>
                   <dtml-if expr="usr_eh_autor">
                     <tr>
                         <td width="50%" colspan="1" valign="top" class="form-text">
+                          <b>Documento para edição</b> 
                          <div id="toolbar" class="ui-widget ui-corner-all"><p></p>
                          <dtml-let id_documento="_.str(cod_proposicao)+'.odt'">
                            <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento)">
@@ -474,7 +491,7 @@ $(document).ready(function() {
                         </div>
                         </td>
                         <td colspan="2" class="form-text" valign="top">
-                          <b>Texto Final em PDF</b> 
+                          <b>Documento em PDF</b> 
                           <div id="toolbar" class="ui-widget ui-corner-all"><p></p>
                           <dtml-if expr="_.has_key('cod_proposicao')">
                             <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.pdf')">
@@ -486,9 +503,11 @@ $(document).ready(function() {
                                </a>
                              </dtml-let>
                               <dtml-if expr="dat_envio==None">
-                                <div id="menuitem2" style="cursor: pointer; float:left; padding-right: 4px;">
-                                 <a class="pdf">Adicionar Assinaturas</a>
-                                </div>
+                                <dtml-if "AUTHENTICATED_USER.has_role(['Autor'])">
+                                  <div id="menuitem2" style="cursor: pointer; float:left; padding-right: 4px;">
+                                   <a class="pdf">Mais assinaturas</a>
+                                  </div>
+                                </dtml-if>
 			         <script type="text/javascript">
 			           $('#menuitem2').click(function () {
     			           $.fancybox({
@@ -513,9 +532,11 @@ $(document).ready(function() {
                                <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
                                 <img align="top" src="sapl/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF" />
                                </a>
-                                <div id="menuitem1" style="cursor: pointer; float:left; padding-right: 4px;">
-                                 <a class="pdf">Assinar Digitalmente</a>
-                                </div>
+                                <dtml-if "AUTHENTICATED_USER.has_role(['Autor'])">
+                                  <div id="menuitem1" style="cursor: pointer; float:left; padding-right: 4px;">
+                                   <a class="pdf">Assinar Digitalmente</a>
+                                  </div>
+                                </dtml-if>
 			         <script type="text/javascript">
 			           $('#menuitem1').click(function () {
     			           $.fancybox({
@@ -552,7 +573,7 @@ $(document).ready(function() {
                           </dtml-if>
                         </td> 
                     </tr>
-                 <dtml-if expr="(not prop_recebida)">
+                 <dtml-if expr="(not prop_enviada)">
                     <tr>
                       <th class="form-element" colspan="2">Anexos em PDF</th>
                     </tr>
@@ -644,7 +665,7 @@ $(document).ready(function() {
                 </table>
                </dtml-if cod_proposicao>
                      <p align="center">
-                    <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor']) and not prop_enviada)">
+                    <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar']) and not prop_enviada)">
                            <input class="botao"
                                type="button"
                                id="btn_proposicao_salvar"
@@ -679,7 +700,7 @@ $(document).ready(function() {
                             </dtml-unless>
                           <dtml-else>
                         <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
-                        <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento_assinado)">
+                        <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento_assinado) and AUTHENTICATED_USER.has_role(['Autor'])">
                           <input class="botao"
                                type="button"
                                id="btn_proposicao_enviar"
@@ -728,7 +749,7 @@ $(document).ready(function() {
                   <dtml-if cod_mat_ou_doc>
                       <dtml-var txt_observacao missing null="">
                   <dtml-else>
-                      <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor', 'Operador', 'Operador Materia']))"> 
+                      <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar', 'Operador', 'Operador Materia']))"> 
                         <script type="text/javascript">
                           $(document).ready(function() {
                           $.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";

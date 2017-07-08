@@ -21,8 +21,19 @@
 
 <h1 class="firstHeading">Disponibilizar para Aposição de Assinaturas</h1>
 
+<dtml-if expr="_.has_key('cod_proposicao') and AUTHENTICATED_USER.has_role(['Autor'])">
+    <dtml-call expr="REQUEST.set('col_username', col_username)">
+
+<dtml-elif expr="_.has_key('cod_proposicao') and AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+         <dtml-call expr="REQUEST.set('col_username', col_username)">
+      </dtml-in>
+    </dtml-in>
+</dtml-if>
+
 <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, ind_excluido=0)">
-  <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
+  <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==col_username))">
   <dtml-call expr="REQUEST.set('cod_autor_sel', cod_autor)">
   <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor_sel, ind_excluido=0)">
     <dtml-call expr="REQUEST.set('des_tipo_autor', des_tipo_autor)">

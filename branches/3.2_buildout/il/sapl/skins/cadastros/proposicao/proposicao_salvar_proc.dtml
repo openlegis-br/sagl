@@ -48,9 +48,17 @@
         </dtml-if>
 
     <dtml-else>
-        <dtml-in expr="zsql.autor_obter_zsql(ind_excluido=0, col_username=AUTHENTICATED_USER.getUserName())">
+        <dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+          <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+            <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar,ind_excluido=0)">
+               <dtml-call expr="REQUEST.set('cod_autor', cod_autor)">
+            </dtml-in>
+          </dtml-in>
+        <dtml-else>
+          <dtml-in expr="zsql.autor_obter_zsql(ind_excluido=0, col_username=AUTHENTICATED_USER.getUserName())">
             <dtml-call expr="REQUEST.set('cod_autor', cod_autor)">
-        </dtml-in>
+          </dtml-in>
+        </dtml-if>
         <dtml-call expr="REQUEST.set('metodo', zsql.proposicao_incluir_zsql)">
     </dtml-if>
 </dtml-if>
