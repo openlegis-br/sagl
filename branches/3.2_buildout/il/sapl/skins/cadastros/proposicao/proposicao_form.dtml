@@ -224,8 +224,16 @@ $(document).ready(function() {
         </dtml-in>
       </dtml-in>
     </dtml-in>
-  <dtml-else>
+
+  <dtml-elif expr="AUTHENTICATED_USER.has_role(['Autor'])">
     <dtml-in expr="zsql.autor_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
+        <dtml-call expr="REQUEST.set('tip_proposicao_perm',tip_proposicao_sel)">
+      </dtml-in>
+    </dtml-in>
+
+  <dtml-else>
+    <dtml-in expr="zsql.autor_obter_zsql(col_username=col_username_sel)">
       <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
         <dtml-call expr="REQUEST.set('tip_proposicao_perm',tip_proposicao_sel)">
       </dtml-in>
@@ -680,7 +688,7 @@ $(document).ready(function() {
                                value="Salvar"
                                onClick="campos_criticar(document.proposicao_form)" />
                      </dtml-if>
-                      <dtml-if usr_eh_autor>
+                      <dtml-if expr="usr_eh_autor and AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
                         <dtml-if cod_proposicao>
                           <dtml-if prop_enviada>
                             <dtml-unless dat_recebimento>
