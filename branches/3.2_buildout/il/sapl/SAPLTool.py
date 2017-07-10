@@ -1214,7 +1214,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for old_file in [old_filename]:
             if old_filename in self.sapl_documentos.proposicao:
               self.sapl_documentos.proposicao.manage_delObjects(ids=old_filename)
-            os.unlink("/tmp/"+old_file)
+            #os.unlink("/tmp/"+old_file)
 
         for file in [filename]:
             os.unlink("/tmp/"+file)
