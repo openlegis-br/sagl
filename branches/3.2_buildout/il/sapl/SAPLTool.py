@@ -1113,7 +1113,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 'horizontalAlign': 'Right'
             },
 
-            'position': self.get_visual_representation_position(2)
+            'position': self.get_visual_representation_position(4)
         })
 
         token = signature_starter.start_with_webpki()
@@ -1358,9 +1358,9 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif sample_number == 2:
             # Example #2: get the footnote positioning preset and customize it
             visual_position = PadesVisualPositioningPresets.get_footnote(self.restpki_client())
-            visual_position['auto']['container']['left'] = 2.54
-            visual_position['auto']['container']['bottom'] = 1.54
-            visual_position['auto']['container']['right'] = 2.54
+            visual_position['auto']['container']['left'] = 3
+            visual_position['auto']['container']['bottom'] = 2
+            visual_position['auto']['container']['right'] = 3
             return visual_position
         elif sample_number == 3:
             # Example #3: automatic positioning on new page. This will insert the signature, and future signatures,
@@ -1369,9 +1369,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif sample_number == 4:
             # Example #4: get the "new page" positioning preset and customize it
             visual_position = PadesVisualPositioningPresets.get_new_page(self.restpki_client())
-            visual_position['auto']['container']['left'] = 2.54
-            visual_position['auto']['container']['top'] = 2.54
-            visual_position['auto']['container']['right'] = 2.54
+            visual_position['auto']['container']['left'] = 3
+            visual_position['auto']['container']['top'] = 2
+            visual_position['auto']['container']['bottom'] = 2
+            visual_position['auto']['container']['right'] = 3
             return visual_position
         elif sample_number == 5:
             # Example #5: manual positioning
@@ -1401,14 +1402,14 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                         'left': 2.54,
                         'right': 2.54,
                         # Specifying bottom and height (but no top) results in a bottom-aligned fixed-height container
-                        'bottom': 2.54,
-                        'height': 12.31
-                    },
-                    # Specification of the size of each signature rectangle
-                    'signatureRectangleSize': {
-                        'width': 5,
+                        'top': 1.54,
                         'height': 3
                     },
+                    # Specification of the size of each signature rectangle
+                    #'signatureRectangleSize': {
+                    #    'width': 5,
+                    #    'height': 3
+                    #},
                     # The signatures will be placed in the container side by side. If there's no room left, the
                     # signatures will "wrap" to the next row. The value below specifies the vertical distance between
                     # rows
