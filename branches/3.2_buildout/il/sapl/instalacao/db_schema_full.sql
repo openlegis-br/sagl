@@ -1294,18 +1294,18 @@ CREATE TABLE `localidade` (
 
 CREATE TABLE `mandato` (
   `cod_mandato` int(11) NOT NULL AUTO_INCREMENT,
-  `cod_parlamentar` int(11) NOT NULL,
-  `tip_afastamento` tinyint(4) DEFAULT NULL,
-  `num_legislatura` int(11) NOT NULL,
+  `num_legislatura` int(11) NOT NULL DEFAULT '0',
   `cod_coligacao` int(11) DEFAULT NULL,
-  `tip_causa_fim_mandato` tinyint(4) DEFAULT NULL,
   `dat_inicio_mandato` date DEFAULT NULL,
+  `tip_causa_fim_mandato` tinyint(4) DEFAULT NULL,
   `dat_fim_mandato` date DEFAULT NULL,
   `num_votos_recebidos` int(11) DEFAULT NULL,
   `dat_expedicao_diploma` date DEFAULT NULL,
+  `cod_parlamentar` int(11) NOT NULL DEFAULT '0',
+  `tip_afastamento` tinyint(4) DEFAULT NULL,
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `ind_titular` tinyint(4) NOT NULL DEFAULT '1',
-  `ind_excluido` tinyint(4) NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_mandato`),
   KEY `idx_coligacao` (`cod_coligacao`),
   KEY `idx_parlamentar` (`cod_parlamentar`),
@@ -1313,7 +1313,7 @@ CREATE TABLE `mandato` (
   KEY `idx_mandato_legislatura` (`num_legislatura`,`cod_parlamentar`,`ind_excluido`),
   KEY `idx_legislatura` (`num_legislatura`),
   KEY `tip_causa_fim_mandato` (`tip_causa_fim_mandato`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- RELACIONAMENTOS PARA A TABELA `mandato`:
@@ -1717,8 +1717,6 @@ CREATE TABLE `parecer` (
 
 CREATE TABLE `parlamentar` (
   `cod_parlamentar` int(11) NOT NULL AUTO_INCREMENT,
-  `cod_nivel_instrucao` tinyint(4) DEFAULT NULL,
-  `tip_situacao_militar` tinyint(4) DEFAULT NULL,
   `nom_completo` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nom_parlamentar` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sex_parlamentar` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1726,7 +1724,9 @@ CREATE TABLE `parlamentar` (
   `num_cpf` varchar(14) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_rg` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_tit_eleitor` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `cod_casa` int(11) NOT NULL,
+  `tip_situacao_militar` tinyint(4) DEFAULT NULL,
+  `cod_nivel_instrucao` tinyint(4) DEFAULT NULL,
+  `cod_casa` int(11) NOT NULL DEFAULT '0',
   `num_gab_parlamentar` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_tel_parlamentar` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_fax_parlamentar` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1736,14 +1736,14 @@ CREATE TABLE `parlamentar` (
   `num_tel_resid` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_fax_resid` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `end_web` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `nom_profissao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nom_profissao` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `end_email` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `des_local_atuacao` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `ind_ativo` tinyint(4) NOT NULL DEFAULT '1',
+  `des_local_atuacao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ind_ativo` tinyint(4) NOT NULL DEFAULT '0',
+  `ind_unid_deliberativa` tinyint(4) DEFAULT NULL,
   `txt_biografia` text COLLATE utf8_unicode_ci,
   `txt_observacao` text COLLATE utf8_unicode_ci,
-  `ind_unid_deliberativa` tinyint(4) NOT NULL,
-  `ind_excluido` tinyint(4) NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_parlamentar`),
   KEY `cod_localidade_resid` (`cod_localidade_resid`),
   KEY `tip_situacao_militar` (`tip_situacao_militar`),
@@ -1751,7 +1751,7 @@ CREATE TABLE `parlamentar` (
   KEY `ind_parlamentar_ativo` (`ind_ativo`,`ind_excluido`),
   FULLTEXT KEY `nom_completo` (`nom_completo`),
   FULLTEXT KEY `nom_parlamentar` (`nom_parlamentar`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- RELACIONAMENTOS PARA A TABELA `parlamentar`:
