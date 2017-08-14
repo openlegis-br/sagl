@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+
+<script type="text/javascript">
+<!--
+  function campos_criticar(form){
+
+     if (form.lst_funcionario.selectedIndex==''){
+         alert("O Funcionário deve ser selecionado!");
+         form.lst_funcionario.focus();
+         return false;
+      }
+
+     if (form.txt_num_cracha.value==""){
+         alert("Informe o número do crachá.");
+         form.txt_num_cracha.focus();
+         return false;
+      }
+
+      form.submit();
+  }
+
+  function visita_excluir(){
+       if (confirm("Deseja realmente excluir a visita?")) {
+          location.href="visita_excluir_proc?cod_visita=<dtml-var cod_visita missing>";
+       }
+  }
+
+  function reloadParentAndClose(){
+       parent.jQuery.fancybox.close();
+  }
+</script>
+<head>
+
+<body class="modal">
+
+  <h1 class="firstHeading">Registro de Visita</h1>
+
+  <form name="visita_form" method="post" action="visita_salvar_proc">
+      <input type="hidden" name="hdn_cod_visita" value="<dtml-var cod_visita missing>" />
+      <table>
+         </tr>
+           <td colspan="2" class="texto">
+            <label for="txa_nom_pessoa">Visitante</label><br />
+            <dtml-unless cod_visita>
+              <dtml-in expr="zsql.pessoa_obter_zsql(cod_pessoa=cod_pessoa)">
+                 <dtml-call expr="REQUEST.set('nom_pessoa', nom_pessoa)">
+              </dtml-in>
+            </dtml-unless>
+            <input type="text" id="txt_nom_pessoa" name="txt_nom_pessoa" size="50" maxlength="200" value="<dtml-var nom_pessoa>" disabled />
+            <input type="hidden" name="hdn_cod_pessoa" value="<dtml-var cod_pessoa>" />
+           </td>
+         <tr>
+         <tr>
+           <td class="texto">
+             <label for="lst_funcionario">Funcionário</label> <span class="campoObrigatorio"></span><br />
+             <select id="lst_funcionario" name="lst_funcionario" <dtml-if dat_saida>disabled</dtml-if> >
+                <option value=""></option>
+                <dtml-in expr="zsql.funcionario_obter_zsql(ind_excluido=0,ind_ativo=1)">
+                  <option
+                    <dtml-if expr="REQUEST.has_key('cod_visita')">
+                      <dtml-if expr="_.int(cod_funcionario) == _.int(visita_form.cod_funcionario)">
+                         selected
+                      </dtml-if>
+                    </dtml-if>
+                    value="<dtml-var cod_funcionario>" >
+                    <dtml-var nom_funcionario>
+                  </option>
+                </dtml-in>
+             </select>
+           </td>
+           <td class="texto">
+            <label for="txt_num_cracha">Crachá</label> <span class="campoObrigatorio"></span><br />
+            <input type="text" id="txt_num_cracha" name="txt_num_cracha" size="18" maxlength="3" value="<dtml-var num_cracha missing>" <dtml-if dat_saida>readonly</dtml-if> />
+           </td>
+         </tr>
+      <dtml-if cod_visita>
+         <tr>
+           <td class="texto">
+             <label for="dat_entrada">Entrada</label><br />
+             <input type="text" name="dat_entrada" size="18" value="<dtml-var dat_entrada>" readonly />
+           </td>
+           <td class="texto">
+             <label for="dat_saida">Saída</label><br />
+             <input type="text" name="dat_saida" size="18" value="<dtml-var dat_saida missing null>" readonly />
+           </td>
+         </tr>
+      </dtml-if>
+         <tr>
+           <td colspan="2" class="texto">
+            <label for="txa_txt_observacao">Observações</label><br />
+            <textarea name="txa_txt_observacao" cols="60" rows="4" <dtml-if dat_saida>readonly</dtml-if>><dtml-var txt_observacao missing null=""></textarea>
+           </td>
+         </tr>
+      </table>
+      <p align="center">
+        <dtml-unless dat_saida>
+          <input type="button" class="botao" name="btn_salvar" value="Salvar" onClick="campos_criticar(document.visita_form)" />
+          <dtml-if cod_visita>
+            <input type="button" class="botaoExtra" name="btn_excluir" value="Excluir" onClick="visita_excluir()" />
+          </dtml-if>
+        </dtml-unless>
+        <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+      </p>
+  </form>
+
+   
+
+

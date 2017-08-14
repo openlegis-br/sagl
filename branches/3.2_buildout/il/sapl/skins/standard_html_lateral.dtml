@@ -77,6 +77,39 @@
   </ul>
 </dtml-if>
 
+
+<dtml-comment>###### MENU ATENDIMENTO AO PÚBLICO #######</dtml-comment>
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
+  <script>
+  $(function() {
+    $( "#atendimento" ).menu({
+      items: "> :not(.ui-widget-header)"
+    });
+  });
+  </script>
+  <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+       <dtml-if cod_usuario>
+         <dtml-in expr="zsql.funcionario_obter_zsql(cod_usuario=cod_usuario)">
+           <dtml-call expr="REQUEST.set('cod_funcionario_corrente', int(cod_funcionario))">
+         </dtml-in>
+       </dtml-if>
+   </dtml-in>
+  <dtml-if cod_funcionario_corrente>
+    <ul id="atendimento">
+       <li class="ui-widget-header">Atendimento ao Público</li>
+          <li><span class="ui-icon ui-icon-star"></span><a href="&dtml-portal_url;/cadastros/atendimento">Visitantes Ativos
+              <dtml-in expr="zsql.visita_obter_zsql(cod_funcionario=cod_funcionario_corrente,ind_aberta=1)">
+                <dtml-call expr="REQUEST.set('qtde_visitas', _['sequence-length'])">
+                  <b>[<dtml-var qtde_visitas>]</b>
+              </dtml-in></a>
+         </li>
+       <li><span class="ui-icon ui-icon-bookmark"></span><a href="&dtml-portal_url;/cadastros/atendimento/historico_html">Histórico de Visitas</a></li>
+       <li><span class="ui-icon ui-icon-search"></span><a href="&dtml-portal_url;/cadastros/atendimento/visitante_pesquisar_form">Pesquisar Visitantes</a></li>
+    </ul>
+  </dtml-if>
+</dtml-if>
+
+
 <dtml-comment>###### MENU TRAMITAÇÃO DE MATÉRIAS #######</dtml-comment>
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
   <script>
@@ -173,7 +206,7 @@
 </dtml-if>
 
 <dtml-comment>###### MENU ADMINISTRATIVO #######</dtml-comment>
-<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Arquivo'])">
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Arquivo', 'Operador Recepção'])">
   <script>
   $(function() {
     $( "#administrativo" ).menu({
@@ -188,6 +221,12 @@
       </dtml-if>
       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
         <li><span class="ui-icon ui-icon-note"></span><a href="&dtml-portal_url;/consultas/instituicao">Cadastro de Entidades</a></li>
+      </dtml-if>
+      <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Recepção'])">
+        <li><span class="ui-icon ui-icon-note"></span><a href="&dtml-portal_url;/cadastros/pessoa">Cadastro de Pessoas</a></li>
+      </dtml-if>
+      <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador'])">
+        <li><span class="ui-icon ui-icon-note"></span><a href="&dtml-portal_url;/relatorios_administrativos/visitasPeriodo">Relatório de Visitas</a></li>
       </dtml-if>
       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Arquivo'])">
         <li><span class="ui-icon ui-icon-folder-collapsed"></span><a href="<dtml-var diretorio>arquivo">Arquivo Permanente</a></li>

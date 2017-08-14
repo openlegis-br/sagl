@@ -1,0 +1,83 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$(".popup").fancybox({
+	maxWidth	: 550,
+	maxHeight	: 450,
+	fitToView	: true,
+	width		: '75%',
+	height		: '85%',
+	autoSize	: false,
+	closeClick	: false,
+        scrolling       : false,
+        preload         : true,
+	openEffect	: 'fade',
+        afterClose      : function() {
+        		window.location.href = "&dtml-portal_url;/cadastros/atendimento";
+        		},
+	closeEffect	: 'fade'
+	});
+});
+$(document).ready(function() {
+$(".popup-visitante").fancybox({
+	maxWidth	: 900,
+	maxHeight	: 600,
+	fitToView	: true,
+	width		: '75%',
+	height		: '85%',
+	autoSize	: false,
+	closeClick	: false,
+        scrolling       : false,
+        preload         : true,
+	openEffect	: 'fade',
+        afterClose      : function() {
+        		window.location.href = "&dtml-portal_url;/cadastros/atendimento";
+        		},
+	closeEffect	: 'fade'
+	});
+});
+</script>
+
+<h1 class="firstHeading">Visitantes Ativos</h1> 
+
+  <fieldset>
+     <dtml-in expr="zsql.visita_obter_zsql(cod_funcionario=cod_funcionario_corrente,ind_aberta=1)">
+       <dtml-if sequence-start>
+         <table>
+           <tr>
+              <th width="50%" class="label">Visitante</th>
+              <th width="20%" class="label">Data de Entrada</th>
+              <th width="10%" class="label">Crachá</th>
+              <th width="20%" class="label">Atendimento</th>
+           </tr>
+       </dtml-if>
+           <tr>
+              <td class="texto">
+                  <a href="&dtml-portal_url;/cadastros/atendimento/visitante_mostrar_proc?hdn_cod_pessoa=<dtml-var cod_pessoa missing>" class="popup-visitante" data-fancybox-type="iframe"/><dtml-var nom_pessoa></a>
+               </td>
+              <td class="texto">
+                 <dtml-var dat_entrada>
+               </td>
+              <td class="texto"><dtml-var num_cracha missing></td>
+              <td class="texto">
+               <dtml-if des_situacao>
+                 <dtml-if expr="des_situacao == 'P'">
+                   <a href="&dtml-portal_url;/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="popup" data-fancybox-type="iframe"/>Pendente</a>
+                 <dtml-elif expr="des_situacao == 'R'">
+                   <a href="&dtml-portal_url;/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="popup" data-fancybox-type="iframe"/>Resolvido</a>
+                 </dtml-if>
+               <dtml-else>
+               <a href="&dtml-portal_url;/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="botao-link popup" data-fancybox-type="iframe"/>Registrar</a>
+               </dtml-if>
+              </td>
+           </tr>
+       <dtml-if sequence-end>
+          </table>
+       </dtml-if>
+     <dtml-else>
+       <p class="texto">Nenhum registro encontrado.</p>
+     </dtml-in>
+  </fieldset>
+
+<dtml-var standard_html_footer>

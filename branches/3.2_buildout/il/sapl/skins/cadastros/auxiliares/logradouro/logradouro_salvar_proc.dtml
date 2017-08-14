@@ -1,0 +1,40 @@
+<dtml-call expr="REQUEST.set('cod_localidade', '')">
+<dtml-if expr="txt_municipio!='' and lst_sgl_uf!=''">
+  <dtml-in expr="zsql.localidade_obter_zsql(sgl_uf = lst_sgl_uf, tip_localidade='M', nom_localidade_pesq=txt_municipio)">
+     <dtml-call expr="REQUEST.set('cod_localidade', cod_localidade)">
+  <dtml-else>
+     <dtml-let mensagem="'A localidade especificada não existe.'">
+          <dtml-var mensagem_emitir>
+     </dtml-let>
+     <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-in>
+</dtml-if>
+
+<dtml-unless erro>
+
+<dtml-if hdn_cod_logradouro>
+  <dtml-call expr="REQUEST.set('metodo', zsql.logradouro_atualizar_zsql)">
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.logradouro_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_logradouro  = hdn_cod_logradouro,
+                          nom_logradouro  = txt_nom_logradouro,
+                          nom_bairro      = txt_nom_bairro,
+                          num_cep         = txt_num_cep,
+                          cod_localidade  = cod_localidade,
+                          )">
+
+<dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar o Logradouro. Tente novamente!'">
+        <dtml-var mensagem_emitir>
+    </dtml-let> 
+
+<dtml-else>
+    <dtml-let mensagem="'Logradouro salvo com sucesso!'" sucesso="1">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+</dtml-try>
+
+</dtml-unless>

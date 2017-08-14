@@ -1,0 +1,84 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+(function ($) {
+  $(function () {
+    //$('input[type=submit]').hide();     //uncomment this if You want to hide the submit form buttons
+    document.onkeypress = function (event) {
+      var form = pesq_basica_form;
+      form.action = "pessoa_pesquisar_proc";
+      if (event.keyCode === 13) {
+        form.submit();
+      }
+    };
+  });
+}(jQuery));
+
+  function encerrar_todas(){
+       if (confirm("Confirma o encerramento de todas as visitas? As datas de saída serão iguais às datas de entrada.")) {
+          location.href="visita_encerrar_todas_proc";
+       }
+  }
+
+</script>
+
+<h1 class="firstHeading">Cadastro de Pessoas</h1> 
+
+<form class="pf-form" style="min-height: 150px;" name="pesq_basica_form" action="pessoa_pesquisar_proc">
+  <fieldset>
+    <input type="hidden" name="existe_ocorrencia" value="0" />
+    <input type="hidden" name="hdn_url" value="pessoa_mostrar_proc?cod_pessoa=<dtml-var cod_pessoa missing>" />
+      <div class="pf-element pf-full-width">
+       <div class="pf-element pf-full-width">
+         <label for="txt_nom_pessoa"><span class="pf-label">Nome da Pessoa</span></label>
+         <input class="pf-field" id="txt_nom_pessoa" type="text" name="txt_nom_pessoa" null="" size="34" maxlength="80" style="max-width: 224px; width: 100%;" />
+       </div>
+       <div class="pf-element pf-full-width">
+         <label for="txt_doc_identidade"><span class="pf-label">Doc. Identidade</span></label>
+         <input class="pf-field" id="txt_doc_identidade" type="text" name="txt_doc_identidade" null="" size="34" style="max-width: 224px; width: 100%;" />
+       </div>     
+       <div class="pf-element pf-buttons">
+          <input class="pf-button botao" type="submit" name="btn_pessoa_pesquisar" value="Pesquisar" />
+          <input class="pf-button botaoExtra" type="reset" name="btn_pessoa_limpar" value="Limpar" />
+      </div>
+  </fieldset>
+</form>
+
+  <fieldset style="clear: both;">
+     <legend>Visitantes Ativos</legend>
+     <dtml-in expr="zsql.visita_obter_zsql(ind_aberta=1)">
+       <dtml-if sequence-start>
+         <table>
+           <tr>
+              <th class="label">Pessoa</th>
+              <th class="label">Entrada</th>
+              <th class="label">Funcionário</th>
+              <th class="label">Crachá</th>
+              <th class="label">Ações</th>
+           </tr>
+       </dtml-if>
+           <tr>
+              <td class="texto">
+                 <dtml-var nom_pessoa>
+               </td>
+              <td class="texto">
+                 <dtml-var dat_entrada>
+               </td>
+              <td class="texto"><dtml-var nom_funcionario></td>
+              <td class="texto"><dtml-var num_cracha missing></td>
+              <td class="texto">
+               <a href="visita_encerrar_proc?hdn_cod_visita=<dtml-var cod_visita>">Encerrar</a>
+              </td>
+           </tr>
+       <dtml-if sequence-end>
+          </table>
+          <p align="center">
+            <input type="button" class="botao" name="button" value="Encerrar Todas as Visitas" onClick="encerrar_todas()" />
+          </p>
+       </dtml-if>
+     <dtml-else>
+       <p class="texto">Nenhum registro encontrado.</p>
+     </dtml-in>
+  </fieldset>
+
+<dtml-var standard_html_footer>
