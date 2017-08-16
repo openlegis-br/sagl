@@ -1,3 +1,6 @@
+-- 15/08/2017
+-- Estrutura de armazenamento para módulo de cadastro de visitantes
+
 CREATE TABLE `logradouro` (
   `cod_logradouro` int(11) NOT NULL,
   `nom_logradouro` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
