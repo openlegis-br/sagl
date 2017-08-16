@@ -17,7 +17,6 @@ def setupConteudo(portal):
     if hasattr(portal, 'sapl_documentos'):
         for o in [
             'administrativo.zexp',
-            'anexo_sessao.zexp',
             'ata_sessao.zexp',
             'emenda.zexp',
             'materia.zexp',
@@ -26,10 +25,10 @@ def setupConteudo(portal):
             'norma_juridica.zexp',
             'oradores.zexp',
             'oradores_expediente.zexp',
-            'painel.zexp',
             'parecer_comissao.zexp',
             'parlamentar.zexp',
             'pauta_sessao.zexp',
+            'pessoa.zexp',
             'proposicao.zexp',
             'props_sapl.zexp',
             'protocolo.zexp',
