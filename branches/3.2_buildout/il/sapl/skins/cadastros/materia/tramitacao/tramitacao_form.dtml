@@ -161,10 +161,13 @@ $(function() {
 });
 </script>
 
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+  <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+</dtml-in>
+
+<dtml-if cod_usuario_corrente>
+
 <form name="tramitacao_form" method="post" action="tramitacao_salvar_proc">
-  <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
-    <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
-  </dtml-in>
   <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao missing>" />
   <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia>" />
   <input type="hidden" name="hdn_url" value="index_html?cod_materia=<dtml-var cod_materia>" />
@@ -325,14 +328,22 @@ $(function() {
          </tr>
         </table>
 </fieldset>
-
 <p align="center">
    <input type="button" class="botao" name="btn_tramitacao_salvar" value="Salvar" onClick="campos_criticar(document.tramitacao_form)" />
     <dtml-if cod_tramitacao>
         <input type="button" class="botao" name="btn_tramitacao_excluir" value="Excluir" onClick="tramitacao_excluir()" />
      </dtml-if>
 </p>
-
 </form>
+
+<dtml-else>
+  <div class="ui-state-error ui-corner-all" style="padding: 0.3em 1em; margin-bottom: 10px">
+    <p>
+      <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+      <strong>Houve um erro !</strong>
+       O usuário autenticado não está habilitado para manipular tramitações. Você pode resolver isso através do módulo de gerenciamento de usuários do sistema.
+    </p>
+  </div>
+</dtml-if>
 
 <dtml-var standard_html_footer>
