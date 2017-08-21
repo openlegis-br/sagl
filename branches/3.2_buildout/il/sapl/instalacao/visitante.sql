@@ -86,6 +86,10 @@ ALTER TABLE `pessoa` ADD FULLTEXT KEY `doc_identidade` (`doc_identidade`);
 ALTER TABLE `pessoa`
   MODIFY `cod_pessoa` int(11) NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `pessoa` ADD `txt_complemento` VARCHAR(50) NULL DEFAULT NULL AFTER `end_residencial`;
+
+ALTER TABLE `pessoa` ADD `sgl_uf` VARCHAR(2) NULL DEFAULT NULL AFTER `nom_cidade`;
+
 
 
 CREATE TABLE `visita` (
