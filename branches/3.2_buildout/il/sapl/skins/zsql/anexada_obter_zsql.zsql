@@ -4,41 +4,30 @@ arguments : cod_materia_principal="" cod_materia_anexada="" dat_anexacao="" ind_
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
-<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
 SELECT 
-       REPLACE(anexada.cod_materia_principal,  'L', '') as cod_materia_principal,
-       REPLACE(anexada.cod_materia_anexada,    'L', '') as cod_materia_anexada,
+       anexada.cod_materia_principal,
+       tmp.sgl_tipo_materia as tip_materia_principal,
+       mp.num_ident_basica as num_materia_principal,
+       mp.ano_ident_basica as ano_materia_principal,
+       anexada.cod_materia_anexada,
+       tma.sgl_tipo_materia as tip_materia_anexada,
+       ma.num_ident_basica as num_materia_anexada,
+       ma.ano_ident_basica as ano_materia_anexada,
        DATE_FORMAT(anexada.dat_anexacao, '%d/%m/%Y') as dat_anexacao,
        DATE_FORMAT(anexada.dat_desanexacao, '%d/%m/%Y') as dat_desanexacao,
        anexada.ind_excluido       
       
 FROM   
        anexada
+       LEFT JOIN materia_legislativa mp ON mp.cod_materia = anexada.cod_materia_principal
+       LEFT JOIN tipo_materia_legislativa tmp ON mp.tip_id_basica = tmp.tip_materia
+       LEFT JOIN materia_legislativa ma ON ma.cod_materia = anexada.cod_materia_anexada
+       LEFT JOIN tipo_materia_legislativa tma ON ma.tip_id_basica = tma.tip_materia
 
   <dtml-sqlgroup where>
-    <dtml-sqltest cod_materia_principal    column="anexada.cod_materia_principal"    op="=" type="int" optional ><dtml-and>
-    <dtml-sqltest cod_materia_anexada  column="anexada.cod_materia_anexada"  op="=" type="int" optional><dtml-and>
-    <dtml-sqltest dat_anexacao column="anexada.dat_anexacao" op="=" type="nb" optional><dtml-and>  
-    <dtml-sqltest ind_excluido op="=" type="int" optional>
+    <dtml-sqltest cod_materia_principal    column="anexada.cod_materia_principal"  op="=" type="int" optional ><dtml-and>
+    <dtml-sqltest cod_materia_anexada      column="anexada.cod_materia_anexada"    op="=" type="int" optional><dtml-and>
+    <dtml-sqltest dat_anexacao             column="anexada.dat_anexacao"           op="=" type="nb"  optional><dtml-and>  
+    <dtml-sqltest ind_excluido             column="anexada.ind_excluido"           op="=" type="int" optional>
   </dtml-sqlgroup>
 
-<dtml-else>
-
-SELECT 
-       anexada.cod_materia_principal as cod_materia_principal,
-       anexada.cod_materia_anexada as cod_materia_anexada,
-       TO_CHAR(anexada.dat_anexacao, 'DD/MM/YYYY') as dat_anexacao,
-       TO_CHAR(anexada.dat_desanexacao, 'DD/MM/YYYY') as dat_desanexacao,
-       anexada.ind_excluido       
-      
-FROM   
-       anexada
-
-  <dtml-sqlgroup where>
-    <dtml-sqltest cod_materia_principal    column="anexada.cod_materia_principal"    op="=" type="int" optional ><dtml-and>
-    <dtml-sqltest cod_materia_anexada  column="anexada.cod_materia_anexada"  op="=" type="int" optional><dtml-and>
-    <dtml-sqltest dat_anexacao column="anexada.dat_anexacao" op="=" type="nb" optional><dtml-and>  
-    <dtml-sqltest ind_excluido op="=" type="int" optional>
-  </dtml-sqlgroup>
-
-</dtml-if>
