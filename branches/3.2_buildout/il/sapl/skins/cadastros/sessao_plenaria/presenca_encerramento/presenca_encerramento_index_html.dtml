@@ -36,10 +36,7 @@ for (i = 0; i < field.length; i++)
 
 <form name="presenca_encerramento_form" method="post" action="presenca_encerramento_salvar_proc">
    <dtml-var sessao_plenaria_menu>
-   <dtml-if cod_sessao_plen>
       <input type="hidden" name="dat_inicio_sessao" value="<dtml-var dat_sessao>" />
-      <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura = cod_num_legislatura, ind_excluido=0)">
-        <dtml-if sequence-start>
         <fieldset>
         <legend>Parlamentares presentes</legend>
         <table>
@@ -50,13 +47,8 @@ for (i = 0; i < field.length; i++)
                 </th>
                 <th class="form-label">Parlamentar</th>
             </tr>
-        </dtml-if sequence-start>
-       <dtml-if  expr="pysc.autoria_parlamentar_validar_pysc(txt_dat_apresentacao=dat_sessao, cod_parlamentar=cod_parlamentar)">
-         <dtml-if sequence-even>
+       <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
           <tr>
-         <dtml-else>
-          <tr class="even">
-         </dtml-if>
             <td>
                 <input type="checkbox" id="chk_presen_parlamentar" name="chk_presen_parlamentar" value="<dtml-var cod_parlamentar>" 
                     <dtml-if expr="zsql.presenca_encerramento_obter_zsql(cod_sessao_plen=cod_sessao_plen, dat_ordem = pysc.data_converter_pysc(data=dat_sessao),cod_parlamentar=cod_parlamentar, ind_excluido=0)">
@@ -65,28 +57,27 @@ for (i = 0; i < field.length; i++)
             </td>
             <td>
                 <label for="chk_presen_parlamentar">
-                    <dtml-var nom_completo> / <dtml-var sgl_partido missing null="">
+                    <dtml-var nom_completo>
+                     <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=cod_num_legislatura, cod_parlamentar=cod_parlamentar)">
+                       <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
+                         - <dtml-var sgl_partido null="">
+                       <dtml-else>
+                         S/P
+                       </dtml-in>
+                     <dtml-else>
+                       S/P
+                     </dtml-in>
                 </label>
             </td>
         </tr>
-
-    </dtml-if>
-    <dtml-if sequence-end>
+       <dtml-else>
+         <tr>
+           <td class="form-text">Não há nenhum parlamentar com mandato cadastrado na Legislatura.</td>
+         </tr>
+       </dtml-in>
     </table>
-        <p align="center">
-                <input class="botao" type="submit" name="button" value="Salvar" />
-        </p>
-    </dtml-if sequence-end>
-  <dtml-else>
-      <fieldset>
-       <legend>Presença no Encerramento da Sessão</legend>
-        <table>
-            <tr>
-                <td class="form-text">Não há nenhum parlamentar com mandato cadastrado na Legislatura.</td>
-            </tr>
-       </table>
-      </fieldset>
-</dtml-in>
-</dtml-if>
+    <p align="center">
+       <input class="botao" type="submit" name="button" value="Salvar" />
+    </p>
 </form>
 <dtml-var standard_html_footer>

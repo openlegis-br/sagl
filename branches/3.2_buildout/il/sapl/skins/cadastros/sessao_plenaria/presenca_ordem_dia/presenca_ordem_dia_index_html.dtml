@@ -41,11 +41,19 @@
                    Observações
                   </th>
              </tr>
-       <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=cod_num_legislatura, ind_excluido=0)">
-         <dtml-if  expr="pysc.autoria_parlamentar_validar_pysc(txt_dat_apresentacao=dat_sessao, cod_parlamentar=cod_parlamentar)">
+       <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
               <tr>
                   <td width="40%" class="texto">
-                    <b><dtml-var nom_completo> / <dtml-var sgl_partido missing null=""></b>
+                    <b><dtml-var nom_completo>
+                     <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=cod_num_legislatura, cod_parlamentar=cod_parlamentar)">
+                       <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
+                         - <dtml-var sgl_partido null="">
+                       <dtml-else>
+                         S/P
+                       </dtml-in>
+                     <dtml-else>
+                       S/P
+                     </dtml-in></b>
                     <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
                   </td>
                   <td>
@@ -76,7 +84,6 @@
                       <input type="text" id="txa_txt_justif_ausencia" name="txa_txt_justif_ausencia" value="<dtml-var txa_txt_justif_ausencia missing null>" size="30" maxlenght="200">
                   </td>
               </tr>
-         </dtml-if>
        <dtml-else>
               <tr>
                   <td class="form-text">Não há nenhum parlamentar com mandato cadastrado na Legislatura.</td>

@@ -34,11 +34,11 @@ for row in results:
     if row[1]!=None:
      r.append(row[1].encode( "utf-8" ))
     if row[10]!=None:
-     r.append(row[10].encode( "utf-8" )+', '+row[11].encode( "utf-8" ))
-    if row[12]!=None:
-     r.append(row[12].encode( "utf-8" )+' - CEP  '+row[13].encode( "utf-8" ))
-    if row[14]!=None:
-     r.append(row[14].encode( "utf-8" ))
+     r.append(row[10].encode( "utf-8" )+', '+row[11].encode( "utf-8" )+' '+row[12].encode( "utf-8" ))
+    if row[13]!=None:
+     r.append(row[13].encode( "utf-8" )+' - CEP  '+row[14].encode( "utf-8" ))
+    if row[15]!=None:
+     r.append(row[15].encode( "utf-8" )+' - '+row[16].encode( "utf-8" ))
     dados.append(r)
 return context.pdflabels(dados)
 
