@@ -27,6 +27,7 @@ SELECT
     p.cod_mat_ou_doc,
     p.cod_emenda,
     p.cod_substitutivo
+
 FROM 
     proposicao p    
      LEFT JOIN tipo_proposicao t on p.tip_proposicao = t.tip_proposicao,
@@ -34,56 +35,63 @@ FROM
      LEFT JOIN parlamentar on a.cod_parlamentar=parlamentar.cod_parlamentar
      LEFT JOIN comissao on a.cod_comissao=comissao.cod_comissao
      LEFT JOIN tipo_autor ta ON a.tip_autor = ta.tip_autor
+
 <dtml-sqlgroup where>
     a.ind_excluido = 0 <dtml-and>
     p.tip_proposicao = t.tip_proposicao <dtml-and>  
     a.cod_autor = p.cod_autor <dtml-and>
-    <dtml-sqltest cod_proposicao    op="=" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_autor         op="=" column="p.cod_autor" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_proposicao       op="=" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_autor            op="=" column="p.cod_autor" type="int" optional> <dtml-and>
     <dtml-sqltest des_tipo_proposicao  op="=" column="t.des_tipo_proposicao" type="nb" optional> <dtml-and>
-    <dtml-sqltest tip_proposicao  op="=" column="p.tip_proposicao" type="int" optional> <dtml-and>
-    <dtml-sqltest dat_envio         op="=" type="nb"  optional> <dtml-and>
-    <dtml-sqltest dat_recebimento   op="=" type="nb" optional> <dtml-and>
-    <dtml-sqltest ind_excluido      op="=" column="p.ind_excluido" type="int" optional> <dtml-and>
-    <dtml-sqltest col_username      op="=" column="a.col_username" type="nb"  optional> <dtml-and>
-    <dtml-sqltest ind_mat_ou_doc    op="=" column="t.ind_mat_ou_doc" type="nb" optional> <dtml-and>
-    <dtml-sqltest tip_mat_ou_doc    op="=" column="t.tip_mat_ou_doc" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_mat_ou_doc    op="=" column="p.cod_mat_ou_doc" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_emenda        op="=" column="p.cod_emenda" type="int" optional> <dtml-and>
-    <dtml-sqltest cod_substitutivo  op="=" column="p.cod_substitutivo" type="int" optional> <dtml-and>
+    <dtml-sqltest tip_proposicao       op="=" column="p.tip_proposicao" type="int" optional> <dtml-and>
+    <dtml-sqltest dat_envio            op="=" type="nb"  optional> <dtml-and>
+    <dtml-sqltest dat_recebimento      op="=" type="nb" optional> <dtml-and>
+    <dtml-sqltest ind_excluido         op="=" column="p.ind_excluido" type="int" optional> <dtml-and>
+    <dtml-sqltest col_username         op="=" column="a.col_username" type="nb"  optional> <dtml-and>
+    <dtml-sqltest ind_mat_ou_doc       op="=" column="t.ind_mat_ou_doc" type="nb" optional> <dtml-and>
+    <dtml-sqltest tip_mat_ou_doc       op="=" column="t.tip_mat_ou_doc" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_mat_ou_doc       op="=" column="p.cod_mat_ou_doc" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_emenda           op="=" column="p.cod_emenda" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_substitutivo     op="=" column="p.cod_substitutivo" type="int" optional> <dtml-and>
     <dtml-if expr="ind_enviado=='1'">
-        p.dat_envio is not null and p.dat_envio != ''
+        p.dat_envio IS NOT NULL 
+        AND p.dat_envio != ''
     <dtml-elif expr="ind_enviado=='0'">
-        p.dat_envio is null
+        p.dat_envio IS NULL
     </dtml-if>
     <dtml-and>
     <dtml-if expr="ind_pendente==1">
-        p.dat_envio != '' and p.dat_recebimento is null
+        p.dat_envio != '' 
+        AND p.dat_recebimento IS NULL
     <dtml-elif expr="ind_pendente=='0'">
         p.dat_envio = ''
     </dtml-if>
     <dtml-and>
     <dtml-if expr="ind_recebido==1">
-        p.dat_recebimento != '' and p.cod_mat_ou_doc is null
+        p.dat_recebimento != '' 
+        AND p.cod_mat_ou_doc IS NULL
     <dtml-elif expr="ind_recebido==0">
-        p.dat_recebimento is null
+        p.dat_recebimento IS NULL
     </dtml-if>
     <dtml-and>
     <dtml-if expr="ind_devolvido==1">
         p.dat_devolucao != ''
-        and YEAR(p.dat_devolucao) = YEAR(now())
+        AND YEAR(p.dat_devolucao) = YEAR(now())
     <dtml-elif expr="ind_devolvido==0">
-        p.dat_devolucao is null
+        p.dat_devolucao IS NULL
     </dtml-if>
     <dtml-and>
     <dtml-if expr="ind_incorporado==1">
         p.dat_recebimento != ''
-        and YEAR(p.dat_recebimento) = YEAR(now())
+        AND p.cod_mat_ou_doc IS NOT NULL
+        AND YEAR(p.dat_recebimento) = YEAR(now())
     <dtml-elif expr="ind_incorporado==0">
-        p.cod_mat_ou_doc is null
+        p.cod_mat_ou_doc IS NULL
     </dtml-if>
 
 </dtml-sqlgroup>
 
-ORDER BY p.dat_envio DESC, p.cod_proposicao DESC
+ORDER BY 
+   p.dat_envio DESC, 
+   p.cod_proposicao DESC
 
