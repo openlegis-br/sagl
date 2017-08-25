@@ -1,4 +1,4 @@
-## Script (Python) "caixa_entrada_pysc"
+## Script (Python) "caixa_entrada_contar_pysc"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
@@ -14,10 +14,10 @@ for unidade in context.zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario
 
 tramitacoes = []
 for unidade in unidades:
-  if context.zsql.usuario_unid_tram_obter_zsql(cod_unidade=unidade,cod_usuario=cod_usuario,ind_responsavel=1):
+  if context.zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario,cod_unid_tramitacao=unidade,ind_responsavel=1):
     for tramitacao in context.zsql.tramitacao_obter_zsql(cod_unid_tram_destino=unidade,ind_ult_tramitacao=1,ind_encaminha=1,ind_recebido=0,ind_retorno_tramitacao=1,ind_tramitacao=1):
       tramitacoes.append(int(tramitacao.cod_tramitacao))
-  elif context.zsql.usuario_unid_tram_obter_zsql(cod_unidade=unidade,cod_usuario=cod_usuario,ind_responsavel=0):
+  elif context.zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario,cod_unid_tramitacao=unidade,ind_responsavel=0):
     for tramitacao in context.zsql.tramitacao_obter_zsql(cod_unid_tram_destino=unidade,cod_usuario_dest=cod_usuario,ind_ult_tramitacao=1,ind_encaminha=1,ind_recebido=0,ind_retorno_tramitacao=1,ind_tramitacao=1):
       tramitacoes.append(int(tramitacao.cod_tramitacao))
 

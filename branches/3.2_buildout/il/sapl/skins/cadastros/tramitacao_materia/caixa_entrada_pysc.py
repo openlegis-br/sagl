@@ -27,5 +27,4 @@ tramitacoes = [
     if tramitacoes.index(e) == i
     ]
 
-
 return tramitacoes
