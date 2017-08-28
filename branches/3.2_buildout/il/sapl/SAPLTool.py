@@ -816,6 +816,11 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
           string = str(protocolo.cod_protocolo).zfill(7)
           texto = 'PROT-'+ str(sgl_casa)+' '+ str(protocolo.num_protocolo)+'/'+str(protocolo.ano_protocolo)
           data = self.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' - '+protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
+          if self.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
+              for materia in self.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
+                 num_materia = materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+          else:
+              num_materia = " "
           pdf_protocolo = self.sapl_documentos.protocolo.absolute_url() + "/" +  str(cod_protocolo) + "_protocolo.pdf"
           nom_pdf_protocolo = str(cod_protocolo) + "_protocolo.pdf"
         pdfmetrics.registerFont(TTFont('Courier_Bold', '/usr/share/fonts/truetype/msttcorefonts/Courier_New_Bold.ttf'))
@@ -829,6 +834,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         slab.setFont("Courier_Bold", 8)
         slab.drawString(497, 801, texto)
         slab.drawString(497, 794, data)
+        slab.drawString(497, 786, num_materia)
         slab.save()
         barcode_pdf = open(packet, 'rb')
         new_pdf = PdfFileReader(barcode_pdf)
