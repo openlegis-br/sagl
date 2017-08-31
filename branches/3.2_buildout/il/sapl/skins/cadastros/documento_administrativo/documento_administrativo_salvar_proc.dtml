@@ -64,34 +64,50 @@
 
     <dtml-call expr="REQUEST.set('erro', 0)">
 
-<dtml-call expr="REQUEST.set('existe_arquivo', 0)">
-<dtml-if file_nom_arquivo>
-    <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
-    <dtml-if expr="_.hasattr(sapl_documentos.administrativo,id_documento)">
-        <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento) ">
-        <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
+    <dtml-call expr="REQUEST.set('existe_arquivo', 0)">
+    <dtml-if file_nom_arquivo>
+       <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
+       <dtml-if expr="_.hasattr(sapl_documentos.administrativo,id_documento)">
+           <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento) ">
+           <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
+           <dtml-try>
+               <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
+           <dtml-except>
+               <dtml-call expr="REQUEST.set('erro', 1)">
+               <dtml-let mensagem="'Ocorreu erro ao tentar salvar texto integral'+hdn_cod_documento">
+                  <dtml-var mensagem_emitir>
+               </dtml-let>
+           </dtml-try>
+           </dtml-let>
+       </dtml-if>
+       <dtml-if expr="not existe_arquivo">
         <dtml-try>
-            <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
-        <dtml-except>
-            <dtml-call expr="REQUEST.set('erro', 1)">
-              <dtml-let mensagem="'Ocorreu erro ao tentar salvar texto integral'+hdn_cod_documento">
-                 <dtml-var mensagem_emitir>
-              </dtml-let>
+         <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
+         <dtml-call expr="sapl_documentos.administrativo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
         </dtml-try>
-        </dtml-let>
+       </dtml-if>
     </dtml-if>
-    <dtml-if expr="not existe_arquivo">
-    <dtml-try>
-      <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
-      <dtml-call expr="sapl_documentos.administrativo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
-     </dtml-try>
-    </dtml-if>
-</dtml-if>
 
-          <dtml-let mensagem="'Documento salvo com sucesso!'" sucesso="1" url="hdn_url" >
-            <dtml-var mensagem_emitir>
-          </dtml-let>
- 
+    <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
+        <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=txt_ano_documento)">
+         <dtml-if sequence-start>
+           <dtml-call expr="REQUEST.set('cod_protocolo', cod_protocolo)">
+           <dtml-let id_documento="_.str(cod_protocolo)+'_protocolo.pdf'">
+            <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">
+              <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_documento_pysc(cod_protocolo,hdn_cod_documento,0)">
+            </dtml-if>
+           </dtml-let>
+         </dtml-if>
+       </dtml-in>
+       <dtml-let mensagem="'Documento salvo com sucesso!'" sucesso="1" cod_protocolo="cod_protocolo" url="hdn_url" >
+         <dtml-var mensagem_emitir>
+       </dtml-let>
+    <dtml-else>
+       <dtml-let mensagem="'Documento salvo com sucesso!'" sucesso="1" url="hdn_url" >
+         <dtml-var mensagem_emitir>
+       </dtml-let>
+    </dtml-if>
+
 </dtml-try>
 
  <dtml-if hdn_cod_documento>

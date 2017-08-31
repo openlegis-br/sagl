@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_protocolo, cod_materia, ind_sobrescrever=0
+##parameters=cod_protocolo, cod_materia, ind_sobrescrever=1
 ##title=
 ##
 ok = 0
