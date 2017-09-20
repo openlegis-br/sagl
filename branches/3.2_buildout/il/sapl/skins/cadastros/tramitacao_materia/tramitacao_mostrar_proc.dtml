@@ -1,5 +1,4 @@
 <dtml-var standard_html_header>
-
 <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.js"></script>
 <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.xhtml.min.js"></script>
 <script type="text/javascript">
@@ -13,7 +12,6 @@
     
 //-->
 </script>
-
 <script type="text/javascript">
 $(document).ready(function() {
 $.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
@@ -38,9 +36,7 @@ $(document).ready(function() {
 	});
 });
 </script>
-
 <h1 class="firstHeading">Detalhes da Tramitação Eletrônica</h1>
-
 <dtml-in expr="zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tramitacao)">
     <dtml-call expr="REQUEST.set('hdn_cod_materia', int(cod_materia))">
     <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_dest', int(cod_unid_tram_dest))">
@@ -72,7 +68,6 @@ $(document).ready(function() {
            <dtml-else><input type="text" size="50" value="<dtml-var nom_parlamentar>" readonly>
            </dtml-if>
          </dtml-in>
-
        </td>
        <td class="form-element">Usuário de Origem</br>
         <dtml-if cod_usuario_local>
@@ -130,7 +125,6 @@ $(document).ready(function() {
             </dtml-in>
        </td>
     </tr>
-
       <dtml-call expr="REQUEST.set('pdf', _.str(hdn_cod_tramitacao)+'_tram.pdf')">
       <dtml-call expr="REQUEST.set('pdf_assinado', _.str(hdn_cod_tramitacao)+'_tram_signed.pdf')">
       <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
@@ -163,7 +157,6 @@ $(document).ready(function() {
 			           });
 			         </script>
                  </dtml-if>
-
                  <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
                    <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
                      <a class="popup1" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
@@ -179,12 +172,11 @@ $(document).ready(function() {
          <textarea name="txa_txt_tramitacao" id="txa_txt_tramitacao" cols="65" rows="4" disabled><dtml-var txt_tramitacao missing html_quote></textarea>
        </td>
     </tr>
-
   </table>
 
-      <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
-        <dtml-call expr="REQUEST.set('cod_usuario_corrente', cod_usuario_corrente)">
-      </dtml-in>
+  <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+    <dtml-call expr="REQUEST.set('cod_usuario_corrente', cod_usuario_corrente)">
+  </dtml-in>
 
   <dtml-if expr="dat_recebimento and ind_retorno_tramitacao==1">
      <form name="tramitacao_incluir" method="post" action="tramitacao_form">
@@ -196,6 +188,15 @@ $(document).ready(function() {
       </p>
      </form>
   <dtml-elif expr="not dat_recebimento and (int(cod_usuario_corrente)!=int(cod_usuario_local))">
+     <form name="recebimento_registrar" method="post" action="recebimento_registrar_proc">
+      <input type="hidden" name="cod_usuario_corrente" value="<dtml-var cod_usuario_corrente missing>" />
+      <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao>" />
+      <p align="center">
+        <input class="botao" type="submit" name="button" value="Receber" />
+        <input class="botao" type="button" value="Voltar" onClick="location.href='tramitacao_materia_index_html'">
+      </p>
+     </form>
+  <dtml-elif expr="dat_encaminha and not dat_recebimento and cod_usuario_dest!=None and (int(cod_usuario_dest)==int(cod_usuario_local)) and (int(cod_unid_tram_local)!=int(cod_unid_tram_dest))">
      <form name="recebimento_registrar" method="post" action="recebimento_registrar_proc">
       <input type="hidden" name="cod_usuario_corrente" value="<dtml-var cod_usuario_corrente missing>" />
       <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao>" />
@@ -234,7 +235,4 @@ $(document).ready(function() {
       </p>
   </dtml-if>
 </dtml-in>
-
-
-
 <dtml-var standard_html_footer>
