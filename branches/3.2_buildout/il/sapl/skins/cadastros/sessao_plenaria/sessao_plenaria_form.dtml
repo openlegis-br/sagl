@@ -182,6 +182,13 @@ function campos_criticar(){
     return;
     }
 
+    function roteiro_excluir(){
+        if (confirm("Deseja realmente excluir o Roteiro da Sessão?")) {
+           location.href="roteiro_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+        }
+    return;
+    }
+
 //-->
 </script>
 
@@ -488,6 +495,21 @@ $(document).ready(function() {
                 </dtml-if>
                 </td>         
             </tr>
+          <dtml-if cod_sessao_plen>
+            <tr>
+              <td colspan="4"><label for="txt_texto_odt">Roteiro da Sessão (PDF)</label><br />
+                 <dtml-call expr="REQUEST.set('id_roteiro', _.str(cod_sessao_plen)+'_roteiro_sessao.pdf')">
+                 <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_roteiro)">
+                   <dtml-let roteiro="_.getattr(sapl_documentos.pauta_sessao,id_roteiro).absolute_url">
+                     <a href="<dtml-var roteiro>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral"></a>
+                     <input type="button" class="botao" value="Excluir" onclick="javascript:roteiro_excluir()">
+                   </dtml-let>
+                 <dtml-else>
+                   <input type="file" id="file_nom_arquivo_roteiro" name="file_nom_arquivo_roteiro" accept="application/pdf" size="40" maxlength="100" />
+                 </dtml-if>
+              </td>
+            </tr>
+          </dtml-if>
 </table>
 
 <p align="center">

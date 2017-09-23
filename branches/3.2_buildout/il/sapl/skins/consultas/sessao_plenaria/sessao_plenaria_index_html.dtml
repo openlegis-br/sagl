@@ -194,7 +194,7 @@ inicio_sessao=<dtml-var dat_inicio_sessao missing>&num_legislatura=<dtml-var num
                 </tr>
 
                 <tr>
-                  <td class="texto" align="center" width="33%">
+                  <td class="texto" align="center" width="30%">
                     <div align="center">
                       <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">
                          <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
@@ -206,20 +206,24 @@ inicio_sessao=<dtml-var dat_inicio_sessao missing>&num_legislatura=<dtml-var num
                           <img class="img-disabled" align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível" />
                           <b>Ordem do Dia</b>
                             <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria'])">
-                              &nbsp;&nbsp;<a class="botao-link" target="_blank" href="javascript:ordem_dia_pdf_gerar(<dtml-var cod_sessao_plen>)">Gerar</a>
+                               <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+                                 <dtml-if sequence-start>
+                                   &nbsp;<a class="botao-link" target="_blank" href="javascript:ordem_dia_pdf_gerar(<dtml-var cod_sessao_plen>)">Gerar</a>
+                                 </dtml-if>
+                               </dtml-in>
                             </dtml-if>
                          </dtml-if>
                        </dtml-let>
                             <dtml-if expr="ZopeTime().strftime('%Y%m%d') > dat_inicio">
                               <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
                                 <dtml-if sequence-start>
-                                 &nbsp;&nbsp;| <a class="popup" data-fancybox-type="iframe" href="materias_ordem_dia_sessao_form?cod_sessao_plen=<dtml-var cod_sessao_plen>">Votação</a> |
+                                 &nbsp;<a class="popup" data-fancybox-type="iframe" href="materias_ordem_dia_sessao_form?cod_sessao_plen=<dtml-var cod_sessao_plen>">[Votação]</a>
                                 </dtml-if>
                               </dtml-in>
                             </dtml-if>
                     </div>
                   </td>
-                  <td class="texto" align="center" width="33%">
+                  <td class="texto" align="center" width="24%">
                     <div align="center">
                       <dtml-in expr="zsql.expediente_materia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
                        <dtml-if sequence-start>
@@ -228,10 +232,24 @@ inicio_sessao=<dtml-var dat_inicio_sessao missing>&num_legislatura=<dtml-var num
                        <dtml-else>
                           <img class="img-disabled" align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
                       </dtml-in>
-                       <b>Matérias do Expediente</b>
+                       <b>Expediente</b>
                     </div>
                   </td>
-                  <td class="texto" align="center" width="33%">
+                  <td class="texto" align="center" width="24%">
+                  <div align="center">
+                   <dtml-let id_roteiro="_.str(cod_sessao_plen)+'_roteiro_sessao.pdf'">
+                     <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_roteiro)">
+                       <dtml-let roteiro="_.getattr(sapl_documentos.pauta_sessao,id_roteiro).absolute_url">
+                         <a target="_blank" href="<dtml-var roteiro>"><img align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Roteiro da Sessão" /></a>
+                         <b>Roteiro</b>
+                       </dtml-let>
+                     <dtml-else>
+                     <img class="img-disabled" align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível"> <b>Roteiro</b>
+                     </dtml-if>
+                   </dtml-let>
+                  </div>
+                  </td>
+                  <td class="texto" align="center" width="22%">
                   <div align="center">
                    <dtml-let id_ata="_.str(cod_sessao_plen)+'_ata_sessao.pdf'">
                      <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_ata)">
