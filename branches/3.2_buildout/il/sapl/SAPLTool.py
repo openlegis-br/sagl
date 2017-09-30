@@ -34,6 +34,7 @@ import urllib2
 import cStringIO
 from appy.pod.renderer import Renderer
 from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
+from pdfrw import PdfReader, PdfWriter, PageMerge
 from StringIO import StringIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -830,8 +831,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         sgl_casa = self.sapl_documentos.props_sapl.sgl_casa
         for protocolo in self.zsql.protocolo_obter_zsql(cod_protocolo=cod_protocolo):
           string = str(protocolo.cod_protocolo).zfill(7)
-          texto = 'PROT-'+ str(sgl_casa)+' '+ str(protocolo.num_protocolo)+'/'+str(protocolo.ano_protocolo)
-          data = self.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' - '+protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
+          texto = 'P '+ str(protocolo.num_protocolo)+'/'+str(protocolo.ano_protocolo)
+          data = self.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' '+protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
           if self.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
               for materia in self.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
                  num_materia = materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
@@ -842,45 +843,42 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               num_materia = " "
           pdf_protocolo = self.sapl_documentos.protocolo.absolute_url() + "/" +  str(cod_protocolo) + "_protocolo.pdf"
           nom_pdf_protocolo = str(cod_protocolo) + "_protocolo.pdf"
+        pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         pdfmetrics.registerFont(TTFont('Courier_Bold', '/usr/share/fonts/truetype/msttcorefonts/Courier_New_Bold.ttf'))
-        x_var=169
-        y_var=285
+        x_var=166
+        y_var=291
         packet = os.path.normpath('temp.pdf')
         slab = canvas.Canvas(packet, pagesize=A4)
         slab.setFillColorRGB(0,0,0) 
-        barcode = barcode128 = code128.Code128(string,barWidth=.34*mm,barHeight=7*mm)
+        barcode = barcode128 = code128.Code128(string,barWidth=.38*mm,barHeight=4*mm)
         barcode.drawOn(slab, x_var*mm , y_var*mm)
-        slab.setFont("Courier_Bold", 8)
-        slab.drawString(497, 801, texto)
-        slab.drawString(497, 794, data)
-        slab.drawString(497, 786, num_materia)
+        slab.setFont("Arial_Bold", 7)
+        slab.drawString(488, 818, texto + " - " + data)
+        slab.drawString(488, 811, num_materia)
         slab.save()
         barcode_pdf = open(packet, 'rb')
-        new_pdf = PdfFileReader(barcode_pdf)
+        new_pdf = PdfReader(barcode_pdf)
         pdf_file = '%s' % (cod_protocolo) + "_protocolo.pdf"
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
         url = self.url() + '/sapl_documentos/protocolo/' + pdf_file
         opener = urllib.urlopen(url)
         f = open('/tmp/' + pdf_file, 'wb').write(opener.read())
-        existing_pdf = PdfFileReader(file('/tmp/'+nom_pdf_protocolo, "rb"))
-        output = PdfFileWriter()
-        for item in range(existing_pdf.getNumPages()):
-          pages = existing_pdf.getPage(item)
-          page1 = existing_pdf.getPage(0)
-          pages.mergePage(new_pdf.getPage(0))
-          output.addPage(pages)
-        outputStream = file(os.path.normpath(nom_pdf_protocolo), "wb")
-        output.write(outputStream)
-        outputStream.close()
-        data = open(nom_pdf_protocolo, "rb").read()              
+        existing_pdf = PdfReader(file('/tmp/'+nom_pdf_protocolo, "rb"))
+        barcode = PageMerge().add(new_pdf.pages[0])[0]
+        for page in existing_pdf.pages:
+          PageMerge(page).add(barcode).render()
+        outputStream = '/tmp/' + nom_pdf_protocolo
+        PdfWriter(outputStream, trailer=existing_pdf).write()
+        data = open('/tmp/' + nom_pdf_protocolo, 'rb').read()              
         for item in [outputStream]:
           if nom_pdf_protocolo in self.sapl_documentos.protocolo:
             documento = getattr(self.sapl_documentos.protocolo,nom_pdf_protocolo)
             documento.manage_upload(file=data)
+          else:
+            self.sapl_documentos.protocolo.manage_addFile(id=nom_pdf_protocolo,file=data)
         os.unlink('/tmp/'+nom_pdf_protocolo)
         os.unlink(packet)
-        os.unlink(nom_pdf_protocolo)
 
     def processo_eletronico_gerar_pdf(self,cod_materia):
         if cod_materia.isdigit():
@@ -994,7 +992,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def proposicao_autuar(self,cod_proposicao):
         nom_pdf_proposicao = str(cod_proposicao) + "_signed.pdf"
         pdf_proposicao = self.sapl_documentos.proposicao.absolute_url() + "/" +  nom_pdf_proposicao
-        nom_pdf_proposicao = str(cod_proposicao) + "_signed.pdf"
         for proposicao in self.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao):
           for tipo_proposicao in self.zsql.tipo_proposicao_obter_zsql(tip_proposicao=proposicao.tip_proposicao):
             if tipo_proposicao.ind_mat_ou_doc == "M":
@@ -1019,8 +1016,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/proposicao'+' e informe o número '+ num_proposicao+'.'
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
-        x_var=27
-        y_var=210
+        x_var=26
+        y_var=216
         packet = os.path.normpath('temp.pdf')
         slab = canvas.Canvas(packet, pagesize=A4)
         slab.setFillColorRGB(0,0,0)
@@ -1028,45 +1025,42 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         bounds = qr_code.getBounds()
         width = bounds[2] - bounds[0]
         height = bounds[3] - bounds[1]
-        d = Drawing(100, 100, transform=[100./width,0,0,100./height,0,0])
+        d = Drawing(80, 80, transform=[80./width,0,0,80./height,0,0])
         d.add(qr_code)
         renderPDF.draw(d, slab,  x_var*mm, y_var*mm)
         slab.setFont("Arial_Bold", 12)
-        slab.drawString(185, 675, texto)
+        slab.drawString(175, 674, texto)
         slab.setFont("Arial", 9)
-        slab.drawString(185, 662, validacao)
+        slab.drawString(175, 662, validacao)
         slab.save()
         barcode_pdf = open(packet, 'rb')
-        new_pdf = PdfFileReader(barcode_pdf)
+        new_pdf = PdfReader(barcode_pdf)
 
         packet1 = os.path.normpath('temp1.pdf')
         c = canvas.Canvas(packet1, pagesize=A4)
         c.setFillColorRGB(0,0,0)
         c.rotate(90)
         c.setFont("Arial", 9)
-        c.drawString(10, -578, mensagem1)
-        c.drawString(10, -590, mensagem2)
+        c.drawString(30, -578, mensagem1)
+        c.drawString(30, -588, mensagem2)
         c.save()
         texto_pdf = open(packet1, 'rb')
-        new_pdf1 = PdfFileReader(texto_pdf)
+        new_pdf1 = PdfReader(texto_pdf)
 
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
         url = self.url() + '/sapl_documentos/proposicao/' + nom_pdf_proposicao
         opener = urllib.urlopen(url)
         f = open('/tmp/' + nom_pdf_proposicao, 'wb').write(opener.read())
-        existing_pdf = PdfFileReader(file('/tmp/' + nom_pdf_proposicao, "rb"))
-        output = PdfFileWriter()
-        for item in range(existing_pdf.getNumPages()):
-          pages = existing_pdf.getPage(item)
-          page1 = existing_pdf.getPage(0)
-          page1.mergePage(new_pdf.getPage(0))
-          pages.mergePage(new_pdf1.getPage(0))
-          output.addPage(pages)
-        outputStream = file(os.path.normpath(nom_pdf_proposicao), "wb")
-        output.write(outputStream)
-        outputStream.close()
-        data = open(nom_pdf_proposicao, "rb").read()              
+        existing_pdf = PdfReader(file('/tmp/' + nom_pdf_proposicao, "rb"))
+        margem = PageMerge().add(new_pdf1.pages[0])[0]
+        for page in existing_pdf.pages:
+          PageMerge(page).add(margem).render()
+        qrcode = PageMerge().add(new_pdf.pages[0])[0]
+        PageMerge(existing_pdf.pages[0]).add(qrcode).render()
+        outputStream = '/tmp/' + nom_pdf_proposicao
+        PdfWriter(outputStream, trailer=existing_pdf).write()
+        data = open('/tmp/' + nom_pdf_proposicao, 'rb').read()              
         for item in [outputStream]:
           if nom_pdf_saida in self.sapl_documentos.materia:
             documento = getattr(self.sapl_documentos.materia,nom_pdf_saida)
@@ -1076,7 +1070,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         os.unlink('/tmp/'+nom_pdf_proposicao)
         os.unlink(packet)
         os.unlink(packet1)
-        os.unlink(nom_pdf_proposicao)
 
     def restpki_client(self):
         restpki_url = 'https://pki.rest/'
