@@ -845,16 +845,16 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
           nom_pdf_protocolo = str(cod_protocolo) + "_protocolo.pdf"
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         pdfmetrics.registerFont(TTFont('Courier_Bold', '/usr/share/fonts/truetype/msttcorefonts/Courier_New_Bold.ttf'))
-        x_var=166
-        y_var=291
+        x_var=165
+        y_var=288
         packet = os.path.normpath('temp.pdf')
         slab = canvas.Canvas(packet, pagesize=A4)
         slab.setFillColorRGB(0,0,0) 
         barcode = barcode128 = code128.Code128(string,barWidth=.38*mm,barHeight=4*mm)
         barcode.drawOn(slab, x_var*mm , y_var*mm)
         slab.setFont("Arial_Bold", 7)
-        slab.drawString(488, 818, texto + " - " + data)
-        slab.drawString(488, 811, num_materia)
+        slab.drawString(485, 810, texto + " - " + data)
+        slab.drawString(485, 803, num_materia)
         slab.save()
         barcode_pdf = open(packet, 'rb')
         new_pdf = PdfReader(barcode_pdf)
