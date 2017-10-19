@@ -31,18 +31,16 @@
     <dtml-var mensagem_emitir>
   </dtml-let>
 
-<dtml-in expr="zsql.emenda_incluida_codigo_obter_zsql()">
+  <dtml-in expr="zsql.emenda_incluida_codigo_obter_zsql()">
     <dtml-call "REQUEST.set('ult_emenda_incluida',cod_emenda)">
-</dtml-in>
+  </dtml-in>
 
 <dtml-else>      
 
    <dtml-if expr="(_.has_key('hdn_cod_proposicao') and hdn_cod_proposicao!='') or (_.has_key('temProposicao'))">
-
       <dtml-in expr="zsql.emenda_incluida_codigo_obter_zsql()">
          <dtml-call "REQUEST.set('hdn_cod_emenda',cod_emenda)">
       </dtml-in>
-
       <dtml-let ok="pysc.proposicao_salvar_como_emenda_pysc(hdn_cod_proposicao,hdn_cod_emenda,0)">
         <dtml-if ok>
           <dtml-call expr="REQUEST.set('dat_recebimento', pysc.data_atual_iso_pysc())">    
@@ -51,39 +49,23 @@
           <dtml-call expr="REQUEST.set('erro', 1)">
         </dtml-if>
       </dtml-let>
-
    </dtml-if>
 
     <dtml-call expr="REQUEST.set('erro', 0)">              
-
-    <dtml-call expr="REQUEST.set('existe_arquivo', 0)">
-      <dtml-if file_nom_arquivo_emenda>
-        <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_emenda)+'_emenda.pdf')">
-        <dtml-if expr="_.hasattr(sapl_documentos.emenda,id_documento)">
-          <dtml-let documento="_.getattr(sapl_documentos.emenda,id_documento) ">
-            <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
-            <dtml-try>
-                <dtml-call "documento.manage_upload(file=file_nom_arquivo_emenda)">
-            <dtml-except>
-              <dtml-call expr="REQUEST.set('erro', 1)">
-              <dtml-let mensagem="'Ocorreu erro ao tentar salvar o texto integral'+hdn_cod_emenda">
-                 <dtml-var mensagem_emitir>
-              </dtml-let>
-            </dtml-try>
-          </dtml-let>
-        </dtml-if>
-      </dtml-if>
-
-      <dtml-if expr="not existe_arquivo">
-        <dtml-call expr="REQUEST.set('erro',0)">
-        <dtml-try>
-            <dtml-call expr="sapl_documentos.emenda.manage_addFile(id=id_documento,file=file_nom_arquivo_emenda)">
-        <dtml-except> 
-        </dtml-try>
-      </dtml-if>
-
-    <dtml-if erro>
-    </dtml-if>
+    <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
+    <dtml-if file_nom_arquivo_emenda>
+       <dtml-in expr="zsql.emenda_incluida_codigo_obter_zsql()">
+         <dtml-call "REQUEST.set('ult_emenda_incluida',cod_emenda)">
+       </dtml-in>
+       <dtml-call expr="REQUEST.set('id_emenda',_.str(ult_emenda_incluida)+'_emenda.pdf')">
+       <dtml-if "not existe_arquivo">
+         <dtml-try>            
+            <dtml-call expr="sapl_documentos.emenda.manage_addFile(id=id_emenda,file=file_nom_arquivo_emenda)">
+         <dtml-except> 
+               <dtml-call expr="REQUEST.set('erro', 1)">              
+         </dtml-try>      
+       </dtml-if>
+     </dtml-if>
 
     <dtml-let mensagem="'Emenda salva com sucesso!'" sucesso="1" url="hdn_url">
       <dtml-var mensagem_emitir>
