@@ -115,3 +115,25 @@ ALTER TABLE `visita`
 
 ALTER TABLE `visita`
   MODIFY `cod_visita` int(11) NOT NULL AUTO_INCREMENT;
+
+
+
+CREATE TABLE `sessao_plenaria_painel` (
+  `cod_item` int(11) NOT NULL,
+  `tip_item` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `nom_fase` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `num_ordem` int(11) NOT NULL,
+  `txt_exibicao` text COLLATE utf8_unicode_ci NOT NULL,
+  `cod_materia` int(11) DEFAULT NULL,
+  `txt_autoria` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `txt_turno` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ind_extrapauta` tinyint(4) DEFAULT '0',
+  `ind_exibicao` tinyint(4) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `sessao_plenaria_painel`
+  ADD PRIMARY KEY (`cod_item`),
+  ADD UNIQUE KEY `ind_cod_materia` (`cod_materia`);
+
+ALTER TABLE `sessao_plenaria_painel`
+  MODIFY `cod_item` int(11) NOT NULL AUTO_INCREMENT;
