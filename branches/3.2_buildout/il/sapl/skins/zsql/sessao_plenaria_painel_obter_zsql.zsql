@@ -1,64 +1,32 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_sessao_plen="" ind_excluido=0 cod_ordem="" dat_inicio_sessao="" num_sessao_plen="" tip_sessao=""
+arguments : ind_exibicao=""
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
-<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
 SELECT
-       REPLACE(sessao_plenaria.cod_sessao_plen,  'L', '') as cod_sessao_plen,
-       REPLACE(sessao_plenaria.cod_andamento_sessao, 'L', '') as cod_andamento_sessao,
-       cod_sessao_leg,
-       DATE_FORMAT(sessao_plenaria.dat_inicio_sessao, '%d/%m/%Y') as dat_inicio_sessao,
-       DATE_FORMAT(sessao_plenaria.dat_fim_sessao, '%d/%m/%Y') as dat_fim_sessao,
-       sessao_plenaria.dia_sessao,
-       sessao_plenaria.hr_inicio_sessao,
-       sessao_plenaria.hr_fim_sessao,
-       sessao_plenaria.num_legislatura,
-       sessao_plenaria.num_sessao_plen,
-       sessao_plenaria.tip_sessao,
-       sessao_plenaria.ind_excluido
+      cod_item,
+      tip_item,
+      nom_fase,
+      num_ordem,
+      txt_exibicao,
+      cod_materia,
+      txt_autoria,
+      txt_turno,
+      ind_extrapauta,
+      ind_exibicao
 
 FROM
-   sessao_plenaria
+   sessao_plenaria_painel
 
-  <dtml-sqlgroup where>
-    <dtml-sqltest cod_sessao_plen   op="=" type="int" optional><dtml-and>
-    <dtml-sqltest ind_excluido      op="=" type="int" optional><dtml-and>
-    <dtml-sqltest num_sessao_plen   op="=" type="int" optional><dtml-and>
-    <dtml-sqltest tip_sessao        op="=" type="int" optional><dtml-and>
-    <dtml-sqltest dat_inicio_sessao op="=" type="nb" optional><dtml-and>
-    sessao_plenaria.cod_sessao_plen != 0 
-  </dtml-sqlgroup>
-ORDER BY dat_inicio_sessao
-
-<dtml-else>
-
-SELECT
-       sessao_plenaria.cod_sessao_plen as cod_sessao_plen,
-       sessao_plenaria.cod_andamento_sessao as cod_andamento_sessao,
-       cod_sessao_leg,
-       TO_CHAR(sessao_plenaria.dat_inicio_sessao, 'DD/MM/YYYY') as dat_inicio_sessao,
-       TO_CHAR(sessao_plenaria.dat_fim_sessao, 'DD/MM/YYYY') as dat_fim_sessao,
-       sessao_plenaria.dia_sessao,
-       sessao_plenaria.hr_inicio_sessao,
-       sessao_plenaria.hr_fim_sessao,
-       sessao_plenaria.num_legislatura,
-       sessao_plenaria.num_sessao_plen,
-       sessao_plenaria.tip_sessao,
-       sessao_plenaria.ind_excluido
-
-FROM
-   sessao_plenaria
-
-  <dtml-sqlgroup where>
-    <dtml-sqltest cod_sessao_plen   op="=" type="int" optional><dtml-and>
-    <dtml-sqltest ind_excluido      op="=" type="int" optional><dtml-and>
-    <dtml-sqltest num_sessao_plen   op="=" type="int" optional><dtml-and>
-    <dtml-sqltest tip_sessao        op="=" type="int" optional><dtml-and>
-    <dtml-sqltest dat_inicio_sessao op="=" type="nb" optional><dtml-and>
-    sessao_plenaria.cod_sessao_plen != 0 
-  </dtml-sqlgroup>
-ORDER BY dat_inicio_sessao
-
+<dtml-if expr="ind_exibicao=='0'">
+WHERE
+    ind_exibicao = 0
+<dtml-elif expr="ind_exibicao=='1'">
+WHERE
+    ind_exibicao = 1
 </dtml-if>
+
+ORDER BY 
+   num_ordem
+

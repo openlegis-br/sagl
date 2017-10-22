@@ -1,0 +1,104 @@
+<dtml-in expr="zsql.sessao_plenaria_obter_zsql(ind_iniciada=1)">
+    <dtml-call expr="REQUEST.set('dat_sessao', dat_inicio_sessao)">
+    <dtml-call expr="REQUEST.set('cod_num_legislatura', num_legislatura)">
+    <dtml-call expr="REQUEST.set('cod_sessao_plen', cod_sessao_plen)">
+</dtml-in>
+<dtml-call expr="REQUEST.set('ind_votacao_iniciada', 0)">
+<dtml-if expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0, ind_votacao_iniciada=1)">
+<dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0, ind_votacao_iniciada=1)">
+    <dtml-call expr="REQUEST.set('cod_ordem', cod_ordem)">
+    <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+    <dtml-call expr="REQUEST.set('tip_votacao', tip_votacao)">
+    <dtml-call expr="REQUEST.set('tip_sessao', tip_sessao)">
+    <dtml-if ind_votacao_iniciada>
+        <dtml-call expr="REQUEST.set('ind_votacao_iniciada', 1)">
+    </dtml-if>
+</dtml-in>
+</dtml-if>
+<dtml-if expr="zsql.expediente_materia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0, ind_votacao_iniciada=1)">
+<dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0, ind_votacao_iniciada=1)">
+    <dtml-call expr="REQUEST.set('cod_ordem', cod_ordem)">
+    <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+    <dtml-call expr="REQUEST.set('tip_votacao', tip_votacao)">
+    <dtml-call expr="REQUEST.set('tip_sessao', tip_sessao)">
+    <dtml-if ind_votacao_iniciada>
+        <dtml-call expr="REQUEST.set('ind_votacao_iniciada', 1)">
+    </dtml-if>
+</dtml-in>
+</dtml-if>
+<dtml-if expr="not ind_votacao_iniciada">
+    <dtml-in expr="pysc.ultima_votacao_pysc(cod_sessao_plen = cod_sessao_plen)">
+        <dtml-call expr="REQUEST.set('cod_ordem', cod_ordem)">
+        <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+        <dtml-call expr="REQUEST.set('tip_votacao', tip_votacao)">
+        <dtml-call expr="REQUEST.set('tip_sessao', tip_sessao)">
+    </dtml-in>
+</dtml-if>
+<dtml-if cod_ordem>
+    <dtml-in expr="zsql.votacao_obter_zsql(cod_ordem=cod_ordem, cod_materia=cod_materia, ind_excluido=0)">
+        <dtml-call expr="REQUEST.set('cod_votacao', cod_votacao)">
+        <dtml-else>
+        <dtml-call expr="REQUEST.set('cod_votacao', None)">
+    </dtml-in>
+</dtml-if>
+<table width="100%" class="votos">
+    <tr class="total-sim">
+        <td width="50%">SIM</td>
+        <td width="50%">
+            <dtml-if cod_votacao>
+                <dtml-in expr="zsql.votacao_obter_zsql(cod_votacao=cod_votacao,ind_excluido=0)">
+                    <dtml-var num_votos_sim>
+                </dtml-in>
+                <dtml-else>
+                00
+            </dtml-if>
+        </td>
+    </tr>
+    <tr class="total-nao">
+        <td>N&Atilde;O </td>
+        <td>
+            <dtml-if cod_votacao>
+                <dtml-in expr="zsql.votacao_obter_zsql(cod_votacao=cod_votacao,ind_excluido=0)">
+                    <dtml-var num_votos_nao>
+                </dtml-in>
+                <dtml-else>
+                00
+            </dtml-if>
+        </td>
+    </tr>
+    <tr class="total-abstencao">
+        <td>ABSTEN&Ccedil;&Atilde;O</td>
+        <td>
+            <dtml-if cod_votacao>
+                <dtml-in expr="zsql.votacao_obter_zsql(cod_votacao=cod_votacao,ind_excluido=0)">
+                    <dtml-var num_abstencao>
+                </dtml-in>
+                <dtml-else>
+                00
+            </dtml-if>
+        </td>
+    </tr>
+    <tr class="total-nao-votou">
+        <td>N&Atilde;O VOTOU</td>
+        <td></td>
+    </tr>
+    <tr class="total-votos">
+        <td>TOTAL</td>
+        <td></td>
+    </tr>
+    <tr class="presenca-total">
+        <td>PRESENTES</td>
+        <td><dtml-var expr="len(zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0))"></td>
+    </tr>
+    <tr class="ausencia-total">
+        <td>AUSENTES</td>
+        <td><dtml-var expr="pysc.ausentes_sessao_pysc(cod_sessao_plen, cod_num_legislatura)"></td>
+    </tr>
+</table>
+<dtml-if cod_votacao>
+    <dtml-in expr="zsql.votacao_obter_zsql(cod_votacao=cod_votacao,ind_excluido=0)">
+        <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+            <p class="resultado">RESULTADO:  <dtml-var expr="nom_resultado.upper()"></p>
+        </dtml-in>
+    </dtml-in>
+</dtml-if>
