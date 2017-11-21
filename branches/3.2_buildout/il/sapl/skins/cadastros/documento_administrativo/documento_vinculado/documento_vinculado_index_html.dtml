@@ -1,0 +1,174 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+
+function campos_criticar(){
+
+    var form=document.documento_vinculado_form;       
+ 
+    var regexp_digitos = /\D+/;
+
+    if (form.lst_tip_documento.selectedIndex==''){
+       alert("O tipo de documento deve ser selecionado!");
+       form.lst_tip_documento.focus();
+       return false;
+    }
+
+    if (form.txt_num_documento.value == "") {
+       alert("O número do documento deve ser preenchido!");
+       form.txt_num_documento.focus();
+       return false;
+    }
+
+    if (regexp_digitos.test(form.txt_num_documento.value)) {
+       alert("O número do documento deve ser um número natural!");
+       form.txt_num_documento.focus();
+       return false;
+    }
+
+    if (form.txt_ano_documento.value == "") {
+       alert("O ano do documento deve ser preenchido!");
+       form.txt_ano_documento.focus();
+       return false;
+    }
+
+    if (regexp_digitos.test(form.txt_ano_documento.value)) {
+       alert("O ano do documento deve ser um número natural!");
+       form.txt_ano_documento.focus();
+       return false;
+    }
+
+    if (form.hdn_cod_documento_vinculado.value == "") {
+       alert("Dados do documento obtidos com sucesso! Verifique se a ementa corresponde ao documento informado.");
+       form.lst_tip_documento.focus();
+       return false;
+    }
+
+
+ form.submit();
+}
+
+  function ementa_buscar(form){
+    if ((form.lst_tip_documento.selectedIndex != 0) &&
+       (form.txt_num_documento.value!="") && 
+       (form.txt_ano_documento.value!="")){
+       location.href="ementa_buscar_proc?cod_documento="+form.hdn_cod_documento.value+"&tip_documento="+form.lst_tip_documento[form.lst_tip_documento.selectedIndex].value+"&num_documento="+form.txt_num_documento.value+"&ano_documento="+form.txt_ano_documento.value;
+    }
+  }
+
+  function excluir(cod_vinculo) {
+    var form=document.documento_vinculado_form;       
+    if (confirm("Deseja realmente excluir o vínculo com o documento?")) {
+       location.href="<dtml-var absolute_url>/documento_vinculado_excluir_proc?cod_vinculo=" + cod_vinculo + "&cod_documento="+form.hdn_cod_documento.value;
+    }
+  } 
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/documento_administrativo">Ajuda</a>
+
+<h1 class="firstHeading">Documento Administrativo</h1>
+
+<dtml-var documento_menu>
+
+<h3 align="center"><dtml-var documento_header></h3>
+
+<form name="documento_vinculado_form" method="post" action="documento_vinculado_salvar_proc">  
+
+<input type="hidden" name="hdn_cod_documento" value=<dtml-var cod_documento>></input>
+<input type="hidden" name="hdn_cod_documento_vinculado" value=<dtml-var hdn_cod_documento_vinculado missing>></input>   
+
+  <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculado=cod_documento)">
+    <dtml-if sequence-start>
+     <fieldset><legend>Documentos Vinculantes</legend>
+   <table>
+       <tr> 
+           <th width="15%" class="form-label">Documento</th>
+           <th width="70%" class="form-label">Ementa</th>
+       </tr>
+      </dtml-if sequence-start>
+        <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento_vinculante)">
+         <tr> 
+           <td width="15%" class="texto">
+                 <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                   <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+                 </a>
+           </td>
+           <td width="70%" class="texto"><dtml-var txt_assunto></td>
+        </tr>
+       </dtml-in>
+    <dtml-if sequence-end>
+      </table>
+     </fieldset>
+    </dtml-if sequence-end>
+   </dtml-in>
+  <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante=cod_documento)">
+    <dtml-if sequence-start>
+     <fieldset><legend>Documentos Vinculados</legend>
+   <table>
+       <tr> 
+           <th width="15%" class="form-label">Documento</th>
+           <th width="70%" class="form-label">Ementa</th>
+           <th width="15%" class="form-label">Ação</th>
+       </tr>
+      </dtml-if sequence-start>
+        <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento_vinculado)">
+         <tr> 
+           <td width="15%" class="texto">
+                 <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>">
+                   <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+                 </a>
+           </td>
+           <td width="70%" class="texto"><dtml-var txt_assunto></td>
+           <td width="15%" class="texto"><p align="center">
+                <a class="botao" href="javascript:excluir(<dtml-var cod_vinculo>)">Excluir</a></p>
+           </td>
+        </tr>
+       </dtml-in>
+    <dtml-if sequence-end>
+      </table>
+     </fieldset>
+    </dtml-if sequence-end>
+   <dtml-else>
+       <fieldset><legend>Documentos Vinculados</legend>
+       <p class="texto">Não há nenhum documento vinculado.</p></fieldset>
+   </dtml-in>
+
+ <table>
+      <tr> 
+        <td colspan="2" width="50%"><label for="lst_tip_documento">Documento Administrativo</label><span class="campoObrigatorio"></span><br>
+           <select name="lst_tip_documento" id="lst_tip_documento" onChange="ementa_buscar(document.documento_vinculado_form)">
+            <option>
+              <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
+                 <option
+                    <dtml-if tip_documento_sel>
+                      <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_sel)">
+                         selected
+                      </dtml-if>
+                   </dtml-if>
+                    value="<dtml-var tip_documento missing>"> <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+                   </option>
+              </dtml-in>
+           </select></td>
+        <td>
+           <label for="txt_num_documento">Número</label><span class="campoObrigatorio"></span><br>
+            <input type="text" name="txt_num_documento" id="txt_num_documento" size="5" value="<dtml-var num_documento_sel missing>" maxlength="5" onChange="ementa_buscar(document.documento_vinculado_form)">
+        </td>
+        <td>
+           <label for="txt_ano_documento">Ano</label><span class="campoObrigatorio"></span><br>
+            <input type="text" name="txt_ano_documento" id="txt_ano_documento" size="4" value="<dtml-var ano_documento_sel missing>" maxlength="4" onChange="ementa_buscar(document.documento_vinculado_form)">
+        </td>
+      </tr>
+       <tr>
+        <td colspan="4"><label for="txa_txt_assunto">Ementa</label><br/>
+          <textarea name="txa_txt_assunto" id="txa_txt_assunto" cols="65" readonly rows="4"><dtml-var txt_assunto missing></textarea>
+        </td>
+       </tr>
+ </table>
+  <input type="hidden" name="hdn_url" value="index_html?cod_documento=<dtml-var cod_documento>" />
+ <p align="center">
+    <input type="button" class="botao" name="button" value="Incluir Vínculo" onClick="campos_criticar(document.documento_vinculado_form)"/>
+ </p>
+</form>
+<dtml-var standard_html_footer>

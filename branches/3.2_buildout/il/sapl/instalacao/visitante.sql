@@ -137,3 +137,38 @@ ALTER TABLE `sessao_plenaria_painel`
 
 ALTER TABLE `sessao_plenaria_painel`
   MODIFY `cod_item` int(11) NOT NULL AUTO_INCREMENT;
+
+
+--
+-- Estrutura da tabela `documento_administrativo_vinculado`
+--
+
+CREATE TABLE `documento_administrativo_vinculado` (
+  `cod_vinculo` int(11) NOT NULL,
+  `cod_documento_vinculante` int(11) NOT NULL,
+  `cod_documento_vinculado` int(11) NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `documento_administrativo_vinculado`
+--
+ALTER TABLE `documento_administrativo_vinculado`
+  ADD PRIMARY KEY (`cod_vinculo`),
+  ADD UNIQUE KEY `idx_doc_vinculo` (`cod_documento_vinculante`,`cod_documento_vinculado`),
+  ADD KEY `idx_doc_vinculado` (`cod_documento_vinculado`) USING BTREE,
+  ADD KEY `idx_cod_documento` (`cod_documento_vinculante`) USING BTREE;
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `documento_administrativo_vinculado`
+--
+ALTER TABLE `documento_administrativo_vinculado`
+  MODIFY `cod_vinculo` int(11) NOT NULL AUTO_INCREMENT;

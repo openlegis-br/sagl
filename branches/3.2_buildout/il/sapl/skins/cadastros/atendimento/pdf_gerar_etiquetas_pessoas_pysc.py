@@ -32,13 +32,13 @@ for row in results:
     r=[]
     # Label, Data
     if row[1]!=None:
-     r.append(row[1].encode( "utf-8" ))
-    if row[10]!=None:
-     r.append(row[10].encode( "utf-8" )+', '+row[11].encode( "utf-8" )+' '+row[12].encode( "utf-8" ))
-    if row[13]!=None:
-     r.append(row[13].encode( "utf-8" )+' - CEP  '+row[14].encode( "utf-8" ))
-    if row[15]!=None:
-     r.append(row[15].encode( "utf-8" )+' - '+row[16].encode( "utf-8" ))
+     r.append(row[1])
+    if row[10]!=None and row[11]!=None and row[12]!=None:
+     r.append(row[10]+', '+row[11]+' '+row[12])
+    if row[13]!=None and row[14]!=None:
+     r.append(row[13]+' - CEP  '+row[14])
+    if row[15]!=None and row[16]!=None:
+     r.append(row[15]+' - '+row[16])
     dados.append(r)
 return context.pdflabels(dados)
 
