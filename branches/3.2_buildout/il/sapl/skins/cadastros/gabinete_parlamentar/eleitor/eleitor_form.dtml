@@ -36,7 +36,7 @@
       var regexp_digitos = /\D+/;
 
       if (form.txt_nom_eleitor.value == "") {
-         alert("O nome da eleitor deve ser preenchido!");
+         alert("O nome do eleitor deve ser preenchido!");
          form.txt_nom_eleitor.focus();
          return false;
       }
@@ -93,6 +93,35 @@
 $(function() {
         $('#txt_dat_nascimento').datepick();
 });
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$(".popup").fancybox({
+	openEffect	: 'fade',
+        beforeShow      : function(){
+            $("body").css({'overflow-y':'hidden'});
+        },
+        afterClose      : function() {
+        		window.location.href = "&dtml-portal_url;/cadastros/gabinete_parlamentar/eleitor/eleitor_mostrar_proc?hdn_cod_eleitor=<dtml-var cod_eleitor missing>";
+        		},
+	closeEffect	: 'fade'
+	});
+});
+
+$("#botao-visita").fancybox({
+    type : "iframe",
+    href : "&dtml-portal_url;/cadastros/gabinete_parlamentar/atendimento/atendimento_form?cod_parlamentar=<dtml-var cod_parlamentar_corrente>&cod_eleitor=<dtml-var cod_eleitor missing>",
+    openEffect	: 'fade',
+    beforeShow  : function(){
+        $("body").css({'overflow-y':'hidden'});
+    },
+    afterClose  : function() {
+        	window.location.href = "&dtml-portal_url;/cadastros/gabinete_parlamentar/eleitor/eleitor_mostrar_proc?hdn_cod_eleitor=<dtml-var cod_eleitor missing>";
+        		},
+    closeEffect	: 'fade'
+});
+
 </script>
 
 <h1 class="firstHeading">Cadastro de Eleitor</h1> 
@@ -213,34 +242,33 @@ $(function() {
  <p align="center">
   <input type="button" class="botao" name="button" value="Salvar" onClick="campos_criticar()" />
    <dtml-if cod_eleitor>
+     <input id="botao-visita" type="button" class="botao" value="Incluir Atendimento" />
+     <input class="botao" type="button" value="Voltar" onClick="history.back()">
      <input type="button" class="botao" name="btn_excluir" value="Excluir" onClick="eleitor_excluir()" />
    </dtml-if>
-  <input class="botao" type="button" value="Voltar" onClick="history.back()">
  </p>
 
-<dtml-comment>
+
 <dtml-if cod_eleitor>
   <fieldset>
      <legend>Histórico de Atendimentos</legend>
-     <dtml-in expr="zsql.gabinete_atendimento_obter_zsql(cod_eleitor==cod_eleitor)">
+     <dtml-in expr="zsql.gabinete_atendimento_obter_zsql(cod_parlamentar=cod_parlamentar_corrente, cod_eleitor=cod_eleitor)">
        <dtml-if sequence-start>
          <table>
            <tr>
-              <th class="label">Entrada</th>
-              <th class="label">Funcionário</th>
-              <th class="label">Crachá</th>
-              <th class="label">Saída</th>
+              <th class="label">Data</th>
+              <th class="label">Assunto</th>
+              <th class="label">Status</th>
            </tr>
        </dtml-if>
            <tr>
               <td class="texto">
-                 <a href="visita_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="popup" data-fancybox-type="iframe">
-                   <dtml-var dat_entrada>
+                 <a href="&dtml-portal_url;/cadastros/gabinete_parlamentar/atendimento/atendimento_mostrar_proc?cod_atendimento=<dtml-var cod_atendimento>" class="popup" data-fancybox-type="iframe">
+                   <dtml-var dat_atendimento>
                  </a>
                </td>
-              <td class="texto"><dtml-var nom_funcionario></td>
-              <td class="texto"><dtml-var num_cracha missing></td>
-              <td class="texto"><dtml-var dat_saida missing null></td>
+              <td class="texto"><dtml-var txt_assunto></td>
+              <td class="texto"><dtml-var txt_status missing null></td>
            </tr>
        <dtml-if sequence-end>
           </table>
@@ -250,6 +278,5 @@ $(function() {
      </dtml-in>
   </fieldset>
 </dtml-if>
-</dtml-comment>
 
 <dtml-var standard_html_footer>

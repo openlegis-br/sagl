@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+
+<script type="text/javascript">
+<!--
+  function campos_criticar(form){
+
+     if (form.txa_txt_assunto.value==""){
+         alert("O assunto deve ser preenchido.");
+         form.txa_txt_assunto.focus();
+         return false;
+      }
+
+      form.submit();
+  }
+
+  function atendimento_excluir(){
+       if (confirm("Deseja realmente excluir o atendimento?")) {
+          location.href="atendimento_excluir_proc?cod_atendimento=<dtml-var cod_atendimento missing>";
+       }
+  }
+
+  function reloadParentAndClose(){
+       parent.jQuery.fancybox.close();
+  }
+
+</script>
+
+</head>
+
+<body class="modal">
+
+  <h1 class="firstHeading">Registro de Atendimento</h1>
+
+  <form name="atendimento_form" method="post" action="atendimento_salvar_proc">
+      <input type="hidden" name="hdn_cod_atendimento" value="<dtml-var cod_atendimento missing>" />
+      <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>" />
+      <table>
+         </tr>
+           <td colspan="2" class="texto">
+            <label for="txa_nom_eleitor">Nome do Eleitor</label><br />
+            <dtml-unless cod_atendimento>
+              <dtml-in expr="zsql.gabinete_eleitor_obter_zsql(cod_eleitor=cod_eleitor)">
+                 <dtml-call expr="REQUEST.set('nom_eleitor', nom_eleitor)">
+              </dtml-in>
+            </dtml-unless>
+            <input type="text" id="txt_nom_eleitor" name="txt_nom_eleitor" size="50" maxlength="200" value="<dtml-var nom_eleitor>" disabled />
+            <input type="hidden" name="hdn_cod_eleitor" value="<dtml-var cod_eleitor>" />
+           </td>
+           <td class="texto">
+             <label for="txt_dat_atendimento">Data de Atendimento</label><br />
+             <dtml-if dat_atendimento>
+               <input type="text" name="txt_dat_atendimento" size="18" value="<dtml-var dat_atendimento>" readonly />
+             <dtml-else>
+               <dtml-call expr="REQUEST.set('dat_atendimento', _.DateTime().strftime('%d/%m/%Y'))">
+               <input type="text" name="txt_dat_atendimento" size="18" value="<dtml-var dat_atendimento>" readonly />
+             </dtml-if>
+           </td>
+         </tr>
+         <tr>
+           <td colspan="3"><label for="txa_txt_observacao">Assunto</label><span class="campoObrigatorio"></span> 
+              <textarea id="txa_txt_assunto" name="txa_txt_assunto" id="txa_txt_assunto" cols="67" rows="4"><dtml-var txt_assunto missing></textarea>
+           </td>
+         </tr>
+         <tr>
+           <td class="texto">
+             <label for="txt_dat_resultado">Data do Resultado</label><br />
+             <input type="text" name="txt_dat_resultado" id="txt_dat_resultado" size="18" value="<dtml-var dat_resultado missing null>" onblur="formata_data(form.txt_dat_resultado)" />
+           </td>
+           <td class="texto">
+             <label for="lst_txt_status">Status</label><br />
+                            <dtml-in expr="['ABERTO','ATENDIDO']">
+                              <input type="radio" id="lst_txt_status" name="lst_txt_status" value="<dtml-var expr="_['sequence-item']">"
+                              <dtml-if expr="_.has_key('cod_atendimento') and txt_status==_['sequence-item']">
+                                checked=1
+                              <dtml-elif expr="not _.has_key('cod_atendimento') and _['sequence-item']=='ABERTO'">
+                                checked=1
+                              </dtml-if> />
+                              <dtml-var expr="_['sequence-item']">
+                            </dtml-in>
+           </td>
+           <td class="texto">
+             <label for="txt_nom_atendente">Atendente</label><br />
+            <dtml-unless cod_atendimento>
+              <dtml-call expr="REQUEST.set('nom_atendente', AUTHENTICATED_USER.getUserName())">
+            </dtml-unless>
+             <input type="text" name="txt_nom_atendente" size="18" value="<dtml-var nom_atendente missing null>" readonly />
+           </td>
+         </tr>
+         <tr>
+           <td colspan="3" class="texto">
+            <label for="txa_txt_resultado">Observações do Resultado</label><br />
+            <textarea name="txa_txt_resultado" cols="60" rows="4"><dtml-var txt_resultado missing null></textarea>
+           </td>
+         </tr>
+      </table>
+      <p align="center">
+          <input type="button" class="botao" name="btn_salvar" value="Salvar" onClick="campos_criticar(document.atendimento_form)" />
+          <dtml-if cod_atendimento>
+            <input type="button" class="botaoExtra" name="btn_excluir" value="Excluir" onClick="atendimento_excluir()" />
+          </dtml-if>
+        <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+      </p>
+  </form>
+
+   
+
+
