@@ -14,7 +14,7 @@ session = REQUEST.SESSION
 
 results =  context.zsql.gabinete_eleitor_pesquisar_zsql(
                                                cod_parlamentar=REQUEST['cod_parlamentar_corrente'],
-                                               txt_nom_eleitor=REQUEST['txt_nom_eleitor'],
+                                               nom_eleitor=REQUEST['txt_nom_eleitor'],
                                                dat_atendimento=REQUEST['txt_dat_atendimento'],
                                                dat_atendimento2=REQUEST['txt_dat_atendimento2'],
                                                mes_aniversario=REQUEST['lst_mes_aniversario'],
