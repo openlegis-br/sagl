@@ -1,0 +1,27 @@
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+  <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+  </dtml-in>
+<dtml-elif expr="AUTHENTICATED_USER.has_role(['Autor'])">
+  <dtml-in expr="zsql.autor_obter_zsql(parlamentar=1,col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-if cod_parlamentar>
+          <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+      </dtml-if>
+  </dtml-in>
+</dtml-if>
+
+<dtml-in expr="zsql.gabinete_eleitor_obter_zsql(cod_eleitor = cod_eleitor)">
+ <dtml-if expr="cod_parlamentar == cod_parlamentar_corrente">
+  <dtml-try>
+   <dtml-call expr="zsql.gabinete_eleitor_excluir_zsql(cod_eleitor = cod_eleitor)">
+  <dtml-except>
+     <dtml-let mensagem="'Houve um erro! Eleitor não excluído!'">
+        <dtml-var mensagem_emitir>
+     </dtml-let>
+  <dtml-else>
+     <dtml-let mensagem="'Eleitor excluído com sucesso!'" sucesso="1" url="url">
+        <dtml-var mensagem_emitir>
+     </dtml-let>
+  </dtml-try>
+ </dtml-if>
+</dtml-in>

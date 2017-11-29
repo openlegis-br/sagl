@@ -48,6 +48,38 @@
   </ul>
   </dtml-if>
 
+<dtml-comment>###### MENU GABINETE PARLAMENTAR #######</dtml-comment>
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
+  <script>
+  $(function() {
+    $( "#gabinete" ).menu({
+      items: "> :not(.ui-widget-header)"
+    });
+  });
+  </script>
+  <dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+        <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+    </dtml-in>
+  <dtml-elif expr="AUTHENTICATED_USER.has_role(['Autor'])">
+    <dtml-in expr="zsql.autor_obter_zsql(parlamentar=1,col_username=AUTHENTICATED_USER.getUserName())">
+        <dtml-if cod_parlamentar>
+            <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+        </dtml-if>
+    </dtml-in>
+  </dtml-if>
+  <dtml-if cod_parlamentar_corrente>
+    <ul id="gabinete">
+       <li class="ui-widget-header">Gabinete Parlamentar</li>
+          <li><span class="ui-icon ui-icon-contact"></span><a href="&dtml-portal_url;/cadastros/gabinete_parlamentar/eleitor">Cadastro de Eleitores</a>
+         </li>
+     <dtml-comment>
+       <li><span class="ui-icon ui-icon-comment"></span><a href="&dtml-portal_url;/cadastros/gabinete_parlamentar/atendimento">Atendimentos</a></li>
+     </dtml-comment>
+    </ul>
+  </dtml-if>
+</dtml-if>
+
 <dtml-comment>###### MENU PROPOSIÇÃO ELETRÔNICA #######</dtml-comment>
   <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar', 'Operador', 'Operador Materia'])">
   <script>
@@ -76,7 +108,6 @@
        </li>
   </ul>
 </dtml-if>
-
 
 <dtml-comment>###### MENU ATENDIMENTO AO PÚBLICO #######</dtml-comment>
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">

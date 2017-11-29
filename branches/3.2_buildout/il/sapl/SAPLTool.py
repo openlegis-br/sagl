@@ -825,7 +825,20 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)                                                                                                      
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'vnd.oasis.opendocument.spreadsheet'
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_ods
-        return data 
+        return data
+
+    def eleitores_exportar(self, eleitores):
+        url = self.sapl_documentos.modelo.absolute_url() + "/planilha-eleitores.ods"
+        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_ods = "eleitores.ods"
+        renderer = Renderer(template_file, locals(), output_file_ods, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()                                                                              
+        data = open(output_file_ods, "rb").read()                 
+        for file in [output_file_ods]:
+            os.unlink(file)                                                                                                      
+        self.REQUEST.RESPONSE.headers['Content-Type'] = 'vnd.oasis.opendocument.spreadsheet'
+        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_ods
+        return data
 
     def substitutivo_gerar_pdf(self,cod_substitutivo):
         nom_arquivo_odt = "%s"%cod_substitutivo+'_substitutivo.odt'
