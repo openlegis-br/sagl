@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters= cod_parlamentar_corrente, txt_nom_eleitor, txt_dat_atendimento, txt_dat_atendimento2, lst_mes_aniversario, rad_sex_eleitor, txt_des_estado_civil, rad_filhos, txt_des_profissao, txt_des_local_trabalho, txt_end_residencial, txt_nom_bairro, txt_num_cep, txt_nom_localidade, lst_txt_classe
+##parameters= cod_parlamentar_corrente, txt_nom_eleitor, txt_dat_atendimento, txt_dat_atendimento2, txt_dia_aniversario, lst_mes_aniversario, rad_sex_eleitor, txt_des_estado_civil, rad_filhos, txt_des_profissao, txt_des_local_trabalho, txt_end_residencial, txt_nom_bairro, txt_num_cep, txt_nom_localidade, lst_txt_classe
 ##title=
 ##
 
@@ -19,6 +19,7 @@ for item in context.zsql.gabinete_eleitor_pesquisar_zsql(
                                                cod_parlamentar=REQUEST['cod_parlamentar_corrente'],
                                                dat_atendimento=REQUEST['txt_dat_atendimento'],
                                                dat_atendimento2=REQUEST['txt_dat_atendimento2'],
+                                               dia_aniversario=REQUEST['txt_dia_aniversario'],
                                                mes_aniversario=REQUEST['lst_mes_aniversario'],
                                                sex_eleitor=REQUEST['rad_sex_eleitor'],
                                                des_estado_civil=REQUEST['txt_des_estado_civil'],

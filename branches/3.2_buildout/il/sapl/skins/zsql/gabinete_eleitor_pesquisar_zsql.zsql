@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_parlamentar nom_eleitor doc_identidade txt_classe dat_nascimento="" sex_eleitor="" des_estado_civil nom_conjuge rad_filhos="" end_residencial nom_bairro num_cep nom_localidade des_profissao dat_atendimento dat_atendimento2 mes_aniversario="" ind_excluido=0
+arguments : cod_parlamentar nom_eleitor doc_identidade txt_classe dat_nascimento="" sex_eleitor="" des_estado_civil nom_conjuge rad_filhos="" end_residencial nom_bairro num_cep nom_localidade des_profissao dat_atendimento dat_atendimento2 dia_aniversario="" mes_aniversario="" ind_excluido=0
 max_rows : 20000
 max_cache : 100
 </dtml-comment>
@@ -50,6 +50,7 @@ FROM
     <dtml-sqltest des_profissao      op="="  type="nb"   optional> <dtml-and>
     <dtml-sqltest ind_excluido       column="e.ind_excluido" op="="  type="int">
 
+
   <dtml-if dat_atendimento>
     <dtml-if expr="dat_atendimento == dat_atendimento2">
        AND DATE(a.dat_atendimento) = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_atendimento)" type="nb">
@@ -57,6 +58,10 @@ FROM
        AND DATE(a.dat_atendimento) >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_atendimento)" type="string"> 
        AND DATE(a.dat_atendimento) <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_atendimento2)" type="string">
     </dtml-if>
+  </dtml-if>
+
+  <dtml-if expr="dia_aniversario">
+    AND DAY(dat_nascimento) = <dtml-sqlvar "dia_aniversario" type="nb">
   </dtml-if>
 
   <dtml-if expr="mes_aniversario">
