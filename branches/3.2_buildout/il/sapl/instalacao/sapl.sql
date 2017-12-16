@@ -585,7 +585,7 @@ CREATE TABLE `documento_administrativo` (
   `ano_documento` smallint(6) NOT NULL DEFAULT '0',
   `dat_documento` date NOT NULL,
   `num_protocolo` int(11) DEFAULT NULL,
-  `txt_interessado` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `txt_interessado` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cod_autor` int(11) DEFAULT NULL,
   `cod_materia` int(11) DEFAULT NULL,
   `num_dias_prazo` tinyint(4) DEFAULT NULL,
