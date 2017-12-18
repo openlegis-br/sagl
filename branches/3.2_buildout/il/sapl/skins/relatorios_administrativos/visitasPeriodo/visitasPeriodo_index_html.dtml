@@ -82,7 +82,7 @@ function clear_form_elements(ele) {
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/relatorios#visita">Ajuda</a>
 
-<h1 class="firstHeading">Visitas por Data</h1>
+<h1 class="firstHeading">Visitas por Período</h1>
 
 <dtml-if expr="not _.has_key('impressao') or (_.has_key('impressao') and not _.has_key('txt_dat_visita') and not _.has_key('txt_dat_visita2'))">
 <form class="pf-form" id="hideprint" method="post" name="visita_form" action="visitasPeriodo_index_html">
@@ -121,6 +121,20 @@ function clear_form_elements(ele) {
              </select>
      </div>
     </div>
+
+    <div class="pf-element pf-full-width">
+      <label><span class="pf-label">Modo de Exibição:</span></label>
+       <div class="pf-group">
+             <dtml-in expr="['Visitas', 'Visitantes']">
+              <input type="radio" id="mod_exibicao" name="rad_mod_exibicao" value="<dtml-var expr="_['sequence-item']">"
+                <dtml-if expr="_.has_key('rad_mod_exibicao') and rad_mod_exibicao==_['sequence-item']">
+                   checked=1
+                <dtml-elif expr="_['sequence-item']=='Visitas'">checked=1</dtml-if>>
+              <label style="vertical-align: top;" for="rad_mod_exibicao"><dtml-var expr="_['sequence-item']"></label>
+             </dtml-in>
+       </div>
+    </div>
+
       <div class="pf-element pf-buttons">
         <input class="pf-button btn botao" type="button" class="botao" name="button" value="Gerar relatório" onClick="campos_criticar()" />
         <input class="pf-button btn botao" type="button" name="btn_materia_limpar" value="Limpar campos" onclick="clear_form_elements('#hideprint')" >
@@ -129,10 +143,10 @@ function clear_form_elements(ele) {
 </form>
 </dtml-if>
 
-<dtml-if expr="_.has_key('txt_dat_visita') and _.has_key('txt_dat_visita2')">
+<dtml-if expr="_.has_key('txt_dat_visita') and _.has_key('txt_dat_visita2') and rad_mod_exibicao == 'Visitas'">
  <dtml-in expr="zsql.visita_obter_zsql(dat_visita=txt_dat_visita,dat_visita2=txt_dat_visita2,cod_funcionario=lst_funcionario)">
   <dtml-if sequence-start>
- <h3>Visitas registradas no período de <dtml-var txt_dat_visita> a <dtml-var txt_dat_visita2>: <dtml-var sequence-length> ocorrências</h3>
+ <h3>Visitas no período de <dtml-var txt_dat_visita> a <dtml-var txt_dat_visita2>: <dtml-var sequence-length> ocorrências</h3>
  <br />
     <table>
      <tr>
@@ -151,6 +165,42 @@ function clear_form_elements(ele) {
       <td class="texto"><dtml-var nom_funcionario></th>
      </tr>
   <dtml-if sequence-end>
+    </table>
+  </dtml-if sequence-end>
+ <dtml-else>
+  <p class="texto">Nenhum registro encontrado.
+ </dtml-in>
+</dtml-if>
+
+
+<dtml-if expr="(_.has_key('txt_dat_visita') and _.has_key('txt_dat_visita2')) and rad_mod_exibicao == 'Visitantes'">
+ <dtml-in expr="listaFuncionarios(dat_visita=txt_dat_visita,dat_visita2=txt_dat_visita2)">
+   <dtml-if sequence-start>
+     <h3>Visitantes no período de <dtml-var txt_dat_visita> a <dtml-var txt_dat_visita2></h3>
+ <br />
+    <table>
+     <tr>
+      <th class="form-label">Funcionário</th>
+      <th class="form-label">Visitantes</th>
+     </tr>
+  </dtml-if sequence-start>
+     <tr>
+      <td class="texto"><dtml-var nom_funcionario></td>
+      <td class="texto">
+        <dtml-in expr="qtdeFuncionario(cod_funcionario=cod_funcionario,dat_visita=txt_dat_visita,dat_visita2=txt_dat_visita2)">
+           <div align="center"><dtml-var qtde></div>
+        </dtml-in>
+      </td>
+     </tr>
+  <dtml-if sequence-end>
+     <tr>
+      <td class="texto"><b>TOTAL DE VISITANTES</b></td>
+      <td class="texto">
+        <dtml-in expr="qtdeTotal(dat_visita=txt_dat_visita,dat_visita2=txt_dat_visita2)">
+           <div align="center"><b><dtml-var qtde></b></div>
+        </dtml-in>
+      </td>
+     </tr>
     </table>
   </dtml-if sequence-end>
  <dtml-else>
