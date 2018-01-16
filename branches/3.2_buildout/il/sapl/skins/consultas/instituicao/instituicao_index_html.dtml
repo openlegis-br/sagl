@@ -1,5 +1,16 @@
 <dtml-var standard_html_header>
 
+<script type="text/javascript">
+<!--
+   function categoria_listar(form){
+      var URL = '<dtml-var absolute_url>?hdn_tip_instituicao=' + 
+                form.lst_tip_instituicao[form.lst_tip_instituicao.selectedIndex].value;
+      location.href = URL;
+   }
+
+//-->
+</script>
+
 <h1 class="firstHeading">Cadastro de Entidades</h1> 
 
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
@@ -17,11 +28,30 @@
     <input type="hidden" name="existe_ocorrencia" value="0" />
       <div class="pf-element pf-full-width">
        <label for="lst_tip_instituicao"><span class="pf-label">Tipo de Entidade</span></label>
-          <select class="pf-field" id="lst_tip_instituicao" name="lst_tip_instituicao" style="max-width: 233px; width: 100%;">
+          <select class="pf-field" id="lst_tip_instituicao" name="lst_tip_instituicao" style="max-width: 233px; width: 100%;" onChange="categoria_listar(document.pesq_basica_form)">
             <option value="">Todos</option>
             <dtml-in expr="zsql.tipo_instituicao_obter_zsql(ind_excluido=0)">
-              <option value="<dtml-var tip_instituicao missing>">
+              <option value="<dtml-var tip_instituicao missing>"
+                <dtml-if expr="_.has_key('hdn_tip_instituicao') and tip_instituicao==_.int(hdn_tip_instituicao)">
+                    <dtml-call expr="REQUEST.set('hdn_tip_instituicao', tip_instituicao)">
+                     selected
+                </dtml-if>
+               >
                 <dtml-var nom_tipo_instituicao>
+              </option>
+            </dtml-in>
+            <dtml-if expr="not _.has_key('hdn_tip_instituicao')">
+               <dtml-call expr="REQUEST.set('hdn_tip_instituicao', '-1')">
+            </dtml-if>
+          </select>
+       </div>
+      <div class="pf-element pf-full-width">
+       <label for="lst_categoria"><span class="pf-label">Categoria</span></label>
+          <select class="pf-field" id="lst_categoria" name="lst_categoria" style="max-width: 233px; width: 100%;">
+            <option value="">Todas</option>
+            <dtml-in expr="zsql.categoria_instituicao_obter_zsql(tip_instituicao=hdn_tip_instituicao,ind_excluido=0)">
+              <option value="<dtml-var cod_categoria missing>">
+                <dtml-var des_categoria>
               </option>
             </dtml-in>
           </select>

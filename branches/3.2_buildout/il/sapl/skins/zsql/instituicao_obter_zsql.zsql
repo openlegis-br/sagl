@@ -1,12 +1,13 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_instituicao="" ncod_instituicao="" tip_instituicao="" txt_nom_instituicao="" cod_localidade="" txt_nom_responsavel="" rd_ordem="" ind_excluido=0
-max_rows : 2000
+arguments : cod_instituicao="" ncod_instituicao="" tip_instituicao="" cod_categoria="" txt_nom_instituicao="" cod_localidade="" txt_nom_responsavel="" rd_ordem="" ind_excluido=0
+max_rows : 50000
 max_cache : 100
 </dtml-comment>
 SELECT DISTINCT
-       REPLACE(instituicao.cod_instituicao, 'L', '') as cod_instituicao,
+       cod_instituicao,
        instituicao.tip_instituicao,
+       instituicao.cod_categoria,
        tipo_instituicao.nom_tipo_instituicao,
        instituicao.nom_instituicao,
        instituicao.end_instituicao,
@@ -37,15 +38,18 @@ FROM
     <dtml-sqltest cod_instituicao       column="instituicao.cod_instituicao" op="="  type="int" optional> <dtml-and>
     <dtml-sqltest ncod_instituicao      column="instituicao.cod_instituicao" op="!=" type="int" optional> <dtml-and>
     <dtml-sqltest tip_instituicao       column="instituicao.tip_instituicao" op="="  type="int" optional> <dtml-and>
+    <dtml-sqltest cod_categoria         column="instituicao.cod_categoria"   op="="  type="int" optional> <dtml-and>
     <dtml-sqltest cod_localidade        column="instituicao.cod_localidade"  op="="  type="int" optional> <dtml-and>
     <dtml-sqltest ind_excluido          column="instituicao.ind_excluido"    op="="  type="int" optional>
 
   <dtml-if txt_nom_instituicao>
-    and (match(nom_instituicao)   against (<dtml-sqlvar txt_nom_instituicao type="string">))
+    AND  ( (nom_instituicao) like (<dtml-sqlvar expr="'%'+txt_nom_instituicao+'%'" type="string">)
+    OR   (nom_instituicao) like (<dtml-sqlvar expr="'%'+txt_nom_instituicao+'%'" type="string">) )
   </dtml-if>
 
   <dtml-if txt_nom_responsavel>
-    and (match(nom_responsavel)    against (<dtml-sqlvar txt_nom_responsavel type="string">))
+    AND  ( (nom_responsavel) like (<dtml-sqlvar expr="'%'+txt_nom_responsavel+'%'" type="string">)
+    OR   (nom_responsavel) like (<dtml-sqlvar expr="'%'+txt_nom_responsavel+'%'" type="string">) )
   </dtml-if>
 
   </dtml-sqlgroup>
