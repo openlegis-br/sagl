@@ -5,7 +5,7 @@ max_rows : 5000
 max_cache : 100
 </dtml-comment>
 
-SELECT DISTINCT
+SELECT        
        TRIM(LEADING '0' FROM cod_protocolo) as cod_protocolo,
        REPLACE(protocolo.tip_protocolo, 'L', '') as tip_protocolo,
        TRIM(LEADING '0' FROM num_protocolo) as num_protocolo,
@@ -43,29 +43,30 @@ FROM
     <dtml-sqltest cod_autor         column="protocolo.cod_autor"        op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ind_anulado       column="protocolo.ind_anulado"      op="="  type="int"    optional> <dtml-and>
 
-<dtml-if dat_apres>
-  <dtml-if dat_apres2>
-     protocolo.dat_protocolo >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres)" type="nb"> and
-     protocolo.dat_protocolo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres2)" type="nb">
-  <dtml-else>
-     protocolo.dat_protocolo = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres)" type="nb">
-  </dtml-if>
-<dtml-else>
-  <dtml-if dat_apres2>
-     protocolo.dat_protocolo = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres2)" type="nb">
-  </dtml-if>
-</dtml-if>
-</dtml-sqlgroup>
+    <dtml-if dat_apres>
+      <dtml-if dat_apres2>
+         protocolo.dat_protocolo >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres)" type="nb"> AND
+         protocolo.dat_protocolo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres2)" type="nb">
+      <dtml-else>
+         protocolo.dat_protocolo = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres)" type="nb">
+      </dtml-if>
+    <dtml-else>
+      <dtml-if dat_apres2>
+         protocolo.dat_protocolo = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres2)" type="nb">
+      </dtml-if>
+    </dtml-if>
 
     <dtml-if des_assunto>
-      and match(protocolo.txt_assunto_ementa,protocolo.txt_observacao)
+      AND match(protocolo.txt_assunto_ementa,protocolo.txt_observacao)
        against (<dtml-sqlvar des_assunto type="string"> IN BOOLEAN MODE)
     </dtml-if>
 
     <dtml-if des_interessado>
       <dtml-let des_interessado="'%'+des_interessado+'%'">
-       and protocolo.txt_interessado like <dtml-sqlvar des_interessado type="string">
+       AND protocolo.txt_interessado like <dtml-sqlvar des_interessado type="string">
       </dtml-let>
     </dtml-if>
+
+</dtml-sqlgroup>
 
 ORDER BY protocolo.ano_protocolo DESC, protocolo.num_protocolo DESC
