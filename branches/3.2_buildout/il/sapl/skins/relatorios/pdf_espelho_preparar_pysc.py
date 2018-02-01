@@ -60,7 +60,7 @@ if REQUEST.txt_check=='1':
   REQUEST=context.REQUEST
   for materia in context.zsql.materia_obter_zsql(cod_materia=cod_mat):
         dic={}
-	dic['titulo']="INDICAÃÃO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
+	dic['titulo']="INDICAÇÃO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
 	dic['materia']=str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
 	dic['dat_apresentacao']=materia.dat_apresentacao
 	dic['txt_ementa']=materia.txt_ementa
@@ -70,7 +70,7 @@ if REQUEST.txt_check=='1':
             for autor in context.zsql.autor_obter_zsql(cod_autor=autoria.cod_autor):
                 if autor.des_tipo_autor=='Parlamentar':
                     for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar):
-                        dic['nom_autor']=parlamentar.nom_completo
+                        dic['nom_autor']=parlamentar.nom_parlamentar
                 elif autor.des_tipo_autor=='Comissao':
                     for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
                         dic['nom_autor']=comissao.nom_comissao
@@ -117,7 +117,7 @@ else:
   for cod_mat in codigo:
    for materia in context.zsql.materia_obter_zsql(cod_materia=cod_mat):
         dic={}
-	dic['titulo']="INDICAÃÃO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
+	dic['titulo']="INDICAÇÃO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
         dic['materia']=str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
         dic['dat_apresentacao']=materia.dat_apresentacao
         dic['txt_ementa']=materia.txt_ementa
@@ -127,7 +127,7 @@ else:
             for autor in context.zsql.autor_obter_zsql(cod_autor=autoria.cod_autor):
                 if autor.des_tipo_autor=='Parlamentar':
                     for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar):
-                        dic['nom_autor']=parlamentar.nom_completo
+                        dic['nom_autor']=parlamentar.nom_parlamentar
                 elif autor.des_tipo_autor=='Comissao':
                     for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
                         dic['nom_autor']=comissao.nom_comissao

@@ -77,7 +77,7 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
            for autor in context.zsql.autor_obter_zsql(cod_autor=protocolo.cod_autor):
                 if autor.des_tipo_autor=='Parlamentar':
                     for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar):
-                        dic['nom_autor']=parlamentar.nom_completo
+                        dic['nom_autor']=parlamentar.nom_parlamentar
                 elif autor.des_tipo_autor=='Comissão':
                     for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
                         dic['nom_autor']=comissao.nom_comissao

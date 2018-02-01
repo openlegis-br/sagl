@@ -31,7 +31,7 @@ if context.REQUEST['data']!='':
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=composicao.cod_parlamentar,ind_excluido=0):
                 for cargo in context.zsql.cargo_mesa_obter_zsql(cod_cargo=composicao.cod_cargo, ind_excluido=0):
                     dic_mesa = {}
-                    dic_mesa['nom_completo'] = parlamentar.nom_completo
+                    dic_mesa['nom_completo'] = parlamentar.nom_parlamentar
                     dic_mesa['sgl_partido'] = parlamentar.sgl_partido
                     dic_mesa['des_cargo'] = cargo.des_cargo
                     lst_mesa.append(dic_mesa)
@@ -41,7 +41,7 @@ if context.REQUEST['data']!='':
         for presenca in context.zsql.presenca_sessao_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, tip_frequencia='P', ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca.cod_parlamentar,ind_excluido=0):
                 dic_presenca = {}
-                nom_completo = parlamentar.nom_completo
+                nom_completo = parlamentar.nom_parlamentar
                 lst_presenca_sessao.append(nom_completo)
         lst_presenca_sessao = ', '.join(['%s' % (value) for (value) in lst_presenca_sessao])
 
@@ -138,7 +138,7 @@ if context.REQUEST['data']!='':
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=orador_expediente.cod_parlamentar,ind_excluido=0):
                 dic_oradores_expediente = {}
                 dic_oradores_expediente["num_ordem"] = orador_expediente.num_ordem
-                dic_oradores_expediente["nom_completo"] = parlamentar.nom_completo
+                dic_oradores_expediente["nom_completo"] = parlamentar.nom_parlamentar
                 dic_oradores_expediente['sgl_partido'] = parlamentar.sgl_partido
                 lst_oradores_expediente.append(dic_oradores_expediente)
 
@@ -146,7 +146,7 @@ if context.REQUEST['data']!='':
         lst_presenca_ordem_dia = []
         for presenca_ordem_dia in context.zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, tip_frequencia='P', ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca_ordem_dia.cod_parlamentar,ind_excluido=0):
-                nom_completo = parlamentar.nom_completo
+                nom_completo = parlamentar.nom_parlamentar
                 lst_presenca_ordem_dia.append(nom_completo)
         lst_presenca_ordem_dia = ', '.join(['%s' % (value) for (value) in lst_presenca_ordem_dia])
        
@@ -204,7 +204,7 @@ if context.REQUEST['data']!='':
         lst_presenca_expediente = []
         for presenca_expediente in context.zsql.presenca_expediente_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen,ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca_expediente.cod_parlamentar,ind_excluido=0):
-                nom_completo = parlamentar.nom_completo
+                nom_completo = parlamentar.nom_parlamentar
                 lst_presenca_expediente.append(nom_completo)
         lst_presenca_expediente = ', '.join(['%s' % (value) for (value) in lst_presenca_expediente])
 
@@ -214,7 +214,7 @@ if context.REQUEST['data']!='':
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=orador.cod_parlamentar,ind_excluido=0):
                 dic_oradores = {}
                 dic_oradores["num_ordem"] = int(orador.num_ordem)
-                dic_oradores["nom_completo"] = parlamentar.nom_completo
+                dic_oradores["nom_completo"] = parlamentar.nom_parlamentar
                 dic_oradores['sgl_partido'] = parlamentar.sgl_partido
                 lst_oradores.append(dic_oradores)
 
@@ -222,7 +222,7 @@ if context.REQUEST['data']!='':
         lst_presenca_encerramento = []
         for presenca_encerramento in context.zsql.presenca_encerramento_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen,ind_excluido=0):
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca_encerramento.cod_parlamentar,ind_excluido=0):
-                nom_completo = parlamentar.nom_completo
+                nom_completo = parlamentar.nom_parlamentar
                 lst_presenca_encerramento.append(nom_completo)
         lst_presenca_encerramento = ', '.join(['%s' % (value) for (value) in lst_presenca_encerramento])
 
@@ -231,7 +231,7 @@ if context.REQUEST['data']!='':
     for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sessao.num_legislatura,data=data):
       for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
         for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-          lst_presidente = presidencia.nom_completo
+          lst_presidente = presidencia.nom_parlamentar
 
     # obtém as propriedades da casa legislativa para montar o cabeçalho e o rodapé da página
     cabecalho={}

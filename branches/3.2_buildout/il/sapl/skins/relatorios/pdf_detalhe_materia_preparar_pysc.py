@@ -106,7 +106,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
    dic_autor['cargo']= " "
    if autor.des_tipo_autor=='Parlamentar':
     for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar):
-     dic_autor['nom_autor']=parlamentar.nom_completo
+     dic_autor['nom_autor']=parlamentar.nom_parlamentar
    elif autor.des_tipo_autor=='Comissao':
     for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
      dic_autor['nom_autor']=comissao.nom_comissao
@@ -181,7 +181,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
     dic_comissao={}
     dic_comissao['nom_comissao']= comissao.nom_comissao
   for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar = relatoria.cod_parlamentar):
-    dic_comissao['parlamentar']= parlamentar.nom_completo
+    dic_comissao['parlamentar']= parlamentar.parlamentar
   dic_comissao['data_desig']= relatoria.dat_desig_relator
   dic_comissao['data_dest']= relatoria.dat_destit_relator
   if relatoria.tip_fim_relatoria==None or relatoria.tip_fim_relatoria=='0': 
