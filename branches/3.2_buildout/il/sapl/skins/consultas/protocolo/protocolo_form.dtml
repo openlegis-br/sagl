@@ -18,6 +18,17 @@ $(document).ready(function() {
 });
 </script>
 
+<script type="text/javascript">
+  function campos_criticar(form){
+    if(document.getElementById("file_nom_arquivo").value == "") {
+       alert("Selecione um arquivo para carregar!");
+       form.file_nom_arquivo.focus();
+       return false;
+    }
+      form.submit();
+  }
+</script>
+
 <a id="ajuda" href="&dtml-portal_url;/ajuda/protocolo_administrativo">Ajuda</a>
 
 <h1 class="firstHeading">Protocolo nº <dtml-var num_protocolo>/<dtml-var ano_protocolo></h1>
@@ -110,7 +121,11 @@ $(document).ready(function() {
                       <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo Digitalizado" title="Arquivo Digitalizado"></a>
                     </dtml-let>
                   <dtml-else>
-                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                     <form action="arquivo_digitalizado_salvar_proc" id="arquivo_form" name="arquivo_form" method="post" enctype="multipart/form-data">
+                       <input type="hidden" name="hdn_cod_protocolo" value="<dtml-var cod_protocolo missing>" />
+                       <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" size="40" maxlength="100" accept="application/pdf" />
+                       <input type="button" class="botao" id="upload" name="upload" value="Carregar"  onClick="campos_criticar(document.arquivo_form)"/>
+                     </form>
                   </dtml-if>
                 </dtml-let>
               </td>
@@ -181,7 +196,7 @@ $(document).ready(function() {
                 <dtml-if cod_autor>
                   <input type="hidden" name="protAutor"         value="<dtml-var cod_autor>" />
                 </dtml-if>
-                &nbsp;<input class="botao"type="submit" name="cmdCriarMat" value="Criar Matéria" />
+                &nbsp;<input class="botao" type="submit" name="cmdCriarMat" value="Criar Matéria" />
               </form>
            </dtml-in>
         </dtml-if>
