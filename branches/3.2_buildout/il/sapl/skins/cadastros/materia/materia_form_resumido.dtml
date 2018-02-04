@@ -256,7 +256,7 @@ $(function() {
                           </td>
                         </tr>
 			<tr>
-                          <td><label for="lst_cod_regime_tramitacao">Regime Tramitação </label><span class="campoObrigatorio">&nbsp;</span><br />
+                          <td><label for="lst_cod_regime_tramitacao">Regime de Tramitação </label><span class="campoObrigatorio">&nbsp;</span><br />
                             <select id="lst_cod_regime_tramitacao" name="lst_cod_regime_tramitacao" onChange="javascript:form.hdn_alterou.value=1">
 			      <option value="0"> 
                               </option>
@@ -266,8 +266,8 @@ $(function() {
                                     <dtml-if expr="_.int(cod_regime_tramitacao) == _.int(cod_regime_tramitacao_sel)">
                                        selected
                                      </dtml-if>
-                                   <dtml-elif expr="des_regime_tramitacao == 'Ordinário'">selected
-                                   </dtml-if>
+                                  <dtml-elif expr="des_regime_tramitacao == 'Ordinário'">selected
+                                  </dtml-if>
                                value="<dtml-var cod_regime_tramitacao>"><dtml-var des_regime_tramitacao>
                               </option>
                               </dtml-in>
@@ -282,7 +282,8 @@ $(function() {
                                     <dtml-if expr="_.int(cod_quorum) == _.int(cod_quorum_sel)">
                                        selected
                                      </dtml-if>
-                                   </dtml-if>
+                                  <dtml-elif expr="cod_quorum == 1">selected
+                                  </dtml-if>
                                 value="<dtml-var cod_quorum>"> <dtml-var des_quorum>
                               </option>
                              </dtml-in>
@@ -301,18 +302,27 @@ $(function() {
         <td valign="top">
            <label for="lst_tip_autor">Tipo de Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
               <select name="lst_tip_autor" size="1" onChange="tipo_autor_mudou(document.materia_form)">
-              <dtml-unless tip_autor>
-               <option value="0"></option>
-             </dtml-unless>
-              <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor='')">            
-               <option <dtml-if expr="REQUEST.has_key('tip_autor') and tip_autor==_.int(REQUEST['tip_autor'])">
-                      selected </dtml-if>
+
+                 <option value="1&Parlamentar">Parlamentar</option>
+                 <dtml-unless des_tipo_autor> 
+                   <dtml-call expr="REQUEST.set('des_tipo_autor', 'Parlamentar')">
+                 </dtml-unless>
+
+              <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor='')">
+               <dtml-if expr="des_tipo_autor!='Parlamentar'">          
+                 <option 
+                    <dtml-if expr="REQUEST.has_key('tip_autor') and tip_autor==_.int(REQUEST['tip_autor'])">
+                      selected
+                    </dtml-if>
                       value="<dtml-var tip_autor>&<dtml-var des_tipo_autor url_quote>">
-              <dtml-var des_tipo_autor></option>
+                    <dtml-var des_tipo_autor>
+                 </option>
+              </dtml-if>
               </dtml-in>
              </select>
              </td>
-             <td colspan="2"><label for="des_tip_autor">Nome do Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
+             <td colspan="2">
+              <label for="des_tip_autor">Nome do Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
               <dtml-if expr="_.has_key('des_tipo_autor')">
 
                   <dtml-if expr="des_tipo_autor=='Parlamentar'">
