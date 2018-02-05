@@ -472,8 +472,42 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
     	renderer.run()
     	data = open(output_file_pdf, "rb").read()
     	for file in [output_file_pdf]:
-    	    os.unlink(file)
-    	    self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
+            if nom_arquivo_pdf in self.sapl_documentos.pauta_sessao:
+              documento = getattr(self.sapl_documentos.pauta_sessao,nom_arquivo_pdf)
+              documento.manage_upload(file=data)
+            else:
+    	      self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
+            os.unlink(file)
+
+    def pdf_completo(self, cod_sessao_plen):
+        writer = PdfFileWriter()
+        merger = PdfFileMerger()
+
+    	nom_arquivo_pdf = 'Pauta_Completa.pdf'
+
+        for pauta in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen):
+          if hasattr(self.sapl_documentos.pauta_sessao, str(cod_sessao_plen) + '_pauta_sessao.pdf'):
+             pdf_pauta = self.sapl_documentos.pauta_sessao.absolute_url()+ "/" + str(cod_sessao_plen) + "_pauta_sessao.pdf"
+             texto_pauta = cStringIO.StringIO(urllib.urlopen(pdf_pauta).read())
+             merger.append(texto_pauta)
+
+          for materia in self.zsql.ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
+             if hasattr(self.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf'):
+                pdf_materia = self.sapl_documentos.materia.absolute_url()+ "/" + materia.cod_materia + "_texto_integral.pdf"
+                texto_materia = cStringIO.StringIO(urllib.urlopen(pdf_materia).read())
+                merger.append(texto_materia)
+
+          output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+          f = open(output_file_pdf, "wb")
+          merger.write(f)
+          f.close()
+          readin = open(output_file_pdf, 'r' )
+          contents = readin.read()
+          for file in [output_file_pdf]:
+              os.unlink(file)
+          self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
+          self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="Pauta_Completa.pdf"'
+          return contents
 
     def oradores_gerar_odt(self, inf_basicas_dic, lst_oradores, lst_presidente, nom_arquivo):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/oradores.odt"
