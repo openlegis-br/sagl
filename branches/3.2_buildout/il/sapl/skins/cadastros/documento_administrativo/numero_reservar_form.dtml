@@ -1,0 +1,88 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+  function campos_criticar(){
+
+      var form = document.numero_reservar_form;
+      var regexp_digitos = /\D+/;
+
+      if (form.lst_tip_documento.selectedIndex==0){
+          alert("Escolha um tipo de documento!");
+          form.lst_tip_documento.focus();
+          return false;
+      }
+
+      if (form.txt_qtde.value == "") {
+         alert("A quantidade deve ser preenchida!");
+         form.txt_qtde.focus();
+         return false;
+      }
+
+      if (regexp_digitos.test(form.txt_qtde.value)) {
+         alert("A quantidade deve ser um número natural!");
+         form.txt_qtde.focus();
+         return false;
+      }
+
+      if (form.txa_txt_interessado.value == "") {
+         alert("Preencha o nome do responsável pela reserva!");
+         form.txa_txt_interessado.focus();
+         return false;
+      }
+
+      if (form.txa_txt_assunto.value == "") {
+         alert("O assunto do documento deve ser preenchido!");
+         form.txa_txt_assunto.focus();
+         return false;
+      }
+
+      form.submit();
+    }
+
+</script>
+
+<h1 class="firstHeading">Reserva de Numeração de Documentos</h1>
+
+<form action="numero_reservar_proc" name="numero_reservar_form">
+  <input type="hidden" name="hdn_url" value="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_index_html">
+   <fieldset>
+      <table>
+          <tr>
+              <td width="50%">
+                 <label for="lst_tip_documento">Tipo de Documento <span class="campoObrigatorio">&nbsp;</span></label><br />
+                 <select id="lst_tip_documento" name="lst_tip_documento" >
+                     <option>Selecione</option>
+                        <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
+                           <option value="<dtml-var tip_documento>">
+                               <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+                           </option>
+                        </dtml-in>
+                 </select>
+              </td>
+              <td>
+                 <label for="txt_qtde">Quantidade <span class="campoObrigatorio">&nbsp;</span></label><br />
+                 <input type="text" id="txt_qtde" name="txt_qtde" size="6" maxlength="2" />
+              </td>
+          </tr>
+          <tr>
+              <td>
+                 <label for="txa_txt_interessado">Responsável / Solicitante <span class="campoObrigatorio">&nbsp;</span></label><br />
+                 <input type="text" id="txa_txt_interessado" name="txa_txt_interessado" size="40" maxlength="200" />
+              </td>
+              <td>
+                 <label for="txa_txt_assunto">Assunto <span class="campoObrigatorio">&nbsp;</span></label><br />
+                 <input type="text" id="txa_txt_assunto" name="txa_txt_assunto" size="40" maxlength="200" value="Reserva..." />
+              </td>
+          </tr>
+      </table>
+   </fieldset>
+
+ <p align="center">
+  <input type="button" class="botao" name="button" value="Reservar" onClick="campos_criticar()" />
+  <input class="botao" type="button" value="Voltar" onClick="history.back()">
+ </p>
+
+</form>
+
+<dtml-var standard_html_footer>
