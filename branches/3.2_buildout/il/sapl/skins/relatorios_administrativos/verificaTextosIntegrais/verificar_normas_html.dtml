@@ -35,10 +35,7 @@
 //-->
 </script>
 
-
-<a id="ajuda" href="&dtml-portal_url;/ajuda/relatorios#rel_autor">Ajuda</a>
-
-<h1 class="firstHeading">Verificação de Textos Integrais</h1>
+  <h1 class="firstHeading">Verificação de Textos Integrais</h1>
   <legend>Normas Jurídicas</legend>
   <form class="pf-form" method="post" name="normas_form" action="verificar_normas_html">
     <input type="hidden" name="norma" value="1">
@@ -61,46 +58,47 @@
         <label for="txt_ano_norma">
           <input class="pf-field" type="text" id="txt_ano_norma" name="txt_ano_norma" maxlength="4" style="min-width: 94px; max-width: 94px; width: 20%;" value="<dtml-var txt_ano_norma missing>" />
         </label>
-       </div>
-      <div class="pf-element pf-buttons">
+    </div>
+    <div class="pf-element pf-buttons">
         <input class="pf-button btn botao" type="button" class="botao" name="button" value="Gerar relatório" onClick="campos_criticar()" />
         <dtml-if expr="_.has_key('norma')">
           <a href="&dtml-portal_url;/relatorios_administrativos/verificaTextosIntegrais/verificar_normas_html" class="botao">Nova Pesquisa</a>
         </dtml-if>
-      </div>
+    </div>
   </form>
 
 <dtml-if expr="_.has_key('norma')">
- <br />
- <h3>Normas Jurídicas desprovidas de Texto Integral</h3>
- <br />
-          <table>
-              <dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=lst_tip_norma,ano_norma=txt_ano_norma,ind_excluido=0)">
+  <br /><h3>Normas Jurídicas desprovidas de Texto Integral</h3><br />
+         <dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=lst_tip_norma,ano_norma=txt_ano_norma,ind_excluido=0)">
                <dtml-let id_documento_pdf="_.str(cod_norma)+'_texto_integral.pdf'">
                 <dtml-if "not _.hasattr(sapl_documentos.norma_juridica,id_documento_pdf)">
                  <dtml-if sequence-start>
+                  <table>
                    <tr>
                       <th width="25%" class="form-label">Identificação</th>
                       <th class="form-label">Ementa</th>
                    </tr>
                  </dtml-if>
-             <tr>
-                  <td>
-                    <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>" target="_blank">
-                      <b><dtml-var des_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma></b>
-                    </a>
-                  </td>
-                  <td>
-                    <dtml-var txt_ementa>
-                  </td>
-             <tr>
+                   <tr>
+                      <td>
+                         <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>" target="_blank">
+                           <b><dtml-var des_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma></b>
+                         </a>
+                      </td>
+                      <td>
+                         <dtml-var txt_ementa>
+                      </td>
+                   </tr>
+                 <dtml-if sequence-end>
+                  </table>
                  </dtml-if>
+                <dtml-else>
+                   <p>Nenhuma ocorrência encontrada</p>
+                </dtml-if>
                </dtml-let>
-              <dtml-else>
-                <p>Nenhuma ocorrência encontrada</p>
-              </dtml-in>
-            </tr>
-          </table>
+         <dtml-else>
+           <p>Nenhuma ocorrência encontrada</p>
+         </dtml-in>
 </dtml-if>
 
 <dtml-var standard_html_footer>
