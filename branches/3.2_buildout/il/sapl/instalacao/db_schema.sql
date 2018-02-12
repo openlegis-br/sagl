@@ -600,10 +600,11 @@ CREATE TABLE `localidade` (
 
 CREATE TABLE `logradouro` (
   `cod_logradouro` int(11) NOT NULL,
-  `nom_logradouro` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `nom_bairro` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nom_logradouro` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `nom_bairro` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_cep` varchar(9) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cod_localidade` int(11) DEFAULT NULL,
+  `cod_norma` int(11) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -1139,8 +1140,6 @@ CREATE TABLE `tipo_materia_legislativa` (
   `sgl_tipo_materia` varchar(5) COLLATE utf8_unicode_ci DEFAULT NULL,
   `des_tipo_materia` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `tip_natureza` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `ind_num_automatica` tinyint(4) NOT NULL DEFAULT '0',
-  `quorum_minimo_votacao` tinyint(4) NOT NULL DEFAULT '1',
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
@@ -2012,37 +2011,37 @@ ALTER TABLE `arquivo_prateleira`
 ALTER TABLE `arquivo_recipiente`
   MODIFY `cod_recipiente` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `arquivo_tipo_recipiente`
-  MODIFY `tip_recipiente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `tip_recipiente` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `arquivo_tipo_suporte`
-  MODIFY `tip_suporte` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `tip_suporte` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `arquivo_tipo_tit_documental`
-  MODIFY `tip_tit_documental` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `tip_tit_documental` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `arquivo_unidade`
   MODIFY `cod_unidade` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `assessor_parlamentar`
   MODIFY `cod_assessor` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `assunto_norma`
-  MODIFY `cod_assunto` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `cod_assunto` int(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `autor`
-  MODIFY `cod_autor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=333;
+  MODIFY `cod_autor` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `bancada`
-  MODIFY `cod_bancada` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `cod_bancada` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `cargo_bancada`
-  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `cargo_comissao`
-  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `cargo_executivo`
-  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `cargo_mesa`
-  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `coligacao`
   MODIFY `cod_coligacao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `comissao`
-  MODIFY `cod_comissao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `cod_comissao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `composicao_bancada`
-  MODIFY `cod_comp_bancada` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `cod_comp_bancada` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `composicao_comissao`
-  MODIFY `cod_comp_comissao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `cod_comp_comissao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `composicao_executivo`
   MODIFY `cod_composicao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `dependente`
@@ -2054,9 +2053,9 @@ ALTER TABLE `documento_acessorio`
 ALTER TABLE `documento_acessorio_administrativo`
   MODIFY `cod_documento_acessorio` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `documento_administrativo`
-  MODIFY `cod_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=587420;
+  MODIFY `cod_documento` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `documento_administrativo_materia`
-  MODIFY `cod_vinculo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111342;
+  MODIFY `cod_vinculo` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `documento_administrativo_vinculado`
   MODIFY `cod_vinculo` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `emenda`
@@ -2064,7 +2063,7 @@ ALTER TABLE `emenda`
 ALTER TABLE `encerramento_presenca`
   MODIFY `cod_presenca_encerramento` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `expediente_materia`
-  MODIFY `cod_ordem` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=302222;
+  MODIFY `cod_ordem` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `expediente_presenca`
   MODIFY `cod_presenca_expediente` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `funcionario`
@@ -2074,7 +2073,7 @@ ALTER TABLE `gabinete_atendimento`
 ALTER TABLE `gabinete_eleitor`
   MODIFY `cod_eleitor` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `instituicao`
-  MODIFY `cod_instituicao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38560;
+  MODIFY `cod_instituicao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `lexml_registro_provedor`
   MODIFY `cod_provedor` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `lexml_registro_publicador`
@@ -2082,107 +2081,107 @@ ALTER TABLE `lexml_registro_publicador`
 ALTER TABLE `logradouro`
   MODIFY `cod_logradouro` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `mandato`
-  MODIFY `cod_mandato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=643;
+  MODIFY `cod_mandato` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `materia_apresentada_sessao`
   MODIFY `cod_ordem` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `materia_legislativa`
-  MODIFY `cod_materia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=360799;
+  MODIFY `cod_materia` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `nivel_instrucao`
-  MODIFY `cod_nivel_instrucao` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `cod_nivel_instrucao` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `norma_juridica`
-  MODIFY `cod_norma` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10001;
+  MODIFY `cod_norma` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `ordem_dia`
-  MODIFY `cod_ordem` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16755;
+  MODIFY `cod_ordem` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `ordem_dia_presenca`
   MODIFY `cod_presenca_ordem_dia` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `orgao`
-  MODIFY `cod_orgao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `cod_orgao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `origem`
   MODIFY `cod_origem` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `parlamentar`
-  MODIFY `cod_parlamentar` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=315;
+  MODIFY `cod_parlamentar` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `partido`
-  MODIFY `cod_partido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `cod_partido` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `periodo_comp_comissao`
-  MODIFY `cod_periodo_comp` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `cod_periodo_comp` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `periodo_comp_mesa`
-  MODIFY `cod_periodo_comp` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `cod_periodo_comp` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `pessoa`
   MODIFY `cod_pessoa` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `proposicao`
   MODIFY `cod_proposicao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `protocolo`
-  MODIFY `cod_protocolo` int(7) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105480;
+  MODIFY `cod_protocolo` int(7) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT;
 ALTER TABLE `quorum_votacao`
-  MODIFY `cod_quorum` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `cod_quorum` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `regime_tramitacao`
-  MODIFY `cod_regime_tramitacao` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `cod_regime_tramitacao` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `registro_votacao`
   MODIFY `cod_votacao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `relatoria`
-  MODIFY `cod_relatoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15560;
+  MODIFY `cod_relatoria` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `reuniao_comissao`
   MODIFY `cod_reuniao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `sessao_legislativa`
-  MODIFY `cod_sessao_leg` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `cod_sessao_leg` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `sessao_plenaria`
-  MODIFY `cod_sessao_plen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2445;
+  MODIFY `cod_sessao_plen` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `sessao_plenaria_painel`
   MODIFY `cod_item` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `sessao_plenaria_presenca`
   MODIFY `cod_presenca_sessao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `status_tramitacao`
-  MODIFY `cod_status` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `cod_status` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `status_tramitacao_administrativo`
-  MODIFY `cod_status` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `cod_status` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `subemenda`
   MODIFY `cod_subemenda` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `substitutivo`
   MODIFY `cod_substitutivo` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_afastamento`
-  MODIFY `tip_afastamento` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `tip_afastamento` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_comissao`
-  MODIFY `tip_comissao` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `tip_comissao` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_dependente`
-  MODIFY `tip_dependente` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `tip_dependente` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_documento`
-  MODIFY `tip_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `tip_documento` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_documento_administrativo`
-  MODIFY `tip_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `tip_documento` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_emenda`
-  MODIFY `tip_emenda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `tip_emenda` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_expediente`
-  MODIFY `cod_expediente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `cod_expediente` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_fim_relatoria`
-  MODIFY `tip_fim_relatoria` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `tip_fim_relatoria` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_instituicao`
-  MODIFY `tip_instituicao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+  MODIFY `tip_instituicao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_materia_legislativa`
-  MODIFY `tip_materia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `tip_materia` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_norma_juridica`
-  MODIFY `tip_norma` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `tip_norma` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_proposicao`
-  MODIFY `tip_proposicao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `tip_proposicao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_resultado_votacao`
-  MODIFY `tip_resultado_votacao` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `tip_resultado_votacao` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_sessao_plenaria`
-  MODIFY `tip_sessao` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `tip_sessao` tinyint(4) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_situacao_materia`
-  MODIFY `tip_situacao_materia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+  MODIFY `tip_situacao_materia` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_situacao_norma`
-  MODIFY `tip_situacao_norma` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `tip_situacao_norma` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_vinculo_norma`
-  MODIFY `cod_tip_vinculo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `cod_tip_vinculo` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tipo_votacao`
-  MODIFY `tip_votacao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `tip_votacao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tramitacao`
   MODIFY `cod_tramitacao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `tramitacao_administrativo`
   MODIFY `cod_tramitacao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `turno_discussao`
-  MODIFY `cod_turno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `cod_turno` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `unidade_tramitacao`
-  MODIFY `cod_unid_tramitacao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `cod_unid_tramitacao` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `usuario`
   MODIFY `cod_usuario` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `vinculo_norma_juridica`
