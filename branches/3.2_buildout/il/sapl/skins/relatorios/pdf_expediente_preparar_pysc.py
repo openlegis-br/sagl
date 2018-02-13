@@ -6,7 +6,6 @@ session= request.SESSION
 
 if context.REQUEST['data']!='':
     dat_inicio_sessao = context.REQUEST['data']
-    pauta = [] # lista contendo a pauta do expediente a ser impressa    
     data = context.pysc.data_converter_pysc(dat_inicio_sessao) # converte data para formato yyyy/mm/dd
     codigo = context.REQUEST['cod_sessao_plen']
 
@@ -23,7 +22,13 @@ if context.REQUEST['data']!='':
         inf_basicas_dic["hr_inicio_sessao"] = sessao.hr_inicio_sessao
         inf_basicas_dic["dat_fim_sessao"] = sessao.dat_fim_sessao
         inf_basicas_dic["hr_fim_sessao"] = sessao.hr_fim_sessao
- 
+
+        # obtém o nome do Presidente da Câmara titular
+        lst_presidente = []
+        for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sessao.num_legislatura,data=data):
+          for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
+            for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
+              lst_presidente = presidencia.nom_parlamentar
 
         # Lista das matérias apresentadas
         lst_materia_apresentada=[]
@@ -48,45 +53,7 @@ if context.REQUEST['data']!='':
             
             lst_materia_apresentada.append(dic_materia_apresentada)
 
-    # Indicacoes
-        lst_indicacoes = [] 
-        for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=codigo,ind_excluido=0):
-          for materia in context.zsql.materia_obter_zsql(cod_materia=item.cod_materia,des_tipo_materia='Indicação',ind_excluido=0):
-            dic_indicacoes = {}
-            dic_indicacoes["num_ordem"] = item.num_ordem
-            dic_indicacoes['txt_ementa'] = materia.txt_ementa
-            dic_indicacoes["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
-            dic_indicacoes["nom_autor"] = ""
-            autores = context.zsql.autoria_obter_zsql(cod_materia=item.cod_materia)
-            fields = autores.data_dictionary().keys()
-            lista_autor = []
-            for autor in autores:
-              for field in fields:
-                 nome_autor = autor['nom_autor_join']
-   	      lista_autor.append(nome_autor)
-            dic_indicacoes["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
-            lst_indicacoes.append(dic_indicacoes)
-
-    # Requerimentos
-        lst_requerimentos = [] 
-        for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=codigo,ind_excluido=0):
-          for materia in context.zsql.materia_obter_zsql(cod_materia=item.cod_materia,des_tipo_materia='Requerimento',ind_excluido=0):
-            dic_requerimentos = {}
-            dic_requerimentos["num_ordem"] = item.num_ordem
-            dic_requerimentos['txt_ementa'] = materia.txt_ementa
-            dic_requerimentos["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
-            dic_requerimentos["nom_autor"] = ""
-            autores = context.zsql.autoria_obter_zsql(cod_materia=item.cod_materia)
-            fields = autores.data_dictionary().keys()
-            lista_autor = []
-            for autor in autores:
-              for field in fields:
-                 nome_autor = autor['nom_autor_join']
-   	      lista_autor.append(nome_autor)
-            dic_requerimentos["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
-            lst_requerimentos.append(dic_requerimentos)
-
-    # Mocoes
+        # Mocoes
         lst_mocoes = [] 
         for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=codigo,ind_excluido=0):
           for materia in context.zsql.materia_obter_zsql(cod_materia=item.cod_materia,des_tipo_materia='Moção',ind_excluido=0):
@@ -105,13 +72,110 @@ if context.REQUEST['data']!='':
             dic_mocoes["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
             lst_mocoes.append(dic_mocoes)
 
+        # Indicacoes
+        vereadoresind=[]
+        lst_indicacoes = [] 
+        for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=codigo,ind_excluido=0):
+          # Filtra materias do tipo Indicacao
+          for materia in context.zsql.materia_obter_zsql(cod_materia=item.cod_materia,des_tipo_materia='Indicação',ind_excluido=0):
+            # Obtem autores das indicacoes
+            dic_autores = {}
+            autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+              for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor[1]):
+                dic_autores["nome_completo"] = parlamentar['nom_completo']
+                dic_autores["txt_autoria"] = parlamentar['nom_parlamentar']
+            vereadoresind.append(dic_autores)
+            # Indicacoes
+            dic_indicacoes = {}
+            dic_indicacoes["num_ordem"] = item.num_ordem
+            dic_indicacoes['txt_ementa'] = materia.txt_ementa
+            dic_indicacoes["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+            dic_indicacoes["nom_autor"] = ""
+            autores = context.zsql.autoria_obter_zsql(cod_materia=item.cod_materia)
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+              for field in fields:
+                 nome_autor = autor['nom_autor_join']
+   	      lista_autor.append(nome_autor)
+            dic_indicacoes["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+            lst_indicacoes.append(dic_indicacoes)
 
-    # obtém o nome do Presidente da Câmara titular
-    lst_presidente = []
-    for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sessao.num_legislatura,data=data):
-      for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
-        for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-          lst_presidente = presidencia.nom_parlamentar
+
+        # Requerimentos
+        vereadores=[]
+        lst_requerimentos = []
+        # Obtem materias da pauta do expediente da sessao
+        for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=codigo,ind_excluido=0):
+          # Filtra materias do tipo Requerimento
+          for materia in context.zsql.materia_obter_zsql(cod_materia=item.cod_materia,des_tipo_materia='Requerimento',ind_excluido=0):
+            # Obtem autores das materias
+            dic_autores = {}
+            autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+              for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor[1]):
+                dic_autores["nome_completo"] = parlamentar['nom_completo']
+                dic_autores["txt_autoria"] = parlamentar['nom_parlamentar']
+            vereadores.append(dic_autores)
+            # Requerimentos
+            dic_requerimentos = {}
+            dic_requerimentos["num_ordem"] = item.num_ordem
+            dic_requerimentos['txt_ementa'] = materia.txt_ementa
+            dic_requerimentos["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+            dic_requerimentos["nom_autor"] = ""
+            autores = context.zsql.autoria_obter_zsql(cod_materia=item.cod_materia)
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+              for field in fields:
+                 nome_autor = autor['nom_autor_join']
+              lista_autor.append(nome_autor)
+            dic_requerimentos["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
+            lst_requerimentos.append(dic_requerimentos)
+
+
+    # Selecione apenas uma ocorrencia do nome do vereador - requerimentos
+    vereadores = [
+        e
+        for i, e in enumerate(vereadores)
+        if vereadores.index(e) == i
+        ]
+
+    # Ordem alfabetica
+    vereadores.sort()
+
+    # Ordena requerimentos por autor
+    demais=[]
+    for autor in vereadores:
+     for materia in lst_requerimentos:
+       if autor.get('txt_autoria',autor) == materia.get('nom_autor',materia):
+         demais.append(materia)
+
+    lst_requerimentos = demais
+
+    # Selecione apenas uma ocorrencia do nome do vereador - requerimentos
+    vereadoresind = [
+        e
+        for i, e in enumerate(vereadoresind)
+        if vereadoresind.index(e) == i
+        ]
+
+    # Ordem alfabetica
+    vereadoresind.sort()
+
+    # Ordena indicacoes por autor
+    indicacoes = []
+    for autor in vereadoresind:
+     for materia in lst_indicacoes:
+       if autor.get('txt_autoria',autor) == materia.get('nom_autor',materia):
+         indicacoes.append(materia)
+
+    lst_indicacoes = indicacoes
 
     # obtém as propriedades da casa legislativa para montar o cabeçalho e o rodapé da página
     cabecalho={}
@@ -152,3 +216,4 @@ if context.REQUEST['data']!='':
         return response.redirect('mensagem_emitir_proc')
     else:
        response.redirect(caminho)
+

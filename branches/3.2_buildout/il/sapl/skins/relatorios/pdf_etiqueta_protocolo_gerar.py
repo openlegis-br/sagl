@@ -97,7 +97,7 @@ def principal(sessao,imagem,data,lst_protocolos,dic_cabecalho,lst_rodape,dic_fil
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="etiquetas.pdf">\n'
-    tmp_data+='\t<template pageSize="(62mm, 29mm)" title="Etiquetas de Protocolo" author="OpenLegis" allowSplitting="20">\n'
+    tmp_data+='\t<template pageSize="(62mm, 62mm)" title="Etiquetas de Protocolo" author="OpenLegis" allowSplitting="20">\n'
     tmp_data+='\t\t<pageTemplate id="first">\n'
     tmp_data+='\t\t\t<pageGraphics>\n'
     tmp_data+='\t\t\t<frame id="first" x1="0.02cm" y1="0.02cm" width="61mm" height="29mm"/>\n'
