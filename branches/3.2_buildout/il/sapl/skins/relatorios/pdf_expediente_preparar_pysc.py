@@ -156,7 +156,7 @@ if context.REQUEST['data']!='':
        if autor.get('txt_autoria',autor) == materia.get('nom_autor',materia):
          demais.append(materia)
 
-    lst_requerimentos = demais
+#    lst_requerimentos = demais
 
     # Selecione apenas uma ocorrencia do nome do vereador - requerimentos
     vereadoresind = [
@@ -175,7 +175,7 @@ if context.REQUEST['data']!='':
        if autor.get('txt_autoria',autor) == materia.get('nom_autor',materia):
          indicacoes.append(materia)
 
-    lst_indicacoes = indicacoes
+#    lst_indicacoes = indicacoes
 
     # obtém as propriedades da casa legislativa para montar o cabeçalho e o rodapé da página
     cabecalho={}

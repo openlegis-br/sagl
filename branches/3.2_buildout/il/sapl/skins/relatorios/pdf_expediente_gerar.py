@@ -230,7 +230,7 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     tmp+=materia_apresentada(lst_materia_apresentada)
     tmp+=requerimentos(lst_requerimentos)
     tmp+=indicacoes(lst_indicacoes)
-#    tmp+=mocoes(lst_mocoes)
+    tmp+=mocoes(lst_mocoes)
     tmp+=presidente(lst_presidente)
     tmp+='\t</story>\n'
     tmp+='</document>\n'
