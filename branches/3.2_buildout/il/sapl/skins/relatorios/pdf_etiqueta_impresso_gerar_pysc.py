@@ -25,7 +25,7 @@ def paraStyle():
     tmp_data+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9" leading="11" alignment="center"/>\n'
     tmp_data+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="12" leading="13" alignment="center"/>\n'
     tmp_data+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10" leading="12" alignment="right"/>\n'
-    tmp_data+='\t\t<paraStyle name="P5" fontName="Helvetica" fontSize="9" leading="11" alignment="left"/>\n'
+    tmp_data+='\t\t<paraStyle name="P5" fontName="Helvetica" fontSize="8" leading="10" alignment="left"/>\n'
     tmp_data+='\t</stylesheet>\n'
 
     return tmp_data
@@ -49,8 +49,6 @@ def destinatarios(lst_destinatarios):
             tmp_data+='\t\t<para style="P1">'+ dic['nome_responsavel']+ '</para>\n'
         if dic['cargo']!="" and dic['cargo']!=None:
             tmp_data+='\t\t<para style="P1">'+ dic['cargo']+ '</para>\n'
-        if dic['nome_instituicao']!="" and dic['nome_instituicao']!=None and dic['nome_instituicao'] != dic['nome_responsavel']:
-            tmp_data+='\t\t<para style="P1">'+ dic['nome_instituicao']+ '</para>\n'
         if dic['endereco']!="" and dic['endereco']!=None and dic['bairro']!='' and dic['bairro']!=None:
             tmp_data+='\t\t<para style="P1">'+ dic['endereco']+' '+dic['bairro']+ '</para>\n'
         else:
