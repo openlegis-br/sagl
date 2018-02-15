@@ -17,6 +17,6 @@ if tipo != '':
 else:
  query = Eq('ementa', assunto) | Eq('PrincipiaSearchSource', assunto)
 
-results = context.sapl_documentos.materia.Catalog.evalAdvancedQuery(query,('tipo_materia',('num_materia','desc'),))
+results = context.sapl_documentos.materia.Catalog.evalAdvancedQuery(query,('tipo_materia', ('ano_materia','desc'), ('num_materia','desc'),))
 
 return results

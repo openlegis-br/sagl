@@ -17,6 +17,6 @@ if tipo != '':
 else:
  query = Eq('ementa', assunto) | Eq('PrincipiaSearchSource', assunto)
 
-results = context.sapl_documentos.norma_juridica.Catalog.evalAdvancedQuery(query,('tipo_norma',('num_norma','desc'),))
+results = context.sapl_documentos.norma_juridica.Catalog.evalAdvancedQuery(query,('tipo_norma', ('ano_norma','desc'), ('num_norma','desc'),))
 
 return results
