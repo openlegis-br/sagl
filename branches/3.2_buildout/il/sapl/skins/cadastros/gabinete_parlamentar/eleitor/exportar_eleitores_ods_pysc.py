@@ -20,6 +20,7 @@ for item in context.zsql.gabinete_eleitor_pesquisar_zsql(
                                                dat_atendimento=REQUEST['txt_dat_atendimento'],
                                                dat_atendimento2=REQUEST['txt_dat_atendimento2'],
                                                dia_aniversario=REQUEST['txt_dia_aniversario'],
+                                               dia_aniversario2=REQUEST['txt_dia_aniversario2'],
                                                mes_aniversario=REQUEST['lst_mes_aniversario'],
                                                sex_eleitor=REQUEST['rad_sex_eleitor'],
                                                des_estado_civil=REQUEST['txt_des_estado_civil'],
