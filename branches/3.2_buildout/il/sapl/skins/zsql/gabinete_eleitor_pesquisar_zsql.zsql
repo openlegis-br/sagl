@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_parlamentar nom_eleitor doc_identidade txt_classe dat_nascimento="" sex_eleitor="" des_estado_civil nom_conjuge rad_filhos="" end_residencial nom_bairro num_cep nom_localidade des_profissao dat_atendimento dat_atendimento2 dia_aniversario="" mes_aniversario="" ind_excluido=0
+arguments : cod_parlamentar nom_eleitor doc_identidade txt_classe dat_nascimento="" sex_eleitor="" des_estado_civil nom_conjuge rad_filhos="" end_residencial nom_bairro num_cep nom_localidade des_profissao dat_atendimento dat_atendimento2 dia_aniversario="" dia_aniversario2="" mes_aniversario="" ind_excluido=0
 max_rows : 20000
 max_cache : 100
 </dtml-comment>
@@ -60,8 +60,13 @@ FROM
     </dtml-if>
   </dtml-if>
 
-  <dtml-if expr="dia_aniversario">
+  <dtml-if expr="dia_aniversario and not dia_aniversario2">
     AND DAY(dat_nascimento) = <dtml-sqlvar "dia_aniversario" type="nb">
+  </dtml-if>
+
+  <dtml-if expr="dia_aniversario and dia_aniversario2">
+    AND DAY(dat_nascimento) >= <dtml-sqlvar "dia_aniversario" type="nb">
+    AND DAY(dat_nascimento) <= <dtml-sqlvar "dia_aniversario2" type="nb">
   </dtml-if>
 
   <dtml-if expr="mes_aniversario">
