@@ -40,21 +40,44 @@
       form.submit();
     }
 
+   function numero_buscar(form){
+      var URL = "numero_buscar_reserva_proc?tip_documento=" + form.lst_tip_documento[form.lst_tip_documento.selectedIndex].value
+              + '&ano_documento=' + form.txt_ano_documento.value
+              + '&txt_qtde=' + form.txt_qtde.value
+              + '&txt_interessado=' + form.txa_txt_interessado.value
+              + '&txt_assunto=' + form.txa_txt_assunto.value
+     if ((form.lst_tip_documento.selectedIndex != 0) &&
+	 (form.txt_qtde.value!="")){
+      location.href= URL;
+     }
+   }
+
 </script>
 
 <h1 class="firstHeading">Reserva de Numeração de Documentos</h1>
 
 <form action="numero_reservar_proc" name="numero_reservar_form">
+
+  <dtml-call expr="REQUEST.set('ano_documento', _.DateTime().strftime('%Y'))">
+  <input type="hidden" name="txt_ano_documento" value="<dtml-var ano_documento>">
+
   <input type="hidden" name="hdn_url" value="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_index_html">
+
    <fieldset>
       <table>
           <tr>
               <td width="50%">
                  <label for="lst_tip_documento">Tipo de Documento <span class="campoObrigatorio">&nbsp;</span></label><br />
-                 <select id="lst_tip_documento" name="lst_tip_documento" >
+                 <select id="lst_tip_documento" name="lst_tip_documento" onChange="numero_buscar(document.numero_reservar_form)">
                      <option>Selecione</option>
                         <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
-                           <option value="<dtml-var tip_documento>">
+                           <option value="<dtml-var tip_documento>"
+                                 <dtml-if expr="REQUEST.has_key('tip_documento_novo')">
+                                     <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_novo)">
+                                       selected
+                                     </dtml-if>
+                                  </dtml-if>
+                           >
                                <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
                            </option>
                         </dtml-in>
@@ -62,25 +85,38 @@
               </td>
               <td>
                  <label for="txt_qtde">Quantidade <span class="campoObrigatorio">&nbsp;</span></label><br />
-                 <input type="text" id="txt_qtde" name="txt_qtde" size="6" maxlength="2" />
+                 <input type="text" id="txt_qtde" name="txt_qtde" value="<dtml-var txt_qtde missing>" size="6" maxlength="2" onkeyup="numero_buscar(document.numero_reservar_form)" />
               </td>
           </tr>
           <tr>
               <td>
                  <label for="txa_txt_interessado">Responsável / Solicitante <span class="campoObrigatorio">&nbsp;</span></label><br />
-                 <input type="text" id="txa_txt_interessado" name="txa_txt_interessado" size="40" maxlength="200" />
+                 <input type="text" id="txa_txt_interessado" name="txa_txt_interessado" value="<dtml-var txt_interessado missing null="">" size="40" maxlength="200" />
               </td>
               <td>
                  <label for="txa_txt_assunto">Assunto <span class="campoObrigatorio">&nbsp;</span></label><br />
-                 <input type="text" id="txa_txt_assunto" name="txa_txt_assunto" size="40" maxlength="200" value="Reserva..." />
+                 <input type="text" id="txa_txt_assunto" name="txa_txt_assunto" size="40" maxlength="200" value="<dtml-var txt_assunto missing>"/>
               </td>
           </tr>
+         <dtml-if num_documento>
+          <tr>
+              <td>
+                 <label for="txt_num_inicial">Número Inicial</label><br />
+                 <input type="text" id="txt_num_inicial" name="txt_num_inicial" value="<dtml-var num_documento missing null="">" size="6" disabled />
+              </td>
+              <td>
+                 <label for="txt_num_final">Número Final</label><br />
+                 <dtml-call expr="REQUEST.set('num_documento_final', (int(num_documento) + int(txt_qtde)) -1)">
+                 <input type="text" id="txt_num_final" name="txt_num_final" value="<dtml-var num_documento_final missing null="">" size="6" disabled />
+              </td>
+          </tr>
+        </dtml-if>
       </table>
    </fieldset>
 
  <p align="center">
   <input type="button" class="botao" name="button" value="Reservar" onClick="campos_criticar()" />
-  <input class="botao" type="button" value="Voltar" onClick="history.back()">
+  <a href="&dtml-portal_url;/cadastros/documento_administrativo/numero_reservar_form" class="botao">Limpar</a>
  </p>
 
 </form>
