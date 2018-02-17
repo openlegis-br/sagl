@@ -1,24 +1,25 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_bancada=""
+arguments : cod_bancada="" cod_periodo_comp
 max_rows : 1
 max_cache : 100
 </dtml-comment>
 
 SELECT
      composicao_bancada.cod_parlamentar,
+     composicao_bancada.cod_periodo_comp,
      parlamentar.nom_completo,
      parlamentar.nom_parlamentar,
      cargo_bancada.des_cargo
 
-FROM composicao_bancada,
-     cargo_bancada,
-     parlamentar
+FROM composicao_bancada LEFT JOIN parlamentar
+     ON composicao_bancada.cod_parlamentar = parlamentar.cod_parlamentar,
+     cargo_bancada
  
 <dtml-sqlgroup where>
   cargo_bancada.des_cargo LIKE ('Lider%') 
   <dtml-and>composicao_bancada.cod_cargo=cargo_bancada.cod_cargo
-  <dtml-and>composicao_bancada.cod_parlamentar = parlamentar.cod_parlamentar
+  <dtml-and><dtml-sqltest cod_periodo_comp column="composicao_bancada.cod_periodo_comp" op="=" type="int"> 
   <dtml-and><dtml-sqltest cod_bancada column="composicao_bancada.cod_bancada" op="=" type="int"> 
   <dtml-and>composicao_bancada.ind_excluido=0
   <dtml-and>cargo_bancada.ind_excluido=0
