@@ -1,12 +1,31 @@
+-- phpMyAdmin SQL Dump
+-- version 4.5.4.1deb2ubuntu2
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: 17-Fev-2018 às 17:30
+-- Versão do servidor: 5.7.21-0ubuntu0.16.04.1
+-- PHP Version: 7.0.25-0ubuntu0.16.04.1
+
 SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+--
+-- Database: `interlegis`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `acomp_materia`
+--
 
 CREATE TABLE `acomp_materia` (
   `cod_cadastro` int(11) NOT NULL,
@@ -15,6 +34,12 @@ CREATE TABLE `acomp_materia` (
   `txt_hash` varchar(8) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `afastamento`
+--
 
 CREATE TABLE `afastamento` (
   `cod_afastamento` int(11) NOT NULL,
@@ -29,6 +54,12 @@ CREATE TABLE `afastamento` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `anexada`
+--
+
 CREATE TABLE `anexada` (
   `cod_materia_principal` int(11) NOT NULL,
   `cod_materia_anexada` int(11) NOT NULL,
@@ -37,12 +68,24 @@ CREATE TABLE `anexada` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `anexo_norma`
+--
+
 CREATE TABLE `anexo_norma` (
   `cod_anexo` int(11) NOT NULL,
   `cod_norma` int(11) NOT NULL,
   `txt_descricao` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `arquivo_armario`
+--
 
 CREATE TABLE `arquivo_armario` (
   `cod_armario` int(11) NOT NULL,
@@ -53,6 +96,12 @@ CREATE TABLE `arquivo_armario` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `arquivo_corredor`
+--
+
 CREATE TABLE `arquivo_corredor` (
   `cod_corredor` int(11) NOT NULL,
   `cod_unidade` int(11) NOT NULL,
@@ -60,6 +109,12 @@ CREATE TABLE `arquivo_corredor` (
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `arquivo_item`
+--
 
 CREATE TABLE `arquivo_item` (
   `cod_item` int(11) NOT NULL,
@@ -75,6 +130,12 @@ CREATE TABLE `arquivo_item` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `arquivo_prateleira`
+--
+
 CREATE TABLE `arquivo_prateleira` (
   `cod_prateleira` int(11) NOT NULL,
   `cod_armario` int(11) DEFAULT NULL,
@@ -84,6 +145,12 @@ CREATE TABLE `arquivo_prateleira` (
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `arquivo_recipiente`
+--
 
 CREATE TABLE `arquivo_recipiente` (
   `cod_recipiente` int(11) NOT NULL,
@@ -99,11 +166,23 @@ CREATE TABLE `arquivo_recipiente` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `arquivo_tipo_recipiente`
+--
+
 CREATE TABLE `arquivo_tipo_recipiente` (
   `tip_recipiente` int(11) NOT NULL,
   `des_tipo_recipiente` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `arquivo_tipo_suporte`
+--
 
 CREATE TABLE `arquivo_tipo_suporte` (
   `tip_suporte` int(11) NOT NULL,
@@ -111,12 +190,24 @@ CREATE TABLE `arquivo_tipo_suporte` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `arquivo_tipo_tit_documental`
+--
+
 CREATE TABLE `arquivo_tipo_tit_documental` (
   `tip_tit_documental` int(11) NOT NULL,
   `sgl_tip_tit_documental` varchar(3) COLLATE utf8_unicode_ci NOT NULL,
   `des_tipo_tit_documental` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `arquivo_unidade`
+--
 
 CREATE TABLE `arquivo_unidade` (
   `cod_unidade` int(11) NOT NULL,
@@ -127,6 +218,12 @@ CREATE TABLE `arquivo_unidade` (
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `assessor_parlamentar`
+--
 
 CREATE TABLE `assessor_parlamentar` (
   `cod_assessor` int(11) NOT NULL,
@@ -149,12 +246,24 @@ CREATE TABLE `assessor_parlamentar` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `assunto_norma`
+--
+
 CREATE TABLE `assunto_norma` (
   `cod_assunto` int(4) NOT NULL,
   `des_assunto` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `des_estendida` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `autor`
+--
 
 CREATE TABLE `autor` (
   `cod_autor` int(11) NOT NULL,
@@ -170,12 +279,24 @@ CREATE TABLE `autor` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `autoria`
+--
+
 CREATE TABLE `autoria` (
   `cod_autor` int(11) NOT NULL,
   `cod_materia` int(11) NOT NULL,
   `ind_primeiro_autor` tinyint(4) NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `bancada`
+--
 
 CREATE TABLE `bancada` (
   `cod_bancada` int(11) NOT NULL,
@@ -188,12 +309,24 @@ CREATE TABLE `bancada` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `cargo_bancada`
+--
+
 CREATE TABLE `cargo_bancada` (
   `cod_cargo` tinyint(4) NOT NULL,
   `des_cargo` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_unico` tinyint(4) NOT NULL DEFAULT '0',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `cargo_comissao`
+--
 
 CREATE TABLE `cargo_comissao` (
   `cod_cargo` tinyint(4) NOT NULL,
@@ -202,11 +335,23 @@ CREATE TABLE `cargo_comissao` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `cargo_executivo`
+--
+
 CREATE TABLE `cargo_executivo` (
   `cod_cargo` tinyint(4) NOT NULL,
   `des_cargo` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `cargo_mesa`
+--
 
 CREATE TABLE `cargo_mesa` (
   `cod_cargo` tinyint(4) NOT NULL,
@@ -215,12 +360,24 @@ CREATE TABLE `cargo_mesa` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `categoria_instituicao`
+--
+
 CREATE TABLE `categoria_instituicao` (
   `tip_instituicao` int(11) NOT NULL,
   `cod_categoria` int(11) NOT NULL,
   `des_categoria` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `coautoria_proposicao`
+--
 
 CREATE TABLE `coautoria_proposicao` (
   `cod_proposicao` int(11) NOT NULL,
@@ -229,6 +386,12 @@ CREATE TABLE `coautoria_proposicao` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `coligacao`
+--
+
 CREATE TABLE `coligacao` (
   `cod_coligacao` int(11) NOT NULL,
   `num_legislatura` int(11) NOT NULL,
@@ -236,6 +399,12 @@ CREATE TABLE `coligacao` (
   `num_votos_coligacao` int(11) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `comissao`
+--
 
 CREATE TABLE `comissao` (
   `cod_comissao` int(11) NOT NULL,
@@ -262,10 +431,17 @@ CREATE TABLE `comissao` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `composicao_bancada`
+--
+
 CREATE TABLE `composicao_bancada` (
   `cod_comp_bancada` int(11) NOT NULL,
   `cod_parlamentar` int(11) NOT NULL,
   `cod_bancada` int(11) NOT NULL,
+  `cod_periodo_comp` int(11) DEFAULT NULL,
   `cod_cargo` tinyint(4) NOT NULL,
   `ind_titular` tinyint(4) NOT NULL,
   `dat_designacao` date NOT NULL,
@@ -275,11 +451,23 @@ CREATE TABLE `composicao_bancada` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `composicao_coligacao`
+--
+
 CREATE TABLE `composicao_coligacao` (
   `cod_partido` int(11) NOT NULL,
   `cod_coligacao` int(11) NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `composicao_comissao`
+--
 
 CREATE TABLE `composicao_comissao` (
   `cod_comp_comissao` int(11) NOT NULL,
@@ -295,6 +483,12 @@ CREATE TABLE `composicao_comissao` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `composicao_executivo`
+--
+
 CREATE TABLE `composicao_executivo` (
   `cod_composicao` int(11) NOT NULL,
   `num_legislatura` tinyint(4) NOT NULL,
@@ -307,6 +501,12 @@ CREATE TABLE `composicao_executivo` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `composicao_mesa`
+--
+
 CREATE TABLE `composicao_mesa` (
   `cod_parlamentar` int(11) NOT NULL,
   `cod_sessao_leg` int(11) DEFAULT NULL,
@@ -314,6 +514,12 @@ CREATE TABLE `composicao_mesa` (
   `cod_cargo` tinyint(4) NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `dependente`
+--
 
 CREATE TABLE `dependente` (
   `cod_dependente` int(11) NOT NULL,
@@ -328,6 +534,12 @@ CREATE TABLE `dependente` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `despacho_inicial`
+--
+
 CREATE TABLE `despacho_inicial` (
   `cod_materia` int(11) NOT NULL,
   `num_ordem` tinyint(4) UNSIGNED NOT NULL,
@@ -335,12 +547,24 @@ CREATE TABLE `despacho_inicial` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `destinatario_oficio`
+--
+
 CREATE TABLE `destinatario_oficio` (
   `cod_destinatario` int(11) NOT NULL,
   `cod_documento` int(11) NOT NULL,
   `cod_instituicao` int(11) NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `documento_acessorio`
+--
 
 CREATE TABLE `documento_acessorio` (
   `cod_documento` int(11) NOT NULL,
@@ -355,6 +579,12 @@ CREATE TABLE `documento_acessorio` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `documento_acessorio_administrativo`
+--
+
 CREATE TABLE `documento_acessorio_administrativo` (
   `cod_documento_acessorio` int(11) NOT NULL,
   `cod_documento` int(11) NOT NULL DEFAULT '0',
@@ -367,6 +597,12 @@ CREATE TABLE `documento_acessorio_administrativo` (
   `txt_indexacao` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `documento_administrativo`
+--
 
 CREATE TABLE `documento_administrativo` (
   `cod_documento` int(11) NOT NULL,
@@ -388,6 +624,12 @@ CREATE TABLE `documento_administrativo` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `documento_administrativo_materia`
+--
+
 CREATE TABLE `documento_administrativo_materia` (
   `cod_vinculo` int(11) NOT NULL,
   `cod_documento` int(11) NOT NULL,
@@ -395,12 +637,24 @@ CREATE TABLE `documento_administrativo_materia` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `documento_administrativo_vinculado`
+--
+
 CREATE TABLE `documento_administrativo_vinculado` (
   `cod_vinculo` int(11) NOT NULL,
   `cod_documento_vinculante` int(11) NOT NULL,
   `cod_documento_vinculado` int(11) NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `emenda`
+--
 
 CREATE TABLE `emenda` (
   `cod_emenda` int(11) NOT NULL,
@@ -416,6 +670,12 @@ CREATE TABLE `emenda` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `encerramento_presenca`
+--
+
 CREATE TABLE `encerramento_presenca` (
   `cod_presenca_encerramento` int(11) NOT NULL,
   `cod_sessao_plen` int(11) NOT NULL DEFAULT '0',
@@ -423,6 +683,12 @@ CREATE TABLE `encerramento_presenca` (
   `dat_ordem` date NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `expediente_materia`
+--
 
 CREATE TABLE `expediente_materia` (
   `cod_ordem` int(11) NOT NULL,
@@ -437,6 +703,12 @@ CREATE TABLE `expediente_materia` (
   `tip_quorum` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `expediente_presenca`
+--
+
 CREATE TABLE `expediente_presenca` (
   `cod_presenca_expediente` int(11) NOT NULL,
   `cod_sessao_plen` int(11) NOT NULL DEFAULT '0',
@@ -445,12 +717,24 @@ CREATE TABLE `expediente_presenca` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `expediente_sessao_plenaria`
+--
+
 CREATE TABLE `expediente_sessao_plenaria` (
   `cod_sessao_plen` int(11) NOT NULL,
   `cod_expediente` int(11) NOT NULL,
   `txt_expediente` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `filiacao`
+--
 
 CREATE TABLE `filiacao` (
   `dat_filiacao` date NOT NULL,
@@ -459,6 +743,12 @@ CREATE TABLE `filiacao` (
   `dat_desfiliacao` date DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `funcionario`
+--
 
 CREATE TABLE `funcionario` (
   `cod_funcionario` int(11) NOT NULL,
@@ -469,6 +759,12 @@ CREATE TABLE `funcionario` (
   `ind_ativo` tinyint(4) NOT NULL DEFAULT '1',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `gabinete_atendimento`
+--
 
 CREATE TABLE `gabinete_atendimento` (
   `cod_atendimento` int(11) NOT NULL,
@@ -482,6 +778,12 @@ CREATE TABLE `gabinete_atendimento` (
   `txt_status` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `gabinete_eleitor`
+--
 
 CREATE TABLE `gabinete_eleitor` (
   `cod_eleitor` int(11) NOT NULL,
@@ -513,6 +815,12 @@ CREATE TABLE `gabinete_eleitor` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `instituicao`
+--
+
 CREATE TABLE `instituicao` (
   `cod_instituicao` int(11) NOT NULL,
   `tip_instituicao` int(11) NOT NULL,
@@ -539,6 +847,12 @@ CREATE TABLE `instituicao` (
   `txt_ip_alteracao` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `legislacao_citada`
+--
+
 CREATE TABLE `legislacao_citada` (
   `cod_materia` int(11) NOT NULL,
   `cod_norma` int(11) NOT NULL,
@@ -557,6 +871,12 @@ CREATE TABLE `legislacao_citada` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `legislatura`
+--
+
 CREATE TABLE `legislatura` (
   `num_legislatura` int(11) NOT NULL,
   `dat_inicio` date NOT NULL,
@@ -564,6 +884,12 @@ CREATE TABLE `legislatura` (
   `dat_eleicao` date NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `lexml_registro_provedor`
+--
 
 CREATE TABLE `lexml_registro_provedor` (
   `cod_provedor` int(11) NOT NULL,
@@ -577,6 +903,12 @@ CREATE TABLE `lexml_registro_provedor` (
   `xml_provedor` longtext COLLATE utf8_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `lexml_registro_publicador`
+--
+
 CREATE TABLE `lexml_registro_publicador` (
   `cod_publicador` int(11) NOT NULL,
   `id_publicador` int(11) NOT NULL,
@@ -588,6 +920,12 @@ CREATE TABLE `lexml_registro_publicador` (
   `id_responsavel` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `localidade`
+--
+
 CREATE TABLE `localidade` (
   `cod_localidade` int(11) NOT NULL DEFAULT '0',
   `nom_localidade` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -598,6 +936,12 @@ CREATE TABLE `localidade` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `logradouro`
+--
+
 CREATE TABLE `logradouro` (
   `cod_logradouro` int(11) NOT NULL,
   `nom_logradouro` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
@@ -607,6 +951,12 @@ CREATE TABLE `logradouro` (
   `cod_norma` int(11) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `mandato`
+--
 
 CREATE TABLE `mandato` (
   `cod_mandato` int(11) NOT NULL,
@@ -624,6 +974,12 @@ CREATE TABLE `mandato` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `materia_apresentada_sessao`
+--
+
 CREATE TABLE `materia_apresentada_sessao` (
   `cod_ordem` int(11) NOT NULL,
   `cod_sessao_plen` int(11) NOT NULL,
@@ -633,6 +989,12 @@ CREATE TABLE `materia_apresentada_sessao` (
   `num_ordem` int(10) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `materia_legislativa`
+--
 
 CREATE TABLE `materia_legislativa` (
   `cod_materia` int(11) NOT NULL,
@@ -665,6 +1027,12 @@ CREATE TABLE `materia_legislativa` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `mesa_sessao_plenaria`
+--
+
 CREATE TABLE `mesa_sessao_plenaria` (
   `cod_cargo` tinyint(4) NOT NULL,
   `cod_sessao_leg` int(11) NOT NULL,
@@ -673,11 +1041,23 @@ CREATE TABLE `mesa_sessao_plenaria` (
   `ind_excluido` tinyint(4) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `nivel_instrucao`
+--
+
 CREATE TABLE `nivel_instrucao` (
   `cod_nivel_instrucao` tinyint(4) NOT NULL,
   `des_nivel_instrucao` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `norma_juridica`
+--
 
 CREATE TABLE `norma_juridica` (
   `cod_norma` int(11) NOT NULL,
@@ -702,6 +1082,12 @@ CREATE TABLE `norma_juridica` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `numeracao`
+--
+
 CREATE TABLE `numeracao` (
   `cod_materia` int(11) NOT NULL,
   `num_ordem` tinyint(4) NOT NULL,
@@ -712,6 +1098,12 @@ CREATE TABLE `numeracao` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `oradores`
+--
+
 CREATE TABLE `oradores` (
   `cod_sessao_plen` int(11) NOT NULL,
   `cod_parlamentar` int(11) NOT NULL,
@@ -720,6 +1112,12 @@ CREATE TABLE `oradores` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `oradores_expediente`
+--
+
 CREATE TABLE `oradores_expediente` (
   `cod_sessao_plen` int(11) NOT NULL,
   `cod_parlamentar` int(11) NOT NULL,
@@ -727,6 +1125,12 @@ CREATE TABLE `oradores_expediente` (
   `url_discurso` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `ordem_dia`
+--
 
 CREATE TABLE `ordem_dia` (
   `cod_ordem` int(11) NOT NULL,
@@ -742,6 +1146,12 @@ CREATE TABLE `ordem_dia` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `ordem_dia_presenca`
+--
+
 CREATE TABLE `ordem_dia_presenca` (
   `cod_presenca_ordem_dia` int(11) NOT NULL,
   `cod_sessao_plen` int(11) NOT NULL DEFAULT '0',
@@ -751,6 +1161,12 @@ CREATE TABLE `ordem_dia_presenca` (
   `dat_ordem` date NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `orgao`
+--
 
 CREATE TABLE `orgao` (
   `cod_orgao` int(11) NOT NULL,
@@ -762,12 +1178,24 @@ CREATE TABLE `orgao` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `origem`
+--
+
 CREATE TABLE `origem` (
   `cod_origem` int(11) NOT NULL,
   `sgl_origem` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nom_origem` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `parecer`
+--
 
 CREATE TABLE `parecer` (
   `cod_relatoria` int(11) NOT NULL,
@@ -779,6 +1207,12 @@ CREATE TABLE `parecer` (
   `txt_parecer` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `parlamentar`
+--
 
 CREATE TABLE `parlamentar` (
   `cod_parlamentar` int(11) NOT NULL,
@@ -811,6 +1245,12 @@ CREATE TABLE `parlamentar` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `partido`
+--
+
 CREATE TABLE `partido` (
   `cod_partido` int(11) NOT NULL,
   `sgl_partido` varchar(9) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -820,12 +1260,38 @@ CREATE TABLE `partido` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `periodo_comp_bancada`
+--
+
+CREATE TABLE `periodo_comp_bancada` (
+  `cod_periodo_comp` int(11) NOT NULL,
+  `num_legislatura` int(11) NOT NULL,
+  `dat_inicio_periodo` date NOT NULL,
+  `dat_fim_periodo` date NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `periodo_comp_comissao`
+--
+
 CREATE TABLE `periodo_comp_comissao` (
   `cod_periodo_comp` int(11) NOT NULL,
   `dat_inicio_periodo` date NOT NULL,
   `dat_fim_periodo` date DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `periodo_comp_mesa`
+--
 
 CREATE TABLE `periodo_comp_mesa` (
   `cod_periodo_comp` int(11) NOT NULL,
@@ -834,6 +1300,12 @@ CREATE TABLE `periodo_comp_mesa` (
   `dat_fim_periodo` date NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `pessoa`
+--
 
 CREATE TABLE `pessoa` (
   `cod_pessoa` int(11) NOT NULL,
@@ -864,6 +1336,12 @@ CREATE TABLE `pessoa` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `proposicao`
+--
+
 CREATE TABLE `proposicao` (
   `cod_proposicao` int(11) NOT NULL,
   `cod_materia` int(11) DEFAULT NULL,
@@ -880,6 +1358,12 @@ CREATE TABLE `proposicao` (
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `protocolo`
+--
 
 CREATE TABLE `protocolo` (
   `cod_protocolo` int(7) UNSIGNED ZEROFILL NOT NULL,
@@ -906,6 +1390,12 @@ CREATE TABLE `protocolo` (
   `timestamp_anulacao` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `quorum_votacao`
+--
+
 CREATE TABLE `quorum_votacao` (
   `cod_quorum` int(11) NOT NULL,
   `des_quorum` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
@@ -913,11 +1403,23 @@ CREATE TABLE `quorum_votacao` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `regime_tramitacao`
+--
+
 CREATE TABLE `regime_tramitacao` (
   `cod_regime_tramitacao` tinyint(4) NOT NULL,
   `des_regime_tramitacao` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `registro_votacao`
+--
 
 CREATE TABLE `registro_votacao` (
   `cod_votacao` int(11) NOT NULL,
@@ -934,12 +1436,24 @@ CREATE TABLE `registro_votacao` (
   `ind_excluido` tinyint(4) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `registro_votacao_parlamentar`
+--
+
 CREATE TABLE `registro_votacao_parlamentar` (
   `cod_votacao` int(11) NOT NULL,
   `cod_parlamentar` int(11) NOT NULL,
   `ind_excluido` tinyint(4) UNSIGNED NOT NULL,
   `vot_parlamentar` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `relatoria`
+--
 
 CREATE TABLE `relatoria` (
   `cod_relatoria` int(11) NOT NULL,
@@ -958,6 +1472,12 @@ CREATE TABLE `relatoria` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `reuniao_comissao`
+--
+
 CREATE TABLE `reuniao_comissao` (
   `cod_reuniao` int(11) NOT NULL,
   `cod_comissao` int(11) NOT NULL,
@@ -967,6 +1487,12 @@ CREATE TABLE `reuniao_comissao` (
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `sessao_legislativa`
+--
 
 CREATE TABLE `sessao_legislativa` (
   `cod_sessao_leg` int(11) NOT NULL,
@@ -979,6 +1505,12 @@ CREATE TABLE `sessao_legislativa` (
   `dat_fim_intervalo` date DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `sessao_plenaria`
+--
 
 CREATE TABLE `sessao_plenaria` (
   `cod_sessao_plen` int(11) NOT NULL,
@@ -998,6 +1530,12 @@ CREATE TABLE `sessao_plenaria` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `sessao_plenaria_painel`
+--
+
 CREATE TABLE `sessao_plenaria_painel` (
   `cod_item` int(11) NOT NULL,
   `tip_item` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
@@ -1011,6 +1549,12 @@ CREATE TABLE `sessao_plenaria_painel` (
   `ind_exibicao` tinyint(4) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `sessao_plenaria_presenca`
+--
+
 CREATE TABLE `sessao_plenaria_presenca` (
   `cod_presenca_sessao` int(11) NOT NULL,
   `cod_sessao_plen` int(11) NOT NULL,
@@ -1020,6 +1564,12 @@ CREATE TABLE `sessao_plenaria_presenca` (
   `dat_sessao` date DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `status_tramitacao`
+--
 
 CREATE TABLE `status_tramitacao` (
   `cod_status` int(11) NOT NULL,
@@ -1031,6 +1581,12 @@ CREATE TABLE `status_tramitacao` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `status_tramitacao_administrativo`
+--
+
 CREATE TABLE `status_tramitacao_administrativo` (
   `cod_status` int(11) NOT NULL,
   `sgl_status` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1040,6 +1596,12 @@ CREATE TABLE `status_tramitacao_administrativo` (
   `num_dias_prazo` tinyint(4) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `subemenda`
+--
 
 CREATE TABLE `subemenda` (
   `cod_subemenda` int(11) NOT NULL,
@@ -1054,6 +1616,12 @@ CREATE TABLE `subemenda` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `substitutivo`
+--
+
 CREATE TABLE `substitutivo` (
   `cod_substitutivo` int(11) NOT NULL,
   `num_substitutivo` int(11) NOT NULL,
@@ -1066,6 +1634,12 @@ CREATE TABLE `substitutivo` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_afastamento`
+--
+
 CREATE TABLE `tipo_afastamento` (
   `tip_afastamento` tinyint(4) NOT NULL,
   `des_afastamento` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1075,12 +1649,24 @@ CREATE TABLE `tipo_afastamento` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_autor`
+--
+
 CREATE TABLE `tipo_autor` (
   `tip_autor` tinyint(4) NOT NULL,
   `des_tipo_autor` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `tip_proposicao` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_comissao`
+--
 
 CREATE TABLE `tipo_comissao` (
   `tip_comissao` tinyint(4) NOT NULL,
@@ -1091,17 +1677,35 @@ CREATE TABLE `tipo_comissao` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_dependente`
+--
+
 CREATE TABLE `tipo_dependente` (
   `tip_dependente` tinyint(4) NOT NULL,
   `des_tipo_dependente` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_documento`
+--
+
 CREATE TABLE `tipo_documento` (
   `tip_documento` int(11) NOT NULL,
   `des_tipo_documento` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_documento_administrativo`
+--
 
 CREATE TABLE `tipo_documento_administrativo` (
   `tip_documento` int(11) NOT NULL,
@@ -1111,11 +1715,23 @@ CREATE TABLE `tipo_documento_administrativo` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_emenda`
+--
+
 CREATE TABLE `tipo_emenda` (
   `tip_emenda` int(11) NOT NULL,
   `des_tipo_emenda` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_expediente`
+--
 
 CREATE TABLE `tipo_expediente` (
   `cod_expediente` int(11) NOT NULL,
@@ -1123,17 +1739,35 @@ CREATE TABLE `tipo_expediente` (
   `ind_excluido` tinyint(4) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_fim_relatoria`
+--
+
 CREATE TABLE `tipo_fim_relatoria` (
   `tip_fim_relatoria` tinyint(4) NOT NULL,
   `des_fim_relatoria` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_instituicao`
+--
+
 CREATE TABLE `tipo_instituicao` (
   `tip_instituicao` int(11) NOT NULL,
   `nom_tipo_instituicao` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_materia_legislativa`
+--
 
 CREATE TABLE `tipo_materia_legislativa` (
   `tip_materia` int(11) NOT NULL,
@@ -1143,6 +1777,12 @@ CREATE TABLE `tipo_materia_legislativa` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_norma_juridica`
+--
+
 CREATE TABLE `tipo_norma_juridica` (
   `tip_norma` tinyint(4) NOT NULL,
   `voc_lexml` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1150,6 +1790,12 @@ CREATE TABLE `tipo_norma_juridica` (
   `des_tipo_norma` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_proposicao`
+--
 
 CREATE TABLE `tipo_proposicao` (
   `tip_proposicao` int(11) NOT NULL,
@@ -1160,11 +1806,23 @@ CREATE TABLE `tipo_proposicao` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_resultado_votacao`
+--
+
 CREATE TABLE `tipo_resultado_votacao` (
   `tip_resultado_votacao` int(10) UNSIGNED NOT NULL,
   `nom_resultado` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_sessao_plenaria`
+--
 
 CREATE TABLE `tipo_sessao_plenaria` (
   `tip_sessao` tinyint(4) NOT NULL,
@@ -1173,11 +1831,23 @@ CREATE TABLE `tipo_sessao_plenaria` (
   `num_minimo` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_situacao_materia`
+--
+
 CREATE TABLE `tipo_situacao_materia` (
   `tip_situacao_materia` int(11) NOT NULL,
   `des_tipo_situacao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_situacao_militar`
+--
 
 CREATE TABLE `tipo_situacao_militar` (
   `tip_situacao_militar` tinyint(4) NOT NULL,
@@ -1185,11 +1855,23 @@ CREATE TABLE `tipo_situacao_militar` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_situacao_norma`
+--
+
 CREATE TABLE `tipo_situacao_norma` (
   `tip_situacao_norma` int(11) NOT NULL,
   `des_tipo_situacao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_vinculo_norma`
+--
 
 CREATE TABLE `tipo_vinculo_norma` (
   `cod_tip_vinculo` int(11) NOT NULL,
@@ -1200,11 +1882,23 @@ CREATE TABLE `tipo_vinculo_norma` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_votacao`
+--
+
 CREATE TABLE `tipo_votacao` (
   `tip_votacao` int(11) NOT NULL,
   `des_tipo_votacao` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tramitacao`
+--
 
 CREATE TABLE `tramitacao` (
   `cod_tramitacao` int(11) NOT NULL,
@@ -1225,6 +1919,12 @@ CREATE TABLE `tramitacao` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tramitacao_administrativo`
+--
+
 CREATE TABLE `tramitacao_administrativo` (
   `cod_tramitacao` int(11) NOT NULL,
   `cod_documento` int(11) NOT NULL DEFAULT '0',
@@ -1242,12 +1942,24 @@ CREATE TABLE `tramitacao_administrativo` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `turno_discussao`
+--
+
 CREATE TABLE `turno_discussao` (
   `cod_turno` int(11) NOT NULL,
   `sgl_turno` char(1) COLLATE utf8_unicode_ci NOT NULL,
   `des_turno` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `unidade_tramitacao`
+--
 
 CREATE TABLE `unidade_tramitacao` (
   `cod_unid_tramitacao` int(11) NOT NULL,
@@ -1258,6 +1970,12 @@ CREATE TABLE `unidade_tramitacao` (
   `status_permitidos` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `usuario`
+--
 
 CREATE TABLE `usuario` (
   `cod_usuario` int(11) NOT NULL,
@@ -1280,12 +1998,24 @@ CREATE TABLE `usuario` (
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `usuario_unid_tram`
+--
+
 CREATE TABLE `usuario_unid_tram` (
   `cod_usuario` int(11) NOT NULL,
   `cod_unid_tramitacao` int(11) NOT NULL,
   `ind_responsavel` tinyint(4) NOT NULL DEFAULT '0',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `vinculo_norma_juridica`
+--
 
 CREATE TABLE `vinculo_norma_juridica` (
   `cod_vinculo` int(11) NOT NULL,
@@ -1295,6 +2025,12 @@ CREATE TABLE `vinculo_norma_juridica` (
   `txt_observacao_vinculo` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` char(1) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `visita`
+--
 
 CREATE TABLE `visita` (
   `cod_visita` int(11) NOT NULL,
@@ -1310,12 +2046,21 @@ CREATE TABLE `visita` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Indexes for dumped tables
+--
 
+--
+-- Indexes for table `acomp_materia`
+--
 ALTER TABLE `acomp_materia`
   ADD PRIMARY KEY (`cod_cadastro`),
   ADD UNIQUE KEY `fk_{CCECA63D-5992-437B-BCD3-D7C98DA3E926}` (`cod_materia`,`end_email`),
   ADD KEY `cod_materia` (`cod_materia`);
 
+--
+-- Indexes for table `afastamento`
+--
 ALTER TABLE `afastamento`
   ADD PRIMARY KEY (`cod_afastamento`),
   ADD KEY `idx_parlamentar_mandato` (`cod_parlamentar`,`num_legislatura`),
@@ -1327,24 +2072,39 @@ ALTER TABLE `afastamento`
   ADD KEY `num_legislatura` (`num_legislatura`),
   ADD KEY `cod_parlamentar_suplente` (`cod_parlamentar_suplente`);
 
+--
+-- Indexes for table `anexada`
+--
 ALTER TABLE `anexada`
   ADD PRIMARY KEY (`cod_materia_principal`,`cod_materia_anexada`),
   ADD KEY `idx_materia_anexada` (`cod_materia_anexada`),
   ADD KEY `idx_materia_principal` (`cod_materia_principal`);
 
+--
+-- Indexes for table `anexo_norma`
+--
 ALTER TABLE `anexo_norma`
   ADD PRIMARY KEY (`cod_anexo`),
   ADD KEY `cod_norma` (`cod_norma`);
 
+--
+-- Indexes for table `arquivo_armario`
+--
 ALTER TABLE `arquivo_armario`
   ADD PRIMARY KEY (`cod_armario`),
   ADD KEY `cod_corredor` (`cod_corredor`),
   ADD KEY `cod_unidade` (`cod_unidade`);
 
+--
+-- Indexes for table `arquivo_corredor`
+--
 ALTER TABLE `arquivo_corredor`
   ADD PRIMARY KEY (`cod_corredor`),
   ADD KEY `cod_unidade` (`cod_unidade`);
 
+--
+-- Indexes for table `arquivo_item`
+--
 ALTER TABLE `arquivo_item`
   ADD PRIMARY KEY (`cod_item`),
   ADD KEY `cod_recipiente` (`cod_recipiente`),
@@ -1354,38 +2114,65 @@ ALTER TABLE `arquivo_item`
   ADD KEY `cod_protocolo` (`cod_protocolo`),
   ADD KEY `tip_suporte` (`tip_suporte`);
 
+--
+-- Indexes for table `arquivo_prateleira`
+--
 ALTER TABLE `arquivo_prateleira`
   ADD PRIMARY KEY (`cod_prateleira`),
   ADD KEY `cod_armario` (`cod_armario`),
   ADD KEY `cod_corredor` (`cod_corredor`),
   ADD KEY `cod_unidade` (`cod_unidade`);
 
+--
+-- Indexes for table `arquivo_recipiente`
+--
 ALTER TABLE `arquivo_recipiente`
   ADD PRIMARY KEY (`cod_recipiente`),
   ADD UNIQUE KEY `num_tipo_recipiente` (`num_recipiente`,`tip_recipiente`,`ano_recipiente`,`ind_excluido`),
   ADD KEY `tip_recipiente` (`tip_recipiente`),
   ADD KEY `tip_tit_documental` (`tip_tit_documental`);
 
+--
+-- Indexes for table `arquivo_tipo_recipiente`
+--
 ALTER TABLE `arquivo_tipo_recipiente`
   ADD PRIMARY KEY (`tip_recipiente`);
 
+--
+-- Indexes for table `arquivo_tipo_suporte`
+--
 ALTER TABLE `arquivo_tipo_suporte`
   ADD PRIMARY KEY (`tip_suporte`);
 
+--
+-- Indexes for table `arquivo_tipo_tit_documental`
+--
 ALTER TABLE `arquivo_tipo_tit_documental`
   ADD PRIMARY KEY (`tip_tit_documental`);
 
+--
+-- Indexes for table `arquivo_unidade`
+--
 ALTER TABLE `arquivo_unidade`
   ADD PRIMARY KEY (`cod_unidade`);
 
+--
+-- Indexes for table `assessor_parlamentar`
+--
 ALTER TABLE `assessor_parlamentar`
   ADD PRIMARY KEY (`cod_assessor`),
   ADD UNIQUE KEY `assessor_parlamentar` (`cod_assessor`,`cod_parlamentar`,`ind_excluido`),
   ADD KEY `cod_parlamentar` (`cod_parlamentar`);
 
+--
+-- Indexes for table `assunto_norma`
+--
 ALTER TABLE `assunto_norma`
   ADD PRIMARY KEY (`cod_assunto`);
 
+--
+-- Indexes for table `autor`
+--
 ALTER TABLE `autor`
   ADD PRIMARY KEY (`cod_autor`),
   ADD KEY `idx_tip_autor` (`tip_autor`),
@@ -1395,11 +2182,17 @@ ALTER TABLE `autor`
   ADD KEY `idx_bancada` (`cod_bancada`);
 ALTER TABLE `autor` ADD FULLTEXT KEY `nom_autor` (`nom_autor`);
 
+--
+-- Indexes for table `autoria`
+--
 ALTER TABLE `autoria`
   ADD PRIMARY KEY (`cod_autor`,`cod_materia`),
   ADD KEY `idx_materia` (`cod_materia`),
   ADD KEY `idx_autor` (`cod_autor`);
 
+--
+-- Indexes for table `bancada`
+--
 ALTER TABLE `bancada`
   ADD PRIMARY KEY (`cod_bancada`),
   ADD KEY `idt_nom_bancada` (`nom_bancada`),
@@ -1407,49 +2200,83 @@ ALTER TABLE `bancada`
   ADD KEY `cod_partido` (`cod_partido`);
 ALTER TABLE `bancada` ADD FULLTEXT KEY `nom_bancada` (`nom_bancada`);
 
+--
+-- Indexes for table `cargo_bancada`
+--
 ALTER TABLE `cargo_bancada`
   ADD PRIMARY KEY (`cod_cargo`);
 
+--
+-- Indexes for table `cargo_comissao`
+--
 ALTER TABLE `cargo_comissao`
   ADD PRIMARY KEY (`cod_cargo`);
 
+--
+-- Indexes for table `cargo_executivo`
+--
 ALTER TABLE `cargo_executivo`
   ADD PRIMARY KEY (`cod_cargo`);
 
+--
+-- Indexes for table `cargo_mesa`
+--
 ALTER TABLE `cargo_mesa`
   ADD PRIMARY KEY (`cod_cargo`);
 
+--
+-- Indexes for table `categoria_instituicao`
+--
 ALTER TABLE `categoria_instituicao`
   ADD PRIMARY KEY (`cod_categoria`,`tip_instituicao`) USING BTREE,
   ADD KEY `tip_instituicao` (`tip_instituicao`) USING BTREE;
 
+--
+-- Indexes for table `coautoria_proposicao`
+--
 ALTER TABLE `coautoria_proposicao`
   ADD PRIMARY KEY (`cod_proposicao`,`cod_autor`),
   ADD KEY `idx_proposicao` (`cod_proposicao`),
   ADD KEY `idx_autor` (`cod_autor`);
 
+--
+-- Indexes for table `coligacao`
+--
 ALTER TABLE `coligacao`
   ADD PRIMARY KEY (`cod_coligacao`),
   ADD KEY `idx_legislatura` (`num_legislatura`),
   ADD KEY `idx_coligacao_legislatura` (`num_legislatura`,`ind_excluido`);
 
+--
+-- Indexes for table `comissao`
+--
 ALTER TABLE `comissao`
   ADD PRIMARY KEY (`cod_comissao`),
   ADD KEY `idx_comissao_tipo` (`tip_comissao`),
   ADD KEY `idx_comissao_nome` (`nom_comissao`);
 ALTER TABLE `comissao` ADD FULLTEXT KEY `nom_comissao` (`nom_comissao`);
 
+--
+-- Indexes for table `composicao_bancada`
+--
 ALTER TABLE `composicao_bancada`
   ADD PRIMARY KEY (`cod_comp_bancada`),
   ADD KEY `idx_cargo` (`cod_cargo`),
   ADD KEY `idx_bancada` (`cod_bancada`),
-  ADD KEY `idx_parlamentar` (`cod_parlamentar`);
+  ADD KEY `idx_parlamentar` (`cod_parlamentar`),
+  ADD KEY `cod_periodo_comp` (`cod_periodo_comp`);
 
+--
+-- Indexes for table `composicao_coligacao`
+--
 ALTER TABLE `composicao_coligacao`
   ADD PRIMARY KEY (`cod_partido`,`cod_coligacao`),
   ADD KEY `idx_coligacao` (`cod_coligacao`),
   ADD KEY `idx_partido` (`cod_partido`);
 
+--
+-- Indexes for table `composicao_comissao`
+--
 ALTER TABLE `composicao_comissao`
   ADD PRIMARY KEY (`cod_comp_comissao`),
   ADD KEY `idx_cargo` (`cod_cargo`),
@@ -1457,12 +2284,18 @@ ALTER TABLE `composicao_comissao`
   ADD KEY `idx_comissao` (`cod_comissao`),
   ADD KEY `idx_parlamentar` (`cod_parlamentar`);
 
+--
+-- Indexes for table `composicao_executivo`
+--
 ALTER TABLE `composicao_executivo`
   ADD PRIMARY KEY (`cod_composicao`),
   ADD KEY `num_legislatura` (`num_legislatura`),
   ADD KEY `cod_cargo` (`cod_cargo`),
   ADD KEY `cod_partido` (`cod_partido`);
 
+--
+-- Indexes for table `composicao_mesa`
+--
 ALTER TABLE `composicao_mesa`
   ADD PRIMARY KEY (`cod_parlamentar`,`cod_periodo_comp`,`cod_cargo`),
   ADD KEY `idx_cargo` (`cod_cargo`),
@@ -1470,29 +2303,44 @@ ALTER TABLE `composicao_mesa`
   ADD KEY `idx_parlamentar` (`cod_parlamentar`),
   ADD KEY `cod_sessao_leg` (`cod_sessao_leg`);
 
+--
+-- Indexes for table `dependente`
+--
 ALTER TABLE `dependente`
   ADD PRIMARY KEY (`cod_dependente`),
   ADD KEY `idx_dep_parlam` (`tip_dependente`,`cod_parlamentar`,`ind_excluido`),
   ADD KEY `idx_dependente` (`tip_dependente`),
   ADD KEY `idx_parlamentar` (`cod_parlamentar`);
 
+--
+-- Indexes for table `despacho_inicial`
+--
 ALTER TABLE `despacho_inicial`
   ADD UNIQUE KEY `idx_unique` (`cod_materia`,`num_ordem`),
   ADD KEY `idx_comissao` (`cod_comissao`),
   ADD KEY `idx_materia` (`cod_materia`),
   ADD KEY `idx_despinic_comissao` (`cod_materia`,`num_ordem`,`cod_comissao`);
 
+--
+-- Indexes for table `destinatario_oficio`
+--
 ALTER TABLE `destinatario_oficio`
   ADD PRIMARY KEY (`cod_destinatario`),
   ADD KEY `cod_documento` (`cod_documento`),
   ADD KEY `cod_instituicao` (`cod_instituicao`);
 
+--
+-- Indexes for table `documento_acessorio`
+--
 ALTER TABLE `documento_acessorio`
   ADD PRIMARY KEY (`cod_documento`),
   ADD KEY `idx_tip_documento` (`tip_documento`),
   ADD KEY `idx_materia` (`cod_materia`);
 ALTER TABLE `documento_acessorio` ADD FULLTEXT KEY `idx_ementa` (`txt_ementa`);
 
+--
+-- Indexes for table `documento_acessorio_administrativo`
+--
 ALTER TABLE `documento_acessorio_administrativo`
   ADD PRIMARY KEY (`cod_documento_acessorio`),
   ADD KEY `idx_tip_documento` (`tip_documento`),
@@ -1501,6 +2349,9 @@ ALTER TABLE `documento_acessorio_administrativo`
   ADD KEY `idx_dat_documento` (`dat_documento`);
 ALTER TABLE `documento_acessorio_administrativo` ADD FULLTEXT KEY `idx_assunto` (`txt_assunto`);
 
+--
+-- Indexes for table `documento_administrativo`
+--
 ALTER TABLE `documento_administrativo`
   ADD PRIMARY KEY (`cod_documento`),
   ADD KEY `tip_documento` (`tip_documento`,`num_documento`,`ano_documento`),
@@ -1513,17 +2364,26 @@ ALTER TABLE `documento_administrativo`
 ALTER TABLE `documento_administrativo` ADD FULLTEXT KEY `idx_busca_documento` (`txt_assunto`,`txt_observacao`);
 ALTER TABLE `documento_administrativo` ADD FULLTEXT KEY `txt_interessado` (`txt_interessado`);
 
+--
+-- Indexes for table `documento_administrativo_materia`
+--
 ALTER TABLE `documento_administrativo_materia`
   ADD PRIMARY KEY (`cod_vinculo`),
   ADD KEY `idx_cod_documento` (`cod_documento`),
   ADD KEY `idx_cod_materia` (`cod_materia`);
 
+--
+-- Indexes for table `documento_administrativo_vinculado`
+--
 ALTER TABLE `documento_administrativo_vinculado`
   ADD PRIMARY KEY (`cod_vinculo`),
   ADD UNIQUE KEY `idx_doc_vinculo` (`cod_documento_vinculante`,`cod_documento_vinculado`),
   ADD KEY `idx_doc_vinculado` (`cod_documento_vinculado`) USING BTREE,
   ADD KEY `idx_cod_documento` (`cod_documento_vinculante`) USING BTREE;
 
+--
+-- Indexes for table `emenda`
+--
 ALTER TABLE `emenda`
   ADD PRIMARY KEY (`cod_emenda`),
   ADD UNIQUE KEY `idx_numemen_materia` (`num_emenda`,`tip_emenda`,`cod_materia`,`ind_excluido`),
@@ -1532,6 +2392,9 @@ ALTER TABLE `emenda`
   ADD KEY `idx_tip_emenda` (`tip_emenda`);
 ALTER TABLE `emenda` ADD FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`);
 
+--
+-- Indexes for table `encerramento_presenca`
+--
 ALTER TABLE `encerramento_presenca`
   ADD PRIMARY KEY (`cod_presenca_encerramento`),
   ADD UNIQUE KEY `idx_sessao_parlamentar` (`cod_sessao_plen`,`cod_parlamentar`),
@@ -1539,6 +2402,9 @@ ALTER TABLE `encerramento_presenca`
   ADD KEY `dat_ordem` (`dat_ordem`),
   ADD KEY `cod_sessao_plen` (`cod_sessao_plen`);
 
+--
+-- Indexes for table `expediente_materia`
+--
 ALTER TABLE `expediente_materia`
   ADD PRIMARY KEY (`cod_ordem`),
   ADD KEY `idx_exped_datord` (`dat_ordem`,`ind_excluido`),
@@ -1547,6 +2413,9 @@ ALTER TABLE `expediente_materia`
   ADD KEY `tip_votacao` (`tip_votacao`),
   ADD KEY `tip_quorum` (`tip_quorum`);
 
+--
+-- Indexes for table `expediente_presenca`
+--
 ALTER TABLE `expediente_presenca`
   ADD PRIMARY KEY (`cod_presenca_expediente`),
   ADD UNIQUE KEY `idx_sessao_parlamentar` (`cod_sessao_plen`,`cod_parlamentar`),
@@ -1554,19 +2423,31 @@ ALTER TABLE `expediente_presenca`
   ADD KEY `cod_parlamentar` (`cod_parlamentar`),
   ADD KEY `dat_ordem` (`dat_ordem`,`ind_excluido`);
 
+--
+-- Indexes for table `expediente_sessao_plenaria`
+--
 ALTER TABLE `expediente_sessao_plenaria`
   ADD PRIMARY KEY (`cod_sessao_plen`,`cod_expediente`),
   ADD KEY `cod_expediente` (`cod_expediente`);
 
+--
+-- Indexes for table `filiacao`
+--
 ALTER TABLE `filiacao`
   ADD PRIMARY KEY (`dat_filiacao`,`cod_parlamentar`,`cod_partido`),
   ADD KEY `idx_partido` (`cod_partido`),
   ADD KEY `idx_parlamentar` (`cod_parlamentar`);
 
+--
+-- Indexes for table `funcionario`
+--
 ALTER TABLE `funcionario`
   ADD PRIMARY KEY (`cod_funcionario`),
   ADD KEY `cod_usuario` (`cod_usuario`);
 
+--
+-- Indexes for table `gabinete_atendimento`
+--
 ALTER TABLE `gabinete_atendimento`
   ADD PRIMARY KEY (`cod_atendimento`),
   ADD KEY `idx_resultado` (`txt_resultado`) USING BTREE,
@@ -1574,6 +2455,9 @@ ALTER TABLE `gabinete_atendimento`
   ADD KEY `idx_parlamentar` (`cod_parlamentar`) USING BTREE;
 ALTER TABLE `gabinete_atendimento` ADD FULLTEXT KEY `idx_assunto` (`txt_assunto`);
 
+--
+-- Indexes for table `gabinete_eleitor`
+--
 ALTER TABLE `gabinete_eleitor`
   ADD PRIMARY KEY (`cod_eleitor`),
   ADD KEY `sex_eleitor` (`sex_eleitor`),
@@ -1585,6 +2469,9 @@ ALTER TABLE `gabinete_eleitor` ADD FULLTEXT KEY `nom_localidade` (`nom_localidad
 ALTER TABLE `gabinete_eleitor` ADD FULLTEXT KEY `des_local_trabalho` (`des_local_trabalho`);
 ALTER TABLE `gabinete_eleitor` ADD FULLTEXT KEY `nom_bairro` (`nom_bairro`);
 
+--
+-- Indexes for table `instituicao`
+--
 ALTER TABLE `instituicao`
   ADD PRIMARY KEY (`cod_instituicao`),
   ADD KEY `tip_instituicao` (`tip_instituicao`),
@@ -1593,21 +2480,36 @@ ALTER TABLE `instituicao`
 ALTER TABLE `instituicao` ADD FULLTEXT KEY `idx_nom_instituicao` (`nom_instituicao`);
 ALTER TABLE `instituicao` ADD FULLTEXT KEY `idx_nom_responsavel` (`nom_responsavel`);
 
+--
+-- Indexes for table `legislacao_citada`
+--
 ALTER TABLE `legislacao_citada`
   ADD PRIMARY KEY (`cod_materia`,`cod_norma`),
   ADD KEY `cod_norma` (`cod_norma`),
   ADD KEY `cod_materia` (`cod_materia`);
 
+--
+-- Indexes for table `legislatura`
+--
 ALTER TABLE `legislatura`
   ADD PRIMARY KEY (`num_legislatura`),
   ADD KEY `idx_legislatura_datas` (`dat_inicio`,`dat_fim`,`dat_eleicao`,`ind_excluido`);
 
+--
+-- Indexes for table `lexml_registro_provedor`
+--
 ALTER TABLE `lexml_registro_provedor`
   ADD PRIMARY KEY (`cod_provedor`);
 
+--
+-- Indexes for table `lexml_registro_publicador`
+--
 ALTER TABLE `lexml_registro_publicador`
   ADD PRIMARY KEY (`cod_publicador`);
 
+--
+-- Indexes for table `localidade`
+--
 ALTER TABLE `localidade`
   ADD PRIMARY KEY (`cod_localidade`),
   ADD KEY `nom_localidade` (`nom_localidade`),
@@ -1615,12 +2517,18 @@ ALTER TABLE `localidade`
   ADD KEY `tip_localidade` (`tip_localidade`);
 ALTER TABLE `localidade` ADD FULLTEXT KEY `nom_localidade_pesq` (`nom_localidade_pesq`);
 
+--
+-- Indexes for table `logradouro`
+--
 ALTER TABLE `logradouro`
   ADD PRIMARY KEY (`cod_logradouro`),
   ADD KEY `num_cep` (`num_cep`),
   ADD KEY `cod_localidade` (`cod_localidade`);
 ALTER TABLE `logradouro` ADD FULLTEXT KEY `nom_logradouro` (`nom_logradouro`);
 
+--
+-- Indexes for table `mandato`
+--
 ALTER TABLE `mandato`
   ADD PRIMARY KEY (`cod_mandato`),
   ADD KEY `idx_coligacao` (`cod_coligacao`),
@@ -1630,12 +2538,18 @@ ALTER TABLE `mandato`
   ADD KEY `idx_legislatura` (`num_legislatura`),
   ADD KEY `tip_causa_fim_mandato` (`tip_causa_fim_mandato`);
 
+--
+-- Indexes for table `materia_apresentada_sessao`
+--
 ALTER TABLE `materia_apresentada_sessao`
   ADD PRIMARY KEY (`cod_ordem`),
   ADD KEY `fk_cod_materia` (`cod_materia`),
   ADD KEY `idx_apres_datord` (`dat_ordem`),
   ADD KEY `cod_sessao_plen` (`cod_sessao_plen`);
 
+--
+-- Indexes for table `materia_legislativa`
+--
 ALTER TABLE `materia_legislativa`
   ADD PRIMARY KEY (`cod_materia`),
   ADD KEY `cod_local_origem_externa` (`cod_local_origem_externa`),
@@ -1650,15 +2564,24 @@ ALTER TABLE `materia_legislativa`
   ADD KEY `idx_matleg_ident` (`ind_excluido`,`tip_id_basica`,`ano_ident_basica`,`num_ident_basica`) USING BTREE;
 ALTER TABLE `materia_legislativa` ADD FULLTEXT KEY `idx_busca` (`txt_ementa`,`txt_observacao`,`txt_indexacao`);
 
+--
+-- Indexes for table `mesa_sessao_plenaria`
+--
 ALTER TABLE `mesa_sessao_plenaria`
   ADD PRIMARY KEY (`cod_cargo`,`cod_sessao_leg`,`cod_parlamentar`,`cod_sessao_plen`),
   ADD KEY `cod_sessao_leg` (`cod_sessao_leg`),
   ADD KEY `cod_sessao_plen` (`cod_sessao_plen`),
   ADD KEY `cod_parlamentar` (`cod_parlamentar`);
 
+--
+-- Indexes for table `nivel_instrucao`
+--
 ALTER TABLE `nivel_instrucao`
   ADD PRIMARY KEY (`cod_nivel_instrucao`);
 
+--
+-- Indexes for table `norma_juridica`
+--
 ALTER TABLE `norma_juridica`
   ADD PRIMARY KEY (`cod_norma`),
   ADD KEY `cod_assunto` (`cod_assunto`),
@@ -1669,24 +2592,36 @@ ALTER TABLE `norma_juridica`
   ADD KEY `cod_situacao` (`cod_situacao`);
 ALTER TABLE `norma_juridica` ADD FULLTEXT KEY `idx_busca` (`txt_ementa`,`txt_observacao`,`txt_indexacao`);
 
+--
+-- Indexes for table `numeracao`
+--
 ALTER TABLE `numeracao`
   ADD PRIMARY KEY (`cod_materia`,`num_ordem`),
   ADD KEY `cod_materia` (`cod_materia`),
   ADD KEY `tip_materia` (`tip_materia`),
   ADD KEY `idx_numer_identificacao` (`tip_materia`,`num_materia`,`ano_materia`,`ind_excluido`);
 
+--
+-- Indexes for table `oradores`
+--
 ALTER TABLE `oradores`
   ADD PRIMARY KEY (`cod_sessao_plen`,`cod_parlamentar`),
   ADD UNIQUE KEY `idx_num_ordem` (`cod_sessao_plen`,`num_ordem`,`ind_excluido`),
   ADD KEY `cod_parlamentar` (`cod_parlamentar`),
   ADD KEY `cod_sessao_plen` (`cod_sessao_plen`);
 
+--
+-- Indexes for table `oradores_expediente`
+--
 ALTER TABLE `oradores_expediente`
   ADD PRIMARY KEY (`cod_sessao_plen`,`cod_parlamentar`),
   ADD UNIQUE KEY `idx_num_ordem` (`cod_sessao_plen`,`num_ordem`,`ind_excluido`),
   ADD KEY `cod_parlamentar` (`cod_parlamentar`),
   ADD KEY `cod_sessao_plen` (`cod_sessao_plen`);
 
+--
+-- Indexes for table `ordem_dia`
+--
 ALTER TABLE `ordem_dia`
   ADD PRIMARY KEY (`cod_ordem`),
   ADD KEY `cod_sessao_plen` (`cod_sessao_plen`),
@@ -1697,6 +2632,9 @@ ALTER TABLE `ordem_dia`
   ADD KEY `tip_turno` (`tip_turno`),
   ADD KEY `num_ordem` (`num_ordem`);
 
+--
+-- Indexes for table `ordem_dia_presenca`
+--
 ALTER TABLE `ordem_dia_presenca`
   ADD PRIMARY KEY (`cod_presenca_ordem_dia`),
   ADD KEY `cod_parlamentar` (`cod_parlamentar`),
@@ -1705,17 +2643,29 @@ ALTER TABLE `ordem_dia_presenca`
   ADD KEY `dat_ordem` (`dat_ordem`),
   ADD KEY `tip_frequencia` (`tip_frequencia`);
 
+--
+-- Indexes for table `orgao`
+--
 ALTER TABLE `orgao`
   ADD PRIMARY KEY (`cod_orgao`);
 
+--
+-- Indexes for table `origem`
+--
 ALTER TABLE `origem`
   ADD PRIMARY KEY (`cod_origem`);
 
+--
+-- Indexes for table `parecer`
+--
 ALTER TABLE `parecer`
   ADD PRIMARY KEY (`cod_relatoria`,`cod_materia`),
   ADD KEY `idx_parecer_materia` (`cod_materia`,`ind_excluido`),
   ADD KEY `cod_materia` (`cod_materia`);
 
+--
+-- Indexes for table `parlamentar`
+--
 ALTER TABLE `parlamentar`
   ADD PRIMARY KEY (`cod_parlamentar`),
   ADD KEY `cod_localidade_resid` (`cod_localidade_resid`),
@@ -1725,18 +2675,38 @@ ALTER TABLE `parlamentar`
 ALTER TABLE `parlamentar` ADD FULLTEXT KEY `nom_completo` (`nom_completo`);
 ALTER TABLE `parlamentar` ADD FULLTEXT KEY `nom_parlamentar` (`nom_parlamentar`);
 
+--
+-- Indexes for table `partido`
+--
 ALTER TABLE `partido`
   ADD PRIMARY KEY (`cod_partido`);
 
+--
+-- Indexes for table `periodo_comp_bancada`
+--
+ALTER TABLE `periodo_comp_bancada`
+  ADD PRIMARY KEY (`cod_periodo_comp`),
+  ADD KEY `ind_percompbancada_datas` (`dat_inicio_periodo`,`dat_fim_periodo`,`ind_excluido`),
+  ADD KEY `idx_legislatura` (`num_legislatura`);
+
+--
+-- Indexes for table `periodo_comp_comissao`
+--
 ALTER TABLE `periodo_comp_comissao`
   ADD PRIMARY KEY (`cod_periodo_comp`),
   ADD KEY `ind_percompcom_datas` (`dat_inicio_periodo`,`dat_fim_periodo`,`ind_excluido`);
 
+--
+-- Indexes for table `periodo_comp_mesa`
+--
 ALTER TABLE `periodo_comp_mesa`
   ADD PRIMARY KEY (`cod_periodo_comp`),
   ADD KEY `ind_percompmesa_datas` (`dat_inicio_periodo`,`dat_fim_periodo`,`ind_excluido`),
   ADD KEY `idx_legislatura` (`num_legislatura`);
 
+--
+-- Indexes for table `pessoa`
+--
 ALTER TABLE `pessoa`
   ADD PRIMARY KEY (`cod_pessoa`),
   ADD KEY `num_cep` (`num_cep`),
@@ -1753,6 +2723,9 @@ ALTER TABLE `pessoa` ADD FULLTEXT KEY `idx_busca` (`doc_identidade`);
 ALTER TABLE `pessoa` ADD FULLTEXT KEY `end_residencial` (`end_residencial`);
 ALTER TABLE `pessoa` ADD FULLTEXT KEY `doc_identidade` (`doc_identidade`);
 
+--
+-- Indexes for table `proposicao`
+--
 ALTER TABLE `proposicao`
   ADD PRIMARY KEY (`cod_proposicao`),
   ADD KEY `tip_proposicao` (`tip_proposicao`),
@@ -1762,6 +2735,9 @@ ALTER TABLE `proposicao`
   ADD KEY `cod_autor` (`cod_autor`),
   ADD KEY `idx_prop_autor` (`dat_envio`,`dat_recebimento`,`ind_excluido`);
 
+--
+-- Indexes for table `protocolo`
+--
 ALTER TABLE `protocolo`
   ADD PRIMARY KEY (`cod_protocolo`),
   ADD UNIQUE KEY `idx_num_protocolo` (`num_protocolo`,`ano_protocolo`),
@@ -1772,12 +2748,21 @@ ALTER TABLE `protocolo`
   ADD KEY `dat_protocolo` (`dat_protocolo`);
 ALTER TABLE `protocolo` ADD FULLTEXT KEY `idx_busca_protocolo` (`txt_assunto_ementa`,`txt_observacao`);
 
+--
+-- Indexes for table `quorum_votacao`
+--
 ALTER TABLE `quorum_votacao`
   ADD PRIMARY KEY (`cod_quorum`);
 
+--
+-- Indexes for table `regime_tramitacao`
+--
 ALTER TABLE `regime_tramitacao`
   ADD PRIMARY KEY (`cod_regime_tramitacao`);
 
+--
+-- Indexes for table `registro_votacao`
+--
 ALTER TABLE `registro_votacao`
   ADD PRIMARY KEY (`cod_votacao`),
   ADD KEY `cod_ordem` (`cod_ordem`),
@@ -1787,11 +2772,17 @@ ALTER TABLE `registro_votacao`
   ADD KEY `cod_subemenda` (`cod_subemenda`),
   ADD KEY `cod_substitutivo` (`cod_substitutivo`);
 
+--
+-- Indexes for table `registro_votacao_parlamentar`
+--
 ALTER TABLE `registro_votacao_parlamentar`
   ADD PRIMARY KEY (`cod_votacao`,`cod_parlamentar`),
   ADD KEY `cod_parlamentar` (`cod_parlamentar`),
   ADD KEY `cod_votacao` (`cod_votacao`);
 
+--
+-- Indexes for table `relatoria`
+--
 ALTER TABLE `relatoria`
   ADD PRIMARY KEY (`cod_relatoria`),
   ADD KEY `cod_comissao` (`cod_comissao`),
@@ -1800,16 +2791,25 @@ ALTER TABLE `relatoria`
   ADD KEY `tip_fim_relatoria` (`tip_fim_relatoria`),
   ADD KEY `idx_relat_materia` (`cod_materia`,`cod_parlamentar`,`ind_excluido`);
 
+--
+-- Indexes for table `reuniao_comissao`
+--
 ALTER TABLE `reuniao_comissao`
   ADD PRIMARY KEY (`cod_reuniao`),
   ADD KEY `cod_comissao` (`cod_comissao`);
 
+--
+-- Indexes for table `sessao_legislativa`
+--
 ALTER TABLE `sessao_legislativa`
   ADD PRIMARY KEY (`cod_sessao_leg`),
   ADD KEY `idx_sessleg_datas` (`dat_inicio`,`ind_excluido`,`dat_fim`,`dat_inicio_intervalo`,`dat_fim_intervalo`),
   ADD KEY `idx_sessleg_legislatura` (`num_legislatura`,`ind_excluido`),
   ADD KEY `idx_legislatura` (`num_legislatura`);
 
+--
+-- Indexes for table `sessao_plenaria`
+--
 ALTER TABLE `sessao_plenaria`
   ADD PRIMARY KEY (`cod_sessao_plen`),
   ADD KEY `cod_sessao_leg` (`cod_sessao_leg`),
@@ -1818,10 +2818,16 @@ ALTER TABLE `sessao_plenaria`
   ADD KEY `dat_inicio_sessao` (`dat_inicio_sessao`),
   ADD KEY `num_sessao_plen` (`num_sessao_plen`);
 
+--
+-- Indexes for table `sessao_plenaria_painel`
+--
 ALTER TABLE `sessao_plenaria_painel`
   ADD PRIMARY KEY (`cod_item`),
   ADD UNIQUE KEY `ind_cod_materia` (`cod_materia`);
 
+--
+-- Indexes for table `sessao_plenaria_presenca`
+--
 ALTER TABLE `sessao_plenaria_presenca`
   ADD PRIMARY KEY (`cod_presenca_sessao`),
   ADD KEY `cod_parlamentar` (`cod_parlamentar`),
@@ -1830,16 +2836,25 @@ ALTER TABLE `sessao_plenaria_presenca`
   ADD KEY `dat_sessao` (`dat_sessao`),
   ADD KEY `tip_frequencia` (`tip_frequencia`);
 
+--
+-- Indexes for table `status_tramitacao`
+--
 ALTER TABLE `status_tramitacao`
   ADD PRIMARY KEY (`cod_status`),
   ADD KEY `sgl_status` (`sgl_status`);
 ALTER TABLE `status_tramitacao` ADD FULLTEXT KEY `des_status` (`des_status`);
 
+--
+-- Indexes for table `status_tramitacao_administrativo`
+--
 ALTER TABLE `status_tramitacao_administrativo`
   ADD PRIMARY KEY (`cod_status`),
   ADD KEY `sgl_status` (`sgl_status`);
 ALTER TABLE `status_tramitacao_administrativo` ADD FULLTEXT KEY `des_status` (`des_status`);
 
+--
+-- Indexes for table `subemenda`
+--
 ALTER TABLE `subemenda`
   ADD PRIMARY KEY (`cod_subemenda`),
   ADD UNIQUE KEY `numsub_emenda` (`num_subemenda`,`tip_subemenda`,`cod_emenda`,`ind_excluido`),
@@ -1848,6 +2863,9 @@ ALTER TABLE `subemenda`
   ADD KEY `tip_subemenda` (`tip_subemenda`);
 ALTER TABLE `subemenda` ADD FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`);
 
+--
+-- Indexes for table `substitutivo`
+--
 ALTER TABLE `substitutivo`
   ADD PRIMARY KEY (`cod_substitutivo`),
   ADD UNIQUE KEY `idx_numsub_materia` (`num_substitutivo`,`cod_materia`,`ind_excluido`),
@@ -1856,84 +2874,147 @@ ALTER TABLE `substitutivo`
 ALTER TABLE `substitutivo` ADD FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`);
 ALTER TABLE `substitutivo` ADD FULLTEXT KEY `txt_observacao` (`txt_observacao`);
 
+--
+-- Indexes for table `tipo_afastamento`
+--
 ALTER TABLE `tipo_afastamento`
   ADD PRIMARY KEY (`tip_afastamento`);
 
+--
+-- Indexes for table `tipo_autor`
+--
 ALTER TABLE `tipo_autor`
   ADD PRIMARY KEY (`tip_autor`),
   ADD KEY `des_tipo_autor` (`des_tipo_autor`);
 
+--
+-- Indexes for table `tipo_comissao`
+--
 ALTER TABLE `tipo_comissao`
   ADD PRIMARY KEY (`tip_comissao`),
   ADD KEY `nom_tipo_comissao` (`nom_tipo_comissao`),
   ADD KEY `sgl_natureza_comissao` (`sgl_natureza_comissao`);
 
+--
+-- Indexes for table `tipo_dependente`
+--
 ALTER TABLE `tipo_dependente`
   ADD PRIMARY KEY (`tip_dependente`),
   ADD KEY `des_tipo_dependente` (`des_tipo_dependente`);
 
+--
+-- Indexes for table `tipo_documento`
+--
 ALTER TABLE `tipo_documento`
   ADD PRIMARY KEY (`tip_documento`),
   ADD KEY `des_tipo_documento` (`des_tipo_documento`);
 
+--
+-- Indexes for table `tipo_documento_administrativo`
+--
 ALTER TABLE `tipo_documento_administrativo`
   ADD PRIMARY KEY (`tip_documento`),
   ADD KEY `des_tipo_documento` (`des_tipo_documento`);
 
+--
+-- Indexes for table `tipo_emenda`
+--
 ALTER TABLE `tipo_emenda`
   ADD PRIMARY KEY (`tip_emenda`),
   ADD KEY `des_tipo_emenda` (`des_tipo_emenda`);
 
+--
+-- Indexes for table `tipo_expediente`
+--
 ALTER TABLE `tipo_expediente`
   ADD PRIMARY KEY (`cod_expediente`),
   ADD KEY `nom_expediente` (`nom_expediente`);
 
+--
+-- Indexes for table `tipo_fim_relatoria`
+--
 ALTER TABLE `tipo_fim_relatoria`
   ADD PRIMARY KEY (`tip_fim_relatoria`);
 
+--
+-- Indexes for table `tipo_instituicao`
+--
 ALTER TABLE `tipo_instituicao`
   ADD PRIMARY KEY (`tip_instituicao`);
 
+--
+-- Indexes for table `tipo_materia_legislativa`
+--
 ALTER TABLE `tipo_materia_legislativa`
   ADD PRIMARY KEY (`tip_materia`),
   ADD KEY `des_tipo_materia` (`des_tipo_materia`);
 
+--
+-- Indexes for table `tipo_norma_juridica`
+--
 ALTER TABLE `tipo_norma_juridica`
   ADD PRIMARY KEY (`tip_norma`),
   ADD KEY `des_tipo_norma` (`des_tipo_norma`);
 
+--
+-- Indexes for table `tipo_proposicao`
+--
 ALTER TABLE `tipo_proposicao`
   ADD PRIMARY KEY (`tip_proposicao`),
   ADD KEY `des_tipo_proposicao` (`des_tipo_proposicao`);
 
+--
+-- Indexes for table `tipo_resultado_votacao`
+--
 ALTER TABLE `tipo_resultado_votacao`
   ADD PRIMARY KEY (`tip_resultado_votacao`),
   ADD KEY `nom_resultado` (`nom_resultado`);
 
+--
+-- Indexes for table `tipo_sessao_plenaria`
+--
 ALTER TABLE `tipo_sessao_plenaria`
   ADD PRIMARY KEY (`tip_sessao`),
   ADD KEY `nom_sessao` (`nom_sessao`);
 
+--
+-- Indexes for table `tipo_situacao_materia`
+--
 ALTER TABLE `tipo_situacao_materia`
   ADD PRIMARY KEY (`tip_situacao_materia`),
   ADD KEY `des_tipo_situacao` (`des_tipo_situacao`);
 
+--
+-- Indexes for table `tipo_situacao_militar`
+--
 ALTER TABLE `tipo_situacao_militar`
   ADD PRIMARY KEY (`tip_situacao_militar`);
 
+--
+-- Indexes for table `tipo_situacao_norma`
+--
 ALTER TABLE `tipo_situacao_norma`
   ADD PRIMARY KEY (`tip_situacao_norma`),
   ADD KEY `des_tipo_situacao` (`des_tipo_situacao`);
 
+--
+-- Indexes for table `tipo_vinculo_norma`
+--
 ALTER TABLE `tipo_vinculo_norma`
   ADD PRIMARY KEY (`cod_tip_vinculo`),
   ADD UNIQUE KEY `tipo_vinculo` (`tipo_vinculo`),
   ADD UNIQUE KEY `idx_vinculo` (`tipo_vinculo`,`des_vinculo`,`des_vinculo_passivo`,`ind_excluido`),
   ADD KEY `tip_situacao` (`tip_situacao`);
 
+--
+-- Indexes for table `tipo_votacao`
+--
 ALTER TABLE `tipo_votacao`
   ADD PRIMARY KEY (`tip_votacao`);
 
+--
+-- Indexes for table `tramitacao`
+--
 ALTER TABLE `tramitacao`
   ADD PRIMARY KEY (`cod_tramitacao`),
   ADD KEY `cod_unid_tram_local` (`cod_unid_tram_local`),
@@ -1945,6 +3026,9 @@ ALTER TABLE `tramitacao`
   ADD KEY `cod_usuario_local` (`cod_usuario_local`),
   ADD KEY `cod_usuario_dest` (`cod_usuario_dest`);
 
+--
+-- Indexes for table `tramitacao_administrativo`
+--
 ALTER TABLE `tramitacao_administrativo`
   ADD PRIMARY KEY (`cod_tramitacao`),
   ADD KEY `cod_unid_tram_dest` (`cod_unid_tram_dest`),
@@ -1955,10 +3039,16 @@ ALTER TABLE `tramitacao_administrativo`
   ADD KEY `cod_usuario_local` (`cod_usuario_local`),
   ADD KEY `cod_usuario_dest` (`cod_usuario_dest`);
 
+--
+-- Indexes for table `turno_discussao`
+--
 ALTER TABLE `turno_discussao`
   ADD PRIMARY KEY (`cod_turno`),
   ADD UNIQUE KEY `idx_unique_key` (`cod_turno`,`sgl_turno`,`ind_excluido`);
 
+--
+-- Indexes for table `unidade_tramitacao`
+--
 ALTER TABLE `unidade_tramitacao`
   ADD PRIMARY KEY (`cod_unid_tramitacao`),
   ADD KEY `idx_unidtramit_orgao` (`cod_orgao`,`ind_excluido`),
@@ -1968,16 +3058,25 @@ ALTER TABLE `unidade_tramitacao`
   ADD KEY `idx_unidtramit_parlamentar` (`cod_parlamentar`,`ind_excluido`),
   ADD KEY `cod_parlamentar` (`cod_parlamentar`);
 
+--
+-- Indexes for table `usuario`
+--
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`cod_usuario`),
   ADD KEY `idx_col_username` (`col_username`),
   ADD KEY `idx_cod_localidade` (`cod_localidade_resid`);
 
+--
+-- Indexes for table `usuario_unid_tram`
+--
 ALTER TABLE `usuario_unid_tram`
   ADD UNIQUE KEY `PRIMARY_KEY` (`cod_usuario`,`cod_unid_tramitacao`),
   ADD KEY `idx_usuario` (`cod_usuario`),
   ADD KEY `idx_unid_tramitacao` (`cod_unid_tramitacao`);
 
+--
+-- Indexes for table `vinculo_norma_juridica`
+--
 ALTER TABLE `vinculo_norma_juridica`
   ADD PRIMARY KEY (`cod_vinculo`),
   ADD KEY `tip_vinculo` (`tip_vinculo`),
@@ -1986,6 +3085,9 @@ ALTER TABLE `vinculo_norma_juridica`
   ADD KEY `cod_norma_referente` (`cod_norma_referente`),
   ADD KEY `cod_norma_referida` (`cod_norma_referida`);
 
+--
+-- Indexes for table `visita`
+--
 ALTER TABLE `visita`
   ADD PRIMARY KEY (`cod_visita`),
   ADD KEY `cod_funcionario` (`cod_funcionario`),
@@ -1993,205 +3095,513 @@ ALTER TABLE `visita`
   ADD KEY `dat_entrada` (`dat_entrada`),
   ADD KEY `des_situacao` (`des_situacao`);
 
+--
+-- AUTO_INCREMENT for dumped tables
+--
 
+--
+-- AUTO_INCREMENT for table `acomp_materia`
+--
 ALTER TABLE `acomp_materia`
   MODIFY `cod_cadastro` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `afastamento`
+--
 ALTER TABLE `afastamento`
   MODIFY `cod_afastamento` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `anexo_norma`
+--
 ALTER TABLE `anexo_norma`
   MODIFY `cod_anexo` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `arquivo_armario`
+--
 ALTER TABLE `arquivo_armario`
   MODIFY `cod_armario` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `arquivo_corredor`
+--
 ALTER TABLE `arquivo_corredor`
   MODIFY `cod_corredor` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `arquivo_item`
+--
 ALTER TABLE `arquivo_item`
   MODIFY `cod_item` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `arquivo_prateleira`
+--
 ALTER TABLE `arquivo_prateleira`
   MODIFY `cod_prateleira` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `arquivo_recipiente`
+--
 ALTER TABLE `arquivo_recipiente`
   MODIFY `cod_recipiente` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `arquivo_tipo_recipiente`
+--
 ALTER TABLE `arquivo_tipo_recipiente`
   MODIFY `tip_recipiente` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `arquivo_tipo_suporte`
+--
 ALTER TABLE `arquivo_tipo_suporte`
   MODIFY `tip_suporte` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `arquivo_tipo_tit_documental`
+--
 ALTER TABLE `arquivo_tipo_tit_documental`
   MODIFY `tip_tit_documental` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `arquivo_unidade`
+--
 ALTER TABLE `arquivo_unidade`
   MODIFY `cod_unidade` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `assessor_parlamentar`
+--
 ALTER TABLE `assessor_parlamentar`
   MODIFY `cod_assessor` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `assunto_norma`
+--
 ALTER TABLE `assunto_norma`
   MODIFY `cod_assunto` int(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `autor`
+--
 ALTER TABLE `autor`
   MODIFY `cod_autor` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `bancada`
+--
 ALTER TABLE `bancada`
   MODIFY `cod_bancada` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `cargo_bancada`
+--
 ALTER TABLE `cargo_bancada`
   MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `cargo_comissao`
+--
 ALTER TABLE `cargo_comissao`
   MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `cargo_executivo`
+--
 ALTER TABLE `cargo_executivo`
   MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `cargo_mesa`
+--
 ALTER TABLE `cargo_mesa`
   MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `coligacao`
+--
 ALTER TABLE `coligacao`
   MODIFY `cod_coligacao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `comissao`
+--
 ALTER TABLE `comissao`
   MODIFY `cod_comissao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `composicao_bancada`
+--
 ALTER TABLE `composicao_bancada`
   MODIFY `cod_comp_bancada` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `composicao_comissao`
+--
 ALTER TABLE `composicao_comissao`
   MODIFY `cod_comp_comissao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `composicao_executivo`
+--
 ALTER TABLE `composicao_executivo`
   MODIFY `cod_composicao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `dependente`
+--
 ALTER TABLE `dependente`
   MODIFY `cod_dependente` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `destinatario_oficio`
+--
 ALTER TABLE `destinatario_oficio`
   MODIFY `cod_destinatario` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `documento_acessorio`
+--
 ALTER TABLE `documento_acessorio`
   MODIFY `cod_documento` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `documento_acessorio_administrativo`
+--
 ALTER TABLE `documento_acessorio_administrativo`
   MODIFY `cod_documento_acessorio` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `documento_administrativo`
+--
 ALTER TABLE `documento_administrativo`
   MODIFY `cod_documento` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `documento_administrativo_materia`
+--
 ALTER TABLE `documento_administrativo_materia`
   MODIFY `cod_vinculo` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `documento_administrativo_vinculado`
+--
 ALTER TABLE `documento_administrativo_vinculado`
   MODIFY `cod_vinculo` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `emenda`
+--
 ALTER TABLE `emenda`
   MODIFY `cod_emenda` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `encerramento_presenca`
+--
 ALTER TABLE `encerramento_presenca`
   MODIFY `cod_presenca_encerramento` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `expediente_materia`
+--
 ALTER TABLE `expediente_materia`
   MODIFY `cod_ordem` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `expediente_presenca`
+--
 ALTER TABLE `expediente_presenca`
   MODIFY `cod_presenca_expediente` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `funcionario`
+--
 ALTER TABLE `funcionario`
   MODIFY `cod_funcionario` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `gabinete_atendimento`
+--
 ALTER TABLE `gabinete_atendimento`
   MODIFY `cod_atendimento` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `gabinete_eleitor`
+--
 ALTER TABLE `gabinete_eleitor`
   MODIFY `cod_eleitor` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `instituicao`
+--
 ALTER TABLE `instituicao`
   MODIFY `cod_instituicao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `lexml_registro_provedor`
+--
 ALTER TABLE `lexml_registro_provedor`
   MODIFY `cod_provedor` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `lexml_registro_publicador`
+--
 ALTER TABLE `lexml_registro_publicador`
   MODIFY `cod_publicador` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `logradouro`
+--
 ALTER TABLE `logradouro`
   MODIFY `cod_logradouro` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `mandato`
+--
 ALTER TABLE `mandato`
   MODIFY `cod_mandato` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `materia_apresentada_sessao`
+--
 ALTER TABLE `materia_apresentada_sessao`
   MODIFY `cod_ordem` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `materia_legislativa`
+--
 ALTER TABLE `materia_legislativa`
   MODIFY `cod_materia` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `nivel_instrucao`
+--
 ALTER TABLE `nivel_instrucao`
   MODIFY `cod_nivel_instrucao` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `norma_juridica`
+--
 ALTER TABLE `norma_juridica`
   MODIFY `cod_norma` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `ordem_dia`
+--
 ALTER TABLE `ordem_dia`
   MODIFY `cod_ordem` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `ordem_dia_presenca`
+--
 ALTER TABLE `ordem_dia_presenca`
   MODIFY `cod_presenca_ordem_dia` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `orgao`
+--
 ALTER TABLE `orgao`
   MODIFY `cod_orgao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `origem`
+--
 ALTER TABLE `origem`
   MODIFY `cod_origem` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `parlamentar`
+--
 ALTER TABLE `parlamentar`
   MODIFY `cod_parlamentar` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `partido`
+--
 ALTER TABLE `partido`
   MODIFY `cod_partido` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `periodo_comp_bancada`
+--
+ALTER TABLE `periodo_comp_bancada`
+  MODIFY `cod_periodo_comp` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `periodo_comp_comissao`
+--
 ALTER TABLE `periodo_comp_comissao`
   MODIFY `cod_periodo_comp` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `periodo_comp_mesa`
+--
 ALTER TABLE `periodo_comp_mesa`
   MODIFY `cod_periodo_comp` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `pessoa`
+--
 ALTER TABLE `pessoa`
   MODIFY `cod_pessoa` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `proposicao`
+--
 ALTER TABLE `proposicao`
   MODIFY `cod_proposicao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `protocolo`
+--
 ALTER TABLE `protocolo`
   MODIFY `cod_protocolo` int(7) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `quorum_votacao`
+--
 ALTER TABLE `quorum_votacao`
   MODIFY `cod_quorum` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `regime_tramitacao`
+--
 ALTER TABLE `regime_tramitacao`
   MODIFY `cod_regime_tramitacao` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `registro_votacao`
+--
 ALTER TABLE `registro_votacao`
   MODIFY `cod_votacao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `relatoria`
+--
 ALTER TABLE `relatoria`
   MODIFY `cod_relatoria` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `reuniao_comissao`
+--
 ALTER TABLE `reuniao_comissao`
   MODIFY `cod_reuniao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `sessao_legislativa`
+--
 ALTER TABLE `sessao_legislativa`
   MODIFY `cod_sessao_leg` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `sessao_plenaria`
+--
 ALTER TABLE `sessao_plenaria`
   MODIFY `cod_sessao_plen` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `sessao_plenaria_painel`
+--
 ALTER TABLE `sessao_plenaria_painel`
   MODIFY `cod_item` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `sessao_plenaria_presenca`
+--
 ALTER TABLE `sessao_plenaria_presenca`
   MODIFY `cod_presenca_sessao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `status_tramitacao`
+--
 ALTER TABLE `status_tramitacao`
   MODIFY `cod_status` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `status_tramitacao_administrativo`
+--
 ALTER TABLE `status_tramitacao_administrativo`
   MODIFY `cod_status` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `subemenda`
+--
 ALTER TABLE `subemenda`
   MODIFY `cod_subemenda` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `substitutivo`
+--
 ALTER TABLE `substitutivo`
   MODIFY `cod_substitutivo` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_afastamento`
+--
 ALTER TABLE `tipo_afastamento`
   MODIFY `tip_afastamento` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_comissao`
+--
 ALTER TABLE `tipo_comissao`
   MODIFY `tip_comissao` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_dependente`
+--
 ALTER TABLE `tipo_dependente`
   MODIFY `tip_dependente` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_documento`
+--
 ALTER TABLE `tipo_documento`
   MODIFY `tip_documento` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_documento_administrativo`
+--
 ALTER TABLE `tipo_documento_administrativo`
   MODIFY `tip_documento` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_emenda`
+--
 ALTER TABLE `tipo_emenda`
   MODIFY `tip_emenda` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_expediente`
+--
 ALTER TABLE `tipo_expediente`
   MODIFY `cod_expediente` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_fim_relatoria`
+--
 ALTER TABLE `tipo_fim_relatoria`
   MODIFY `tip_fim_relatoria` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_instituicao`
+--
 ALTER TABLE `tipo_instituicao`
   MODIFY `tip_instituicao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_materia_legislativa`
+--
 ALTER TABLE `tipo_materia_legislativa`
   MODIFY `tip_materia` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_norma_juridica`
+--
 ALTER TABLE `tipo_norma_juridica`
   MODIFY `tip_norma` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_proposicao`
+--
 ALTER TABLE `tipo_proposicao`
   MODIFY `tip_proposicao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_resultado_votacao`
+--
 ALTER TABLE `tipo_resultado_votacao`
   MODIFY `tip_resultado_votacao` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_sessao_plenaria`
+--
 ALTER TABLE `tipo_sessao_plenaria`
   MODIFY `tip_sessao` tinyint(4) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_situacao_materia`
+--
 ALTER TABLE `tipo_situacao_materia`
   MODIFY `tip_situacao_materia` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_situacao_norma`
+--
 ALTER TABLE `tipo_situacao_norma`
   MODIFY `tip_situacao_norma` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_vinculo_norma`
+--
 ALTER TABLE `tipo_vinculo_norma`
   MODIFY `cod_tip_vinculo` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tipo_votacao`
+--
 ALTER TABLE `tipo_votacao`
   MODIFY `tip_votacao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tramitacao`
+--
 ALTER TABLE `tramitacao`
   MODIFY `cod_tramitacao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `tramitacao_administrativo`
+--
 ALTER TABLE `tramitacao_administrativo`
   MODIFY `cod_tramitacao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `turno_discussao`
+--
 ALTER TABLE `turno_discussao`
   MODIFY `cod_turno` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `unidade_tramitacao`
+--
 ALTER TABLE `unidade_tramitacao`
   MODIFY `cod_unid_tramitacao` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `usuario`
+--
 ALTER TABLE `usuario`
   MODIFY `cod_usuario` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `vinculo_norma_juridica`
+--
 ALTER TABLE `vinculo_norma_juridica`
   MODIFY `cod_vinculo` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `visita`
+--
 ALTER TABLE `visita`
   MODIFY `cod_visita` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- Constraints for dumped tables
+--
 
+--
+-- Limitadores para a tabela `categoria_instituicao`
+--
 ALTER TABLE `categoria_instituicao`
   ADD CONSTRAINT `idx_tip_instituicao` FOREIGN KEY (`tip_instituicao`) REFERENCES `tipo_instituicao` (`tip_instituicao`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
+--
+-- Limitadores para a tabela `gabinete_atendimento`
+--
 ALTER TABLE `gabinete_atendimento`
   ADD CONSTRAINT `gabinete_atendimento_ibfk_1` FOREIGN KEY (`cod_eleitor`) REFERENCES `gabinete_eleitor` (`cod_eleitor`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `gabinete_atendimento_ibfk_2` FOREIGN KEY (`cod_parlamentar`) REFERENCES `parlamentar` (`cod_parlamentar`) ON DELETE CASCADE ON UPDATE CASCADE;
