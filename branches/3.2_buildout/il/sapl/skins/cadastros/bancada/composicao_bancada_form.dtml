@@ -57,23 +57,21 @@ $('#txt_dat_desligamento').datepick();
   <dtml-call expr="REQUEST.set('cod_partido_sel', cod_partido_sel)">
 </dtml-in>
 
-<h1 class="firstHeading"><dtml-var nom_bancada></h1> 
+<dtml-in expr="zsql.periodo_comp_bancada_obter_zsql(cod_periodo_comp=cod_periodo_comp)">
+  <dtml-call expr="REQUEST.set('dat_inicio', dat_inicio_periodo)">
+  <dtml-call expr="REQUEST.set('dat_fim', dat_fim_periodo)">
+</dtml-in>
 
-<div id="barra-conteudo">
-<ul>
-    <li>
-        <a href="javascript:history.back()">Retornar</a>
-    </li>
-</ul>
-</div>
+<h1 class="firstHeading"><dtml-var nom_bancada></h1> 
 
 <form name="composicao_bancada_form" method="post" action="composicao_bancada_salvar_proc">
   <input type="hidden" name="hdn_cod_comp_bancada" value="<dtml-var cod_comp_bancada missing>">
   <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura missing>">
+  <input type="hidden" name="hdn_cod_periodo_comp" value="<dtml-var cod_periodo_comp missing>">
   <input type="hidden" name="hdn_cod_bancada" value="<dtml-var cod_bancada missing>">
   <input type="hidden" name="hdn_nom_bancada" value="<dtml-var nom_bancada missing>">
 <fieldset>
- <legend>Composição</legend>
+ <legend>Composição no período de <dtml-var dat_inicio> a <dtml-var dat_fim></legend>
     <table>
         <tr> 
             <td class="form-element" colspan="2">Parlamentar<span class="campoObrigatorio">&nbsp;</span> <br />
@@ -166,10 +164,10 @@ $('#txt_dat_desligamento').datepick();
 <p align="center">
     <input type="button" name="btn_composicao_salvar" class="botao" value="Salvar"
       onClick="campos_criticar(document.composicao_bancada_form)" />
-
-  <dtml-if cod_comp_bancada>
-    <input type="button" name="btn_composicao_excluir" class="botao" value="Excluir" onClick="composicao_excluir(document.composicao_bancada_form)">
-  </dtml-if>
+   <dtml-if cod_comp_bancada>
+     <input type="button" name="btn_composicao_excluir" class="botao" value="Excluir" onClick="composicao_excluir(document.composicao_bancada_form)">
+   </dtml-if>
+     <input type="button" class="botao" name="retornar" value="Voltar" onClick="javascript:history.go(-1)">
 </p>
 </form>
 <dtml-var standard_html_footer>
