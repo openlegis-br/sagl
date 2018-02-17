@@ -4,10 +4,16 @@
 
 <h1 class="firstHeading"><dtml-var nom_bancada></h1>
 
-<fieldset>
-  <table>
-  <dtml-in expr="zsql.composicao_bancada_obter_zsql(cod_bancada=cod_bancada)">
+<dtml-in expr="zsql.periodo_comp_bancada_obter_zsql(cod_periodo_comp=cod_periodo_comp)">
+  <dtml-call expr="REQUEST.set('dat_inicio', dat_inicio_periodo)">
+  <dtml-call expr="REQUEST.set('dat_fim', dat_fim_periodo)">
+</dtml-in>
+
+ <legend>Composição no período de <dtml-var dat_inicio> a <dtml-var dat_fim></legend><br />
+
+  <dtml-in expr="zsql.composicao_bancada_obter_zsql(cod_bancada=cod_bancada,cod_periodo_comp=cod_periodo_comp)">
     <dtml-if sequence-start>
+    <table>
     <thead>
      <tr>
        <th class="form-label">Parlamentar</th>
@@ -20,16 +26,15 @@
        <td class="texto"><a href="&dtml-portal_url;/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>"><b><dtml-var nom_parlamentar><br></td>
        <td class="texto"><dtml-var des_cargo></td>
     </tr>
+    <dtml-if sequence-end>
+      </tbody>
+     </table>
+    </dtml-if>
   <dtml-else>
-    <tr>
-       <td class="texto">
-         Não há nenhum parlamentar cadastrado nesta bancada
-       </td>
-    </tr> 
+    <p class="texto">
+         Não há nenhum parlamentar cadastrado na composição.
+    </p>
   </dtml-in>
-   </tbody>
-  </table>
-</fieldset>
 
     <p align="center">
      <input type="button" class="botao" name="retornar" value="Voltar" onClick="javascript:history.go(-1)">
