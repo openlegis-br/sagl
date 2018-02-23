@@ -68,6 +68,7 @@
           <tr>
               <td width="50%">
                  <label for="lst_tip_documento">Tipo de Documento <span class="campoObrigatorio">&nbsp;</span></label><br />
+                 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
                  <select id="lst_tip_documento" name="lst_tip_documento" onChange="numero_buscar(document.numero_reservar_form)">
                      <option>Selecione</option>
                         <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
@@ -82,6 +83,22 @@
                            </option>
                         </dtml-in>
                  </select>
+                 <dtml-else>
+                 <select id="lst_tip_documento" name="lst_tip_documento" onChange="numero_buscar(document.numero_reservar_form)">
+                     <option>Selecione</option>
+                        <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
+                           <option value="<dtml-var tip_documento>"
+                                 <dtml-if expr="REQUEST.has_key('tip_documento_novo')">
+                                     <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_novo)">
+                                       selected
+                                     </dtml-if>
+                                  </dtml-if>
+                           >
+                               <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+                           </option>
+                        </dtml-in>
+                 </select>
+                 </dtml-if>
               </td>
               <td>
                  <label for="txt_qtde">Quantidade <span class="campoObrigatorio">&nbsp;</span></label><br />

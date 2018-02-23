@@ -1,11 +1,19 @@
 <dtml-var standard_html_header>
-<div class="helpsapl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/tramitacao_relatoria">Ajuda</a> </div>
-<h1 class="firstHeading"> Documento Administrativo </h1>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.xhtml.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
+$("#txa_txt_tramitacao").cleditor()[0].disable("true");;
+});
+</script>
 
 <dtml-if cod_tramitacao> 
   <dtml-call expr="REQUEST.set('dat_ultima', dat_tramitacao[6:10] + dat_tramitacao[3:5] + dat_tramitacao[0:2])">
 <dtml-else>
-  <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento = cod_documento, ind_ult_tramitacao=1)">
+  <dtml-in expr="zsql.tramitacao_obter_zsql(cod_documento = cod_documento, ind_ult_tramitacao=1)">
       <dtml-call expr="REQUEST.set('dat_ultima', dat_tramitacao[6:10] + dat_tramitacao[3:5] + dat_tramitacao[0:2])">
   <dtml-else>
     <dtml-call expr="REQUEST.set('dat_ultima', '10000101')">    
@@ -13,8 +21,7 @@
 </dtml-if>
 
 <script type="text/javascript" src="javascript/data_validar_jvsc"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/prototype.min.js"></script>
-<style  type="text/css"><!-- @import url(&dtml-portal_url;/generico/datepicker.css); --></style>
+
 <script type="text/javascript">
 <!--
   function submeter(endereco){
@@ -32,6 +39,7 @@
       location.href = endereco;
   }
 
+
   function campos_criticar(form){
 
       if (form.txt_dat_tramitacao.value == ""){
@@ -40,20 +48,22 @@
          return false;
       }
 
-      if (!IsValidDate(form.txt_dat_tramitacao.value)){
+      if (form.txt_dat_tramitacao.value!="" ) {
+       if (!IsValidDate(form.txt_dat_tramitacao.value)){
          alert("Digite uma data de tramitação válida!");
          form.txt_dat_tramitacao.focus();
          form.txt_dat_tramitacao.select();
          return false;
-      }
+       }
 
-      var dat_tramitacao = form.txt_dat_tramitacao.value.substring(6,10) + form.txt_dat_tramitacao.value.substring(3,5) + form.txt_dat_tramitacao.value.substring(0,2);
-
-      if ((dat_tramitacao > <dtml-var expr="_.DateTime.strftime(_.DateTime(), '%Y%m%d')">) || (dat_tramitacao < <dtml-var dat_ultima>)) {
-           alert("Data de tramitação deve ser menor ou igual à data corrente e maior ou igual à data da última tramitação!");
+       var dat_tramitacao = form.txt_dat_tramitacao.value.substring(6,10) + form.txt_dat_tramitacao.value.substring(3,5) + form.txt_dat_tramitacao.value.substring(0,2);
+      
+       if (dat_tramitacao < <dtml-var dat_ultima>) {
+           alert("Data de tramitação deve ser menor ou igual à data da última tramitação!");
            form.txt_dat_tramitacao.focus();
            form.txt_dat_tramitacao.select();
            return false;
+       }
       }
 
       if (form.lst_cod_unid_tram_local.selectedIndex == 0){
@@ -62,9 +72,10 @@
           return false;
       }
       
-      if (form.txa_txt_tramitacao.value == "") {
-         alert("O texto da tramitação deve ser preenchido!");
-         form.txa_txt_tramitacao.focus();
+      if (!(form.rad_ind_urgencia[0].checked ||
+            form.rad_ind_urgencia[1].checked)){
+         alert("O í­ndice de urgência deve ser preenchido!");
+         form.rad_ind_urgencia[0].focus();
          return false;
       }
 
@@ -117,106 +128,174 @@
 //-->
 </script>
 
-<form name="tramitacao_form" method="post" action="tramitacao_salvar_proc">
+<script type="text/javascript">
+$(function() {
+        $('#txt_dat_fim_prazo').datepick();
+        $('#txt_dat_encaminha').datepick();
+});
+</script>
 
-  <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao missing>" />
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup1").fancybox({
+		maxWidth	: 1024,
+		maxHeight	: 800,
+		fitToView	: false,
+		width		: '95%',
+		height		: '93%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+
+<dtml-call expr="REQUEST.set('cod_tramitacao', int(cod_tramitacao))">
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/tramitacao_relatoria">Ajuda</a>
+<h1 class="firstHeading">Matéria Legislativa</h1>
+  <form name="tramitacao_form" method="post" action="tramitacao_salvar_proc">
+  <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+    <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+    <input type="hidden" name="hdn_cod_usuario_corrente" value="<dtml-var cod_usuario_corrente missing>" />
+  </dtml-in>
+    <dtml-if expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente,cod_unid_tramitacao=cod_unid_tram_local,ind_responsavel=1)">
+      <dtml-call expr="REQUEST.set('ind_responsavel', 1)">
+    </dtml-if>
+  <input type="hidden" name="cod_tramitacao" value="<dtml-var cod_tramitacao missing>" />
   <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento>" />
   <input type="hidden" name="hdn_url" value="index_html?cod_documento=<dtml-var cod_documento>" />
   <input type="hidden" name="hdn_alterou" value="0" />
   <input type="hidden" name="hdn_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" />
+    <dtml-var documento_menu>
+    <dtml-var documento_header>
 
-<fieldset><legend>Documento Administrativo</legend>
-      <dtml-var documento_menu>
-      <dtml-var documento_header>
-
-      <fieldset><legend>Tramita&ccedil;&atilde;o</legend>
+<fieldset><legend>Detalhes da Tramitação</legend>
       <table>
           <tr>
-            <td><label for="txt_dat_tramitacao">Data Tramita&ccedil;&atilde;o <span class="campoObrigatorio">&nbsp;</span></label><br />
-            <dtml-unless dat_tramitacao>
-              <dtml-call expr="REQUEST.set('dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
-            </dtml-unless>
-            <dtml-if cod_tramitacao>             
-              <dtml-if expr="pysc.browser_verificar_pysc(HTTP_USER_AGENT)"> 
-                <input type="text" name="txt_dat_tramitacao" size="10" maxlength="10" value="<dtml-var dat_tramitacao missing>"
-                  disabled /></td>
-              <dtml-else>
-                <input type="text" name="txt_dat_tramitacao" size="10" maxlength="10" value="<dtml-var dat_tramitacao missing>"
-                  readonly="readonly" /></td>
-              </dtml-if>
-            <dtml-else>
-              <input type="text" name="txt_dat_tramitacao" size="10" maxlength="10" value="<dtml-var dat_tramitacao missing>"
-                onChange="javascript:form.hdn_alterou.value=1" onBlur="formata_data(form.txt_dat_tramitacao)" />
-               </td>
-            </dtml-if> 
-
-            <td><label for="lst_cod_unid_tram_local">Unidade Local <span class="campoObrigatorio">&nbsp;</span></label><br />
-             <select name="lst_cod_unid_tram_local" onChange="javascript:form.hdn_alterou.value=1">
-             <option>Selecione</option>
-             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
-               <option 
-                  <dtml-if expr="_.has_key('cod_tramitacao') and cod_unid_tram_local==cod_unid_tramitacao"> selected
-                  </dtml-if>
-                 value="<dtml-var cod_unid_tramitacao>">
-               <dtml-if cod_orgao><dtml-var nom_orgao>
-               <dtml-elif cod_comissao><dtml-var nom_comissao> 
-               <dtml-else><dtml-var nom_parlamentar> 
-               </dtml-if></option>
-             </dtml-in>
-             </select></td>
-         </tr>
-
-          <tr>
-             <td><label for="lst_cod_status">Status <span class="campoObrigatorio">&nbsp;</span></label><br />
-              <select name="lst_cod_status" onChange="javascript:form.hdn_alterou.value=1">
-            <option>Selecione</option>
-            <dtml-in expr="zsql.status_tramitacao_administrativo_obter_zsql()">
-              <option 
-                 <dtml-if expr="_.has_key('cod_tramitacao') and _.int(cod_status)==_.int(tramitacao_form.cod_status)"> selected
-                 </dtml-if>
-                value="<dtml-var cod_status>">
-            <dtml-var sgl_status> - <dtml-var des_status></option>
-            </dtml-in>
-            </select></td>
-	                
-             <td><label for="lst_cod_unid_tram_dest">Unidade Destino </label><br />
-              <select name="lst_cod_unid_tram_dest" onChange="javascript:form.hdn_alterou.value=1">
-             <option value="">Selecione</option>
-             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
-               <option 
-                  <dtml-if expr="_.has_key('cod_tramitacao') and cod_unid_tram_dest==cod_unid_tramitacao"> selected
-                  </dtml-if>
-                  value="<dtml-var cod_unid_tramitacao>">
-               <dtml-if cod_orgao><dtml-var nom_orgao>
-               <dtml-elif cod_comissao><dtml-var nom_comissao> 
-              <dtml-else><dtml-var nom_parlamentar> 
-               </dtml-if></option>
-             </dtml-in>
-             </select></td></tr>
-	     
-	     <tr>
-	     <td><label for="txt_dat_encaminha">Data Encaminhamento </label><br />
-             <input type="text" name="txt_dat_encaminha" size="10" maxlength="10" value="<dtml-var dat_encaminha missing null="">"
-                    onChange="javascript:form.hdn_alterou.value=1" onBlur="formata_data(form.txt_dat_encaminha)" /></td>
-             <td><label for="txt_dat_fim_prazo">Data Fim do Prazo<br />
-               <input type="text" name="txt_dat_fim_prazo" size="10" maxlength="10" value="<dtml-var dat_fim_prazo missing null="">"
-                   onChange="javascript:form.hdn_alterou.value=1" onBlur="formata_data(form.txt_dat_fim_prazo)" /></td>
-         </tr>
-         <tr>
-            <td colspan="4"><label for="txa_txt_tramitacao">Texto da A&ccedil;&atilde;o <span class="campoObrigatorio"></label></span> <br />
-             <textarea name="txa_txt_tramitacao" cols="65" 
-                 onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_tramitacao missing></textarea>
+            <td>
+            <label for="txt_dat_tramitacao">Data Tramitação </label><br/>
+              <input type="text" name="txt_dat_tramitacao" size="13" maxlength="10" value="<dtml-var dat_tramitacao missing>" readonly />
             </td>
+            <td>
+             <label for="lst_cod_unid_tram_local">Unidade de Origem </label><br/>
+         <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local)">
+           <dtml-if cod_orgao><input type="text" size="50" value="<dtml-var nom_orgao>" readonly>
+           <dtml-elif cod_comissao><input type="text" size="50" value="<dtml-var nom_comissao>" readonly>
+           <dtml-else><input type="text" size="50" value="<dtml-var nom_parlamentar>" readonly>
+           </dtml-if>
+         </dtml-in>
+            </td>
+            <td class="form-element">Usuário de Origem</br>
+             <dtml-if cod_usuario_local>
+               <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario_local)">
+                 <input type="text" size="12" value="<dtml-var col_username>" readonly>
+               </dtml-in>
+             <dtml-else>
+                 <input type="text" size="12" value="não especificado" readonly>
+             </dtml-if>
+           </td>
+          </tr>
+       <td class="form-element">Encaminhamento</br>
+         <input type="text" size="13" value="<dtml-var dat_encaminha missing null>" readonly>
+       </td>
+       <td class="form-element">Unidade de Destino</br>
+         <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest)">
+           <dtml-if cod_orgao><input type="text" size="50" value="<dtml-var nom_orgao>" readonly>
+           <dtml-elif cod_comissao><input type="text" size="50" value="<dtml-var nom_comissao>" readonly>
+           <dtml-else><input type="text" size="50" value="<dtml-var nom_parlamentar>" readonly>
+           </dtml-if>
+         </dtml-in>
+       </td>
+       <td class="form-element">Usuário de Destino</br>
+        <dtml-if cod_usuario_dest>
+          <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario_dest)">
+            <input type="text" size="12" value="<dtml-var col_username>" readonly>
+          </dtml-in>
+        <dtml-else>
+            <input type="text" size="12" value="não especificado" readonly>
+        </dtml-if>
+       </td>
          </tr>
+          <tr>
+       <td class="form-element">Recebimento</br>
+         <dtml-if dat_recebimento>
+            <input type="text" size="13" value="<dtml-var dat_recebimento missing null>" readonly>
+            <dtml-call expr="REQUEST.set('ind_recebida', '1')">
+         <dtml-else>
+            <input type="text" size="13" style="color:#DE1E1E;font-weight:bold" value="Pendente" readonly>
+         </dtml-if>
+       </td>
+       <td class="form-element">Status</br>
+         <input type="text" size="50" value="<dtml-var sgl_status> - <dtml-var des_status>" readonly>
+       </td>
+       <td class="form-element">Data Fim Prazo</br>
+         <input type="text" size="13" value="<dtml-var dat_fim_prazo missing null>" readonly>
+       </td>
+      </tr>
+
+      <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+      <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.administrativo,pdf) or _.hasattr(sapl_documentos.administrativo,pdf_assinado)">
+         <tr>
+           <td class="form-element">
+                Texto PDF
+           </td>
+           <td valign="top" class="form-element" colspan="2">
+                 <dtml-if "_.hasattr(sapl_documentos.documento.tramitacao,pdf)">
+                   <dtml-let pdf="_.getattr(sapl_documentos.administrativo,pdf).absolute_url">
+                     <a class="popup1" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                       <img align="top" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF">
+                     <dtml-if expr="int(cod_usuario_corrente)==int(cod_usuario_local)" >
+                       </a><div class="assinar-pdf" style="cursor: pointer; float:left; padding-right: 4px;"><a class="botao">Assinar Digitalmente</a></div>
+                     </dtml-if>
+                   </dtml-let>
+			         <script type="text/javascript">
+			           $('.assinar-pdf').click(function () {
+    			           $.fancybox({
+        			   type: 'iframe',
+        			   href: 'assinador/tramitacao-signature_html?cod_tramitacao=<dtml-var cod_tramitacao>',
+				   width	   : '70%',
+				   height	   : '50%',
+                                   minHeight	   : 320,
+        			   preload         : true,
+                                   afterClose      : function() {
+                                     window.location.href = "tramitacao_mostrar_proc?cod_tramitacao=<dtml-var cod_tramitacao>";},
+		                   closeEffect	: 'fade'
+    			           });
+			           });
+			         </script>
+                 </dtml-if>
+
+                 <dtml-if "_.hasattr(sapl_documentos.administrativo,pdf_assinado)">
+                   <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo,pdf_assinado).absolute_url">
+                     <a class="popup1" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
+                       <img height="22" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada">Tramitação com Assinatura Digital
+                     </a>
+                   </dtml-let>
+                 </dtml-if>
+           </td>
+         </tr>
+      </dtml-if>
+    <tr>
+       <td colspan="3"class="form-element">Texto da Ação</br>
+         <textarea name="txa_txt_tramitacao" id="txa_txt_tramitacao" cols="65" rows="4" disabled><dtml-var txt_tramitacao missing html_quote></textarea>
+       </td>
+    </tr>
         </table>
         </fieldset>
-        <p align="center">
-          <input type="button" class="botao" name="btn_tramitacao_salvar" value="Salvar" onClick="campos_criticar(document.tramitacao_form)" />
-          &nbsp;&nbsp;
-          <dtml-if cod_tramitacao>
-            <input type="button" class="botao" name="btn_tramitacao_excluir" value="Excluir" onClick="tramitacao_excluir()" />
-          </dtml-if>
-        </p>
-</fieldset>
-</form>
+      <p align="center">
+      <input class="botao" type=button onClick="parent.location='tramitacao_index_html?cod_documento=<dtml-var cod_documento>'" value='Voltar'>
+
+       <dtml-if expr="ind_ult_tramitacao==1 and AUTHENTICATED_USER.has_role(['Operador'])">
+          <input type="button" class="botao" name="btn_tramitacao_excluir" value="Excluir" onClick="tramitacao_excluir()" />
+       <dtml-elif expr="ind_ult_tramitacao==1 and _.has_key('ind_responsavel')">
+          <input type="button" class="botao" name="btn_tramitacao_excluir" value="Excluir" onClick="tramitacao_excluir()" />
+       </dtml-if>
+      </p>
+
+   </form>
 <dtml-var standard_html_footer>

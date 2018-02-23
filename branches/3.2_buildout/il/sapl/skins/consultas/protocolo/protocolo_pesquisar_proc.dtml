@@ -124,7 +124,12 @@ $(document).ready(function() {
               <b>Classificação:</b> <dtml-var des_tipo_documento>
                <dtml-in expr="zsql.documento_administrativo_obter_zsql(num_protocolo=num_protocolo,ano_documento=ano_protocolo)">
                   <dtml-if num_documento>
-                    <br /><b>Documento Vinculado:</b> <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                    <br /><b>Documento Vinculado:</b> 
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                      <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                    <dtml-else>
+                      <a href="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" >
+                    </dtml-if>
                     <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></a>
                   <dtml-else>Criar Documento
                   </dtml-if>
@@ -139,8 +144,12 @@ $(document).ready(function() {
                   <dtml-if sequence-start>
                     <br /><b>Matéria Vinculada:</b> 
                   </dtml-if>
-                    <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-                    <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a> 
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                  <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                <dtml-else>
+                  <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" >
+                </dtml-if>
+                     <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a> 
                   <dtml-unless sequence-end>
                    -
                   </dtml-unless>

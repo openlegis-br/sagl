@@ -17,3 +17,7 @@ ALTER TABLE `periodo_comp_bancada`
 ALTER TABLE `composicao_bancada` ADD `cod_periodo_comp` INT(11) NULL AFTER `cod_bancada`;
 
 ALTER TABLE `composicao_bancada` ADD INDEX(`cod_periodo_comp`);
+
+-- Status de tramitação adminatrativo - permissão por unidade
+
+ALTER TABLE `unidade_tramitacao` ADD `status_adm_permitidos` VARCHAR(200) NULL AFTER `status_permitidos`;

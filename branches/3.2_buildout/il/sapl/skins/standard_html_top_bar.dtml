@@ -132,26 +132,34 @@
                 </ul>
             </li>
 
-           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo',  'Operador Materia',  'Operador Modulo Administrativo'])">
             <li class='has-sub'><a href="#"><span>Protocolo Digital</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
                 <ul>
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
 	          <li><a href='&dtml-portal_url;/consultas/protocolo/'><span>Pesquisar Protocolos</span></a></li>
 	          <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_rapido_form'><span>Protocolo Rápido</span></a></li>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Materia'])">
-	            <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form'><span>Protocolo Legislativo</span></a></li>
-                  </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Modulo Administrativo'])">
-	            <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form'><span>Protocolo Administrativo</span></a></li>
-                  </dtml-if>
-                  <li><a href="&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form">Anular Protocolo</a></li>
+                </dtml-if>
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador',  'Operador Protocolo', 'Operador Materia'])">
+	          <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form'><span>Protocolo Legislativo</span></a></li>
+                 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador',  'Operador Materia'])">
+                  <li><a href="&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_pendente_form"><span>Incorporar Matérias</span></a></li>
+                 </dtml-if>
+                </dtml-if>
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Modulo Administrativo'])">
+	          <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form'><span>Protocolo Administrativo</span></a></li>
+                 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                  <li><a href="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_pendente_form"><span>Incorporar Documentos</span></a></li>
+                 </dtml-if>
+                </dtml-if>
+                  <li><a href="&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form"><span>Anular Protocolo</span></a></li>
                </ul>
             </li>
            </dtml-if>
 
-           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Arquivo', 'Operador Recepção'])">
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Arquivo', 'Operador Recepção', 'Operador Materia'])">
             <li class='has-sub'><a href="#"><span>Administrativo</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
                 <ul>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Materia'])">
                      <li><a href='&dtml-portal_url;/consultas/documento_administrativo'><span>Pesquisar Documentos</span></a></li>
 	             <li><a href='&dtml-portal_url;/consultas/instituicao'><span>Cadastro de Entidades</span></a></li>
                  </dtml-if>
@@ -245,15 +253,10 @@
 
 $(function () {
     $(window).load(function () {
-        // Cache the elements we'll need
         var menu = $('#funcoes');
         var menuList = menu.find('ul:first');
         var listItems = menu.find('li').not('#responsive-tab');
-
-        // Create responsive Menu Version
         menuList.prepend('<li id="responsive-tab"><a href="#">Menu</a></li>');
-
-        // show the responsiv menu links
         menu.on('click', '#responsive-tab', function () {
             listItems.slideToggle();
             listItems.addClass('collapsed');
@@ -262,30 +265,14 @@ $(function () {
 });
 
 $(function () {
-    if ($(window).width() > 651) {
-        $("ul#menu-bar li ul li:has(ul)").find("a:first").addClass("active");
-        $("ul#menu-bar li").click(function () {
-            $(this).next().slideToggle(); 
-            $(this).addClass("hover");
-            $('ul:first', this).css('visibility', 'visible');
-            $(this).children('ul').delay(20).slideDown(200); // speed of the slide
-
-        }, function () {
-            $(this).removeClass("hover");
-            $('ul:first', this).css('visibility', 'hidden');
-            $(this).children('ul').delay(20).slideUp(200); // speed of the slide
-        });
-    } else {
-        $("ul#menu-bar li ul li:has(ul)").find("a:first").addClass("subnav");
-        var $mobil = $("ul#menu-bar li ");
-        $mobil.children("ul").css("display", "none");
-        $mobil.filter(":has(ul)").children(":first-child").click(function () {
-            $(this).next().slideToggle(); 
-            $(this).parent().siblings().children("ul:visible").slideUp();  // activate this if you will sho only 1 activ Menupoint
-            $(this).parent().removeClass('closed');
-
-        });
-    }
+     $("ul#menu-bar li ul li:has(ul)").find("a:first").addClass("subnav");
+     var $mobil = $(".has-sub");
+     $mobil.children("ul").css("display", "none");
+     $mobil.filter(":has(ul)").children(":first-child").click(function () {
+         $(this).next().slideToggle('fast'); 
+         $(this).parent().siblings().children("ul:visible").slideUp();
+         $(this).parent().removeClass('closed');
+     });
 });
 
 </script>

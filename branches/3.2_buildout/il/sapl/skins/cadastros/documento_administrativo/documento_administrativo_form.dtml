@@ -239,7 +239,7 @@ $(document).ready(function() {
 <dtml-if cod_documento>
 <div id="barra-conteudo">
       <ul>
-
+        <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
 	    <li>
 	        <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_acessorio/index_html?cod_documento=<dtml-var cod_documento>">Documento Acessório</a>
 	    </li>
@@ -256,6 +256,15 @@ $(document).ready(function() {
             <li>
                 <a href="&dtml-portal_url;/cadastros/documento_administrativo/destinatario/index_html?cod_documento=<dtml-var cod_documento>">Destinatários</a>
             </li>
+         </dtml-if>
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
+	    <li>
+	        <a href="&dtml-portal_url;/cadastros/documento_administrativo/materia_vinculada/index_html?cod_documento=<dtml-var cod_documento>">Matéria Vinculada</a>
+	    </li>
+           <li>
+                <a href="&dtml-portal_url;/cadastros/documento_administrativo/destinatario/index_html?cod_documento=<dtml-var cod_documento>">Destinatários</a>
+            </li>
+         </dtml-if>
       </ul>
 </div>
 </dtml-if>
@@ -269,10 +278,11 @@ $(document).ready(function() {
         <fieldset>
           <legend>Identificação Básica</legend>
                 <table>
-                        <tr>
+                      <tr>
                          <td width="50%"><label for="lst_tip_documento">Tipo Documento<span class="campoObrigatorio">&nbsp;</span></label><br />
+                          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
                            <select id="lst_tip_documento" name="lst_tip_documento" onChange="numero_buscar(document.documento_administrativo_form)" <dtml-if cod_documento>disabled</dtml-if>>
-                                 <option>Selecione</option>
+                             <option>Selecione</option>
                              <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
                                  <option
                                    <dtml-if tip_documento_sel>
@@ -284,39 +294,70 @@ $(document).ready(function() {
                                      <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_novo)">
                                        selected
                                      </dtml-if>
-                                   </dtml-if>                                                                                           
-                                       value="<dtml-var tip_documento>">
+                                   </dtml-if>                                                                        
+                                   value="<dtml-var tip_documento>">
                                        <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
                                  </option>
                              </dtml-in>
-                                 </select>
+                           </select>
                               <dtml-if cod_documento>
-                              <input type="hidden" name="lst_tip_documento" value="<dtml-var tip_documento_sel>" />
+                                <input type="hidden" name="lst_tip_documento" value="<dtml-var tip_documento_sel>" />
                               </dtml-if>
-                           </td>
-                           <td><label for="txt_num_documento">Número <span class="campoObrigatorio">&nbsp;</span></label><br />
+                         <dtml-else>
+                           <select id="lst_tip_documento" name="lst_tip_documento" onChange="numero_buscar(document.documento_administrativo_form)" <dtml-if cod_documento>disabled</dtml-if>>
+                             <option>Selecione</option>
+                             <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
+                                 <option
+                                   <dtml-if tip_documento_sel>
+                                    <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_sel)">
+                                        selected
+                                    </dtml-if>     
+                                   </dtml-if>
+                                   <dtml-if expr="REQUEST.has_key('tip_documento_novo')">
+                                     <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_novo)">
+                                       selected
+                                     </dtml-if>
+                                   </dtml-if>                                                                        
+                                   value="<dtml-var tip_documento>">
+                                       <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+                                 </option>
+                             </dtml-in>
+                           </select>
+                              <dtml-if cod_documento>
+                                <input type="hidden" name="lst_tip_documento" value="<dtml-var tip_documento_sel>" />
+                              </dtml-if>
+                         </dtml-if>
+                         </td>
+                         <td><label for="txt_num_documento">Número <span class="campoObrigatorio">&nbsp;</span></label><br />
                              <input type="hidden" name="hdn_num_documento" value="" />
                              <input type="text" id="txt_num_documento" name="txt_num_documento" size="6" maxlength="6" value="<dtml-var num_documento missing null="">" />
-                           </td>
-
-                           <td><label for="txt_ano_documento">Ano <span class="campoObrigatorio">&nbsp;</span></label><br />
+                         </td>
+                         <td><label for="txt_ano_documento">Ano <span class="campoObrigatorio">&nbsp;</span></label><br />
                              <dtml-unless ano_documento>
                               <dtml-call expr="REQUEST.set('ano_documento', _.DateTime.year(_.DateTime()))">
                              </dtml-unless>
                             <input type="text" id="txt_ano_documento" name="txt_ano_documento" size="4" maxlength="4" value="<dtml-var ano_documento missing>">
-                           </td>
-			</tr>
-			<tr>
-                          <td><label for="txt_dat_documento">Data <span class="campoObrigatorio">&nbsp;</span></label><br />
+                         </td>
+		      </tr>
+		      <tr>
+                         <td><label for="txt_dat_documento">Data <span class="campoObrigatorio">&nbsp;</span></label><br />
                              <dtml-unless dat_documento>
                                <dtml-call expr="REQUEST.set('dat_documento', _.DateTime().strftime('%d/%m/%Y'))">
                              </dtml-unless>
                             <input type="text" id="txt_dat_documento" name="txt_dat_documento" size="10" maxlength="10" value="<dtml-var dat_documento missing null="">" onBlur="formata_data(form.txt_dat_documento)" onChange="javascript:form.hdn_alterou.value=1" />
-                            </td>
-                            <td><label for="txt_num_protocolo">Núm. Protocolo</label><br />
-                             <input type="text" id="txt_num_protocolo" name="txt_num_protocolo" size="7" maxlength="7" value="<dtml-var num_protocolo missing null="">" /> 
-                            </td>
-                          <td><label>Em Tramitação? </label><span class="campoObrigatorio">&nbsp;</span> <br />
+                         </td>
+                         <td><label for="txt_num_protocolo">Núm. Protocolo</label><br />
+                             <input type="text" id="txt_num_protocolo" name="txt_num_protocolo" size="7" maxlength="7" value="<dtml-var num_protocolo missing null="">" />
+                             <dtml-if num_protocolo>
+                               <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=num_protocolo, ano_protocolo=ano_documento)">
+                                 <dtml-if cod_protocolo>
+                                    &nbsp;<a href="&dtml-portal_url;/relatorios/pdf_etiqueta_protocolo_preparar_pysc?rad_tip_protocolo=&amp;txt_cod_protocolo=<dtml-var cod_protocolo>&amp;txt_num_protocolo=<dtml-var num_protocolo>&amp;txt_ano_protocolo=<dtml-var ano_protocolo>&amp;dt_apres=&amp;dt_apres2=&amp;rad_tip_processo=&amp;lst_tip_documento=&amp;lst_tip_materia=&amp;txt_assunto=&amp;txa_txt_interessado=&amp;hdn_cod_autor=" class="popup" data-fancybox-type="iframe"><img align="absmiddle" src="&dtml-portal_url;/imagens/label.png" alt="Etiqueta de Protocolo" title="Etiqueta de Protocolo" width="20" height="16" /></a>
+                                   <a href="&dtml-portal_url;/consultas/protocolo/protocolo_mostrar_proc?cod_protocolo=<dtml-var cod_protocolo>" class="botao">Visualizar</a>
+                                 </dtml-if>
+                               </dtml-in>
+                             </dtml-if>
+                         </td>
+                         <td><label>Em Tramitação? </label><span class="campoObrigatorio">&nbsp;</span> <br />
 <dtml-in expr="[(1,'Sim'),(0,'Não')]">
                             <input type="radio" id="rad_ind_tramitacao" name="rad_ind_tramitacao" value="<dtml-var expr="_['sequence-key']">"
   <dtml-if expr="_.has_key('cod_documento') and ind_tramitacao==_['sequence-key']">checked=1</dtml-if>
@@ -325,23 +366,23 @@ $(document).ready(function() {
                               onChange="javascript:form.hdn_alterou.value=1" />
                               <span class="texto"><dtml-var expr="_['sequence-item']"></span>
 </dtml-in>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td colspan="3"><label for="txa_txt_interessado">Interessado (Autor) <span class="campoObrigatorio">&nbsp;</span></label><br />
+                         </td>
+                      </tr>
+                      <tr>
+                         <td colspan="3"><label for="txa_txt_interessado">Interessado (Autor) <span class="campoObrigatorio">&nbsp;</span></label><br />
                             <input type="hidden" name="hdn_txt_autor" value="" />
                             <input type="hidden" name="hdn_cod_autor" value="" />
                             <input type="text" id="txa_txt_interessado" name="txa_txt_interessado" size="50" maxlength="200" value="<dtml-var txt_interessado missing null="">" />
                             <a href="autor_pesquisar_form?hdn_tipo_pesquisa=pesq_basica" class="botao-link popup" data-fancybox-type="iframe">Pesquisar</a>
-                          </td>
-                        </tr>
+                         </td>
+                      </tr>
                         <tr>
-                          <td colspan="3"><label for="txa_txt_assunto">Assunto </label> <span class="campoObrigatorio">&nbsp;</span>
+                         <td colspan="3"><label for="txa_txt_assunto">Assunto </label> <span class="campoObrigatorio">&nbsp;</span>
                             <textarea id="txa_txt_assunto" name="txa_txt_assunto" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_assunto missing></textarea>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><label for="radTipTxtIntegral">Texto digitalizado (PDF)</label><br />
+                         </td>
+                      </tr>
+                      <tr>
+                         <td><label for="radTipTxtIntegral">Texto digitalizado (PDF)</label><br />
                             <dtml-if expr="_.has_key('cod_documento')">
                              <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_texto_integral.pdf')">
                               <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
@@ -357,8 +398,8 @@ $(document).ready(function() {
                              <dtml-else>
                               <input type="file" name="file_nom_arquivo" size="40" maxlength="100" />
                            </dtml-if>
-                           </td>
-                        <td colspan="2">
+                         </td>
+                         <td colspan="2">
 <dtml-if cod_documento>
                          <label for="radTipTxtIntegral">Texto editável (ODT)</label><br />
                           <dtml-let id_documento="_.str(cod_documento)+'_texto_integral.odt'">
@@ -392,8 +433,8 @@ $(document).ready(function() {
                          </dtml-let>
                         </dtml-if>
                          </td>
-                        </tr>
-                      </table>
+                       </tr>
+                    </table>
         </fieldset>
 
         <fieldset>

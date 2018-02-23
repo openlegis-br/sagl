@@ -16,17 +16,17 @@
 <form name="tramitacao_form" action="tramitacao_form">
   <input type="hidden" name="cod_documento" value="<dtml-var cod_documento>" />
 
-   <fieldset><legend>Tramitação</legend>
+   <fieldset><legend>Histórico de Tramitações</legend>
    <table>
   <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento)" size=12 start=query_start orphan=2>
   <dtml-if sequence-start>
       <tr>  
-         <th width="15%" class="form-label">Data Ação </th>
-         <th class="form-label">Origem </th>
-         <th class="form-label">Destino </th>
-         <th class="form-label">Status</th>
-         </tr>
-      
+         <th width="15%" class="form-label">Data Ação</th>
+         <th width="30%" class="form-label">Origem</th>
+         <th width="30%" class="form-label">Destino</th>
+         <th width="15%" class="form-label">Status</th>
+         <th width="10%" class="form-label">PDF</th>
+      </tr>
      <dtml-if previous-sequence>
          <tr><td colspan="3" class="form-element">
              <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
@@ -54,6 +54,25 @@
            </dtml-in>
          </dtml-if></td> 
          <td class="texto"><dtml-var sgl_status null=""></td>
+         <td>
+        <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+        <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+
+        <dtml-if "_.hasattr(sapl_documentos.administrativo,pdf) or _.hasattr(sapl_documentos.administrativo,pdf_assinado)">
+           <dtml-if "_.hasattr(sapl_documentos.administrativo,pdf)">
+             <dtml-let pdf="_.getattr(sapl_documentos.administrativo,pdf).absolute_url">
+               <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                 <img align="top" style="margin-left: 20px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF"></a>
+             </dtml-let>
+           </dtml-if>
+           <dtml-if "_.hasattr(sapl_documentos.administrativo,pdf_assinado)">
+             <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo,pdf_assinado).absolute_url">
+               <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                  <img height="22" style="margin-left: 20px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada"></a>
+             </dtml-let>
+           </dtml-if>
+        </dtml-if> 
+         </td>
       </tr>
     <dtml-if sequence-end>   
       <dtml-if next-sequence>
