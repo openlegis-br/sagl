@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : 
+arguments : ind_publico
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
@@ -10,11 +10,14 @@ SELECT
  hor_protocolo, 
  TRIM(LEADING '0' FROM num_protocolo) as num_protocolo,
  ano_protocolo, 
- tip_documento, 
+ protocolo.tip_documento, 
  txt_assunto_ementa, 
- txt_interessado
+ txt_interessado,
+ t.ind_publico
 FROM 
- protocolo WHERE cod_protocolo NOT IN (
+ protocolo 
+ LEFT JOIN tipo_documento_administrativo t ON protocolo.tip_documento = t.tip_documento
+WHERE cod_protocolo NOT IN (
    SELECT
      p.cod_protocolo
    FROM
@@ -32,5 +35,6 @@ AND
  tip_processo = 0
  AND ano_protocolo = YEAR(NOW())
  AND ind_anulado = 0
+ AND ind_publico = <dtml-sqlvar ind_publico type="int">
 ORDER BY
  dat_timestamp ASC

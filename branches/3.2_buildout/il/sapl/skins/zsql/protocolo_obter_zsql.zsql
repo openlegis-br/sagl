@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : tip_protocolo="" cod_protocolo="" num_protocolo="" ano_protocolo="" tip_processo="" tip_documento="" tip_materia="" des_assunto="" cod_autor="" des_interessado="" dat_apres="" dat_apres2=""
+arguments : tip_protocolo="" cod_protocolo="" num_protocolo="" ano_protocolo="" tip_processo="" tip_documento="" tip_materia="" des_assunto="" cod_autor="" des_interessado="" dat_apres="" dat_apres2="" ind_publico=""
 max_rows : 2000
 max_cache : 100
 </dtml-comment>
@@ -28,22 +28,17 @@ SELECT DISTINCT
        protocolo.txt_just_anulacao,
        tipo_documento_administrativo.sgl_tipo_documento,
        tipo_documento_administrativo.des_tipo_documento,
+       tipo_documento_administrativo.ind_publico,
        tipo_materia_legislativa.sgl_tipo_materia,
        tipo_materia_legislativa.des_tipo_materia
 
 FROM protocolo 
-
-LEFT JOIN tipo_documento_administrativo ON
-protocolo.tip_documento=tipo_documento_administrativo.tip_documento 
-
-LEFT JOIN tipo_materia_legislativa ON
-protocolo.tip_materia=tipo_materia_legislativa.tip_materia
-
-LEFT JOIN autor ON
-protocolo.cod_autor=autor.cod_autor,
-
-tipo_documento_administrativo as tipo_documento,
-tipo_materia_legislativa as tipo_materia
+     LEFT JOIN tipo_documento_administrativo ON
+        protocolo.tip_documento=tipo_documento_administrativo.tip_documento 
+     LEFT JOIN tipo_materia_legislativa ON
+        protocolo.tip_materia=tipo_materia_legislativa.tip_materia
+     LEFT JOIN autor ON
+        protocolo.cod_autor=autor.cod_autor
 
 <dtml-sqlgroup where>
     <dtml-sqltest tip_protocolo     column="protocolo.tip_protocolo"    op="="  type="int"    optional> <dtml-and>
@@ -55,32 +50,34 @@ tipo_materia_legislativa as tipo_materia
     <dtml-sqltest tip_materia       column="protocolo.tip_materia"      op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest cod_autor         column="protocolo.cod_autor"        op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ind_anulado       column="protocolo.ind_anulado"      op="="  type="int"    optional> <dtml-and>
-
-<dtml-if dat_apres>
-  <dtml-if dat_apres2>
-     protocolo.dat_protocolo >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres)" type="nb"> and
-     protocolo.dat_protocolo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres2)" type="nb">
-  <dtml-else>
-     protocolo.dat_protocolo = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres)" type="nb">
-  </dtml-if>
-<dtml-else>
-  <dtml-if dat_apres2>
-     protocolo.dat_protocolo = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres2)" type="nb">
-  </dtml-if>
-</dtml-if>
+    <dtml-if dat_apres>
+      <dtml-if dat_apres2>
+         protocolo.dat_protocolo >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres)" type="nb"> and
+         protocolo.dat_protocolo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres2)" type="nb">
+      <dtml-else>
+         protocolo.dat_protocolo = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres)" type="nb">
+      </dtml-if>
+    <dtml-else>
+      <dtml-if dat_apres2>
+         protocolo.dat_protocolo = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres2)" type="nb">
+      </dtml-if>
+    </dtml-if>
 </dtml-sqlgroup>
 
     <dtml-if des_assunto>
       <dtml-let des_assunto="'%'+des_assunto+'%'">
-       and protocolo.txt_assunto_ementa like <dtml-sqlvar des_assunto type="string">
+       AND protocolo.txt_assunto_ementa like <dtml-sqlvar des_assunto type="string">
       </dtml-let>
     </dtml-if>
 
-
     <dtml-if des_interessado>
       <dtml-let des_interessado="'%'+des_interessado+'%'">
-       and protocolo.txt_interessado like <dtml-sqlvar des_interessado type="string">
+       AND protocolo.txt_interessado like <dtml-sqlvar des_interessado type="string">
       </dtml-let>
+    </dtml-if>
+
+    <dtml-if ind_publico>
+      AND tipo_documento_administrativo.ind_publico = <dtml-sqlvar ind_publico type="int">
     </dtml-if>
 
 ORDER BY protocolo.ano_protocolo DESC, protocolo.num_protocolo DESC

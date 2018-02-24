@@ -1,7 +1,7 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
 arguments : tip_protocolo="" num_protocolo="" ano_protocolo="" tip_processo="" tip_documento="" tip_materia="" des_assunto="" cod_autor="" des_interessado="" dat_apres="" dat_apres2=""
-max_rows : 5000
+max_rows : 2000
 max_cache : 100
 </dtml-comment>
 
@@ -27,11 +27,13 @@ SELECT
        tipo_materia_legislativa.sgl_tipo_materia,
        tipo_materia_legislativa.des_tipo_materia
 
-FROM 
-   protocolo 
-   LEFT JOIN tipo_documento_administrativo ON protocolo.tip_documento=tipo_documento_administrativo.tip_documento 
-   LEFT JOIN tipo_materia_legislativa ON protocolo.tip_materia=tipo_materia_legislativa.tip_materia
-   LEFT JOIN autor ON protocolo.cod_autor=autor.cod_autor
+FROM protocolo 
+     LEFT JOIN tipo_documento_administrativo ON
+        protocolo.tip_documento=tipo_documento_administrativo.tip_documento 
+     LEFT JOIN tipo_materia_legislativa ON
+        protocolo.tip_materia=tipo_materia_legislativa.tip_materia
+     LEFT JOIN autor ON
+        protocolo.cod_autor=autor.cod_autor
 
 <dtml-sqlgroup where>
     <dtml-sqltest tip_protocolo     column="protocolo.tip_protocolo"    op="="  type="int"    optional> <dtml-and>
@@ -42,7 +44,6 @@ FROM
     <dtml-sqltest tip_materia       column="protocolo.tip_materia"      op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest cod_autor         column="protocolo.cod_autor"        op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ind_anulado       column="protocolo.ind_anulado"      op="="  type="int"    optional> <dtml-and>
-
     <dtml-if dat_apres>
       <dtml-if dat_apres2>
          protocolo.dat_protocolo >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres)" type="nb"> AND
@@ -55,7 +56,6 @@ FROM
          protocolo.dat_protocolo = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apres2)" type="nb">
       </dtml-if>
     </dtml-if>
-
 </dtml-sqlgroup>
 
     <dtml-if des_assunto>

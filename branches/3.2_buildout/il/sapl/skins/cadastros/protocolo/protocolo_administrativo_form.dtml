@@ -45,16 +45,14 @@ form.submit();
             <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_rapido_form">Protocolo Rápido</a>
         </li>
       </dtml-if>
-      <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Modulo Administrativo'])">
-        <li>
-            <a class="selecionado" href="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form">Protocolo Administrativo</a>
-        </li>
-      </dtml-if>
       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Materia'])">
         <li>
             <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form">Protocolo Legislativo</a>
         </li>
       </dtml-if>
+        <li>
+            <a class="selecionado" href="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form">Protocolo Administrativo</a>
+        </li>
         <li>
             <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form">Anular Protocolo</a>
         </li>
@@ -63,9 +61,12 @@ form.submit();
 <form action="protocolo_administrativo_salvar_proc" name="protocolo_administrativo_form" method="post" enctype="multipart/form-data">
 
 <input type="hidden" name="hdn_cod_protocolo" value="<dtml-var cod_protocolo missing>" />
-<input type="hidden" name="hdn_url" value="&dtml-portal_url;/consultas/protocolo/protocolo_index_html" />
 
-<fieldset>
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
+  <input type="hidden" name="hdn_url" value="&dtml-portal_url;/consultas/protocolo/protocolo_index_html" />
+<dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia','Operador Modulo Administrativo'])">
+  <input type="hidden" name="hdn_url" value="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form" />
+</dtml-if>
 
     <legend>Identificação do Documento</legend>
 
@@ -82,7 +83,8 @@ form.submit();
       </tr>
 
                         <tr>
-                         <td colspan="2"><label for="lst_tip_documento">Tipo Documento</label> <span class="campoObrigatorio">&nbsp;</span> <br />
+                         <td colspan="2"><label for="lst_tip_documento">Tipo de Documento</label> <span class="campoObrigatorio">&nbsp;</span> <br />
+                          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
                             <select id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
 			            <option>Selecione</option>
                                      <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
@@ -91,6 +93,25 @@ form.submit();
                                     </option>
                                      </dtml-in>
                             </select>
+                          <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Modulo Administrativo'])">
+                            <select id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
+			            <option>Selecione</option>
+                                     <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=0,ind_excluido=0)">
+                                    <option value="<dtml-var tip_documento>">
+                                     <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+                                    </option>
+                                     </dtml-in>
+                            </select>
+                          <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
+                            <select id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
+			            <option>Selecione</option>
+                                     <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
+                                    <option value="<dtml-var tip_documento>">
+                                     <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+                                    </option>
+                                     </dtml-in>
+                            </select>
+                         </dtml-if>
                          </td> 
                        </tr>
 
@@ -123,7 +144,6 @@ form.submit();
                         </tr>
 
 </table>
-</fieldset>
 
  <p align="center">
      <input type="button" class="botao" name="button" value="Protocolar Documento" onClick="campos_criticar()" />
