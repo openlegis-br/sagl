@@ -954,7 +954,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            url = self.url() + '/sapl_documentos/proposicao/' + str(cod_proposicao) + "_signed.pdf"
            opener = urllib.urlopen(url)
            f = open('/tmp/' + str(cod_proposicao) + "_signed.pdf", 'wb').write(opener.read())
-           texto_materia = PdfReader(file('/tmp/' + str(cod_proposicao) + "_signed.pdf", "rb"))
+           texto_materia = PdfReader('/tmp/'+ str(cod_proposicao) + "_signed.pdf", decompress=False).pages
            writer.addpages(texto_materia)
         else:
            if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
