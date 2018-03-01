@@ -945,104 +945,52 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            cod_materia = cod_materia
         else:
            cod_materia = self.pysc.b64decode_pysc(codigo=str(cod_materia))
-        writer = PdfFileWriter()
-        merger = PdfFileMerger()
+        writer = PdfWriter()
         for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia):
            nom_arquivo_pdf = materia.sgl_tipo_materia + "-" +str(materia.num_ident_basica) + "-" + str(materia.ano_ident_basica) + '_processo_eletronico.pdf'
         proposicao = self.zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=cod_materia,ind_excluido=0)
         if proposicao:
            cod_proposicao = proposicao[0].cod_proposicao
-           pdf_proposicao = self.sapl_documentos.proposicao.absolute_url() + "/" +  str(cod_proposicao) + "_signed.pdf"
-           texto_materia = cStringIO.StringIO(urllib.urlopen(pdf_proposicao).read())
-           merger.append(texto_materia)
+           url = self.url() + '/sapl_documentos/proposicao/' + str(cod_proposicao) + "_signed.pdf"
+           opener = urllib.urlopen(url)
+           f = open('/tmp/' + str(cod_proposicao) + "_signed.pdf", 'wb').write(opener.read())
+           texto_materia = PdfReader(file('/tmp/' + str(cod_proposicao) + "_signed.pdf", "rb"))
+           writer.addpages(texto_materia)
         else:
            if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
-              pdf_materia = self.sapl_documentos.materia.absolute_url()+ "/" + cod_materia + "_texto_integral.pdf"
-              texto_materia = cStringIO.StringIO(urllib.urlopen(pdf_materia).read())
-              merger.append(texto_materia)
-
-        lst_mat_anexadas = []
-        for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
-           dic_mat = {}
-           if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
-              dic_mat['pdf_anexada'] = self.sapl_documentos.materia.absolute_url()+ "/" + str(anexada.cod_materia_anexada) + "_texto_integral.pdf"
-           lst_mat_anexadas.append(dic_mat)
-           if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
-              for dic_mat in lst_mat_anexadas:
-                 texto_anexada = cStringIO.StringIO(urllib.urlopen(dic_mat['pdf_anexada']).read())
-                 merger.append(texto_anexada)
-
-        lst_emendas = []
-        for emenda in self.zsql.emenda_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-           dic_emendas = {}
-           if hasattr(self.sapl_documentos.emenda, str(emenda.cod_emenda) + '_emenda.pdf'):
-              dic_emendas['pdf_emenda'] = self.sapl_documentos.emenda.absolute_url()+ "/" + str(emenda.cod_emenda) + "_emenda.pdf"
-           lst_emendas.append(dic_emendas)
-           if hasattr(self.sapl_documentos.emenda, str(emenda.cod_emenda) + '_emenda.pdf'):
-              for dic_emendas in lst_emendas:
-                 texto_emenda = cStringIO.StringIO(urllib.urlopen(dic_emendas['pdf_emenda']).read())
-                 merger.append(texto_emenda)
-
-        lst_substitutivos = []
-        for substitutivo in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia):
-           dic_substitutivos = {}
-           if hasattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf'):
-              dic_substitutivos['pdf_substitutivo'] = self.sapl_documentos.substitutivo.absolute_url()+ "/" + str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
-           lst_substitutivos.append(dic_substitutivos)
-           if hasattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf'):
-              for dic_substitutivos in lst_substitutivos:
-                 texto_substitutivo = cStringIO.StringIO(urllib.urlopen(dic_substitutivos['pdf_substitutivo']).read())
-                 merger.append(texto_substitutivo)
-
-        #lst_relatorias = []
-        #for relatoria in self.zsql.relatoria_obter_zsql(cod_materia = cod_materia,ind_excluido=0):
-        #   dic_comissao={}
-        #   if hasattr(self.sapl_documentos.parecer_comissao, str(relatoria.cod_relatoria) + '_parecer.pdf'):
-        #      dic_comissao['pdf_relatoria'] = self.sapl_documentos.parecer_comissao.absolute_url()+ "/" + relatoria.cod_relatoria + "_parecer.pdf"
-        #   lst_relatorias.append(dic_comissao)
-        #   if hasattr(self.sapl_documentos.parecer_comissao, str(relatoria.cod_relatoria) + '_parecer.pdf'):
-        #      for dic_comissao in lst_relatorias:
-        #         texto_relatoria = cStringIO.StringIO(urllib.urlopen(dic_comissao['pdf_relatoria']).read())
-        #         merger.append(texto_relatoria)
+              url = self.url() + '/sapl_documentos/materia/' + str(cod_materia) + "_texto_integral.pdf"
+              opener = urllib.urlopen(url)
+              f = open('/tmp/' + str(cod_materia) + "_texto_integral.pdf", 'wb').write(opener.read())
+              texto_materia = PdfReader('/tmp/'+ str(cod_materia) + "_texto_integral.pdf", decompress=False).pages
+              writer.addpages(texto_materia)
 
         lst_acessorios = []
         for documento in self.zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia,ind_excluido=0):
            proposicao = self.zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=documento.cod_documento,ind_excluido=0)
            if proposicao:
               cod_proposicao = proposicao[0].cod_proposicao
-              pdf_proposicao = self.sapl_documentos.proposicao.absolute_url() + "/" +  str(cod_proposicao) + "_signed.pdf"
-              texto_documento = cStringIO.StringIO(urllib.urlopen(pdf_proposicao).read())
-              merger.append(texto_documento)
+              pdf_proposicao = self.sapl_documentos.proposicao.absolute_url()+ "/" +  str(cod_proposicao) + "_signed.pdf"
+              opener = urllib.urlopen(pdf_proposicao)
+              f = open('/tmp/' + str(cod_proposicao) + "_signed.pdf", 'wb').write(opener.read())
+              texto_documento = PdfReader('/tmp/'+ str(cod_proposicao) + "_signed.pdf", decompress=False).pages
+              writer.addpages(texto_documento)
            else:
-              dic_dados={}
               if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
-                 dic_dados['pdf_documento'] = self.sapl_documentos.materia.absolute_url()+ "/" + documento.cod_documento + ".pdf"
-              lst_acessorios.append(dic_dados)
-              if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
-                 for dic_dados in lst_acessorios:
-                   texto_documento = cStringIO.StringIO(urllib.urlopen(dic_dados['pdf_documento']).read())
-                   merger.append(texto_documento)
+                 cod_documento = documento.cod_documento
+                 lst_acessorios.append(cod_documento)
+              for item in lst_acessorios:
+                 pdf_documento = self.sapl_documentos.materia.absolute_url()+ "/" + str(item) + ".pdf"
+                 opener = urllib.urlopen(pdf_documento)
+                 f = open('/tmp/' + str(item) + ".pdf", 'wb').write(opener.read())
+                 texto_documento = PdfReader('/tmp/'+ str(item) + ".pdf", decompress=False).pages
+                 writer.addpages(texto_documento)
 
-        lst_tramitacoes = []
-        for tramitacao in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-           dic_tramitacoes={}
-           if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf'):
-              dic_tramitacoes['pdf_tramitacao'] = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + tramitacao.cod_tramitacao + "_tram_signed.pdf"
-           #   lst_tramitacoes.append(dic_tramitacoes)
-           elif hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram.pdf'):
-              dic_tramitacoes['pdf_tramitacao'] = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + tramitacao.cod_tramitacao + "_tram.pdf"
-              lst_tramitacoes.append(dic_tramitacoes)
-           #if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram_signed.pdf') or hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao.cod_tramitacao) + '_tram.pdf'):
-        for dic_tramitacoes in lst_tramitacoes:
-           texto_tramitacao = cStringIO.StringIO(urllib.urlopen(dic_tramitacoes['pdf_tramitacao']).read())
-           merger.append(texto_tramitacao)
+        output_file_pdf = '/tmp/' + nom_arquivo_pdf
+        writer.write(output_file_pdf)
 
-        output_file_pdf = os.path.normpath(nom_arquivo_pdf)
-        f = open(output_file_pdf, "wb")
-        merger.write(f)
-        f.close()
         readin = open(output_file_pdf, 'r' )
         contents = readin.read()
+
         for file in [output_file_pdf]:
             os.unlink(file)
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
