@@ -110,6 +110,9 @@ for item, value in extras.items():
   if item == 'txa_txt_assunto':
     value = '%22'.join(value.split('\"'))
     value = '%2B'.join(value.split('+'))
+  if item == 'txa_txt_interessado':
+    value = '%22'.join(value.split('\"'))
+    value = '%2B'.join(value.split('+'))
  
   linkString = linkString + ("&%s=%s" % (item, value))
 linkString = linkString + '">%s</a></li>'
