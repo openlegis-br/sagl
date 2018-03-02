@@ -1,7 +1,84 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.xhtml.min.js"></script>
+<link rel="stylesheet" href="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
+
+<script type="text/javascript">
+// add parser through the tablesorter addParser method
+$.tablesorter.addParser({
+    id: 'checkbox',
+    is: function(s) {
+        return false;
+    },
+    format: function(s, table, cell, cellIndex) {
+        var $t = $(table),
+            $tb = $t.children('tbody'),
+            $c = $(cell),
+            c, check,
+
+            // resort the table after the checkbox status has changed
+            resort = false;
+
+        if (!$t.hasClass('hasCheckbox')) {
+            
+            // update the select all visible checkbox in the header
+            check = function($t) {
+                var $v = $tb.children('tr:visible'),
+                    $c = $v.filter('.checked');
+                $t.find('.selectVisible').prop('checked', $v.length === $c.length);
+            };
+
+            $t
+            .addClass('hasCheckbox')
+            // update select all checkbox in header
+            .bind('pageMoved', function() {
+                check($t);
+            })
+            // make checkbox in header set all others
+            .find('thead th:eq(' + cellIndex + ') input[type=checkbox]')
+            .addClass('selectVisible')
+            .bind('change', function() {
+                c = this.checked;
+                $tb.find('> tr:visible td:nth-child(' + (cellIndex + 1) + ') input')
+                    .each(function() {
+                        this.checked = c;
+                        $(this).trigger('change');
+                    });
+            }).bind('mouseup', function() {
+                return false;
+            });
+            $tb.children('tr').each(function() {
+                $(this).find('td:eq(' + cellIndex + ')').find('input[type=checkbox]')
+                    .bind('change', function() {
+                        $t.trigger('updateCell', [$(this).closest('td')[0], resort]);
+                        check($t);
+                    });
+            });
+        }
+        // return 1 for true, 2 for false, so true sorts before false
+        c = ($c.find('input[type=checkbox]')[0].checked) ? 1 : 2;
+        $c.closest('tr')[c === 1 ? 'addClass' : 'removeClass']('checked');
+        return c;
+    },
+    type: 'numeric'
+});
+
+$(function() {
+    $('#tramitacao').tablesorter({
+        theme: 'blue',
+        widgets: ['zebra', 'filter'],
+        headers: {
+            0: {
+                sorter: 'checkbox'
+            }
+        }
+    })
+});
+
+</script>
+
 <script type="text/javascript" src="javascript/data_validar_jvsc"></script>
 
 <script type="text/javascript">
@@ -114,13 +191,6 @@ $(function() {
 });
 </script>
 
-<script type="text/javascript">
-$(document).ready(function() {
-$.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
-$("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
-});
-</script>
-
 <a id="ajuda" href="&dtml-portal_url;/ajuda/tramitacao_lote">Ajuda</a>
 
 <h1 class="firstHeading">Primeira Tramitação de Matérias em Lote</h1>
@@ -189,7 +259,7 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
            </td>
           </tr>
          <tr>
-           <th colspan="2" class="label">3. Preenchimento de dados da primeira tramitação</th>
+           <th colspan="2" class="label">3. Preencha de dados da primeira tramitação</th>
          </tr>
          <tr>
         <td class="form-element">Unidade Local </label><span class="campoObrigatorio">&nbsp;</span></br>
@@ -277,11 +347,13 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
          </select>
          </td>
          <td class="label">
-          Urgente? <span class="campoObrigatorio">&nbsp;</span><br />
-                <dtml-in expr="[(1,'Sim'),(0,'Não')]">
-                 <input type="radio" name="rad_ind_urgencia" value="<dtml-var sequence-key>">
-                  <dtml-var sequence-item>
-                </dtml-in>
+               Urgente? <span class="campoObrigatorio">&nbsp;</span><br />
+              <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+                <input type="radio" name="rad_ind_urgencia" value="<dtml-var sequence-key>" 
+                <dtml-if expr="_.has_key('cod_tramitacao') and ind_urgencia==_['sequence-key']">checked=1</dtml-if>
+                <dtml-if expr="_['sequence-item']=='Não'">checked=1</dtml-if> onChange="javascript:form.hdn_alterou.value=1" />
+                <span class="texto"><dtml-var sequence-item></span>
+              </dtml-in>
          </td>
       </tr>       
       <tr>          
@@ -297,8 +369,17 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
            <textarea name="txa_txt_tramitacao" id="txa_txt_tramitacao" cols="65" rows="4"></textarea>
           </td>
          </tr>
-
-    <tr><th colspan="2" class="label">4. Selecione as matérias para a primeira tramitação</th></tr>
+</table>
+<table>
+    <tr><th colspan="2" class="label">4. Selecione as matérias para inclusão da primeira tramitação</th></tr>
+</table>
+         <table id="tramitacao" class="tablesorter">
+           <thead>
+             <tr>
+               <th class="label"><input type="checkbox"></th>
+               <th class="label">Matéria</th>
+             </tr>
+           </thead>
 
    </dtml-if primeira_vez>
     <dtml-in expr="zsql.numeracao_pesquisar_zsql(cod_materia=cod_materia, ind_excluido=0)">
@@ -307,8 +388,12 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
       <dtml-call expr="REQUEST.set('num_materia', '')">
     </dtml-in>
       <tr>
-     <td class="texto" colspan="2">
-      <input type="checkbox" name="check_tram" value="<dtml-var cod_materia>">
+          <td class="texto" width="5%">
+            <div align="center">
+              <input type="checkbox" id="check_tram" name="check_tram" value="<dtml-var cod_materia>">
+            </div>
+          </td>
+     <td class="texto">
       <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
             <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
               <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
@@ -325,9 +410,11 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
       </tr>
   </dtml-in>
 </dtml-in>
+   </table>
 <dtml-if check_ocorrencia>
+   <table>
         <tr>
-          <td colspan="2" class="label">Existem <dtml-var contador> matérias do tipo informado, apresentadas entre <dtml-var txt_data_inicial> e <dtml-var txt_data_final></td>
+          <th colspan="2" class="label">Há <dtml-var contador> matérias sem tramitação, apresentadas entre <dtml-var txt_data_inicial> e <dtml-var txt_data_final></th>
           <input type="hidden" name="txt_tamanho" value="<dtml-var contador>">
           <input type="hidden" name="txt_check" value="">
         </tr>
@@ -336,7 +423,6 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
             <input class="botao" type="button" name="btn_tramitacao_lote_tramitar" value="Tramitar" 
                    onClick="campos_criticar(document.primeira_tramitacao_lote_tramitar_proc)">
             <input class="botao" type="reset" name="btn_limpar" value="Limpar">
-            <input class="botao" type="button" name="select_all" value="Selecionar todas" onClick="selecao(this.form)">
           </p>
 </form>
 <dtml-else>  
@@ -344,5 +430,6 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
            <p align="center">
               <input class="botao" type="button" name="btn-retornar" value="Voltar" onClick="history.go(-1)">
            </p>
+</form>
 </dtml-if check>
 <dtml-var standard_html_footer>

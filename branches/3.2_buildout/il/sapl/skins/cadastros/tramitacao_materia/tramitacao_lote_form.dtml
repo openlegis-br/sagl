@@ -1,7 +1,87 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.xhtml.min.js"></script>
+<link rel="stylesheet" href="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
+
+<script type="text/javascript">
+// add parser through the tablesorter addParser method
+$.tablesorter.addParser({
+    id: 'checkbox',
+    is: function(s) {
+        return false;
+    },
+    format: function(s, table, cell, cellIndex) {
+        var $t = $(table),
+            $tb = $t.children('tbody'),
+            $c = $(cell),
+            c, check,
+
+            // resort the table after the checkbox status has changed
+            resort = false;
+
+        if (!$t.hasClass('hasCheckbox')) {
+            
+            // update the select all visible checkbox in the header
+            check = function($t) {
+                var $v = $tb.children('tr:visible'),
+                    $c = $v.filter('.checked');
+                $t.find('.selectVisible').prop('checked', $v.length === $c.length);
+            };
+
+            $t
+            .addClass('hasCheckbox')
+            // update select all checkbox in header
+            .bind('pageMoved', function() {
+                check($t);
+            })
+            // make checkbox in header set all others
+            .find('thead th:eq(' + cellIndex + ') input[type=checkbox]')
+            .addClass('selectVisible')
+            .bind('change', function() {
+                c = this.checked;
+                $tb.find('> tr:visible td:nth-child(' + (cellIndex + 1) + ') input')
+                    .each(function() {
+                        this.checked = c;
+                        $(this).trigger('change');
+                    });
+            }).bind('mouseup', function() {
+                return false;
+            });
+            $tb.children('tr').each(function() {
+                $(this).find('td:eq(' + cellIndex + ')').find('input[type=checkbox]')
+                    .bind('change', function() {
+                        $t.trigger('updateCell', [$(this).closest('td')[0], resort]);
+                        check($t);
+                    });
+            });
+        }
+        // return 1 for true, 2 for false, so true sorts before false
+        c = ($c.find('input[type=checkbox]')[0].checked) ? 1 : 2;
+        $c.closest('tr')[c === 1 ? 'addClass' : 'removeClass']('checked');
+        return c;
+    },
+    type: 'numeric'
+});
+
+$(function() {
+    $('#tramitacao').tablesorter({
+        theme: 'blue',
+        widgets: ['zebra', 'filter'],
+        headers: {
+            0: {
+                sorter: 'checkbox'
+            }
+        }
+    }).tablesorterPager({
+        container: $(".pager"),
+        size: 5
+    });
+});
+
+</script>
+
 <script type="text/javascript" src="javascript/data_validar_jvsc"></script>
 
 <script type="text/javascript">
@@ -9,7 +89,6 @@
   function campos_criticar(form){
 
       var form = document.getElementById('tramitacao_lote_tramitar_proc');
-
 
       if (form.lst_cod_unid_tram_local.selectedIndex == 0 ){
           alert("A unidade local deve ser selecionada!");
@@ -91,27 +170,6 @@
      form.reset();
   }
 
-  function selecao(form) {
-     if (form.select_all.value == 'Selecionar todas') {
-        form.select_all.value = 'Desmarcar todas';
-        if (form.txt_tamanho.value != 1) {
-          for (var i = 0; i < form.txt_tamanho.value; i++) {
-            form.check_tram[i].checked = true;
-          }
-        }
-        else form.check_tram.checked = true;
-      }
-      else {
-        form.select_all.value = 'Selecionar todas';
-        if (form.txt_tamanho.value != 1) {
-          for (var i = 0; i < form.txt_tamanho.value; i++) {
-            form.check_tram[i].checked = false;
-          }
-        }
-        else form.check_tram.checked = false;
-      }
-  }
-
 //-->
 </script>
 
@@ -126,16 +184,9 @@
 </script>
 
 <script type="text/javascript">
-$(function() {
+  $(function() {
         $('#txt_dat_fim_prazo').datepick();
-});
-</script>
-
-<script type="text/javascript">
-$(document).ready(function() {
-$.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
-$("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
-});
+  });
 </script>
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/tramitacao_lote">Ajuda</a>
@@ -291,25 +342,27 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
   <input type="hidden" name="txt_tamanho" value="<dtml-var sequence-length>">
   <input type="hidden" name="txt_check" value="">
   <table>
-      <tr><th colspan="3" class="label">3. Selecione as matérias para nova tramitação</th></tr>
+      <tr><th colspan="3" class="label">3. Selecione as matérias para inclusão da nova tramitação</th></tr>
        <tr>
           <td class="texto" colspan="3">
 	     Há <dtml-var sequence-length> matéria(s) pendente(s) de tramitação nesta unidade.
           </td>
        </tr>
   </table>
-  <table id="tram" class="tablesorter">
+  <table id="tramitacao" class="tablesorter">
+    <thead>
       <tr>
-          <th class="label"></th>
+          <th class="label"><input type="checkbox"></th>
           <th class="label">Matéria</th>
-          <th class="label">Situação Atual</th>
+          <th class="label" width="18%">Situação Atual</th>
      </tr>
+    </thead>
  </dtml-if sequence-start>
 
  <dtml-in expr="zsql.tramitacao_obter_zsql(cod_tramitacao=_['sequence-item'], ind_excluido=0)">
   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
        <tr>
-          <td class="texto" width="7%">
+          <td class="texto" width="5%">
             <div align="center"><input type="checkbox" id="check_tram" name="check_tram" value="<dtml-var cod_materia>"></div>
             <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao missing>">
           </td>
@@ -331,14 +384,27 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
        </tr>
   </dtml-in>
  </dtml-in>
-
  <dtml-if sequence-end>
  </table>
+ <div id="pager" class="pager">
+  <form>
+	<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
+	<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
+	<input type="text" class="pagedisplay"/>
+	<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
+	<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
+	<select class="pagesize">
+		<option selected="selected" value="10">10</option>
+		<option value="250">25</option>
+		<option value="50">50</option>
+		<option value="100">100</option>
+	</select>
+  </form>
+ </div>
    <p align="center">
       <input class="botao" type="button" name="btn_tramitacao_lote_tramitar" value="Tramitar" 
         onClick="campos_criticar(document.tramitacao_lote_tramitar_proc)">
       <input class="botao" type="button" name="btn_limpar" value="Limpar" onClick="Limpa(document.tramitacao_lote_tramitar_proc)">
-      <input class="botao" type="button" name="select_all" value="Selecionar todas" onClick="selecao(this.form)">
    </p>
   </form>
   </dtml-if sequence-end>
@@ -349,6 +415,5 @@ $("#txa_txt_tramitacao").cleditor({width:"100%", height:"100%"})[0];
      <input type="button" class="botao" name="btn-retornar" value="Voltar" onClick="history.go(-1)" />
    </p>
 </dtml-in>
-
 
 <dtml-var standard_html_footer>
