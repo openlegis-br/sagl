@@ -27,12 +27,18 @@
 
 <dtml-unless contador>
   <dtml-in expr="zsql.materia_obter_zsql(tip_id_basica=lst_tip_id_basica, num_ident_basica=txt_num_ident_basica, ano_ident_basica=txt_ano_ident_basica, ind_excluido=0)">
-    <dtml-call expr="REQUEST.set('cod_materia',cod_materia)">
-    <dtml-call expr="REQUEST.set('marcador',cod_materia)">
+    <dtml-if expr="ind_tramitacao==0">
+      <dtml-let mensagem="'Não foi possível incluir a matéria na ordem do dia! Motivo: a matéria informada não está em tramitação.'">
+         <dtml-var mensagem_popup_emitir>
+      </dtml-let>
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('cod_materia',cod_materia)">
+      <dtml-call expr="REQUEST.set('marcador',cod_materia)">
+    </dtml-if>
   <dtml-else>
     <dtml-let mensagem="'Essa matéria não existe no cadastro de matérias legislativas.'">
       <dtml-var mensagem_popup_emitir>
-    </dtml-let>  
+    </dtml-let>
   </dtml-in>
 </dtml-unless>
 
@@ -45,7 +51,7 @@
       </dtml-if> 
         <dtml-unless cod_ordem_atualizar1>
          <dtml-unless contador>
-           <dtml-let mensagem="'Essa matéria, no turno informado, já faz parte da Ordem do Dia desta Sessão Plenária.'">
+           <dtml-let mensagem="'A matéria, no turno informado, já faz parte da Ordem do Dia desta Sessão Plenária.'">
              <dtml-var mensagem_popup_emitir>
            </dtml-let>  
            <dtml-call expr="REQUEST.set('contador',1)">
