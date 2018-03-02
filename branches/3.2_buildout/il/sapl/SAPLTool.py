@@ -947,29 +947,19 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            cod_materia = self.pysc.b64decode_pysc(codigo=str(cod_materia))
         writer = PdfWriter()
         output_file_pdf = str(cod_materia) + "pasta-digital.pdf"
-        proposicao = self.zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=cod_materia,ind_excluido=0)
-        if proposicao:
-           cod_proposicao = proposicao[0].cod_proposicao
-           url = self.url() + '/sapl_documentos/proposicao/' + str(cod_proposicao) + "_signed.pdf"
+        if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
+           url = self.url() + '/sapl_documentos/materia/' + str(cod_materia) + "_texto_integral.pdf"
            opener = urllib.urlopen(url)
-           f = open('/tmp/' + str(cod_proposicao) + "_signed.pdf", 'wb').write(opener.read())
-           texto_materia = PdfReader('/tmp/'+ str(cod_proposicao) + "_signed.pdf", decompress=False).pages
+           f = open('/tmp/' + str(cod_materia) + "_texto_integral.pdf", 'wb').write(opener.read())
+           texto_materia = PdfReader('/tmp/'+ str(cod_materia) + "_texto_integral.pdf", decompress=False).pages
            writer.addpages(texto_materia)
-           os.unlink('/tmp/' + str(cod_proposicao) + "_signed.pdf")
-        else:
-           if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
-              url = self.url() + '/sapl_documentos/materia/' + str(cod_materia) + "_texto_integral.pdf"
-              opener = urllib.urlopen(url)
-              f = open('/tmp/' + str(cod_materia) + "_texto_integral.pdf", 'wb').write(opener.read())
-              texto_materia = PdfReader('/tmp/'+ str(cod_materia) + "_texto_integral.pdf", decompress=False).pages
-              writer.addpages(texto_materia)
-              os.unlink('/tmp/' + str(cod_materia) + "_texto_integral.pdf")
+           os.unlink('/tmp/' + str(cod_materia) + "_texto_integral.pdf")
 
-        lst_substitutivos = []
         for subst in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+           lst_substitutivos = []
            if hasattr(self.sapl_documentos.substitutivo, str(subst.cod_substitutivo) + '_substitutivo.pdf'):
               substitutivo = subst.cod_substitutivo 
-              lst_substitutivos.append(substitutivo)
+           lst_substitutivos.append(substitutivo)
            for substitutivo in lst_substitutivos:
               pdf_substitutivo = self.sapl_documentos.substitutivo.absolute_url()+ "/" + str(substitutivo) + "_substitutivo.pdf"
               opener = urllib.urlopen(pdf_substitutivo)
@@ -978,11 +968,11 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               writer.addpages(texto_substitutivo)
               os.unlink('/tmp/' + str(substitutivo) + "_substitutivo.pdf")
 
-        lst_emendas = []
         for eme in self.zsql.emenda_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+           lst_emendas = []
            if hasattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf'):
               emenda = eme.cod_emenda
-              lst_emendas.append(emenda)
+           lst_emendas.append(emenda)
            for emenda in lst_emendas:
               pdf_emenda = self.sapl_documentos.emenda.absolute_url()+ "/" + str(emenda) + "_emenda.pdf"
               opener = urllib.urlopen(pdf_emenda)
@@ -991,11 +981,11 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               writer.addpages(texto_emenda)
               os.unlink('/tmp/' + str(emenda) + "_emenda.pdf")
 
-        lst_relatorias = []
         for relat in self.zsql.relatoria_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+           lst_relatorias = []
            if hasattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf'):
               relatoria = relat.cod_relatoria 
-              lst_relatorias.append(relatoria)
+           lst_relatorias.append(relatoria)
            for relatoria in lst_relatorias:
               pdf_relatoria = self.sapl_documentos.parecer_comissao.absolute_url()+ "/" + str(relatoria) + "_parecer.pdf"
               opener = urllib.urlopen(pdf_relatoria)
@@ -1004,11 +994,11 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               writer.addpages(texto_relatoria)
               os.unlink('/tmp/' + str(relatoria) + "_parecer.pdf")
 
-        lst_mat_anexadas = []
         for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
+           lst_mat_anexadas = []
            if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
               anexada = anexada.cod_materia
-              lst_mat_anexadas.append(anexada)
+           lst_mat_anexadas.append(anexada)
            for anexada in lst_mat_anexadas:
               pdf_anexada = self.sapl_documentos.materia.absolute_url()+ "/" + str(anexada) + "_texto_integral.pdf"
               opener = urllib.urlopen(pdf_anexada)
@@ -1017,8 +1007,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               writer.addpages(texto_anexada)
               os.unlink('/tmp/' + str(anexada) + "_texto_integral.pdf")
 
-        lst_acessorios = []
         for documento in self.zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia,ind_excluido=0):
+           lst_acessorios = []
            proposicao = self.zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=documento.cod_documento,ind_excluido=0)
            if proposicao:
               cod_proposicao = proposicao[0].cod_proposicao
@@ -1031,7 +1021,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            else:
               if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
                  cod_documento = documento.cod_documento
-                 lst_acessorios.append(cod_documento)
+              lst_acessorios.append(cod_documento)
               for item in lst_acessorios:
                  pdf_documento = self.sapl_documentos.materia.absolute_url()+ "/" + str(item) + ".pdf"
                  opener = urllib.urlopen(pdf_documento)
@@ -1040,8 +1030,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                  writer.addpages(texto_documento)
                  os.unlink('/tmp/' + str(item) + ".pdf")
 
-        lst_tramitacoes = []
         for tram in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+           lst_tramitacoes = []
            if hasattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
               tramitacao =  tram.cod_tramitacao
               lst_tramitacoes.append(tramitacao)
@@ -1052,6 +1042,19 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               texto_tramitacao = PdfReader('/tmp/'+ str(tramitacao) + "_tram.pdf", decompress=False).pages
               writer.addpages(texto_tramitacao)
               os.unlink('/tmp/' + str(tramitacao) + "_tram.pdf")
+
+        for tram_sig in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+           lst_tram_sig = []
+           if hasattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf'):
+              tramitacao =  tram_sig.cod_tramitacao
+              lst_tram_sig.append(tramitacao)
+           for tramitacao in lst_tram_sig:
+              pdf_tram_sig = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + str(tramitacao) + "_tram_signed.pdf"
+              opener = urllib.urlopen(pdf_tram_sig)
+              f = open('/tmp/' + str(tramitacao) + "_tram_signed.pdf", 'wb').write(opener.read())
+              texto_tram = PdfReader('/tmp/'+ str(tramitacao) + "_tram_signed.pdf", decompress=False).pages
+              writer.addpages(texto_tram)
+              os.unlink('/tmp/' + str(tramitacao) + "_tram_signed.pdf")
 
         for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia):
            nom_arquivo_pdf = materia.sgl_tipo_materia+'-'+str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)+'.pdf'
