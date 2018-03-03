@@ -483,19 +483,56 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         writer = PdfFileWriter()
         merger = PdfFileMerger()
 
-    	nom_arquivo_pdf = 'Pauta_Completa.pdf'
-
         for pauta in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen):
+    	  nom_arquivo_pdf = str(pauta.num_sessao_plen)+'-sessao-'+ str(pauta.dat_inicio)+'pauta_completa.pdf'
+          nom_arquivo_pdf = nom_arquivo_pdf.decode('latin-1').encode("utf-8")
           if hasattr(self.sapl_documentos.pauta_sessao, str(cod_sessao_plen) + '_pauta_sessao.pdf'):
              pdf_pauta = self.sapl_documentos.pauta_sessao.absolute_url()+ "/" + str(cod_sessao_plen) + "_pauta_sessao.pdf"
              texto_pauta = cStringIO.StringIO(urllib.urlopen(pdf_pauta).read())
              merger.append(texto_pauta)
 
-          for materia in self.zsql.ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
-             if hasattr(self.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf'):
-                pdf_materia = self.sapl_documentos.materia.absolute_url()+ "/" + materia.cod_materia + "_texto_integral.pdf"
+          lst_materia = []
+          for materia in self.zsql.ordem_dia_obter_zsql(cod_sessao_plen=pauta.cod_sessao_plen,ind_excluido=0):
+            cod_materia = int(materia.cod_materia)
+            lst_materia.append(cod_materia)
+
+          lst_materia = [i for n, i in enumerate(lst_materia) if i not in lst_materia[n + 1:]]
+
+          for cod_materia in lst_materia:
+             if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
+                pdf_materia = self.sapl_documentos.materia.absolute_url()+ "/" + str(cod_materia) + "_texto_integral.pdf"
                 texto_materia = cStringIO.StringIO(urllib.urlopen(pdf_materia).read())
                 merger.append(texto_materia)
+
+             for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
+                lst_mat_anexadas = []
+                if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
+                   anexada = anexada.cod_materia_anexada
+                lst_mat_anexadas.append(anexada)
+                for anexada in lst_mat_anexadas:
+                   pdf_anexada = self.sapl_documentos.materia.absolute_url()+ "/" + str(anexada) + "_texto_integral.pdf"
+                   texto_anexada = cStringIO.StringIO(urllib.urlopen(pdf_anexada).read())
+                   merger.append(texto_anexada)
+
+             for subst in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+                lst_substitutivos = []
+                if hasattr(self.sapl_documentos.substitutivo, str(subst.cod_substitutivo) + '_substitutivo.pdf'):
+                   substitutivo = subst.cod_substitutivo 
+                lst_substitutivos.append(substitutivo)
+                for substitutivo in lst_substitutivos:
+                   pdf_substitutivo = self.sapl_documentos.substitutivo.absolute_url()+ "/" + str(substitutivo) + "_substitutivo.pdf"
+                   texto_substitutivo = cStringIO.StringIO(urllib.urlopen(pdf_substitutivo).read())
+                   merger.append(texto_substitutivo)
+
+             for eme in self.zsql.emenda_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+                lst_emendas = []
+                if hasattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf'):
+                   emenda = eme.cod_emenda
+                lst_emendas.append(emenda)
+                for emenda in lst_emendas:
+                   pdf_emenda = self.sapl_documentos.emenda.absolute_url()+ "/" + str(emenda) + "_emenda.pdf"
+                   texto_emenda = cStringIO.StringIO(urllib.urlopen(pdf_emenda).read())
+                   merger.append(texto_emenda)
 
           output_file_pdf = os.path.normpath(nom_arquivo_pdf)
           f = open(output_file_pdf, "wb")
@@ -506,7 +543,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
           for file in [output_file_pdf]:
               os.unlink(file)
           self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
-          self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="Pauta_Completa.pdf"'
+          self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%nom_arquivo_pdf
           return contents
 
     def oradores_gerar_odt(self, inf_basicas_dic, lst_oradores, lst_presidente, nom_arquivo):
@@ -997,7 +1034,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
            lst_mat_anexadas = []
            if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
-              anexada = anexada.cod_materia
+              anexada = anexada.cod_materia_anexada
            lst_mat_anexadas.append(anexada)
            for anexada in lst_mat_anexadas:
               pdf_anexada = self.sapl_documentos.materia.absolute_url()+ "/" + str(anexada) + "_texto_integral.pdf"
