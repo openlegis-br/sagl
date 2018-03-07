@@ -851,7 +851,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def proposicao_gerar_pdf(self, cod_proposicao):
         writer = PdfFileWriter()
-        merger = PdfFileMerger()
+        merger = PdfWriter()
         nom_arquivo_odt = "%s"%cod_proposicao+'.odt'
         nom_arquivo_pdf1 = "%s"%cod_proposicao+'.pdf'
         url = self.sapl_documentos.proposicao.absolute_url() + "/%s"%nom_arquivo_odt
@@ -859,25 +859,24 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
         renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
-        data = open(output_file_pdf, "rb").read()
-        for file in [output_file_pdf]:
-            merger.append(file)
-            os.unlink(file)
+
+#        f = open('/tmp/' + str(nom_arquivo_pdf1), 'rb').write(output_file_pdf.read())
+        texto_pdf = PdfReader(os.path.normpath(nom_arquivo_pdf1), decompress=False).pages
+        merger.addpages(texto_pdf)
+        os.unlink(output_file_pdf)
 
         lst_anexos = []
         for anexo in self.pysc.anexo_proposicao_pysc(cod_proposicao,listar=True):
-            dic_anexos={}
-            dic_anexos['pdf_anexo'] = self.sapl_documentos.proposicao.absolute_url()+ "/" + anexo
-            lst_anexos.append(dic_anexos)
-        for dic_anexos in lst_anexos:
-            texto_anexo = cStringIO.StringIO(urllib.urlopen(dic_anexos['pdf_anexo']).read())
-            merger.append(texto_anexo)
-        
+            pdf_anexo = self.sapl_documentos.proposicao.absolute_url()+ "/" + str(anexo)
+            opener = urllib.urlopen(pdf_anexo)
+            f = open('/tmp/' + str(anexo), 'wb').write(opener.read())
+            texto_anexo = PdfReader('/tmp/'+ str(anexo), decompress=False).pages
+            merger.addpages(texto_anexo)
+            os.unlink('/tmp/' + str(anexo))
+
         final_output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
-        f = open(final_output_file_pdf, "wb")
-        merger.write(f)
-        f.close()
-        readin = open(final_output_file_pdf, 'r' )
+        merger.write(final_output_file_pdf)
+        readin = open(final_output_file_pdf, "r")
         contents = readin.read()
         for file in [final_output_file_pdf]:
             os.unlink(file)
