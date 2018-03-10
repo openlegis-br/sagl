@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=tip_documento, txt_interessado, txt_assunto, txt_qtde
+##parameters=tip_documento, txt_interessado, txt_assunto, txt_qtde, cod_materia
 ##title=
 ##
 
@@ -28,7 +28,10 @@ for i in range(qtde):
                                                      txt_interessado = txt_interessado,
                                                      txt_assunto = txt_assunto,
                                                      ind_tramitacao = ind_tramitacao,
-                                                     ind_excluido = ind_excluido) 
-
+                                                     ind_excluido = ind_excluido)
+  if cod_materia != 0:
+    for documento in context.zsql.documento_administrativo_incluido_codigo_obter_zsql():
+      context.zsql.documento_administrativo_materia_incluir_zsql(cod_documento = int(documento.cod_documento),
+                                                                 cod_materia = cod_materia)
 return 1
 
