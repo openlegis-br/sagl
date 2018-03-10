@@ -36,3 +36,7 @@ ALTER TABLE substitutivo CHANGE `txt_ementa` `txt_ementa` TEXT CHARACTER SET utf
 
 ALTER TABLE substitutivo CHANGE `txt_observacao` `txt_observacao` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 
+-- Indice tramitacao materia
+ALTER TABLE materia_legislativa ADD KEY idx_tramitacao (ind_tramitacao) USING BTREE;
+
+
