@@ -1,0 +1,110 @@
+<dtml-var standard_html_header>
+
+<link rel="stylesheet" href="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
+
+<script type="text/javascript">
+window.onload = setupRefresh;
+
+function setupRefresh() {
+  setTimeout("refreshPage();", 600000);
+}
+function refreshPage() {
+   window.location = location.href;
+}
+</script>
+
+<script type="text/javascript">
+<!--
+   $(document).ready(function() { 
+    $("#vincendas")
+    .tablesorter(
+      {theme:'blue',
+       widgets:['filter'], 
+       sortList: [[3,0]], 
+       headers: 
+            {
+                3: {sorter: "shortDate", dateFormat: "ddmmyyyy"}
+            }
+     })
+    .tablesorterPager({container: $("#pager")});  
+    }); 
+-->
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/materia_legislativa">Ajuda</a>
+
+<h1 class="firstHeading">Matérias em tramitação com prazos de deliberação vencidos</h1>
+
+    <dtml-in expr="zsql.materia_prazo_deliberacao_vencido_zsql()">
+          <dtml-if sequence-even>
+             <dtml-call "REQUEST.set ('class', 'odd')">
+          <dtml-else>
+             <dtml-call "REQUEST.set ('class', 'even')">
+          </dtml-if>
+        <dtml-if sequence-start>
+        <fieldset>
+        <table id="vincendas" class="tablesorter">
+         <thead>
+            <tr>
+                <th width="85%" class="form-label">Matéria</th>
+                <th class="form-label">Fim de Prazo</th>
+            </tr>
+         </thead>
+         <tfoot>
+         </tfoot>
+         <tbody>
+        <dtml-if previous-sequence>
+          <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+        </dtml-if previous-sequence>
+        </dtml-if sequence-start>
+          <tr class="<dtml-var class>">
+            <td class="texto" valign="top">
+              <b><a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
+                 <dtml-var des_tipo_materia missing upper> Nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a><br />
+                 <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
+                   <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
+                     <b>Autores:</b>
+                   <dtml-else>
+                     <b>Autoria:</b>
+                   </dtml-if>
+                 </dtml-if> 
+                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                   <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                  <dtml-if sequence-end><br /></dtml-if>
+                 </dtml-in>
+              <dtml-var txt_ementa>
+            </td>
+            <td class="texto" valign="top">
+               <dtml-var dat_fim_prazo>
+            </td>
+        </tr>
+    <dtml-if sequence-end>
+         <tbody>
+     </table>
+      <div id="pager" class="pager">
+        <form>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
+                <input type="text" class="pagedisplay"/>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
+                <img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
+                <select class="pagesize">
+                        <option selected="selected"  value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                </select>
+        </form>
+      </div>
+</fieldset>
+  </dtml-if sequence-end>
+  <dtml-else>
+      <fieldset>
+        <p class="texto">Não há ocorrências.</p>
+      </fieldset>
+</dtml-in>
+<dtml-var standard_html_footer>
