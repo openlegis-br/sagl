@@ -21,3 +21,18 @@ ALTER TABLE `composicao_bancada` ADD INDEX(`cod_periodo_comp`);
 -- Status de tramitação adminatrativo - permissão por unidade
 
 ALTER TABLE `unidade_tramitacao` ADD `status_adm_permitidos` VARCHAR(200) NULL AFTER `status_permitidos`;
+
+-- Ajusta indices
+
+ALTER TABLE emenda DROP INDEX idx_numemen_materia; 
+
+ALTER TABLE emenda ADD KEY `idx_emenda` (cod_emenda,tip_emenda,cod_materia) USING BTREE;
+
+ALTER TABLE substitutivo DROP INDEX idx_numsub_materia; 
+
+ALTER TABLE substitutivo ADD KEY `idx_substitutivo` (cod_substitutivo,cod_materia) USING BTREE;
+
+ALTER TABLE substitutivo CHANGE `txt_ementa` `txt_ementa` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+
+ALTER TABLE substitutivo CHANGE `txt_observacao` `txt_observacao` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+
