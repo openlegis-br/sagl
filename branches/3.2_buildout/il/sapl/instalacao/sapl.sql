@@ -866,7 +866,8 @@ CREATE TABLE IF NOT EXISTS `materia_legislativa` (
   KEY `idx_mat_principal` (`cod_materia_principal`),
   KEY `tip_quorum` (`tip_quorum`),
   KEY `tip_id_basica` (`tip_id_basica`) USING BTREE,
-  KEY `idx_matleg_ident` (`ind_excluido`,`tip_id_basica`,`ano_ident_basica`,`num_ident_basica`) USING BTREE
+  KEY `idx_matleg_ident` (`ind_excluido`,`tip_id_basica`,`ano_ident_basica`,`num_ident_basica`) USING BTREE,
+  KEY `idx_tramitacao` (`ind_tramitacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 CREATE TABLE IF NOT EXISTS `mesa_sessao_plenaria` (
