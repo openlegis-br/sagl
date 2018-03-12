@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
+
+<script type="text/javascript">
+function checkAll(field)
+{
+for (i = 0; i < field.length; i++)
+        field[i].checked = true ;
+}
+
+function uncheckAll(field)
+{
+for (i = 0; i < field.length; i++)
+        field[i].checked = false ;
+}
+
+function reloadParentAndClose()
+{
+    parent.jQuery.fancybox.close();
+}
+</script>
+</head>
+
+<body class="modal">
+
+<h1 class="firstHeading">Discussão de Matéria da Ordem do Dia</h1>
+
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+    <legend>Selecione os Parlamentares para discussão da matéria</legend>
+
+<form name="discussao_form" method="post" action="discussao_salvar_proc">
+        <input type="hidden" name="cod_ordem" value="<dtml-var cod_ordem>" />
+        <table>
+            <tr>
+               <th class="texto" colspan="3">
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                   <p><b><dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></b><br />
+                     <dtml-var txt_ementa>
+                   </p>
+                 </dtml-in>
+               </th>
+            </tr>
+            <tr>
+                <th width="25%" class="form-label">
+               <div align="center">
+               <input type="button" class="botao" name="CheckAll" value="Todos" onClick="checkAll(document.discussao_form.chk_discussao_parlamentar)">
+                <input type="button" class="botaoExtra" name="UnCheckAll" value="Nenhum" onClick="uncheckAll(document.discussao_form.chk_discussao_parlamentar)">
+                </div>
+                </th>
+                <th class="form-label">Parlamentar</th>
+            </tr>
+       <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+          <tr>
+            <td>
+              <div align="center">
+                <input type="checkbox" id="chk_discussao_parlamentar" name="chk_discussao_parlamentar" value="<dtml-var cod_parlamentar>" 
+                    <dtml-if expr="zsql.discussao_ordem_dia_obter_zsql(cod_ordem=cod_ordem,cod_parlamentar=cod_parlamentar)">
+                        checked=1
+                    </dtml-if> />
+               </div>
+            </td>
+            <td>
+                <label for="chk_discussao_parlamentar">
+                    <dtml-var nom_parlamentar>
+                     <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=cod_num_legislatura, cod_parlamentar=cod_parlamentar)">
+                       <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
+                         - <dtml-var sgl_partido null="">
+                       <dtml-else>
+                         S/P
+                       </dtml-in>
+                     <dtml-else>
+                       S/P
+                     </dtml-in>
+                </label>
+            </td>
+        </tr>
+       <dtml-else>
+         <tr>
+           <td class="form-text">Não há nenhum parlamentar em exercício na data da sessão.</td>
+         </tr>
+       </dtml-in>
+    </table>
+    <p align="center">
+      <input class="botao" type="submit" name="button" value="Salvar" />
+      <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+    </p>
+</form>
+
+</body>
+</html>
