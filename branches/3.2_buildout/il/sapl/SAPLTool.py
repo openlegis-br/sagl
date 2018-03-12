@@ -859,8 +859,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
         renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
-
-#        f = open('/tmp/' + str(nom_arquivo_pdf1), 'rb').write(output_file_pdf.read())
         texto_pdf = PdfReader(os.path.normpath(nom_arquivo_pdf1), decompress=False).pages
         merger.addpages(texto_pdf)
         os.unlink(output_file_pdf)
