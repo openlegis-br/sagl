@@ -28,9 +28,7 @@ function reloadParentAndClose()
 <fieldset><legend>Gerar Pauta do Expediente</legend>
 
   <form name="pauta_expediente_gerar" method="post" action="pauta_expediente_salvar_proc">
-
-  <dtml-in expr="zsql.tramitacao_pesquisar_status_zsql(cod_status=lst_status)" prefix=item>
-
+    <dtml-in expr="zsql.tramitacao_pesquisar_status_zsql(cod_status=lst_status)" prefix=item>
         <dtml-if sequence-start>
 	   <p class="texto">
 	    Resultado da Pesquisa: <b><dtml-var sequence-length> matéria(s) encontrada(s).</b>
@@ -56,25 +54,36 @@ function reloadParentAndClose()
             </tr> 
         <dtml-if sequence-end>
           <tr>
-          </table>
+        </table>
+        <table>
+           <tr> 
+              <th>
+                <label for="rad_tip_votacao">Tipo de Votação <span class="campoObrigatorio">&nbsp;</span></label><br />
+                 <dtml-in expr="zsql.tipo_votacao_obter_zsql(tip_votacao='')">
+                   <input class="texto" type="radio" id="rad_tip_votacao" name="rad_tip_votacao" value="<dtml-var tip_votacao_sel>"
+                   <dtml-if expr="des_tipo_votacao == 'Simbólica'">checked=1</dtml-if>>
+                       <span class="texto"><dtml-var des_tipo_votacao></span>
+                   </dtml-in>
+               </th>
+            </tr>
+         </table>
            <p align="center">
             <input type="button" name="btn_pauta_expediente_gerar" class="botao" value="Confirmar Geração da Pauta" onClick="campos_criticar(document.pauta_expediente_gerar)" />
             <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
            </p>
         </dtml-if sequence-end>
 
-      <dtml-else>
+    <dtml-else>
         <p class="texto">Não foram encontradas matérias com o status de tramitação selecionado.</p>
            <p align="center">
             <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
            </p>
-      </dtml-in> 
+    </dtml-in> 
               <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
               <input type="hidden" name="cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>" />
               <input type="hidden" name="cod_num_legislatura" value="<dtml-var cod_num_legislatura missing>" />
               <input type="hidden" name="tip_sessao" value="<dtml-var tip_sessao missing>" />
               <input type="hidden" name="txt_dat_ordem" value="<dtml-var "pysc.port_to_iso_pysc(dat_ordem)">" />
-              <input type="hidden" name="rad_tip_votacao" value="1" />
               <input type="hidden" name="lst_tip_quorum" value="1" />
   </form>
 </fieldset>
