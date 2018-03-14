@@ -509,52 +509,53 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 writer.addpages(texto_redacao)
                 os.unlink('/tmp/' + str(cod_materia) + "_redacao_final.pdf")
 
-             elif hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
-                url = self.url() + '/sapl_documentos/materia/' + str(cod_materia) + "_texto_integral.pdf"
-                opener = urllib.urlopen(url)
-                f = open('/tmp/' + str(cod_materia) + "_texto_integral.pdf", 'wb').write(opener.read())
-                texto_materia = PdfReader('/tmp/'+ str(cod_materia) + "_texto_integral.pdf", decompress=False).pages
-                writer.addpages(texto_materia)
-                os.unlink('/tmp/' + str(cod_materia) + "_texto_integral.pdf")
+             else:
+                if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
+                   url = self.url() + '/sapl_documentos/materia/' + str(cod_materia) + "_texto_integral.pdf"
+                   opener = urllib.urlopen(url)
+                   f = open('/tmp/' + str(cod_materia) + "_texto_integral.pdf", 'wb').write(opener.read())
+                   texto_materia = PdfReader('/tmp/'+ str(cod_materia) + "_texto_integral.pdf", decompress=False).pages
+                   writer.addpages(texto_materia)
+                   os.unlink('/tmp/' + str(cod_materia) + "_texto_integral.pdf")
 
-                for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
-                   lst_mat_anexadas = []
-                   if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
-                      anexada = anexada.cod_materia_anexada
-                   lst_mat_anexadas.append(anexada)
-                   for anexada in lst_mat_anexadas:
-                      pdf_anexada = self.sapl_documentos.materia.absolute_url()+ "/" + str(anexada) + "_texto_integral.pdf"
-                      opener = urllib.urlopen(pdf_anexada)
-                      f = open('/tmp/' + str(anexada) + "_texto_integral.pdf", 'wb').write(opener.read())
-                      texto_anexada = PdfReader('/tmp/'+ str(anexada) + "_texto_integral.pdf", decompress=False).pages
-                      writer.addpages(texto_anexada)
-                      os.unlink('/tmp/' + str(anexada) + "_texto_integral.pdf")
+                   for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
+                      lst_mat_anexadas = []
+                      if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
+                         anexada = anexada.cod_materia_anexada
+                         lst_mat_anexadas.append(anexada)
+                      for anexada in lst_mat_anexadas:
+                          pdf_anexada = self.sapl_documentos.materia.absolute_url()+ "/" + str(anexada) + "_texto_integral.pdf"
+                          opener = urllib.urlopen(pdf_anexada)
+                          f = open('/tmp/' + str(anexada) + "_texto_integral.pdf", 'wb').write(opener.read())
+                          texto_anexada = PdfReader('/tmp/'+ str(anexada) + "_texto_integral.pdf", decompress=False).pages
+                          writer.addpages(texto_anexada)
+                          os.unlink('/tmp/' + str(anexada) + "_texto_integral.pdf")
 
-                for subst in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-                   lst_substitutivos = []
-                   if hasattr(self.sapl_documentos.substitutivo, str(subst.cod_substitutivo) + '_substitutivo.pdf'):
-                      substitutivo = subst.cod_substitutivo 
-                   lst_substitutivos.append(substitutivo)
-                   for substitutivo in lst_substitutivos:
-                      pdf_substitutivo = self.sapl_documentos.substitutivo.absolute_url()+ "/" + str(substitutivo) + "_substitutivo.pdf"
-                      opener = urllib.urlopen(pdf_substitutivo)
-                      f = open('/tmp/' + str(substitutivo) + "_substitutivo.pdf", 'wb').write(opener.read())
-                      texto_substitutivo = PdfReader('/tmp/'+ str(substitutivo) + "_substitutivo.pdf", decompress=False).pages
-                      writer.addpages(texto_substitutivo)
-                      os.unlink('/tmp/' + str(substitutivo) + "_substitutivo.pdf")
+                   for subst in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+                      lst_substitutivos = []
+                      if hasattr(self.sapl_documentos.substitutivo, str(subst.cod_substitutivo) + '_substitutivo.pdf'):
+                         substitutivo = subst.cod_substitutivo 
+                         lst_substitutivos.append(substitutivo)
+                      for substitutivo in lst_substitutivos:
+                          pdf_substitutivo = self.sapl_documentos.substitutivo.absolute_url()+ "/" + str(substitutivo) + "_substitutivo.pdf"
+                          opener = urllib.urlopen(pdf_substitutivo)
+                          f = open('/tmp/' + str(substitutivo) + "_substitutivo.pdf", 'wb').write(opener.read())
+                          texto_substitutivo = PdfReader('/tmp/'+ str(substitutivo) + "_substitutivo.pdf", decompress=False).pages
+                          writer.addpages(texto_substitutivo)
+                          os.unlink('/tmp/' + str(substitutivo) + "_substitutivo.pdf")
 
-                for eme in self.zsql.emenda_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-                   lst_emendas = []
-                   if hasattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf'):
-                      emenda = eme.cod_emenda
-                   lst_emendas.append(emenda)
-                   for emenda in lst_emendas:
-                      pdf_emenda = self.sapl_documentos.emenda.absolute_url()+ "/" + str(emenda) + "_emenda.pdf"
-                      opener = urllib.urlopen(pdf_emenda)
-                      f = open('/tmp/' + str(emenda) + "_emenda.pdf", 'wb').write(opener.read())
-                      texto_emenda = PdfReader('/tmp/'+ str(emenda) + "_emenda.pdf", decompress=False).pages
-                      writer.addpages(texto_emenda)
-                      os.unlink('/tmp/' + str(emenda) + "_emenda.pdf")
+                   for eme in self.zsql.emenda_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+                      lst_emendas = []
+                      if hasattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf'):
+                         emenda = eme.cod_emenda
+                         lst_emendas.append(emenda)
+                      for emenda in lst_emendas:
+                          pdf_emenda = self.sapl_documentos.emenda.absolute_url()+ "/" + str(emenda) + "_emenda.pdf"
+                          opener = urllib.urlopen(pdf_emenda)
+                          f = open('/tmp/' + str(emenda) + "_emenda.pdf", 'wb').write(opener.read())
+                          texto_emenda = PdfReader('/tmp/'+ str(emenda) + "_emenda.pdf", decompress=False).pages
+                          writer.addpages(texto_emenda)
+                          os.unlink('/tmp/' + str(emenda) + "_emenda.pdf")
 
           output_file_pdf = '/tmp/' + nom_arquivo_pdf
           writer.write(output_file_pdf)
