@@ -53,7 +53,7 @@ import base64
 from base64 import b64encode
 import simplejson as json
 
-from lacunarestpki import *
+from restpki import *
 
 from zope.testbrowser.browser import Browser
 browser = Browser()
@@ -1215,13 +1215,30 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         restpki_client = RestPkiClient(restpki_url, restpki_access_token)
         return restpki_client
 
-    def pades_signature(self, cod_proposicao):
-        pdf_file = '%s' % (cod_proposicao) + ".pdf"
+    def pades_signature(self, codigo, tipo_doc):
+        if tipo_doc == 'materia':
+           pdf_location = '/sapl_documentos/materia/'
+           pdf_file = '%s' % (codigo) + "_texto_integral.pdf"
+        elif tipo_doc == 'tramitacao':
+           pdf_location = '/sapl_documentos/materia/tramitacao/'
+           pdf_file = '%s' % (codigo) + "_tram.pdf"
+        elif tipo_doc == 'norma':
+           pdf_location = '/sapl_documentos/norma_juridica/'
+           pdf_file = '%s' % (codigo) + "_texto_integral.pdf"
+        elif tipo_doc == 'documento':
+           pdf_location = '/sapl_documentos/administrativo/'
+           pdf_file = '%s' % (codigo) + "_texto_integral.pdf"
+        elif tipo_doc == 'tramitacao_adm':
+           pdf_location = '/sapl_documentos/administrativo/tramitacao/'
+           pdf_file = '%s' % (codigo) + "_tram.pdf"
+        elif tipo_doc == 'proposicao':
+           pdf_location = '/sapl_documentos/proposicao/'
+           pdf_file = '%s' % (codigo) + ".pdf"
 
         # Read the PDF path
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
-        url = self.url() + '/sapl_documentos/proposicao/' + pdf_file
+        url = self.url() + pdf_location + pdf_file
         opener = urllib.urlopen(url)
         f = open('/tmp/' + pdf_file, 'wb').write(opener.read())
         tmp_path = '/tmp'
@@ -1243,46 +1260,88 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signature_starter.set_pdf_path(pdf_path)
         signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
         signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
-        signature_starter.visual_representation = ({
-            'text': {
-                # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
-                # certificate
-                # signerName -> full name of the signer
-                # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
-                'text': 'Assinado por {{signerName}} - {{signerNationalId}}',
-                # Specify that the signing time should also be rendered
-                'includeSigningTime': True,
-                # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
-                # Left
-                'horizontalAlign': 'Left'
-            },
-
-            'image': {
-                # We'll use as background the image that we've read above
-                'resource': {
-                    'content': base64.b64encode(pdf_stamp),
-                    'mimeType': 'image/png'
-                },
-                # Opacity is an integer from 0 to 100 (0 is completely transparent, 100 is completely opaque).
-                'opacity': 40,
-                # Align the image to the right
-                'horizontalAlign': 'Right'
-            },
-
-            'position': self.get_visual_representation_position(4)
-        })
-
+        if tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm':
+           signature_starter.visual_representation = ({
+               'text': {
+                   # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
+                   # certificate
+                   # signerName -> full name of the signer
+                   # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
+                   'text': 'Assinado por {{signerName}} - {{signerNationalId}}',
+                   # Specify that the signing time should also be rendered
+                   'includeSigningTime': True,
+                   # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
+                   # Left
+                   'horizontalAlign': 'Left'
+               },
+               'image': {
+                   # We'll use as background the image that we've read above
+                   'resource': {
+                       'content': base64.b64encode(pdf_stamp),
+                       'mimeType': 'image/png'
+                   },
+                   # Opacity is an integer from 0 to 100 (0 is completely transparent, 100 is completely opaque).
+                   'opacity': 40,
+                   # Align the image to the right
+                   'horizontalAlign': 'Right'
+               },
+               'position': self.get_visual_representation_position(2)
+           })
+        else:
+           signature_starter.visual_representation = ({
+               'text': {
+                   # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
+                   # certificate
+                   # signerName -> full name of the signer
+                   # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
+                   'text': 'Assinado por {{signerName}} - {{signerNationalId}}',
+                   # Specify that the signing time should also be rendered
+                   'includeSigningTime': True,
+                   # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
+                   # Left
+                   'horizontalAlign': 'Left'
+               },
+               'image': {
+                   # We'll use as background the image that we've read above
+                   'resource': {
+                       'content': base64.b64encode(pdf_stamp),
+                       'mimeType': 'image/png'
+                   },
+                   # Opacity is an integer from 0 to 100 (0 is completely transparent, 100 is completely opaque).
+                   'opacity': 40,
+                   # Align the image to the right
+                   'horizontalAlign': 'Right'
+               },
+               'position': self.get_visual_representation_position(4)
+           })
         token = signature_starter.start_with_webpki()
  
-        return token, pdf_path, cod_proposicao
+        return token, pdf_path, codigo, tipo_doc
 
-    def pades_cosignature(self, cod_proposicao):
-        pdf_file_signed = '%s' % (cod_proposicao) + "_signed.pdf"
-        
+    def pades_cosignature(self, codigo, tipo_doc):
+        if tipo_doc == 'materia':
+           pdf_location = '/sapl_documentos/materia/'
+           pdf_file_signed = '%s' % (codigo) + "_texto_integral_signed.pdf"
+        elif tipo_doc == 'tramitacao':
+           pdf_location = '/sapl_documentos/materia/tramitacao/'
+           pdf_file_signed = '%s' % (codigo) + "_tram_signed.pdf"
+        elif tipo_doc == 'norma':
+           pdf_location = '/sapl_documentos/norma_juridica/'
+           pdf_file_signed = '%s' % (codigo) + "_texto_integral_signed.pdf"
+        elif tipo_doc == 'documento':
+           pdf_location = '/sapl_documentos/administrativo/'
+           pdf_file_signed = '%s' % (codigo) + "_texto_integral_signed.pdf"
+        elif tipo_doc == 'tramitacao_adm':
+           pdf_location = '/sapl_documentos/administrativo/tramitacao/'
+           pdf_file_signed = '%s' % (codigo) + "_tram_signed.pdf"
+        elif tipo_doc == 'proposicao':
+           pdf_location = '/sapl_documentos/proposicao/'
+           pdf_file_signed = '%s' % (codigo) + "_signed.pdf"
+       
         # Read the PDF path
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
-        url = self.url() + '/sapl_documentos/proposicao/' + pdf_file_signed
+        url = self.url() + pdf_location + pdf_file_signed
         opener = urllib.urlopen(url)
         f = open('/tmp/' + pdf_file_signed, 'wb').write(opener.read())
         tmp_path = '/tmp'
@@ -1335,12 +1394,13 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         token = signature_starter.start_with_webpki()
  
-        return token, pdf_path, cod_proposicao
+        return token, pdf_path, codigo, tipo_doc
 
-    def pades_signature_action(self, token, cod_proposicao):
-        # Get the token for this signature (rendered in a hidden input field, see pades-signature.html template)
+    def pades_signature_action(self, token, codigo, tipo_doc):
+        # Get the token for this signature (rendered in a hidden input field)
         token = token
-        cod_proposicao = cod_proposicao
+        codigo = codigo
+        tipo_doc = tipo_doc
 
         # Instantiate the PadesSignatureFinisher class, responsible for completing the signature process
         signature_finisher = PadesSignatureFinisher(self.restpki_client())
@@ -1356,8 +1416,30 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signer_cert = signature_finisher.certificate
 
         # At this point, you'd typically store the signed PDF on your database.
-        filename = "%s"%cod_proposicao+'_signed.pdf'
-        old_filename = "%s"%cod_proposicao+'.pdf'
+        if tipo_doc == 'materia':
+           storage_path = self.sapl_documentos.materia
+           filename = '%s' % (codigo) + "_texto_integral_signed.pdf"
+           old_filename = '%s' % (codigo) + "_texto_integral.pdf"
+        elif tipo_doc == 'norma':
+           storage_path = self.sapl_documentos.norma_juridica
+           filename = '%s' % (codigo) + "_texto_integral_signed.pdf"
+           old_filename = '%s' % (codigo) + "_texto_integral.pdf"
+        elif tipo_doc == 'documento':
+           storage_path = self.sapl_documentos.administrativo
+           filename = '%s' % (codigo) + "_texto_integral_signed.pdf"
+           old_filename = '%s' % (codigo) + "_texto_integral.pdf"
+        elif tipo_doc == 'tramitacao':
+           storage_path = self.sapl_documentos.materia.tramitacao
+           filename = '%s' % (codigo) + "_tram_signed.pdf"
+           old_filename = '%s' % (codigo) + "_tram.pdf"
+        elif tipo_doc == 'tramitacao_adm':
+           storage_path = self.sapl_documentos.administrativo.tramitacao
+           filename = '%s' % (codigo) + "_tram_signed.pdf"
+           old_filename = '%s' % (codigo) + "_tram.pdf"
+        elif tipo_doc == 'proposicao':
+           storage_path = self.sapl_documentos.proposicao
+           filename = "%s"%codigo+'_signed.pdf'
+           old_filename = "%s"%codigo+'.pdf'
 
         tmp_path = "/tmp"
 
@@ -1367,133 +1449,17 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         data = open('/tmp/' + filename, "rb").read()
 
-        for old_file in [old_filename]:
-            if old_filename in self.sapl_documentos.proposicao:
-              self.sapl_documentos.proposicao.manage_delObjects(ids=old_filename)
-            #os.unlink("/tmp/"+old_file)
+        if old_filename in storage_path:
+           storage_path.manage_delObjects(ids=old_filename)
+           os.unlink("/tmp/"+old_filename)
 
         for file in [filename]:
-            os.unlink("/tmp/"+file)
-            if filename in self.sapl_documentos.proposicao:
-              documento = getattr(self.sapl_documentos.proposicao,filename)
+            if filename in storage_path:
+              documento = getattr(storage_path,filename)
               documento.manage_upload(file=data)
             else:
-              self.sapl_documentos.proposicao.manage_addFile(id=filename,file=data)
-
-        for item in signer_cert:
-           subjectName = signer_cert['subjectName']
-           commonName = subjectName['commonName']
-           email = signer_cert['emailAddress']
-           pkiBrazil = signer_cert['pkiBrazil']
-           certificateType = pkiBrazil['certificateType']
-           cpf = pkiBrazil['cpf']
-           responsavel = pkiBrazil['responsavel']
-
-        return signer_cert, commonName, email, certificateType, cpf, responsavel, filename
-
-    def tramitacao_signature(self, cod_tramitacao):
-        pdf_file = '%s' % (cod_tramitacao) + "_tram.pdf"
-
-        # Read the PDF path
-        utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()
-        url = self.url() + '/sapl_documentos/materia/tramitacao/' + pdf_file
-        opener = urllib.urlopen(url)
-        f = open('/tmp/' + pdf_file, 'wb').write(opener.read())
-        tmp_path = '/tmp'
-        pdf_tmp = pdf_file
-        pdf_path = '%s/%s' % (tmp_path, pdf_file)
-
-        # Read the PDF stamp image
-        utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()
-        id_logo = portal.sapl_documentos.props_sapl.id_logo
-        url = self.url() + '/sapl_documentos/props_sapl/logo_casa.gif'
-        opener = urllib.urlopen(url)
-        open('/tmp/' + id_logo, 'wb').write(opener.read())
-        f = open('/tmp/' + id_logo, 'rb')
-        pdf_stamp = f.read()
-        f.close()
-
-        signature_starter = PadesSignatureStarter(self.restpki_client())
-        signature_starter.set_pdf_path(pdf_path)
-        signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
-        signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
-        signature_starter.visual_representation = ({
-            'text': {
-                # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
-                # certificate
-                # signerName -> full name of the signer
-                # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
-                'text': 'Assinado por {{signerName}} - {{signerNationalId}}',
-                # Specify that the signing time should also be rendered
-                'includeSigningTime': True,
-                # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
-                # Left
-                'horizontalAlign': 'Left'
-            },
-
-            'image': {
-                # We'll use as background the image that we've read above
-                'resource': {
-                    'content': base64.b64encode(pdf_stamp),
-                    'mimeType': 'image/png'
-                },
-                # Opacity is an integer from 0 to 100 (0 is completely transparent, 100 is completely opaque).
-                'opacity': 40,
-                # Align the image to the right
-                'horizontalAlign': 'Right'
-            },
-
-            'position': self.get_visual_representation_position(2)
-        })
-
-        token = signature_starter.start_with_webpki()
- 
-        return token, pdf_path, cod_tramitacao
-
-    def tramitacao_signature_action(self, token, cod_tramitacao):
-        # Get the token for this signature (rendered in a hidden input field, see pades-signature.html template)
-        token = token
-        cod_tramitacao = cod_tramitacao
-
-        # Instantiate the PadesSignatureFinisher class, responsible for completing the signature process
-        signature_finisher = PadesSignatureFinisher(self.restpki_client())
-
-        # Set the token
-        signature_finisher.token = token
-
-        # Call the finish() method, which finalizes the signature process and returns the signed PDF
-        signature_finisher.finish()
-
-        # Get information about the certificate used by the user to sign the file. This method must only be called after
-        # calling the finish() method.
-        signer_cert = signature_finisher.certificate
-
-        # At this point, you'd typically store the signed PDF on your database.
-        old_filename = "%s"%cod_tramitacao+'_tram.pdf'
-        filename = "%s"%cod_tramitacao+'_tram_signed.pdf'
-
-        tmp_path = "/tmp"
-
-        signature_finisher.write_signed_pdf(os.path.join(tmp_path, filename))
-
-        signature_finisher.write_signed_pdf(filename)
-
-        data = open('/tmp/' + filename, "rb").read()
-
-        for old_file in [old_filename]:
-            if old_filename in self.sapl_documentos.materia.tramitacao:
-              self.sapl_documentos.materia.tramitacao.manage_delObjects(ids=old_filename)
-            os.unlink("/tmp/"+old_file)
-
-        for file in [filename]:
-            os.unlink("/tmp/"+file)
-            if filename in self.sapl_documentos.materia.tramitacao:
-              documento = getattr(self.sapl_documentos.materia.tramitacao,filename)
-              documento.manage_upload(file=data)
-            else:
-              self.sapl_documentos.materia.tramitacao.manage_addFile(id=filename,file=data)
+              storage_path.manage_addFile(id=filename,file=data)
+            os.unlink("/tmp/"+filename)
 
         for item in signer_cert:
            subjectName = signer_cert['subjectName']
