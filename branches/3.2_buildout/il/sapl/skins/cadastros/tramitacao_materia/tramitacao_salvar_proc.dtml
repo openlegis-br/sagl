@@ -27,6 +27,7 @@
 </dtml-if>
 
 <dtml-try>
+  <dtml-call expr="zsql.trans_begin_zsql()">
   <dtml-call expr="metodo(   
         cod_tramitacao  = hdn_cod_tramitacao,     
         cod_materia = hdn_cod_materia,
@@ -49,8 +50,10 @@
   </dtml-if>
 
   <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=hdn_cod_materia, cod_status=lst_cod_status)">
+  <dtml-call expr="zsql.trans_commit_zsql()">
 
 <dtml-except>
+    <dtml-call expr="zsql.trans_rollback_zsql()">
     <dtml-let mensagem="'Houve um erro no banco de dados.'">
         <dtml-var mensagem_emitir>
     </dtml-let>

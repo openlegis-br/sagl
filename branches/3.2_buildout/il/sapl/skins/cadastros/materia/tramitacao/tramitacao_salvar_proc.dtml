@@ -28,6 +28,7 @@
 <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
 
 <dtml-try>
+  <dtml-call expr="zsql.trans_begin_zsql()">
   <dtml-call expr="metodo(   
         cod_tramitacao  = hdn_cod_tramitacao,     
         cod_materia = hdn_cod_materia,
@@ -48,13 +49,13 @@
                                                                cod_materia = hdn_cod_materia,  
                                                                ind_ult_tramitacao = 0)">
   </dtml-if>
-
   <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=hdn_cod_materia, cod_status=lst_cod_status)">
   <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=hdn_cod_materia)">
   <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=hdn_cod_materia)">
+  <dtml-call expr="zsql.trans_commit_zsql()">
 
 <dtml-except>
-
+    <dtml-call expr="zsql.trans_rollback_zsql()">
     <dtml-let mensagem="'Houve um erro no banco de dados.'">
         <dtml-var mensagem_emitir>
     </dtml-let>
