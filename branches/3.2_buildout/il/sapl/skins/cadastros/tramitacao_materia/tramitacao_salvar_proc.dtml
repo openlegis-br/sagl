@@ -65,14 +65,13 @@
      </dtml-in>
   </dtml-if>
 
-  <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_tramitacao)+'_tram.pdf')">
-
   <dtml-call expr="REQUEST.set('erro', 0)">  
             
   <dtml-if expr="radTI=='U' or radTI=='S'">                
       <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
       <dtml-if expr="(_.int(hdn_file)==1)">
           <dtml-if hdn_cod_tramitacao>
+              <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_tramitacao)+'_tram.pdf')">
               <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,id_documento)">
                   <dtml-let documento="_.getattr(sapl_documentos.materia.tramitacao,id_documento) ">
                       <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
@@ -93,9 +92,15 @@
           </dtml-if>
       </dtml-if>
   <dtml-elif expr="radTI=='E'">
-       <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_tramitacao)+'_tram.pdf')">
       <dtml-if hdn_cod_tramitacao>
-          <dtml-call expr="sapl_documentos.materia.tramitacao.manage_delObjects(id_documento)">
+        <dtml-call expr="REQUEST.set('id_pdf', _.str(hdn_cod_tramitacao)+'_tram.pdf')">
+        <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,id_pdf)">
+          <dtml-call expr="sapl_documentos.materia.tramitacao.manage_delObjects(id_pdf)">
+        </dtml-if>
+        <dtml-call expr="REQUEST.set('id_pdf_assinado', _.str(hdn_cod_tramitacao)+'_tram_signed.pdf')">
+        <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,id_pdf_assinado)">
+          <dtml-call expr="sapl_documentos.materia.tramitacao.manage_delObjects(id_pdf_assinado)">
+        </dtml-if>
       </dtml-if>
   </dtml-if>
 

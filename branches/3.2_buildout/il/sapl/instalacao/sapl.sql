@@ -1,10 +1,13 @@
 SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
+
 
 CREATE TABLE IF NOT EXISTS `acomp_materia` (
   `cod_cadastro` int(11) NOT NULL AUTO_INCREMENT,
@@ -13,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `acomp_materia` (
   `txt_hash` varchar(8) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_cadastro`),
-  UNIQUE KEY `idx_unique_acomp` (`cod_materia`,`end_email`),
+  UNIQUE KEY `fk_{CCECA63D-5992-437B-BCD3-D7C98DA3E926}` (`cod_materia`,`end_email`),
   KEY `cod_materia` (`cod_materia`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
@@ -712,7 +715,10 @@ CREATE TABLE IF NOT EXISTS `instituicao` (
   PRIMARY KEY (`cod_instituicao`),
   KEY `tip_instituicao` (`tip_instituicao`),
   KEY `cod_categoria` (`cod_categoria`),
-  KEY `cod_localidade` (`cod_localidade`)
+  KEY `cod_localidade` (`cod_localidade`),
+  KEY `dat_insercao` (`dat_insercao`),
+  KEY `ind_excluido` (`ind_excluido`),
+  KEY `idx_cod_cat` (`tip_instituicao`,`cod_categoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `legislacao_citada` (
@@ -824,7 +830,8 @@ CREATE TABLE IF NOT EXISTS `mandato` (
 CREATE TABLE IF NOT EXISTS `materia_apresentada_sessao` (
   `cod_ordem` int(11) NOT NULL AUTO_INCREMENT,
   `cod_sessao_plen` int(11) NOT NULL,
-  `cod_materia` int(11) NOT NULL,
+  `cod_materia` int(11) DEFAULT NULL,
+  `cod_documento` int(11) DEFAULT NULL,
   `dat_ordem` date NOT NULL,
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `num_ordem` int(10) DEFAULT NULL,
@@ -832,7 +839,8 @@ CREATE TABLE IF NOT EXISTS `materia_apresentada_sessao` (
   PRIMARY KEY (`cod_ordem`),
   KEY `fk_cod_materia` (`cod_materia`),
   KEY `idx_apres_datord` (`dat_ordem`),
-  KEY `cod_sessao_plen` (`cod_sessao_plen`)
+  KEY `cod_sessao_plen` (`cod_sessao_plen`),
+  KEY `cod_documento` (`cod_documento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 CREATE TABLE IF NOT EXISTS `materia_legislativa` (
@@ -1213,7 +1221,9 @@ CREATE TABLE IF NOT EXISTS `protocolo` (
   KEY `cod_autor` (`cod_autor`),
   KEY `tip_materia` (`tip_materia`),
   KEY `tip_documento` (`tip_documento`),
-  KEY `dat_protocolo` (`dat_protocolo`)
+  KEY `dat_protocolo` (`dat_protocolo`),
+  KEY `tip_processo` (`tip_processo`),
+  KEY `ano_protocolo` (`ano_protocolo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
 CREATE TABLE IF NOT EXISTS `quorum_votacao` (
@@ -1674,8 +1684,10 @@ CREATE TABLE IF NOT EXISTS `unidade_tramitacao` (
   `cod_comissao` int(11) DEFAULT NULL,
   `cod_orgao` int(11) DEFAULT NULL,
   `cod_parlamentar` int(11) DEFAULT NULL,
+  `ind_leg` tinyint(4) DEFAULT '1',
   `unid_dest_permitidas` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `status_permitidos` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status_permitidos` varchar(400) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ind_adm` tinyint(4) DEFAULT '0',
   `status_adm_permitidos` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_unid_tramitacao`),
@@ -1684,12 +1696,23 @@ CREATE TABLE IF NOT EXISTS `unidade_tramitacao` (
   KEY `cod_orgao` (`cod_orgao`),
   KEY `cod_comissao` (`cod_comissao`),
   KEY `idx_unidtramit_parlamentar` (`cod_parlamentar`,`ind_excluido`),
-  KEY `cod_parlamentar` (`cod_parlamentar`)
+  KEY `cod_parlamentar` (`cod_parlamentar`),
+  KEY `ind_leg` (`ind_leg`),
+  KEY `ind_adm` (`ind_adm`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+
+CREATE TABLE IF NOT EXISTS `UserProperties` (
+  `username` varchar(64) NOT NULL,
+  `prop_key` varchar(128) NOT NULL,
+  `value` text NOT NULL,
+  `istemporary` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS `usuario` (
   `cod_usuario` int(11) NOT NULL AUTO_INCREMENT,
   `col_username` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `roles` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nom_completo` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `dat_nascimento` date DEFAULT NULL,
   `num_cpf` varchar(14) COLLATE utf8_unicode_ci NOT NULL,
@@ -1801,6 +1824,7 @@ ALTER TABLE `pessoa` ADD FULLTEXT KEY `end_residencial` (`end_residencial`);
 ALTER TABLE `pessoa` ADD FULLTEXT KEY `doc_identidade` (`doc_identidade`);
 
 ALTER TABLE `protocolo` ADD FULLTEXT KEY `idx_busca_protocolo` (`txt_assunto_ementa`,`txt_observacao`);
+ALTER TABLE `protocolo` ADD FULLTEXT KEY `txt_interessado` (`txt_interessado`);
 
 ALTER TABLE `status_tramitacao` ADD FULLTEXT KEY `des_status` (`des_status`);
 
@@ -1825,6 +1849,7 @@ ALTER TABLE `gabinete_atendimento`
 ALTER TABLE `ordem_dia_discussao`
   ADD CONSTRAINT `ordem_dia_discussao_ibfk_1` FOREIGN KEY (`cod_ordem`) REFERENCES `ordem_dia` (`cod_ordem`) ON DELETE CASCADE ON UPDATE NO ACTION;
 SET FOREIGN_KEY_CHECKS=1;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -39,4 +39,16 @@ ALTER TABLE substitutivo CHANGE `txt_observacao` `txt_observacao` TEXT CHARACTER
 -- Indice tramitacao materia
 ALTER TABLE materia_legislativa ADD KEY idx_tramitacao (ind_tramitacao) USING BTREE;
 
+-- Separa unidades de tramitação adm x leg
+
+ALTER TABLE `unidade_tramitacao` ADD `ind_leg` TINYINT(4) NULL DEFAULT '0' AFTER `cod_parlamentar`;
+
+ALTER TABLE `unidade_tramitacao` ADD INDEX(`ind_leg`);
+
+UPDATE unidade_tramitacao set ind_leg = 1;
+
+ALTER TABLE `unidade_tramitacao` ADD `ind_adm` TINYINT(4) NULL DEFAULT '0' AFTER `status_permitidos`;
+
+ALTER TABLE `unidade_tramitacao` ADD INDEX(`ind_adm`);
+
 
