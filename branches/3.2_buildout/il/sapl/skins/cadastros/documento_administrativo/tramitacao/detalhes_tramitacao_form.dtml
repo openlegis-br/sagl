@@ -156,7 +156,7 @@ $(document).ready(function() {
 <dtml-call expr="REQUEST.set('cod_tramitacao', int(cod_tramitacao))">
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/tramitacao_relatoria">Ajuda</a>
-<h1 class="firstHeading">Matéria Legislativa</h1>
+<h1 class="firstHeading">Documento Administrativo</h1>
   <form name="tramitacao_form" method="post" action="tramitacao_salvar_proc">
   <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
     <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
@@ -233,14 +233,14 @@ $(document).ready(function() {
 
       <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
       <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
-      <dtml-if "_.hasattr(sapl_documentos.administrativo,pdf) or _.hasattr(sapl_documentos.administrativo,pdf_assinado)">
+      <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf) or _.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
          <tr>
            <td class="form-element">
                 Texto PDF
            </td>
            <td valign="top" class="form-element" colspan="2">
-                 <dtml-if "_.hasattr(sapl_documentos.documento.tramitacao,pdf)">
-                   <dtml-let pdf="_.getattr(sapl_documentos.administrativo,pdf).absolute_url">
+                 <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
+                   <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
                      <a class="popup1" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
                        <img align="top" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF">
                      <dtml-if expr="int(cod_usuario_corrente)==int(cod_usuario_local)" >
@@ -251,7 +251,7 @@ $(document).ready(function() {
 			           $('.assinar-pdf').click(function () {
     			           $.fancybox({
         			   type: 'iframe',
-        			   href: 'assinador/tramitacao-signature_html?cod_tramitacao=<dtml-var cod_tramitacao>',
+        			   href: '&dtml-portal_url;/generico/assinador/pades-signature_html?codigo=<dtml-var cod_tramitacao>&tipo_doc=tramitacao_adm',
 				   width	   : '70%',
 				   height	   : '50%',
                                    minHeight	   : 320,
@@ -264,8 +264,8 @@ $(document).ready(function() {
 			         </script>
                  </dtml-if>
 
-                 <dtml-if "_.hasattr(sapl_documentos.administrativo,pdf_assinado)">
-                   <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo,pdf_assinado).absolute_url">
+                 <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
+                   <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo.tramitacao,pdf_assinado).absolute_url">
                      <a class="popup1" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
                        <img height="22" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada">Tramitação com Assinatura Digital
                      </a>
@@ -284,7 +284,7 @@ $(document).ready(function() {
       <p align="center">
       <input class="botao" type=button onClick="parent.location='tramitacao_index_html?cod_documento=<dtml-var cod_documento>'" value='Voltar'>
 
-       <dtml-if expr="ind_ult_tramitacao==1 and AUTHENTICATED_USER.has_role(['Operador'])">
+        <dtml-if expr="ind_ult_tramitacao==1 and (AUTHENTICATED_USER.has_role(['Operador'] or int(cod_usuario_corrente)==int(cod_usuario_local)))">
           <input type="button" class="botao" name="btn_tramitacao_excluir" value="Excluir" onClick="tramitacao_excluir()" />
        <dtml-elif expr="ind_ult_tramitacao==1 and _.has_key('ind_responsavel')">
           <input type="button" class="botao" name="btn_tramitacao_excluir" value="Excluir" onClick="tramitacao_excluir()" />
