@@ -51,4 +51,9 @@ ALTER TABLE `unidade_tramitacao` ADD `ind_adm` TINYINT(4) NULL DEFAULT '0' AFTER
 
 ALTER TABLE `unidade_tramitacao` ADD INDEX(`ind_adm`);
 
+-- Link para album de fotos da sessão
+
+ALTER TABLE `sessao_plenaria` ADD `url_fotos` VARCHAR(150) NULL AFTER `dat_fim_sessao`;
+
+
 
