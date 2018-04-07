@@ -1,0 +1,33 @@
+<dtml-var standard_html_header>
+
+ <h1 class="firstHeading">Galeria de Presidentes</h1>
+
+ <fieldset>
+   <dtml-in expr="zsql.presidentes_obter_zsql()">
+      <div class="photoAlbumEntry">
+        <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                  <a href="&dtml-portal_url;/cadastros/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>" title="<dtml-var nom_completo>">
+        <dtml-else>
+                  <a href="&dtml-portal_url;/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>" title="<dtml-var nom_completo>">
+        </dtml-if>
+             <span class="photoAlbumEntryWrapper">
+               <dtml-in expr="sapl_documentos.parlamentar.fotos.objectValues('Image')">
+                 <dtml-if expr=" _.str(cod_parlamentar)+'_foto_parlamentar' == id() ">
+                    <img height="138" alt="<dtml-var nom_completo>" src="<dtml-var absolute_url>">
+                 <dtml-else>
+                    <img height="138" alt="<dtml-var nom_completo>" src="&dtml-portal_url;/imagens/avatar.png">
+                 </dtml-if>
+               </dtml-in>
+             </span>
+             <span class="photoAlbumEntryTitle">
+                <dtml-var nom_parlamentar><br />
+                <dtml-in expr="zsql.presidentes_periodos_obter_zsql(cod_parlamentar=cod_parlamentar)"><dtml-var ano_inicio><dtml-if expr="ano_inicio>ano_fim">-<dtml-var ano_fim></dtml-if><dtml-unless sequence-end> / </dtml-unless></dtml-in>
+             </span>
+          </a>
+      </div>
+   <dtml-else>
+      Não há nenhum Presidente cadastrado.
+   </dtml-in>  
+ </fieldset>
+
+<dtml-var standard_html_footer>
