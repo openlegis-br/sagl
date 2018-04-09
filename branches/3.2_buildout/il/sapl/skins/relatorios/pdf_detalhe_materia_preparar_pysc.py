@@ -181,7 +181,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
     dic_comissao={}
     dic_comissao['nom_comissao']= comissao.nom_comissao
   for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar = relatoria.cod_parlamentar):
-    dic_comissao['parlamentar']= parlamentar.parlamentar
+    dic_comissao['parlamentar']= parlamentar.nom_parlamentar
   dic_comissao['data_desig']= relatoria.dat_desig_relator
   dic_comissao['data_dest']= relatoria.dat_destit_relator
   if relatoria.tip_fim_relatoria==None or relatoria.tip_fim_relatoria=='0': 
