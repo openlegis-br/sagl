@@ -198,6 +198,6 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
     arq=context.sapl_documentos.administrativo.tramitacao[arquivoPdf]
     arq.manage_edit(title='PDF Tramitação',filedata=tmp_pdf,content_type='application/pdf')
 
-    return "tramitacao_mostrar_proc?cod_tramitacao="+str(cod_tramitacao)
+    return "tramitacao_mostrar_proc?hdn_cod_tramitacao="+str(cod_tramitacao)
 
 return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,sessao)

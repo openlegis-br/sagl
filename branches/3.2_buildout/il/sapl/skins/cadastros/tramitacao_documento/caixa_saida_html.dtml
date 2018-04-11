@@ -1,0 +1,125 @@
+<dtml-var standard_html_header>
+
+<link rel="stylesheet" href="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
+
+<script type="text/javascript">
+<!--
+  function submeter(campo,form) {
+
+    form.submit();
+  }
+
+
+//-->
+</script>
+
+<script type="text/javascript">
+<!--
+   $(document).ready(function() { 
+    $("#saida")
+    .tablesorter(
+      {theme:'blue',
+       widgets:['filter'],
+       sortInitialOrder: 'desc',
+       sortRestart: true,
+       sortList: [[4,2]], 
+       headers: 
+            {
+                2: {sorter: "shortDate", dateFormat: "ddmmyyyy"},
+                4: {sorter: "shortDate", dateFormat: "ddmmyyyy"}
+            }
+     })
+    .tablesorterPager({container: $("#pager")});  
+    });
+
+-->
+</script>
+
+<style scoped>
+tr.clickable:hover td {
+       cursor: pointer;
+       background: #F3F5F7 !important;
+}
+</style>
+
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+  <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+</dtml-in>
+
+<h1 class="firstHeading">Caixa de Saída - Tramitação de Documentos</h1>
+           <table id="saida" class="tablesorter">
+             <thead>
+		 <tr>  
+		     <th width="20%" class="form-label">Destino</th>
+		     <th width="42%" class="form-label">Identificação do Documento</th>
+		     <th width="14%" class="form-label">Encaminhamento</th>
+		     <th width="14%" class="form-label">Recebimento</th>
+		     <th width="10%" class="form-label">Prazo</th>
+		 </tr>
+             </thead>
+             <tbody>
+              <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_usuario_local=cod_usuario_corrente,ind_ult_tramitacao=1,ind_recebido=0,ind_rascunho=0,ind_tramitacao=1)">
+                   <dtml-call expr="REQUEST.set('prazo_a_vencer', _.DateTime()+3)">
+                   <tr onclick="javascript:submeter(<dtml-var cod_tramitacao>,document.outbox_form_<dtml-var cod_tramitacao>)" class="clickable">
+                   <form name="outbox_form_<dtml-var cod_tramitacao>" method="post" action="tramitacao_mostrar_proc"> 
+                   <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao>" />
+                   <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento>" />
+                     <td class="form-text">
+                        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest,ind_adm=1)">
+                           <dtml-if cod_orgao><dtml-var nom_orgao>
+                           <dtml-elif cod_comissao><dtml-var nom_comissao> 
+                           <dtml-else><dtml-var nom_parlamentar> 
+                           </dtml-if>
+                        </dtml-in>
+                     </td>
+                     <td class="form-text">
+                        <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento)">
+                           <b><dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></b>
+                           - <dtml-var txt_assunto>
+                        </dtml-in>
+                        <br />Status: <dtml-var des_status>
+                     </td>
+                     <td class="form-text"><div align="center"><dtml-var dat_encaminha missing null></div></td>
+                     <td class="form-text">
+                       <dtml-if dat_recebimento>
+                         <div align="center"><dtml-var dat_recebimento missing null></div>
+                       <dtml-else>
+                         <div align="center" style="color:#DE1E1E;font-weight:bold">Não recebido</div>
+                       </dtml-if>
+                     </td>
+                     <td class="form-text"
+                       <dtml-if dat_fim_prazo>
+                        <dtml-if expr="(_.DateTime(prazo_a_vencer).strftime('%d/%m/%Y') >= _.DateTime(dat_fim_prazo).strftime('%d/%m/%Y')) and (_.DateTime().strftime('%d/%m/%Y')<=_.DateTime(dat_fim_prazo).strftime('%d/%m/%Y'))">
+                          style="background-color: #F9F475"
+                        <dtml-elif expr="_.DateTime().strftime('%d/%m/%Y') > _.DateTime(dat_fim_prazo).strftime('%d/%m/%Y')">
+                          style="background-color: #FFCDCD"
+                        <dtml-else>
+                          style="background-color: #DBF3DB"
+                        </dtml-if>
+                       </dtml-if>
+                     ><dtml-var dat_fim_prazo missing null></td>
+                   </form>
+                   </tr>
+              </dtml-in>
+             </tbody>
+           </table>
+           <div id="pager" class="pager">
+	    <form>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
+		<input type="text" class="pagedisplay"/>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
+		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
+		<select class="pagesize">
+			<option selected="selected"  value="10">10</option>
+			<option value="20">20</option>
+			<option value="30">30</option>
+			<option value="40">40</option>
+		</select>
+	    </form>
+          </div>
+<dtml-var standard_html_footer>
