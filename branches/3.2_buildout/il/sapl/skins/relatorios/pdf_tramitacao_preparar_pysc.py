@@ -55,6 +55,8 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
   tramitacao_dic['des_status'] = tramitacao.des_status
   if tramitacao.txt_tramitacao != None and tramitacao.txt_tramitacao!='':
     tramitacao_dic['txt_tramitacao'] = context.modelo_proposicao.xhtml2rml(tramitacao.txt_tramitacao,'P2')
+  else:
+    tramitacao_dic['txt_tramitacao'] = ''
   if tramitacao.dat_fim_prazo != None:
     tramitacao_dic['dat_fim_prazo'] = tramitacao.dat_fim_prazo
   else:
