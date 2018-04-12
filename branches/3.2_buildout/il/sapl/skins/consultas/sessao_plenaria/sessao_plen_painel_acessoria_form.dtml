@@ -105,42 +105,40 @@ $('#print_button').show();
 </fieldset>
 
 <fieldset>
-    <legend>Votação</legend>
-      <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=cod_num_legislatura, inind_excluido=0)">
+    <legend>Votação Nominal</legend>
+     <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_inicio_sessao)">
       <dtml-if sequence-start>
        <table>
         <tr>
-         <th width="50%" class="label">Parlamentar / Partido</th>
+         <th width="50%" class="label">Parlamentar</th>
          <th width="50%" class="label">Votação (Sim / Não / Abstenção)</th>
         </tr>
       </dtml-if>
-       <dtml-if  expr="pysc.autoria_parlamentar_validar_pysc(txt_dat_apresentacao=dat_inicio_sessao, cod_parlamentar=cod_parlamentar)">
         <tr>
          <td class="texto">
-           <dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null="">
+           <dtml-var nom_parlamentar> 
          </td>
          <td class="texto">
-          <dtml-call expr="REQUEST.set('voto', 0)">
-          <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, cod_subemenda=cod_subemenda, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
-            <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao = cod_votacao, cod_parlamentar = cod_parlamentar, ind_excluido=0)">        
-              <span>
-               <dtml-if expr="vot_parlamentar!='-1'">
-                 <dtml-var vot_parlamentar>
-                   <dtml-call expr="REQUEST.set('voto', 1)">
-                 </dtml-if>
-              </span>
-            </dtml-in>
-          </dtml-in>
+           <dtml-call expr="REQUEST.set('voto', 0)">
+              <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, cod_subemenda=cod_subemenda, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+                <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao = cod_votacao, cod_parlamentar = cod_parlamentar, ind_excluido=0)">        
+                 <span>
+                    <dtml-if expr="vot_parlamentar!='-1'">
+                       <dtml-var vot_parlamentar>
+                       <dtml-call expr="REQUEST.set('voto', 1)">
+                    </dtml-if>
+                 </span>
+                </dtml-in>
+              </dtml-in>
             <dtml-unless voto>
                 <span>Não votou</span>            
             </dtml-unless>
             </td>
            </tr>
-       </dtml-if>
        <dtml-if sequence-end>
         </table>
        </dtml-if>
-      </dtml-in>
+     </dtml-in>
  </fieldset>
 
   <p align="center">
