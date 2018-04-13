@@ -1210,7 +1210,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         os.unlink(packet1)
 
     def restpki_client(self):
-        restpki_url = 'https://pki.rest/'
+        restpki_url = 'https://restpkiol.azurewebsites.net/'
         restpki_access_token = self.sapl_documentos.props_sapl.restpki_access_token            
         restpki_client = RestPkiClient(restpki_url, restpki_access_token)
         return restpki_client
@@ -1266,8 +1266,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
                    # certificate
                    # signerName -> full name of the signer
-                   # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
-                   'text': 'Assinado por {{signerName}} - {{signerNationalId}}',
+                   # br_cpf_formatted -> if the certificate is ICP-Brasil, contains the signer's CPF
+                   'text': 'Assinado por {{signerName}} - {{br_cpf_formatted}}',
                    # Specify that the signing time should also be rendered
                    'includeSigningTime': True,
                    # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
@@ -1293,8 +1293,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
                    # certificate
                    # signerName -> full name of the signer
-                   # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
-                   'text': 'Assinado por {{signerName}} - {{signerNationalId}}',
+                   # br_cpf_formatted -> if the certificate is ICP-Brasil, contains the signer's CPF
+                   'text': 'Assinado por {{signerName}} - {{br_cpf_formatted}}',
                    # Specify that the signing time should also be rendered
                    'includeSigningTime': True,
                    # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
@@ -1369,7 +1369,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 # certificate
                 # signerName -> full name of the signer
                 # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
-                'text': 'Assinado por {{signerName}} - {{signerNationalId}}',
+                'text': 'Assinado por {{signerName}} - {{br_cpf_formatted}}',
                 # Specify that the signing time should also be rendered
                 'includeSigningTime': True,
                 # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
