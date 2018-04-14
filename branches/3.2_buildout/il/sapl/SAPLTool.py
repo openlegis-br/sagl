@@ -1267,7 +1267,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    # certificate
                    # signerName -> full name of the signer
                    # br_cpf_formatted -> if the certificate is ICP-Brasil, contains the signer's CPF
-                   'text': 'Assinado por {{signerName}} - {{br_cpf_formatted}}',
+                   'text': 'Assinado por {{signerName}} {{br_cpf_formatted}}',
                    # Specify that the signing time should also be rendered
                    'includeSigningTime': True,
                    # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
@@ -1294,7 +1294,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    # certificate
                    # signerName -> full name of the signer
                    # br_cpf_formatted -> if the certificate is ICP-Brasil, contains the signer's CPF
-                   'text': 'Assinado por {{signerName}} - {{br_cpf_formatted}}',
+                   'text': 'Assinado por {{signerName}} {{br_cpf_formatted}}',
                    # Specify that the signing time should also be rendered
                    'includeSigningTime': True,
                    # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
@@ -1369,7 +1369,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 # certificate
                 # signerName -> full name of the signer
                 # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
-                'text': 'Assinado por {{signerName}} - {{br_cpf_formatted}}',
+                'text': 'Assinado por {{signerName}} {{br_cpf_formatted}}',
                 # Specify that the signing time should also be rendered
                 'includeSigningTime': True,
                 # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
