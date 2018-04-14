@@ -122,7 +122,7 @@ def tramitacao(tramitacao_dic):
 
     tmp+='<blockTable style="Standard_Outline" repeatRows="1" colWidths="110,350">\n'
     tmp+='<tr><td>Data da Ação</td><td>' +str(tramitacao_dic['dat_tramitacao'])+ '</td></tr>\n'
-    tmp+='<tr><td>Unidade Local</td><td>' +str(tramitacao_dic['unidade_origem'])+ '</td></tr>\n'
+    tmp+='<tr><td>Unidade de Origem</td><td>' +str(tramitacao_dic['unidade_origem'])+ '</td></tr>\n'
     tmp+='<tr><td>Unidade de Destino</td><td>' +str(tramitacao_dic['unidade_destino'])+ '</td></tr>\n'
     tmp+='<tr><td>Status</td><td>' +str(tramitacao_dic['des_status'])+ '</td></tr>\n'
     dat_fim_prazo = str(tramitacao_dic['dat_fim_prazo'])

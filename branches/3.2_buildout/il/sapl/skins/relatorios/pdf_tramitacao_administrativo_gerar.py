@@ -122,7 +122,7 @@ def tramitacao(tramitacao_dic):
 
     tmp+='<blockTable style="Standard_Outline" repeatRows="1" colWidths="110,350">\n'
     tmp+='<tr><td>Data do Despacho</td><td>' +str(tramitacao_dic['dat_tramitacao'])+ '</td></tr>\n'
-    tmp+='<tr><td>Unidade Local</td><td>' +str(tramitacao_dic['unidade_origem'])+ '</td></tr>\n'
+    tmp+='<tr><td>Unidade de Origem</td><td>' +str(tramitacao_dic['unidade_origem'])+ '</td></tr>\n'
     tmp+='<tr><td>Unidade de Destino</td><td>' +str(tramitacao_dic['unidade_destino'])+ '</td></tr>\n'
     tmp+='<tr><td>Status</td><td>' +str(tramitacao_dic['des_status'])+ '</td></tr>\n'
     dat_fim_prazo = str(tramitacao_dic['dat_fim_prazo'])
@@ -196,6 +196,6 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
     arq=context.sapl_documentos.administrativo.tramitacao[arquivoPdf]
     arq.manage_edit(title='PDF Tramitação',filedata=tmp_pdf,content_type='application/pdf')
 
-    return "tramitacao_mostrar_proc?hdn_cod_tramitacao="+str(cod_tramitacao)
+    return "tramitacao_mostrar_proc?cod_tramitacao="+str(cod_tramitacao)
 
 return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,sessao)

@@ -37,6 +37,11 @@ $(document).ready(function() {
 });
 </script>
 <h1 class="firstHeading">Detalhes da Tramitação Eletrônica</h1>
+
+<dtml-if cod_tramitacao>
+  <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', cod_tramitacao)">
+</dtml-if>
+
 <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_tramitacao=hdn_cod_tramitacao)">
     <dtml-call expr="REQUEST.set('hdn_cod_documento', int(cod_documento))">
     <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_dest', int(cod_unid_tram_dest))">
@@ -77,7 +82,12 @@ $(document).ready(function() {
         </dtml-if>
        </td>
        <td class="form-element">Encaminhamento</br>
-         <input type="text" size="13" value="<dtml-var dat_encaminha missing null>" readonly>
+         <dtml-if dat_encaminha>
+            <input type="text" size="13" value="<dtml-var dat_encaminha missing null>" readonly>
+            <dtml-call expr="REQUEST.set('ind_encaminha', '1')">
+         <dtml-else>
+            <input type="text" size="13" style="color:#DE1E1E;font-weight:bold" value="Pendente" readonly>
+         </dtml-if>
        </td>
     </tr>
     <tr>
@@ -95,7 +105,7 @@ $(document).ready(function() {
             <input type="text" size="12" value="<dtml-var col_username>" readonly>
           </dtml-in>
         <dtml-else>
-            <input type="text" size="12" value="não especificado" readonly>
+            <input type="text" size="12" value="" readonly>
         </dtml-if>
        </td>
        <td class="form-element">Recebimento</br>
@@ -111,7 +121,7 @@ $(document).ready(function() {
        <td class="form-element">Status</br>
          <input type="text" size="50" value="<dtml-var des_status>" readonly>
        </td>
-       <td colspan="2" class="form-element">Prazo</br>
+       <td colspan="2" width="50%" class="form-element">Prazo</br>
          <input type="text" size="13" value="<dtml-var dat_fim_prazo missing null>" readonly>
        </td>
     </tr>
@@ -119,10 +129,10 @@ $(document).ready(function() {
       <dtml-call expr="REQUEST.set('pdf_assinado', _.str(hdn_cod_tramitacao)+'_tram_signed.pdf')">
       <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf) or _.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
          <tr>
-           <td class="form-element">
-                Texto PDF
-           </td>
-           <td valign="top" class="form-element" colspan="2">
+           <th class="form-element">
+                Tramitação em PDF
+           </th>
+           <th valign="top" class="form-element" colspan="2">
                  <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
                    <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
                      <a class="popup1" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
@@ -150,15 +160,15 @@ $(document).ready(function() {
                  <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
                    <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo.tramitacao,pdf_assinado).absolute_url">
                      <a class="popup1" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
-                       <img height="22" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada">Tramitação com Assinatura Digital
+                       <img height="22" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada">Tramitação Assinada
                      </a>
                    </dtml-let>
                  </dtml-if>
-           </td>
+           </th>
          </tr>
    </dtml-if>
     <tr>
-       <td colspan="3"class="form-element">Texto da Ação</br>
+       <td colspan="3"class="form-element">Texto do Despacho</br>
          <textarea name="txa_txt_tramitacao" id="txa_txt_tramitacao" cols="65" rows="4" disabled><dtml-var txt_tramitacao missing null></textarea>
        </td>
     </tr>

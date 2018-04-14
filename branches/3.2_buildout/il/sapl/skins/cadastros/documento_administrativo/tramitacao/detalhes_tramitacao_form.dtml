@@ -177,7 +177,7 @@ $(document).ready(function() {
       <table>
           <tr>
             <td>
-            <label for="txt_dat_tramitacao">Data Tramitação </label><br/>
+            <label for="txt_dat_tramitacao">Data da Tramitação </label><br/>
               <input type="text" name="txt_dat_tramitacao" size="13" maxlength="10" value="<dtml-var dat_tramitacao missing>" readonly />
             </td>
             <td>
@@ -210,7 +210,7 @@ $(document).ready(function() {
             <input type="text" size="12" value="<dtml-var col_username>" readonly>
           </dtml-in>
         <dtml-else>
-            <input type="text" size="12" value="não especificado" readonly>
+            <input type="text" size="12" value="" readonly>
         </dtml-if>
        </td>
          </tr>
@@ -220,7 +220,7 @@ $(document).ready(function() {
             <input type="text" size="13" value="<dtml-var dat_recebimento missing null>" readonly>
             <dtml-call expr="REQUEST.set('ind_recebida', '1')">
          <dtml-else>
-            <input type="text" size="13" style="color:#DE1E1E;font-weight:bold" value="Pendente" readonly>
+            <input type="text" size="13" value="" readonly>
          </dtml-if>
        </td>
        <td class="form-element">Status</br>
@@ -235,10 +235,10 @@ $(document).ready(function() {
       <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
       <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf) or _.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
          <tr>
-           <td class="form-element">
-                Texto PDF
-           </td>
-           <td valign="top" class="form-element" colspan="2">
+           <th class="form-element">
+                Tramitação em PDF
+           </th>
+           <th valign="top" class="form-element" colspan="2">
                  <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
                    <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
                      <a class="popup1" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
@@ -267,16 +267,16 @@ $(document).ready(function() {
                  <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
                    <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo.tramitacao,pdf_assinado).absolute_url">
                      <a class="popup1" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
-                       <img height="22" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada">Tramitação com Assinatura Digital
+                       <img height="22" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada">Tramitação Assinada
                      </a>
                    </dtml-let>
                  </dtml-if>
-           </td>
+           </th>
          </tr>
       </dtml-if>
     <tr>
-       <td colspan="3"class="form-element">Texto da Ação</br>
-         <textarea name="txa_txt_tramitacao" id="txa_txt_tramitacao" cols="65" rows="4" disabled><dtml-var txt_tramitacao missing html_quote></textarea>
+       <td colspan="3"class="form-element">Texto do Despacho</br>
+         <textarea name="txa_txt_tramitacao" id="txa_txt_tramitacao" cols="65" rows="4" disabled><dtml-var txt_tramitacao missing null></textarea>
        </td>
     </tr>
         </table>
@@ -284,9 +284,9 @@ $(document).ready(function() {
       <p align="center">
       <input class="botao" type=button onClick="parent.location='tramitacao_index_html?cod_documento=<dtml-var cod_documento>'" value='Voltar'>
 
-        <dtml-if expr="ind_ult_tramitacao==1 and (AUTHENTICATED_USER.has_role(['Operador'] or int(cod_usuario_corrente)==int(cod_usuario_local)))">
+        <dtml-if expr="ind_ult_tramitacao==1 and AUTHENTICATED_USER.has_role(['Operador'])">
           <input type="button" class="botao" name="btn_tramitacao_excluir" value="Excluir" onClick="tramitacao_excluir()" />
-       <dtml-elif expr="ind_ult_tramitacao==1 and _.has_key('ind_responsavel')">
+       <dtml-elif expr="ind_ult_tramitacao==1 and int(cod_usuario_corrente)==int(cod_usuario_local)">
           <input type="button" class="botao" name="btn_tramitacao_excluir" value="Excluir" onClick="tramitacao_excluir()" />
        </dtml-if>
       </p>
