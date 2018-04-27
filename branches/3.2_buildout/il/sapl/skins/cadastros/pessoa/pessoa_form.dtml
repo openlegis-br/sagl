@@ -157,7 +157,7 @@ $(".popup").fancybox({
   <input type="hidden" name="txt_des_profissao" value="<dtml-var des_profissao missing>" />
   <input type="hidden" name="txt_des_local_trabalho" value="<dtml-var des_local_trabalho missing>" />
   <input type="hidden" name="hdn_url" value="pessoa_mostrar_proc?cod_pessoa=<dtml-var cod_pessoa missing>" />
-  <input type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('mudou')">1<dtml-else>0</dtml-if>" />                
+ <input type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('mudou')">1<dtml-else>0</dtml-if>" />                
                 <table>
                         <tr>
                           <td width="45%"><label for="txt_nom_pessoa">Nome da Pessoa</label> <span class="campoObrigatorio"></span><br />
@@ -233,6 +233,72 @@ $(".popup").fancybox({
                             <textarea id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
                           </td>
                         </tr>
+                      <dtml-if cod_pessoa>
+                        <tr>
+                          <th colspan="4">Fotografia
+                          </th>
+                        </tr>
+                        <tr>
+                          <td colspan="2">
+	                     <div id="results" align="center">
+                                 <dtml-call expr="REQUEST.set('id_foto', _.str(cod_pessoa)+'_foto_pessoa.jpg')">
+                                 <dtml-if expr="_.hasattr(sapl_documentos.pessoa,id_foto)">
+                                   <img height="200" src="&dtml-portal_url;/sapl_documentos/pessoa/<dtml-var id_foto>">
+                                 <dtml-else>
+                                   <img height="200" alt="<dtml-var nom_pessoa>" src="&dtml-portal_url;/imagens/avatar.png">
+                                 </dtml-if>
+                             </div>
+	                  </td>
+                             <script type="text/javascript" src="webcam.js"></script>
+	                  <td colspan="2">
+	                     <div id="my_camera"></div>
+                             <input type=button value="Capturar Imagem" onClick="take_snapshot()">
+
+
+	<!-- Configure a few settings and attach camera -->
+	<script language="javascript">
+		Webcam.set({
+			// live preview size
+			width: 320,
+			height: 240,
+			
+			// device capture size
+			dest_width: 320,
+			dest_height: 240,
+			
+			// final cropped size
+			crop_width: 184,
+			crop_height: 200,
+			
+			// format and quality
+			image_format: 'jpeg',
+			jpeg_quality: 90
+		});
+		
+		Webcam.attach( '#my_camera' );
+	</script>
+	
+	<!-- Code to handle taking the snapshot and displaying it locally -->
+	<script language="javascript">
+		function take_snapshot() {
+			// take snapshot and get image data
+			Webcam.snap( function(data_uri) {
+                             Webcam.upload( data_uri, 'foto_salvar_proc?cod_pessoa=<dtml-var cod_pessoa>', function(code, text) {
+                             // Upload complete!
+                             // 'code' will be the HTTP response code from the server, e.g. 200
+                             // 'text' will be the raw response content
+                              alert( "Mensagem de retorno: " + code + ": " + text );
+                             } );
+		             // display results in page
+			     document.getElementById('results').innerHTML =
+				'<img src="'+data_uri+'"/>';
+			 } );
+		}
+	</script>
+
+                          </td>
+                        </tr>
+                    </dtml-if>
                       <dtml-if cod_pessoa>
                         <tr>
                           <th colspan="4" class="texto">
