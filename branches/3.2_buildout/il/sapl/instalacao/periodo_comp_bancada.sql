@@ -55,5 +55,9 @@ ALTER TABLE `unidade_tramitacao` ADD INDEX(`ind_adm`);
 
 ALTER TABLE `sessao_plenaria` ADD `url_fotos` VARCHAR(150) NULL AFTER `dat_fim_sessao`;
 
+-- Endereço de email de órgão
+
+ALTER TABLE `orgao` ADD `end_email` VARCHAR(100) NULL AFTER `num_tel_orgao`;
+
 
 
