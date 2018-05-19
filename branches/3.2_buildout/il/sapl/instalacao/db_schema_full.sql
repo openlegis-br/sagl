@@ -1,5 +1,6 @@
-SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -454,7 +455,7 @@ CREATE TABLE IF NOT EXISTS `documento_acessorio` (
   `tip_documento` int(11) NOT NULL,
   `nom_documento` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dat_documento` date DEFAULT NULL,
-  `nom_autor_documento` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nom_autor_documento` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
   `txt_ementa` text COLLATE utf8_unicode_ci,
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `txt_indexacao` text COLLATE utf8_unicode_ci,
@@ -563,6 +564,15 @@ CREATE TABLE IF NOT EXISTS `encerramento_presenca` (
   KEY `cod_sessao_plen` (`cod_sessao_plen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+CREATE TABLE IF NOT EXISTS `expediente_discussao` (
+  `cod_ordem` int(11) NOT NULL,
+  `cod_parlamentar` int(11) NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`cod_ordem`,`cod_parlamentar`) USING BTREE,
+  KEY `cod_ordem` (`cod_ordem`),
+  KEY `cod_parlamentar` (`cod_parlamentar`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS `expediente_materia` (
   `cod_ordem` int(11) NOT NULL AUTO_INCREMENT,
   `cod_sessao_plen` int(11) NOT NULL,
@@ -653,10 +663,10 @@ CREATE TABLE IF NOT EXISTS `gabinete_eleitor` (
   `dat_nascimento` date DEFAULT NULL,
   `des_estado_civil` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   `doc_identidade` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `num_cpf` varchar(50) CHARACTER SET utf32 COLLATE utf32_unicode_ci DEFAULT NULL,
+  `num_cpf` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `txt_classe` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `des_profissao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `des_escolaridade` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
+  `des_escolaridade` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_tit_eleitor` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `end_residencial` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nom_bairro` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -704,7 +714,10 @@ CREATE TABLE IF NOT EXISTS `instituicao` (
   PRIMARY KEY (`cod_instituicao`),
   KEY `tip_instituicao` (`tip_instituicao`),
   KEY `cod_categoria` (`cod_categoria`),
-  KEY `cod_localidade` (`cod_localidade`)
+  KEY `cod_localidade` (`cod_localidade`),
+  KEY `dat_insercao` (`dat_insercao`),
+  KEY `ind_excluido` (`ind_excluido`),
+  KEY `idx_cod_cat` (`tip_instituicao`,`cod_categoria`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `legislacao_citada` (
@@ -816,7 +829,8 @@ CREATE TABLE IF NOT EXISTS `mandato` (
 CREATE TABLE IF NOT EXISTS `materia_apresentada_sessao` (
   `cod_ordem` int(11) NOT NULL AUTO_INCREMENT,
   `cod_sessao_plen` int(11) NOT NULL,
-  `cod_materia` int(11) NOT NULL,
+  `cod_materia` int(11) DEFAULT NULL,
+  `cod_documento` int(11) DEFAULT NULL,
   `dat_ordem` date NOT NULL,
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `num_ordem` int(10) DEFAULT NULL,
@@ -824,7 +838,8 @@ CREATE TABLE IF NOT EXISTS `materia_apresentada_sessao` (
   PRIMARY KEY (`cod_ordem`),
   KEY `fk_cod_materia` (`cod_materia`),
   KEY `idx_apres_datord` (`dat_ordem`),
-  KEY `cod_sessao_plen` (`cod_sessao_plen`)
+  KEY `cod_sessao_plen` (`cod_sessao_plen`),
+  KEY `cod_documento` (`cod_documento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 CREATE TABLE IF NOT EXISTS `materia_legislativa` (
@@ -979,6 +994,15 @@ CREATE TABLE IF NOT EXISTS `ordem_dia` (
   KEY `num_ordem` (`num_ordem`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
+CREATE TABLE IF NOT EXISTS `ordem_dia_discussao` (
+  `cod_ordem` int(11) NOT NULL,
+  `cod_parlamentar` int(11) NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`cod_ordem`,`cod_parlamentar`) USING BTREE,
+  KEY `cod_ordem` (`cod_ordem`),
+  KEY `cod_parlamentar` (`cod_parlamentar`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS `ordem_dia_presenca` (
   `cod_presenca_ordem_dia` int(11) NOT NULL AUTO_INCREMENT,
   `cod_sessao_plen` int(11) NOT NULL DEFAULT '0',
@@ -1002,6 +1026,7 @@ CREATE TABLE IF NOT EXISTS `orgao` (
   `ind_unid_deliberativa` tinyint(4) NOT NULL,
   `end_orgao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_tel_orgao` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `end_email` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_orgao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
@@ -1196,7 +1221,9 @@ CREATE TABLE IF NOT EXISTS `protocolo` (
   KEY `cod_autor` (`cod_autor`),
   KEY `tip_materia` (`tip_materia`),
   KEY `tip_documento` (`tip_documento`),
-  KEY `dat_protocolo` (`dat_protocolo`)
+  KEY `dat_protocolo` (`dat_protocolo`),
+  KEY `tip_processo` (`tip_processo`),
+  KEY `ano_protocolo` (`ano_protocolo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1;
 
 CREATE TABLE IF NOT EXISTS `quorum_votacao` (
@@ -1310,6 +1337,7 @@ CREATE TABLE IF NOT EXISTS `sessao_plenaria` (
   `hr_fim_sessao` varchar(5) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_sessao_plen` int(11) UNSIGNED NOT NULL,
   `dat_fim_sessao` date DEFAULT NULL,
+  `url_fotos` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `url_audio` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `url_video` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
@@ -1657,8 +1685,10 @@ CREATE TABLE IF NOT EXISTS `unidade_tramitacao` (
   `cod_comissao` int(11) DEFAULT NULL,
   `cod_orgao` int(11) DEFAULT NULL,
   `cod_parlamentar` int(11) DEFAULT NULL,
+  `ind_leg` tinyint(4) DEFAULT '1',
   `unid_dest_permitidas` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `status_permitidos` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status_permitidos` varchar(400) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ind_adm` tinyint(4) DEFAULT '0',
   `status_adm_permitidos` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_unid_tramitacao`),
@@ -1667,12 +1697,16 @@ CREATE TABLE IF NOT EXISTS `unidade_tramitacao` (
   KEY `cod_orgao` (`cod_orgao`),
   KEY `cod_comissao` (`cod_comissao`),
   KEY `idx_unidtramit_parlamentar` (`cod_parlamentar`,`ind_excluido`),
-  KEY `cod_parlamentar` (`cod_parlamentar`)
+  KEY `cod_parlamentar` (`cod_parlamentar`),
+  KEY `ind_leg` (`ind_leg`),
+  KEY `ind_adm` (`ind_adm`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
 CREATE TABLE IF NOT EXISTS `usuario` (
   `cod_usuario` int(11) NOT NULL AUTO_INCREMENT,
   `col_username` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `roles` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nom_completo` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `dat_nascimento` date DEFAULT NULL,
   `num_cpf` varchar(14) COLLATE utf8_unicode_ci NOT NULL,
@@ -1784,6 +1818,7 @@ ALTER TABLE `pessoa` ADD FULLTEXT KEY `end_residencial` (`end_residencial`);
 ALTER TABLE `pessoa` ADD FULLTEXT KEY `doc_identidade` (`doc_identidade`);
 
 ALTER TABLE `protocolo` ADD FULLTEXT KEY `idx_busca_protocolo` (`txt_assunto_ementa`,`txt_observacao`);
+ALTER TABLE `protocolo` ADD FULLTEXT KEY `txt_interessado` (`txt_interessado`);
 
 ALTER TABLE `status_tramitacao` ADD FULLTEXT KEY `des_status` (`des_status`);
 
@@ -1798,10 +1833,16 @@ ALTER TABLE `substitutivo` ADD FULLTEXT KEY `txt_observacao` (`txt_observacao`);
 ALTER TABLE `categoria_instituicao`
   ADD CONSTRAINT `idx_tip_instituicao` FOREIGN KEY (`tip_instituicao`) REFERENCES `tipo_instituicao` (`tip_instituicao`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
+ALTER TABLE `expediente_discussao`
+  ADD CONSTRAINT `fk_cod_ordem_expediente` FOREIGN KEY (`cod_ordem`) REFERENCES `expediente_materia` (`cod_ordem`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
 ALTER TABLE `gabinete_atendimento`
   ADD CONSTRAINT `gabinete_atendimento_ibfk_1` FOREIGN KEY (`cod_eleitor`) REFERENCES `gabinete_eleitor` (`cod_eleitor`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `gabinete_atendimento_ibfk_2` FOREIGN KEY (`cod_parlamentar`) REFERENCES `parlamentar` (`cod_parlamentar`) ON DELETE CASCADE ON UPDATE CASCADE;
-SET FOREIGN_KEY_CHECKS=1;
+
+ALTER TABLE `ordem_dia_discussao`
+  ADD CONSTRAINT `ordem_dia_discussao_ibfk_1` FOREIGN KEY (`cod_ordem`) REFERENCES `ordem_dia` (`cod_ordem`) ON DELETE CASCADE ON UPDATE NO ACTION;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

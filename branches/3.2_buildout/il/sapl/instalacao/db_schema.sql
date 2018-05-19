@@ -1,4 +1,3 @@
-SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
@@ -456,7 +455,7 @@ CREATE TABLE IF NOT EXISTS `documento_acessorio` (
   `tip_documento` int(11) NOT NULL,
   `nom_documento` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dat_documento` date DEFAULT NULL,
-  `nom_autor_documento` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nom_autor_documento` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
   `txt_ementa` text COLLATE utf8_unicode_ci,
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `txt_indexacao` text COLLATE utf8_unicode_ci,
@@ -664,10 +663,10 @@ CREATE TABLE IF NOT EXISTS `gabinete_eleitor` (
   `dat_nascimento` date DEFAULT NULL,
   `des_estado_civil` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   `doc_identidade` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `num_cpf` varchar(50) CHARACTER SET utf32 COLLATE utf32_unicode_ci DEFAULT NULL,
+  `num_cpf` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `txt_classe` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `des_profissao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `des_escolaridade` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
+  `des_escolaridade` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_tit_eleitor` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `end_residencial` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nom_bairro` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -1027,6 +1026,7 @@ CREATE TABLE IF NOT EXISTS `orgao` (
   `ind_unid_deliberativa` tinyint(4) NOT NULL,
   `end_orgao` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_tel_orgao` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `end_email` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL,
   PRIMARY KEY (`cod_orgao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
@@ -1337,6 +1337,7 @@ CREATE TABLE IF NOT EXISTS `sessao_plenaria` (
   `hr_fim_sessao` varchar(5) COLLATE utf8_unicode_ci DEFAULT NULL,
   `num_sessao_plen` int(11) UNSIGNED NOT NULL,
   `dat_fim_sessao` date DEFAULT NULL,
+  `url_fotos` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `url_audio` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `url_video` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
@@ -1701,13 +1702,6 @@ CREATE TABLE IF NOT EXISTS `unidade_tramitacao` (
   KEY `ind_adm` (`ind_adm`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 
-CREATE TABLE IF NOT EXISTS `UserProperties` (
-  `username` varchar(64) NOT NULL,
-  `prop_key` varchar(128) NOT NULL,
-  `value` text NOT NULL,
-  `istemporary` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 CREATE TABLE IF NOT EXISTS `usuario` (
   `cod_usuario` int(11) NOT NULL AUTO_INCREMENT,
   `col_username` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
@@ -1848,7 +1842,6 @@ ALTER TABLE `gabinete_atendimento`
 
 ALTER TABLE `ordem_dia_discussao`
   ADD CONSTRAINT `ordem_dia_discussao_ibfk_1` FOREIGN KEY (`cod_ordem`) REFERENCES `ordem_dia` (`cod_ordem`) ON DELETE CASCADE ON UPDATE NO ACTION;
-SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
