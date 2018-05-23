@@ -55,7 +55,7 @@ for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=
 
    prazo = tramitacao.dat_fim_prazo
 
-   linkDoc = "" + context.absolute_url()
+   linkDoc = "" + context.absolute_url()+"/default_index_html"
 
 if txt_nome != '' and end_email != '':
  mMsg = "O seguinte processo administrativo foi despachado aos seus cuidados, para as providências cabíveis.\n\n"
