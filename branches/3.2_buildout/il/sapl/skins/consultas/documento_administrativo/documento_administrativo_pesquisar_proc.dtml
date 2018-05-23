@@ -95,16 +95,38 @@
                 
                 <dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_documento=cod_documento)">
                  <dtml-if sequence-start>
-                   <b>Matéria Vinculada: </b> 
+                   <b>Matéria<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculada<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </b>
+                 </dtml-if>
                    <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
                      <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
 		        <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
                      <dtml-else>
 		        <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
                      </dtml-if>                     
-                       <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a><br />
+                       <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
+                       <dtml-unless sequence-end>,</dtml-unless>
+                       <dtml-if sequence-end><br /></dtml-if>
                     </dtml-in>
+                </dtml-in>
+
+                <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculado=cod_documento)">
+                 <dtml-if sequence-start>
+                   <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculante<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </b>
                  </dtml-if>
+                    <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculante>">
+                      <dtml-var sgl_tipo_documento_vinculante> <dtml-var num_documento_vinculante>/<dtml-var ano_documento_vinculante>
+                    </a><dtml-unless sequence-end>,</dtml-unless>
+                    <dtml-if sequence-end><br /></dtml-if>
+                </dtml-in>
+
+                <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante=cod_documento)">
+                 <dtml-if sequence-start>
+                   <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculado<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </b> 
+                 </dtml-if>
+                    <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>">
+                      <dtml-var sgl_tipo_documento_vinculado> <dtml-var num_documento_vinculado>/<dtml-var ano_documento_vinculado>
+                    </a><dtml-unless sequence-end>,</dtml-unless>
+                    <dtml-if sequence-end><br /></dtml-if>
                 </dtml-in>
 
                 <dtml-call expr="REQUEST.set('des_status', '')">
