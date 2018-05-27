@@ -59,5 +59,10 @@ ALTER TABLE `sessao_plenaria` ADD `url_fotos` VARCHAR(150) NULL AFTER `dat_fim_s
 
 ALTER TABLE `orgao` ADD `end_email` VARCHAR(100) NULL AFTER `num_tel_orgao`;
 
+--Código de acesso externo a protocolo administrativo
 
+ALTER TABLE `protocolo` ADD `codigo_acesso` VARCHAR(18) NULL AFTER `timestamp_anulacao`;
 
+ALTER TABLE `protocolo` ADD INDEX(`codigo_acesso`);
+
+ALTER TABLE `documento_administrativo` ADD INDEX(`num_protocolo`);

@@ -68,10 +68,12 @@
        <img src="data:image/png;base64,<dtml-var barcode>" width="140" height="30">
      </div>
    </td class="texto">
-   <td class="texto" width="70%">Autenticação: 
+   <td class="texto" width="70%">Código de Autenticidade: 
    <dtml-if expr="ind_anulado==1"> <span class="anulado"> ** NULO **</span>
    <dtml-else>
-     <dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"><dtml-var cod_protocolo></td class="texto">
+     <dtml-call "REQUEST.set('codb64', pysc.b64encode_pysc(codigo=cod_protocolo))">
+     <dtml-call "REQUEST.set('autenticacao', codb64)">
+     <dtml-var autenticacao></td class="texto">
    </dtml-if>
   </tr>  
   <tr>
@@ -83,7 +85,13 @@
    <td class="texto"><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> - <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td class="texto">
   </tr>
   <tr>
-    <td class="texto"><b>Assunto/Ementa</b></td class="texto">
+<dtml-if expr="tip_processo==''">
+    <td class="texto"><b>Assunto/Ementa</b></td>
+<dtml-elif expr="tip_processo==0">
+    <td class="texto"><b>Assunto</b></td>
+<dtml-elif expr="tip_processo==1">
+    <td class="texto"><b>Ementa</b></td>
+</dtml-if>
     <td class="texto" style="text-align:justify"><dtml-var txt_assunto_ementa></td class="texto">
   </tr>
 <dtml-if expr="tip_processo!=''">
@@ -94,7 +102,7 @@
         </dtml-if>
 
 	<dtml-if txt_interessado>
-		<b>Interessado(s)</b>
+		<b>Interessado(a)</b>
         </dtml-if>
    </td class="texto">
    <td class="texto">
@@ -169,9 +177,24 @@
  </dtml-if>
   <tr>
    <td class="texto" width="30%"><b>Recebido por:</b></td>
-   <td class="texto" width="70%"><dtml-var txt_user_protocolo></td>
+   <td class="texto" width="70%"><dtml-var txt_user_protocolo missing null></td>
   </tr>
- </table> 
+<dtml-if expr="tip_processo==0 and codigo_acesso!=None">
+  <tr>
+    <td class="texto">
+       <b>Chave de Acesso</b>
+    </td>
+    <td>
+       <dtml-var codigo_acesso>
+    </td>
+   </tr>
+</dtml-if>
+ </table>
+ <dtml-if expr="tip_processo==0 and codigo_acesso!=None">
+    <p align="center">
+       <b>Consulta de Protocolo</b>: <dtml-var BASE1>/consultas/protocolo</br>
+    </p>
+ </dtml-if>
 <p align="center">
   <input type="button" class="botao" id="hideprint" name="print_button" value="Imprimir" onClick="printFrame();return false;" />
   <input class="botaoExtra" type="button" id="hideclose" value="Fechar" onClick="parent.jQuery.fancybox.close();" />

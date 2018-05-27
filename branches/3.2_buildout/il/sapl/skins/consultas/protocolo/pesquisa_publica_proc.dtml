@@ -1,0 +1,90 @@
+<dtml-var standard_html_header>
+
+<dtml-in expr="zsql.protocolo_pesquisa_publica_zsql(chave_acesso=txt_chave_acesso)">
+  <dtml-call expr="REQUEST.set('resultado', '1')">
+  <h1 class="firstHeading">Protocolo nº <dtml-var num_protocolo>/<dtml-var ano_protocolo></h1>
+  <div style="font-size:13px ;margin-top: 7px;">
+    <table>
+      <tr>
+        <th width="25%"><b>Entrada</b></th>
+        <td><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> - <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td>
+      </tr>
+      <tr>
+        <th><b>Assunto</b></th>
+        <td colspan="3"><dtml-var txt_assunto_ementa></td>
+      </tr>
+      <tr>
+        <th><b>Interessado</b></th>
+        <td colspan="3"><dtml-var txt_interessado></td>
+      </tr>
+      <tr>
+        <th><b>Processo</b></th>
+        <td colspan="3">
+         <dtml-if cod_documento>
+           <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento>
+         <dtml-else>
+           <i>Aguardando autuação</i>
+         </dtml-if>
+        </td>
+      </tr>
+    </table>
+  </div>
+<dtml-if cod_documento>
+  <div style="font-size:13px ;margin-top: 15px;">
+    <legend>Movimentações</legend>
+    <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento)">
+     <dtml-if sequence-start>
+      <table>
+        <tr>
+          <th width="25%">
+            Data
+          </th>
+          <th>
+            Movimento
+          </th>
+        </tr>
+     </dtml-if sequence-start>
+        <tr>
+          <td><dtml-var dat_tramitacao></td>
+          <td>
+       <b>Origem:</b>
+       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
+          <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
+          <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
+          <dtml-else><dtml-var nom_parlamentar missing null="">
+          </dtml-if> 
+       </dtml-in> 
+       <b>/ Destino:</b> 
+       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
+          <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
+          <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
+          <dtml-else><dtml-var nom_parlamentar missing null="">
+          </dtml-if> 
+       </dtml-in> 
+              <br/><b>Situação:</b> <dtml-var expr="des_status" missing null=""> <dtml-var expr="txt_tramitacao" missing null> <dtml-if expr="txt_tramitacao!=''"> - <dtml-var expr="txt_tramitacao" missing null></dtml-if>
+          </td>
+        </tr>
+     <dtml-if sequence-end>
+      </table>
+     </dtml-if sequence-end>
+    <dtml-else>
+      <p>Não há nenhuma movimentação registrada.</p>
+    </dtml-in>
+  </div>
+</dtml-if>
+<dtml-else>
+  <h1 class="firstHeading">Consulta de Protocolo</h1>
+  <div class="ui-state-error ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
+    <p>
+      <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+      <strong>A Chave de Acesso informada é inválida!</strong>
+    </p>
+  </div>
+</dtml-in>
+  <p align="center">
+    <dtml-if resultado>
+      <input type="button" class="botao" id="hideprint" name="print_button" value="Imprimir" onClick="window.print();return false;" />
+    </dtml-if>
+    <input class="botao" type="button" value="Nova Consulta" onClick="history.back()">
+  </p>
+<dtml-var standard_html_footer>

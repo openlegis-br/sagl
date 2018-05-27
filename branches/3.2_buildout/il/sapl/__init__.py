@@ -41,7 +41,7 @@ def initialize(context):
     allow_module('urllib2')
     allow_module('sys')
     allow_module('os')
-    allow_module('lacunarestpki')
+    allow_module('restpki')
     allow_module('Acquisition')
     allow_module('ExtensionClass')
     allow_module('App.FindHomes')
@@ -64,6 +64,7 @@ def initialize(context):
     allow_module('PyPDF2')
     allow_module('StringIO')
     allow_module('PIL')
+    allow_module('uuid')
 
     tools = (SAPLTool.SAPLTool,)
     ToolInit('SAPL Tool',

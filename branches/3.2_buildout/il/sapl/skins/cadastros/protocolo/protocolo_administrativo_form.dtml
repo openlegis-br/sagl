@@ -58,19 +58,19 @@ form.submit();
         </li>
     </ul>
 </div>
+
 <form action="protocolo_administrativo_salvar_proc" name="protocolo_administrativo_form" method="post" enctype="multipart/form-data">
 
-<input type="hidden" name="hdn_cod_protocolo" value="<dtml-var cod_protocolo missing>" />
+  <input type="hidden" name="hdn_cod_protocolo" value="<dtml-var cod_protocolo missing>" />
+  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
+     <input type="hidden" name="hdn_url" value="&dtml-portal_url;/consultas/protocolo/protocolo_index_html" />
+  <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia','Operador Modulo Administrativo'])">
+     <input type="hidden" name="hdn_url" value="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form" />
+  </dtml-if>
 
-<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
-  <input type="hidden" name="hdn_url" value="&dtml-portal_url;/consultas/protocolo/protocolo_index_html" />
-<dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia','Operador Modulo Administrativo'])">
-  <input type="hidden" name="hdn_url" value="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form" />
-</dtml-if>
+  <legend>Identificação do Documento</legend>
 
-    <legend>Identificação do Documento</legend>
-
-     <table>
+  <table>
       <tr>
         <th colspan="2"> <label for="rad_tipo_protocolo">Tipo Protocolo:</label> 
           <dtml-in expr="[('Recebimento', '0'), ('Envio', '1')]">
@@ -81,74 +81,72 @@ form.submit();
            </dtml-in>
         </th>
       </tr>
-
-                        <tr>
-                         <td colspan="2"><label for="lst_tip_documento">Tipo de Documento</label> <span class="campoObrigatorio">&nbsp;</span> <br />
-                          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
-                            <select id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
-			            <option>Selecione</option>
-                                     <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
-                                    <option value="<dtml-var tip_documento>">
-                                     <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
-                                    </option>
-                                     </dtml-in>
-                            </select>
-                          <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Modulo Administrativo'])">
-                            <select id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
-			            <option>Selecione</option>
-                                     <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=0,ind_excluido=0)">
-                                    <option value="<dtml-var tip_documento>">
-                                     <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
-                                    </option>
-                                     </dtml-in>
-                            </select>
-                          <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
-                            <select id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
-			            <option>Selecione</option>
-                                     <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
-                                    <option value="<dtml-var tip_documento>">
-                                     <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
-                                    </option>
-                                     </dtml-in>
-                            </select>
-                         </dtml-if>
-                         </td> 
-                       </tr>
-
-                        <tr>
-                          <td colspan="2"><label for="txa_txt_assunto">Assunto </label> <span class="campoObrigatorio">&nbsp;</span>
-                            <textarea id="txa_txt_assunto" name="txa_txt_assunto" cols="67" rows="4" maxlength="500"><dtml-var txt_assunto_ementa missing></textarea> 
-                          </td>
-                        </tr>
-
+      <tr>
+        <td colspan="2"><label for="lst_tip_documento">Tipo de Documento</label> <span class="campoObrigatorio">&nbsp;</span> <br />
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
+           <select id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
+            <option>Selecione</option>
+            <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var tip_documento>">
+                <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+              </option>
+            </dtml-in>
+           </select>
+         <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Modulo Administrativo'])">
+           <select id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
+	    <option>Selecione</option>
+            <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=0,ind_excluido=0)">
+              <option value="<dtml-var tip_documento>">
+                <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+              </option>
+            </dtml-in>
+           </select>
+         <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
+           <select id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
+	    <option>Selecione</option>
+            <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
+              <option value="<dtml-var tip_documento>">
+                <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+              </option>
+            </dtml-in>
+           </select>
+         </dtml-if>
+        </td> 
+      </tr>
+      <tr>
+        <td colspan="2"><label for="txa_txt_assunto">Assunto </label> <span class="campoObrigatorio">&nbsp;</span>
+         <textarea id="txa_txt_assunto" name="txa_txt_assunto" cols="67" rows="4" maxlength="500"><dtml-var txt_assunto_ementa missing></textarea> 
+        </td>
+      </tr>
       <tr> 
-        <td colspan="2">
+        <td>
          <label for="txa_txt_interessado">Interessado / Autor</label> <span class="campoObrigatorio">&nbsp;</span><br />
           <input id="txa_txt_interessado" type="text" name="txa_txt_interessado" size="48" maxlength="60" />
         </td>
+        <td>
+          <label><input type="checkbox" name="chk_consulta_externa" /> Habilitar acesso externo?</label>
+        </td>
       </tr>
+      <tr>
+        <td width="50%"><label for="file_nom_arquivo">Documento Digitalizado (PDF)</label><br />
+           <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="20" maxlength="100" />
+        </td>
+        <td>
+           <label for="txt_num_paginas">Núm. Páginas</label><br />
+           <input type="text" id="txt_num_paginas" name="txt_num_paginas" size="6 maxlength="3" value="<dtml-var num_dias_prazo missing null="">"/>
+        </td> 
+      </tr>
+      <tr>
+        <td colspan="2"><label for="txa_txt_observacao">Observações</label> 
+          <textarea id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing></textarea>
+        </td>
+      </tr>
+  </table>
 
-           <tr>
-             <td><label for="file_nom_arquivo">Documento Digitalizado (PDF)</label><br />
-                 <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="20" maxlength="100" />
-             </td>
-           <td>
-                <label for="txt_num_paginas">Núm. Páginas</label><br />
-                <input type="text" id="txt_num_paginas" name="txt_num_paginas" size="6 maxlength="3" value="<dtml-var num_dias_prazo missing null="">"/>
-           </td> 
-           </tr>
-                        <tr>
-                          <td colspan="2"><label for="txa_txt_observacao">Observações</label> 
-                            <textarea id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing></textarea>
-                          </td>
-                        </tr>
-
-</table>
-
- <p align="center">
+  <p align="center">
      <input type="button" class="botao" name="button" value="Protocolar Documento" onClick="campos_criticar()" />
      <input class="botaoExtra" type="reset" name="btn_protocolo_limpar" value="Limpar" />
- </p>
+  </p>
 
 </form>
 
