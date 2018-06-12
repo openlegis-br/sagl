@@ -16,25 +16,25 @@
       }
 
      if (form.txt_num_ordem.value==""){
-         alert("O numero da ordem deve ser preenchido");
+         alert("O numero de ordem deve ser preenchido");
          form.txt_num_ordem.focus();
          return false;
       }
      if (regexp_digitos.test(form.txt_num_ordem.value)){
-        alert("O número da ordem deve ser um número natural!");
+        alert("O número de ordem deve ser um número natural!");
         form.txt_num_ordem.focus();
         return false;
       }  
-      if ((form.lst_tip_id_basica.selectedIndex == 0) ||
+      if ((form.lst_tip_documento.selectedIndex == 0) ||
           (form.lst_tip_sessao.selectedIndex == 0) ||
-          (form.txt_num_ident_basica.value=="") || 
-          (form.txt_ano_ident_basica.value=="")){
-          alert("Os campos de identificação da matéria devem ser preenchidos!");
-          form.txt_num_ident_basica.focus();
+          (form.txt_num_documento.value=="") || 
+          (form.txt_ano_documento.value=="")){
+          alert("Os campos de identificação do documento devem ser preenchidos!");
+          form.txt_num_documento.focus();
           return false;
       }
       if (form.txa_txt_observacao.value==""){
-         alert("A ementa deve ser preenchida");
+         alert("O assunto deve ser preenchido");
          form.txa_txt_observacao.focus();
          return false;
       }
@@ -51,12 +51,12 @@
   }
 
   function ementa_buscar(form){
-     if ((form.lst_tip_id_basica.selectedIndex != 0) &&
-	 (form.txt_num_ident_basica.value!="") && 
-	 (form.txt_ano_ident_basica.value!="")){
-	location.href="ementa_buscar_proc?tip_ident_basica="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+
-          "&num_ident_basica="+form.txt_num_ident_basica.value+"&ano_ident_basica="+
-          form.txt_ano_ident_basica.value+"&cod_ordem="+form.cod_ordem.value+
+     if ((form.lst_tip_documento.selectedIndex != 0) &&
+	 (form.txt_num_documento.value!="") && 
+	 (form.txt_ano_documento.value!="")){
+	location.href="assunto_buscar_proc?tip_documento="+form.lst_tip_documento[form.lst_tip_documento.selectedIndex].value+
+          "&num_documento="+form.txt_num_documento.value+"&ano_documento="+
+          form.txt_ano_documento.value+"&cod_ordem="+form.cod_ordem.value+
           "&dat_ordem="+form.txt_dat_ordem.value+"&num_ordem="+form.txt_num_ordem.value+"&tip_sessao_plen="+form.lst_tip_sessao[form.lst_tip_sessao.selectedIndex].value+"&cod_sessao_plen=<dtml-var cod_sessao_plen>";
      }
   }
@@ -73,15 +73,14 @@ function reloadParentAndClose()
 
 <body class="modal">
 
-<h1 class="firstHeading">Matéria Apresentada</h1> 
+<h1 class="firstHeading">Documento Apresentado</h1> 
 
 <h3 align="center"><dtml-var sessao_plenaria_header></h3>
 
-<form id="materia_apresentada_form" name="materia_apresentada_form" method="post" action="materia_apresentada_salvar_proc">
+<form id="materia_apresentada_documento_form" name="materia_apresentada_documento_form" method="post" action="materia_apresentada_salvar_proc">
 <fieldset>
-    <legend>Cadastro de Matéria para Leitura na Sessão</legend>
-      <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen,
-                                                                   ind_excluido=0)">
+    <legend>Cadastro de Documento para Leitura na Sessão</legend>
+      <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
         <table>
             <tr>
                 <td>
@@ -95,14 +94,14 @@ function reloadParentAndClose()
 	                    </dtml-if> />
                 </td>
                 <td>
-                    <label for="lst_tip_sessao">Tipo da Sessão<span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <label for="lst_tip_sessao">Tipo de Sessão<span class="campoObrigatorio">&nbsp;</span></label><br />
                     <select name="lst_tip_sessao" onfocus="this.initialSelect = this.selectedIndex;" onchange="this.selectedIndex = this.initialSelect;">
                         <option>Selecione</option>
                         <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(ind_excluido=0)">
                         <option
                             <dtml-if expr="_.has_key('cod_ordem') and _.int(tip_sessao)==_.int(materia_apresentada_form.tip_sessao)">
                                 selected
-                            <dtml-elif expr="_.int(tip_sessao)==_.int(materia_apresentada_form.tip_sessao)">
+                            <dtml-elif expr="_.int(tip_sessao)==_.int(materia_apresentada_documento_form.tip_sessao)">
                                 selected
                             </dtml-if>
                             value="<dtml-var tip_sessao>"><dtml-var nom_sessao>
@@ -122,53 +121,47 @@ function reloadParentAndClose()
             </tr>
             <tr>
                 <td>
-                    <label for="lst_tip_id_basica">Tipo Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
-                    <select name="lst_tip_id_basica" onChange="ementa_buscar(document.materia_apresentada_form)">
+                    <label for="lst_tip_documento">Tipo Documento <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <select name="lst_tip_documento" onChange="ementa_buscar(document.materia_apresentada_documento_form)">
                         <option>Selecione</option>
-                        <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+                        <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
                         <option
-                            <dtml-if cod_materia>
-                                <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
-                                    <dtml-if expr="_.int(tip_id_basica) == _.int(tip_materia)">
-                                        selected
-                                    </dtml-if>
-                                </dtml-in>
-                            <dtml-elif expr="REQUEST.has_key('tip_ident_basica') and _.int(tip_materia) == _.int(tip_ident_basica)">
+                            <dtml-if expr="REQUEST.has_key('tip_documento_sel') and _.int(tip_documento_sel) == _.int(tip_documento)">
                                 selected
                             </dtml-if>
-                            value="<dtml-var tip_materia>">
-                            <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia missing>
+                            value="<dtml-var tip_documento>">
+                            <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento missing>
                         </option>
                         </dtml-in>
                     </select>
                 </td>
                 <td>
-                    <label for="txt_num_ident_basica" >Nº Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
-                    <input type="text" name="txt_num_ident_basica" size="4" maxlength="5" onChange="ementa_buscar(document.materia_apresentada_form)"
-                        <dtml-if cod_materia>
-                            <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
-                                value="<dtml-var num_ident_basica missing>"
+                    <label for="txt_num_documento" >Nº Documento <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <input type="text" name="txt_num_documento" size="4" maxlength="5" onChange="ementa_buscar(document.materia_apresentada_documento_form)"
+                        <dtml-if cod_documento>
+                            <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento = cod_documento)">
+                                value="<dtml-var num_documento missing>"
                             </dtml-in>
-                        <dtml-else> value="<dtml-var num_ident_basica missing>"
+                        <dtml-else> value="<dtml-var num_documento missing>"
                         </dtml-if>/>
                 </td>
                 <td>
-                    <dtml-unless ano_ident_basica>
-                     <dtml-call expr="REQUEST.set('ano_ident_basica', _.DateTime.year(_.DateTime()))">
+                    <dtml-unless ano_documento>
+                     <dtml-call expr="REQUEST.set('ano_documento', _.DateTime.year(_.DateTime()))">
                     </dtml-unless>
-                    <label for="txt_ano_ident_basica">Ano Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
-                    <input type="text" name="txt_ano_ident_basica" size="4" maxlength="4" onChange="ementa_buscar(document.materia_apresentada_form)"
-                        <dtml-if cod_materia>
-                            <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
-                                value="<dtml-var ano_ident_basica missing>"
+                    <label for="txt_ano_documento">Ano Documento <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <input type="text" name="txt_ano_documento" size="4" maxlength="4" onChange="ementa_buscar(document.materia_apresentada_documento_form)"
+                        <dtml-if cod_documento>
+                            <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento = cod_documento)">
+                                value="<dtml-var ano_documento missing>"
                             </dtml-in>
-                        <dtml-else> value="<dtml-var ano_ident_basica missing>"
+                        <dtml-else> value="<dtml-var ano_documento missing>"
                         </dtml-if>/>
                 </td>
             </tr>
             <tr>
                 <td colspan="3">
-                    <label for="txa_txt_observacao">Ementa <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <label for="txa_txt_observacao">Assunto <span class="campoObrigatorio">&nbsp;</span></label><br />
                     <textarea name="txa_txt_observacao" cols="60" rows="4"><dtml-var txt_observacao missing></textarea>
                 </td>
             </tr>
@@ -176,19 +169,21 @@ function reloadParentAndClose()
 </dtml-in>
  </fieldset>
          <p align="center">
-            <input type="button" class="botao" name="btn_salvar" value="Salvar" onClick="campos_criticar(document.materia_apresentada_form)" />
+            <input type="button" class="botao" name="btn_salvar" value="Salvar" onClick="campos_criticar(document.materia_apresentada_documento_form)" />
             <dtml-if cod_ordem>
                 <input type="hidden" name="flag_atualizar" value="<dtml-var cod_ordem missing>" />
                 <input type="button" class="botaoExtra" name="btn_excluir" value="Excluir" onClick="materia_apresentada_excluir()" />
             </dtml-if>
             <input type="button" class="botao" name="btn_fechar" value="Fechar" onclick="javascript:parent.jQuery.fancybox.close();" />
-          <dtml-if cod_materia>
-              <a class="botao-link" target="_blank" href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" >Ver Matéria</a>
+          <dtml-if cod_documento>
+              <a class="botao-link" target="_blank" href="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" >Ver Documento</a>
          </dtml-if>
         </p>
         <input type="hidden" name="cod_ordem" value="<dtml-var cod_ordem missing>" />
-        <input type="hidden" name="cod_materia" value="<dtml-var cod_materia missing>" />
+        <input type="hidden" name="cod_documento" value="<dtml-var cod_documento missing>" />
         <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
 </form>
+
 </body>
+
 </html>

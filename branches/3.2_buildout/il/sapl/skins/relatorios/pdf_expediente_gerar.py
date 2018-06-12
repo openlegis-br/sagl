@@ -106,7 +106,7 @@ def materia_apresentada(lst_materia_apresentada):
     """
     """
     tmp = ''
-    tmp+='\t\t<para style="P7" spaceBefore="10"><b><u>MATÉRIAS APRESENTADAS</u></b></para>\n\n'
+    tmp+='\t\t<para style="P7" spaceBefore="10"><b><u>LEITURA DE MATÉRIAS E DOCUMENTOS</u></b></para>\n\n'
     tmp+='\t\t<para style="P2" spaceAfter="2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
@@ -121,7 +121,7 @@ def materia_apresentada(lst_materia_apresentada):
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
      else:
-        tmp+='\t\t<para style="P3">Nenhuma matéria apresentada parana leitura na Sessão</para>\n'
+        tmp+='\t\t<para style="P3">Não há itens para leitura nesta Sessão.</para>\n'
 
     return tmp
 
@@ -144,7 +144,7 @@ def indicacoes(lst_indicacoes):
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
      else:
-        tmp+='\t\t<para style="P3">Nenhuma Indicação</para>\n'
+        tmp+='\t\t<para style="P3">Não há nenhuma Indicação</para>\n'
 
     return tmp
 
@@ -167,7 +167,7 @@ def requerimentos(lst_requerimentos):
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
      else:
-        tmp+='\t\t<para style="P3">Nenhum Requerimento</para>\n'
+        tmp+='\t\t<para style="P3">Não há nenhum Requerimento</para>\n'
 
     return tmp
 
@@ -190,7 +190,7 @@ def mocoes(lst_mocoes):
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
      else:
-        tmp+='\t\t<para style="P3">Nenhuma Moção</para>\n'
+        tmp+='\t\t<para style="P3">Não há nenhuma Moção</para>\n'
 
     return tmp
 
