@@ -66,3 +66,14 @@ ALTER TABLE `protocolo` ADD `codigo_acesso` VARCHAR(18) NULL AFTER `timestamp_an
 ALTER TABLE `protocolo` ADD INDEX(`codigo_acesso`);
 
 ALTER TABLE `documento_administrativo` ADD INDEX(`num_protocolo`);
+
+-- Possibilidade de Adicionar Documentos para Leitura na Sessão
+
+ALTER TABLE `materia_apresentada_sessao` ADD `cod_documento` INT(11) NULL AFTER `cod_materia`, 
+ADD INDEX `idx_cod_documento` (`cod_documento`);
+
+ALTER TABLE `materia_apresentada_sessao` CHANGE `cod_materia` `cod_materia` INT(11) NULL;
+
+ALTER TABLE `materia_apresentada_sessao` ADD INDEX(`cod_materia`);
+
+
