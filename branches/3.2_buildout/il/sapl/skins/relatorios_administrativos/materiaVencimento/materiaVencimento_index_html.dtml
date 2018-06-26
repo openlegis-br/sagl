@@ -1,0 +1,34 @@
+<dtml-var standard_html_header>
+
+ <h1 class="firstHeading">Matérias a Vencer</h1>
+ <h3 align="center">Matérias com prazo final de deliberação nos próximos 15 dias</h3>
+ <br />
+
+<dtml-in expr="listarDatas_zsql()">
+  <dtml-if sequence-start>
+    <table>
+      <tr>
+         <th width="13%"><div align="center">Vencimento</div></th>
+         <th>Identificação das Matérias</th>
+      </tr>
+  </dtml-if>
+      <tr>
+         <th><div align="center" valign="top"><dtml-var data_fim_prazo></div></th>
+         <td>
+            <dtml-in expr="listarMaterias_zsql(data=dat_fim_prazo)">
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                  <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                <dtml-else>
+                  <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" >
+                </dtml-if>
+                  <p><b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b>
+                </a> - <dtml-var txt_ementa></p>
+            </dtml-in>
+         </td>
+      </tr>
+  <dtml-if sequence-end>
+    </table>
+  </dtml-if>
+</dtml-in>
+
+<dtml-var standard_html_footer>
