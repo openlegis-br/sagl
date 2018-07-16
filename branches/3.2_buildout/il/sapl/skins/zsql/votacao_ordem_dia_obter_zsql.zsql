@@ -20,14 +20,19 @@ SELECT DISTINCT
    registro_votacao.txt_observacao as votacao_observacao,
    registro_votacao.num_votos_nao as num_votos_nao,
    registro_votacao.num_votos_sim as num_votos_sim,
-   registro_votacao.num_abstencao as num_abstencao
+   registro_votacao.num_abstencao as num_abstencao,
+   sessao_plenaria.cod_sessao_plen
 
 FROM
    ordem_dia
+   LEFT JOIN sessao_plenaria ON
+     sessao_plenaria.cod_sessao_plen = ordem_dia.cod_sessao_plen
    LEFT JOIN registro_votacao ON
-   registro_votacao.cod_ordem = ordem_dia.cod_ordem and registro_votacao.cod_materia=ordem_dia.cod_materia
+     registro_votacao.cod_ordem = ordem_dia.cod_ordem 
+     AND registro_votacao.cod_materia=ordem_dia.cod_materia
    LEFT JOIN materia_legislativa ON
-   ordem_dia.cod_materia=materia_legislativa.cod_materia and materia_legislativa.ind_excluido=0
+     ordem_dia.cod_materia=materia_legislativa.cod_materia 
+     AND materia_legislativa.ind_excluido=0
 
 <dtml-sqlgroup where>
    <dtml-sqltest cod_materia  column="ordem_dia.cod_materia"   op="=" type="int" optional><dtml-and>
