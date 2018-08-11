@@ -1,5 +1,25 @@
 <dtml-var standard_html_header>
 
+<script type="text/javascript">
+
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 700,
+		maxHeight	: 500,
+		fitToView	: false,
+		width		: '70%',
+		height		: '72%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+
+</script>
+
 <a id="ajuda" href="&dtml-portal_url;/ajuda/emenda">Ajuda</a>
 
 <h1 class="firstHeading">Matéria Legislativa</h1>
@@ -36,6 +56,7 @@
          <th class="form-label">Ementa</th>
          <th class="form-label">Autoria</th>
          <th width="16%" class="form-label">Arquivo</th>
+         <th width="16%" class="form-label">Resultado</th>
        </tr> 
     </dtml-if sequence-start>
        <tr> 
@@ -92,6 +113,25 @@
                 </dtml-let>
             </div>
           </td>
+            <td class="texto">
+             <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_materia=cod_materia,cod_emenda=cod_emenda, ind_excluido=0)">
+                <dtml-if tip_resultado_votacao>
+                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                    <dtml-if expr="tip_votacao == 2 ">
+                       <a href="&dtml-portal_url;/consultas/sessao_plenaria/sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tipo_materia=acessoria" class="popup" data-fancybox-type="iframe">
+                        <b><dtml-var nom_resultado></a></b><br />
+                    <dtml-else>
+                        <b><dtml-var nom_resultado></b><br />
+                    </dtml-if>
+                    <dtml-if votacao_observacao>
+                        <dtml-var votacao_observacao>
+                    </dtml-if>
+                </dtml-in>
+                <dtml-else><i>Matéria não votada</i>
+                </dtml-if>
+                <dtml-else><i>Matéria não votada</i>
+             </dtml-in>
+            </td>
        </tr>
     <dtml-if sequence-end>
       </table>
