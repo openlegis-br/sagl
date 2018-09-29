@@ -13,7 +13,7 @@ for documento in context.zsql.documento_administrativo_pesquisar_publico_zsql(ti
  if hasattr(context.sapl_documentos.administrativo, filename):
    if context.REQUEST.ind_publico == 0:
      documento = getattr(context.sapl_documentos.administrativo,filename)
-     documento.manage_permission('View', roles=['Manager','Operador','Operador Modulo Administrativo'], acquire=1)
+     documento.manage_permission('View', roles=['Authenticated', 'Manager','Operador','Operador Modulo Administrativo'], acquire=1)
    if context.REQUEST.ind_publico == 1:
      documento = getattr(context.sapl_documentos.administrativo,filename)
      documento.manage_permission('View', roles=['Anonymous','Manager','Operador','Operador Modulo Administrativo'], acquire=0)
@@ -23,7 +23,7 @@ for documento in context.zsql.documento_acessorio_administrativo_obter_zsql(tip_
  if hasattr(context.sapl_documentos.administrativo, filename_acessorio):
    if context.REQUEST.ind_publico == 0:
      documento = getattr(context.sapl_documentos.administrativo,filename_acessorio)
-     documento.manage_permission('View', roles=['Manager','Operador','Operador Modulo Administrativo'], acquire=1)
+     documento.manage_permission('View', roles=['Authenticated','Manager','Operador','Operador Modulo Administrativo'], acquire=1)
    if context.REQUEST.ind_publico == 1:
      documento = getattr(context.sapl_documentos.administrativo,filename_acessorio)
      documento.manage_permission('View', roles=['Anonymous','Manager','Operador','Operador Modulo Administrativo'], acquire=0)

@@ -252,24 +252,6 @@ $(function() {
 
 <script type="text/javascript">
 $(document).ready(function() {
-$(".popup").fancybox({
-maxWidth : 500,
-maxHeight : 320,
-fitToView : false,
-width : '70%',
-height : '72%',
-autoSize : false,
-closeClick : false,
-scrolling : 'auto',
-preload : true,
-openEffect : 'fade',
-closeEffect : 'fade'
-});
-});
-</script>
-
-<script type="text/javascript">
-$(document).ready(function() {
 	$(".popup1").fancybox({
 		maxWidth	: 1024,
 		maxHeight	: 800,
@@ -504,8 +486,20 @@ $(document).ready(function() {
                                <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_materia)+'_texto_integral.odt')">
                                  <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
                                    <img align="top" style="float: left; margin-top: 2px; margin-right: 2px;" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
-                                 <input type="button" class="botao" value="Editor Externo" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/materia_odt/externalEdit_/<dtml-var nome_arquivo_odt>.zem'" />
-                               <input type="button" class="botao" value="Excluir" onclick="javascript:texto_integral_odt_excluir()" />
+                               <input id="menuitem" type="button" class="botao" value="Editar" />
+			         <script type="text/javascript">
+             			  $('#menuitem').click(function () {
+    			          $.fancybox({
+        		   	   type: 'iframe',
+        			   href: '&dtml-portal_url;/webeditor/editorMateria?<dtml-var documento_odt>',
+				   width		: '90%',
+				   height		: '95%',
+        			   preload         : true
+    		 	           });
+		 	           });
+			          </script>
+		 	         <input type="button" class="botao" value="Editor Externo" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/materia_odt/externalEdit_/<dtml-var nome_arquivo_odt>.zem'" />
+			         <input type="button" class="botao" value="Excluir" onclick="javascript:texto_integral_odt_excluir()" />
                              </dtml-let>
                            <dtml-else>
                             <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_materia)+'-')">
@@ -567,8 +561,18 @@ $(document).ready(function() {
                             <dtml-call expr="REQUEST.set('temODT', 1)">
                              <dtml-let documento_odt="_.getattr(sapl_documentos.materia_odt,id_documento_odt).absolute_url">
                                <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_materia)+'_redacao_final.odt')">
-                                 <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
-                                   <img align="top" style="float: left; margin-top: 2px; margin-right: 2px;" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
+                               <input id="menuitem1" type="button" class="botao" value="Editar" />
+                                 <script type="text/javascript">
+                                  $('#menuitem1').click(function () {
+                                  $.fancybox({
+                                   type: 'iframe',
+                                   href: '&dtml-portal_url;/webeditor/editorMateria?<dtml-var documento_odt>',
+                                   width                : '90%',
+                                   height               : '95%',
+                                   preload         : true
+                                   });
+                                   });
+                                  </script>
                                  <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/materia_odt/externalEdit_/<dtml-var nome_arquivo_odt>.zem">Editor Externo</a>
                                <input type="button" class="botao" value="Excluir" onclick="javascript:redacao_final_odt_excluir()" />
                              </dtml-let>
@@ -661,7 +665,7 @@ $(document).ready(function() {
               <legend>Outras Informações</legend>
                 <table>
                         <tr>
-                          <td colspan="2"><label for="lst_tip_quorum">Quórum de Votação </label><br />
+                          <td><label for="lst_tip_quorum">Quórum de Votação </label><br />
                             <select id="lst_tip_quorum" name="lst_tip_quorum">
                               <option></option>
                              <dtml-in expr="zsql.quorum_votacao_obter_zsql()">
@@ -678,39 +682,10 @@ $(document).ready(function() {
                              </dtml-in>
                             </select>
                           </td>
-                          <dtml-comment>
-                          <td><label for="lst_tip_situacao">Situação </label><br />
-                            <select id="lst_tip_situacao" name="lst_tip_situacao">
-                              <option></option>
-                             <dtml-in expr="zsql.tipo_situacao_materia_obter_zsql(ind_excluido=0)">
-                              <option 
-                               <dtml-if expr="_.has_key('cod_situacao') and _.int(tip_situacao_materia) == cod_situacao">
-                                 selected </dtml-if>
-                                value="<dtml-var tip_situacao_materia>"> <dtml-var des_tipo_situacao>
-                              </option>
-                             </dtml-in>
-                            </select>
-                          </td>
-                          </dtml-comment>
-                          <td class="texto"><label for="rad_ind_polemica">Matéria Polêmica?</label><br />
-<dtml-in expr="[(1,'Sim'),(0,'Não')]">
-                            <input type="radio" id="rad_ind_polemica" name="rad_ind_polemica" value="<dtml-var expr="_['sequence-key']">"
-  <dtml-if expr="_.has_key('cod_materia') and ind_polemica==_['sequence-key']">
-                              checked=1
-  </dtml-if>
-                              onChange="javascript:form.hdn_alterou.value=1" />
-                              <dtml-var expr="_['sequence-item']">
-</dtml-in>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><label for="txt_des_objeto">Objeto </label><br />
-                            <input type="text" id="txt_des_objeto" name="txt_des_objeto" size="30" maxlength="150" value="<dtml-var des_objeto missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
-                          </td>
-                          <td><label for="lst_cod_regime_tramitacao">Regime Tramitação <span class="campoObrigatorio">&nbsp;</span></label><br />
+                          <td><label for="lst_cod_regime_tramitacao">Regime de Tramitação <span class="campoObrigatorio">&nbsp;</span></label><br />
                             <select id="lst_cod_regime_tramitacao" name="lst_cod_regime_tramitacao" onChange="javascript:form.hdn_alterou.value=1">
-				<option value="0">
-                              	</option>
+                                <option value="0">
+                                </option>
 <dtml-in expr="zsql.regime_tramitacao_obter_zsql()">
                               <option
   <dtml-if expr="_.has_key('cod_materia') and cod_regime_tramitacao==materia_form.cod_regime_tramitacao">selected</dtml-if>
@@ -725,6 +700,25 @@ $(document).ready(function() {
                             <input type="radio" id="rad_ind_tramitacao" name="rad_ind_tramitacao" value="<dtml-var expr="_['sequence-key']">"
   <dtml-if expr="_.has_key('cod_materia') and ind_tramitacao==_['sequence-key']">checked=1</dtml-if>
   <dtml-if expr="not _.has_key('cod_materia') and _['sequence-item']=='Sim'">checked=1</dtml-if>
+                              onChange="javascript:form.hdn_alterou.value=1" />
+                              <dtml-var expr="_['sequence-item']">
+</dtml-in>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><label for="txt_des_objeto">Objeto </label><br />
+                            <input type="text" id="txt_des_objeto" name="txt_des_objeto" size="30" maxlength="150" value="<dtml-var des_objeto missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
+                          </td>
+                           <td><label for="txt_nom_apelido">Apelido </label><br />
+                            <input type="text" id="txt_nom_apelido" name="txt_nom_apelido" size="30" maxlength="50" value="<dtml-var nom_apelido missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
+                          </td>
+
+                          <td class="texto"><label for="rad_ind_polemica">Matéria Polêmica?</label><br />
+<dtml-in expr="[(1,'Sim'),(0,'Não')]">
+                            <input type="radio" id="rad_ind_polemica" name="rad_ind_polemica" value="<dtml-var expr="_['sequence-key']">"
+  <dtml-if expr="_.has_key('cod_materia') and ind_polemica==_['sequence-key']">
+                              checked=1
+  </dtml-if>
                               onChange="javascript:form.hdn_alterou.value=1" />
                               <dtml-var expr="_['sequence-item']">
 </dtml-in>
@@ -748,14 +742,7 @@ $(document).ready(function() {
 </dtml-in>
                           </td>
                         </tr>
-                        <tr>
-                          <td><label for="txt_nom_apelido">Apelido </label><br />
-                            <input type="text" id="txt_nom_apelido" name="txt_nom_apelido" size="30" maxlength="50" value="<dtml-var nom_apelido missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
-                          </td>
-                          <td colspan="2"><label for="txt_num_dias_prazo">Dias Prazo </label><br />
-                            <input type="text" id="txt_num_dias_prazo" name="txt_num_dias_prazo" size="3" maxlength="3" value="<dtml-var num_dias_prazo missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
-                          </td>
-                        </tr>
+                        <input type="hidden" id="txt_num_dias_prazo" name="txt_num_dias_prazo" size="3" maxlength="3" value="<dtml-var num_dias_prazo missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
                  </table>
                  </fieldset>
 
@@ -807,7 +794,7 @@ $(document).ready(function() {
                             </select>
                           </td>
                           <td><label for="txt_num_origem_externa">Número </label><br />
-                            <input type="text" id="txt_num_origem_externa" name="txt_num_origem_externa" size="15" maxlength="15" value="<dtml-var num_origem_externa missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
+                            <input type="text" id="txt_num_origem_externa" name="txt_num_origem_externa" size="6" maxlength="15" value="<dtml-var num_origem_externa missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
                           </td>
                           <td><label for="txt_ano_origem_externa">Ano </label><br />
                             <input type="text" id="txt_ano_origem_externa" name="txt_ano_origem_externa" size="4" maxlength="4" value="<dtml-var ano_origem_externa missing null="">" onChange="javascript:form.hdn_alterou.value=1" /> <br />

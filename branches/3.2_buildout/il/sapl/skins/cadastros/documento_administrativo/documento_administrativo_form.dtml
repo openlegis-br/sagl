@@ -111,11 +111,9 @@
   function texto_odt_gerar(){
       lst_modelo = document.getElementById("lst_modelo");
       lst_modelo.options[lst_modelo.selectedIndex].value;     
-
       if (lst_modelo.selectedIndex == 0) {
          alert("É necessário selecionar um modelo!");
       }
-
       if ((lst_modelo.selectedIndex != 0) && confirm("Confirma a geração do arquivo ODT?")) {
          location.href="&dtml-portal_url;/modelo_proposicao/oficio?cod_documento=<dtml-var cod_documento missing>&modelo_documento="+lst_modelo.options[lst_modelo.selectedIndex].value;
          setTimeout(function(){window.location.reload(true)},2500);
@@ -125,16 +123,22 @@
   }
 
   function documento_administrativo_excluir(){
-
        if (confirm("Deseja realmente excluir?")) {
           location.href="documento_administrativo_excluir_proc?cod_documento=<dtml-var cod_documento missing>&url=&dtml-portal_url;/consultas/documento_administrativo";
        }
        return;
   }
 
+  function texto_pdf_gerar(){
+      if (confirm("Confirma a geração do texto original em PDF?")) {
+         location.href="&dtml-portal_url;/modelo_proposicao/oficio_gerar_pdf?cod_documento=<dtml-var cod_documento missing>";
+         setTimeout(function(){window.location.reload(true)},3000);
+         return true;
+       }
+  return;
+  }
 
   function texto_integral_excluir(){
-
        if (confirm("Deseja realmente excluir o texto integral PDF?")) {
           location.href="texto_documento_administrativo_excluir_proc?cod_documento=<dtml-var cod_documento missing>";
        }
@@ -142,7 +146,6 @@
   }
 
   function texto_integral_excluir_odt(){
-
        if (confirm("Deseja realmente excluir o texto integral ODT?")) {
           location.href="texto_documento_administrativo_excluir_odt_proc?cod_documento=<dtml-var cod_documento missing>";
        }
@@ -376,39 +379,81 @@ $(document).ready(function() {
                          </td>
                       </tr>
                       <tr>
-                         <td><label for="radTipTxtIntegral">Texto digitalizado (PDF)</label><br />
+                         <td><label for="radTipTxtIntegral">Texto Original (PDF)</label><br />
                             <dtml-if expr="_.has_key('cod_documento')">
                              <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_texto_integral.pdf')">
-                              <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
+                             <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_documento)+'_texto_integral_signed.pdf')">
+                              <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento) and not _.hasattr(sapl_documentos.administrativo,id_documento_assinado)">
                                <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
                                 <a target="_blank" href="<dtml-var documento>">
                                  <img align="top" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral" title="Texto integral">
                                 </a>
-                               <a class="botao-link" href="javascript:texto_integral_excluir()">Excluir</a>
-                               </dtml-let>
-                           <dtml-else>
-                              <input type="file" name="file_nom_arquivo" size="40" maxlength="100" />
-                           </dtml-if>
+                                <dtml-unless "_.hasattr(sapl_documentos.administrativo,id_documento_assinado)">
+                                 <input id="assinar-pdf" type="button" class="botao" value="Assinar" />
+			           <script type="text/javascript">
+			             $('#assinar-pdf').click(function () {
+    			             $.fancybox({
+        			     type: 'iframe',
+        			     href: '&dtml-portal_url;/generico/assinador/pades-signature_html?codigo=<dtml-var cod_documento>&tipo_doc=documento',
+				     width	   : '70%',
+				     height	   : '50%',
+                                     minHeight	   : 320,
+        			     preload         : true,
+                                     afterClose      : function() {
+                                       window.location.href = "documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>";},
+		                     closeEffect	: 'fade'
+    			             });
+			             });
+			           </script>
+        		        </dtml-unless>
+                                <input type="button" class="botao" value="Excluir" onclick="javascript:texto_integral_excluir()" />
+ 		               </dtml-let>
+                              <dtml-elif "_.hasattr(sapl_documentos.administrativo,id_documento) and _.hasattr(sapl_documentos.administrativo,id_documento_assinado)">
+                               <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento_assinado).absolute_url">
+                                <a target="_blank" href="<dtml-var documento>">
+                                 <img align="top" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral" title="Texto integral">
+                                </a>
+			       </dtml-let>
+                               <input type="button" class="botao" value="Excluir" onclick="javascript:texto_integral_excluir()" />
+			      <dtml-else>
+                                <input type="file" name="file_nom_arquivo" size="40" maxlength="100" />
+                                <dtml-let id_documento_odt="_.str(cod_documento)+'_texto_integral.odt'">
+                                 <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento_odt)">
+                                  <dtml-call expr="REQUEST.set('temODT', 1)">
+                                 </dtml-if>
+                                </dtml-let>
+                                <dtml-if expr="_.has_key('temODT')">
+                                 <input type="button" class="botao" value="Gerar" onclick="javascript:texto_pdf_gerar()" />
+                                </dtml-if>
+                              </dtml-if>
                              <dtml-else>
                               <input type="file" name="file_nom_arquivo" size="40" maxlength="100" />
-                           </dtml-if>
+                            </dtml-if>
                          </td>
                          <td colspan="2">
 <dtml-if cod_documento>
-                         <label for="radTipTxtIntegral">Texto editável (ODT)</label><br />
+                         <label for="radTipTxtIntegral">Texto Editável (ODT)</label><br />
                           <dtml-let id_documento="_.str(cod_documento)+'_texto_integral.odt'">
                            <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
                              <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
                                <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_documento)+'_texto_integral.odt')">
-                               <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">                              
-                                 <img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Visualizar Arquivo ODT" title="Visualizar Arquivo ODT">
-                               </a>
-                               <dtml-if "not _.hasattr(sapl_documentos.administrativo,_.str(cod_documento)+'_texto_integral.pdf')">
-                               <a class="botao-link" target="_blank" href="&dtml-URL1;/sapl_documentos/administrativo/externalEdit_/<dtml-var nome_arquivo>.zem">
-                                 Editor Externo</a>
-                               </dtml-if>
-                             </dtml-let>
-                               &nbsp;<a class="botao-link" href="javascript:texto_integral_excluir_odt()">Excluir</a>
+                               <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe"><img align="top" border="0" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Visualizar Arquivo ODT" title="Visualizar Arquivo ODT"></a>
+  		               <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_documento)+'_texto_integral.odt')">
+                               <input id="menuitem" type="button" class="botao" value="Editar" />
+                                 <script type="text/javascript">
+                                  $('#menuitem').click(function () {
+                                  $.fancybox({
+                                   type: 'iframe',
+                                   href: '&dtml-portal_url;/webeditor/editorDocumento?<dtml-var documento>',
+                                   width                : '90%',
+                                   height               : '95%',
+                                   preload         : true
+                                   });
+                                   });
+                                  </script>
+				  <input type="button" class="botao" value="Editor Externo" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/administrativo/externalEdit_/<dtml-var nome_arquivo_odt>.zem'" />
+  		          </dtml-let>
+                          <input type="button" class="botao" value="Excluir" onclick="javascript:texto_integral_excluir_odt()" />
                         </dtml-if>
                            <dtml-unless "_.hasattr(sapl_documentos.administrativo,id_documento)">
                               <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_documento))">
