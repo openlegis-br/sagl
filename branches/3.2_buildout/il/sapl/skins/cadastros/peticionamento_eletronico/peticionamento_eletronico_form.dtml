@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+
+<script type="text/javascript">
+  function campos_criticar(){
+  var form = document.peticionamento_form;
+
+      if (form.lst_assunto.selectedIndex==''){
+          alert("Assunto é campo obrigatório !");
+          form.lst_assunto.focus();
+          return false;
+      }
+
+      if (form.txa_txt_assunto.value == "") {
+         alert("O enunciado do pedido deve ser preenchido !");
+         form.txa_txt_assunto.focus();
+         return false;
+      }
+
+      if (confirm("Confirma o protocolo desta petição ?")) {
+         form.submit();
+      }
+
+  }
+</script>
+
+<script type="text/javascript">
+  function reloadParentAndClose() {
+    parent.jQuery.fancybox.close();
+  }
+</script>
+
+<head>
+  <body class="modal">
+
+     <h1 class="firstHeading">Peticionamento Eletrônico</h1> 
+ 
+        <dtml-call "REQUEST.set('username', AUTHENTICATED_USER)">
+
+	<dtml-in expr="zsql.usuario_obter_zsql(col_username=username)">
+		<dtml-call "REQUEST.set('nom_completo', nom_completo)">
+		<dtml-call "REQUEST.set('nom_cargo', nom_cargo)">
+	<dtml-else>
+                <dtml-call "REQUEST.set('nom_completo', AUTHENTICATED_USER)">
+	</dtml-in>
+
+
+     <form enctype="multipart/form-data" name="peticionamento_form" method="post" action="protocolo_pysc">
+
+         <table>
+		 <tr>
+                          <td>
+				  <label for="txa_txt_interessado">Requerente</label><br />
+				  <input type="text" id="txa_txt_interessado" name="txa_txt_interessado" size="34" value="<dtml-var nom_completo>" readonly/>
+			 </td>
+		 </tr>
+		 <tr>
+			 <td>
+				 <label for="lst_assunto">Assunto<span class="campoObrigatorio">&nbsp;</span></label><br />
+				 <select id="lst_assunto" name="lst_assunto">
+					<option></option>
+                                        <option value="Adiantamento de 13º salário">Adiantamento de 13º salário</option>
+                                        <option value="Adiantamento de despesas de viagem">Adiantamento de despesas de viagem</option>
+					<option value="Compra">Compra de produto ou serviço</option>
+                                        <option value="Férias">Férias</option>
+                                        <option value="Justificativa de falta">Justificativa de falta</option>
+                                        <option value="Licença-prêmio">Licença-prêmio</option>
+                                        <option value="Outros assunto">Outros assuntos</option>
+				 </select>
+			 </td>
+		</tr>
+		<tr>
+			<td>
+				<label for="txa_txt_assunto">Enunciado do Pedido </label> <span class="campoObrigatorio">&nbsp;</span>
+				<textarea id="txa_txt_assunto" name="txa_txt_assunto" cols="67" rows="4"></textarea>
+			</td>
+		</tr>
+		<tr>
+                         <td>
+				 <label for="anexo">Anexo em PDF</label><br />
+				 <input type="file" id="anexo" name="anexo" accept="application/pdf" size="45" />
+			 </td>
+		</tr>
+	</table>
+
+     </form>
+
+     <p align="center">
+       <input type="button" class="botao" name="btn_salvar" value="Protocolar Petição" onClick="campos_criticar()" />
+     </p>
+
+  </body>
+</html>
