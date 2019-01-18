@@ -473,6 +473,15 @@ CREATE TABLE `documento_administrativo_vinculado` (
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE `documento_comissao` (
+  `cod_documento` int(11) NOT NULL,
+  `cod_comissao` int(11) NOT NULL,
+  `dat_documento` date NOT NULL,
+  `txt_descricao` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `txt_observacao` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 CREATE TABLE `emenda` (
   `cod_emenda` int(11) NOT NULL,
   `tip_emenda` int(11) NOT NULL,
@@ -664,6 +673,31 @@ CREATE TABLE `lexml_registro_publicador` (
   `tipo` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `id_responsavel` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `listaAutores` (
+`cod_autor` varchar(11)
+,`nom_autor_join` varchar(100)
+);
+CREATE TABLE `listaComissoes` (
+`cod_comissao` int(11)
+,`sgl_comissao` varchar(10)
+,`nom_comissao` varchar(100)
+,`dat_criacao` date
+,`dat_extincao` date
+,`tipo_comissao` varchar(50)
+);
+CREATE TABLE `listaMembrosComissoes` (
+`cod_comissao` int(11)
+,`nom_comissao` varchar(100)
+,`cod_parlamentar` int(11)
+,`nom_completo` varchar(50)
+,`nom_parlamentar` varchar(50)
+,`des_cargo` varchar(50)
+,`ind_titular` tinyint(4)
+,`dat_designacao` varchar(10)
+,`dat_desligamento` varchar(10)
+,`des_motivo_desligamento` varchar(150)
+,`obs_composicao` varchar(150)
+);
 
 CREATE TABLE `localidade` (
   `cod_localidade` int(11) NOT NULL DEFAULT '0',
@@ -6345,6 +6379,15 @@ CREATE TABLE `materia_legislativa` (
   `cod_materia_principal` int(11) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+CREATE TABLE `mesaAtual` (
+`cod_parlamentar` int(11)
+,`des_cargo` varchar(50)
+,`nom_parlamentar` varchar(50)
+,`nom_completo` varchar(50)
+,`sgl_partido` varchar(9)
+,`foto_parlamentar` varchar(108)
+,`end_email` varchar(100)
+);
 
 CREATE TABLE `mesa_sessao_plenaria` (
   `cod_cargo` tinyint(4) NOT NULL,
@@ -7385,6 +7428,18 @@ CREATE TABLE `usuario_unid_tram` (
   `ind_responsavel` tinyint(4) NOT NULL DEFAULT '0',
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `vereadoresAtuais` (
+`cod_parlamentar` int(11)
+,`nom_parlamentar` varchar(50)
+,`nom_completo` varchar(50)
+,`sgl_partido` varchar(9)
+,`foto_parlamentar` varchar(108)
+,`end_email` varchar(100)
+,`num_legislatura` int(11)
+,`dat_inicio_mandato` date
+,`dat_fim_mandato` date
+,`ind_titular` tinyint(4)
+);
 
 CREATE TABLE `vinculo_norma_juridica` (
   `cod_vinculo` int(11) NOT NULL,
@@ -7408,6 +7463,21 @@ CREATE TABLE `visita` (
   `txt_observacao` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+DROP TABLE IF EXISTS `listaAutores`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `listaAutores`  AS  select distinct replace(`autor`.`cod_autor`,'L','') AS `cod_autor`,if((`tipo_autor`.`des_tipo_autor` = 'Parlamentar'),`parlamentar`.`nom_parlamentar`,if((`tipo_autor`.`des_tipo_autor` = 'Bancada'),concat(`bancada`.`nom_bancada`,' (',convert(date_format(`legislatura`.`dat_inicio`,'%Y') using utf8),'-',convert(date_format(`legislatura`.`dat_fim`,'%Y') using utf8),')'),if((`tipo_autor`.`des_tipo_autor` = 'Comissao'),`comissao`.`nom_comissao`,`autor`.`nom_autor`))) AS `nom_autor_join` from (`tipo_autor` join ((((`autor` left join `parlamentar` on(((`autor`.`cod_parlamentar` = `parlamentar`.`cod_parlamentar`) and (`parlamentar`.`ind_excluido` = 0)))) left join `comissao` on(((`autor`.`cod_comissao` = `comissao`.`cod_comissao`) and (`comissao`.`ind_excluido` = 0)))) left join `bancada` on(((`autor`.`cod_bancada` = `bancada`.`cod_bancada`) and (`bancada`.`ind_excluido` = 0)))) left join `legislatura` on((`bancada`.`num_legislatura` = `legislatura`.`num_legislatura`)))) where ((((`parlamentar`.`cod_parlamentar` is not null) and (`tipo_autor`.`des_tipo_autor` = 'Parlamentar')) or ((`bancada`.`cod_bancada` is not null) and (`tipo_autor`.`des_tipo_autor` = 'Bancada')) or ((`comissao`.`cod_comissao` is not null) and (`tipo_autor`.`des_tipo_autor` = 'Comissao')) or ((`tipo_autor`.`des_tipo_autor` <> 'Parlamentar') and (`tipo_autor`.`des_tipo_autor` <> 'Bancada') and (`tipo_autor`.`des_tipo_autor` <> 'Comissao'))) and (`autor`.`ind_excluido` = 0) and (`autor`.`tip_autor` = `tipo_autor`.`tip_autor`)) order by `nom_autor_join` ;
+DROP TABLE IF EXISTS `listaComissoes`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `listaComissoes`  AS  select `c`.`cod_comissao` AS `cod_comissao`,`c`.`sgl_comissao` AS `sgl_comissao`,`c`.`nom_comissao` AS `nom_comissao`,`c`.`dat_criacao` AS `dat_criacao`,`c`.`dat_extincao` AS `dat_extincao`,`tc`.`nom_tipo_comissao` AS `tipo_comissao` from (`comissao` `c` left join `tipo_comissao` `tc` on((`c`.`tip_comissao` = `tc`.`tip_comissao`))) where ((`c`.`ind_excluido` = 0) and (`tc`.`ind_excluido` = 0)) order by `c`.`nom_comissao` ;
+DROP TABLE IF EXISTS `listaMembrosComissoes`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `listaMembrosComissoes`  AS  select `cp`.`cod_comissao` AS `cod_comissao`,`c`.`nom_comissao` AS `nom_comissao`,`cp`.`cod_parlamentar` AS `cod_parlamentar`,`p`.`nom_completo` AS `nom_completo`,`p`.`nom_parlamentar` AS `nom_parlamentar`,`cc`.`des_cargo` AS `des_cargo`,`cp`.`ind_titular` AS `ind_titular`,date_format(`cp`.`dat_designacao`,'%d/%m/%Y') AS `dat_designacao`,date_format(`cp`.`dat_desligamento`,'%d/%m/%Y') AS `dat_desligamento`,`cp`.`des_motivo_desligamento` AS `des_motivo_desligamento`,`cp`.`obs_composicao` AS `obs_composicao` from ((((`periodo_comp_comissao` `pc` left join `composicao_comissao` `cp` on((`cp`.`cod_periodo_comp` = `pc`.`cod_periodo_comp`))) left join `cargo_comissao` `cc` on((`cp`.`cod_cargo` = `cc`.`cod_cargo`))) left join `parlamentar` `p` on((`cp`.`cod_parlamentar` = `p`.`cod_parlamentar`))) left join `comissao` `c` on((`cp`.`cod_comissao` = `c`.`cod_comissao`))) where ((cast(now() as date) >= `pc`.`dat_inicio_periodo`) and (cast(now() as date) <= `pc`.`dat_fim_periodo`) and (`pc`.`ind_excluido` = 0) and (`cp`.`ind_excluido` = 0)) order by `c`.`nom_comissao`,`cc`.`cod_cargo` ;
+DROP TABLE IF EXISTS `mesaAtual`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `mesaAtual`  AS  select `cm`.`cod_parlamentar` AS `cod_parlamentar`,`cme`.`des_cargo` AS `des_cargo`,`p`.`nom_parlamentar` AS `nom_parlamentar`,`p`.`nom_completo` AS `nom_completo`,`pr`.`sgl_partido` AS `sgl_partido`,concat('https://publico.camararibeiraopreto.sp.gov.br/sapl_documentos/parlamentar/fotos/',`p`.`cod_parlamentar`,'_foto_parlamentar') AS `foto_parlamentar`,`p`.`end_email` AS `end_email` from (((((`composicao_mesa` `cm` left join `periodo_comp_mesa` `pm` on((`cm`.`cod_periodo_comp` = `pm`.`cod_periodo_comp`))) left join `cargo_mesa` `cme` on((`cm`.`cod_cargo` = `cme`.`cod_cargo`))) left join `parlamentar` `p` on((`cm`.`cod_parlamentar` = `p`.`cod_parlamentar`))) left join `filiacao` `f` on((`f`.`cod_parlamentar` = `p`.`cod_parlamentar`))) left join `partido` `pr` on((`f`.`cod_partido` = `pr`.`cod_partido`))) where ((cast(now() as date) >= `pm`.`dat_inicio_periodo`) and (cast(now() as date) <= `pm`.`dat_fim_periodo`) and (cast(now() as date) >= `f`.`dat_filiacao`) and isnull(`f`.`dat_desfiliacao`)) order by `cm`.`cod_cargo` ;
+DROP TABLE IF EXISTS `vereadoresAtuais`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vereadoresAtuais`  AS  select `p`.`cod_parlamentar` AS `cod_parlamentar`,`p`.`nom_parlamentar` AS `nom_parlamentar`,`p`.`nom_completo` AS `nom_completo`,`pr`.`sgl_partido` AS `sgl_partido`,concat('https://publico.camararibeiraopreto.sp.gov.br/sapl_documentos/parlamentar/fotos/',`p`.`cod_parlamentar`,'_foto_parlamentar') AS `foto_parlamentar`,`p`.`end_email` AS `end_email`,`l`.`num_legislatura` AS `num_legislatura`,`m`.`dat_inicio_mandato` AS `dat_inicio_mandato`,`m`.`dat_fim_mandato` AS `dat_fim_mandato`,`m`.`ind_titular` AS `ind_titular` from ((((`mandato` `m` left join `legislatura` `l` on((`m`.`num_legislatura` = `l`.`num_legislatura`))) left join `parlamentar` `p` on((`m`.`cod_parlamentar` = `p`.`cod_parlamentar`))) left join `filiacao` `f` on((`f`.`cod_parlamentar` = `p`.`cod_parlamentar`))) left join `partido` `pr` on((`f`.`cod_partido` = `pr`.`cod_partido`))) where ((cast(now() as date) >= `l`.`dat_inicio`) and (cast(now() as date) <= `l`.`dat_fim`) and (cast(now() as date) >= `f`.`dat_filiacao`) and isnull(`f`.`dat_desfiliacao`)) group by `p`.`cod_parlamentar` order by `p`.`nom_completo` ;
 
 
 ALTER TABLE `acomp_materia`
@@ -7629,6 +7699,11 @@ ALTER TABLE `documento_administrativo_vinculado`
   ADD UNIQUE KEY `idx_doc_vinculo` (`cod_documento_vinculante`,`cod_documento_vinculado`),
   ADD KEY `idx_doc_vinculado` (`cod_documento_vinculado`) USING BTREE,
   ADD KEY `idx_cod_documento` (`cod_documento_vinculante`) USING BTREE;
+
+ALTER TABLE `documento_comissao`
+  ADD PRIMARY KEY (`cod_documento`),
+  ADD KEY `cod_comissao` (`cod_comissao`);
+ALTER TABLE `documento_comissao` ADD FULLTEXT KEY `txt_descricao` (`txt_descricao`);
 
 ALTER TABLE `emenda`
   ADD PRIMARY KEY (`cod_emenda`),
@@ -8154,13 +8229,13 @@ ALTER TABLE `arquivo_recipiente`
   MODIFY `cod_recipiente` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `arquivo_tipo_recipiente`
-  MODIFY `tip_recipiente` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_recipiente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `arquivo_tipo_suporte`
-  MODIFY `tip_suporte` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_suporte` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `arquivo_tipo_tit_documental`
-  MODIFY `tip_tit_documental` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_tit_documental` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 ALTER TABLE `arquivo_unidade`
   MODIFY `cod_unidade` int(11) NOT NULL AUTO_INCREMENT;
@@ -8169,25 +8244,25 @@ ALTER TABLE `assessor_parlamentar`
   MODIFY `cod_assessor` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `assunto_norma`
-  MODIFY `cod_assunto` int(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_assunto` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 ALTER TABLE `autor`
-  MODIFY `cod_autor` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_autor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `bancada`
   MODIFY `cod_bancada` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `cargo_bancada`
-  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `cargo_comissao`
-  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `cargo_executivo`
-  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 ALTER TABLE `cargo_mesa`
-  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_cargo` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 ALTER TABLE `coligacao`
   MODIFY `cod_coligacao` int(11) NOT NULL AUTO_INCREMENT;
@@ -8224,6 +8299,9 @@ ALTER TABLE `documento_administrativo_materia`
 
 ALTER TABLE `documento_administrativo_vinculado`
   MODIFY `cod_vinculo` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `documento_comissao`
+  MODIFY `cod_documento` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `emenda`
   MODIFY `cod_emenda` int(11) NOT NULL AUTO_INCREMENT;
@@ -8268,7 +8346,7 @@ ALTER TABLE `materia_legislativa`
   MODIFY `cod_materia` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `nivel_instrucao`
-  MODIFY `cod_nivel_instrucao` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_nivel_instrucao` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 ALTER TABLE `norma_juridica`
   MODIFY `cod_norma` int(11) NOT NULL AUTO_INCREMENT;
@@ -8280,7 +8358,7 @@ ALTER TABLE `ordem_dia_presenca`
   MODIFY `cod_presenca_ordem_dia` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `orgao`
-  MODIFY `cod_orgao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_orgao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 ALTER TABLE `origem`
   MODIFY `cod_origem` int(11) NOT NULL AUTO_INCREMENT;
@@ -8289,7 +8367,7 @@ ALTER TABLE `parlamentar`
   MODIFY `cod_parlamentar` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `partido`
-  MODIFY `cod_partido` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_partido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 ALTER TABLE `periodo_comp_bancada`
   MODIFY `cod_periodo_comp` int(11) NOT NULL AUTO_INCREMENT;
@@ -8310,10 +8388,10 @@ ALTER TABLE `protocolo`
   MODIFY `cod_protocolo` int(7) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `quorum_votacao`
-  MODIFY `cod_quorum` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_quorum` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 ALTER TABLE `regime_tramitacao`
-  MODIFY `cod_regime_tramitacao` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_regime_tramitacao` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 ALTER TABLE `registro_votacao`
   MODIFY `cod_votacao` int(11) NOT NULL AUTO_INCREMENT;
@@ -8337,10 +8415,10 @@ ALTER TABLE `sessao_plenaria_presenca`
   MODIFY `cod_presenca_sessao` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `status_tramitacao`
-  MODIFY `cod_status` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_status` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 ALTER TABLE `status_tramitacao_administrativo`
-  MODIFY `cod_status` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_status` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `subemenda`
   MODIFY `cod_subemenda` int(11) NOT NULL AUTO_INCREMENT;
@@ -8349,58 +8427,58 @@ ALTER TABLE `substitutivo`
   MODIFY `cod_substitutivo` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `tipo_afastamento`
-  MODIFY `tip_afastamento` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_afastamento` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 ALTER TABLE `tipo_comissao`
-  MODIFY `tip_comissao` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_comissao` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `tipo_dependente`
-  MODIFY `tip_dependente` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_dependente` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 ALTER TABLE `tipo_documento`
-  MODIFY `tip_documento` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 ALTER TABLE `tipo_documento_administrativo`
-  MODIFY `tip_documento` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `tipo_emenda`
-  MODIFY `tip_emenda` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_emenda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 ALTER TABLE `tipo_expediente`
-  MODIFY `cod_expediente` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_expediente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 ALTER TABLE `tipo_fim_relatoria`
-  MODIFY `tip_fim_relatoria` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_fim_relatoria` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 ALTER TABLE `tipo_instituicao`
-  MODIFY `tip_instituicao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_instituicao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 ALTER TABLE `tipo_materia_legislativa`
-  MODIFY `tip_materia` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_materia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 ALTER TABLE `tipo_norma_juridica`
-  MODIFY `tip_norma` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_norma` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 ALTER TABLE `tipo_proposicao`
-  MODIFY `tip_proposicao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_proposicao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 ALTER TABLE `tipo_resultado_votacao`
-  MODIFY `tip_resultado_votacao` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_resultado_votacao` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 ALTER TABLE `tipo_sessao_plenaria`
-  MODIFY `tip_sessao` tinyint(4) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_sessao` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 ALTER TABLE `tipo_situacao_materia`
-  MODIFY `tip_situacao_materia` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_situacao_materia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
 
 ALTER TABLE `tipo_situacao_norma`
-  MODIFY `tip_situacao_norma` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_situacao_norma` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 ALTER TABLE `tipo_vinculo_norma`
-  MODIFY `cod_tip_vinculo` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_tip_vinculo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 ALTER TABLE `tipo_votacao`
-  MODIFY `tip_votacao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `tip_votacao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `tramitacao`
   MODIFY `cod_tramitacao` int(11) NOT NULL AUTO_INCREMENT;
@@ -8409,10 +8487,10 @@ ALTER TABLE `tramitacao_administrativo`
   MODIFY `cod_tramitacao` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `turno_discussao`
-  MODIFY `cod_turno` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_turno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 ALTER TABLE `unidade_tramitacao`
-  MODIFY `cod_unid_tramitacao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `cod_unid_tramitacao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 ALTER TABLE `usuario`
   MODIFY `cod_usuario` int(11) NOT NULL AUTO_INCREMENT;
