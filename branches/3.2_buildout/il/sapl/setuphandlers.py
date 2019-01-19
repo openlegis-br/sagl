@@ -18,6 +18,7 @@ def setupConteudo(portal):
         for o in [
             'administrativo.zexp',
             'ata_sessao.zexp',
+            'documento_comissao.zexp',
             'emenda.zexp',
             'materia.zexp',
             'materia_odt.zexp',
