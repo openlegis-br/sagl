@@ -1,0 +1,111 @@
+<dtml-var standard_html_header>
+
+<dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+  <dtml-call expr="REQUEST.set('nom_comissao', nom_comissao)">
+</dtml-in>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_comissoes">Ajuda</a>
+
+<h1 class="firstHeading"><dtml-var nom_comissao></h1> 
+
+<dtml-if cod_comissao>
+<div id="barra-conteudo">
+<ul>
+   <li>
+      <a href="&dtml-portal_url;/cadastros/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>">Início</a>
+   </li>
+   <li>
+      <a href="&dtml-portal_url;/cadastros/comissao/composicao/index_html?cod_comissao=<dtml-var cod_comissao>">Composição</a>
+   </li>
+    <li>
+        <a href="&dtml-portal_url;/cadastros/comissao/materia/index_html?cod_comissao=<dtml-var cod_comissao>"">Matérias</a>
+    </li>
+    <li>
+        <a href="&dtml-portal_url;/cadastros/comissao/reuniao/index_html?cod_comissao=<dtml-var cod_comissao>"">Reuniões</a>
+    </li>
+
+   <li>
+      <a class="selecionado">Documentos</a>
+   </li>
+</ul>
+</div>
+</dtml-if>
+
+<form name="documento_index_form" action="documento_form">
+ <input type="hidden" name="cod_comissao" value="<dtml-var cod_comissao>" />
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+<dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+<dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+<dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+<dtml-call "REQUEST.set('step', 12)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+ <dtml-in expr="zsql.documento_comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)" size="step" start="start" orphan=0>
+    <dtml-if sequence-start>
+      <fieldset><legend>Documentos</legend>
+      <table>
+        <tr>
+          <th width="15%" class="form-label">Data</th>
+	  <th width="45%" class="form-label">Descrição</th>
+	  <th width="25%" class="form-label">Observações</th>
+          <th width="15%" class="form-label">Arquivo</th>
+        </tr>
+  <dtml-if previous-sequence>
+     <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+  </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+       <dtml-if sequence-even>
+         <tr>
+       <dtml-else>
+         <tr class="even">
+       </dtml-if>
+             <td class="texto"><a href="documento_mostrar_proc?cod_documento=<dtml-var cod_documento>"><dtml-var dat_documento></a></td>
+             <td class="texto"><dtml-var txt_descricao></td>
+             <td class="texto"><dtml-var txt_observacao missing null=""></td>
+	     <td class="texto">
+                <dtml-let id_documento="_.str(cod_documento)+'_documento.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.documento_comissao,id_documento)">
+                    <dtml-let documento="_.getattr(sapl_documentos.documento_comissao,id_documento).absolute_url">
+		    <div align="center">
+                      <a target="_blank" href="<dtml-var documento>"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+		    </div>
+                    </dtml-let>
+                  <dtml-else>
+	            <div align="center">
+                      <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+		    </div>
+                  </dtml-if>
+                </dtml-let>
+              </td>
+        </tr>
+    <dtml-if sequence-end>
+      </table>
+     </fieldset>
+  <dtml-if next-sequence>
+    <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+ </dtml-if next-sequence>
+ <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+  <p align="center" class="form-text"><b> 
+   <dtml-var "pysc.PageListOutput_pysc('documento_index_html', page, step, _['sequence-length'], cod_comissao=cod_comissao)">
+  </p>
+  </dtml-if>
+    </dtml-if sequence-end>
+<dtml-else>
+ <fieldset><legend>Documentos</legend>
+  <p class="texto">Nenhum documento cadastrado.</p>
+ </fieldset>
+</dtml-in>
+  <p align="center">
+     <input type="submit" name="Submit" class="botao" value="Incluir Documento" />
+  </p>
+</form>
+<dtml-var standard_html_footer>
+
