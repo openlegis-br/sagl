@@ -6634,6 +6634,7 @@ CREATE TABLE `periodo_comp_mesa` (
   `num_legislatura` int(11) NOT NULL,
   `dat_inicio_periodo` date NOT NULL,
   `dat_fim_periodo` date NOT NULL,
+  `txt_observacao` text COLLATE utf8_unicode_ci,
   `ind_excluido` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
 

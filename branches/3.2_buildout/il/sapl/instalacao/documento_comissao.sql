@@ -20,3 +20,6 @@ ALTER TABLE `documento_comissao`
 
 ALTER TABLE `documento_comissao`
   ADD CONSTRAINT `documento_comissao_ibfk_1` FOREIGN KEY (`cod_comissao`) REFERENCES `comissao` (`cod_comissao`) ON UPDATE NO ACTION;
+
+ALTER TABLE `periodo_comp_mesa` ADD `txt_observacao` TEXT NULL AFTER `dat_fim_periodo`;
+
