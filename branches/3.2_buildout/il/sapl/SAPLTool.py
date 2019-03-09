@@ -818,6 +818,78 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.administrativo.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
+    def documento_assinado_imprimir(self,cod_documento):
+        nom_pdf_documento = str(cod_documento) + "_texto_integral_signed.pdf"
+        pdf_documento = self.sapl_documentos.administrativo.absolute_url() + "/" +  nom_pdf_documento
+        for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
+          string = str(documento.cod_documento)
+          num_documento = documento.num_documento
+          nom_autor = documento.txt_interessado
+          for tipo_documento in self.zsql.tipo_documento_administrativo_obter_zsql(tip_documento=documento.tip_documento):
+            texto = str(tipo_documento.des_tipo_documento.upper())+' Nº '+ str(documento.num_documento)+'/'+str(documento.ano_documento)
+            #validacao = 'Código: ' + self.pysc.documento_calcular_checksum_pysc(cod_documento)
+            nom_pdf_saida = str(documento.cod_documento) + "_texto_integral.pdf"
+            nom_pdf_amigavel = str(tipo_documento.des_tipo_documento.upper())+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+".pdf"
+        mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por '+nom_autor+'.'
+        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/documento_validar?codigo='+str(string)
+        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
+        pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
+        x_var=189
+        y_var=2
+        packet = os.path.normpath('temp.pdf')
+        slab = canvas.Canvas(packet, pagesize=A4)
+        slab.setFillColorRGB(0,0,0)
+        qr_code = qr.QrCodeWidget(self.url()+'/consultas/documento_validar?codigo='+str(cod_documento))
+        bounds = qr_code.getBounds()
+        width = bounds[2] - bounds[0]
+        height = bounds[3] - bounds[1]
+        d = Drawing(55, 55, transform=[55./width,0,0,55./height,0,0])
+        d.add(qr_code)
+        renderPDF.draw(d, slab,  x_var*mm, y_var*mm)
+        slab.setFont("Arial_Bold", 12)
+        #slab.drawString(175, 674, texto)
+        slab.setFont("Arial", 9)
+        #slab.drawString(175, 662, validacao)
+        slab.save()
+        barcode_pdf = open(packet, 'rb')
+        new_pdf = PdfReader(barcode_pdf)
+
+        packet1 = os.path.normpath('temp1.pdf')
+        c = canvas.Canvas(packet1, pagesize=A4)
+        c.setFillColorRGB(0,0,0)
+        c.rotate(90)
+        c.setFont("Arial", 9)
+        c.drawString(65, -575, mensagem1)
+        c.drawString(65, -585, mensagem2)
+        c.save()
+        texto_pdf = open(packet1, 'rb')
+        new_pdf1 = PdfReader(texto_pdf)
+
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()
+        url = self.url() + '/sapl_documentos/administrativo/' + nom_pdf_documento
+        opener = urllib.urlopen(url)
+        f = open('/tmp/' + nom_pdf_documento, 'wb').write(opener.read())
+        existing_pdf = PdfReader(file('/tmp/' + nom_pdf_documento, "rb"))
+        margem = PageMerge().add(new_pdf1.pages[0])[0]
+        for page in existing_pdf.pages:
+          PageMerge(page).add(margem).render()
+        qrcode = PageMerge().add(new_pdf.pages[0])[0]
+        PageMerge(existing_pdf.pages[0]).add(qrcode).render()
+        outputStream = '/tmp/' + nom_pdf_saida
+        PdfWriter(outputStream, trailer=existing_pdf).write()
+        readin = open(outputStream, 'r' )
+        contents = readin.read()
+        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
+        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%nom_pdf_amigavel
+        self.REQUEST.RESPONSE.headers['Content-Length'] = len(contents)
+        os.unlink('/tmp/'+nom_pdf_documento)
+        os.unlink(outputStream)
+        return contents
+
+        os.unlink(packet)
+        os.unlink(packet1)
+
     def parecer_gerar_odt(self, inf_basicas_dic, nom_arquivo, nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao):
         url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/parecer.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
