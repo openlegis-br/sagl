@@ -822,12 +822,11 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         nom_pdf_documento = str(cod_documento) + "_texto_integral_signed.pdf"
         pdf_documento = self.sapl_documentos.administrativo.absolute_url() + "/" +  nom_pdf_documento
         for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
-          string = str(documento.cod_documento)
+          string = self.pysc.b64encode_pysc(codigo=str(documento.cod_documento))
           num_documento = documento.num_documento
           nom_autor = documento.txt_interessado
           for tipo_documento in self.zsql.tipo_documento_administrativo_obter_zsql(tip_documento=documento.tip_documento):
             texto = str(tipo_documento.des_tipo_documento.upper())+' Nº '+ str(documento.num_documento)+'/'+str(documento.ano_documento)
-            #validacao = 'Código: ' + self.pysc.documento_calcular_checksum_pysc(cod_documento)
             nom_pdf_saida = str(documento.cod_documento) + "_texto_integral.pdf"
             nom_pdf_amigavel = str(tipo_documento.des_tipo_documento.upper())+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+".pdf"
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por '+nom_autor+'.'
@@ -839,7 +838,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         packet = os.path.normpath('temp.pdf')
         slab = canvas.Canvas(packet, pagesize=A4)
         slab.setFillColorRGB(0,0,0)
-        qr_code = qr.QrCodeWidget(self.url()+'/consultas/documento_validar?codigo='+str(cod_documento))
+        qr_code = qr.QrCodeWidget(self.url()+'/consultas/documento_validar?codigo='+str(string))
         bounds = qr_code.getBounds()
         width = bounds[2] - bounds[0]
         height = bounds[3] - bounds[1]
