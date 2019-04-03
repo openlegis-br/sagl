@@ -189,7 +189,7 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
     tmp_pdf=parseString(tmp)
 
     if hasattr(context.sapl_documentos.administrativo.tramitacao,arquivoPdf):
-        context.sapl_documentos.administrativo.tramitacao.manage_delObjects(ids=arquivoPdf)
+         context.sapl_documentos.administrativo.tramitacao.manage_delObjects(ids=arquivoPdf)
     if hasattr(context.sapl_documentos.administrativo.tramitacao,arquivoAssinado):
         context.sapl_documentos.administrativo.tramitacao.manage_delObjects(ids=arquivoAssinado)
     context.sapl_documentos.administrativo.tramitacao.manage_addFile(arquivoPdf)

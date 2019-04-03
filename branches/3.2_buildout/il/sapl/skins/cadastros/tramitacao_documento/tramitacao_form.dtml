@@ -110,6 +110,8 @@ $(document).ready(function() {
 });
 </script>
 
+
+
 <h1 class="firstHeading">Tramitação Eletrônica de Documento</h1>
 
   <table>
@@ -153,6 +155,13 @@ $(document).ready(function() {
               </dtml-if>
              </dtml-in>
            </dtml-if>
+
+<dtml-comment>
+  <dtml-call expr="REQUEST.set('id_pdf_anexo', _.str(hdn_cod_tramitacao)+'_tram_anexo1.pdf')">
+  <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,id_pdf_anexo)">
+     <dtml-call expr="cadastros.tramitacao_documento.tramitacao_juntar_pdf(cod_tramitacao=hdn_cod_tramitacao)">
+  </dtml-if>
+</dtml-comment>
 
  <table>
       <tr>
@@ -280,21 +289,36 @@ $(document).ready(function() {
   <dtml-if hdn_cod_tramitacao>
       <dtml-call expr="REQUEST.set('cod_tramitacao', hdn_cod_tramitacao)">
       <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+      <dtml-call expr="REQUEST.set('pdf_anexo', _.str(cod_tramitacao)+'_tram_anexo1.pdf')">
       <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
       <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf) or _.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
        <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
          <tr>
            <th class="form-element">
-                 Tramitação em PDF
+             Tramitação em PDF
            </th>
-           <th valign="top" class="form-element" colspan="2">
-                   <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
-                     <a class="popup1" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
-                       <img align="top" style="float: left; margin-right: 8px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF">
-                     <dtml-if expr="int(cod_usuario_corrente)==int(cod_usuario_local)" >
-                       </a><div class="assinar-pdf" style="cursor: pointer; float:left; padding-right: 4px;"><a class="botao">Assinar Digitalmente</a></div>
-                     </dtml-if>
-                   </dtml-let>
+           <th valign="top" class="form-element" colspan="2" style="text-align: left;">
+              <div style="width: 20%; float: left;" >
+                <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
+                  <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
+                        <a class="popup1" style="float: left;" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">Despacho</a>
+                  </dtml-let>
+                </dtml-if>
+                <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_anexo)">
+                  <dtml-let pdf_anexo="_.getattr(sapl_documentos.administrativo.tramitacao,pdf_anexo).absolute_url">
+                        <a class="popup1" style="float: left;" href="<dtml-var pdf_anexo>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">Anexo</a><br />
+                  </dtml-let>
+                </dtml-if>
+              </div>
+              <div style="width: 40%; float: left;" >
+                <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_anexo)">
+                   <a class="botao" id="link" onclick="javascript:location.href='tramitacao_juntar?cod_tramitacao=<dtml-var cod_tramitacao>'" style="float: right;">Unir PDFs</a>
+                </dtml-if>
+              </div>
+              <div style="width: 40%; float: right;" >
+                    <dtml-if expr="int(cod_usuario_corrente)==int(cod_usuario_local)" >
+                      <div class="assinar-pdf" style="float: right; cursor: pointer; padding-right: 4px;"><a class="botao">Assinar Digitalmente</a></div>
+                    </dtml-if>
 			         <script type="text/javascript">
 			           $('.assinar-pdf').click(function () {
     			           $.fancybox({
@@ -310,14 +334,15 @@ $(document).ready(function() {
     			           });
 			           });
 			         </script>
+              </div>
            </th>
          </tr>
          <tr>
            <td colspan="3">
-                      <input type="radio" name="radTI" value="G" checked="true" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Gerar PDF</b></span>
+                      <input type="radio" name="radTI" value="G" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Gerar PDF</b></span>
                       <input type="radio" name="radTI" value="S" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Carregar Arquivo</b></span>
                       <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="45" maxlength="100" disabled="1" />
-                      <input type="radio" name="radTI" value="M" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Manter</b></span>
+                      <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Manter</b></span>
                       <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Excluir</b></span>
 
            </td>
@@ -350,14 +375,14 @@ $(document).ready(function() {
                    <td colspan="3">
                       <input type="radio" name="radTI" value="G" checked="true" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Gerar PDF</b></span>
                       <input type="radio" name="radTI" value="U" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Carregar Arquivo</b></span>
-                      <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="45" maxlength="100" disabled="1" />
+                      <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="45" maxlength="100" />
                    </td>
                  </tr>
       </dtml-if>
    <dtml-else>
          <tr>
            <td valign="top" class="form-element" colspan="3">
-              <input type="radio" name="radTI" value="G" checked="true" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Gerar PDF</b></span>
+                      <input type="radio" name="radTI" value="G" checked="true" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Gerar PDF</b></span>
               <input type="radio" name="radTI" value="U" onClick="ativa_desativa_file_field(document.tramitacao_form)"/><span class="texto"><b>Carregar Arquivo</b></span>
               <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="45" maxlength="100" disabled="1" />
            </td>

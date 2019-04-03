@@ -818,6 +818,39 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.administrativo.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
+    def tramitacao_documento_juntar(self,cod_tramitacao):
+        writer = PdfFileWriter()
+        merger = PdfWriter()
+        arquivoPdf=str(cod_tramitacao)+"_tram.pdf"
+        arquivoPdfAnexo=str(cod_tramitacao)+"_tram_anexo1.pdf"
+        arquivoFinal=str(cod_tramitacao)+".pdf"
+        if hasattr(self.sapl_documentos.administrativo.tramitacao,arquivoPdf):
+            pdf_tramitacao = self.sapl_documentos.administrativo.tramitacao.absolute_url()+ "/" + str(arquivoPdf)
+            opener = urllib.urlopen(pdf_tramitacao)
+            f = open('/tmp/' + str(arquivoPdf), 'wb').write(opener.read())
+            texto_tram = PdfReader('/tmp/'+ str(arquivoPdf), decompress=False).pages
+            merger.addpages(texto_tram)
+            os.unlink('/tmp/' + str(arquivoPdf))
+        if hasattr(self.sapl_documentos.administrativo.tramitacao,arquivoPdfAnexo):
+            pdf_anexo = self.sapl_documentos.administrativo.tramitacao.absolute_url()+ "/" + str(arquivoPdfAnexo)
+            opener = urllib.urlopen(pdf_anexo)
+            f = open('/tmp/' + str(arquivoPdfAnexo), 'wb').write(opener.read())
+            texto_anexo = PdfReader('/tmp/'+ str(arquivoPdfAnexo), decompress=False).pages
+            merger.addpages(texto_anexo)
+            self.sapl_documentos.administrativo.tramitacao.manage_delObjects(ids=arquivoPdfAnexo)
+            os.unlink('/tmp/' + str(arquivoPdfAnexo))
+        final_output_file_pdf = os.path.normpath(arquivoFinal)
+        merger.write(final_output_file_pdf)
+        readin = open(final_output_file_pdf, "r")
+        contents = readin.read()
+        for file in [final_output_file_pdf]:
+            os.unlink(file)
+            if arquivoPdf in self.sapl_documentos.administrativo.tramitacao:
+               documento = getattr(self.sapl_documentos.administrativo.tramitacao,arquivoPdf)
+               documento.manage_upload(file=contents)
+            else:
+               self.sapl_documentos.administrativo.tramitacao.manage_addFile(id=arquivoPdf,file=contents)
+
     def documento_assinado_imprimir(self,cod_documento):
         nom_pdf_documento = str(cod_documento) + "_texto_integral_signed.pdf"
         pdf_documento = self.sapl_documentos.administrativo.absolute_url() + "/" +  nom_pdf_documento
