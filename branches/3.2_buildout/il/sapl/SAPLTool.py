@@ -1258,8 +1258,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/proposicao'+' e informe o número '+ num_proposicao+'.'
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
-        x_var=26
-        y_var=216
+        x_var=189
+        y_var=2
         packet = os.path.normpath('temp.pdf')
         slab = canvas.Canvas(packet, pagesize=A4)
         slab.setFillColorRGB(0,0,0)
@@ -1267,13 +1267,13 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         bounds = qr_code.getBounds()
         width = bounds[2] - bounds[0]
         height = bounds[3] - bounds[1]
-        d = Drawing(80, 80, transform=[80./width,0,0,80./height,0,0])
+        d = Drawing(55, 55, transform=[55./width,0,0,55./height,0,0])
         d.add(qr_code)
         renderPDF.draw(d, slab,  x_var*mm, y_var*mm)
         slab.setFont("Arial_Bold", 12)
-        slab.drawString(175, 674, texto)
+        slab.drawString(170, 716, texto)
         slab.setFont("Arial", 9)
-        slab.drawString(175, 662, validacao)
+        slab.drawString(170, 704, validacao)
         slab.save()
         barcode_pdf = open(packet, 'rb')
         new_pdf = PdfReader(barcode_pdf)
@@ -1283,8 +1283,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         c.setFillColorRGB(0,0,0)
         c.rotate(90)
         c.setFont("Arial", 9)
-        c.drawString(30, -578, mensagem1)
-        c.drawString(30, -588, mensagem2)
+        c.drawString(65, -575, mensagem1)
+        c.drawString(65, -585, mensagem2)
         c.save()
         texto_pdf = open(packet1, 'rb')
         new_pdf1 = PdfReader(texto_pdf)
