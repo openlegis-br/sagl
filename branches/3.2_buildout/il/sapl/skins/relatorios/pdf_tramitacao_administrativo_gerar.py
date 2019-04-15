@@ -47,9 +47,9 @@ def rodape(dic_rodape):
         data_emissao = dic_rodape['data_emissao']
 
 #    tmp+='\t\t\t\t<lines>3.3cm 2.2cm 19.5cm 2.2cm</lines>\n'
-    tmp+='\t\t\t\t<setFont name="Helvetica" size="8"/>\n'
+#    tmp+='\t\t\t\t<setFont name="Helvetica" size="8"/>\n'
 #    tmp+='\t\t\t\t<drawString x="3.3cm" y="2.4cm">' + data_emissao + '</drawString>\n'
-    tmp+='\t\t\t\t<drawString x="18.4cm" y="1cm">Página <pageNumber/></drawString>\n'
+#    tmp+='\t\t\t\t<drawString x="18.4cm" y="1cm">Página <pageNumber/></drawString>\n'
 
     return tmp
 
@@ -189,12 +189,12 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
     tmp_pdf=parseString(tmp)
 
     if hasattr(context.sapl_documentos.administrativo.tramitacao,arquivoPdf):
-         context.sapl_documentos.administrativo.tramitacao.manage_delObjects(ids=arquivoPdf)
+        context.sapl_documentos.administrativo.tramitacao.manage_delObjects(ids=arquivoPdf)
     if hasattr(context.sapl_documentos.administrativo.tramitacao,arquivoAssinado):
         context.sapl_documentos.administrativo.tramitacao.manage_delObjects(ids=arquivoAssinado)
     context.sapl_documentos.administrativo.tramitacao.manage_addFile(arquivoPdf)
     arq=context.sapl_documentos.administrativo.tramitacao[arquivoPdf]
-    arq.manage_edit(title='PDF Tramitação',filedata=tmp_pdf,content_type='application/pdf')
+    arq.manage_edit(title='PDF Tramitação Documento',filedata=tmp_pdf,content_type='application/pdf')
 
     return "tramitacao_mostrar_proc?cod_tramitacao="+str(cod_tramitacao)
 
