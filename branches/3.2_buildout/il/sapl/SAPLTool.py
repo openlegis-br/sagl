@@ -1346,10 +1346,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             documento.manage_upload(file=data)
           else:
             self.sapl_documentos.materia.manage_addFile(id=nom_pdf_saida,file=data)
-        #os.unlink('/tmp/'+nom_pdf_proposicao)
-        #os.unlink(packet)
-        #os.unlink(packet1)
-        #os.unlink(packet2)
+        os.unlink('/tmp/'+nom_pdf_proposicao)
+        os.unlink(packet)
+        os.unlink(packet1)
+        os.unlink(packet2)
 
     def restpki_client(self):
         restpki_url = 'https://restpkiol.azurewebsites.net/'
