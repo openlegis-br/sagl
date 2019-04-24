@@ -32,12 +32,12 @@ from PIL import Image
 import urllib
 import urllib2
 import cStringIO
+import StringIO
 from appy.pod.renderer import Renderer
 from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
 from pdfrw import PdfReader, PdfWriter, PageMerge
 from pdfrw.toreportlab import makerl
 from pdfrw.buildxobj import pagexobj
-from StringIO import StringIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -886,24 +886,24 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
-
+        validacao = ''
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
         url = self.url() + '/sapl_documentos/administrativo/' + nom_pdf_documento
         opener = urllib.urlopen(url)
         f = open('/tmp/' + nom_pdf_documento, 'wb').write(opener.read())
-        existing_pdf = PdfReader(open('/tmp/' + nom_pdf_documento, "rb"))
-
-        # Número de páginas
-        pages = [pagexobj(p) for p in existing_pdf.pages]
-        packet_number = os.path.normpath('temp_number.pdf')
-        canvas1 = canvas.Canvas(packet_number)
-        for page_num, page in enumerate(pages, start=1):
-        # Adiciona página
-            canvas1.setPageSize((page.BBox[2], page.BBox[3]))
-            canvas1.doForm(makerl(canvas1, page))
-        # QRCode
-            canvas1.setFillColorRGB(0,0,0)
+        existing_pdf = PdfFileReader('/tmp/'+ nom_pdf_documento, "rb")
+        numPages = existing_pdf.getNumPages()
+        # cria novo PDF
+        packet = StringIO.StringIO()
+        can = canvas.Canvas(packet)
+        for page_num, i in enumerate(range(numPages), start=1):
+            page = existing_pdf.getPage(i)
+            pwidth = self.getPageSizeW(page)
+            pheight = self.getPageSizeH(page)
+            can.setPageSize((pwidth, pheight))
+            can.setFillColorRGB(0,0,0) 
+            # QRCode
             qr_code = qr.QrCodeWidget(self.url()+'/consultas/documento_validar?codigo='+str(string))
             bounds = qr_code.getBounds()
             width = bounds[2] - bounds[0]
@@ -911,42 +911,75 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             d = Drawing(55, 55, transform=[55./width,0,0,55./height,0,0])
             d.add(qr_code)
             x = 59
-            renderPDF.draw(d, canvas1,  page.BBox[2]-x, 13)
-        # Margem direita
+            renderPDF.draw(d, can,  pwidth-59, 13)
+            # Margem direita
             d = Drawing(10, 5)
             lab = Label()
             lab.setOrigin(0,250)
             lab.angle = 90
-            x = 28
             lab.fontName = 'Arial'
             lab.fontSize = 8
             lab.textAnchor = 'start'
             lab.boxAnchor = 'n'
             lab.setText(mensagem)
             d.add(lab)
-            renderPDF.draw(d, canvas1,  page.BBox[2]-x, 85)
-        # Desenha rodapé
-            footer_text = "Pág. %s/%s" % (page_num, len(pages))
-            x = 30
-            canvas1.saveState()
-            canvas1.setFont('Arial', 8)
-            canvas1.drawCentredString(page.BBox[2]-x, 10, footer_text)
-            canvas1.restoreState()
-            canvas1.showPage()
-        canvas1.save()
-        numpage_pdf = open(packet_number, 'rb')
-        existing_pdf = PdfReader(numpage_pdf)
-        outputStream = '/tmp/' + nom_pdf_saida
-        PdfWriter(outputStream, trailer=existing_pdf).write()
-        readin = open(outputStream, 'r' )
+            renderPDF.draw(d, can, pwidth-28, 85)
+            # Numero de pagina
+            footer_text = "Pag. %s/%s" % (page_num, numPages)
+            can.saveState()
+            can.setFont('Arial', 8)
+            can.drawCentredString(pwidth-30, 10, footer_text)
+            can.restoreState()
+            can.showPage()
+        can.save()
+        packet.seek(0)
+        new_pdf = PdfFileReader(packet)
+        # Numero do documento
+        #packet2 = StringIO.StringIO()
+        #d = canvas.Canvas(packet2, pagesize=A4)
+        #d.setFillColorRGB(0,0,0)
+        #d.setFont("Arial_Bold", 12)
+        #d.drawString(170, 716, texto)
+        #d.setFont("Arial", 9)
+        #d.drawString(170, 704, validacao)
+        #d.save()
+        #packet2.seek(0)
+        #new_pdf2 = PdfFileReader(packet2)
+        # Mescla arquivos
+        output = PdfFileWriter()
+        for page in range(existing_pdf.getNumPages()):
+            pdf_page = existing_pdf.getPage(page)
+            # numeração documento na primeira pagina
+            #if page == 0:
+            #   pdf_page.mergePage(new_pdf2.getPage(0))
+            # qrcode e margem direita em todas as páginas
+            for wm in range(new_pdf.getNumPages()):
+                watermark_page = new_pdf.getPage(wm)
+                if page == wm:
+                   pdf_page.mergePage(watermark_page)
+            output.addPage(pdf_page)
+        outputStream = file('/tmp/' + nom_pdf_saida, "wb")
+        output.write(outputStream)
+        outputStream.close()
+        arquivo = '/tmp/' + nom_pdf_saida
+        readin = open(arquivo, 'r' )
         contents = readin.read()
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%nom_pdf_amigavel
         self.REQUEST.RESPONSE.headers['Content-Length'] = len(contents)
+        os.unlink('/tmp/'+nom_pdf_saida)
         os.unlink('/tmp/'+nom_pdf_documento)
-        os.unlink(outputStream)
-        os.unlink(packet_number)
         return contents
+
+    # obter altura da pagina
+    def getPageSizeH(self, p):
+        h = int(p.mediaBox.getHeight())
+        return h
+
+    # obter largura da pagina
+    def getPageSizeW(self, p):
+        w = int(p.mediaBox.getWidth())
+        return w
 
     def parecer_gerar_odt(self, inf_basicas_dic, nom_arquivo, nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao):
         url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/parecer.odt"
@@ -1282,38 +1315,58 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 nom_pdf_saida = str(documento.cod_documento) + ".pdf"
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por '+nom_autor+'.'
         mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/proposicao'+' e informe o número '+ num_proposicao+'.'
+        mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
 
-        x_var=189
-        y_var=2
+        url = self.url() + '/sapl_documentos/proposicao/' + nom_pdf_proposicao
+        opener = urllib.urlopen(url)
+        f = open('/tmp/' + nom_pdf_proposicao, 'wb').write(opener.read())
+        existing_pdf = PdfFileReader('/tmp/'+ nom_pdf_proposicao, "rb")
+        numPages = existing_pdf.getNumPages()
 
-        packet = os.path.normpath('temp.pdf')
-        slab = canvas.Canvas(packet, pagesize=A4)
-        slab.setFillColorRGB(0,0,0)
-        qr_code = qr.QrCodeWidget(self.url()+'/consultas/materia/materia_mostrar_proc?cod_materia='+str(cod_materia))
-        bounds = qr_code.getBounds()
-        width = bounds[2] - bounds[0]
-        height = bounds[3] - bounds[1]
-        d = Drawing(55, 55, transform=[55./width,0,0,55./height,0,0])
-        d.add(qr_code)
-        renderPDF.draw(d, slab,  x_var*mm, y_var*mm)
-        slab.save()
-        barcode_pdf = open(packet, 'rb')
-        new_pdf = PdfReader(barcode_pdf)
-
-        packet1 = os.path.normpath('temp1.pdf')
-        c = canvas.Canvas(packet1, pagesize=A4)
-        c.setFillColorRGB(0,0,0)
-        c.rotate(90)
-        c.setFont("Arial", 9)
-        c.drawString(65, -575, mensagem1)
-        c.drawString(65, -585, mensagem2)
-        c.save()
-        texto_pdf = open(packet1, 'rb')
-        new_pdf1 = PdfReader(texto_pdf)
-
-        packet2 = os.path.normpath('temp2.pdf')
+        # cria novo PDF
+        packet = StringIO.StringIO()
+        can = canvas.Canvas(packet)
+        for page_num, i in enumerate(range(numPages), start=1):
+            page = existing_pdf.getPage(i)
+            pwidth = self.getPageSizeW(page)
+            pheight = self.getPageSizeH(page)
+            can.setPageSize((pwidth, pheight))
+            can.setFillColorRGB(0,0,0) 
+            # QRCode
+            qr_code = qr.QrCodeWidget(self.url()+'/consultas/materia/materia_mostrar_proc?cod_materia='+str(cod_materia))
+            bounds = qr_code.getBounds()
+            width = bounds[2] - bounds[0]
+            height = bounds[3] - bounds[1]
+            d = Drawing(55, 55, transform=[55./width,0,0,55./height,0,0])
+            d.add(qr_code)
+            x = 59
+            renderPDF.draw(d, can,  pwidth-59, 13)
+            # Margem direita
+            d = Drawing(10, 5)
+            lab = Label()
+            lab.setOrigin(0,250)
+            lab.angle = 90
+            lab.fontName = 'Arial'
+            lab.fontSize = 8
+            lab.textAnchor = 'start'
+            lab.boxAnchor = 'n'
+            lab.setText(mensagem)
+            d.add(lab)
+            renderPDF.draw(d, can, pwidth-28, 85)
+            # Numero de pagina
+            footer_text = "Pag. %s/%s" % (page_num, numPages)
+            can.saveState()
+            can.setFont('Arial', 8)
+            can.drawCentredString(pwidth-30, 10, footer_text)
+            can.restoreState()
+            can.showPage()
+        can.save()
+        packet.seek(0)
+        new_pdf = PdfFileReader(packet)
+        # Numero do documento
+        packet2 = StringIO.StringIO()
         d = canvas.Canvas(packet2, pagesize=A4)
         d.setFillColorRGB(0,0,0)
         d.setFont("Arial_Bold", 12)
@@ -1321,35 +1374,32 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         d.setFont("Arial", 9)
         d.drawString(170, 704, validacao)
         d.save()
-        validacao_pdf = open(packet2, 'rb')
-        new_pdf2 = PdfReader(validacao_pdf)
-
-        utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()
-        url = self.url() + '/sapl_documentos/proposicao/' + nom_pdf_proposicao
-        opener = urllib.urlopen(url)
-        f = open('/tmp/' + nom_pdf_proposicao, 'wb').write(opener.read())
-        existing_pdf = PdfReader(file('/tmp/' + nom_pdf_proposicao, "rb"))
-        qrcode = PageMerge().add(new_pdf.pages[0])[0]
-        margem = PageMerge().add(new_pdf1.pages[0])[0]
-        validacao = PageMerge().add(new_pdf2.pages[0])[0]
-        for page in existing_pdf.pages:
-          PageMerge(page).add(margem).render()
-          PageMerge(page).add(qrcode).render()
-        PageMerge(existing_pdf.pages[0]).add(validacao).render()
-        outputStream = '/tmp/' + nom_pdf_proposicao
-        PdfWriter(outputStream, trailer=existing_pdf).write()
-        data = open('/tmp/' + nom_pdf_proposicao, 'rb').read()              
-        for item in [outputStream]:
-          if nom_pdf_saida in self.sapl_documentos.materia:
-            documento = getattr(self.sapl_documentos.materia,nom_pdf_saida)
-            documento.manage_upload(file=data)
-          else:
-            self.sapl_documentos.materia.manage_addFile(id=nom_pdf_saida,file=data)
+        packet2.seek(0)
+        new_pdf2 = PdfFileReader(packet2)
+        # Mescla arquivos
+        output = PdfFileWriter()
+        for page in range(existing_pdf.getNumPages()):
+            pdf_page = existing_pdf.getPage(page)
+            # numeração documento na primeira pagina
+            if page == 0:
+               pdf_page.mergePage(new_pdf2.getPage(0))
+            # qrcode e margem direita em todas as páginas
+            for wm in range(new_pdf.getNumPages()):
+                watermark_page = new_pdf.getPage(wm)
+                if page == wm:
+                   pdf_page.mergePage(watermark_page)
+            output.addPage(pdf_page)
+        outputStream = file('/tmp/' + nom_pdf_saida, "wb")
+        output.write(outputStream)
+        outputStream.close()
+        data = open('/tmp/' + nom_pdf_saida, 'rb').read()              
+        if nom_pdf_saida in self.sapl_documentos.materia:
+           documento = getattr(self.sapl_documentos.materia,nom_pdf_saida)
+           documento.manage_upload(file=data)
+        else:
+           self.sapl_documentos.materia.manage_addFile(id=nom_pdf_saida,file=data)
+        os.unlink('/tmp/'+nom_pdf_saida)
         os.unlink('/tmp/'+nom_pdf_proposicao)
-        os.unlink(packet)
-        os.unlink(packet1)
-        os.unlink(packet2)
 
     def restpki_client(self):
         restpki_url = 'https://restpkiol.azurewebsites.net/'
