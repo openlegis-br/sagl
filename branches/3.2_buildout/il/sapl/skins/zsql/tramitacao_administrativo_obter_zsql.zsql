@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_tramitacao="" cod_documento="" ind_ult_tramitacao="" cod_unid_tram_origem="" cod_usuario_local="" cod_unid_tram_destino="" cod_usuario_dest="" cod_status="" ind_tramitacao="" ind_pendente="" ind_encaminha="" ind_recebido="" ind_rascunho="" ind_retorno_tramitacao="" ind_fim_tramitacao="" ind_excluido=0
+arguments : cod_tramitacao="" cod_documento="" ind_ult_tramitacao="" cod_unid_tram_origem="" cod_usuario_local="" cod_unid_tram_destino="" cod_usuario_dest="" cod_status="" ind_tramitacao="" ind_pendente="" ind_encaminha="" ind_recebido="" ind_rascunho="" ind_retorno_tramitacao="" ind_fim_tramitacao="" rd_ordem="" ind_excluido=0
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
@@ -96,11 +96,21 @@ FROM
     AND <dtml-sqltest ind_fim_tramitacao   op="=" column="status.ind_fim_tramitacao"   type="int" optional>
   </dtml-if>
 
-ORDER BY 
+  <dtml-if expr="rd_ordem == '1'">
+    ORDER BY 
+     tipo_documento_administrativo.sgl_tipo_documento, 
+     LPAD(documento_administrativo.num_documento, 5, '0'), 
+     documento_administrativo.ano_documento,
+     tramitacao_administrativo.cod_documento, 
+     tramitacao_administrativo.dat_tramitacao ASC, 
+     tramitacao_administrativo.cod_tramitacao ASC
+  <dtml-else>
+    ORDER BY 
      tipo_documento_administrativo.sgl_tipo_documento, 
      LPAD(documento_administrativo.num_documento, 5, '0'), 
      documento_administrativo.ano_documento,
      tramitacao_administrativo.cod_documento DESC, 
      tramitacao_administrativo.dat_tramitacao DESC, 
      tramitacao_administrativo.cod_tramitacao DESC
+  </dtml-if>
 

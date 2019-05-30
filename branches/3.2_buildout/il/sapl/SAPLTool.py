@@ -1216,7 +1216,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               arquivo_doc = StringIO.StringIO(str(doc.data))
               texto_doc = PdfReader(arquivo_doc, decompress=False).pages
               writer.addpages(texto_doc)
-        for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0):
+        for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,rd_ordem='1',ind_excluido=0):
            lst_tramitacoes = []
            if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
               tramitacao =  tram.cod_tramitacao
@@ -1224,8 +1224,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            for tramitacao in lst_tramitacoes:
               tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
               arquivo_tram = StringIO.StringIO(str(tram.data))
-              texto_tramitacao = PdfReader(arquivo_tram, decompress=False).pages
-              writer.addpages(texto_tramitacao)
+              texto_tramitacao = PdfReader(arquivo_tram).pages
+              texto_tramitacao.sort(reverse=True)
+	      for page in texto_tramitacao:
+		  writer.addpage(page)
         for tram_sig in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0):
            lst_tram_sig = []
            if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram_sig.cod_tramitacao) + '_tram_signed.pdf'):
@@ -1234,8 +1236,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            for tramitacao in lst_tram_sig:
               tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
               arquivo_tram = StringIO.StringIO(str(tram.data))
-              texto_tramitacao = PdfReader(arquivo_tram, decompress=False).pages
-              writer.addpages(texto_tramitacao)
+              texto_tramitacao = PdfReader(arquivo_tram).pages
+              texto_tramitacao.sort(reverse=True)
+	      for page in texto_tramitacao:
+		  writer.addpage(page)
         for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
            nom_pdf_amigavel = documento.sgl_tipo_documento+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+'.pdf'
            id_processo = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
