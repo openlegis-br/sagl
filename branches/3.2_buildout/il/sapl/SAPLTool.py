@@ -1225,9 +1225,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
               arquivo_tram = StringIO.StringIO(str(tram.data))
               texto_tramitacao = PdfReader(arquivo_tram).pages
-              texto_tramitacao.sort(reverse=True)
-	      for page in texto_tramitacao:
-		  writer.addpage(page)
+              for page_num, i in enumerate(texto_tramitacao):
+                  if page_num > 0:
+		     writer.addpage(texto_tramitacao[page_num])
+              for page_num, i in enumerate(texto_tramitacao):
+                  if page_num == 0:
+		     writer.addpage(texto_tramitacao[0])
         for tram_sig in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0):
            lst_tram_sig = []
            if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram_sig.cod_tramitacao) + '_tram_signed.pdf'):
@@ -1237,9 +1240,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
               arquivo_tram = StringIO.StringIO(str(tram.data))
               texto_tramitacao = PdfReader(arquivo_tram).pages
-              texto_tramitacao.sort(reverse=True)
-	      for page in texto_tramitacao:
-		  writer.addpage(page)
+              for page_num, i in enumerate(texto_tramitacao):
+                  if page_num > 0:
+		     writer.addpage(texto_tramitacao[page_num])
+              for page_num, i in enumerate(texto_tramitacao):
+                  if page_num == 0:
+		     writer.addpage(texto_tramitacao[0])
         for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
            nom_pdf_amigavel = documento.sgl_tipo_documento+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+'.pdf'
            id_processo = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
