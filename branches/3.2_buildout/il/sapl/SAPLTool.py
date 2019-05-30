@@ -1197,55 +1197,45 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         if hasattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral_signed.pdf'):
-           url = self.url() + '/sapl_documentos/administrativo/' + str(cod_documento) + "_texto_integral_signed.pdf"
-           opener = urllib.urlopen(url)
-           f = open('/tmp/' + str(cod_documento) + "_texto_integral_signed.pdf", 'wb').write(opener.read())
-           texto_documento = PdfReader('/tmp/'+ str(cod_documento) + "_texto_integral_signed.pdf", decompress=False).pages
+           arq = getattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral_signed.pdf')
+           arquivo = StringIO.StringIO(str(arq.data))
+           texto_documento = PdfReader(arquivo, decompress=False).pages
            writer.addpages(texto_documento)
-           os.unlink('/tmp/' + str(cod_documento) + "_texto_integral_signed.pdf")
         elif hasattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral.pdf'):
-           url = self.url() + '/sapl_documentos/administrativo/' + str(cod_documento) + "_texto_integral.pdf"
-           opener = urllib.urlopen(url)
-           f = open('/tmp/' + str(cod_documento) + "_texto_integral.pdf", 'wb').write(opener.read())
-           texto_documento = PdfReader('/tmp/'+ str(cod_documento) + "_texto_integral.pdf", decompress=False).pages
+           arq = getattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral.pdf')
+           arquivo = StringIO.StringIO(str(arq.data))
+           texto_documento = PdfReader(arquivo, decompress=False).pages
            writer.addpages(texto_documento)
-           os.unlink('/tmp/' + str(cod_documento) + "_texto_integral.pdf")
         for docadm in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0):
            lst_acessorios = []
            cod_documento_acessorio = docadm.cod_documento_acessorio
            if hasattr(self.sapl_documentos.administrativo, str(cod_documento_acessorio) + '.pdf'):
               lst_acessorios.append(cod_documento_acessorio)
            for item in lst_acessorios:
-              pdf_documento = self.sapl_documentos.administrativo.absolute_url()+ "/" + str(item) + ".pdf"
-              opener = urllib.urlopen(pdf_documento)
-              f = open('/tmp/' + str(item) + ".pdf", 'wb').write(opener.read())
-              texto_documento = PdfReader('/tmp/'+ str(item) + ".pdf", decompress=False).pages
-              writer.addpages(texto_documento)
-              os.unlink('/tmp/' + str(item) + ".pdf")
+              doc = getattr(self.sapl_documentos.administrativo, str(item) + '.pdf')
+              arquivo_doc = StringIO.StringIO(str(doc.data))
+              texto_doc = PdfReader(arquivo_doc, decompress=False).pages
+              writer.addpages(texto_doc)
         for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0):
            lst_tramitacoes = []
            if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
               tramitacao =  tram.cod_tramitacao
               lst_tramitacoes.append(tramitacao)
            for tramitacao in lst_tramitacoes:
-              pdf_tramitacao = self.sapl_documentos.administrativo.tramitacao.absolute_url()+ "/" + str(tramitacao) + "_tram.pdf"
-              opener = urllib.urlopen(pdf_tramitacao)
-              f = open('/tmp/' + str(tramitacao) + "_tram.pdf", 'wb').write(opener.read())
-              texto_tramitacao = PdfReader('/tmp/'+ str(tramitacao) + "_tram.pdf", decompress=False).pages
+              tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
+              arquivo_tram = StringIO.StringIO(str(tram.data))
+              texto_tramitacao = PdfReader(arquivo_tram, decompress=False).pages
               writer.addpages(texto_tramitacao)
-              os.unlink('/tmp/' + str(tramitacao) + "_tram.pdf")
         for tram_sig in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0):
            lst_tram_sig = []
-           if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf'):
+           if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram_sig.cod_tramitacao) + '_tram_signed.pdf'):
               tramitacao =  tram_sig.cod_tramitacao
               lst_tram_sig.append(tramitacao)
            for tramitacao in lst_tram_sig:
-              pdf_tram_sig = self.sapl_documentos.administrativo.tramitacao.absolute_url()+ "/" + str(tramitacao) + "_tram_signed.pdf"
-              opener = urllib.urlopen(pdf_tram_sig)
-              f = open('/tmp/' + str(tramitacao) + "_tram_signed.pdf", 'wb').write(opener.read())
-              texto_tram = PdfReader('/tmp/'+ str(tramitacao) + "_tram_signed.pdf", decompress=False).pages
-              writer.addpages(texto_tram)
-              os.unlink('/tmp/' + str(tramitacao) + "_tram_signed.pdf")
+              tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
+              arquivo_tram = StringIO.StringIO(str(tram.data))
+              texto_tramitacao = PdfReader(arquivo_tram, decompress=False).pages
+              writer.addpages(texto_tramitacao)
         for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
            nom_pdf_amigavel = documento.sgl_tipo_documento+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+'.pdf'
            id_processo = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
@@ -1264,10 +1254,13 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             can.setPageSize((pwidth, pheight))
             can.setFillColorRGB(0,0,0)
             # Numero de pagina
-            footer_text = id_processo + " - FLS. %s/%s" % (page_num, numPages)
+            id_processo = id_processo
+            num_pagina = "Fls. %s/%s" % (page_num, numPages)
             can.saveState()
             can.setFont('Arial', 9)
-            can.drawCentredString(pwidth/2, 15, footer_text)
+            can.drawCentredString(pwidth-40, pheight-50, id_processo)
+            can.setFont('Arial_Bold', 9)
+            can.drawCentredString(pwidth-40, pheight-60, num_pagina)
             can.restoreState()
             can.showPage()
         can.save()
@@ -1277,9 +1270,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output = PdfFileWriter()
         for page in range(existing_pdf.getNumPages()):
             pdf_page = existing_pdf.getPage(page)
-            # identificação do documento na primeira pagina
-            #if page == 0:
-            #   pdf_page.mergePage(new_pdf2.getPage(0))
             # numeração de páginas
             for wm in range(new_pdf.getNumPages()):
                 watermark_page = new_pdf.getPage(wm)
