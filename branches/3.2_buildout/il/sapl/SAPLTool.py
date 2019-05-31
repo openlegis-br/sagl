@@ -1218,26 +1218,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               writer.addpages(texto_doc)
         for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,rd_ordem='1',ind_excluido=0):
            lst_tramitacoes = []
-           if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
-              tramitacao =  tram.cod_tramitacao
-              lst_tramitacoes.append(tramitacao)
+           lst_tramitacoes.append(tram.cod_tramitacao)
            for tramitacao in lst_tramitacoes:
-              tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
-              arquivo_tram = cStringIO.StringIO(str(tram.data))
-              texto_tramitacao = PdfReader(arquivo_tram).pages
-              for page_num, i in enumerate(texto_tramitacao):
-                  if page_num > 0:
-		     writer.addpage(texto_tramitacao[page_num])
-              for page_num, i in enumerate(texto_tramitacao):
-                  if page_num == 0:
-		     writer.addpage(texto_tramitacao[0])
-        for tram_sig in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0):
-           lst_tram_sig = []
-           if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram_sig.cod_tramitacao) + '_tram_signed.pdf'):
-              tramitacao =  tram_sig.cod_tramitacao
-              lst_tram_sig.append(tramitacao)
-           for tramitacao in lst_tram_sig:
-              tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
+              if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf'):
+                 tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
+              elif hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf'):
+                 tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
               arquivo_tram = cStringIO.StringIO(str(tram.data))
               texto_tramitacao = PdfReader(arquivo_tram).pages
               for page_num, i in enumerate(texto_tramitacao):
