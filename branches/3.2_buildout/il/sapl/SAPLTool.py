@@ -1198,12 +1198,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         if hasattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral_signed.pdf'):
            arq = getattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral_signed.pdf')
-           arquivo = StringIO.StringIO(str(arq.data))
+           arquivo = cStringIO.StringIO(str(arq.data))
            texto_documento = PdfReader(arquivo, decompress=False).pages
            writer.addpages(texto_documento)
         elif hasattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral.pdf'):
            arq = getattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral.pdf')
-           arquivo = StringIO.StringIO(str(arq.data))
+           arquivo = cStringIO.StringIO(str(arq.data))
            texto_documento = PdfReader(arquivo, decompress=False).pages
            writer.addpages(texto_documento)
         for docadm in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0):
@@ -1213,7 +1213,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               lst_acessorios.append(cod_documento_acessorio)
            for item in lst_acessorios:
               doc = getattr(self.sapl_documentos.administrativo, str(item) + '.pdf')
-              arquivo_doc = StringIO.StringIO(str(doc.data))
+              arquivo_doc = cStringIO.StringIO(str(doc.data))
               texto_doc = PdfReader(arquivo_doc, decompress=False).pages
               writer.addpages(texto_doc)
         for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,rd_ordem='1',ind_excluido=0):
@@ -1223,7 +1223,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               lst_tramitacoes.append(tramitacao)
            for tramitacao in lst_tramitacoes:
               tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
-              arquivo_tram = StringIO.StringIO(str(tram.data))
+              arquivo_tram = cStringIO.StringIO(str(tram.data))
               texto_tramitacao = PdfReader(arquivo_tram).pages
               for page_num, i in enumerate(texto_tramitacao):
                   if page_num > 0:
@@ -1238,7 +1238,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               lst_tram_sig.append(tramitacao)
            for tramitacao in lst_tram_sig:
               tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
-              arquivo_tram = StringIO.StringIO(str(tram.data))
+              arquivo_tram = cStringIO.StringIO(str(tram.data))
               texto_tramitacao = PdfReader(arquivo_tram).pages
               for page_num, i in enumerate(texto_tramitacao):
                   if page_num > 0:
@@ -1250,12 +1250,13 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            nom_pdf_amigavel = documento.sgl_tipo_documento+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+'.pdf'
            id_processo = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
         nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
-        output_file_pdf = '/tmp/' + output_file
+        output_file_pdf = cStringIO.StringIO()
         writer.write(output_file_pdf)
-        existing_pdf = PdfFileReader('/tmp/'+ output_file, "rb")
+        output_file_pdf.seek(0)
+        existing_pdf = PdfFileReader(output_file_pdf)
         numPages = existing_pdf.getNumPages()
         # cria novo PDF
-        packet = StringIO.StringIO()
+        packet = cStringIO.StringIO()
         can = canvas.Canvas(packet)
         for page_num, i in enumerate(range(numPages), start=1):
             page = existing_pdf.getPage(i)
@@ -1286,18 +1287,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 if page == wm:
                    pdf_page.mergePage(watermark_page)
             output.addPage(pdf_page)
-        outputStream = file('/tmp/' + nom_pdf_amigavel, "wb")
+        outputStream = cStringIO.StringIO()
         output.write(outputStream)
-        outputStream.close()
-        arquivo = '/tmp/' + nom_pdf_amigavel
-        readin = open(arquivo, 'r' )
-        contents = readin.read()
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%nom_pdf_amigavel
-        self.REQUEST.RESPONSE.headers['Content-Length'] = len(contents)
-        os.unlink('/tmp/'+nom_pdf_amigavel)
-        os.unlink('/tmp/'+output_file)
-        return contents
+        return outputStream.getvalue()
+        outputStream.close()
 
     def processo_eletronico_gerar_pdf(self,cod_materia):
         if cod_materia.isdigit():
