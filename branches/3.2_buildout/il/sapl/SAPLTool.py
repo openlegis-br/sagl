@@ -1222,7 +1222,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            for tramitacao in lst_tramitacoes:
               if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf'):
                  tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
-              elif hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf'):
+              elif hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf'):
                  tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
               arquivo_tram = cStringIO.StringIO(str(tram.data))
               texto_tramitacao = PdfReader(arquivo_tram).pages
