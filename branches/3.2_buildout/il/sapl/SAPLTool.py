@@ -392,9 +392,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for file in [output_file_odt]:
             os.unlink(file)
             self.sapl_documentos.ata_sessao.manage_addFile(id=output_file_odt,file=data)
-        #self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
-        #self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
-        #return data
 
     def ata_gerar_pdf(self, cod_sessao_plen):
         nom_arquivo_odt = "%s"%cod_sessao_plen+'_ata_sessao.odt'
@@ -446,7 +443,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         renderer.run()                                                                              
         data = open(output_file_odt, "rb").read()                 
         for file in [output_file_odt]:
-            os.unlink(file)                                                                                                      
+            os.unlink(file)
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
         return data 
@@ -484,92 +481,96 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def pdf_completo(self, cod_sessao_plen):
         writer = PdfWriter()
+        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         for pauta in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen):
-    	  nom_arquivo_pdf = str(pauta.num_sessao_plen)+'-sessao-'+ str(pauta.dat_inicio)+'pauta_completa.pdf'
-          nom_arquivo_pdf = nom_arquivo_pdf.decode('latin-1').encode("utf-8")
+    	  nom_pdf_amigavel = str(pauta.num_sessao_plen)+'-sessao-'+ str(pauta.dat_inicio)+'-pauta_completa.pdf'
+          nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
           if hasattr(self.sapl_documentos.pauta_sessao, str(cod_sessao_plen) + '_pauta_sessao.pdf'):
-             url = self.url() + '/sapl_documentos/pauta_sessao/' + str(pauta.cod_sessao_plen) + '_pauta_sessao.pdf'
-             opener = urllib.urlopen(url)
-             f = open('/tmp/' + str(cod_sessao_plen) + '_pauta_sessao.pdf', 'wb').write(opener.read())
-             texto_pauta = PdfReader('/tmp/'+ str(cod_sessao_plen) + '_pauta_sessao.pdf', decompress=False).pages
+             arq = getattr(self.sapl_documentos.pauta_sessao, str(cod_sessao_plen) + '_pauta_sessao.pdf')
+             arquivo = cStringIO.StringIO(str(arq.data))
+             texto_pauta = PdfReader(arquivo, decompress=False).pages
              writer.addpages(texto_pauta)
-             os.unlink('/tmp/' + str(cod_sessao_plen) + '_pauta_sessao.pdf')
-
           lst_materia = []
           for materia in self.zsql.ordem_dia_obter_zsql(cod_sessao_plen=pauta.cod_sessao_plen,ind_excluido=0):
-            cod_materia = int(materia.cod_materia)
-            lst_materia.append(cod_materia)
-
+              cod_materia = int(materia.cod_materia)
+              lst_materia.append(cod_materia)
           lst_materia = [i for n, i in enumerate(lst_materia) if i not in lst_materia[n + 1:]]
-
           for cod_materia in lst_materia:
-
-             if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_redacao_final.pdf'):
-                url = self.url() + '/sapl_documentos/materia/' + str(cod_materia) + "_redacao_final.pdf"
-                opener = urllib.urlopen(url)
-                f = open('/tmp/' + str(cod_materia) + "_redacao_final.pdf", 'wb').write(opener.read())
-                texto_redacao = PdfReader('/tmp/'+ str(cod_materia) + "_redacao_final.pdf", decompress=False).pages
-                writer.addpages(texto_redacao)
-                os.unlink('/tmp/' + str(cod_materia) + "_redacao_final.pdf")
-
-             else:
-                if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
-                   url = self.url() + '/sapl_documentos/materia/' + str(cod_materia) + "_texto_integral.pdf"
-                   opener = urllib.urlopen(url)
-                   f = open('/tmp/' + str(cod_materia) + "_texto_integral.pdf", 'wb').write(opener.read())
-                   texto_materia = PdfReader('/tmp/'+ str(cod_materia) + "_texto_integral.pdf", decompress=False).pages
+              if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_redacao_final.pdf'):
+                 arq = getattr(self.sapl_documentos.materia, str(cod_materia) + '_redacao_final.pdf')
+                 arquivo = cStringIO.StringIO(str(arq.data))
+                 texto_redacao = PdfReader(arquivo, decompress=False).pages
+                 writer.addpages(texto_redacao)
+              elif hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
+                   arq = getattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf')
+                   arquivo = cStringIO.StringIO(str(arq.data))
+                   texto_materia = PdfReader(arquivo, decompress=False).pages
                    writer.addpages(texto_materia)
-                   os.unlink('/tmp/' + str(cod_materia) + "_texto_integral.pdf")
-
                    for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
-                      lst_mat_anexadas = []
-                      if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
-                         anexada = anexada.cod_materia_anexada
-                         lst_mat_anexadas.append(anexada)
-                      for anexada in lst_mat_anexadas:
-                          pdf_anexada = self.sapl_documentos.materia.absolute_url()+ "/" + str(anexada) + "_texto_integral.pdf"
-                          opener = urllib.urlopen(pdf_anexada)
-                          f = open('/tmp/' + str(anexada) + "_texto_integral.pdf", 'wb').write(opener.read())
-                          texto_anexada = PdfReader('/tmp/'+ str(anexada) + "_texto_integral.pdf", decompress=False).pages
+                       anexada = anexada.cod_materia_anexada
+                       if hasattr(self.sapl_documentos.materia, str(anexada) + '_texto_integral.pdf'):
+                          arq = getattr(self.sapl_documentos.materia, str(anexada) + '_texto_integral.pdf')
+                          arquivo = cStringIO.StringIO(str(arq.data))
+                          texto_anexada = PdfReader(arquivo, decompress=False).pages
                           writer.addpages(texto_anexada)
-                          os.unlink('/tmp/' + str(anexada) + "_texto_integral.pdf")
-
                    for subst in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-                      lst_substitutivos = []
-                      if hasattr(self.sapl_documentos.substitutivo, str(subst.cod_substitutivo) + '_substitutivo.pdf'):
-                         substitutivo = subst.cod_substitutivo 
-                         lst_substitutivos.append(substitutivo)
-                      for substitutivo in lst_substitutivos:
-                          pdf_substitutivo = self.sapl_documentos.substitutivo.absolute_url()+ "/" + str(substitutivo) + "_substitutivo.pdf"
-                          opener = urllib.urlopen(pdf_substitutivo)
-                          f = open('/tmp/' + str(substitutivo) + "_substitutivo.pdf", 'wb').write(opener.read())
-                          texto_substitutivo = PdfReader('/tmp/'+ str(substitutivo) + "_substitutivo.pdf", decompress=False).pages
+                       substitutivo = subst.cod_substitutivo 
+                       if hasattr(self.sapl_documentos.substitutivo, str(substitutivo) + '_substitutivo.pdf'):
+                          arq = getattr(self.sapl_documentos.substitutivo, str(substitutivo) + '_substitutivo.pdf')
+                          arquivo = cStringIO.StringIO(str(arq.data))
+                          texto_substitutivo = PdfReader(arquivo, decompress=False).pages
                           writer.addpages(texto_substitutivo)
-                          os.unlink('/tmp/' + str(substitutivo) + "_substitutivo.pdf")
-
                    for eme in self.zsql.emenda_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-                      lst_emendas = []
-                      if hasattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf'):
-                         emenda = eme.cod_emenda
-                         lst_emendas.append(emenda)
-                      for emenda in lst_emendas:
-                          pdf_emenda = self.sapl_documentos.emenda.absolute_url()+ "/" + str(emenda) + "_emenda.pdf"
-                          opener = urllib.urlopen(pdf_emenda)
-                          f = open('/tmp/' + str(emenda) + "_emenda.pdf", 'wb').write(opener.read())
-                          texto_emenda = PdfReader('/tmp/'+ str(emenda) + "_emenda.pdf", decompress=False).pages
+                       emenda = eme.cod_emenda
+                       if hasattr(self.sapl_documentos.emenda, str(emenda) + '_emenda.pdf'):
+                          arq = getattr(self.sapl_documentos.emenda, str(emenda) + '_emenda.pdf')
+                          arquivo = cStringIO.StringIO(str(arq.data))
+                          texto_emenda = PdfReader(arquivo, decompress=False).pages
                           writer.addpages(texto_emenda)
-                          os.unlink('/tmp/' + str(emenda) + "_emenda.pdf")
-
-          output_file_pdf = '/tmp/' + nom_arquivo_pdf
+          output_file_pdf = cStringIO.StringIO()
           writer.write(output_file_pdf)
-          readin = open(output_file_pdf, 'r' )
-          contents = readin.read()
-          for file in [output_file_pdf]:
-              self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
-              self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%nom_arquivo_pdf
-              self.REQUEST.RESPONSE.headers['Content-Length'] = len(contents)
-              os.unlink(file)
-          return contents
+          output_file_pdf.seek(0)
+          existing_pdf = PdfFileReader(output_file_pdf)
+          numPages = existing_pdf.getNumPages()
+          # cria novo PDF
+          packet = cStringIO.StringIO()
+          can = canvas.Canvas(packet)
+          for page_num, i in enumerate(range(numPages), start=1):
+              page = existing_pdf.getPage(i)
+              pwidth = self.getPageSizeW(page)
+              pheight = self.getPageSizeH(page)
+              can.setPageSize((pwidth, pheight))
+              can.setFillColorRGB(0,0,0)
+              # Numero de pagina
+              num_pagina = "fls. %s/%s" % (page_num, numPages)
+              can.saveState()
+              can.setFont('Arial', 9)
+              can.drawCentredString(pwidth-45, pheight-60, num_pagina)
+              can.restoreState()
+              can.showPage()
+          can.save()
+          packet.seek(0)
+          new_pdf = PdfFileReader(packet)
+          # Mescla arquivos
+          output = PdfFileWriter()
+          for page in range(existing_pdf.getNumPages()):
+              pdf_page = existing_pdf.getPage(page)
+              # numeração de páginas
+              for wm in range(new_pdf.getNumPages()):
+                  watermark_page = new_pdf.getPage(wm)
+                  if page == wm:
+                     pdf_page.mergePage(watermark_page)
+              output.addPage(pdf_page)
+          outputStream = cStringIO.StringIO()
+          self.temp_folder.manage_addFile(nom_pdf_amigavel)
+          output.write(outputStream)
+          arq=self.temp_folder[nom_pdf_amigavel]
+          arq.manage_edit(title=nom_pdf_amigavel,filedata=outputStream.getvalue(),content_type='application/pdf')
+          arq = getattr(self.temp_folder,nom_pdf_amigavel)
+          self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
+          self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
+          self.temp_folder.manage_delObjects(ids=nom_pdf_amigavel)
+          return arq
 
     def oradores_gerar_odt(self, inf_basicas_dic, lst_oradores, lst_presidente, nom_arquivo):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/oradores.odt"
@@ -870,48 +871,41 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             self.sapl_documentos.administrativo.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
     def tramitacao_documento_juntar(self,cod_tramitacao):
-        writer = PdfFileWriter()
         merger = PdfWriter()
         arquivoPdf=str(cod_tramitacao)+"_tram.pdf"
         arquivoPdfAnexo=str(cod_tramitacao)+"_tram_anexo1.pdf"
         arquivoFinal=str(cod_tramitacao)+".pdf"
         if hasattr(self.sapl_documentos.administrativo.tramitacao,arquivoPdf):
-            pdf_tramitacao = self.sapl_documentos.administrativo.tramitacao.absolute_url()+ "/" + str(arquivoPdf)
-            opener = urllib.urlopen(pdf_tramitacao)
-            f = open('/tmp/' + str(arquivoPdf), 'wb').write(opener.read())
-            texto_tram = PdfReader('/tmp/'+ str(arquivoPdf), decompress=False).pages
-            merger.addpages(texto_tram)
-            os.unlink('/tmp/' + str(arquivoPdf))
+           arq = getattr(self.sapl_documentos.administrativo.tramitacao, arquivoPdf)
+           arquivo = cStringIO.StringIO(str(arq.data))
+           texto_tram = PdfReader(arquivo, decompress=False).pages
+           merger.addpages(texto_tram)
         if hasattr(self.sapl_documentos.administrativo.tramitacao,arquivoPdfAnexo):
-            pdf_anexo = self.sapl_documentos.administrativo.tramitacao.absolute_url()+ "/" + str(arquivoPdfAnexo)
-            opener = urllib.urlopen(pdf_anexo)
-            f = open('/tmp/' + str(arquivoPdfAnexo), 'wb').write(opener.read())
-            texto_anexo = PdfReader('/tmp/'+ str(arquivoPdfAnexo), decompress=False).pages
-            merger.addpages(texto_anexo)
-            self.sapl_documentos.administrativo.tramitacao.manage_delObjects(ids=arquivoPdfAnexo)
-            os.unlink('/tmp/' + str(arquivoPdfAnexo))
-        final_output_file_pdf = os.path.normpath(arquivoFinal)
-        merger.write(final_output_file_pdf)
-        readin = open(final_output_file_pdf, "r")
-        contents = readin.read()
-        for file in [final_output_file_pdf]:
-            os.unlink(file)
-            if arquivoPdf in self.sapl_documentos.administrativo.tramitacao:
-               documento = getattr(self.sapl_documentos.administrativo.tramitacao,arquivoPdf)
-               documento.manage_upload(file=contents)
-            else:
-               self.sapl_documentos.administrativo.tramitacao.manage_addFile(id=arquivoPdf,file=contents)
+           arq = getattr(self.sapl_documentos.administrativo.tramitacao, arquivoPdfAnexo)
+           arquivo = cStringIO.StringIO(str(arq.data))
+           texto_anexo = PdfReader(arquivo, decompress=False).pages
+           merger.addpages(texto_anexo)
+           self.sapl_documentos.administrativo.tramitacao.manage_delObjects(ids=arquivoPdfAnexo)
+        outputStream = cStringIO.StringIO()
+        self.temp_folder.manage_addFile(arquivoPdf)
+        merger.write(outputStream)
+        arq=self.temp_folder[arquivoPdf]
+        arq.manage_edit(title=arquivoPdf,filedata=outputStream.getvalue(),content_type='application/pdf')
+        tmp_copy = self.temp_folder.manage_copyObjects(ids=arquivoPdf)
+        if arquivoPdf in self.sapl_documentos.administrativo.tramitacao:
+           self.sapl_documentos.administrativo.tramitacao.manage_delObjects(arquivoPdf)
+           tmp_id = self.sapl_documentos.administrativo.tramitacao.manage_pasteObjects(tmp_copy)[0]['new_id']
+           self.sapl_documentos.administrativo.tramitacao.manage_renameObjects(ids=list([tmp_id]),new_ids=list([arquivoPdf]))
+        self.temp_folder.manage_delObjects(ids=arquivoPdf)
 
     def documento_assinado_imprimir(self,cod_documento):
         nom_pdf_documento = str(cod_documento) + "_texto_integral_signed.pdf"
-        pdf_documento = self.sapl_documentos.administrativo.absolute_url() + "/" +  nom_pdf_documento
         for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
           string = self.pysc.b64encode_pysc(codigo=str(documento.cod_documento))
           num_documento = documento.num_documento
           nom_autor = documento.txt_interessado
           for tipo_documento in self.zsql.tipo_documento_administrativo_obter_zsql(tip_documento=documento.tip_documento):
             texto = str(tipo_documento.des_tipo_documento.upper())+' Nº '+ str(documento.num_documento)+'/'+str(documento.ano_documento)
-            nom_pdf_saida = str(documento.cod_documento) + "_texto_integral.pdf"
             nom_pdf_amigavel = str(tipo_documento.des_tipo_documento.upper())+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+".pdf"
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por '+nom_autor+'.'
         mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/documento_validar?codigo='+str(string)
@@ -919,12 +913,9 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         validacao = ''
-        utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()
-        url = self.url() + '/sapl_documentos/administrativo/' + nom_pdf_documento
-        opener = urllib.urlopen(url)
-        f = open('/tmp/' + nom_pdf_documento, 'wb').write(opener.read())
-        existing_pdf = PdfFileReader('/tmp/'+ nom_pdf_documento, "rb")
+        arq = getattr(self.sapl_documentos.administrativo, nom_pdf_documento)
+        arquivo = cStringIO.StringIO(str(arq.data))
+        existing_pdf = PdfFileReader(arquivo, "rb")
         numPages = existing_pdf.getNumPages()
         # cria novo PDF
         packet = StringIO.StringIO()
@@ -966,42 +957,26 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         can.save()
         packet.seek(0)
         new_pdf = PdfFileReader(packet)
-        # Numero do documento
-        #packet2 = StringIO.StringIO()
-        #d = canvas.Canvas(packet2, pagesize=A4)
-        #d.setFillColorRGB(0,0,0)
-        #d.setFont("Arial_Bold", 12)
-        #d.drawString(170, 716, texto)
-        #d.setFont("Arial", 9)
-        #d.drawString(170, 704, validacao)
-        #d.save()
-        #packet2.seek(0)
-        #new_pdf2 = PdfFileReader(packet2)
         # Mescla arquivos
         output = PdfFileWriter()
         for page in range(existing_pdf.getNumPages()):
             pdf_page = existing_pdf.getPage(page)
-            # identificação do documento na primeira pagina
-            #if page == 0:
-            #   pdf_page.mergePage(new_pdf2.getPage(0))
             # qrcode e margem direita em todas as páginas
             for wm in range(new_pdf.getNumPages()):
                 watermark_page = new_pdf.getPage(wm)
                 if page == wm:
                    pdf_page.mergePage(watermark_page)
             output.addPage(pdf_page)
-        outputStream = file('/tmp/' + nom_pdf_saida, "wb")
+        outputStream = cStringIO.StringIO()
+        self.temp_folder.manage_addFile(nom_pdf_amigavel)
         output.write(outputStream)
-        outputStream.close()
-        arquivo = '/tmp/' + nom_pdf_saida
-        readin = open(arquivo, 'r' )
-        contents = readin.read()
-        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
-        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%nom_pdf_amigavel
-        self.REQUEST.RESPONSE.headers['Content-Length'] = len(contents)
-        os.unlink('/tmp/'+nom_pdf_saida)
-        os.unlink('/tmp/'+nom_pdf_documento)
-        return contents
+        arq=self.temp_folder[nom_pdf_amigavel]
+        arq.manage_edit(title=nom_pdf_amigavel,filedata=outputStream.getvalue(),content_type='application/pdf')
+        arq = getattr(self.temp_folder,nom_pdf_amigavel)
+        self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
+        self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
+        self.temp_folder.manage_delObjects(ids=nom_pdf_amigavel)
+        return arq
 
     # obter altura da pagina
     def getPageSizeH(self, p):
@@ -1193,7 +1168,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def processo_adm_gerar_pdf(self,cod_documento):
         writer = PdfWriter()
-        output_file = str(cod_documento) + "_processo_adm.pdf"
+        for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
+           nom_pdf_amigavel = documento.sgl_tipo_documento+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+'.pdf'
+           id_processo = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
+        nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         if hasattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral_signed.pdf'):
@@ -1207,40 +1185,31 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            texto_documento = PdfReader(arquivo, decompress=False).pages
            writer.addpages(texto_documento)
         for docadm in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0):
-           lst_acessorios = []
            cod_documento_acessorio = docadm.cod_documento_acessorio
            if hasattr(self.sapl_documentos.administrativo, str(cod_documento_acessorio) + '.pdf'):
-              lst_acessorios.append(cod_documento_acessorio)
-           for item in lst_acessorios:
-              doc = getattr(self.sapl_documentos.administrativo, str(item) + '.pdf')
+              doc = getattr(self.sapl_documentos.administrativo, str(cod_documento_acessorio) + '.pdf')
               arquivo_doc = cStringIO.StringIO(str(doc.data))
               texto_doc = PdfReader(arquivo_doc, decompress=False).pages
               writer.addpages(texto_doc)
         for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,rd_ordem='1',ind_excluido=0):
-           lst_tramitacoes = []
-           lst_tramitacoes.append(tram.cod_tramitacao)
-           for tramitacao in lst_tramitacoes:
-              if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf'):
-                 tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
-                 existe_arquivo = 1
-              elif hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf'):
-                 tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
-                 existe_arquivo = 1
-              else:
-                 existe_arquivo = 0
-              if existe_arquivo == 1:
-                 arquivo_tram = cStringIO.StringIO(str(tram.data))
-                 texto_tramitacao = PdfReader(arquivo_tram).pages
-                 for page_num, i in enumerate(texto_tramitacao):
-                     if page_num > 0:
-		        writer.addpage(texto_tramitacao[page_num])
-                 for page_num, i in enumerate(texto_tramitacao):
-                     if page_num == 0:
-		        writer.addpage(texto_tramitacao[0])
-        for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
-           nom_pdf_amigavel = documento.sgl_tipo_documento+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+'.pdf'
-           id_processo = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
-        nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
+            tramitacao = tram.cod_tramitacao
+            if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf'):
+               tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
+               existe_arquivo = 1
+            elif hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf'):
+               tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
+               existe_arquivo = 1
+            else:
+               existe_arquivo = 0
+            if existe_arquivo == 1:
+               arquivo_tram = cStringIO.StringIO(str(tram.data))
+               texto_tramitacao = PdfReader(arquivo_tram).pages
+               for page_num, i in enumerate(texto_tramitacao):
+                   if page_num > 0:
+	              writer.addpage(texto_tramitacao[page_num])
+               for page_num, i in enumerate(texto_tramitacao):
+                   if page_num == 0:
+	              writer.addpage(texto_tramitacao[0])
         output_file_pdf = cStringIO.StringIO()
         writer.write(output_file_pdf)
         output_file_pdf.seek(0)
@@ -1256,13 +1225,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             can.setPageSize((pwidth, pheight))
             can.setFillColorRGB(0,0,0)
             # Numero de pagina
-            id_processo = id_processo
-            num_pagina = "Fls. %s/%s" % (page_num, numPages)
+            num_pagina = "fls. %s/%s" % (page_num, numPages)
             can.saveState()
             can.setFont('Arial', 9)
-            can.drawCentredString(pwidth-40, pheight-60, id_processo)
+            can.drawCentredString(pwidth-45, pheight-60, id_processo)
             can.setFont('Arial_Bold', 9)
-            can.drawCentredString(pwidth-40, pheight-70, num_pagina)
+            can.drawCentredString(pwidth-45, pheight-72, num_pagina)
             can.restoreState()
             can.showPage()
         can.save()
@@ -1279,142 +1247,137 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    pdf_page.mergePage(watermark_page)
             output.addPage(pdf_page)
         outputStream = cStringIO.StringIO()
+        self.temp_folder.manage_addFile(nom_pdf_amigavel)
         output.write(outputStream)
-        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
-        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%nom_pdf_amigavel
-        return outputStream.getvalue()
-        outputStream.close()
+        arq=self.temp_folder[nom_pdf_amigavel]
+        arq.manage_edit(title=nom_pdf_amigavel,filedata=outputStream.getvalue(),content_type='application/pdf')
+        arq = getattr(self.temp_folder,nom_pdf_amigavel)
+        self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
+        self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
+        self.temp_folder.manage_delObjects(ids=nom_pdf_amigavel)
+        return arq
 
     def processo_eletronico_gerar_pdf(self,cod_materia):
         if cod_materia.isdigit():
            cod_materia = cod_materia
         else:
-           cod_materia = self.pysc.b64decode_pysc(codigo=str(cod_materia))
+           cod_materia = self.pysc.b64decode_pysc(codigo=str(cod_materia))     
+        for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia):
+           nom_pdf_amigavel = materia.sgl_tipo_materia+'-'+str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)+'.pdf'
+           nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
+           id_processo = materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
         writer = PdfWriter()
-        output_file_pdf = str(cod_materia) + "pasta-digital.pdf"
+        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
+        pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
-           url = self.url() + '/sapl_documentos/materia/' + str(cod_materia) + "_texto_integral.pdf"
-           opener = urllib.urlopen(url)
-           f = open('/tmp/' + str(cod_materia) + "_texto_integral.pdf", 'wb').write(opener.read())
-           texto_materia = PdfReader('/tmp/'+ str(cod_materia) + "_texto_integral.pdf", decompress=False).pages
+           arq = getattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf')
+           arquivo = cStringIO.StringIO(str(arq.data))
+           texto_materia = PdfReader(arquivo, decompress=False).pages
            writer.addpages(texto_materia)
-           os.unlink('/tmp/' + str(cod_materia) + "_texto_integral.pdf")
-
-        for subst in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-           lst_substitutivos = []
-           if hasattr(self.sapl_documentos.substitutivo, str(subst.cod_substitutivo) + '_substitutivo.pdf'):
-              substitutivo = subst.cod_substitutivo 
-           lst_substitutivos.append(substitutivo)
-           for substitutivo in lst_substitutivos:
-              pdf_substitutivo = self.sapl_documentos.substitutivo.absolute_url()+ "/" + str(substitutivo) + "_substitutivo.pdf"
-              opener = urllib.urlopen(pdf_substitutivo)
-              f = open('/tmp/' + str(substitutivo) + "_substitutivo.pdf", 'wb').write(opener.read())
-              texto_substitutivo = PdfReader('/tmp/'+ str(substitutivo) + "_substitutivo.pdf", decompress=False).pages
-              writer.addpages(texto_substitutivo)
-              os.unlink('/tmp/' + str(substitutivo) + "_substitutivo.pdf")
-
+        for substitutivo in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+            subst = substitutivo.cod_substitutivo
+            if hasattr(self.sapl_documentos.substitutivo, str(subst) + '_substitutivo.pdf'):
+               subst = getattr(self.sapl_documentos.substitutivo, str(subst) + '_substitutivo.pdf')
+               arquivo_subst = cStringIO.StringIO(str(subst.data))
+               texto_subst = PdfReader(arquivo_subst).pages
+               writer.addpages(texto_subst)
         for eme in self.zsql.emenda_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-           lst_emendas = []
-           if hasattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf'):
-              emenda = eme.cod_emenda
-           lst_emendas.append(emenda)
-           for emenda in lst_emendas:
-              pdf_emenda = self.sapl_documentos.emenda.absolute_url()+ "/" + str(emenda) + "_emenda.pdf"
-              opener = urllib.urlopen(pdf_emenda)
-              f = open('/tmp/' + str(emenda) + "_emenda.pdf", 'wb').write(opener.read())
-              texto_emenda = PdfReader('/tmp/'+ str(emenda) + "_emenda.pdf", decompress=False).pages
-              writer.addpages(texto_emenda)
-              os.unlink('/tmp/' + str(emenda) + "_emenda.pdf")
-
+            emenda = eme.cod_emenda
+            if hasattr(self.sapl_documentos.emenda, str(emenda) + '_emenda.pdf'):
+               pdf_emenda = getattr(self.sapl_documentos.emenda, str(emenda) + '_emenda.pdf')
+               arquivo_emenda = cStringIO.StringIO(str(pdf_emenda.data))
+               texto_emenda = PdfReader(arquivo_emenda).pages
+               writer.addpages(texto_emenda)
         for relat in self.zsql.relatoria_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-           lst_relatorias = []
-           if hasattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf'):
-              relatoria = relat.cod_relatoria 
-           lst_relatorias.append(relatoria)
-           for relatoria in lst_relatorias:
-              pdf_relatoria = self.sapl_documentos.parecer_comissao.absolute_url()+ "/" + str(relatoria) + "_parecer.pdf"
-              opener = urllib.urlopen(pdf_relatoria)
-              f = open('/tmp/' + str(relatoria) + "_parecer.pdf", 'wb').write(opener.read())
-              texto_relatoria = PdfReader('/tmp/'+ str(relatoria) + "_parecer.pdf", decompress=False).pages
-              writer.addpages(texto_relatoria)
-              os.unlink('/tmp/' + str(relatoria) + "_parecer.pdf")
-
+            relatoria = relat.cod_relatoria
+            if hasattr(self.sapl_documentos.parecer_comissao, str(relatoria) + '_parecer.pdf'):
+               pdf_relatoria = getattr(self.sapl_documentos.parecer_comissao, str(relatoria) + '_parecer.pdf')
+               arquivo_relatoria = cStringIO.StringIO(str(pdf_relatoria.data))
+               texto_relatoria = PdfReader(arquivo_relatoria).pages
+               writer.addpages(texto_relatoria)
         for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
-           lst_mat_anexadas = []
-           if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
-              anexada = anexada.cod_materia_anexada
-           lst_mat_anexadas.append(anexada)
-           for anexada in lst_mat_anexadas:
-              pdf_anexada = self.sapl_documentos.materia.absolute_url()+ "/" + str(anexada) + "_texto_integral.pdf"
-              opener = urllib.urlopen(pdf_anexada)
-              f = open('/tmp/' + str(anexada) + "_texto_integral.pdf", 'wb').write(opener.read())
-              texto_anexada = PdfReader('/tmp/'+ str(anexada) + "_texto_integral.pdf", decompress=False).pages
-              writer.addpages(texto_anexada)
-              os.unlink('/tmp/' + str(anexada) + "_texto_integral.pdf")
-
+            anexada = anexada.cod_materia_anexada
+            if hasattr(self.sapl_documentos.materia, str(anexada) + '_texto_integral.pdf'):
+               pdf_anexada = getattr(self.sapl_documentos.materia, str(anexada) + '_texto_integral.pdf')
+               arquivo_anexada = cStringIO.StringIO(str(pdf_anexada.data))
+               texto_anexada = PdfReader(arquivo_anexada).pages
+               writer.addpages(texto_anexada)
         for documento in self.zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia,ind_excluido=0):
-           lst_acessorios = []
-           proposicao = self.zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=documento.cod_documento,ind_excluido=0)
+           cod_documento = documento.cod_documento
+           proposicao = self.zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento,ind_excluido=0)
            if proposicao:
               cod_proposicao = proposicao[0].cod_proposicao
-              pdf_proposicao = self.sapl_documentos.proposicao.absolute_url()+ "/" +  str(cod_proposicao) + "_signed.pdf"
-              opener = urllib.urlopen(pdf_proposicao)
-              f = open('/tmp/' + str(cod_proposicao) + "_signed.pdf", 'wb').write(opener.read())
-              texto_documento = PdfReader('/tmp/'+ str(cod_proposicao) + "_signed.pdf", decompress=False).pages
-              writer.addpages(texto_documento)
-              os.unlink('/tmp/' + str(cod_proposicao) + "_signed.pdf")
+              if hasattr(self.sapl_documentos.proposicao, str(cod_proposicao) + '_signed.pdf'):
+                 pdf_proposicao = getattr(self.sapl_documentos.proposicao, str(cod_proposicao) + '_signed.pdf')
+                 arquivo_proposicao = cStringIO.StringIO(str(pdf_proposicao.data))
+                 texto_proposicao = PdfReader(arquivo_proposicao).pages
+                 writer.addpages(texto_proposicao)
            else:
-              if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
-                 cod_documento = documento.cod_documento
-              lst_acessorios.append(cod_documento)
-              for item in lst_acessorios:
-                 pdf_documento = self.sapl_documentos.materia.absolute_url()+ "/" + str(item) + ".pdf"
-                 opener = urllib.urlopen(pdf_documento)
-                 f = open('/tmp/' + str(item) + ".pdf", 'wb').write(opener.read())
-                 texto_documento = PdfReader('/tmp/'+ str(item) + ".pdf", decompress=False).pages
+              if hasattr(self.sapl_documentos.materia, str(cod_documento) + '.pdf'):
+                 pdf_documento = getattr(self.sapl_documentos.materia, str(cod_documento) + '_.pdf')
+                 arquivo_documento = cStringIO.StringIO(str(pdf_documento.data))
+                 texto_documento = PdfReader(arquivo_documento).pages
                  writer.addpages(texto_documento)
-                 os.unlink('/tmp/' + str(item) + ".pdf")
-
         for tram in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-           lst_tramitacoes = []
-           if hasattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
-              tramitacao =  tram.cod_tramitacao
-              lst_tramitacoes.append(tramitacao)
-           for tramitacao in lst_tramitacoes:
-              pdf_tramitacao = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + str(tramitacao) + "_tram.pdf"
-              opener = urllib.urlopen(pdf_tramitacao)
-              f = open('/tmp/' + str(tramitacao) + "_tram.pdf", 'wb').write(opener.read())
-              texto_tramitacao = PdfReader('/tmp/'+ str(tramitacao) + "_tram.pdf", decompress=False).pages
-              writer.addpages(texto_tramitacao)
-              os.unlink('/tmp/' + str(tramitacao) + "_tram.pdf")
-
-        for tram_sig in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-           lst_tram_sig = []
-           if hasattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf'):
-              tramitacao =  tram_sig.cod_tramitacao
-              lst_tram_sig.append(tramitacao)
-           for tramitacao in lst_tram_sig:
-              pdf_tram_sig = self.sapl_documentos.materia.tramitacao.absolute_url()+ "/" + str(tramitacao) + "_tram_signed.pdf"
-              opener = urllib.urlopen(pdf_tram_sig)
-              f = open('/tmp/' + str(tramitacao) + "_tram_signed.pdf", 'wb').write(opener.read())
-              texto_tram = PdfReader('/tmp/'+ str(tramitacao) + "_tram_signed.pdf", decompress=False).pages
-              writer.addpages(texto_tram)
-              os.unlink('/tmp/' + str(tramitacao) + "_tram_signed.pdf")
-
-        for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia):
-           nom_arquivo_pdf = materia.sgl_tipo_materia+'-'+str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)+'.pdf'
-
-        nom_arquivo_pdf = nom_arquivo_pdf.decode('latin-1').encode("utf-8")
-        output_file_pdf = '/tmp/' + nom_arquivo_pdf
+            tramitacao = tram.cod_tramitacao
+            if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao) + '_tram.pdf'):
+               tram = getattr(self.sapl_documentos.materia.tramitacao, str(tramitacao) + '_tram.pdf')
+               existe_arquivo = 1
+            elif hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao) + '_tram_signed.pdf'):
+               tram = getattr(self.sapl_documentos.materia.tramitacao, str(tramitacao) + '_tram_signed.pdf')
+               existe_arquivo = 1
+            else:
+               existe_arquivo = 0
+            if existe_arquivo == 1:
+               arquivo_tram = cStringIO.StringIO(str(tram.data))
+               texto_tramitacao = PdfReader(arquivo_tram).pages
+               writer.addpages(texto_tramitacao)
+        output_file_pdf = cStringIO.StringIO()
         writer.write(output_file_pdf)
-        readin = open(output_file_pdf, 'r' )
-        contents = readin.read()
-        for file in [output_file_pdf]:
-            self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/pdf'
-            self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%nom_arquivo_pdf
-            self.REQUEST.RESPONSE.headers['Content-Length'] = len(contents)
-            os.unlink(file)
-        return contents
+        output_file_pdf.seek(0)
+        existing_pdf = PdfFileReader(output_file_pdf)
+        numPages = existing_pdf.getNumPages()
+        # cria novo PDF
+        packet = cStringIO.StringIO()
+        can = canvas.Canvas(packet)
+        for page_num, i in enumerate(range(numPages), start=1):
+            page = existing_pdf.getPage(i)
+            pwidth = self.getPageSizeW(page)
+            pheight = self.getPageSizeH(page)
+            can.setPageSize((pwidth, pheight))
+            can.setFillColorRGB(0,0,0)
+            # Numero de pagina
+            num_pagina = "fls. %s/%s" % (page_num, numPages)
+            can.saveState()
+            can.setFont('Arial', 9)
+            can.drawCentredString(pwidth-45, pheight-60, id_processo)
+            can.setFont('Arial_Bold', 9)
+            can.drawCentredString(pwidth-45, pheight-72, num_pagina)
+            can.restoreState()
+            can.showPage()
+        can.save()
+        packet.seek(0)
+        new_pdf = PdfFileReader(packet)
+        # Mescla arquivos
+        output = PdfFileWriter()
+        for page in range(existing_pdf.getNumPages()):
+            pdf_page = existing_pdf.getPage(page)
+            # numeração de páginas
+            for wm in range(new_pdf.getNumPages()):
+                watermark_page = new_pdf.getPage(wm)
+                if page == wm:
+                   pdf_page.mergePage(watermark_page)
+            output.addPage(pdf_page)
+        outputStream = cStringIO.StringIO()
+        self.temp_folder.manage_addFile(nom_pdf_amigavel)
+        output.write(outputStream)
+        arq=self.temp_folder[nom_pdf_amigavel]
+        arq.manage_edit(title=nom_pdf_amigavel,filedata=outputStream.getvalue(),content_type='application/pdf')
+        arq = getattr(self.temp_folder,nom_pdf_amigavel)
+        self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
+        self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
+        self.temp_folder.manage_delObjects(ids=nom_pdf_amigavel)
+        return arq
 
     def proposicao_autuar(self,cod_proposicao):
         nom_pdf_proposicao = str(cod_proposicao) + "_signed.pdf"
