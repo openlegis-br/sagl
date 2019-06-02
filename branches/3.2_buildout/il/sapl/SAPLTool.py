@@ -1222,16 +1222,21 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            for tramitacao in lst_tramitacoes:
               if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf'):
                  tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
+                 existe_arquivo = 1
               elif hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf'):
                  tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
-              arquivo_tram = cStringIO.StringIO(str(tram.data))
-              texto_tramitacao = PdfReader(arquivo_tram).pages
-              for page_num, i in enumerate(texto_tramitacao):
-                  if page_num > 0:
-		     writer.addpage(texto_tramitacao[page_num])
-              for page_num, i in enumerate(texto_tramitacao):
-                  if page_num == 0:
-		     writer.addpage(texto_tramitacao[0])
+                 existe_arquivo = 1
+              else:
+                 existe_arquivo = 0
+              if existe_arquivo == 1:
+                 arquivo_tram = cStringIO.StringIO(str(tram.data))
+                 texto_tramitacao = PdfReader(arquivo_tram).pages
+                 for page_num, i in enumerate(texto_tramitacao):
+                     if page_num > 0:
+		        writer.addpage(texto_tramitacao[page_num])
+                 for page_num, i in enumerate(texto_tramitacao):
+                     if page_num == 0:
+		        writer.addpage(texto_tramitacao[0])
         for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
            nom_pdf_amigavel = documento.sgl_tipo_documento+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+'.pdf'
            id_processo = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
@@ -1573,14 +1578,14 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signature_starter.set_pdf_path(pdf_path)
         signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
         signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
-        if tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm':
+        if tipo_doc == 'documento' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm':
            signature_starter.visual_representation = ({
                'text': {
                    # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
                    # certificate
                    # signerName -> full name of the signer
                    # br_cpf_formatted -> if the certificate is ICP-Brasil, contains the signer's CPF
-                   'text': 'Assinado por {{signerName}} {{br_cpf_formatted}}',
+                   'text': 'Assinado digitalmente por {{signerName}} {{br_cpf_formatted}}',
                    # Specify that the signing time should also be rendered
                    'includeSigningTime': True,
                    # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
@@ -1607,7 +1612,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    # certificate
                    # signerName -> full name of the signer
                    # br_cpf_formatted -> if the certificate is ICP-Brasil, contains the signer's CPF
-                   'text': 'Assinado por {{signerName}} {{br_cpf_formatted}}',
+                   'text': 'Assinado digitalmente por {{signerName}} {{br_cpf_formatted}}',
                    # Specify that the signing time should also be rendered
                    'includeSigningTime': True,
                    # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
