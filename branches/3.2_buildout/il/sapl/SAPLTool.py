@@ -1314,7 +1314,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                  writer.addpages(texto_proposicao)
            else:
               if hasattr(self.sapl_documentos.materia, str(cod_documento) + '.pdf'):
-                 pdf_documento = getattr(self.sapl_documentos.materia, str(cod_documento) + '_.pdf')
+                 pdf_documento = getattr(self.sapl_documentos.materia, str(cod_documento) + '.pdf')
                  arquivo_documento = cStringIO.StringIO(str(pdf_documento.data))
                  texto_documento = PdfReader(arquivo_documento).pages
                  writer.addpages(texto_documento)
