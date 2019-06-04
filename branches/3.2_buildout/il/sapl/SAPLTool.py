@@ -906,7 +906,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
           nom_autor = documento.txt_interessado
           for tipo_documento in self.zsql.tipo_documento_administrativo_obter_zsql(tip_documento=documento.tip_documento):
             texto = str(tipo_documento.des_tipo_documento.upper())+' Nº '+ str(documento.num_documento)+'/'+str(documento.ano_documento)
-            nom_pdf_amigavel = str(tipo_documento.des_tipo_documento.upper())+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+".pdf"
+            nom_pdf_amigavel = tipo_documento.sgl_tipo_documento+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+".pdf"
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por '+nom_autor+'.'
         mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/documento_validar?codigo='+str(string)
         mensagem = mensagem1 + '\n' + mensagem2
