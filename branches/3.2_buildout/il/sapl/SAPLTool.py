@@ -1318,7 +1318,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                  arquivo_documento = cStringIO.StringIO(str(pdf_documento.data))
                  texto_documento = PdfReader(arquivo_documento).pages
                  writer.addpages(texto_documento)
-        for tram in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+        for tram in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia,rd_ordem='1',ind_excluido=0):
             tramitacao = tram.cod_tramitacao
             if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao) + '_tram.pdf'):
                tram = getattr(self.sapl_documentos.materia.tramitacao, str(tramitacao) + '_tram.pdf')
