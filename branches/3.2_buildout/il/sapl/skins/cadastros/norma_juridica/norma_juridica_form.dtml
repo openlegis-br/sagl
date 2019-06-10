@@ -351,12 +351,28 @@ $(document).ready(function() {
         <td colspan="2" width="55%"><label>Texto Digitalizado (PDF)</label><br/>
            <input type="hidden" name="hdn_file" value="0"/>
             <dtml-if cod_norma>
-              <dtml-call expr="REQUEST.set('id_documento', _.str(cod_norma)+'_'+sapl_documentos.norma_juridica.nom_documento)">
+              <dtml-call expr="REQUEST.set('id_documento', _.str(cod_norma)+'_texto_integral.pdf')">
               <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento)">
                 <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento).absolute_url">
-                <a target="_blank" href="&dtml-portal_url;/generico/pdfJS/viewer_html?file=<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
-                  <img align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Arquivo PDF">
-                </a>
+                 <a target="_blank" href="&dtml-portal_url;/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1">
+                   <img align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Arquivo PDF">
+                 </a>
+                   <input id="assinar-pdf" type="button" class="botao" value="Assinar" />
+		   <script type="text/javascript">
+		      $('#assinar-pdf').click(function () {
+    		       $.fancybox({
+        	        type: 'iframe',
+        	        href: '&dtml-portal_url;/generico/assinador/pades-signature_html?codigo=<dtml-var cod_norma>&tipo_doc=norma',
+		        width	   : '70%',
+		        height	   : '50%',
+                        minHeight	   : 320,
+        	        preload         : true,
+                        afterClose      : function() {
+                        window.location.href = "norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>";},
+		        closeEffect	: 'fade'
+    		        });
+		      });
+		   </script>
                 </dtml-let>
                 <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field(document.norma_juridica_form)"/><span class="texto">Manter</span>
                 <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field(document.norma_juridica_form)"/><span class="texto">Excluir</span>

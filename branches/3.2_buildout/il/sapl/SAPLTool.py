@@ -1541,7 +1541,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signature_starter.set_pdf_path(pdf_path)
         signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
         signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
-        if tipo_doc == 'documento' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm':
+        if tipo_doc == 'documento' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm' or tipo_doc == 'norma':
            signature_starter.visual_representation = ({
                'text': {
                    # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
@@ -1703,7 +1703,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            old_filename = '%s' % (codigo) + "_texto_integral.pdf"
         elif tipo_doc == 'norma':
            storage_path = self.sapl_documentos.norma_juridica
-           filename = '%s' % (codigo) + "_texto_integral_signed.pdf"
+           filename = '%s' % (codigo) + "_texto_integral.pdf"
            old_filename = '%s' % (codigo) + "_texto_integral.pdf"
         elif tipo_doc == 'documento':
            storage_path = self.sapl_documentos.administrativo
