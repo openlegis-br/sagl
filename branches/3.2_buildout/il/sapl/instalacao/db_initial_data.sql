@@ -6002,17 +6002,17 @@ INSERT INTO `tipo_instituicao` (`tip_instituicao`, `nom_tipo_instituicao`, `ind_
 -- Fazendo dump de dados para tabela `tipo_materia_legislativa`
 --
 
-INSERT INTO `tipo_materia_legislativa` (`tip_materia`, `sgl_tipo_materia`, `des_tipo_materia`, `ind_num_automatica`, `quorum_minimo_votacao`, `ind_excluido`) VALUES
-(1, 'PL', 'Projeto de Lei', 0, 1, 0),
-(2, 'PR', 'Projeto de Resolução', 0, 1, 0),
-(3, 'REQ', 'Requerimento', 0, 1, 0),
-(4, 'REC', 'Recurso', 0, 1, 0),
-(5, 'PLC', 'Projeto de Lei Complementar', 0, 1, 0),
-(6, 'PDL', 'Projeto de Decreto Legislativo', 0, 1, 0),
-(7, 'MOC', 'Moção', 0, 1, 0),
-(8, 'IND', 'Indicação', 0, 1, 0),
-(9, 'PEL', 'Proposta de Emenda à Lei Orgânica', 0, 1, 0),
-(10, 'VET', 'Veto', 0, 1, 0);
+INSERT INTO `tipo_materia_legislativa` (`tip_materia`, `sgl_tipo_materia`, `des_tipo_materia`, `tip_natureza`, `ind_num_automatica`, `quorum_minimo_votacao`, `ind_excluido`) VALUES
+(1, 'PL', 'Projeto de Lei', 'P', 0, 1, 0),
+(2, 'PR', 'Projeto de Resolução', 'P', 0, 1, 0),
+(3, 'REQ', 'Requerimento', 'P', 0, 1, 0),
+(4, 'REC', 'Recurso', 'P', 0, 1, 0),
+(5, 'PLC', 'Projeto de Lei Complementar', 'P', 0, 1, 0),
+(6, 'PDL', 'Projeto de Decreto Legislativo', 'P', 0, 1, 0),
+(7, 'MOC', 'Moção', 'P', 0, 1, 0),
+(8, 'IND', 'Indicação', 'P',  0, 1, 0),
+(9, 'PEL', 'Proposta de Emenda à Lei Orgânica', 'P', 0, 1, 0),
+(10, 'VET', 'Veto', 'P', 0, 1, 0);
 
 --
 -- Fazendo dump de dados para tabela `tipo_norma_juridica`
