@@ -1668,7 +1668,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             filename = '%s%s' % (codigo, storage.pdf_signed)
             old_filename = '%s%s' % (codigo, storage.pdf_file)
 
-        if tipo_doc == 'materia' or tip_doc == 'doc_acessorio':
+        if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio':
            storage_path = self.sapl_documentos.materia
         elif tipo_doc == 'emenda':
            storage_path = self.sapl_documentos.emenda
@@ -1682,7 +1682,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            storage_path = self.sapl_documentos.ata_sessao
         elif tipo_doc == 'norma':
            storage_path = self.sapl_documentos.norma_juridica
-        elif tipo_doc == 'documento' or tip_doc == 'doc_acessorio_adm':
+        elif tipo_doc == 'documento' or tipo_doc == 'doc_acessorio_adm':
            storage_path = self.sapl_documentos.administrativo
         elif tipo_doc == 'tramitacao':
            storage_path = self.sapl_documentos.materia.tramitacao
