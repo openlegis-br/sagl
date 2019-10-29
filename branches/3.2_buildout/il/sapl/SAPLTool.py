@@ -1699,9 +1699,9 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         data = open('/tmp/' + filename, "rb").read()
 
-        if old_filename in storage_path:
-           storage_path.manage_delObjects(ids=old_filename)
-           os.unlink("/tmp/"+old_filename)
+        #if old_filename in storage_path:
+        #   storage_path.manage_delObjects(ids=old_filename)
+        #   os.unlink("/tmp/"+old_filename)
 
         for file in [filename]:
             if filename in storage_path:
