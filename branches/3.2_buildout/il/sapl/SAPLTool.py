@@ -1665,9 +1665,31 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         # At this point, you'd typically store the signed PDF on your database.
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
-            storage_path = 'self.' + storage.storage_path
             filename = '%s%s' % (codigo, storage.pdf_signed)
             old_filename = '%s%s' % (codigo, storage.pdf_file)
+
+        if tipo_doc == 'materia' or tip_doc == 'doc_acessorio':
+           storage_path = self.sapl_documentos.materia
+        elif tipo_doc == 'emenda':
+           storage_path = self.sapl_documentos.emenda
+        elif tipo_doc == 'substitutivo':
+           storage_path = self.sapl_documentos.substitutivo
+        elif tipo_doc == 'parecer_comissao':
+           storage_path = self.sapl_documentos.parecer_comissao
+        elif tipo_doc == 'pauta':
+           storage_path = self.sapl_documentos.pauta_sessao
+        elif tipo_doc == 'ata':
+           storage_path = self.sapl_documentos.ata_sessao
+        elif tipo_doc == 'norma':
+           storage_path = self.sapl_documentos.norma_juridica
+        elif tipo_doc == 'documento' or tip_doc == 'doc_acessorio_adm':
+           storage_path = self.sapl_documentos.administrativo
+        elif tipo_doc == 'tramitacao':
+           storage_path = self.sapl_documentos.materia.tramitacao
+        elif tipo_doc == 'tramitacao_adm':
+           storage_path = self.sapl_documentos.administrativo.tramitacao
+        elif tipo_doc == 'proposicao':
+           storage_path = self.sapl_documentos.proposicao
 
         tmp_path = "/tmp"
 
