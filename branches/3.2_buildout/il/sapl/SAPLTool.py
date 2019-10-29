@@ -1492,29 +1492,15 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def restpki_client(self):
         restpki_url = 'https://restpkiol.azurewebsites.net/'
+        #restpki_url = 'https://pki.rest/'
         restpki_access_token = self.sapl_documentos.props_sapl.restpki_access_token            
         restpki_client = RestPkiClient(restpki_url, restpki_access_token)
         return restpki_client
 
     def pades_signature(self, codigo, tipo_doc):
-        if tipo_doc == 'materia':
-           pdf_location = '/sapl_documentos/materia/'
-           pdf_file = '%s' % (codigo) + "_texto_integral.pdf"
-        elif tipo_doc == 'tramitacao':
-           pdf_location = '/sapl_documentos/materia/tramitacao/'
-           pdf_file = '%s' % (codigo) + "_tram.pdf"
-        elif tipo_doc == 'norma':
-           pdf_location = '/sapl_documentos/norma_juridica/'
-           pdf_file = '%s' % (codigo) + "_texto_integral.pdf"
-        elif tipo_doc == 'documento':
-           pdf_location = '/sapl_documentos/administrativo/'
-           pdf_file = '%s' % (codigo) + "_texto_integral.pdf"
-        elif tipo_doc == 'tramitacao_adm':
-           pdf_location = '/sapl_documentos/administrativo/tramitacao/'
-           pdf_file = '%s' % (codigo) + "_tram.pdf"
-        elif tipo_doc == 'proposicao':
-           pdf_location = '/sapl_documentos/proposicao/'
-           pdf_file = '%s' % (codigo) + ".pdf"
+        for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
+            pdf_location = storage.pdf_location
+            pdf_file = '%s%s' % (codigo, storage.pdf_file)
 
         # Read the PDF path
         utool = getToolByName(self, 'portal_url')
@@ -1527,8 +1513,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdf_path = '%s/%s' % (tmp_path, pdf_file)
 
         # Read the PDF stamp image
-        utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()
         id_logo = portal.sapl_documentos.props_sapl.id_logo
         url = self.url() + '/sapl_documentos/props_sapl/logo_casa.gif'
         opener = urllib.urlopen(url)
@@ -1600,38 +1584,21 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         return token, pdf_path, codigo, tipo_doc
 
     def pades_cosignature(self, codigo, tipo_doc):
-        if tipo_doc == 'materia':
-           pdf_location = '/sapl_documentos/materia/'
-           pdf_file_signed = '%s' % (codigo) + "_texto_integral_signed.pdf"
-        elif tipo_doc == 'tramitacao':
-           pdf_location = '/sapl_documentos/materia/tramitacao/'
-           pdf_file_signed = '%s' % (codigo) + "_tram_signed.pdf"
-        elif tipo_doc == 'norma':
-           pdf_location = '/sapl_documentos/norma_juridica/'
-           pdf_file_signed = '%s' % (codigo) + "_texto_integral_signed.pdf"
-        elif tipo_doc == 'documento':
-           pdf_location = '/sapl_documentos/administrativo/'
-           pdf_file_signed = '%s' % (codigo) + "_texto_integral_signed.pdf"
-        elif tipo_doc == 'tramitacao_adm':
-           pdf_location = '/sapl_documentos/administrativo/tramitacao/'
-           pdf_file_signed = '%s' % (codigo) + "_tram_signed.pdf"
-        elif tipo_doc == 'proposicao':
-           pdf_location = '/sapl_documentos/proposicao/'
-           pdf_file_signed = '%s' % (codigo) + "_signed.pdf"
+        for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
+            pdf_location = storage.pdf_location
+            pdf_file = '%s%s' % (codigo, storage.pdf_signed)
        
         # Read the PDF path
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
-        url = self.url() + pdf_location + pdf_file_signed
+        url = self.url() + pdf_location + pdf_file
         opener = urllib.urlopen(url)
-        f = open('/tmp/' + pdf_file_signed, 'wb').write(opener.read())
+        f = open('/tmp/' + pdf_file, 'wb').write(opener.read())
         tmp_path = '/tmp'
-        pdf_tmp = pdf_file_signed
-        pdf_path = '%s/%s' % (tmp_path, pdf_file_signed)
+        pdf_tmp = pdf_file
+        pdf_path = '%s/%s' % (tmp_path, pdf_file)
 
         # Read the PDF stamp image
-        utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()
         id_logo = portal.sapl_documentos.props_sapl.id_logo
         url = self.url() + '/sapl_documentos/props_sapl/logo_casa.gif'
         opener = urllib.urlopen(url)
@@ -1697,30 +1664,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signer_cert = signature_finisher.certificate
 
         # At this point, you'd typically store the signed PDF on your database.
-        if tipo_doc == 'materia':
-           storage_path = self.sapl_documentos.materia
-           filename = '%s' % (codigo) + "_texto_integral_signed.pdf"
-           old_filename = '%s' % (codigo) + "_texto_integral.pdf"
-        elif tipo_doc == 'norma':
-           storage_path = self.sapl_documentos.norma_juridica
-           filename = '%s' % (codigo) + "_texto_integral.pdf"
-           old_filename = '%s' % (codigo) + "_texto_integral.pdf"
-        elif tipo_doc == 'documento':
-           storage_path = self.sapl_documentos.administrativo
-           filename = '%s' % (codigo) + "_texto_integral_signed.pdf"
-           old_filename = '%s' % (codigo) + "_texto_integral.pdf"
-        elif tipo_doc == 'tramitacao':
-           storage_path = self.sapl_documentos.materia.tramitacao
-           filename = '%s' % (codigo) + "_tram_signed.pdf"
-           old_filename = '%s' % (codigo) + "_tram.pdf"
-        elif tipo_doc == 'tramitacao_adm':
-           storage_path = self.sapl_documentos.administrativo.tramitacao
-           filename = '%s' % (codigo) + "_tram_signed.pdf"
-           old_filename = '%s' % (codigo) + "_tram.pdf"
-        elif tipo_doc == 'proposicao':
-           storage_path = self.sapl_documentos.proposicao
-           filename = "%s"%codigo+'_signed.pdf'
-           old_filename = "%s"%codigo+'.pdf'
+        for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
+            storage_path = 'self.' + storage.storage_path
+            filename = '%s%s' % (codigo, storage.pdf_signed)
+            old_filename = '%s%s' % (codigo, storage.pdf_file)
 
         tmp_path = "/tmp"
 
