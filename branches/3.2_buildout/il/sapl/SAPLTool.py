@@ -1100,6 +1100,32 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_ods
         return data
 
+    def materias_exportar(self, materias):
+        url = self.sapl_documentos.modelo.absolute_url() + "/planilha-materias.ods"
+        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_ods = "materias.ods"
+        renderer = Renderer(template_file, locals(), output_file_ods, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()                                                                              
+        data = open(output_file_ods, "rb").read()                 
+        for file in [output_file_ods]:
+            os.unlink(file)                                                
+        self.REQUEST.RESPONSE.headers['Content-Type'] = 'vnd.oasis.opendocument.spreadsheet'
+        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_ods
+        return data
+
+    def normas_exportar(self, normas):
+        url = self.sapl_documentos.modelo.absolute_url() + "/planilha-normas.ods"
+        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_ods = "normas.ods"
+        renderer = Renderer(template_file, locals(), output_file_ods, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()                                                                              
+        data = open(output_file_ods, "rb").read()                 
+        for file in [output_file_ods]:
+            os.unlink(file)                                                
+        self.REQUEST.RESPONSE.headers['Content-Type'] = 'vnd.oasis.opendocument.spreadsheet'
+        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_ods
+        return data
+
     def substitutivo_gerar_pdf(self,cod_substitutivo):
         nom_arquivo_odt = "%s"%cod_substitutivo+'_substitutivo.odt'
         nom_arquivo_pdf = "%s"%cod_substitutivo+'_substitutivo.pdf'
