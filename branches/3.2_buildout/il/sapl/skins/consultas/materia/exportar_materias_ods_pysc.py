@@ -49,6 +49,8 @@ for item in context.zsql.materia_pesquisar_zsql(
     materia["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
 
     materia['localizacao_atual']= ""
+    materia['des_situacao'] = ""
+    materia['ultima_acao'] = ""
     for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=item.cod_materia,ind_ult_tramitacao=1):
         if tramitacao.cod_unid_tram_dest:
             cod_unid_tram = tramitacao.cod_unid_tram_dest
@@ -59,10 +61,8 @@ for item in context.zsql.materia_pesquisar_zsql(
                 materia['localizacao_atual']=unidade_tramitacao.nom_orgao
             else:
                 materia['localizacao_atual']=unidade_tramitacao.nom_comissao
-        des_status=tramitacao.des_status
-        txt_tramitacao=tramitacao.txt_tramitacao
-    materia['des_situacao'] = des_status
-    materia['ultima_acao'] = txt_tramitacao
+        materia['des_situacao'] = tramitacao.des_status
+        materia['ultima_acao'] = tramitacao.txt_tramitacao
 
     materias.append(materia)
 
