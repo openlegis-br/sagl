@@ -20,13 +20,8 @@ try:
    nom_arquivo = nom_arquivo_assinado
    link = pdf_signed
 except:
-   pass
-
-try:
    arquivo = context.restrictedTraverse(pdf_file)
    nom_arquivo = nom_arquivo
    link = pdf_file
-except:
-   pass
 
 return link

@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=codigo, tipo_doc
+##parameters=codigo, tipo_doc, cod_usuario
 ##title=
 ##
 
@@ -12,5 +12,5 @@ from Products.CMFCore.utils import getToolByName
 
 st = getToolByName(context, 'portal_sapl')
 
-return st.pades_signature(codigo, tipo_doc)
+return st.pades_signature(codigo, tipo_doc, cod_usuario)
 

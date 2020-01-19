@@ -1523,20 +1523,29 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         restpki_client = RestPkiClient(restpki_url, restpki_access_token)
         return restpki_client
 
-    def pades_signature(self, codigo, tipo_doc):
+    def pades_signature(self, codigo, tipo_doc, cod_usuario):
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
             pdf_location = storage.pdf_location
-            pdf_file = '%s%s' % (codigo, storage.pdf_file)
+            pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
+            nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
+            pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
+            nom_arquivo = str(codigo) + str(storage.pdf_file)
+        try:
+           arquivo = self.restrictedTraverse(pdf_signed)
+           pdf_tosign = nom_arquivo_assinado
+        except:
+           arquivo = self.restrictedTraverse(pdf_file)
+           pdf_tosign = nom_arquivo
 
         # Read the PDF path
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
-        url = self.url() + '/' + pdf_location + pdf_file
+        url = self.url() + '/' + pdf_location + pdf_tosign
         opener = urllib.urlopen(url)
-        f = open('/tmp/' + pdf_file, 'wb').write(opener.read())
+        f = open('/tmp/' + pdf_tosign, 'wb').write(opener.read())
         tmp_path = '/tmp'
-        pdf_tmp = pdf_file
-        pdf_path = '%s/%s' % (tmp_path, pdf_file)
+        pdf_tmp = pdf_tosign
+        pdf_path = '%s/%s' % (tmp_path, pdf_tosign)
 
         # Read the PDF stamp image
         id_logo = portal.sapl_documentos.props_sapl.id_logo
@@ -1607,7 +1616,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            })
         token = signature_starter.start_with_webpki()
  
-        return token, pdf_path, codigo, tipo_doc
+        return token, pdf_path, codigo, tipo_doc, cod_usuario
 
     def pades_cosignature(self, codigo, tipo_doc):
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
@@ -1670,11 +1679,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
  
         return token, pdf_path, codigo, tipo_doc
 
-    def pades_signature_action(self, token, codigo, tipo_doc):
+    def pades_signature_action(self, token, codigo, tipo_doc, cod_usuario):
         # Get the token for this signature (rendered in a hidden input field)
         token = token
         codigo = codigo
         tipo_doc = tipo_doc
+        cod_usuario = cod_usuario
 
         # Instantiate the PadesSignatureFinisher class, responsible for completing the signature process
         signature_finisher = PadesSignatureFinisher(self.restpki_client())
@@ -1691,8 +1701,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         # At this point, you'd typically store the signed PDF on your database.
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
-            filename = '%s%s' % (codigo, storage.pdf_signed)
-            old_filename = '%s%s' % (codigo, storage.pdf_file)
+            filename = str(codigo) + str(storage.pdf_signed)
+            old_filename = str(codigo) + str(storage.pdf_file)
 
         if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio' or tipo_doc == 'redacao_final':
            storage_path = self.sapl_documentos.materia
@@ -1725,18 +1735,34 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         data = open('/tmp/' + filename, "rb").read()
 
-        #if old_filename in storage_path:
-        #   storage_path.manage_delObjects(ids=old_filename)
-        #   os.unlink("/tmp/"+old_filename)
-
         for file in [filename]:
-            if filename in storage_path:
-              documento = getattr(storage_path,filename)
-              documento.manage_upload(file=data)
+            if hasattr(storage_path,filename):
+               documento = getattr(storage_path,filename)
+               documento.manage_upload(file=data)
+               if os.path.exists(os.path.join(tmp_path, filename)):
+                  os.unlink(os.path.join(tmp_path, filename))
             else:
-              storage_path.manage_addFile(id=filename,file=data)
-            os.unlink("/tmp/"+filename)
+               storage_path.manage_addFile(id=filename,file=data)
+               if os.path.exists(os.path.join(tmp_path, filename)):
+                  os.unlink(os.path.join(tmp_path, filename))
 
+               if hasattr(storage_path, old_filename):
+                  storage_path.manage_delObjects(ids=old_filename)
+                  if os.path.exists(os.path.join(tmp_path, old_filename)):
+                     os.unlink(os.path.join(tmp_path, old_filename))
+ 
+        cod_assinatura_doc = ''
+        for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo,tipo_doc=tipo_doc,cod_usuario=cod_usuario,ind_assinado=0):
+            cod_assinatura_doc = str(item.cod_assinatura_doc)
+            self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc,cod_usuario=cod_usuario)
+
+        if cod_assinatura_doc == '':
+            cod_assinatura_doc = str(self.cadastros.assinatura.generate_verification_code())
+            self.zsql.assinatura_documento_incluir_zsql(cod_assinatura_doc=cod_assinatura_doc,
+                                                        codigo=codigo,tipo_doc=tipo_doc,
+                                                        cod_usuario=cod_usuario,ind_prim_assinatura=1)
+            self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc,cod_usuario=cod_usuario)
+ 
         for item in signer_cert:
            subjectName = signer_cert['subjectName']
            commonName = subjectName['commonName']
