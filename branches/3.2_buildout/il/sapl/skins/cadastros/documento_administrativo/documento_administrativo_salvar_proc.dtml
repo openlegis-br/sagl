@@ -41,17 +41,18 @@
         <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
           <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=txt_ano_documento)">
              <dtml-if cod_protocolo>
-               <dtml-call expr="REQUEST.set('cod_protocolo', cod_protocolo)">
+               <dtml-call expr="REQUEST.set('cod_protocolo', int(cod_protocolo))">
              </dtml-if>
           </dtml-in>
           <dtml-if cod_protocolo>
-            <dtml-let id_documento="_.str(cod_protocolo)+'_protocolo.pdf'">
+            <dtml-call expr="REQUEST.set('id_documento', _.str(cod_protocolo)+'_protocolo.pdf')">
+            <dtml-let id_documento="_.getattr(sapl_documentos.protocolo,id_documento).absolute_url">
               <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">
                 <dtml-let ok="pysc.protocolo_salvar_como_texto_integral_documento_pysc(cod_protocolo,hdn_cod_documento,0)">
                   <dtml-if ok>
                   <dtml-else>
                     <dtml-call expr="REQUEST.set('erro', 1)">
-                    <dtml-let mensagem="'Ocorreu erro ao salvar texto integral'+hdn_cod_documento">
+                    <dtml-let mensagem="'Ocorreu erro ao salvar texto integral'+str(hdn_cod_documento)">
                       <dtml-var mensagem_emitir>
                     </dtml-let>
                   </dtml-if>
@@ -74,7 +75,7 @@
                <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
            <dtml-except>
                <dtml-call expr="REQUEST.set('erro', 1)">
-               <dtml-let mensagem="'Ocorreu erro ao tentar salvar texto integral'+hdn_cod_documento">
+               <dtml-let mensagem="'Ocorreu erro ao tentar salvar texto integral'+str(hdn_cod_documento)">
                   <dtml-var mensagem_emitir>
                </dtml-let>
            </dtml-try>
@@ -91,7 +92,7 @@
     <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
         <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=txt_ano_documento)">
          <dtml-if cod_protocolo>
-           <dtml-call expr="REQUEST.set('cod_protocolo', cod_protocolo)">
+           <dtml-call expr="REQUEST.set('cod_protocolo', int(cod_protocolo))">
            <dtml-let id_documento="_.str(cod_protocolo)+'_protocolo.pdf'">
             <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">
               <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_documento_pysc(cod_protocolo,hdn_cod_documento,0)">

@@ -1531,7 +1531,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # Read the PDF path
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
-        url = self.url() + pdf_location + pdf_file
+        url = self.url() + '/' + pdf_location + pdf_file
         opener = urllib.urlopen(url)
         f = open('/tmp/' + pdf_file, 'wb').write(opener.read())
         tmp_path = '/tmp'
@@ -1617,7 +1617,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # Read the PDF path
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
-        url = self.url() + pdf_location + pdf_file
+        url = self.url() + '/' + pdf_location + pdf_file
         opener = urllib.urlopen(url)
         f = open('/tmp/' + pdf_file, 'wb').write(opener.read())
         tmp_path = '/tmp'
@@ -1694,7 +1694,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             filename = '%s%s' % (codigo, storage.pdf_signed)
             old_filename = '%s%s' % (codigo, storage.pdf_file)
 
-        if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio':
+        if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio' or tipo_doc == 'redacao_final':
            storage_path = self.sapl_documentos.materia
         elif tipo_doc == 'emenda':
            storage_path = self.sapl_documentos.emenda

@@ -1,4 +1,5 @@
 <dtml-call expr="REQUEST.set('erro', 0)">
+
 <dtml-call expr="REQUEST.set('id_texto', _.str(cod_materia)+'_texto_integral.pdf')">
 <dtml-if expr="_.hasattr(sapl_documentos.materia,id_texto)">
  <dtml-let documento="_.getattr(sapl_documentos.materia,id_texto) ">
@@ -9,6 +10,19 @@
     <dtml-call expr="REQUEST.set('erro', 1)">
   </dtml-try>
  </dtml-let>
+</dtml-if>
+
+<dtml-call expr="REQUEST.set('id_texto_assinado', _.str(cod_materia)+'_texto_integral_signed.pdf')">
+<dtml-if expr="_.hasattr(sapl_documentos.materia,id_texto_assinado)">
+ <dtml-let documento="_.getattr(sapl_documentos.materia,id_texto_assinado) ">
+  <dtml-try>
+    <dtml-call "sapl_documentos.materia.manage_delObjects(id_texto_assinado)">
+    <dtml-call expr="sapl_documentos.materia.Catalog.removerCatalogo(cod_materia)">
+  <dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-try>
+ </dtml-let>
+</dtml-if>
 
   <dtml-if erro>
     <dtml-let mensagem="'Ocorreu um erro ao tentar excluir o texto original em PDF!'">
@@ -20,4 +34,3 @@
       <dtml-var mensagem_emitir>
     </dtml-let>
   </dtml-if>
-</dtml-if>

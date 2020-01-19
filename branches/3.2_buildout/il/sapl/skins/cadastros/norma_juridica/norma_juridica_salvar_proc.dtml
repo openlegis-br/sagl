@@ -67,6 +67,7 @@
                 <dtml-if expr="(_.int(hdn_file)==1)">
                     <dtml-if hdn_cod_norma>
                         <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_norma)+'_'+sapl_documentos.norma_juridica.nom_documento)">
+                        <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(hdn_cod_norma)+ '_' + 'texto_integral_signed.pdf')">
                         <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento)">
                             <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento) ">
                                 <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
@@ -77,6 +78,19 @@
                                 </dtml-try>
                             </dtml-let>
                         </dtml-if>
+                        <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento_assinado)">
+                           <dtml-call expr="sapl_documentos.norma_juridica.manage_delObjects(id_documento_assinado)">
+                        </dtml-if>
+                        <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=hdn_cod_norma,tipo_doc='norma')">
+                          <dtml-try>
+                            <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                                cod_assinatura_doc  = cod_assinatura_doc,
+                                codigo              = codigo,
+                                tipo_doc            = tipo_doc)">
+                          <dtml-except>
+                            <dtml-call expr="REQUEST.set('erro', 1)">
+                          </dtml-try>
+                        </dtml-in>
                     </dtml-if>
                     <dtml-if "not existe_arquivo">
                         <dtml-try>            
@@ -89,8 +103,22 @@
             <dtml-elif expr="radTI=='E'">
                 <dtml-if hdn_cod_norma>
                     <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_norma)+'_'+sapl_documentos.norma_juridica.nom_documento)">
+                    <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(hdn_cod_norma)+ '_' + 'texto_integral_signed.pdf')">
+                    <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento_assinado)">
+                       <dtml-call expr="sapl_documentos.norma_juridica.manage_delObjects(id_documento_assinado)">
+                    </dtml-if>
                     <dtml-call expr="sapl_documentos.norma_juridica.manage_delObjects(id_documento)">
                     <dtml-call expr="sapl_documentos.norma_juridica.Catalog.removerCatalogo(hdn_cod_norma)">
+                    <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=hdn_cod_norma,tipo_doc='norma')">
+                      <dtml-try>
+                        <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                            cod_assinatura_doc  = cod_assinatura_doc,
+                            codigo              = codigo,
+                            tipo_doc            = tipo_doc)">
+                      <dtml-except>
+                        <dtml-call expr="REQUEST.set('erro', 1)">
+                      </dtml-try>
+                    </dtml-in>
                 </dtml-if>
             </dtml-if>
 

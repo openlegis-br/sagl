@@ -66,6 +66,8 @@ def initialize(context):
     allow_module('StringIO')
     allow_module('PIL')
     allow_module('uuid')
+    allow_module('binascii')
+    allow_module('re')
 
     tools = (SAPLTool.SAPLTool,)
     ToolInit('SAPL Tool',

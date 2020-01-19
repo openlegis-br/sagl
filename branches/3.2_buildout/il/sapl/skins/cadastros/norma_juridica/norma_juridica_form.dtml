@@ -352,27 +352,54 @@ $(document).ready(function() {
            <input type="hidden" name="hdn_file" value="0"/>
             <dtml-if cod_norma>
               <dtml-call expr="REQUEST.set('id_documento', _.str(cod_norma)+'_texto_integral.pdf')">
-              <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento)">
+              <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_norma)+'_texto_integral_signed.pdf')">
+              <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento) and not _.hasattr(sapl_documentos.norma_juridica,id_documento_assinado)">
                 <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento).absolute_url">
                  <a target="_blank" href="&dtml-portal_url;/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1">
                    <img align="absmiddle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Arquivo PDF">
                  </a>
-                   <input id="assinar-pdf" type="button" class="botao" value="Assinar" />
+                  <dtml-if "sapl_documentos.props_sapl.restpki_access_token!=''">
+                   <input id="solicitar-assinatura" type="button" class="botao" value="Assinaturas" />
 		   <script type="text/javascript">
-		      $('#assinar-pdf').click(function () {
+		      $('#solicitar-assinatura').click(function () {
     		       $.fancybox({
         	        type: 'iframe',
-        	        href: '&dtml-portal_url;/generico/assinador/pades-signature_html?codigo=<dtml-var cod_norma>&tipo_doc=norma',
-		        width	   : '70%',
-		        height	   : '50%',
-                        minHeight	   : 320,
+        	        href: '&dtml-portal_url;/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_norma>&tipo_doc=norma',
+		        width	        : '60%',
+		        height	        : '60%',
+                        minHeight	: 420,
         	        preload         : true,
-                        afterClose      : function() {
-                        window.location.href = "norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>";},
 		        closeEffect	: 'fade'
     		        });
 		      });
 		   </script>
+                  </dtml-if>
+                </dtml-let>
+                <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field(document.norma_juridica_form)"/><span class="texto">Manter</span>
+                <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field(document.norma_juridica_form)"/><span class="texto">Excluir</span>
+                <input type="radio" name="radTI" value="S" onClick="ativa_desativa_file_field(document.norma_juridica_form)"/><span class="texto">Substituir</span>
+                <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="45" maxlength="100" disabled="1" />
+              <dtml-elif " _.hasattr(sapl_documentos.norma_juridica,id_documento_assinado)">
+                <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento_assinado).absolute_url">
+                 <a target="_blank" href="&dtml-portal_url;/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1">
+                   <img align="top" height="27" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Documento Assinado" title="Documento Assinado">
+                 </a>
+                  <dtml-if "sapl_documentos.props_sapl.restpki_access_token!=''">
+                   <input id="solicitar-assinatura" type="button" class="botao" value="Assinaturas" />
+		   <script type="text/javascript">
+		      $('#solicitar-assinatura').click(function () {
+    		       $.fancybox({
+        	        type: 'iframe',
+        	        href: '&dtml-portal_url;/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_norma>&tipo_doc=norma',
+		        width	        : '60%',
+		        height	        : '60%',
+                        minHeight	: 420,
+        	        preload         : true,
+		        closeEffect	: 'fade'
+    		        });
+		      });
+		   </script>
+                  </dtml-if>
                 </dtml-let>
                 <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field(document.norma_juridica_form)"/><span class="texto">Manter</span>
                 <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field(document.norma_juridica_form)"/><span class="texto">Excluir</span>

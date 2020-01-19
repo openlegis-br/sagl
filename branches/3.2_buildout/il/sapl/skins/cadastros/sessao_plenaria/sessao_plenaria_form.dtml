@@ -379,12 +379,51 @@ $(document).ready(function() {
 
             <input type="hidden" name="hdn_file_pauta" value="0"/>
              <dtml-call expr="REQUEST.set('id_pauta', _.str(cod_sessao_plen)+'_pauta_sessao.pdf')">
-             <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
+             <dtml-call expr="REQUEST.set('id_pauta_assinada', _.str(cod_sessao_plen)+'_pauta_sessao_signed.pdf')">
+             <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta) and not _.hasattr(sapl_documentos.pauta_sessao,id_pauta_assinada)">
               <dtml-let pauta="_.getattr(sapl_documentos.pauta_sessao,id_pauta).absolute_url">
                <a href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><img align="top" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral"></a>
-                    <a class="botao-link" href="javascript:pauta_pdf_excluir()">Excluir</a>
+                          <dtml-if "sapl_documentos.props_sapl.restpki_access_token!=''">
+                                <input id="solicitar-assinaturap" type="button" class="botao" value="Assinaturas" />
+		                <script type="text/javascript">
+		                  $('#solicitar-assinaturap').click(function () {
+    		                    $.fancybox({
+        	                     type: 'iframe',
+        	                     href: '&dtml-portal_url;/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_sessao_plen>&tipo_doc=pauta',
+		                     width	 : '60%',
+		                     height	 : '60%',
+                                     minHeight	 : 420,
+        	                     preload     : true,
+		                     closeEffect : 'fade'
+    		                    });
+		                  });
+		                </script>
+                         </dtml-if>
                     <a class="botao-link" target="_blank" href="pauta_completa_pysc?cod_sessao_plen=<dtml-var cod_sessao_plen>">Pauta Completa</a>
+                    <a class="botao-link" href="javascript:pauta_pdf_excluir()">Excluir</a>
               </dtml-let>
+             <dtml-elif "_.hasattr(sapl_documentos.pauta_sessao,id_pauta_assinada)">
+               <dtml-let pauta="_.getattr(sapl_documentos.pauta_sessao,id_pauta_assinada).absolute_url">
+               <a href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><img align="top" height="27" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Documento Assinado" title="Documento Assinado" /></a>
+                          <dtml-if "sapl_documentos.props_sapl.restpki_access_token!=''">
+                                <input id="solicitar-assinaturap" type="button" class="botao" value="Assinaturas" />
+		                <script type="text/javascript">
+		                  $('#solicitar-assinaturap').click(function () {
+    		                    $.fancybox({
+        	                     type: 'iframe',
+        	                     href: '&dtml-portal_url;/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_sessao_plen>&tipo_doc=pauta',
+		                     width	 : '60%',
+		                     height	 : '60%',
+                                     minHeight	 : 420,
+        	                     preload     : true,
+		                     closeEffect : 'fade'
+    		                    });
+		                  });
+		                </script>
+                          </dtml-if>
+                    <a class="botao-link" target="_blank" href="pauta_completa_pysc?cod_sessao_plen=<dtml-var cod_sessao_plen>">Pauta Completa</a>
+                    <a class="botao-link" href="javascript:pauta_pdf_excluir()">Excluir</a>
+               </dtml-let>
              <dtml-else>
                   <dtml-if expr="_.has_key('temODT')">
                     <a class="botao-link" href="javascript:pauta_pdf_gerar()">Gerar PDF</a>
@@ -455,14 +494,55 @@ $(document).ready(function() {
             <input type="hidden" name="hdn_file_ata" value="0"/>
             <dtml-if cod_sessao_plen>
              <dtml-call expr="REQUEST.set('id_ata', _.str(cod_sessao_plen)+'_ata_sessao.pdf')">
-             <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_ata)">
+             <dtml-call expr="REQUEST.set('id_ata_assinada', _.str(cod_sessao_plen)+'_ata_sessao_signed.pdf')">
+             <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_ata) and not _.hasattr(sapl_documentos.ata_sessao,id_ata_assinada)">
               <dtml-let ata="_.getattr(sapl_documentos.ata_sessao,id_ata).absolute_url">
                <a href="<dtml-var ata>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral"></a>
+                          <dtml-if "sapl_documentos.props_sapl.restpki_access_token!=''">
+                                <input id="solicitar-assinatura" type="button" class="botao" value="Assinaturas" />
+		                <script type="text/javascript">
+		                  $('#solicitar-assinatura').click(function () {
+    		                    $.fancybox({
+        	                     type: 'iframe',
+        	                     href: '&dtml-portal_url;/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_sessao_plen>&tipo_doc=ata',
+		                     width	 : '60%',
+		                     height	 : '60%',
+                                     minHeight	 : 420,
+        	                     preload     : true,
+		                     closeEffect : 'fade'
+    		                    });
+		                  });
+		                </script>
+                          </dtml-if>
               </dtml-let>
                <input type="radio" name="radTI2" value="M" checked="true" onClick="ativa_desativa_file_field_ata(document.sessao_plenaria_form)"/><span class="texto">Manter</span>
                <input type="radio" name="radTI2" value="E" onClick="ativa_desativa_file_field_ata(document.sessao_plenaria_form)"/><span class="texto">Excluir</span>
                <input type="radio" name="radTI2" value="S" onClick="ativa_desativa_file_field_ata(document.sessao_plenaria_form)"/><span class="texto">Substituir</span>
                <input type="file" id="file_nom_arquivo_ata" name="file_nom_arquivo_ata" accept="application/pdf" size="40" maxlength="100" disabled="1" />
+             <dtml-elif "_.hasattr(sapl_documentos.ata_sessao,id_ata_assinada)">
+               <dtml-let ata="_.getattr(sapl_documentos.ata_sessao,id_ata_assinada).absolute_url">
+               <a href="<dtml-var ata>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><img align="top" height="27" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Documento Assinado" title="Documento Assinado" /></a>
+                          <dtml-if "sapl_documentos.props_sapl.restpki_access_token!=''">
+                                <input id="solicitar-assinatura" type="button" class="botao" value="Assinaturas" />
+		                <script type="text/javascript">
+		                  $('#solicitar-assinatura').click(function () {
+    		                    $.fancybox({
+        	                     type: 'iframe',
+        	                     href: '&dtml-portal_url;/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_sessao_plen>&tipo_doc=ata',
+		                     width	 : '60%',
+		                     height	 : '60%',
+                                     minHeight	 : 420,
+        	                     preload     : true,
+		                     closeEffect : 'fade'
+    		                    });
+		                  });
+		                </script>
+                          </dtml-if>
+                <input type="radio" name="radTI2" value="M" checked="true" onClick="ativa_desativa_file_field_ata(document.sessao_plenaria_form)"/><span class="texto">Manter</span>
+               <input type="radio" name="radTI2" value="E" onClick="ativa_desativa_file_field_ata(document.sessao_plenaria_form)"/><span class="texto">Excluir</span>
+               <input type="radio" name="radTI2" value="S" onClick="ativa_desativa_file_field_ata(document.sessao_plenaria_form)"/><span class="texto">Substituir</span>
+               <input type="file" id="file_nom_arquivo_ata" name="file_nom_arquivo_ata" accept="application/pdf" size="40" maxlength="100" disabled="1" />
+               </dtml-let>
              <dtml-else>
                <input type="file" id="file_nom_arquivo_ata" name="file_nom_arquivo_ata" accept="application/pdf" size="40" maxlength="100" />
                <input type="hidden" name="radTI2" value="I"/>

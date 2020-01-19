@@ -42,6 +42,10 @@
         <dtml-if expr="(_.int(hdn_file_ata)==1)">
             <dtml-if hdn_cod_sessao_plen>
                 <dtml-call expr="REQUEST.set('id_ata', hdn_cod_sessao_plen+'_ata_sessao.pdf')">
+                <dtml-call expr="REQUEST.set('id_ata_assinada', hdn_cod_sessao_plen+'_ata_sessao_signed.pdf')">
+                <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_ata_assinada)">
+                  <dtml-call "sapl_documentos.ata_sessao.manage_delObjects(id_ata_assinada)">
+                </dtml-if>
                 <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_ata)">
                     <dtml-let documento="_.getattr(sapl_documentos.ata_sessao,id_ata) ">
                         <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
@@ -52,6 +56,16 @@
                         </dtml-try>
                     </dtml-let>
                 </dtml-if>
+                    <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=hdn_cod_sessao_plen,tipo_doc='ata')">
+                      <dtml-try>
+                        <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                            cod_assinatura_doc  = cod_assinatura_doc,
+                            codigo              = codigo,
+                            tipo_doc            = tipo_doc)">
+                      <dtml-except>
+                        <dtml-call expr="REQUEST.set('erro', 1)">
+                      </dtml-try>
+                    </dtml-in>
             <dtml-else>
                <dtml-call expr="REQUEST.set('id_ata', hdn_cod_sessao_plen+'_ata_sessao.pdf')">
              </dtml-if>
@@ -66,7 +80,21 @@
      <dtml-elif expr="radTI2=='E'">
          <dtml-if hdn_cod_sessao_plen>
              <dtml-call expr="REQUEST.set('id_ata', hdn_cod_sessao_plen+'_ata_sessao.pdf')">
+             <dtml-call expr="REQUEST.set('id_ata_assinada', hdn_cod_sessao_plen+'_ata_sessao_signed.pdf')">
              <dtml-call "sapl_documentos.ata_sessao.manage_delObjects(id_ata)">
+             <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_ata_assinada)">
+               <dtml-call "sapl_documentos.ata_sessao.manage_delObjects(id_ata_assinada)">
+             </dtml-if>
+                    <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=hdn_cod_sessao_plen,tipo_doc='ata')">
+                      <dtml-try>
+                        <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                            cod_assinatura_doc  = cod_assinatura_doc,
+                            codigo              = codigo,
+                            tipo_doc            = tipo_doc)">
+                      <dtml-except>
+                        <dtml-call expr="REQUEST.set('erro', 1)">
+                      </dtml-try>
+                    </dtml-in>
          </dtml-if>
      </dtml-if>
 

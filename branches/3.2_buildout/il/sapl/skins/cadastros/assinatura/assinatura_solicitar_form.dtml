@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <dtml-var standard_css_slot>
+  <script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+  <script type="text/javascript">
+    function campos_criticar(form){
+       if (form.lst_cod_usuario.selectedIndex==0){
+           alert("Selecione um usuário para assinatura !");
+           form.lst_cod_usuario.focus();
+           return false;
+        }
+        form.submit();
+    }
+    function ordem_dia_excluir(){
+         if (confirm("Deseja realmente excluir?")) {
+            location.href="assinatura_solicitar_proc?cod_ordem=''&cod_sessao_plen=''";
+         }
+    }
+  </script>
+<head>
+<body class="modal">
+
+  <h1 class="firstHeading">Gerenciamento de Assinaturas Digitais</h1> 
+
+   <dtml-if expr="_.has_key('mensagem')">
+     <dtml-if expr="_.has_key('sucesso')">
+       <div class="ui-state-highlight ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
+         <p>
+           <span class="ui-icon ui-icon-check" style="float: left; margin-right: .3em;"></span>
+           <strong><dtml-var mensagem></strong>
+         </p>
+       </div>
+     <dtml-else>
+       <div class="ui-state-error ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
+         <p>
+           <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+           <strong><dtml-var mensagem></strong>
+         </p>
+       </div>
+     </dtml-if>
+   </dtml-if>
+
+  <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=codigo,tipo_doc=tipo_doc)">
+    <dtml-if cod_assinatura_doc>
+       <dtml-call expr="REQUEST.set('temCodigo', 1)">
+       <dtml-call expr="REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+       <dtml-call expr="REQUEST.set('formatted_code', format_verification_code(cod_assinatura_doc))">
+    </dtml-if>
+  </dtml-in>
+
+  <dtml-if temCodigo>
+      <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=codigo,tipo_doc=tipo_doc)">
+         <dtml-if sequence-start>
+            <table>
+               <tr>
+                  <th>Usuário</th>
+                  <th>Data de Solicitação</th>
+                  <th>Data de Assinatura</th>
+               </tr>
+         </dtml-if>
+               <tr>
+                  <td><dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario)"><dtml-var nom_completo></dtml-in></td>
+                  <td><dtml-var dat_solicitacao></td>
+                  <td>
+                      <dtml-if expr="ind_assinado==1 and dat_assinatura">
+                        <dtml-var dat_assinatura>
+                      <dtml-else>
+                          <span class="anulado">Não assinou</span> | <a href="assinatura_excluir_proc?hdn_cod_assinatura_doc=<dtml-var cod_assinatura_doc>&hdn_cod_usuario=<dtml-var cod_usuario>&hdn_codigo=<dtml-var codigo>&hdn_tipo_doc=<dtml-var tipo_doc>">Excluir</a>
+                      </dtml-if>
+                  </td>
+               </tr>
+         <dtml-if sequence-end>
+            </table>
+         </dtml-if>
+      </dtml-in>
+      <form name="assinatura_solicitar" method="post" action="assinatura_solicitar_proc">
+          <input type="hidden" name="hdn_cod_assinatura_doc" value="<dtml-var cod_assinatura_doc>" />
+          <input type="hidden" name="hdn_codigo" value="<dtml-var codigo>" />
+          <input type="hidden" name="hdn_tipo_doc" value="<dtml-var tipo_doc>" />
+          <table>
+            <tr>
+              <td class="form-element">Usuário para assinatura</br>
+                <select name="lst_cod_usuario" id="lst_cod_usuario">
+                  <option value="Selecione">
+                    <dtml-in expr="zsql.usuario_obter_zsql()">
+                      <option value="<dtml-var cod_usuario>"><dtml-var nom_completo></option>
+                    </dtml-in>
+                  </option>
+                </select>
+                <input type="button" class="botao" name="btn_incluir" value="Incluir" onClick="campos_criticar(document.assinatura_solicitar)" />
+              </td>
+            </tr>
+          </table>
+      </form>
+  <dtml-else>
+      <form name="assinatura_solicitar" method="post" action="assinatura_solicitar_proc">
+          <dtml-call expr="REQUEST.set('cod_assinatura_doc', generate_verification_code())">
+          <input type="hidden" name="hdn_cod_assinatura_doc" value="<dtml-var cod_assinatura_doc>" />
+          <input type="hidden" name="hdn_codigo" value="<dtml-var codigo>" />
+          <input type="hidden" name="hdn_tipo_doc" value="<dtml-var tipo_doc>" />
+          <table>
+            <tr>
+              <td class="form-element">Usuário para assinatura</br>
+                <select name="lst_cod_usuario" id="lst_cod_usuario">
+                  <option value="Selecione">
+                    <dtml-in expr="zsql.usuario_obter_zsql()">
+                      <option value="<dtml-var cod_usuario>"><dtml-var nom_completo></option>
+                    </dtml-in>
+                  </option>
+                </select>
+                <input type="button" class="botao" name="btn_incluir" value="Incluir" onClick="campos_criticar(document.assinatura_solicitar)" />
+              </td>
+            </tr>
+          </table>
+      </form>
+  </dtml-if>
+  <p align="center">
+    <button id="closeButton" type="button" class="botao" OnClick="javascript:parent.jQuery.fancybox.close();">Fechar</button>
+  </p>
+</body>
+</html>
