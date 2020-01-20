@@ -1726,6 +1726,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            storage_path = self.sapl_documentos.administrativo.tramitacao
         elif tipo_doc == 'proposicao':
            storage_path = self.sapl_documentos.proposicao
+        elif tipo_doc == 'protocolo':
+           storage_path = self.sapl_documentos.protocolo
 
         tmp_path = "/tmp"
 
