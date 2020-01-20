@@ -1,4 +1,4 @@
-## Script (Python) "votacao_assinalar_voto_presidente_pysc"
+## Script (Python) "gerar_itens_painel_pysc"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
