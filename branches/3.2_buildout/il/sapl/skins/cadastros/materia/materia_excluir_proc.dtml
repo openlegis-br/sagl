@@ -41,7 +41,25 @@
    <dtml-try>
       <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia, ind_excluido=0)">
          <dtml-let silent="1">
-           <dtml-call expr="documento_acessorio.documento_acessorio_excluir_proc">
+           <dtml-call expr="documento_acessorio.documento_acessorio_excluir_proc(cod_documento=cod_documento)">
+           <dtml-call expr="REQUEST.set('id_doc', _.str(cod_documento)+'.pdf')">
+           <dtml-if "_.hasattr(sapl_documentos.materia,id_doc)">
+              <dtml-call expr="sapl_documentos.materia.manage_delObjects(id_doc)">
+           </dtml-if>
+           <dtml-call expr="REQUEST.set('id_doc_assinado', _.str(cod_documento)+'_signed.pdf')">
+           <dtml-if "_.hasattr(sapl_documentos.materia,id_doc_assinado)">
+              <dtml-call expr="sapl_documentos.materia.manage_delObjects(id_doc_assinado)">
+              <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento,tipo_doc='doc_acessorio')">
+                 <dtml-try>
+                   <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                            cod_assinatura_doc  = cod_assinatura_doc,
+                            codigo              = codigo,
+                            tipo_doc            = tipo_doc)">
+                 <dtml-except>
+                   <dtml-call expr="REQUEST.set('erro', 1)">
+                 </dtml-try>
+              </dtml-in>
+           </dtml-if>
          </dtml-let>
       </dtml-in>
       <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc = 'M', cod_mat_ou_doc = cod_materia, ind_excluido=0)">
@@ -51,6 +69,43 @@
       </dtml-in>
       <dtml-call expr="sapl_documentos.materia.Catalog.removerCatalogo(cod_materia)">
       <dtml-call expr="zsql.materia_excluir_zsql(cod_materia = cod_materia)">
+      <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_materia)+'_texto_integral.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.materia,id_pdf)">
+         <dtml-call expr="sapl_documentos.materia.manage_delObjects(id_pdf)">
+      </dtml-if>
+      <dtml-call expr="REQUEST.set('id_pdf_assinado', _.str(cod_materia)+'_texto_integral_signed.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.materia,id_pdf_assinado)">
+         <dtml-call expr="sapl_documentos.materia.manage_delObjects(id_pdf_assinado)">
+         <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_materia,tipo_doc='materia')">
+          <dtml-try>
+              <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                            cod_assinatura_doc  = cod_assinatura_doc,
+                            codigo              = codigo,
+                            tipo_doc            = tipo_doc)">
+            <dtml-except>
+              <dtml-call expr="REQUEST.set('erro', 1)">
+            </dtml-try>
+         </dtml-in>
+      </dtml-if>
+      <dtml-call expr="REQUEST.set('id_redacao', _.str(cod_materia)+'_redacao_final.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.materia,id_redacao)">
+         <dtml-call expr="sapl_documentos.materia.manage_delObjects(id_redacao)">
+      </dtml-if>
+      <dtml-call expr="REQUEST.set('id_redacao_assinada', _.str(cod_materia)+'_redacao_final_signed.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.materia,id_redacao_assinada)">
+         <dtml-call expr="sapl_documentos.materia.manage_delObjects(id_redacao_assinada)">
+         <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_materia,tipo_doc='redacao_final')">
+          <dtml-try>
+              <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                            cod_assinatura_doc  = cod_assinatura_doc,
+                            codigo              = codigo,
+                            tipo_doc            = tipo_doc)">
+            <dtml-except>
+              <dtml-call expr="REQUEST.set('erro', 1)">
+            </dtml-try>
+         </dtml-in>
+      </dtml-if>
+
    <dtml-except>
       <dtml-let mensagem="'Houve um erro! Matéria não excluída!'">
          <dtml-var mensagem_emitir>
