@@ -49,12 +49,12 @@ $(document).ready(function() {
              </td>
           </tr>
           <tr>
-             <th class="form-label">Data Apresentação:</th>
+             <th class="form-label">Data de Apresentação:</th>
              <td class="texto">
                <dtml-var dat_apresentacao missing null="">
              </td>
              <td class="form-label"><b>Protocolo:</b></td>
-             <td class="texto">
+             <td width="20%" class="texto">
            <dtml-if num_protocolo>
                <dtml-var num_protocolo missing null="">/<dtml-var ano_ident_basica missing>
            <dtml-else>
@@ -65,7 +65,6 @@ $(document).ready(function() {
           <tr>
              <th class="form-label">Ementa:</th>
              <td colspan="3" class="texto">
-               <div align="justify">
           <dtml-comment>verifica se usuário é anônimo</dtml-comment>
           <dtml-if expr="portal_membership.isAnonymousUser()">
                   <dtml-call expr="REQUEST.set('substituiEmentaTitulo', '0')">
@@ -93,7 +92,6 @@ $(document).ready(function() {
                   <dtml-call expr="REQUEST.set('substituiEmentaTitulo', '0')">
                      <b><dtml-var txt_ementa missing></b>
           </dtml-if>
-               </div>
              </td>
           </tr>
           <tr>
@@ -102,7 +100,7 @@ $(document).ready(function() {
                    <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
                      <b>Autores:</b>
                    <dtml-else>
-                     <b>Autor:</b>
+                     <b>Autoria:</b>
                    </dtml-if>
                  </dtml-if>
              </th>
@@ -165,7 +163,7 @@ $(document).ready(function() {
                <th class="form-label">Parecer Comissão:</th> 
                <td colspan="3" class="texto">
                 <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
-                  <b><dtml-var nom_comissao_index missing></b>
+                  - <dtml-var nom_comissao_index>
                     <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao_sel,num_ordem=num_ordem)">
                       <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
                        | <b>Relator</b>: <dtml-var nom_parlamentar>
@@ -234,24 +232,40 @@ $(document).ready(function() {
   </table>
 </fieldset>
 
-<dtml-if expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia=cod_materia)">
- <fieldset>
-  <legend>Norma Derivada</legend>
-  <table>
-   <dtml-in expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia)" mapping>
-    <tr class="even">
-       <td colspan="0" class="texto"> 
+<fieldset>
+    <table style="margin-bottom: 1em;">
+       <tr>
+         <th width="20%" class="form-label"><b>Regime de Tramitação:</b></th>
+         <td class="texto">
+           <dtml-in expr="zsql.regime_tramitacao_obter_zsql(cod_regime_tramitacao = cod_regime_tramitacao)">
+             <dtml-var des_regime_tramitacao missing>
+           </dtml-in>
+         </td>
+         <th width="20%" class="form-label">Em Tramitação?</th>
+         <td width="20%" class="texto">
+           <dtml-if expr="ind_tramitacao == 1">
+             Sim
+           <dtml-elif expr="ind_tramitacao == 0">
+             Não
+           </dtml-if>
+         </td>
+       </tr>
+    <dtml-if expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia=cod_materia)">
+     <dtml-in expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia)" mapping>
+       <tr>
+         <th width="20%">Norma Derivada</th>
+           <td colspan="3" class="texto"> 
           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Operador Norma'])">
             <a href="&dtml-portal_url;/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> nº <dtml-var num_norma>, de <dtml-var dat_norma null=""></b></a><br />
-          <dtml-else>
-            <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> nº <dtml-var num_norma>, de <dtml-var dat_norma null=""></b></a><br />
-          </dtml-if>
-       </td>
-    </tr>
-   </dtml-in>
-  </table>
- </fieldset>
-</dtml-if>
+            <dtml-else>
+              <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> nº <dtml-var num_norma>, de <dtml-var dat_norma null=""></b></a><br />
+            </dtml-if>
+         </td>
+      </tr>
+    </dtml-in>
+   </dtml-if>
+    </table>
+</fieldset>
 
 <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=cod_materia)">
 <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
@@ -282,40 +296,38 @@ $(document).ready(function() {
     <fieldset><legend>Documentos Vinculados</legend>
     <table>
       <tr>
-        <th width="15%" class="form-label">Documento</th>
-        <th class="form-label">Data</th>
-        <th class="form-label">Descrição</th>
-        <th width="10%" class="form-label">Arquivo</th>
+        <th width="20%" class="form-label">Documento</th>
+        <th>Descrição</th>
+        <th width="25%">Autoria</th>
+        <th width="15%">Data</th>
       </tr>
   </dtml-if sequence-start>
     <dtml-in expr="zsql.documento_administrativo_obter_publico_zsql(cod_documento=cod_documento,ind_excluido=0)">
-      <tr>
+      <tr <dtml-if sequence-odd>class="even"</dtml-if>>
         <td class="texto">
-           <a href="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
-               <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
-           </a>
-        </td>
-        <td class="texto"><dtml-var dat_documento></td>
-        <td class="texto"><dtml-var txt_assunto><br /><b>Autor:</b> <dtml-var txt_interessado></td>
-        <td class="texto">
-          <div align="center">
            <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_texto_integral.pdf')">
            <dtml-call expr="REQUEST.set('id_documento_signed', _.str(cod_documento)+'_texto_integral_signed.pdf')">
            <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
                 <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
                   <a target="_blank" href="<dtml-var documento>">
-                     <img align="top" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral" title="Texto integral">
+                     <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
                   </a>
                 </dtml-let>
            <dtml-elif "_.hasattr(sapl_documentos.administrativo,id_documento_signed)">
                 <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento_signed).absolute_url">
                   <a target="_blank" href="<dtml-var documento>">
-                     <img align="top" height="27" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Documento Assinado" title="Documento Assinado">
+                     <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
                   </a>
                 </dtml-let>
+           <dtml-else>
+             <a href="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                 <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+             </a>
            </dtml-if>
-          </div>
         </td>
+        <td class="texto"><dtml-var txt_assunto></td>
+        <td class="texto"><dtml-var txt_interessado></td>
+        <td class="texto"><dtml-var dat_documento></td>
       </tr>
     </dtml-in>
   <dtml-if sequence-end>
@@ -329,42 +341,60 @@ $(document).ready(function() {
 <dtml-if expr="zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
 <fieldset>
 <legend>Documentos Acessórios</legend>
- <table>
    <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
-    <tr> 
-      <th width="20%">
-      <div align="center">
-                <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
-                 <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
-                   <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
-                     <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
-                      <dtml-call expr="REQUEST.set('cod_doc',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
-                        <a target="blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
-                          <img align="middle" height="25" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
-                          <p style="line-height: 1.3em; font-size:11px"><b>Proposição Eletrônica<br /><dtml-var cod_doc></p>
-                        </a>
-                     </dtml-let>
-                   </dtml-if>
-                 </dtml-let>
-                </dtml-in>
-      <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
-      <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
-         <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-           <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
-             <img align=middle border=0 src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto integral"></a>
-         </dtml-let>
-      </dtml-if>
-      </th>
-      <td class="texto">
-       <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0,tip_documento=tip_documento)">
-          <b>Tipo:</b> <dtml-var des_tipo_documento missing null="">
-       </dtml-in>
-       &nbsp;&nbsp;-&nbsp;&nbsp;<b>Descrição:</b> <dtml-var nom_documento missing null=""><br />
-       <b>Data:</b> <dtml-var dat_documento missing null="">
-       &nbsp;&nbsp;-&nbsp;&nbsp;<b>Autoria:</b> <dtml-var nom_autor_documento missing null=""></div></td>
+   <dtml-if sequence-start>
+    <table>
+    <tr>
+      <th width="20%">Tipo</th>
+      <th>Descrição</th>
+      <th width="25%">Autoria</th>
+      <th width="15%">Data</th>
     </tr>
+   </dtml-if>
+    <tr <dtml-if sequence-odd>class="even"</dtml-if>> 
+      <td>
+        <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
+              <dtml-call expr="REQUEST.set('cod_proposicao_doc',cod_proposicao)">
+        </dtml-in>
+        <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
+         <dtml-if expr="_.has_key('cod_proposicao_doc')">
+             <dtml-let id_proposicao="_.str(cod_proposicao_doc)+'_signed.pdf'">
+               <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+                 <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                    <a target="blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
+                      <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0,tip_documento=tip_documento)">
+                          <b><dtml-var des_tipo_documento></b>
+                      </dtml-in>
+                    </a>
+                 </dtml-let>
+               </dtml-if>
+             </dtml-let>
+         <dtml-elif expr="_.hasattr(sapl_documentos.materia,id_documento)">
+             <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
+                 <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
+                    <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0,tip_documento=tip_documento)">
+                        <b><dtml-var des_tipo_documento></b>
+                    </dtml-in>
+                 </a>
+             </dtml-let>
+         <dtml-else>
+             <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0,tip_documento=tip_documento)">
+               <dtml-var des_tipo_documento>
+             </dtml-in>
+         </dtml-if>
+      </td>
+      <td class="texto">
+         <dtml-var nom_documento missing null="">
+      </td>
+      <td class="texto">
+         <dtml-var nom_autor_documento missing null="">
+      </td>
+      <td class="texto"><dtml-var dat_documento missing null=""></td>
+    </tr>
+   <dtml-if sequence-end>
+     </table>
+   </dtml-if>
    </dtml-in>
- </table>
 </fieldset>
 </dtml-if> 
 </dtml-if>
@@ -452,7 +482,7 @@ $(document).ready(function() {
        <tr class="even">
          <td class="texto" colspan="2">
            <a href="&dtml-portal_url;/consultas/sessao_plenaria/agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
-          <dtml-var dat_inicio_sessao> - <dtml-var num_sessao_plen>ª Sessão <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)"><dtml-var nom_sessao></dtml-in> / <dtml-var num_sessao_leg>ª Sessão Legislativa / <dtml-var num_legislatura>ª Legislatura [Expediente]</a>
+          <dtml-var dat_inicio_sessao> - <dtml-var num_sessao_plen>ª Sessão <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)"><dtml-var nom_sessao></dtml-in> / <dtml-var num_sessao_leg>ª Sessão Legislativa / <dtml-var num_legislatura>ª Legislatura [Fase: Expediente]</a>
          </td>
        </tr>
       </dtml-in>
@@ -500,13 +530,10 @@ $(document).ready(function() {
                   <b>NÃO VOTOU: </b><dtml-var expr="_['sequence-length']"> (</dtml-if><dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar = cod_parlamentar, ind_excluido=0)"><dtml-var nom_parlamentar></dtml-in><dtml-if sequence-end>)<br /><dtml-else>,</dtml-if>
              </dtml-in>
           </dtml-if>
+          <b>RESULTADO: </b><dtml-var nom_resultado upper></b><dtml-if observacao_votacao> (<dtml-var observacao_votacao missing null="">)</dtml-if>
        </td>
      </tr>
      </dtml-if>
-     <tr>
-       <td class="texto" width="20%"><b>Resultado:</b></td>
-       <td><b><dtml-var nom_resultado upper></b><dtml-if observacao_votacao> - <dtml-var observacao_votacao missing null=""></dtml-if></td>
-     </tr>
     </dtml-in>
    </table>
  </fieldset>
@@ -519,7 +546,7 @@ $(document).ready(function() {
        <tr class="even">
          <td class="texto" colspan="4">
            <a href="&dtml-portal_url;/consultas/sessao_plenaria/agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
-          <dtml-var dat_inicio_sessao> - <dtml-var num_sessao_plen>ª Sessão <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)"><dtml-var nom_sessao></dtml-in> / <dtml-var num_sessao_leg>ª Sessão Legislativa / <dtml-var num_legislatura>ª Legislatura [Ordem do Dia]</a>
+          <dtml-var dat_inicio_sessao> - <dtml-var num_sessao_plen>ª Sessão <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)"><dtml-var nom_sessao></dtml-in> / <dtml-var num_sessao_leg>ª Sessão Legislativa / <dtml-var num_legislatura>ª Legislatura [Fase: Ordem do Dia]</a>
          </td>
        </tr>
       </dtml-in>
@@ -567,19 +594,10 @@ $(document).ready(function() {
                   <b>NÃO VOTOU: </b><dtml-var expr="_['sequence-length']"> (</dtml-if><dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar = cod_parlamentar, ind_excluido=0)"><dtml-var nom_parlamentar></dtml-in><dtml-if sequence-end>)<br /><dtml-else>,</dtml-if>
              </dtml-in>
           </dtml-if>
+          <b>RESULTADO: </b><dtml-var nom_resultado upper></b><dtml-if observacao_votacao> (<dtml-var observacao_votacao missing null="">)</dtml-if> <dtml-in expr="zsql.turno_discussao_obter_zsql(cod_turno=tip_turno)"> | <b>Turno:</b> <dtml-var des_turno></dtml-in>
        </td>
      </tr>
      </dtml-if>
-     <tr>
-       <th class="texto" width="20%"><b>Resultado:</b></th>
-       <td><b><dtml-var nom_resultado upper></b><dtml-if observacao_votacao> - <dtml-var observacao_votacao missing null=""></dtml-if></td>
-       <th class="texto" width="15%"><b>Turno:</b></th>
-       <td class="texto" width="15%">
-         <dtml-in expr="zsql.turno_discussao_obter_zsql(cod_turno=tip_turno)">
-	   <dtml-var des_turno>
-         </dtml-in>
-       </td>
-     </tr>
     </dtml-in>
    </table>
  </fieldset>
@@ -593,16 +611,17 @@ $(document).ready(function() {
   <table>
        <tr> 
          <th class="form-label" width="5%">Número</th>
-         <th class="form-label" width="40%">Ementa</th>
+         <th class="form-label" width="45%">Ementa</th>
          <th class="form-label" width="25%">Autoria</th>
-         <th class="form-label" width="15%">Texto Integral</th>
+         <th class="form-label" width="10%">PDF</th>
          <th class="form-label" width="15%">Votação</th>
        </tr>  
     </dtml-if sequence-start>   
-       <tr> 
+       <tr <dtml-if sequence-odd>class="even"</dtml-if>> 
           <td class="texto">
-           <b><dtml-var num_substitutivo></b></td>
-          <td class="texto"><dtml-var txt_ementa></td>
+           <div align="center"><b><dtml-var num_substitutivo></b></div>
+          </td>
+          <td class="texto"><dtml-var txt_ementa></th>
           <td class="texto">
            <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
            <dtml-if expr="des_tipo_autor=='Parlamentar'">
@@ -686,16 +705,17 @@ $(document).ready(function() {
   <table>
        <tr>
          <th class="form-label" width="5%">Número</th>
-         <th class="form-label" width="10%">Tipo</th>
+         <th class="form-label" width="15%">Tipo</th>
          <th class="form-label" width="35%">Ementa</th>
          <th class="form-label" width="25%">Autoria</th>
-         <th class="form-label" width="15%">Texto Integral</th>
+         <th class="form-label" width="10%">PDF</th>
          <th class="form-label" width="15%">Votação</th>
        </tr>  
     </dtml-if sequence-start>   
-       <tr> 
+       <tr <dtml-if sequence-odd>class="even"</dtml-if>> 
           <td class="texto">
-           <b><dtml-var num_emenda></b></td>
+           <div align="center"><b><dtml-var num_emenda></b></div>
+          </td>
            <dtml-in expr="zsql.tipo_emenda_obter_zsql(tip_emenda=tip_emenda)">
              <td class="texto"><dtml-var des_tipo_emenda></td>
            </dtml-in>
@@ -789,64 +809,50 @@ $(document).ready(function() {
 </dtml-in>
 
 <fieldset>
- <legend>Tramitação</legend>
-    <table style="margin-bottom: 1em;">
-       <tr>
-         <th width="20%" class="form-label">Em Tramitação?</th>
-         <td width="20%" class="texto">
-           <dtml-if expr="ind_tramitacao == 1">
-             Sim
-           <dtml-elif expr="ind_tramitacao == 0">
-             Não
-           </dtml-if>
-         </td>
-         <th width="30%" class="form-label"><b>Regime de Tramitação:</b></th>
-         <td width="30%" class="texto">
-           <dtml-in expr="zsql.regime_tramitacao_obter_zsql(cod_regime_tramitacao = cod_regime_tramitacao)">
-             <dtml-var des_regime_tramitacao missing>
-           </dtml-in>
-         </td>
-       </tr>
-    </table>
-
-<dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_ult_tramitacao=1)">
+ <legend>Histórico de Tramitações</legend>
+ <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_ult_tramitacao=1)">
     <dtml-if sequence-start>
      <table style="margin-bottom: 1em;">
       <tr>
-       <th class="form-label" width="20%" colspan="4"><h4>Situação Atual</h4></th>
+        <th width="15%" class="form-label">Data</th>
+        <th width="25%" class="form-label">Origem</th>
+        <th width="25%" class="form-label">Localização Atual</th>
+        <th width="30%" class="form-label">Situação Atual</th>
+        <th width="5%"></th>
       </tr>
     </dtml-if>
       <tr>
-       <td width="20%" class="texto">
-        <b>Data:</b> <dtml-var dat_tramitacao missing null="">
-       </td>
-       <td width="30%" class="texto">
-       <b>Origem:</b>
-       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
+       <th class="form-label">
+        <dtml-var dat_tramitacao>
+       </th>
+       <td class="texto">
+        <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
           <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
           <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
-       </dtml-in>
-       <dtml-if cod_unid_tram_dest>
-       <br /><b>Destino:</b> 
-       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
+        </dtml-in>
+       </td>
+       <td class="texto">
+        <dtml-if cod_unid_tram_dest>
+         <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
           <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
           <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
-       </dtml-in>
-       </dtml-if>
+         </dtml-in>
+        </dtml-if>
        </td>
-       <td class="texto"><b><dtml-var expr="des_status" missing null=""></b>
+       <td class="texto">
+        <dtml-var expr="des_status" missing null="">
         <dtml-if txt_tramitacao>
-          <br /><dtml-var expr="txt_tramitacao" missing>
+          <dtml-var expr="txt_tramitacao" missing>
         </dtml-if>
         <dtml-if dat_fim_prazo>
-          <br /><b>Prazo: </b> <dtml-var dat_fim_prazo>
+          | <b>Prazo: </b> <dtml-var dat_fim_prazo>
         </dtml-if>
        </td>
-       <td class="texto" width="4%">
+       <td class="texto">
         <dtml-if expr="dat_encaminha!=None">
         <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
         <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
@@ -870,7 +876,7 @@ $(document).ready(function() {
    <dtml-if sequence-end>
      <dtml-if expr="ind_tramitacao==1">
       <tr class="even">
-       <td colspan="4" class="texto">  
+       <td colspan="5" class="texto">  
            <dtml-if expr="int(sapl_documentos.props_sapl.acompanhamento_materia)==1">
               <span style="color:#32682F;font-weight:normal;float:left;text-align:center;width:45%;"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/acomp_email.png">&nbsp;<a href="&dtml-portal_url;/consultas/materia/acompanhamento/acomp_materia_form?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" class="popup" data-fancybox-type="iframe"><b>Acompanhar matéria</a></b>&nbsp;</span>
            </dtml-if>
@@ -885,24 +891,28 @@ $(document).ready(function() {
 <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_ult_tramitacao=0)">
     <dtml-if sequence-start>
      <table style="margin-bottom: 1em;">
-      <tr class="even">
-       <th class="form-label" width="20%" colspan="4"><h4>Histórico de Tramitações</h4></th>
+      <tr>
+        <th width="15%" class="form-label">Data</th>
+        <th width="25%" class="form-label">Origem</th>
+        <th width="25%" class="form-label">Destino</th>
+        <th width="30%" class="form-label">Status</th>
+        <th width="5%"></th>
       </tr>
     </dtml-if>
       <tr <dtml-if sequence-odd>class="even"</dtml-if>>
-       <td width="20%" class="texto">
-        <b>Data:</b> <dtml-var dat_tramitacao missing null="">
-       </td>
-       <td width="30%" class="texto">
-       <b>Origem:</b>
+       <th class="form-label">
+        <dtml-var dat_tramitacao>
+       </th>
+       <td class="texto">
        <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
           <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
           <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
        </dtml-in>  
+       </td>
+       <td>
        <dtml-if cod_unid_tram_dest>
-       <br /> <b>Destino:</b> 
        <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
           <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
           <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
@@ -913,10 +923,10 @@ $(document).ready(function() {
        </td>
        <td class="texto"><dtml-var expr="des_status" missing null="">
         <dtml-if txt_tramitacao>
-          <br /><dtml-var expr="txt_tramitacao" missing>
+          <dtml-var expr="txt_tramitacao" missing>
         </dtml-if>
        </td>
-       <td class="texto" width="4%">
+       <td class="texto">
         <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
         <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
         <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
