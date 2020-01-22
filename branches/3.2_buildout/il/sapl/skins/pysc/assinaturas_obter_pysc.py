@@ -10,11 +10,9 @@
 
 itens = []
 
-cod_assinatura_novo = str(context.cadastros.assinatura.generate_verification_code())
-
 for item in context.zsql.assinatura_documento_obter_zsql(codigo=codigo_origem,tipo_doc=tipo_doc_origem,ind_assinado=1):
     dic_assinaturas = {}
-    dic_assinaturas["cod_assinatura_doc"] = cod_assinatura_novo
+    dic_assinaturas["cod_assinatura_doc"] = item.cod_assinatura_doc
     dic_assinaturas["codigo"] = codigo_destino
     dic_assinaturas["tipo_doc"] = tipo_doc_destino
     dic_assinaturas["dat_solicitacao"] = item.data_solicitacao

@@ -1,10 +1,30 @@
 <dtml-call expr="REQUEST.set('erro', 0)">
 <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
+<dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_documento)+'_signed.pdf')">
+
 <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
   <dtml-try>
     <dtml-call "sapl_documentos.materia.manage_delObjects(id_documento)">
   </dtml-try>
 </dtml-if>
+
+<dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento_assinado)">
+  <dtml-try>
+    <dtml-call "sapl_documentos.materia.manage_delObjects(id_documento_assinado)">
+  </dtml-try>
+</dtml-if>
+
+              <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento,tipo_doc='doc_acessorio')">
+                 <dtml-try>
+                   <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                            cod_assinatura_doc  = cod_assinatura_doc,
+                            codigo              = codigo,
+                            tipo_doc            = tipo_doc)">
+                 <dtml-except>
+                   <dtml-call expr="REQUEST.set('erro', 1)">
+                 </dtml-try>
+              </dtml-in>
+
 
 <dtml-try>
   <dtml-if expr="zsql.proposicao_obter_zsql(cod_mat_ou_doc=cod_documento,ind_mat_ou_doc='D')">

@@ -120,9 +120,11 @@
 	   <dtml-call expr="REQUEST.set('erro_autor', 1)">
 	</dtml-try>
      </dtml-in>
+
      <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao = hdn_cod_proposicao,
                                                                  dat_recebimento = pysc.data_atual_iso_pysc(),
                                                                  cod_mat_ou_doc = _.int(hdn_cod_materia))">
+
      <dtml-let ok="pysc.proposicao_salvar_como_texto_integral_materia_pysc(hdn_cod_proposicao,hdn_cod_materia,0)">
        <dtml-if ok>
        <dtml-else>
@@ -132,7 +134,11 @@
          </dtml-let>
        </dtml-if>
      </dtml-let>
+
+     <dtml-call expr="pysc.assinaturas_obter_pysc(codigo_origem=hdn_cod_proposicao, tipo_doc_origem='proposicao', codigo_destino=hdn_cod_materia, tipo_doc_destino='materia')">
+
      <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">
+
      <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
      <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
      <dtml-call expr="REQUEST.set('nom_unidade_origem', 'Protocolo Eletrônico')">
@@ -175,7 +181,6 @@
            <dtml-call expr="REQUEST.set('id_protocolo', _.str(cod_protocolo)+'_protocolo.pdf')">
            <dtml-call expr="REQUEST.set('id_protocolo_assinado', _.str(cod_protocolo)+'_protocolo_signed.pdf')">
              <dtml-if "_.hasattr(sapl_documentos.protocolo,id_protocolo_assinado)">
-                <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_materia1_pysc(cod_protocolo,hdn_cod_materia)">
                 <dtml-call expr="pysc.assinaturas_obter_pysc(codigo_origem=cod_protocolo, tipo_doc_origem='protocolo', codigo_destino=hdn_cod_materia, tipo_doc_destino='materia')">
              <dtml-elif "_.hasattr(sapl_documentos.protocolo,id_protocolo) and not _.hasattr(sapl_documentos.protocolo,id_protocolo_assinado)">
                 <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_materia_pysc(cod_protocolo,hdn_cod_materia)">

@@ -1409,27 +1409,46 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         nom_pdf_proposicao = str(cod_proposicao) + "_signed.pdf"
         pdf_proposicao = self.sapl_documentos.proposicao.absolute_url() + "/" +  nom_pdf_proposicao
         for proposicao in self.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao):
+          num_proposicao = proposicao.cod_proposicao
+          nom_autor = proposicao.nom_autor
+          cod_validacao_doc = ''
+          outros = ''
+          for validacao in self.zsql.assinatura_storage_obter_zsql(codigo=cod_proposicao,tipo_doc='proposicao',ind_assinado=1):
+            if validacao.ind_prim_assinatura == 1:
+               cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_validacao_doc))
+               break
+            if len(validacao) > 1:
+               outros = " e outros"
           for tipo_proposicao in self.zsql.tipo_proposicao_obter_zsql(tip_proposicao=proposicao.tip_proposicao):
             if tipo_proposicao.ind_mat_ou_doc == "M":
               for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
-                string = str(materia.cod_materia).zfill(11)
-                num_proposicao = proposicao.cod_proposicao
-                cod_materia = materia.cod_materia
-                nom_autor = proposicao.nom_autor
                 texto = str(materia.des_tipo_materia.upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-                validacao = 'Código: ' + self.pysc.proposicao_calcular_checksum_pysc(cod_proposicao)
+                storage_path = self.sapl_documentos.materia
                 nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
-            elif tipo_proposicao.ind_mat_ou_doc == "D":
+            elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao!='Emenda' and tipo_proposicao.des_tipo_proposicao!='Mensagem Aditiva' and tipo_proposicao.des_tipo_proposicao!='Substitutivo'):
               for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=proposicao.cod_mat_ou_doc):
-                string = str(documento.cod_documento).zfill(11)
-                num_proposicao = proposicao.cod_proposicao
-                cod_materia = documento.cod_materia
-                nom_autor = proposicao.nom_autor
-                texto = str(documento.des_tipo_documento.upper())
-                validacao = 'Código: ' + self.pysc.proposicao_calcular_checksum_pysc(cod_proposicao)
+                for materia in self.zsql.materia_obter_zsql(cod_materia=documento.cod_materia):
+                    materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+                texto = str(documento.des_tipo_documento.upper())+'- '+ str(documento.nom_documento) + ' - ' + str(materia)
+                storage_path = self.sapl_documentos.materia
                 nom_pdf_saida = str(documento.cod_documento) + ".pdf"
-        mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por '+nom_autor+'.'
-        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/proposicao'+' e informe o número '+ num_proposicao+'.'
+            elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao=='Emenda' or tipo_proposicao.des_tipo_proposicao=='Mensagem Aditiva'):
+              for emenda in self.zsql.emenda_obter_zsql(cod_emenda=proposicao.cod_emenda):
+                for materia in self.zsql.materia_obter_zsql(cod_materia=emenda.cod_materia):
+                    materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+                texto = 'EMENDA' + str(emenda.des_tipo_emenda())+' Nº '+ str(emenda.num_emenda) + ' - ' + str(materia)
+                storage_path = self.sapl_documentos.emenda
+                nom_pdf_saida = str(emenda.cod_emenda) + "_emenda.pdf"
+            elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao=='Substitutivo'):
+              for substitutivo in self.zsql.substitutivo_obter_zsql(cod_substitutivo=proposicao.cod_substitutivo):
+                for materia in self.zsql.materia_obter_zsql(cod_materia=substitivo.cod_materia):
+                    materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+                texto = 'SUBSTITUTIVO' + ' Nº '+ str(substitutivo.num_substitivo) + ' - ' + str(materia)
+                storage_path = self.sapl_documentos.substitutivo
+                nom_pdf_saida = str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
+
+        mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros
+        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/autenticar_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
@@ -1450,7 +1469,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             can.setPageSize((pwidth, pheight))
             can.setFillColorRGB(0,0,0) 
             # QRCode
-            qr_code = qr.QrCodeWidget(self.url()+'/consultas/materia/materia_mostrar_proc?cod_materia='+str(cod_materia))
+            qr_code = qr.QrCodeWidget(self.url()+'/consultas/autenticar_assinatura/?codigo='+str(cod_validacao_doc))
             bounds = qr_code.getBounds()
             width = bounds[2] - bounds[0]
             height = bounds[3] - bounds[1]
@@ -1486,8 +1505,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         d.setFillColorRGB(0,0,0)
         d.setFont("Arial_Bold", 12)
         d.drawString(170, 716, texto)
-        d.setFont("Arial", 9)
-        d.drawString(170, 704, validacao)
         d.save()
         packet2.seek(0)
         new_pdf2 = PdfFileReader(packet2)
@@ -1508,11 +1525,11 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output.write(outputStream)
         outputStream.close()
         data = open('/tmp/' + nom_pdf_saida, 'rb').read()              
-        if nom_pdf_saida in self.sapl_documentos.materia:
-           documento = getattr(self.sapl_documentos.materia,nom_pdf_saida)
+        if nom_pdf_saida in storage_path:
+           documento = getattr(storage_path,nom_pdf_saida)
            documento.manage_upload(file=data)
         else:
-           self.sapl_documentos.materia.manage_addFile(id=nom_pdf_saida,file=data)
+           storage_path.manage_addFile(id=nom_pdf_saida,file=data)
         os.unlink('/tmp/'+nom_pdf_saida)
         os.unlink('/tmp/'+nom_pdf_proposicao)
 
