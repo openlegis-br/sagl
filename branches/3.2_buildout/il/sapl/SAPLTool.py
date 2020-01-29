@@ -1781,6 +1781,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if hasattr(storage_path,filename):
                documento = getattr(storage_path,filename)
                documento.manage_upload(file=data)
+               if os.path.exists(os.path.join(tmp_path, filename)):
+                  os.unlink(os.path.join(tmp_path, filename))
+               if os.path.exists(os.path.join(tmp_path, old_filename)):
+                  os.unlink(os.path.join(tmp_path, old_filename))
             else:
                storage_path.manage_addFile(id=filename,file=data)
                if os.path.exists(os.path.join(tmp_path, filename)):
