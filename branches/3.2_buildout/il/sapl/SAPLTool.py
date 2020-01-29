@@ -908,7 +908,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             texto = str(tipo_documento.des_tipo_documento.upper())+' Nº '+ str(documento.num_documento)+'/'+str(documento.ano_documento)
             nom_pdf_amigavel = str(tipo_documento.sgl_tipo_documento)+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+".pdf"
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por '+nom_autor+'.'
-        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/documento_validar?codigo='+str(string)
+        mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/consultas/documento_validar?codigo='+str(string)
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
@@ -1448,7 +1448,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 nom_pdf_saida = str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros
-        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
+        mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
@@ -1966,7 +1966,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                texto = 'PROTOCOLO Nº '+ str(metodo.num_protocolo)+'/'+ str(metodo.ano_protocolo)
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros + '.'
-        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ string
+        mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ string
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
@@ -2004,7 +2004,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             lab.boxAnchor = 'n'
             lab.setText(mensagem)
             d.add(lab)
-            renderPDF.draw(d, can, pwidth-28, 100)
+            renderPDF.draw(d, can, pwidth-28, 105)
             # Numero de pagina
             footer_text = "Pag. %s/%s" % (page_num, numPages)
             can.saveState()
