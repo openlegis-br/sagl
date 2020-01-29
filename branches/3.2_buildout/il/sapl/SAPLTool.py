@@ -1542,11 +1542,25 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def pades_signature(self, codigo, tipo_doc, cod_usuario):
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
-            pdf_location = storage.pdf_location
-            pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
-            nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
-            pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
-            nom_arquivo = str(codigo) + str(storage.pdf_file)
+            if tipo_doc == 'proposicao':
+               pdf_location = storage.pdf_location
+               pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
+               nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
+               pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
+               nom_arquivo = str(codigo) + str(storage.pdf_file)
+            else:
+               for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, ind_assinado=1):
+                   pdf_location = self.sapl_documentos.documentos_assinados
+                   pdf_signed = str(pdf_location) + str(item.cod_assinatura_doc) + '.pdf'
+                   nom_arquivo_assinado = str(item.cod_assinatura_doc) + '.pdf'
+                   pdf_file = str(pdf_location) + str(item.cod_assinatura_doc) + '.pdf'
+                   nom_arquivo = str(item.cod_assinatura_doc) + '.pdf'
+               else:
+                   pdf_location = storage.pdf_location
+                   pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
+                   nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
+                   pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
+                   nom_arquivo = str(codigo) + str(storage.pdf_file)
         try:
            arquivo = self.restrictedTraverse(pdf_signed)
            pdf_tosign = nom_arquivo_assinado
@@ -1634,67 +1648,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         token = signature_starter.start_with_webpki()
  
         return token, pdf_path, codigo, tipo_doc, cod_usuario
-
-    def pades_cosignature(self, codigo, tipo_doc):
-        for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
-            pdf_location = storage.pdf_location
-            pdf_file = '%s%s' % (codigo, storage.pdf_signed)
-       
-        # Read the PDF path
-        utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()
-        url = self.url() + '/' + pdf_location + pdf_file
-        opener = urllib.urlopen(url)
-        f = open('/tmp/' + pdf_file, 'wb').write(opener.read())
-        tmp_path = '/tmp'
-        pdf_tmp = pdf_file
-        pdf_path = '%s/%s' % (tmp_path, pdf_file)
-
-        # Read the PDF stamp image
-        id_logo = portal.sapl_documentos.props_sapl.id_logo
-        url = self.url() + '/sapl_documentos/props_sapl/logo_casa.gif'
-        opener = urllib.urlopen(url)
-        open('/tmp/' + id_logo, 'wb').write(opener.read())
-        f = open('/tmp/' + id_logo, 'rb')
-        pdf_stamp = f.read()
-        f.close()
-
-        signature_starter = PadesSignatureStarter(self.restpki_client())
-        signature_starter.set_pdf_path(pdf_path)
-        signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
-        signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
-        signature_starter.visual_representation = ({
-            'text': {
-                # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
-                # certificate
-                # signerName -> full name of the signer
-                # signerNationalId -> if the certificate is ICP-Brasil, contains the signer's CPF
-                'text': 'Assinado por {{signerName}} {{br_cpf_formatted}}',
-                # Specify that the signing time should also be rendered
-                'includeSigningTime': True,
-                # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
-                # Left
-                'horizontalAlign': 'Left'
-            },
-
-            'image': {
-                # We'll use as background the image that we've read above
-                'resource': {
-                    'content': base64.b64encode(pdf_stamp),
-                    'mimeType': 'image/png'
-                },
-                # Opacity is an integer from 0 to 100 (0 is completely transparent, 100 is completely opaque).
-                'opacity': 40,
-                # Align the image to the right
-                'horizontalAlign': 'Right'
-            },
-
-            'position': self.get_visual_representation_position(4)
-        })
-
-        token = signature_starter.start_with_webpki()
- 
-        return token, pdf_path, codigo, tipo_doc
 
     def pades_signature_action(self, token, codigo, tipo_doc, cod_usuario):
         # Get the token for this signature (rendered in a hidden input field)
