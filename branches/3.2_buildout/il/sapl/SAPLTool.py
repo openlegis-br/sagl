@@ -1776,6 +1776,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         data = open('/tmp/' + filename, "rb").read()
 
         for file in [filename]:
+            if tipo_doc != 'proposicao':  
+               self.margem_direita(codigo,tipo_doc,cod_assinatura_doc)
             if hasattr(storage_path,filename):
                documento = getattr(storage_path,filename)
                documento.manage_upload(file=data)
@@ -1798,9 +1800,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            responsavel = pkiBrazil['responsavel']
 
         return signer_cert, commonName, email, certificateType, cpf, responsavel, filename
-
-        if tipo_doc != 'proposicao':  
-           return self.margem_direita(codigo,tipo_doc,cod_assinatura_doc)
 
     def get_visual_representation_position(self, sample_number):
         if sample_number == 1:
@@ -1973,7 +1972,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
-        arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_assinado)
+        #arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_assinado)
+        arq = open('/tmp/' + nom_pdf_assinado, "rb").read()
         arquivo = cStringIO.StringIO(str(arq.data))
         existing_pdf = PdfFileReader(arquivo, "rb")
         numPages = existing_pdf.getNumPages()
