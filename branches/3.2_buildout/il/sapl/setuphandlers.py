@@ -19,6 +19,7 @@ def setupConteudo(portal):
             'administrativo.zexp',
             'ata_sessao.zexp',
             'documento_comissao.zexp',
+            'documentos_assinados.zexp',
             'emenda.zexp',
             'materia.zexp',
             'materia_odt.zexp',
