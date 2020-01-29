@@ -1417,7 +1417,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if validacao.ind_prim_assinatura == 1:
                cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_validacao_doc))
                break
-            if len(validacao) > 1:
+            if len([validacao]) > 1:
                outros = " e outros"
           for tipo_proposicao in self.zsql.tipo_proposicao_obter_zsql(tip_proposicao=proposicao.tip_proposicao):
             if tipo_proposicao.ind_mat_ou_doc == "M":
@@ -1448,7 +1448,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 nom_pdf_saida = str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros
-        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/autenticar_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
+        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
@@ -1469,7 +1469,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             can.setPageSize((pwidth, pheight))
             can.setFillColorRGB(0,0,0) 
             # QRCode
-            qr_code = qr.QrCodeWidget(self.url()+'/consultas/autenticar_assinatura/?codigo='+str(cod_validacao_doc))
+            qr_code = qr.QrCodeWidget(self.url()+'/consultas/conferir_assinatura/?codigo='+str(cod_validacao_doc))
             bounds = qr_code.getBounds()
             width = bounds[2] - bounds[0]
             height = bounds[3] - bounds[1]
@@ -1781,8 +1781,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if hasattr(storage_path,filename):
                documento = getattr(storage_path,filename)
                documento.manage_upload(file=data)
-               if os.path.exists(os.path.join(tmp_path, filename)):
-                  os.unlink(os.path.join(tmp_path, filename))
             else:
                storage_path.manage_addFile(id=filename,file=data)
                if os.path.exists(os.path.join(tmp_path, filename)):
@@ -1882,7 +1880,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    nom_autor = usuario.nom_completo
                    break
             outros = ''
-            if len(item) > 1:
+            if len([item]) > 1:
                outros = " e outros"
 
         string = str(self.cadastros.assinatura.format_verification_code(cod_assinatura_doc))
@@ -1941,7 +1939,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif tipo_doc == 'norma':
            storage_path = self.sapl_documentos.norma_juridica
            for metodo in self.zsql.norma_juridica_obter_zsql(cod_norma=codigo):
-               texto = str(metodo.des_tipo_norma.upper())+'- '+ str(metodo.num_norma) + '/' + str(metodo.ano_norma)
+               texto = str(metodo.des_tipo_norma.upper())+' Nº '+ str(metodo.num_norma) + '/' + str(metodo.ano_norma)
         elif tipo_doc == 'documento' or tipo_doc == 'doc_acessorio_adm':
            storage_path = self.sapl_documentos.administrativo
            if tipo_doc == 'documento':
@@ -1961,21 +1959,21 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif tipo_doc == 'proposicao':
            storage_path = self.sapl_documentos.proposicao
            for metodo in self.zsql.proposicao_obter_zsql(cod_proposicao=codigo):
-               texto = str(metodo.des_tipo_proposicao.upper())+'- '+ str(metodo.cod_proposicao)
+               texto = str(metodo.des_tipo_proposicao.upper())+' Nº '+ str(metodo.cod_proposicao)
         elif tipo_doc == 'protocolo':
            storage_path = self.sapl_documentos.protocolo
            for metodo in self.zsql.protocolo_obter_zsql(cod_protocolo=codigo):
-               texto = 'PROTOCOLO Nº '+ str(metodo.num_protocolo)+' '+ str(metodo.ano_protocolo)
+               texto = 'PROTOCOLO Nº '+ str(metodo.num_protocolo)+'/'+ str(metodo.ano_protocolo)
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros + '.'
-        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/autenticar_assinatura'+' e informe o código '+ string + '.'
+        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/conferir_assinatura'+' e informe o código '+ string
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         #arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_assinado)
-        arq = open('/tmp/' + nom_pdf_assinado, "rb").read()
-        arquivo = cStringIO.StringIO(arq)
-        existing_pdf = PdfFileReader(arquivo, "rb")
+        arq = open('/tmp/' + nom_pdf_assinado, "rb")
+        #arquivo = cStringIO.StringIO(arq)
+        existing_pdf = PdfFileReader(arq)
         numPages = existing_pdf.getNumPages()
         # cria novo PDF
         packet = StringIO.StringIO()
@@ -1987,7 +1985,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             can.setPageSize((pwidth, pheight))
             can.setFillColorRGB(0,0,0) 
             # QRCode
-            qr_code = qr.QrCodeWidget(self.url()+'/consultas/autenticar_assinatura/?codigo='+str(string))
+            qr_code = qr.QrCodeWidget(self.url()+'/consultas/conferir_assinatura/?codigo='+str(string))
             bounds = qr_code.getBounds()
             width = bounds[2] - bounds[0]
             height = bounds[3] - bounds[1]
@@ -2006,7 +2004,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             lab.boxAnchor = 'n'
             lab.setText(mensagem)
             d.add(lab)
-            renderPDF.draw(d, can, pwidth-28, 85)
+            renderPDF.draw(d, can, pwidth-28, 100)
             # Numero de pagina
             footer_text = "Pag. %s/%s" % (page_num, numPages)
             can.saveState()
@@ -2028,6 +2026,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    pdf_page.mergePage(watermark_page)
             output.addPage(pdf_page)
         outputStream = cStringIO.StringIO()
+        output.write(outputStream)
 
         if hasattr(storage_path,nom_pdf_documento):
            documento = getattr(storage_path,nom_pdf_documento)
