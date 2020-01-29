@@ -1550,17 +1550,18 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                nom_arquivo = str(codigo) + str(storage.pdf_file)
             else:
                for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, ind_assinado=1):
-                   pdf_location = self.sapl_documentos.documentos_assinados
-                   pdf_signed = str(pdf_location) + str(item.cod_assinatura_doc) + '.pdf'
-                   nom_arquivo_assinado = str(item.cod_assinatura_doc) + '.pdf'
-                   pdf_file = str(pdf_location) + str(item.cod_assinatura_doc) + '.pdf'
-                   nom_arquivo = str(item.cod_assinatura_doc) + '.pdf'
-               else:
-                   pdf_location = storage.pdf_location
-                   pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
-                   nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
-                   pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
-                   nom_arquivo = str(codigo) + str(storage.pdf_file)
+                   if len([item]) > 0:
+                      pdf_location = self.sapl_documentos.documentos_assinados
+                      pdf_signed = str(pdf_location) + str(item.cod_assinatura_doc) + '.pdf'
+                      nom_arquivo_assinado = str(item.cod_assinatura_doc) + '.pdf'
+                      pdf_file = str(pdf_location) + str(item.cod_assinatura_doc) + '.pdf'
+                      nom_arquivo = str(item.cod_assinatura_doc) + '.pdf'
+                   else:
+                      pdf_location = storage.pdf_location
+                      pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
+                      nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
+                      pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
+                      nom_arquivo = str(codigo) + str(storage.pdf_file)
         try:
            arquivo = self.restrictedTraverse(pdf_signed)
            pdf_tosign = nom_arquivo_assinado
@@ -1675,12 +1676,13 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         cod_assinatura_doc = ''
         for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc):
-            cod_assinatura_doc = str(item.cod_assinatura_doc)
-            self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=item.cod_assinatura_doc, cod_usuario=cod_usuario)
-        else:
-            cod_assinatura_doc = str(self.cadastros.assinatura.generate_verification_code())
-            self.zsql.assinatura_documento_incluir_zsql(cod_assinatura_doc=cod_assinatura_doc, codigo=codigo,tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_prim_assinatura=1)
-            self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc, cod_usuario=cod_usuario)
+            if len([item]) > 0:
+               cod_assinatura_doc = str(item.cod_assinatura_doc)
+               self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=item.cod_assinatura_doc, cod_usuario=cod_usuario)
+            else:
+               cod_assinatura_doc = str(self.cadastros.assinatura.generate_verification_code())
+               self.zsql.assinatura_documento_incluir_zsql(cod_assinatura_doc=cod_assinatura_doc, codigo=codigo,tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_prim_assinatura=1)
+               self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc, cod_usuario=cod_usuario)
 
         if tipo_doc == 'proposicao':
            storage_path = self.sapl_documentos.proposicao
