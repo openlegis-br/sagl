@@ -1415,7 +1415,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
           outros = ''
           for validacao in self.zsql.assinatura_documento_obter_zsql(codigo=cod_proposicao,tipo_doc='proposicao',ind_assinado=1):
             if validacao.ind_prim_assinatura == 1:
-               cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_validacao_doc))
+               cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
                break
             if len([validacao]) > 1:
                outros = " e outros"
