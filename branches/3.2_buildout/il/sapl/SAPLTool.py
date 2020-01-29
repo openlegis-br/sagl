@@ -1470,7 +1470,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             can.setPageSize((pwidth, pheight))
             can.setFillColorRGB(0,0,0) 
             # QRCode
-            qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura/?codigo='+str(cod_validacao_doc))
+            qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura_proc?txt_codigo_verificacao='+str(cod_validacao_doc))
             bounds = qr_code.getBounds()
             width = bounds[2] - bounds[0]
             height = bounds[3] - bounds[1]
@@ -1920,7 +1920,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             can.setPageSize((pwidth, pheight))
             can.setFillColorRGB(0,0,0) 
             # QRCode
-            qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura/?codigo='+str(string))
+            qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura_proc?txt_codigo_verificacao='+str(string))
             bounds = qr_code.getBounds()
             width = bounds[2] - bounds[0]
             height = bounds[3] - bounds[1]

@@ -9,28 +9,33 @@ SELECT
   cod_assinatura_doc,
   codigo,
   tipo_doc,
-  cod_usuario,
+  a.cod_usuario,
   DATE_FORMAT(dat_solicitacao, '%d/%m/%Y %T') as dat_solicitacao,
   DATE_FORMAT(dat_solicitacao, '%Y/%m/%d %T') as data_solicitacao,
   DATE_FORMAT(dat_assinatura, '%d/%m/%Y %T') as dat_assinatura,
   DATE_FORMAT(dat_assinatura, '%Y/%m/%d %T') as data_assinatura,
   ind_assinado,
-  ind_prim_assinatura
+  ind_prim_assinatura,
+  u.nom_completo,
+  u.num_cpf
 FROM 
-  assinatura_documento
+  assinatura_documento a
+   LEFT JOIN usuario u ON a.cod_usuario = u.cod_usuario
 <dtml-sqlgroup where>
   <dtml-sqltest cod_assinatura_doc  op="=" type="nb"     optional><dtml-and>
   <dtml-sqltest codigo              op="=" type="int"    optional><dtml-and>
   <dtml-sqltest tipo_doc            op="=" type="nb"     optional><dtml-and>
-  <dtml-sqltest cod_usuario         op="=" type="int"    optional><dtml-and>
+  <dtml-sqltest cod_usuario         column="a.cod_usuario" op="=" type="int" optional><dtml-and>
   <dtml-sqltest ind_assinado        op="=" type="int"    optional><dtml-and>
   <dtml-sqltest ind_prim_assinatura op="=" type="int"    optional><dtml-and>
-  <dtml-sqltest ind_excluido        op="=" type="int">
+  <dtml-sqltest ind_excluido        column="a.ind_excluido" op="=" type="int">
 </dtml-sqlgroup>
 
-
-ORDER BY
-  dat_solicitacao
-
-
+<dtml-if rd_ordenacao>
+  ORDER BY
+    dat_solicitacao DES
+<dtml-else>
+  ORDER BY
+    dat_solicitacao ASC
+</dtml-if>
 
