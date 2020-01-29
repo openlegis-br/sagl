@@ -1448,7 +1448,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 nom_pdf_saida = str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros
-        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
+        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
@@ -1469,7 +1469,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             can.setPageSize((pwidth, pheight))
             can.setFillColorRGB(0,0,0) 
             # QRCode
-            qr_code = qr.QrCodeWidget(self.url()+'/consultas/conferir_assinatura/?codigo='+str(cod_validacao_doc))
+            qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura/?codigo='+str(cod_validacao_doc))
             bounds = qr_code.getBounds()
             width = bounds[2] - bounds[0]
             height = bounds[3] - bounds[1]
@@ -1966,7 +1966,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                texto = 'PROTOCOLO Nº '+ str(metodo.num_protocolo)+'/'+ str(metodo.ano_protocolo)
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros + '.'
-        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/conferir_assinatura'+' e informe o código '+ string
+        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ string
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
@@ -1985,7 +1985,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             can.setPageSize((pwidth, pheight))
             can.setFillColorRGB(0,0,0) 
             # QRCode
-            qr_code = qr.QrCodeWidget(self.url()+'/consultas/conferir_assinatura/?codigo='+str(string))
+            qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura/?codigo='+str(string))
             bounds = qr_code.getBounds()
             width = bounds[2] - bounds[0]
             height = bounds[3] - bounds[1]
