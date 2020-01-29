@@ -1811,10 +1811,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                for usuario in self.zsql.usuario_obter_zsql(cod_usuario=item.cod_usuario):
                    nom_autor = usuario.nom_completo
                    break
-               break
-            outros = ''
             if len([item]) > 1:
                outros = " e outros"
+            else:
+               outros = ''
+               break
+
 
         string = str(self.cadastros.assinatura.format_verification_code(cod_assinatura_doc))
 
