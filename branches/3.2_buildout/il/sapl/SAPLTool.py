@@ -1720,9 +1720,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         tmp_path = "/tmp"
 
-        for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_assinado=0):
+        cod_assinatura_doc = ''
+        for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc):
             cod_assinatura_doc = str(item.cod_assinatura_doc)
-            self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc, cod_usuario=cod_usuario)
+            self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=item.cod_assinatura_doc, cod_usuario=cod_usuario)
         else:
             cod_assinatura_doc = str(self.cadastros.assinatura.generate_verification_code())
             self.zsql.assinatura_documento_incluir_zsql(cod_assinatura_doc=cod_assinatura_doc, codigo=codigo,tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_prim_assinatura=1)
