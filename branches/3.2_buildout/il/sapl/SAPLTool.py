@@ -1974,7 +1974,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         #arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_assinado)
         arq = open('/tmp/' + nom_pdf_assinado, "rb").read()
-        arquivo = cStringIO.StringIO(str(arq))
+        arquivo = cStringIO.StringIO(arq)
         existing_pdf = PdfFileReader(arquivo, "rb")
         numPages = existing_pdf.getNumPages()
         # cria novo PDF
