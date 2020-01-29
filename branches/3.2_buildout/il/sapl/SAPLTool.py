@@ -1748,13 +1748,13 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         tmp_path = "/tmp"
 
-        cod_assinatura_doc = ''
-        if cod_assinatura_doc == '':
-           cod_assinatura_doc = str(self.cadastros.assinatura.generate_verification_code())
-           self.zsql.assinatura_documento_incluir_zsql(cod_assinatura_doc=cod_assinatura_doc, codigo=codigo,tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_prim_assinatura=1)
-           self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc, cod_usuario=cod_usuario)
-        else:
-           for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_assinado=0):
+        for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_assinado=0):
+            cod_assinatura_doc = item.cod_assinatura_doc
+            if cod_assinatura_doc == '':
+               cod_assinatura_doc = str(self.cadastros.assinatura.generate_verification_code())
+               self.zsql.assinatura_documento_incluir_zsql(cod_assinatura_doc=cod_assinatura_doc, codigo=codigo,tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_prim_assinatura=1)
+               self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc, cod_usuario=cod_usuario)
+            else:
                cod_assinatura_doc = str(item.cod_assinatura_doc)
                self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc, cod_usuario=cod_usuario)
 
@@ -1788,9 +1788,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                if os.path.exists(os.path.join(tmp_path, old_filename)):
                   os.unlink(os.path.join(tmp_path, old_filename))
 
-        if tipo_doc != 'proposicao':  
-           self.margem_direita(codigo,tipo_doc,cod_assinatura_doc)
-
         for item in signer_cert:
            subjectName = signer_cert['subjectName']
            commonName = subjectName['commonName']
@@ -1801,6 +1798,9 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            responsavel = pkiBrazil['responsavel']
 
         return signer_cert, commonName, email, certificateType, cpf, responsavel, filename
+
+        if tipo_doc != 'proposicao':  
+           return self.margem_direita(codigo,tipo_doc,cod_assinatura_doc)
 
     def get_visual_representation_position(self, sample_number):
         if sample_number == 1:
