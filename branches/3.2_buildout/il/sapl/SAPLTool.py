@@ -1717,36 +1717,57 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signer_cert = signature_finisher.certificate
 
         # At this point, you'd typically store the signed PDF on your database.
-        for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
-            filename = str(codigo) + str(storage.pdf_signed)
-            old_filename = str(codigo) + str(storage.pdf_file)
+        #for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
+        #    filename = str(codigo) + str(storage.pdf_signed)
+        #    old_filename = str(codigo) + str(storage.pdf_file)
 
-        if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio' or tipo_doc == 'redacao_final':
-           storage_path = self.sapl_documentos.materia
-        elif tipo_doc == 'emenda':
-           storage_path = self.sapl_documentos.emenda
-        elif tipo_doc == 'substitutivo':
-           storage_path = self.sapl_documentos.substitutivo
-        elif tipo_doc == 'parecer_comissao':
-           storage_path = self.sapl_documentos.parecer_comissao
-        elif tipo_doc == 'pauta':
-           storage_path = self.sapl_documentos.pauta_sessao
-        elif tipo_doc == 'ata':
-           storage_path = self.sapl_documentos.ata_sessao
-        elif tipo_doc == 'norma':
-           storage_path = self.sapl_documentos.norma_juridica
-        elif tipo_doc == 'documento' or tipo_doc == 'doc_acessorio_adm':
-           storage_path = self.sapl_documentos.administrativo
-        elif tipo_doc == 'tramitacao':
-           storage_path = self.sapl_documentos.materia.tramitacao
-        elif tipo_doc == 'tramitacao_adm':
-           storage_path = self.sapl_documentos.administrativo.tramitacao
-        elif tipo_doc == 'proposicao':
-           storage_path = self.sapl_documentos.proposicao
-        elif tipo_doc == 'protocolo':
-           storage_path = self.sapl_documentos.protocolo
+        #if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio' or tipo_doc == 'redacao_final':
+        #   storage_path = self.sapl_documentos.materia
+        #elif tipo_doc == 'emenda':
+        #   storage_path = self.sapl_documentos.emenda
+        #elif tipo_doc == 'substitutivo':
+        #   storage_path = self.sapl_documentos.substitutivo
+        #elif tipo_doc == 'parecer_comissao':
+        #   storage_path = self.sapl_documentos.parecer_comissao
+        #elif tipo_doc == 'pauta':
+        #   storage_path = self.sapl_documentos.pauta_sessao
+        #elif tipo_doc == 'ata':
+        #   storage_path = self.sapl_documentos.ata_sessao
+        #elif tipo_doc == 'norma':
+        #   storage_path = self.sapl_documentos.norma_juridica
+        #elif tipo_doc == 'documento' or tipo_doc == 'doc_acessorio_adm':
+        #   storage_path = self.sapl_documentos.administrativo
+        #elif tipo_doc == 'tramitacao':
+        #   storage_path = self.sapl_documentos.materia.tramitacao
+        #elif tipo_doc == 'tramitacao_adm':
+        #   storage_path = self.sapl_documentos.administrativo.tramitacao
+        #elif tipo_doc == 'proposicao':
+        #   storage_path = self.sapl_documentos.proposicao
+        #elif tipo_doc == 'protocolo':
+        #   storage_path = self.sapl_documentos.protocolo
 
         tmp_path = "/tmp"
+
+        cod_assinatura_doc = ''
+        if cod_assinatura_doc == '':
+           cod_assinatura_doc = str(self.cadastros.assinatura.generate_verification_code())
+           self.zsql.assinatura_documento_incluir_zsql(cod_assinatura_doc=cod_assinatura_doc, codigo=codigo,tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_prim_assinatura=1)
+           self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc, cod_usuario=cod_usuario)
+        else:
+           for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_assinado=0):
+               cod_assinatura_doc = str(item.cod_assinatura_doc)
+               self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc, cod_usuario=cod_usuario)
+
+        if tipo_doc == 'proposicao':
+           storage_path = self.sapl_documentos.proposicao
+           for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
+               filename = str(codigo) + str(storage.pdf_signed)
+               old_filename = str(codigo) + str(storage.pdf_file)
+        else:
+           storage_path = self.sapl_documentos.documentos_assinados
+           for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
+               filename = str(cod_assinatura_doc) + '.pdf'
+               old_filename = str(codigo) + str(storage.pdf_file)
 
         signature_finisher.write_signed_pdf(os.path.join(tmp_path, filename))
 
@@ -1764,24 +1785,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                storage_path.manage_addFile(id=filename,file=data)
                if os.path.exists(os.path.join(tmp_path, filename)):
                   os.unlink(os.path.join(tmp_path, filename))
+               if os.path.exists(os.path.join(tmp_path, old_filename)):
+                  os.unlink(os.path.join(tmp_path, old_filename))
 
-               if hasattr(storage_path, old_filename):
-                  storage_path.manage_delObjects(ids=old_filename)
-                  if os.path.exists(os.path.join(tmp_path, old_filename)):
-                     os.unlink(os.path.join(tmp_path, old_filename))
- 
-        cod_assinatura_doc = ''
-        for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo,tipo_doc=tipo_doc,cod_usuario=cod_usuario,ind_assinado=0):
-            cod_assinatura_doc = str(item.cod_assinatura_doc)
-            self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc,cod_usuario=cod_usuario)
+        if tipo_doc != 'proposicao':  
+           self.margem_direita(codigo,tipo_doc,cod_assinatura_doc)
 
-        if cod_assinatura_doc == '':
-            cod_assinatura_doc = str(self.cadastros.assinatura.generate_verification_code())
-            self.zsql.assinatura_documento_incluir_zsql(cod_assinatura_doc=cod_assinatura_doc,
-                                                        codigo=codigo,tipo_doc=tipo_doc,
-                                                        cod_usuario=cod_usuario,ind_prim_assinatura=1)
-            self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc,cod_usuario=cod_usuario)
- 
         for item in signer_cert:
            subjectName = signer_cert['subjectName']
            commonName = subjectName['commonName']
@@ -1861,6 +1870,175 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             }
         else:
             return None
+
+    def margem_direita(self,codigo,tipo_doc,cod_assinatura_doc):
+
+        for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
+            nom_pdf_assinado = str(cod_assinatura_doc) + '.pdf'
+            nom_pdf_documento = str(codigo) + str(storage.pdf_file)
+
+        for item in self.zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=cod_assinatura_doc, ind_assinado=1):
+            if item.ind_prim_assinatura == 1:
+               for usuario in self.zsql.usuario_obter_zsql(cod_usuario=item.cod_usuario):
+                   nom_autor = usuario.nom_completo
+                   break
+            outros = ''
+            if len(item) > 1:
+               outros = " e outros"
+
+        string = str(self.cadastros.assinatura.format_verification_code(cod_assinatura_doc))
+
+        # Variáveis para obtenção de dados e local de armazenamento por tipo de documento
+
+        if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio' or tipo_doc == 'redacao_final':
+           storage_path = self.sapl_documentos.materia
+           if tipo_doc == 'materia' or tipo_doc == 'redacao_final':
+              for metodo in self.zsql.materia_obter_zsql(cod_materia=codigo):
+                  num_documento = metodo.num_ident_basica
+                  if tipo_doc == 'materia':
+                     texto = str(metodo.des_tipo_materia.upper())+' Nº '+ str(metodo.num_ident_basica) + '/' + str(metodo.ano_ident_basica)
+                  elif tipo_doc == 'redacao_final':
+                     texto = 'REDAÇÃO FINAL - ' + str(metodo.sgl_tipo_materia)+' Nº '+ str(metodo.num_ident_basica) + '/' + str(metodo.ano_ident_basica)
+           elif tipo_doc == 'doc_acessorio':
+              for metodo in self.zsql.documento_acessorio_obter_zsql(cod_documento=codigo):
+                  for materia in self.zsql.materia_obter_zsql(cod_materia=metodo.cod_materia):
+                      materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+              texto = str(metodo.des_tipo_documento.upper())+'- '+ str(metodo.nom_documento) + ' - ' + str(materia)
+        elif tipo_doc == 'emenda':
+           storage_path = self.sapl_documentos.emenda
+           for metodo in self.zsql.emenda_obter_zsql(cod_emenda=codigp):
+               for materia in self.zsql.materia_obter_zsql(cod_materia=metodo.cod_materia):
+                   materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+               texto = 'EMENDA' + str(metodo.des_tipo_emenda())+' Nº '+ str(metodo.num_emenda) + ' - ' + str(materia)
+        elif tipo_doc == 'substitutivo':
+           storage_path = self.sapl_documentos.substitutivo
+           for metodo in self.zsql.substitutivo_obter_zsql(cod_substitutivo=codigo):
+               for materia in self.zsql.materia_obter_zsql(cod_materia=metodo.cod_materia):
+                   materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+               texto = 'SUBSTITUTIVO Nº '+ str(metodo.num_substitivo) + ' - ' + str(materia)
+        elif tipo_doc == 'tramitacao':
+           storage_path = self.sapl_documentos.materia.tramitacao
+           for metodo in self.zsql.tramitacao_obter_zsql(cod_tramitacao=codigo):
+               materia = str(metodo.sgl_tipo_materia)+' '+ str(metodo.num_ident_basica)+'/'+str(metodo.ano_ident_basica)
+           texto = 'TRAMITAÇÃO Nº '+ str(metodo.cod_tramitacao) + ' - ' + str(materia)
+        elif tipo_doc == 'parecer_comissao':
+           storage_path = self.sapl_documentos.parecer_comissao
+           for metodo in self.zsql.relatoria_obter_zsql(cod_relatoria=codigo):
+               for materia in self.zsql.materia_obter_zsql(cod_materia=metodo.cod_materia):
+                   materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+           texto = 'PARECER Nº '+ str(metodo.num_ordem) + ' - ' + str(materia)
+        elif tipo_doc == 'pauta':
+           storage_path = self.sapl_documentos.pauta_sessao
+           for metodo in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=codigo):
+               for tipo in self.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=metodo.tip_sessao):
+                   sessao = str(metodo.num_sessao_plen) +  'ª Sessão ' + str(tipo.nom_sessao)+' - '+ str(metodo.dat_inicio_sessao)
+           texto = 'PAUTA' + ' - ' + str(sessao)
+        elif tipo_doc == 'ata':
+           storage_path = self.sapl_documentos.ata_sessao
+           for metodo in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=codigo):
+               for tipo in self.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=metodo.tip_sessao):
+                   sessao = str(metodo.num_sessao_plen) +  'ª Sessão ' + str(tipo.nom_sessao)+' - '+ str(metodo.dat_inicio_sessao)
+           texto = 'ATA' + ' - ' + str(sessao)
+        elif tipo_doc == 'norma':
+           storage_path = self.sapl_documentos.norma_juridica
+           for metodo in self.zsql.norma_juridica_obter_zsql(cod_norma=codigo):
+               texto = str(metodo.des_tipo_norma.upper())+'- '+ str(metodo.num_norma) + '/' + str(metodo.ano_norma)
+        elif tipo_doc == 'documento' or tipo_doc == 'doc_acessorio_adm':
+           storage_path = self.sapl_documentos.administrativo
+           if tipo_doc == 'documento':
+              for metodo in self.zsql.documento_administrativo_obter_zsql(cod_documento=codigo):
+                  num_documento = metodo.num_documento
+              texto = str(metodo.des_tipo_documento.upper())+' Nº '+ str(metodo.num_documento)+ '/' +str(metodo.ano_documento)
+           elif tipo_doc == 'doc_acessorio_adm':
+              for metodo in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=codigo):
+                  for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=metodo.cod_documento):
+                      documento = str(documento.sgl_tipo_documento) +' '+ str(documento.num_documento)+'/'+str(documento.ano_documento)
+              texto = str(metodo.nom_documento) + ' - ' + str(materia)
+        elif tipo_doc == 'tramitacao_adm':
+           storage_path = self.sapl_documentos.administrativo.tramitacao
+           for metodo in self.zsql.tramitacao_administrativo_obter_zsql(cod_tramitacao=codigo):
+               documento = str(metodo.sgl_tipo_documento)+' '+ str(metodo.num_documento)+'/'+str(metodo.ano_documento)
+           texto = 'TRAMITAÇÃO Nº '+ str(metodo.cod_tramitacao) + ' - ' + str(documento)
+        elif tipo_doc == 'proposicao':
+           storage_path = self.sapl_documentos.proposicao
+           for metodo in self.zsql.proposicao_obter_zsql(cod_proposicao=codigo):
+               texto = str(metodo.des_tipo_proposicao.upper())+'- '+ str(metodo.cod_proposicao)
+        elif tipo_doc == 'protocolo':
+           storage_path = self.sapl_documentos.protocolo
+           for metodo in self.zsql.protocolo_obter_zsql(cod_protocolo=codigo):
+               texto = 'PROTOCOLO Nº '+ str(metodo.num_protocolo)+' '+ str(metodo.ano_protocolo)
+
+        mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros + '.'
+        mensagem2 = 'Para conferir o original, utilize um leitor QR Code ou acesse ' + self.url()+'/consultas/autenticar_assinatura'+' e informe o código '+ string + '.'
+        mensagem = mensagem1 + '\n' + mensagem2
+        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
+        pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
+        arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_assinado)
+        arquivo = cStringIO.StringIO(str(arq.data))
+        existing_pdf = PdfFileReader(arquivo, "rb")
+        numPages = existing_pdf.getNumPages()
+        # cria novo PDF
+        packet = StringIO.StringIO()
+        can = canvas.Canvas(packet)
+        for page_num, i in enumerate(range(numPages), start=1):
+            page = existing_pdf.getPage(i)
+            pwidth = self.getPageSizeW(page)
+            pheight = self.getPageSizeH(page)
+            can.setPageSize((pwidth, pheight))
+            can.setFillColorRGB(0,0,0) 
+            # QRCode
+            qr_code = qr.QrCodeWidget(self.url()+'/consultas/autenticar_assinatura/?codigo='+str(string))
+            bounds = qr_code.getBounds()
+            width = bounds[2] - bounds[0]
+            height = bounds[3] - bounds[1]
+            d = Drawing(55, 55, transform=[55./width,0,0,55./height,0,0])
+            d.add(qr_code)
+            x = 59
+            renderPDF.draw(d, can,  pwidth-59, 13)
+            # Margem direita
+            d = Drawing(10, 5)
+            lab = Label()
+            lab.setOrigin(0,250)
+            lab.angle = 90
+            lab.fontName = 'Arial'
+            lab.fontSize = 8
+            lab.textAnchor = 'start'
+            lab.boxAnchor = 'n'
+            lab.setText(mensagem)
+            d.add(lab)
+            renderPDF.draw(d, can, pwidth-28, 85)
+            # Numero de pagina
+            footer_text = "Pag. %s/%s" % (page_num, numPages)
+            can.saveState()
+            can.setFont('Arial', 8)
+            can.drawCentredString(pwidth-30, 10, footer_text)
+            can.restoreState()
+            can.showPage()
+        can.save()
+        packet.seek(0)
+        new_pdf = PdfFileReader(packet)
+        # Mescla arquivos
+        output = PdfFileWriter()
+        for page in range(existing_pdf.getNumPages()):
+            pdf_page = existing_pdf.getPage(page)
+            # qrcode e margem direita em todas as páginas
+            for wm in range(new_pdf.getNumPages()):
+                watermark_page = new_pdf.getPage(wm)
+                if page == wm:
+                   pdf_page.mergePage(watermark_page)
+            output.addPage(pdf_page)
+        outputStream = cStringIO.StringIO()
+
+        if hasattr(storage_path,nom_pdf_documento):
+           documento = getattr(storage_path,nom_pdf_documento)
+           documento.manage_upload(file=outputStream.getvalue())
+        else:
+           storage_path.manage_addFile(nom_pdf_documento)
+           output.write(outputStream)
+           arq=storage_path[nom_pdf_documento]
+           arq.manage_edit(title=nom_pdf_documento,filedata=outputStream.getvalue(),content_type='application/pdf')
+
+        return 'ok'
 
 InitializeClass(SAPLTool)
 
