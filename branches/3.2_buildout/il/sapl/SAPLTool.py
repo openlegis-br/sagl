@@ -1717,45 +1717,16 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signer_cert = signature_finisher.certificate
 
         # At this point, you'd typically store the signed PDF on your database.
-        #for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
-        #    filename = str(codigo) + str(storage.pdf_signed)
-        #    old_filename = str(codigo) + str(storage.pdf_file)
-
-        #if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio' or tipo_doc == 'redacao_final':
-        #   storage_path = self.sapl_documentos.materia
-        #elif tipo_doc == 'emenda':
-        #   storage_path = self.sapl_documentos.emenda
-        #elif tipo_doc == 'substitutivo':
-        #   storage_path = self.sapl_documentos.substitutivo
-        #elif tipo_doc == 'parecer_comissao':
-        #   storage_path = self.sapl_documentos.parecer_comissao
-        #elif tipo_doc == 'pauta':
-        #   storage_path = self.sapl_documentos.pauta_sessao
-        #elif tipo_doc == 'ata':
-        #   storage_path = self.sapl_documentos.ata_sessao
-        #elif tipo_doc == 'norma':
-        #   storage_path = self.sapl_documentos.norma_juridica
-        #elif tipo_doc == 'documento' or tipo_doc == 'doc_acessorio_adm':
-        #   storage_path = self.sapl_documentos.administrativo
-        #elif tipo_doc == 'tramitacao':
-        #   storage_path = self.sapl_documentos.materia.tramitacao
-        #elif tipo_doc == 'tramitacao_adm':
-        #   storage_path = self.sapl_documentos.administrativo.tramitacao
-        #elif tipo_doc == 'proposicao':
-        #   storage_path = self.sapl_documentos.proposicao
-        #elif tipo_doc == 'protocolo':
-        #   storage_path = self.sapl_documentos.protocolo
 
         tmp_path = "/tmp"
 
         for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_assinado=0):
-            cod_assinatura_doc = item.cod_assinatura_doc
-            if cod_assinatura_doc == '':
-               cod_assinatura_doc = str(self.cadastros.assinatura.generate_verification_code())
-               self.zsql.assinatura_documento_incluir_zsql(cod_assinatura_doc=cod_assinatura_doc, codigo=codigo,tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_prim_assinatura=1)
+            if len([item]) > 0:
+               cod_assinatura_doc = str(item.cod_assinatura_doc)
                self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc, cod_usuario=cod_usuario)
             else:
-               cod_assinatura_doc = str(item.cod_assinatura_doc)
+               cod_assinatura_doc = str(self.cadastros.assinatura.generate_verification_code())
+               self.zsql.assinatura_documento_incluir_zsql(cod_assinatura_doc=cod_assinatura_doc, codigo=codigo,tipo_doc=tipo_doc, cod_usuario=cod_usuario, ind_prim_assinatura=1)
                self.zsql.assinatura_documento_registrar_zsql(cod_assinatura_doc=cod_assinatura_doc, cod_usuario=cod_usuario)
 
         if tipo_doc == 'proposicao':
@@ -2008,7 +1979,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             lab.boxAnchor = 'n'
             lab.setText(mensagem)
             d.add(lab)
-            renderPDF.draw(d, can, pwidth-28, 105)
+            renderPDF.draw(d, can, pwidth-28, 85)
             # Numero de pagina
             footer_text = "Pag. %s/%s" % (page_num, numPages)
             can.saveState()
