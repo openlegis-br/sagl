@@ -1552,7 +1552,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             else:
                for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, ind_assinado=1):
                    if len([item]) >= 1:
-                      pdf_location = self.sapl_documentos.documentos_assinados
+                      pdf_location = 'sapl_documentos/documentos_assinados/'
                       pdf_signed = str(pdf_location) + str(item.cod_assinatura_doc) + '.pdf'
                       nom_arquivo_assinado = str(item.cod_assinatura_doc) + '.pdf'
                       pdf_file = str(pdf_location) + str(item.cod_assinatura_doc) + '.pdf'
