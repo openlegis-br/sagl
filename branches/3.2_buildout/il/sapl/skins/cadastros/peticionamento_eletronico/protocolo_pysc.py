@@ -31,7 +31,7 @@ txt_user_protocolo = 'Protocolo Eletrônico'
 arquivo = REQUEST.form['anexo']
 ano = DateTime().strftime('%Y')
 data = DateTime().strftime('%Y-%m-%d')
-for numero_doc in context.zsql.numero_documento_administrativo_obter_zsql(tip_documento=tip_documento,ano=ano):
+for numero_doc in context.zsql.numero_documento_administrativo_obter_zsql(tip_documento=tip_documento,ano_documento=ano):
     numero = numero_doc.novo_numero
 
 def criar_protocolo(hdn_num_protocolo,tip_protocolo,tip_processo,tip_documento,txt_assunto_ementa,txt_interessado,txt_user_protocolo,arquivo,numero,ano,data):
@@ -54,7 +54,7 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
 
 def tramitar_documento(cod_documento):
     for unidade in context.zsql.unidade_tramitacao_obter_zsql(ind_excluido=0):
-        if 'PRT' in unidade.sgl_orgao:
+        if 'Protocolo' in unidade.nom_unidade_join:
             cod_unid_tram_local =  int(unidade.cod_unid_tramitacao)
         if 'Administra' in unidade.nom_unidade_join:
             cod_unid_tram_dest = int(unidade.cod_unid_tramitacao)
