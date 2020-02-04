@@ -44,7 +44,7 @@ def protocolos(lst_protocolos):
 
         #protocolos
         tmp_data+='\t\t<para style="P1"><b>'+dic['numeracao']+'</b></para>\n'
-        tmp_data+='\t\t<para style="P4"><b>'+dic['ident_processo']+ ' Nº '+dic['num_processo']+ '</b></para>\n'
+        tmp_data+='\t\t<para style="P4"><b>'+dic['ident_processo']+ dic['num_processo']+ '</b></para>\n'
         tmp_data+='\t\t<para style="P1"><b>'+dic['tipo_autor']+': </b>' +dic['nom_autor']+ '</para>\n'
 
         tmp_data+='\t\t<para style="P2"><b>'+dic['tipo_enunciado']+': </b>' +dic['txt_assunto']+ '</para>\n'

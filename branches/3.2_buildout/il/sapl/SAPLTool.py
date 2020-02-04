@@ -1143,18 +1143,37 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         sgl_casa = self.sapl_documentos.props_sapl.sgl_casa
         for protocolo in self.zsql.protocolo_obter_zsql(cod_protocolo=cod_protocolo):
           string = str(protocolo.cod_protocolo).zfill(7)
-          texto = 'P '+ str(protocolo.num_protocolo)+'/'+str(protocolo.ano_protocolo)
+          texto = 'PRT '+ str(protocolo.num_protocolo)+'/'+str(protocolo.ano_protocolo)
           data = self.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' '+protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
-          if self.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
-              for materia in self.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
-                 num_materia = materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-          elif self.zsql.documento_administrativo_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_documento=protocolo.ano_protocolo):
-              for documento in self.zsql.documento_administrativo_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_documento=protocolo.ano_protocolo):
-                 num_materia = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
+
+          if protocolo.tip_processo==1:
+             if protocolo.tip_natureza_materia == 1:
+                for materia in self.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
+                    des_tipo_materia = materia.des_tipo_materia
+                    num_materia=materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+             elif protocolo.tip_natureza_materia == 2:
+                  for materia in self.zsql.materia_obter_zsql(cod_materia=protocolo.cod_materia_principal):
+                      materia_principal = ' - ' + materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+                  for tipo in self.zsql.tipo_materia_legislativa_obter_zsql(tip_materia=protocolo.tip_materia,tip_natureza='A'):
+                      if tipo.des_tipo_materia == 'Emenda':
+                         for emenda in self.zsql.emenda_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
+                             num_materia = 'Emenda' + ' nº ' +str(emenda.num_emenda) + str(materia_principal)
+                      elif tipo.des_tipo_materia == 'Substitutivo':
+                           for substitutivo in self.zsql.substitutivo_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
+                               num_materia = 'Subst. nº ' +str(substitutivo.num_substitutivo) + str(materia_principal)
+             elif protocolo.tip_natureza_materia == 3:
+                  for materia in self.zsql.materia_obter_zsql(cod_materia=protocolo.cod_materia_principal):
+                      materia_principal = ' - ' + materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+                  for documento in self.zsql.documento_acessorio_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
+                      num_materia = documento.des_tipo_documento + str(materia_principal)
+          elif protocolo.tip_processo==0:
+               for documento in self.zsql.documento_administrativo_obter_zsql(num_protocolo=protocolo.num_protocolo, ano_documento=protocolo.ano_protocolo):
+                   num_materia = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
           else:
               num_materia = " "
-          pdf_protocolo = self.sapl_documentos.protocolo.absolute_url() + "/" +  str(cod_protocolo) + "_protocolo.pdf"
-          nom_pdf_protocolo = str(cod_protocolo) + "_protocolo.pdf"
+
+        pdf_protocolo = self.sapl_documentos.protocolo.absolute_url() + "/" +  str(cod_protocolo) + "_protocolo.pdf"
+        nom_pdf_protocolo = str(cod_protocolo) + "_protocolo.pdf"
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         pdfmetrics.registerFont(TTFont('Courier_Bold', '/usr/share/fonts/truetype/msttcorefonts/Courier_New_Bold.ttf'))
         x_var=165

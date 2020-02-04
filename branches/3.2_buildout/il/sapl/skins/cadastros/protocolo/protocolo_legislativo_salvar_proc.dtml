@@ -2,7 +2,7 @@
 *********************************************************************
 *   Função: Salvar os dados do protocolo vindos do formulário,      *
 *   Retorno: Mensagem de sucesso ou erro.                           *
-*   OpenLegis - 24/02/2018                                          *
+*   OpenLegis - 03/02/2020                                          *
 *********************************************************************
 </dtml-comment>
 
@@ -16,9 +16,37 @@
    </dtml-in>
 </dtml-if>
 
+<dtml-call expr="REQUEST.set('save_ok', '1')">
+
+<dtml-comment> Verifica se a matéria legislativa existe no cadastro.</dtml-comment>
+<dtml-if expr="_.has_key('lst_tip_id_basica')">
+    <dtml-in expr="zsql.materia_obter_zsql(tip_id_basica=lst_tip_id_basica, num_ident_basica=txt_num_ident_basica, ano_ident_basica=txt_ano_ident_basica)">
+        <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+        <dtml-else>
+        <dtml-call expr="REQUEST.set('save_ok', '0')">
+        <dtml-let mensagem="'A matéria legislativa à qual este protocolo será vinculado não existe no cadastro!'"
+          url="'protocolo_legislativo_form?tip_natureza='+lst_tip_natureza
+                +'&tip_materia_sel='+lst_tip_materia
+                +'&txt_assunto_ementa='+txa_txt_ementa
+                +'&tip_autor='+lst_tip_autor
+                +'&cod_autor='+lst_cod_autor
+                +'&num_paginas='+txt_num_paginas
+                +'&txt_observacao='+txa_txt_observacao
+                +'&tip_id_basica_sel='+lst_tip_id_basica
+                +'&num_ident_basica_sel='+txt_num_ident_basica
+                +'&ano_ident_basica_sel='+txt_ano_ident_basica">
+            <dtml-var mensagem_emitir>
+        </dtml-let>
+    </dtml-in>
+    <dtml-else>
+    <dtml-call expr="REQUEST.set('cod_materia', '')">
+</dtml-if>
+
 <dtml-call expr="REQUEST.set('txt_user', AUTHENTICATED_USER.getUserName())">
 
 <dtml-call expr="REQUEST.set('metodo', zsql.protocolo_legislativo_incluir_zsql)">
+
+<dtml-if expr="save_ok=='1'">
 
 <dtml-try>
     <dtml-call expr="metodo(
@@ -26,12 +54,13 @@
         tip_protocolo		 = hdn_tip_protocolo,
         tip_processo		 = hdn_tip_processo,
         tip_materia              = lst_tip_materia,
+        tip_natureza_materia     = lst_tip_natureza,
+        cod_materia_principal    = cod_materia,
         num_paginas              = txt_num_paginas,
         txt_assunto_ementa       = txa_txt_ementa,
         cod_autor                = lst_cod_autor,
         txt_observacao           = txa_txt_observacao,
         txt_user_protocolo       = txt_user)">
-
 
   <dtml-in expr="zsql.protocolo_incluido_codigo_obter_zsql()">
     <dtml-call expr="REQUEST.set('codigo', cod_protocolo)">
@@ -44,6 +73,7 @@
       <dtml-except>
             <dtml-let mensagem="'Ocorreu erro ao tentar salvar o documento digitalizado'+codigo">
                <dtml-var mensagem_emitir>
+               <dtml-call expr="REQUEST.set('save_ok', '0')">
             </dtml-let>
       </dtml-try>
     </dtml-if>
@@ -54,3 +84,5 @@
   </dtml-in>
 
 </dtml-try>
+
+</dtml-if>
