@@ -101,7 +101,7 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
         if protocolo.tip_processo==1:
            dic['natureza']='LEG'
   
-        dic['num_materia']=''
+        dic['num_materia'] = ''
         des_tipo_materia = ''
         if protocolo.tip_natureza_materia == 1:
            for materia in context.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
@@ -113,7 +113,7 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
              for tipo in context.zsql.tipo_materia_legislativa_obter_zsql(tip_materia=protocolo.tip_materia,tip_natureza='A'):
                  if tipo.des_tipo_materia == 'Emenda':
                     for emenda in context.zsql.emenda_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
-                        des_tipo_materia = emenda.des_tipo_materia
+                        des_tipo_materia = emenda.des_tipo_emenda
                         dic['num_materia']= 'Emenda' + ' nº ' +str(emenda.num_emenda) + str(materia_principal)
                  elif tipo.des_tipo_materia == 'Substitutivo':
                     for substitutivo in context.zsql.substitutivo_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):

@@ -20,7 +20,7 @@ def cabecalho(inf_basicas_dic,imagem):
     tmp_data+='\t\t\t\t<setFont name="Helvetica" size="12"/>\n'
     tmp_data+='\t\t\t\t<drawString x="5cm" y="26.6cm">Sistema Aberto de Gestão Legislativa</drawString>\n'
     tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="13"/>\n'
-    tmp_data+='\t\t\t\t<drawString x="2.2cm" y="24.6cm">Relatório de Controle do Protocolo</drawString>\n'
+    tmp_data+='\t\t\t\t<drawString x="2.2cm" y="24.6cm">Etiqueta de Protocolo</drawString>\n'
 
     return tmp_data
 

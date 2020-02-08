@@ -1145,7 +1145,9 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
           string = str(protocolo.cod_protocolo).zfill(7)
           texto = 'PRT '+ str(protocolo.num_protocolo)+'/'+str(protocolo.ano_protocolo)
           data = self.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' '+protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
-
+          des_tipo_materia=""
+          num_materia = ""
+          materia_principal = ""
           if protocolo.tip_processo==1:
              if protocolo.tip_natureza_materia == 1:
                 for materia in self.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
@@ -1169,8 +1171,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
           elif protocolo.tip_processo==0:
                for documento in self.zsql.documento_administrativo_obter_zsql(num_protocolo=protocolo.num_protocolo, ano_documento=protocolo.ano_protocolo):
                    num_materia = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
-          else:
-              num_materia = " "
 
         pdf_protocolo = self.sapl_documentos.protocolo.absolute_url() + "/" +  str(cod_protocolo) + "_protocolo.pdf"
         nom_pdf_protocolo = str(cod_protocolo) + "_protocolo.pdf"
