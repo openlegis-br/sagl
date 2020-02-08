@@ -1,4 +1,4 @@
-##parameters=imagem,dic_rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,sessao=''
+##parameters=imagem,dic_rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,sessao='',hdn_url=''
 
 """pdf_tramitacao_gerar.py
    Script python para gerar o PDF da tramitação
@@ -160,7 +160,7 @@ def tramitacao(tramitacao_dic):
 
     return tmp
 
-def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
+def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao='',hdn_url=''):
     """
     Função principal responsável por chamar as funções que irão gerar o código rml apropriado
     """
@@ -196,6 +196,7 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
     arq=context.sapl_documentos.administrativo.tramitacao[arquivoPdf]
     arq.manage_edit(title='PDF Tramitação Documento',filedata=tmp_pdf,content_type='application/pdf')
 
-    return "tramitacao_mostrar_proc?cod_tramitacao="+str(cod_tramitacao)
+    return hdn_url
+    #return "tramitacao_mostrar_proc?cod_tramitacao="+str(cod_tramitacao)
 
 return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,sessao)

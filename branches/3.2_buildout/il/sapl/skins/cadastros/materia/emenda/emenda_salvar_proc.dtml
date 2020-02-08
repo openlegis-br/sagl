@@ -45,6 +45,71 @@
       <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">
   </dtml-if>
 
+   <dtml-if expr="metodo==zsql.emenda_incluir_zsql">
+     <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
+        <dtml-call expr="REQUEST.set('ano', _.DateTime().strftime('%Y'))">
+        <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=ano)">
+           <dtml-if sequence-start>
+             <dtml-call expr="REQUEST.set('cod_protocolo', cod_protocolo)">
+           </dtml-if>
+        </dtml-in>
+        <dtml-if cod_protocolo>
+          <dtml-call expr="REQUEST.set('id_protocolo', _.str(cod_protocolo)+'_protocolo.pdf')">
+          <dtml-if "_.hasattr(sapl_documentos.protocolo,id_protocolo)">
+          </dtml-if>
+          <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+            <dtml-if cod_usuario>
+              <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+            </dtml-if>
+          </dtml-in>
+          <dtml-call expr="REQUEST.set('nom_unidade_origem', 'Protocolo')">
+          <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_origem)">
+            <dtml-call expr="REQUEST.set('cod_unid_tram_local', cod_unid_tramitacao)">
+          </dtml-in>
+          <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_ult_tramitacao=1)">
+               <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tram_dest)">
+               <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
+          </dtml-in>
+          <dtml-unless cod_ult_tramitacao>
+              <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
+              <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_destino)">
+                <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tramitacao)">
+              </dtml-in>
+          </dtml-unless>
+          <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y às %H:%M'))">
+          <dtml-call expr="REQUEST.set('txt_tramitacao', 'Emenda nº ' + txt_num_emenda + ' incorporada em ' + hdn_hor_tramitacao)">
+          <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
+          <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
+          <dtml-call expr="REQUEST.set('sgl_status', 'EME')">
+          <dtml-in expr="zsql.status_tramitacao_obter_zsql(sgl_status=sgl_status)">
+            <dtml-call expr="REQUEST.set('cod_status', cod_status)">
+          </dtml-in>
+          <dtml-call expr="zsql.tramitacao_incluir_zsql(cod_materia = cod_materia,
+                                                   dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
+                                                   cod_unid_tram_local = cod_unid_tram_local,
+                                                   cod_usuario_local = cod_usuario_corrente,
+                                                   dat_encaminha = hdn_dat_encaminha,
+                                                   cod_unid_tram_dest = cod_unid_tram_dest,
+                                                   cod_status = cod_status,
+                                                   ind_urgencia = 0,
+                                                   txt_tramitacao = txt_tramitacao,
+                                                   ind_ult_tramitacao = 1)">
+          <dtml-if cod_ult_tramitacao>
+            <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao  = cod_ult_tramitacao,
+                                                               cod_materia = cod_materia,  
+                                                               ind_ult_tramitacao = 0)">
+          </dtml-if>
+          <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=cod_materia, cod_status=cod_status)">
+          <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=cod_materia)">
+          <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=cod_materia)">
+          <dtml-in expr="zsql.tramitacao_incluida_codigo_obter_zsql()">
+             <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
+          </dtml-in>
+          <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=hdn_cod_tramitacao)">
+        </dtml-if>
+     </dtml-if>
+   </dtml-if>
+
     <dtml-call expr="REQUEST.set('erro', 0)">              
     <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
     <dtml-if file_nom_arquivo_emenda>
