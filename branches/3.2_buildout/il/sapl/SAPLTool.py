@@ -1826,7 +1826,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             nom_pdf_assinado = str(cod_assinatura_doc) + '.pdf'
             nom_pdf_documento = str(codigo) + str(storage.pdf_file)
 
-        for item in self.zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=cod_assinatura_doc, ind_assinado=1):
+        for item in self.zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=cod_assinatura_doc):
             if item.ind_prim_assinatura == 1:
                for usuario in self.zsql.usuario_obter_zsql(cod_usuario=item.cod_usuario):
                    nom_autor = usuario.nom_completo
