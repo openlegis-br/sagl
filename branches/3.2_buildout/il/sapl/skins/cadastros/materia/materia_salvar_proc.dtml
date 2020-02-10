@@ -2,11 +2,16 @@
    <dtml-call expr="REQUEST.set('temProposicao',hdn_cod_proposicao!='')">
 </dtml-if>
 
+<dtml-unless hdn_cod_materia>
+   <dtml-call expr="REQUEST.set('hdn_cod_materia','')">
+</dtml-unless>
+
 <dtml-in expr="zsql.materia_obter_zsql(ncod_materia = hdn_cod_materia,
                                        tip_id_basica=lst_tip_id_basica,
                                        num_ident_basica = hdn_num_ident_basica,
                                        ano_ident_basica = txt_ano_ident_basica,
                                        tip_natureza = 'P')">
+
   <dtml-call expr="REQUEST.set('erro', 1)">
   <dtml-let mensagem="'Matéria identificada por tipo, número e ano já existe no cadastro. Não foi possível salvá-la.'">
     <dtml-var mensagem_emitir>
@@ -76,7 +81,7 @@
     </dtml-let>
   <dtml-else>
 
-  <dtml-if expr="hdn_url[-1:]=='='">
+  <dtml-if expr="metodo==zsql.materia_incluir_zsql">
      <dtml-in expr="zsql.materia_incluida_codigo_obter_zsql()">
         <dtml-call expr="REQUEST.set('hdn_url', hdn_url + str(cod_materia))">
         <dtml-call expr="REQUEST.set('codigo', cod_materia)">
@@ -194,7 +199,7 @@
           </dtml-if>
           <dtml-call expr="REQUEST.set('id_protocolo', _.str(cod_protocolo)+'_protocolo.pdf')">
           <dtml-if "_.hasattr(sapl_documentos.protocolo,id_protocolo)">
-             <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_materia_pysc(cod_protocolo,hdn_cod_materia)">
+             <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_materia_pysc(cod_protocolo,codigo)">
           </dtml-if>
           <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
             <dtml-if cod_usuario>
@@ -327,3 +332,5 @@
 
  </dtml-try>
 </dtml-unless>
+
+<dtml-var REQUEST>
