@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `autoria_emenda` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO autoria_emenda (cod_autor, cod_emenda, ind_excluido)
-  SELECT cod_autor, cod_emenda, ind_excluido FROM emenda WHERE ind_excluido = 0
+  SELECT cod_autor, cod_emenda, ind_excluido FROM emenda WHERE ind_excluido = 0;
 
 ALTER TABLE `emenda` DROP `cod_autor`;
 
@@ -22,6 +22,6 @@ CREATE TABLE IF NOT EXISTS `autoria_substitutivo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO autoria_substitutivo (cod_autor, cod_substitutivo, ind_excluido)
-  SELECT cod_autor, cod_substitutivo, ind_excluido FROM substitutivo WHERE ind_excluido = 0
+  SELECT cod_autor, cod_substitutivo, ind_excluido FROM substitutivo WHERE ind_excluido = 0;
 
 ALTER TABLE `substitutivo` DROP `cod_autor`;
