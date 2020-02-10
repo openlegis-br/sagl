@@ -15,8 +15,7 @@
                             dat_apresentacao       = pysc.data_converter_pysc(data=txt_dat_apresentacao),
                             num_protocolo          = txt_num_protocolo,
                             txt_ementa             = txa_txt_ementa,
-                            txt_observacao         = txa_txt_observacao,
-                            cod_autor              = lst_cod_autor)">
+                            txt_observacao         = txa_txt_observacao)">
 
 <dtml-except>
   <dtml-let mensagem="'Não foi possível salvar o substitutivo. Tente novamente!'">
@@ -38,6 +37,7 @@
    </dtml-if>
  
    <dtml-if expr="metodo==zsql.substitutivo_incluir_zsql">
+     <dtml-call expr="zsql.autoria_substitutivo_incluir_zsql(cod_autor=lst_cod_autor,cod_substitutivo=hdn_cod_substitutivo)">
      <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
         <dtml-call expr="REQUEST.set('ano', _.DateTime().strftime('%Y'))">
         <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=ano)">
@@ -47,6 +47,7 @@
         </dtml-in>
         <dtml-if cod_protocolo>
           <dtml-call expr="REQUEST.set('id_protocolo', _.str(cod_protocolo)+'_protocolo.pdf')">
+             <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_substitutivo_pysc(cod_protocolo,hdn_cod_substitutivo)">
           <dtml-if "_.hasattr(sapl_documentos.protocolo,id_protocolo)">
           </dtml-if>
           <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">

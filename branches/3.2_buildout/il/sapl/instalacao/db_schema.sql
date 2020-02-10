@@ -1,14 +1,9 @@
-SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
+CREATE DATABASE IF NOT EXISTS `interlegis` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE `interlegis`;
 
 CREATE TABLE IF NOT EXISTS `acomp_materia` (
   `cod_cadastro` int(11) NOT NULL AUTO_INCREMENT,
@@ -217,23 +212,6 @@ CREATE TABLE IF NOT EXISTS `assinatura_storage` (
   PRIMARY KEY (`tip_documento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `assinatura_storage` (`tip_documento`, `pdf_location`, `storage_path`, `pdf_file`, `pdf_signed`) VALUES
-('ata', 'sapl_documentos/ata_sessao/', 'sapl_documentos.ata_sessao', '_ata_sessao.pdf', '_ata_sessao_signed.pdf'),
-('doc_acessorio', 'sapl_documentos/materia/', 'sapl_documentos.materia', '.pdf', '_signed.pdf'),
-('doc_acessorio_adm', 'sapl_documentos/administrativo/', 'sapl_documentos.administrativo', '.pdf', '_signed.pdf'),
-('documento', 'sapl_documentos/administrativo/', 'sapl_documentos.administrativo', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
-('emenda', 'sapl_documentos/emenda/', 'sapl_documentos.emenda', '_emenda.pdf', '_emenda_signed.pdf'),
-('materia', 'sapl_documentos/materia/', 'sapl_documentos.materia', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
-('norma', 'sapl_documentos/norma_juridica/', 'sapl_documentos.norma_juridica', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
-('parecer_comissao', 'sapl_documentos/parecer_comissao/', 'sapl_documentos.parecer_comissao', '_parecer.pdf', '_parecer_signed.pdf'),
-('pauta', 'sapl_documentos/pauta_sessao/', 'sapl_documentos.pauta_sessao', '_pauta_sessao.pdf', '_pauta_sessao_signed.pdf'),
-('proposicao', 'sapl_documentos/proposicao/', 'sapl_documentos.proposicao', '.pdf', '_signed.pdf'),
-('protocolo', 'sapl_documentos/protocolo/', 'sapl_documentos.protocolo', '_protocolo.pdf', '_protocolo_signed.pdf'),
-('redacao_final', 'sapl_documentos/materia/', 'sapl_documentos.materia', '_redacao_final.pdf', '_redacao_final_signed.pdf'),
-('substitutivo', 'sapl_documentos/substitutivo/', 'sapl_documentos.substitutivo', '_substitutivo.pdf', '_substitutivo_signed.pdf'),
-('tramitacao', 'sapl_documentos/materia/tramitacao/', 'sapl_documentos.materia.tramitacao', '_tram.pdf', '_tram_signed.pdf'),
-('tramitacao_adm', 'sapl_documentos/administrativo/tramitacao/', 'sapl_documentos.administrativo.tramitacao', '_tram.pdf', '_tram_signed.pdf');
-
 CREATE TABLE IF NOT EXISTS `assunto_norma` (
   `cod_assunto` int(4) NOT NULL AUTO_INCREMENT,
   `des_assunto` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -270,6 +248,24 @@ CREATE TABLE IF NOT EXISTS `autoria` (
   PRIMARY KEY (`cod_autor`,`cod_materia`),
   KEY `idx_materia` (`cod_materia`),
   KEY `idx_autor` (`cod_autor`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `autoria_emenda` (
+  `cod_autor` int(11) NOT NULL,
+  `cod_emenda` int(11) NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_autor`,`cod_emenda`),
+  KEY `idx_autor` (`cod_autor`),
+  KEY `idx_emenda` (`cod_emenda`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `autoria_substitutivo` (
+  `cod_autor` int(11) NOT NULL,
+  `cod_substitutivo` int(11) NOT NULL,
+  `ind_excluido` tinyint(4) NOT NULL,
+  PRIMARY KEY (`cod_autor`,`cod_substitutivo`),
+  KEY `idx_autor` (`cod_autor`),
+  KEY `idx_substitutivo` (`cod_substitutivo`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `bancada` (
@@ -595,12 +591,10 @@ CREATE TABLE IF NOT EXISTS `emenda` (
   `dat_apresentacao` date DEFAULT NULL,
   `txt_ementa` varchar(400) COLLATE utf8_unicode_ci DEFAULT NULL,
   `txt_observacao` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `cod_autor` int(11) NOT NULL,
   `exc_pauta` tinyint(4) DEFAULT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_emenda`),
   KEY `idx_cod_materia` (`cod_materia`),
-  KEY `idx_cod_autor` (`cod_autor`),
   KEY `idx_tip_emenda` (`tip_emenda`),
   KEY `idx_emenda` (`cod_emenda`,`tip_emenda`,`cod_materia`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -842,6 +836,31 @@ CREATE TABLE IF NOT EXISTS `liderancas_partidarias` (
   KEY `cod_sessao_plen` (`cod_sessao_plen`),
   KEY `cod_partido` (`cod_partido`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+CREATE TABLE IF NOT EXISTS `listaAutores` (
+`cod_autor` varchar(11)
+,`nom_autor_join` varchar(100)
+);
+CREATE TABLE IF NOT EXISTS `listaComissoes` (
+`cod_comissao` int(11)
+,`sgl_comissao` varchar(10)
+,`nom_comissao` varchar(100)
+,`dat_criacao` date
+,`dat_extincao` date
+,`tipo_comissao` varchar(50)
+);
+CREATE TABLE IF NOT EXISTS `listaMembrosComissoes` (
+`cod_comissao` int(11)
+,`nom_comissao` varchar(100)
+,`cod_parlamentar` int(11)
+,`nom_completo` varchar(50)
+,`nom_parlamentar` varchar(50)
+,`des_cargo` varchar(50)
+,`ind_titular` tinyint(4)
+,`dat_designacao` varchar(10)
+,`dat_desligamento` varchar(10)
+,`des_motivo_desligamento` varchar(150)
+,`obs_composicao` varchar(150)
+);
 
 CREATE TABLE IF NOT EXISTS `localidade` (
   `cod_localidade` int(11) NOT NULL DEFAULT '0',
@@ -953,6 +972,15 @@ CREATE TABLE IF NOT EXISTS `materia_legislativa` (
   KEY `idx_matleg_ident` (`ind_excluido`,`tip_id_basica`,`ano_ident_basica`,`num_ident_basica`) USING BTREE,
   KEY `idx_tramitacao` (`ind_tramitacao`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=0;
+CREATE TABLE IF NOT EXISTS `mesaAtual` (
+`cod_parlamentar` int(11)
+,`des_cargo` varchar(50)
+,`nom_parlamentar` varchar(50)
+,`nom_completo` varchar(50)
+,`sgl_partido` varchar(9)
+,`foto_parlamentar` varchar(108)
+,`end_email` varchar(100)
+);
 
 CREATE TABLE IF NOT EXISTS `mesa_sessao_plenaria` (
   `cod_cargo` tinyint(4) NOT NULL,
@@ -1506,10 +1534,8 @@ CREATE TABLE IF NOT EXISTS `substitutivo` (
   `dat_apresentacao` date DEFAULT NULL,
   `txt_ementa` text COLLATE utf8_unicode_ci,
   `txt_observacao` text COLLATE utf8_unicode_ci,
-  `cod_autor` int(11) NOT NULL,
   `ind_excluido` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_substitutivo`),
-  KEY `idx_cod_autor` (`cod_autor`),
   KEY `idx_cod_materia` (`cod_materia`),
   KEY `idx_substitutivo` (`cod_substitutivo`,`cod_materia`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -1814,6 +1840,21 @@ CREATE TABLE IF NOT EXISTS `usuario_unid_tram` (
   KEY `idx_usuario` (`cod_usuario`),
   KEY `idx_unid_tramitacao` (`cod_unid_tramitacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE IF NOT EXISTS `vereadoresAtuais` (
+`cod_parlamentar` int(11)
+,`nom_parlamentar` varchar(50)
+,`nom_completo` varchar(50)
+,`sgl_partido` varchar(9)
+,`cod_partido` int(11)
+,`foto_parlamentar` varchar(108)
+,`end_email` varchar(100)
+,`txt_biografia` text
+,`num_legislatura` int(11)
+,`dat_inicio_mandato` date
+,`dat_fim_mandato` date
+,`ind_titular` tinyint(4)
+,`ind_ativo` tinyint(4)
+);
 
 CREATE TABLE IF NOT EXISTS `vinculo_norma_juridica` (
   `cod_vinculo` int(11) NOT NULL AUTO_INCREMENT,
@@ -1848,7 +1889,6 @@ CREATE TABLE IF NOT EXISTS `visita` (
   KEY `dat_entrada` (`dat_entrada`),
   KEY `des_situacao` (`des_situacao`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 
 ALTER TABLE `autor` ADD FULLTEXT KEY `nom_autor` (`nom_autor`);
 
@@ -1908,7 +1948,6 @@ ALTER TABLE `subemenda` ADD FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`);
 ALTER TABLE `substitutivo` ADD FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`);
 ALTER TABLE `substitutivo` ADD FULLTEXT KEY `txt_observacao` (`txt_observacao`);
 
-
 ALTER TABLE `autoria`
   ADD CONSTRAINT `autoria_ibfk_1` FOREIGN KEY (`cod_materia`) REFERENCES `materia_legislativa` (`cod_materia`) ON DELETE CASCADE ON UPDATE NO ACTION,
   ADD CONSTRAINT `autoria_ibfk_2` FOREIGN KEY (`cod_autor`) REFERENCES `autor` (`cod_autor`) ON DELETE CASCADE ON UPDATE NO ACTION;
@@ -1939,9 +1978,6 @@ ALTER TABLE `oradores`
 
 ALTER TABLE `ordem_dia_discussao`
   ADD CONSTRAINT `ordem_dia_discussao_ibfk_1` FOREIGN KEY (`cod_ordem`) REFERENCES `ordem_dia` (`cod_ordem`) ON DELETE CASCADE ON UPDATE NO ACTION;
-SET FOREIGN_KEY_CHECKS=1;
+
 COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

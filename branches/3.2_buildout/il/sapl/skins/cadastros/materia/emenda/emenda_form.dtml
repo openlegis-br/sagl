@@ -48,6 +48,7 @@
          return false;
       }
 
+   <dtml-unless cod_emenda> 
       var tipo_autor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;
       if (tipo_autor=='0'){
          alert("Um tipo de autor deve ser selecionado!");
@@ -61,6 +62,7 @@
          form.lst_cod_autor.focus();
          return false; 
       }
+   </dtml-unless>
 
       if (form.txa_txt_ementa.value == "") {
          alert("A ementa deve ser preenchida!");
@@ -71,6 +73,7 @@
       form.submit();   
    }
 
+  <dtml-unless cod_emenda> 
    function tipo_autor_mudou(form){
       var valor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;      
       var separador = valor.indexOf("&");
@@ -87,6 +90,7 @@
               + '&cod_autor_sel=' + form.hdn_cod_autor.value;      
       location.href= URL;
    }
+  </dtml-unless>
 
   function texto_odt_gerar(){
       lst_modelo = document.getElementById("lst_modelo");
@@ -237,6 +241,35 @@ $(function() {
             value="<dtml-var num_protocolo missing null="">" />
         </td>
       </tr>
+
+  <dtml-if cod_emenda>
+    <tr>
+     <td>
+       <label for="nom_autor">Autoria </label><span class="campoObrigatorio">&nbsp;</span><br />
+       <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
+         <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+       </dtml-in>
+     </td>
+     <td>
+       <input id="autoria" type="button" class="botao" value="Editar Autoria" />
+       <script type="text/javascript">
+         $('#autoria').click(function () {
+           $.fancybox({
+             type: 'iframe',
+             href: '&dtml-portal_url;/cadastros/materia/emenda/autoria_emenda_form?cod_emenda=<dtml-var cod_emenda>&cod_materia=<dtml-var cod_materia>',
+             width	  : '60%',
+             height	  : '60%',
+             minHeight	  : 420,
+             preload      : true,
+             afterClose   : function() {
+               window.location.href = "emenda_mostrar_proc?cod_emenda=<dtml-var cod_emenda>&cod_materia=<dtml-var cod_materia>";},
+             closeEffect  : 'fade'
+           });
+         });
+       </script>
+     </td>
+    </tr>
+  <dtml-else> 
       <tr> 
         <td><label for="lst_tip_autor">Tipo de Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
               <select name="lst_tip_autor" size="1" onChange="tipo_autor_mudou(document.emenda_form)">
@@ -315,6 +348,7 @@ $(function() {
               </dtml-if>
              </td>
            </tr>
+  </dtml-if> 
 
 <dtml-if cod_emenda>
   <dtml-call expr="REQUEST.set('des_tipo_proposicao', 'Emenda')">

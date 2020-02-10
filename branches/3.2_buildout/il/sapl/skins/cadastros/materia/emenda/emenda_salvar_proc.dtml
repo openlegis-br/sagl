@@ -23,7 +23,6 @@
                             num_protocolo          = txt_num_protocolo,
                             txt_ementa             = txa_txt_ementa,
                             txt_observacao         = txa_txt_observacao,
-                            cod_autor              = lst_cod_autor,
                             exc_pauta              = check)">
 
 <dtml-except>
@@ -46,6 +45,7 @@
   </dtml-if>
 
    <dtml-if expr="metodo==zsql.emenda_incluir_zsql">
+     <dtml-call expr="zsql.autoria_emenda_incluir_zsql(cod_autor=lst_cod_autor,cod_emenda=hdn_cod_emenda)">
      <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
         <dtml-call expr="REQUEST.set('ano', _.DateTime().strftime('%Y'))">
         <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=ano)">
@@ -56,6 +56,7 @@
         <dtml-if cod_protocolo>
           <dtml-call expr="REQUEST.set('id_protocolo', _.str(cod_protocolo)+'_protocolo.pdf')">
           <dtml-if "_.hasattr(sapl_documentos.protocolo,id_protocolo)">
+             <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_emenda_pysc(cod_protocolo,hdn_cod_emenda)">
           </dtml-if>
           <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
             <dtml-if cod_usuario>
