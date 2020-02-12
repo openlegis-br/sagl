@@ -1,6 +1,6 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="javascript/data_validar.js" "></script>
+<script type="text/javascript" src="javascript/data_validar.js"></script>
 
 <script type="text/javascript">
 <!--
@@ -291,11 +291,6 @@ $(document).ready(function() {
   </dtml-in>
 </dtml-if>
 
-<form action="materia_salvar_proc" name="materia_form" method="post" enctype="multipart/form-data">
-
-<input type="hidden" name="hdn_cod_proposicao" value="<dtml-var hdnCodProposicao missing>" />
-
-<input type="hidden" name="protAutor" value="<dtml-var protAutor missing>" />
 
 <dtml-if cod_materia>
 <div id="barra-conteudo">
@@ -330,12 +325,17 @@ $(document).ready(function() {
      </ul>
 </div>
 </dtml-if>
+
+<form action="materia_salvar_proc" name="materia_form" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var hdnCodProposicao missing>" />
+  <input type="hidden" name="protAutor" value="<dtml-var protAutor missing>" />
+  <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia missing>" />
+  <input type="hidden" name="hdn_url" value="materia_mostrar_proc?cod_materia=<dtml-var cod_materia missing>" />
+  <input type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('mudou')">1<dtml-else>0</dtml-if>" />
+  <input type="hidden" id="txt_num_dias_prazo" name="txt_num_dias_prazo" value="<dtml-var num_dias_prazo missing null="">" />
             <fieldset>
              <legend>Identificação Básica</legend>
               <table>
-		<input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia missing>" />
-                <input type="hidden" name="hdn_url" value="materia_mostrar_proc?cod_materia=<dtml-var cod_materia missing>" />
-                <input type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('mudou')">1<dtml-else>0</dtml-if>" />
                         <tr>
                           <td width="33%"><label for="lst_tip_id_basica">Tipo <span class="campoObrigatorio">&nbsp;</span></label><br />
                         <dtml-if temProposicao>
@@ -747,16 +747,16 @@ $(document).ready(function() {
                           </td>
                           <td><label for="lst_cod_regime_tramitacao">Regime de Tramitação <span class="campoObrigatorio">&nbsp;</span></label><br />
                             <select id="lst_cod_regime_tramitacao" name="lst_cod_regime_tramitacao" onChange="javascript:form.hdn_alterou.value=1">
-                                <option value="0">
-                                </option>
-<dtml-in expr="zsql.regime_tramitacao_obter_zsql()">
+                             <option value="0">
+                             </option>
+                             <dtml-in expr="zsql.regime_tramitacao_obter_zsql()">
                               <option
-  <dtml-if expr="_.has_key('cod_materia') and cod_regime_tramitacao==materia_form.cod_regime_tramitacao">selected</dtml-if>
-  <dtml-if expr="not _.has_key('cod_materia') and des_regime_tramitacao == 'Ordinário'">selected</dtml-if>
-
+                               <dtml-if expr="_.has_key('cod_materia') and cod_regime_tramitacao==materia_form.cod_regime_tramitacao">selected</dtml-if>
+                               <dtml-if expr="not _.has_key('cod_materia') and des_regime_tramitacao == 'Ordinário'">selected</dtml-if>
                                 value="<dtml-var cod_regime_tramitacao>"><dtml-var des_regime_tramitacao>
                               </option>
-</dtml-in>
+                             </dtml-in>
+                           </select>
                           </td>
                           <td class="texto"><label for="rad_ind_tramitacao">Em Tramitação? <span class="campoObrigatorio">&nbsp;</span></label><br />
 <dtml-in expr="[(1,'Sim'),(0,'Não')]">
@@ -805,7 +805,6 @@ $(document).ready(function() {
 </dtml-in>
                           </td>
                         </tr>
-                        <input type="hidden" id="txt_num_dias_prazo" name="txt_num_dias_prazo" size="3" maxlength="3" value="<dtml-var num_dias_prazo missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
                  </table>
                  </fieldset>
 
@@ -867,13 +866,13 @@ $(document).ready(function() {
                           <td colspan="2"><label for="lst_cod_local_origem_externa">Local Origem </label><br />
                             <select id="lst_cod_local_origem_externa" name="lst_cod_local_origem_externa" onChange="javascript:form.hdn_alterou.value=1">
                               <option></option>
-<dtml-in expr="zsql.origem_obter_zsql()">
-                              <option
-  <dtml-if expr="_.has_key('cod_materia') and cod_origem==cod_local_origem_externa">
-                                selected
-  </dtml-if>
-                                value="<dtml-var cod_origem>"><dtml-var sgl_origem> - <dtml-var nom_origem></option>
-</dtml-in>
+                              <dtml-in expr="zsql.origem_obter_zsql()">
+                                <option
+                                <dtml-if expr="_.has_key('cod_materia') and cod_origem==cod_local_origem_externa">
+                                  selected
+                                </dtml-if>
+                                  value="<dtml-var cod_origem>"><dtml-var sgl_origem> - <dtml-var nom_origem></option>
+                              </dtml-in>
                             </select>
                           </td>
                           <td colspan="2"><label for="txt_dat_origem_externa">Data </label><br />

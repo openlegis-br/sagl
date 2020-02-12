@@ -1,4 +1,4 @@
-##parameters=imagem,dic_rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,sessao='',hdn_url=''
+##parameters=imagem,dic_rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url,sessao=''
 
 """pdf_tramitacao_gerar.py
    Script python para gerar o PDF da tramitação
@@ -160,7 +160,7 @@ def tramitacao(tramitacao_dic):
 
     return tmp
 
-def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao='',hdn_url=''):
+def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url,sessao=''):
     """
     Função principal responsável por chamar as funções que irão gerar o código rml apropriado
     """
@@ -199,4 +199,4 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao='',hdn_url
     return hdn_url
     #return "tramitacao_mostrar_proc?cod_tramitacao="+str(cod_tramitacao)
 
-return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,sessao)
+return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url,sessao)

@@ -1,24 +1,17 @@
-<dtml-if hdn_cod_proposicao>
-   <dtml-call expr="REQUEST.set('temProposicao',hdn_cod_proposicao!='')">
-</dtml-if>
-
-<dtml-unless hdn_cod_materia>
-   <dtml-call expr="REQUEST.set('hdn_cod_materia','')">
-</dtml-unless>
+<dtml-call expr="REQUEST.set('temProposicao',hdn_cod_proposicao!='')">
 
 <dtml-in expr="zsql.materia_obter_zsql(ncod_materia = hdn_cod_materia,
                                        tip_id_basica=lst_tip_id_basica,
                                        num_ident_basica = hdn_num_ident_basica,
                                        ano_ident_basica = txt_ano_ident_basica,
                                        tip_natureza = 'P')">
-
   <dtml-call expr="REQUEST.set('erro', 1)">
   <dtml-let mensagem="'Matéria identificada por tipo, número e ano já existe no cadastro. Não foi possível salvá-la.'">
     <dtml-var mensagem_emitir>
   </dtml-let>
 </dtml-in>
 
-<dtml-if expr="(_.has_key('hdn_cod_proposicao') and hdn_cod_proposicao!='') or (_.has_key('temProposicao'))">
+<dtml-if temProposicao>
     <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao)">
       <dtml-if expr="tip_mat_ou_doc!=_.int(lst_tip_id_basica)">
         <dtml-call expr="REQUEST.set('erro', 1)">
@@ -81,88 +74,58 @@
     </dtml-let>
   <dtml-else>
 
-  <dtml-if expr="metodo==zsql.materia_incluir_zsql">
+ <dtml-if expr="hdn_url[-1:]=='='">
      <dtml-in expr="zsql.materia_incluida_codigo_obter_zsql()">
         <dtml-call expr="REQUEST.set('hdn_url', hdn_url + str(cod_materia))">
-        <dtml-call expr="REQUEST.set('codigo', cod_materia)">
-        <dtml-call expr="REQUEST.set('hdn_cod_materia', int(cod_materia))">
+        <dtml-call expr="REQUEST.set('codigo', str(cod_materia))">
+        <dtml-call expr="REQUEST.set('hdn_cod_materia', str(cod_materia))">
      </dtml-in>
+
      <dtml-if hdn_cod_autor>
-        <dtml-try>
-           <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor          = _.int(hdn_cod_autor),
-                                                      cod_materia        = codigo,
-                                                      ind_primeiro_autor = 1)">
-           <dtml-call expr="REQUEST.set('erro_autor', 0)">
-        <dtml-except>
-           <dtml-call expr="REQUEST.set('erro_autor', 1)">
-        </dtml-try>
+        <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor = _.int(hdn_cod_autor), cod_materia = codigo, ind_primeiro_autor = 1)">
      </dtml-if>
 
      <dtml-if chk_cod_autor>
-        <dtml-try>
-          <dtml-call expr="pysc.autoria_materia_salvar_pysc(autores=chk_cod_autor,materia=hdn_cod_materia)">
-          <dtml-call expr="REQUEST.set('erro_autor', 0)">
-        <dtml-except>
-          <dtml-call expr="REQUEST.set('erro_autor', 1)">
-        </dtml-try>
+        <dtml-call expr="pysc.autoria_materia_salvar_pysc(autores=chk_cod_autor,materia=hdn_cod_materia)">
      </dtml-if>
 
-     <dtml-if expr="(_.has_key('hdn_cod_proposicao') and hdn_cod_proposicao!='') or (_.has_key('temProposicao'))">
+     <dtml-if temProposicao>
         <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
-          <dtml-if cod_usuario>
-            <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
-          </dtml-if>
+           <dtml-if cod_usuario>
+             <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+           </dtml-if>
         </dtml-in>
         <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao)">
           <dtml-call expr="REQUEST.set('des_tipo_proposicao', des_tipo_proposicao)">
           <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
           <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y às %H:%M'))">
-          <dtml-call expr="REQUEST.set('txt_tramitacao', 'Proposição Eletrônica ' + str(cod_documento) + ' incorporada como matéria principal em ' + hdn_hor_tramitacao)">
-        <dtml-try>
-	  <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor          = cod_autor,
-                                                     cod_materia        = codigo,
-                          		             ind_primeiro_autor = 1)">
-	   <dtml-call expr="REQUEST.set('erro_autor', 0)">
-	<dtml-except>
-	   <dtml-call expr="REQUEST.set('erro_autor', 1)">
-	</dtml-try>
-     </dtml-in>
-
-     <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao = hdn_cod_proposicao,
+          <dtml-call expr="REQUEST.set('txt_tramitacao', 'Proposição Eletrônica ' + cod_documento + ' incorporada como matéria principal em ' + hdn_hor_tramitacao)">
+	  <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = codigo, ind_primeiro_autor = 1)">
+        </dtml-in>
+        <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao = hdn_cod_proposicao,
                                                                  dat_recebimento = pysc.data_atual_iso_pysc(),
                                                                  cod_mat_ou_doc = _.int(hdn_cod_materia))">
-
-     <dtml-let ok="pysc.proposicao_salvar_como_texto_integral_materia_pysc(hdn_cod_proposicao,hdn_cod_materia,0)">
-       <dtml-if ok>
-       <dtml-else>
-         <dtml-call expr="REQUEST.set('erro', 1)">
-         <dtml-let mensagem="'Ocorreu erro ao obter o texto integral da proposição' + str(hdn_cod_materia)">
-           <dtml-var mensagem_emitir>
-         </dtml-let>
-       </dtml-if>
-     </dtml-let>
-
-     <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">
-
-     <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
-     <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
-     <dtml-call expr="REQUEST.set('nom_unidade_origem', 'Protocolo')">
-     <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_origem)">
-        <dtml-call expr="REQUEST.set('cod_unid_tram_local', cod_unid_tramitacao)">
-     </dtml-in>
-     <dtml-if expr="des_tipo_proposicao=='Indicação' or des_tipo_proposicao=='Moção' or des_tipo_proposicao=='Requerimento'">
-        <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
-     <dtml-else>
-         <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
-     </dtml-if>
-     <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_destino)">
-        <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tramitacao)">
-     </dtml-in>
-     <dtml-call expr="REQUEST.set('sgl_status', 'PRT')">
-        <dtml-in expr="zsql.status_tramitacao_obter_zsql(sgl_status=sgl_status)">
-           <dtml-call expr="REQUEST.set('cod_status', cod_status)">
+        <dtml-call expr="pysc.proposicao_salvar_como_texto_integral_materia_pysc(hdn_cod_proposicao,hdn_cod_materia,0)">
+        <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">
+        <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
+        <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
+        <dtml-call expr="REQUEST.set('nom_unidade_origem', 'Protocolo Eletrônico')">
+        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_origem)">
+           <dtml-call expr="REQUEST.set('cod_unid_tram_local', cod_unid_tramitacao)">
         </dtml-in>
-     <dtml-call expr="zsql.tramitacao_incluir_zsql(cod_materia = codigo,
+        <dtml-if expr="des_tipo_proposicao=='Indicação' or des_tipo_proposicao=='Moção' or des_tipo_proposicao=='Requerimento'">
+          <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
+        <dtml-else>
+          <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Assessoria Legislativa')">
+        </dtml-if>
+        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_destino)">
+          <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tramitacao)">
+        </dtml-in>
+        <dtml-call expr="REQUEST.set('sgl_status', 'PRT')">
+        <dtml-in expr="zsql.status_tramitacao_obter_zsql(sgl_status=sgl_status)">
+          <dtml-call expr="REQUEST.set('cod_status', cod_status)">
+        </dtml-in>
+        <dtml-call expr="zsql.tramitacao_incluir_zsql(cod_materia = codigo,
                                                    dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
                                                    cod_unid_tram_local = cod_unid_tram_local,
                                                    cod_usuario_local = cod_usuario_corrente,
@@ -172,57 +135,47 @@
                                                    ind_urgencia = 0,
                                                    txt_tramitacao = txt_tramitacao,
                                                    ind_ult_tramitacao = 1)">
-     <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=codigo)">
-     <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=codigo)">
-     <dtml-in expr="zsql.tramitacao_incluida_codigo_obter_zsql()">
-        <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
-     </dtml-in>
-     <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=hdn_cod_tramitacao)">
+        <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=codigo)">
+        <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=codigo)">
+     </dtml-if temProposicao>
+
+  <dtml-if protAutor>
+      <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor = protAutor, cod_materia = codigo, ind_primeiro_autor = 1)">
   </dtml-if>
 
-  <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
+  <dtml-if expr="txt_num_protocolo!=''">
         <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=txt_ano_ident_basica)">
            <dtml-if sequence-start>
              <dtml-call expr="REQUEST.set('cod_protocolo', cod_protocolo)">
            </dtml-if>
         </dtml-in>
         <dtml-if cod_protocolo>
-          <dtml-if protAutor>
-            <dtml-try>
-                <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor          = protAutor,
-                                                         cod_materia        = codigo,
-                                                         ind_primeiro_autor = 1)">
-                <dtml-call expr="REQUEST.set('erro_autor', 0)">
-            <dtml-except>
-                <dtml-call expr="REQUEST.set('erro_autor', 1)">
-            </dtml-try>
-          </dtml-if>
-          <dtml-call expr="REQUEST.set('id_protocolo', _.str(cod_protocolo)+'_protocolo.pdf')">
-          <dtml-if "_.hasattr(sapl_documentos.protocolo,id_protocolo)">
-             <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_materia_pysc(cod_protocolo,codigo)">
-          </dtml-if>
-          <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
-            <dtml-if cod_usuario>
-              <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+            <dtml-call expr="REQUEST.set('id_protocolo', _.str(cod_protocolo)+'_protocolo.pdf')">
+            <dtml-if "_.hasattr(sapl_documentos.protocolo,id_protocolo)">
+               <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_materia_pysc(cod_protocolo,codigo)">
             </dtml-if>
-          </dtml-in>
-          <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y às %H:%M'))">
-          <dtml-call expr="REQUEST.set('txt_tramitacao', 'Matéria incorporada em ' + hdn_hor_tramitacao)">
-          <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
-          <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
-          <dtml-call expr="REQUEST.set('nom_unidade_origem', 'Protocolo')">
-          <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_origem)">
-            <dtml-call expr="REQUEST.set('cod_unid_tram_local', cod_unid_tramitacao)">
-          </dtml-in>
-          <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
-          <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_destino)">
-             <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tramitacao)">
-          </dtml-in>
-          <dtml-call expr="REQUEST.set('sgl_status', 'PRT')">
-          <dtml-in expr="zsql.status_tramitacao_obter_zsql(sgl_status=sgl_status)">
-            <dtml-call expr="REQUEST.set('cod_status', cod_status)">
-          </dtml-in>
-          <dtml-call expr="zsql.tramitacao_incluir_zsql(cod_materia = codigo,
+            <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+              <dtml-if cod_usuario>
+                 <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+              </dtml-if>
+            </dtml-in>
+            <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y às %H:%M'))">
+            <dtml-call expr="REQUEST.set('txt_tramitacao', 'Matéria incorporada em ' + hdn_hor_tramitacao)">
+            <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
+            <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
+            <dtml-call expr="REQUEST.set('nom_unidade_origem', 'Protocolo')">
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_origem)">
+               <dtml-call expr="REQUEST.set('cod_unid_tram_local', cod_unid_tramitacao)">
+            </dtml-in>
+            <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_destino)">
+               <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tramitacao)">
+            </dtml-in>
+            <dtml-call expr="REQUEST.set('sgl_status', 'PRT')">
+            <dtml-in expr="zsql.status_tramitacao_obter_zsql(sgl_status=sgl_status)">
+               <dtml-call expr="REQUEST.set('cod_status', cod_status)">
+            </dtml-in>
+            <dtml-call expr="zsql.tramitacao_incluir_zsql(cod_materia = codigo,
                                                    dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
                                                    cod_unid_tram_local = cod_unid_tram_local,
                                                    cod_usuario_local = cod_usuario_corrente,
@@ -232,19 +185,18 @@
                                                    ind_urgencia = 0,
                                                    txt_tramitacao = txt_tramitacao,
                                                    ind_ult_tramitacao = 1)">
-          <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=codigo, cod_status=cod_status)">
-          <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=codigo)">
-          <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=codigo)">
-          <dtml-in expr="zsql.tramitacao_incluida_codigo_obter_zsql()">
-            <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
-          </dtml-in>
-          <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=hdn_cod_tramitacao)">
+            <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=codigo, cod_status=cod_status)">
+            <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=codigo)">
+            <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=codigo)">
+            <dtml-in expr="zsql.tramitacao_incluida_codigo_obter_zsql()">
+               <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
+            </dtml-in>
+            <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=hdn_cod_tramitacao,hdn_url=hdn_url)">
         </dtml-if>
   </dtml-if>
+ </dtml-if>
 
-</dtml-if>
-
-  <dtml-unless expr="(_.has_key('hdn_cod_proposicao') and hdn_cod_proposicao!='') or (_.has_key('temProposicao'))">
+  <dtml-unless temProposicao>
    <dtml-unless cod_protocolo>
     <dtml-call expr="REQUEST.set('erro', 0)">
     <dtml-call expr="REQUEST.set('existe_arquivo', 0)">
@@ -257,7 +209,7 @@
               <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
           <dtml-except>
             <dtml-call expr="REQUEST.set('erro', 1)">
-            <dtml-let mensagem="'Ocorreu erro ao tentar salvar o texto integral '+str(hdn_cod_materia)">
+            <dtml-let mensagem="'Ocorreu erro ao tentar salvar o texto integral'+hdn_cod_materia">
                <dtml-var mensagem_emitir>
             </dtml-let>
           </dtml-try>
@@ -281,7 +233,7 @@
               <dtml-call "documento.manage_upload(file=file_redacao)">
           <dtml-except>
             <dtml-call expr="REQUEST.set('erro', 1)">
-            <dtml-let mensagem="'Ocorreu erro ao tentar salvar a redação final '+ str(hdn_cod_materia)">
+            <dtml-let mensagem="'Ocorreu erro ao tentar salvar a redação final'+hdn_cod_materia">
                <dtml-var mensagem_emitir>
             </dtml-let>
           </dtml-try>
@@ -307,24 +259,25 @@
    <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
        <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=txt_ano_ident_basica)">
         <dtml-if cod_protocolo>
-           <dtml-call expr="REQUEST.set('cod_protocolo', cod_protocolo)">
-           <dtml-call expr="REQUEST.set('id_protocolo', _.str(cod_protocolo)+'_protocolo.pdf')">
-             <dtml-if "_.hasattr(sapl_documentos.protocolo,id_protocolo)">
-                <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_materia_pysc(cod_protocolo,hdn_cod_materia)">
-             </dtml-if>
+          <dtml-call expr="REQUEST.set('cod_protocolo', cod_protocolo)">
+          <dtml-let id_documento="_.str(cod_protocolo)+'_protocolo.pdf'">
+            <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">
+              <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_materia_pysc(cod_protocolo,hdn_cod_materia,0)">
+            </dtml-if>
+          </dtml-let>
         </dtml-if>
       </dtml-in>
       <dtml-if cod_protocolo>
-        <dtml-let mensagem="'Matéria salva com sucesso!'" sucesso="1"  cod_mat="str(hdn_cod_materia)" cod_protocolo="cod_protocolo" url="hdn_url" >
+        <dtml-let mensagem="'Matéria salva com sucesso!'" sucesso="1"  cod_mat="hdn_cod_materia" cod_protocolo="cod_protocolo" url="hdn_url" >
           <dtml-var mensagem_emitir>
         </dtml-let>
       <dtml-else>
-        <dtml-let mensagem="'Matéria salva com sucesso!'" sucesso="1" cod_mat="str(hdn_cod_materia)" url="hdn_url" >
+        <dtml-let mensagem="'Matéria salva com sucesso!'" sucesso="1" cod_mat="hdn_cod_materia" url="hdn_url" >
           <dtml-var mensagem_emitir>
         </dtml-let>
       </dtml-if>
    <dtml-else>
-      <dtml-let mensagem="'Matéria salva com sucesso!'" sucesso="1"  cod_mat="str(hdn_cod_materia)" url="hdn_url" >
+      <dtml-let mensagem="'Matéria salva com sucesso!'" sucesso="1"  cod_mat="hdn_cod_materia" url="hdn_url" >
         <dtml-var mensagem_emitir>
       </dtml-let>
    </dtml-if>
@@ -333,4 +286,3 @@
  </dtml-try>
 </dtml-unless>
 
-<dtml-var REQUEST>

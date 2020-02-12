@@ -1,10 +1,10 @@
-## Script (Python) "pdf_tramitaao_preparar_pysc"
+## Script (Python) "pdf_tramitacao_preparar_pysc"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=hdn_cod_tramitacao
+##parameters=hdn_cod_tramitacao,hdn_url
 ##title=
 ##
 import os
@@ -103,7 +103,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
      tramitacao_dic['nom_usuario_destino'] = usu_destino.nom_completo
      tramitacao_dic['nom_cargo_usuario_destino'] = usu_destino.nom_cargo
 
-caminho=context.pdf_tramitacao_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,sessao=session.id)
+caminho=context.pdf_tramitacao_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url,sessao=session.id)
 if caminho=='aviso':
  return response.redirect('mensagem_emitir_proc')
 else:

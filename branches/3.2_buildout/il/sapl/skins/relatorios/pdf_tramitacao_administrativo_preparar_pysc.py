@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=hdn_cod_tramitacao
+##parameters=hdn_cod_tramitacao,hdn_url
 ##title=
 ##
 import os
@@ -94,7 +94,7 @@ for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_tramitac
      tramitacao_dic['nom_usuario_destino'] = usu_destino.nom_completo
      tramitacao_dic['nom_cargo_usuario_destino'] = usu_destino.nom_cargo
 
-caminho=context.pdf_tramitacao_administrativo_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,sessao=session.id)
+caminho=context.pdf_tramitacao_administrativo_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url,sessao=session.id)
 if caminho=='aviso':
  return response.redirect('mensagem_emitir_proc')
 else:
