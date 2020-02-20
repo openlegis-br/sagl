@@ -141,6 +141,41 @@ $(document).ready(function() {
                         <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
                         <dtml-if sequence-end><br /></dtml-if>
                       </dtml-in>
+
+                  <dtml-elif cod_emenda>
+                    <dtml-in expr="zsql.emenda_obter_zsql(cod_emenda=cod_emenda, ind_excluido=0)">
+                      <b><a href="materia_apresentada_emenda_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>" class="popup" data-fancybox-type="iframe">
+                          Emenda <dtml-var des_tipo_emenda> nº <dtml-var num_emenda> ao 
+                          <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                            <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
+                          </dtml-in>
+                         </a></b><br />
+                      <dtml-if num_protocolo>
+                        <b>Protocolo:</b> <dtml-var num_protocolo><br />
+                      </dtml-if>
+                      <b>Autoria:</b> 
+                      <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
+                        <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                      </dtml-in>
+                    </dtml-in>
+
+                  <dtml-elif cod_substitutivo>
+                    <dtml-in expr="zsql.substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+                      <b><a href="materia_apresentada_substitutivo_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>" class="popup" data-fancybox-type="iframe">
+                          Substitutivo nº <dtml-var num_substitutivo> ao 
+                          <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                            <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
+                          </dtml-in>
+                         </a></b><br />
+                      <dtml-if num_protocolo>
+                        <b>Protocolo:</b> <dtml-var num_protocolo><br />
+                      </dtml-if>
+                      <b>Autoria:</b> 
+                      <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
+                        <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                      </dtml-in>
+                    </dtml-in>
+
                   <dtml-elif cod_documento>
                     <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
                       <b><a href="materia_apresentada_documento_mostrar_proc?cod_ordem=<dtml-var cod_ordem>" class="popup" data-fancybox-type="iframe">
@@ -178,21 +213,28 @@ $(document).ready(function() {
 </dtml-in>
 
 <p align="center">
+  <a href="materia_apresentada_form?cod_sessao_plen=<dtml-var cod_sessao_plen>" class="botao-link popup" data-fancybox-type="iframe">Incluir matéria</a>&nbsp;
+
+  <a href="materia_apresentada_emenda_form?cod_sessao_plen=<dtml-var cod_sessao_plen>" class="botao-link popup" data-fancybox-type="iframe">Incluir emenda</a>&nbsp;
+
+  <a href="materia_apresentada_substitutivo_form?cod_sessao_plen=<dtml-var cod_sessao_plen>" class="botao-link popup" data-fancybox-type="iframe">Incluir substitutivo</a>&nbsp;
+
+  <a href="materia_apresentada_documento_form?cod_sessao_plen=<dtml-var cod_sessao_plen>" class="botao-link popup" data-fancybox-type="iframe">Incluir doc administrativo</a>&nbsp;
+</p>
+<br />
+<p align="center">
 
   <dtml-unless expr="zsql.materia_apresentada_sessao_obter_zsql(dat_ordem = pysc.data_converter_pysc(data=dat_sessao),cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
     <a href="pauta/pauta_apresentada_form?cod_sessao_plen=<dtml-var cod_sessao_plen>"class="botao-link popup" data-fancybox-type="iframe">Gerar lista</a>&nbsp;
   </dtml-unless>
 
   <dtml-if expr="zsql.materia_apresentada_sessao_obter_zsql(dat_ordem = pysc.data_converter_pysc(data=dat_sessao),cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
-    <input type="button" class="botao" name="btn_excluir" value="Excluir lista" onClick="lista_apresentada_excluir()" />
+    <input type="button" class="botao" name="btn_excluir" value="Excluir itens" onClick="lista_apresentada_excluir()" />
   </dtml-if>
-
-  <a href="materia_apresentada_form?cod_sessao_plen=<dtml-var cod_sessao_plen>" class="botao-link popup" data-fancybox-type="iframe">Incluir matéria</a>&nbsp;
-
-  <a href="materia_apresentada_documento_form?cod_sessao_plen=<dtml-var cod_sessao_plen>" class="botao-link popup" data-fancybox-type="iframe">Incluir documento</a>&nbsp;
 
   <input class="botao" type="button" value="Atualizar" onClick="window.location.reload()">
 </p>
+
 </form>
 
 </body>

@@ -48,10 +48,47 @@ if context.REQUEST['data']!='':
                lista_autor = []
                for autor in autores:
 	         for field in fields:
-                         nome_autor = autor['nom_autor_join']
+                     nome_autor = autor['nom_autor_join']
 	         lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
+
+            elif materia_apresentada.cod_emenda != None:
+               for emenda in context.zsql.emenda_obter_zsql(cod_emenda=materia_apresentada.cod_emenda):
+                   materia = context.zsql.materia_obter_zsql(cod_materia=emenda.cod_materia)[0]
+                   dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
+                   dic_materia_apresentada["txt_ementa"] = emenda.txt_ementa
+                   dic_materia_apresentada["id_materia"] = 'Emenda ' + emenda.des_tipo_emenda + ' nº ' + str(emenda.num_emenda) + " ao " + materia.sgl_tipo_materia + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
+                   dic_materia_apresentada["link_materia"] = '<link href="' + context.consultas.absolute_url() + '/materia/materia_mostrar_proc?cod_materia=' + materia.cod_materia+ '">' + 'EMENDA ' + emenda.des_tipo_emenda.upper() + ' Nº ' + str(emenda.num_emenda) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+                   dic_materia_apresentada["nom_autor"] = ""
+                   autores = context.zsql.autoria_emenda_obter_zsql(cod_emenda=emenda.cod_emenda)
+                   fields = autores.data_dictionary().keys()
+                   lista_autor = []
+                   for autor in autores:
+	             for field in fields:
+                         nome_autor = autor['nom_autor_join']
+	             lista_autor.append(nome_autor)
+               dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+               lst_materia_apresentada.append(dic_materia_apresentada)
+
+            elif materia_apresentada.cod_substitutivo != None:
+               for substitutivo in context.zsql.substitutivo_obter_zsql(cod_substitutivo=materia_apresentada.cod_substitutivo):
+                   materia = context.zsql.materia_obter_zsql(cod_materia=substitutivo.cod_materia)[0]
+                   dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
+                   dic_materia_apresentada["txt_ementa"] = substitutivo.txt_ementa
+                   dic_materia_apresentada["id_materia"] = 'Substitutivo ' + ' nº ' + str(substitutivo.num_substitutivo) + " ao " + materia.sgl_tipo_materia + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
+                   dic_materia_apresentada["link_materia"] = '<link href="' + context.consultas.absolute_url() + '/materia/materia_mostrar_proc?cod_materia=' + materia.cod_materia+ '">' + 'SUBSTITUTIVO Nº ' + str(substitutivo.num_substitutivo) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+                   dic_materia_apresentada["nom_autor"] = ""
+                   autores = context.zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=substitutivo.cod_substitutivo)
+                   fields = autores.data_dictionary().keys()
+                   lista_autor = []
+                   for autor in autores:
+	             for field in fields:
+                         nome_autor = autor['nom_autor_join']
+	             lista_autor.append(nome_autor)
+               dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+               lst_materia_apresentada.append(dic_materia_apresentada)
+
             elif materia_apresentada.cod_documento != None:
                materia = context.zsql.documento_administrativo_obter_zsql(cod_documento=materia_apresentada.cod_documento)[0]
                dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem

@@ -1,13 +1,17 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_ordem="" cod_materia="" cod_documento="" num_ordem="" dat_ordem="" cod_sessao_plen="" ind_excluido=0
+arguments : cod_ordem="" cod_materia="" cod_emenda="" cod_substitutivo="" cod_doc_acessorio="" cod_documento="" num_ordem="" dat_ordem="" cod_sessao_plen="" ind_excluido=0
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
+
 SELECT 
        mas.cod_ordem as cod_ordem,
        mas.cod_sessao_plen as cod_sessao_plen,
        mas.cod_materia as cod_materia,
+       mas.cod_emenda,
+       mas.cod_substitutivo,
+       mas.cod_doc_acessorio,
        mas.cod_documento,
        DATE_FORMAT(mas.dat_ordem, '%d/%m/%Y') as dat_ordem,
        mas.num_ordem,
@@ -21,13 +25,16 @@ FROM
    LEFT JOIN sessao_plenaria sp ON sp.cod_sessao_plen = mas.cod_sessao_plen
   
   <dtml-sqlgroup where>
-    <dtml-sqltest cod_materia     column="mas.cod_materia"     op="=" type="int" optional><dtml-and>
-    <dtml-sqltest cod_documento   column="mas.cod_documento"   op="=" type="int" optional><dtml-and>
-    <dtml-sqltest cod_sessao_plen column="mas.cod_sessao_plen" op="=" type="int" optional><dtml-and>  
-    <dtml-sqltest cod_ordem       column="mas.cod_ordem"       op="=" type="int" optional><dtml-and>
-    <dtml-sqltest ind_excluido 	  column="mas.ind_excluido"    op="=" type="int" optional><dtml-and>
-    <dtml-sqltest num_ordem       op="=" type="int" optional><dtml-and>
-    <dtml-sqltest dat_ordem       op="=" type="nb"  optional>
+    <dtml-sqltest cod_materia       column="mas.cod_materia"       op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_emenda        column="mas.cod_emenda"        op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_substitutivo  column="mas.cod_substitutivo"  op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_doc_acessorio column="mas.cod_doc_acessorio" op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_documento     column="mas.cod_documento"     op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_sessao_plen   column="mas.cod_sessao_plen"   op="=" type="int" optional><dtml-and>  
+    <dtml-sqltest cod_ordem         column="mas.cod_ordem"         op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ind_excluido 	    column="mas.ind_excluido"      op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_ordem         op="=" type="int" optional><dtml-and>
+    <dtml-sqltest dat_ordem         op="=" type="nb"  optional>
   </dtml-sqlgroup>
 
 ORDER BY dat_ordem, num_ordem
