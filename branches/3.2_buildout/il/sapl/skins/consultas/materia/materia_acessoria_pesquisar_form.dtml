@@ -1,0 +1,203 @@
+<dtml-var standard_html_header>
+
+<link href="&dtml-portal_url;/generico/multiple-select.css" media="all" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="&dtml-portal_url;/javascript/multiple-select.js"></script>
+
+<script type="text/javascript">
+
+function campos_criticar(){
+
+  var form = document.pesq_basica_form;
+  var regexp_digitos = /\D+/;
+
+  if (form.lst_tip_materia_acessoria.selectedIndex == ''){
+     alert("Selecione um tipo de matéria acessória!");
+     form.lst_tip_materia_acessoria.focus();
+     return false;
+  }
+
+  if (regexp_digitos.test(form.txt_numero_acessoria.value)) {
+     alert("O número da matéria acessória deve ser um numero natural!");
+     form.txt_numero_acessoria.focus();
+     return false;
+  }
+
+  if (regexp_digitos.test(form.txt_ano_apresentacao.value)) {
+     alert("O ano de apressentação deve ser um numero natural!");
+     form.txt_ano_apresentacao.focus();
+     return false;
+  }
+
+  var materia_principal = form.lst_tip_materia[form.lst_tip_materia.selectedIndex].value;
+  if (materia_principal!=''){
+     if ((form.lst_tip_materia[form.lst_tip_materia.selectedIndex].value == "") ||
+        (form.txt_numero.value == "") || (form.txt_ano.value == ""))  {
+         alert("Devem ser informados tipo, número e ano da matéria principal!");
+         form.txt_numero.focus(); 
+         return false;
+     }
+     if (regexp_digitos.test(form.txt_numero.value)) {
+        alert("O número da matéria principal deve ser um numero natural!");
+        form.txt_numero.focus();
+        return false;
+     }
+     if (regexp_digitos.test(form.txt_ano.value)) {
+        alert("O ano da matéria principal deve ser um numero natural!");
+        form.txt_ano.focus();
+        return false;
+     }
+  }
+
+
+  form.submit();
+}
+
+(function ($) {
+  $(function () {
+    document.onkeypress = function (event) {
+      var form = pesq_basica_form;
+      if (event.keyCode === 13) {
+        form.submit();
+      }
+    };
+  });
+}(jQuery));
+
+$(function() {
+        $('#txt_dat_apresentacao').datepick();
+});
+
+$(function() {
+	$('#dt_apres').datepick();
+	$('#dt_apres2').datepick();
+});
+
+</script>
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+  <dtml-if expr="isAnon and sapl_documentos.props_sapl.recaptcha_key">
+     <script src='https://www.google.com/recaptcha/api.js?hl=pt-BR' async defer></script>
+  </dtml-if>
+</dtml-let>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_materia">Ajuda</a>
+
+<h1 class="firstHeading">Pesquisa de Matérias Acessórias</h1> 
+
+<div id="barra-conteudo">
+    <ul>
+      <li>
+         <a 
+           <dtml-if expr="_['REQUEST']['ACTUAL_URL']==(portal_url() + '/consultas/materia/materia_index_html')">
+              class="selecionado"
+           </dtml-if> 
+         href="&dtml-portal_url;/consultas/materia">Matérias Principais</a>
+      </li>
+      <li>
+         <a 
+           <dtml-if expr="_['REQUEST']['ACTUAL_URL']==(portal_url() + '/consultas/materia/materia_acessoria_pesquisar_form')">
+              class="selecionado"
+           </dtml-if>
+         href="&dtml-portal_url;/consultas/materia/materia_acessoria_pesquisar_form">Matérias Acessórias</a>
+      </li>
+      <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+         <li>
+             <a href="&dtml-portal_url;/cadastros/materia/materia_form_resumido">Incluir Matéria</a>
+         </li>
+      </dtml-if>
+    </ul>
+</div>
+
+<form class="pf-form" name="pesq_basica_form" action="materia_acessoria_pesquisar_proc">
+  <fieldset>
+  <div id="inputs">
+     <div class="pf-element pf-full-width">
+      <label for="lst_tip_materia_acessoria"><span class="pf-label">Tipo de Matéria Acessória</span></label>
+      <select class="pf-field" id="lst_tip_materia_acessoria" name="lst_tip_materia_acessoria" style="max-width: 240px; width: 100%;">
+          <option value=""></option>
+          <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='A', ind_excluido=0)">
+                <option value="<dtml-var des_tipo_materia>"><dtml-var des_tipo_materia></option>
+          </dtml-in>
+      </select>
+     </div>
+     <div class="pf-element pf-full-width">
+        <label><span class="pf-label">Número</span></label>
+        <div class="pf-group">
+          <input class="pf-field" id="txt_numero_acessoria" type="text" name="txt_numero_acessoria" null="" missing="" style="min-width: 98px; max-width: 98px; width: 20%;" maxlength="6" />
+          <label for="txt_ano_apresentacao">&nbsp;Ano
+            <input class="pf-field" id="txt_ano_apresentacao" type="text" name="txt_ano_apresentacao" null="" style="min-width: 88px; max-width: 88px; width: 20%;" maxlength="8" />
+          </label>
+        </div>
+     </div>
+     <div class="pf-element pf-full-width">
+       <label for="txt_autor"><span class="pf-label">Autor</span></label>
+       <div class="pf-group">
+ 	<div id="combo_zone" style="width:235px;"></div>
+      </div>
+     </div>
+     <script type="text/javascript">
+	myCombo = new dhtmlXCombo("combo_zone", "hdn_cod_autor", 240);
+                  myCombo.load("&dtml-portal_url;/pysc/autores_pesquisar_pysc");
+	myCombo.enableFilteringMode(true);
+     </script>
+     <div class="pf-element pf-full-width">
+       <label><span class="pf-label">Período de Apresentação:</span></label>
+        <div class="pf-group">
+          <label for="dt_apres">
+            <input class="pf-field" type="text" id="dt_apres" name="dt_apres" style="min-width: 98px; max-width: 98px; width: 20%;" maxlength=10 onblur="formata_data(form.dt_apres)" />
+          </label>
+          <label for="dt_apres2">&nbsp;a&nbsp;
+            <input class="pf-field" type="text" id="dt_apres2" name="dt_apres2" style="min-width: 102px; max-width: 102px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_apres2)" />
+          </label>
+        </div>
+     </div> 
+    <div class="pf-element pf-full-width">
+        <label for="txt_assunto"><span class="pf-label">Assunto / Ementa</span></label>
+          <input class="pf-field" id="txt_assunto" type="text" name="txt_assunto" null="" style="max-width: 231px; width: 100%;" />
+    </div>
+     <div class="pf-element pf-full-width">
+      <label for="lst_tip_materia"><span class="pf-label">Matéria Principal</span></label>
+      <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia">
+          <option value=""></option>
+          <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)">
+              <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia></option>
+          </dtml-in>
+      </select>
+     </div>
+     <div class="pf-element pf-full-width">
+        <label><span class="pf-label"></span></label>
+        <div class="pf-group">
+          <label for="txt_numero">Número
+            <input class="pf-field" id="txt_numero" type="text" name="txt_numero" null="" missing="" style="min-width: 69px; max-width: 69px; width: 20%;" maxlength="6" />
+          </label>
+          <label for="txt_ano">&nbsp;Ano
+            <input class="pf-field" id="txt_ano" type="text" name="txt_ano" null="" style="min-width: 64px; max-width: 64px; width: 20%;" maxlength="4" />
+          </label>
+        </div>
+     </div> 
+     <div class="pf-element pf-full-width">
+        <label><span class="pf-label">Ordenação do Resultado</span></label>
+        <div class="pf-group">
+          <dtml-in expr="[('Data', '1'), ('Matéria Principal', '2')]">     
+           <input type="radio" name="rd_ordenacao" value="<dtml-var expr="_['sequence-item']">"
+                  id="rd_ordenacao<dtml-var expr="_['sequence-item']">"
+                <dtml-if expr="_['sequence-item']=='1'">checked="1"</dtml-if> />
+             <label style="vertical-align: top;" for="rd_ordenacao_t<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"> &nbsp;</label>
+          </dtml-in>
+        </div>
+     </div>
+  <dtml-let isAnon="portal_membership.isAnonymousUser()">
+   <dtml-if expr="isAnon and sapl_documentos.props_sapl.recaptcha_key">
+     <div class="pf-element pf-full-width" style="height: 78px !important;">
+       <div class="g-recaptcha" data-sitekey="<dtml-var "sapl_documentos.props_sapl.recaptcha_key">"></div>
+     </div>
+   </dtml-if>
+  </dtml-let>
+     <div class="pf-element pf-buttons">
+          <input class="pf-button btn botao" type="button" name="btn_materia_pesquisar" value="Pesquisar" onClick="campos_criticar()" />
+          <input class="pf-button btn botao" type="reset" name="btn_materia_limpar" value="Limpar" />
+     </div>
+   </div>
+  </fieldset>
+</form>
+<dtml-var standard_html_footer>
