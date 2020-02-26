@@ -68,11 +68,16 @@
    <dtml-else>
      <dtml-call expr="REQUEST.set('chk_ind_responsavel', 0)">
    </dtml-if>
-  <dtml-if expr="lst_cod_unid_tramitacao != ['0'] or lst_cod_unid_tramitacao != 0">
-   <dtml-call expr="pysc.usuario_unid_tram_vincular_pysc(cod_usuario=hdn_cod_usuario,cod_unid_tramitacao=lst_cod_unid_tramitacao,ind_responsavel=chk_ind_responsavel)">
-  <dtml-else>
-   <dtml-call expr="zsql.usuario_incluido_codigo_obter_zsql(cod_usuario=hdn_cod_usuario)">
-  </dtml-if>
+
+   <dtml-unless lst_cod_unid_tramitacao>
+      <dtml-call expr="REQUEST.set('lst_cod_unid_tramitacao', '')">
+   </dtml-unless>
+   <dtml-if expr="(lst_cod_unid_tramitacao != ['0'] or lst_cod_unid_tramitacao != 0)">
+      <dtml-call expr="pysc.usuario_unid_tram_vincular_pysc(cod_usuario = hdn_cod_usuario, cod_unid_tramitacao = lst_cod_unid_tramitacao, ind_responsavel = chk_ind_responsavel)">
+   <dtml-else>
+      <dtml-call expr="zsql.usuario_incluido_codigo_obter_zsql(cod_usuario=hdn_cod_usuario)">
+   </dtml-if>
+
    <dtml-if expr="(name == AUTHENTICATED_USER.getUserName()) and (roles == ['Operador'])">
      <dtml-call expr="REQUEST.set('url', portal_url() + '/index_html')">
    <dtml-else>
