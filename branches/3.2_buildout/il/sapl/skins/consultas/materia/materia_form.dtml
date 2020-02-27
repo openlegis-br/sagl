@@ -171,7 +171,7 @@ $(document).ready(function() {
                 <dtml-let id_parecer="_.str(cod_relatoria)+'_parecer.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.parecer_comissao,id_parecer)">
                     <dtml-let parecer="_.getattr(sapl_documentos.parecer_comissao,id_parecer).absolute_url">
-                      &nbsp;|<a target="_blank" href="<dtml-var parecer>">Parecer <dtml-if expr="tip_conclusao=='F'">Favorável</dtml-if><dtml-if expr="tip_conclusao=='C'">Contrário</dtml-if></a>|
+                      &nbsp;| <a target="_blank" href="<dtml-var parecer>">Parecer <dtml-if expr="tip_conclusao=='F'">Favorável</dtml-if><dtml-if expr="tip_conclusao=='C'">Contrário</dtml-if></a>
                     </dtml-let>
                   </dtml-if>
                 </dtml-let>
@@ -351,37 +351,30 @@ $(document).ready(function() {
       <th width="15%">Data</th>
     </tr>
    </dtml-if>
-    <tr <dtml-if sequence-odd>class="even"</dtml-if>> 
+    <tr <dtml-if sequence-odd>class="even"</dtml-if>>
       <td>
-        <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
-              <dtml-call expr="REQUEST.set('cod_proposicao_doc',cod_proposicao)">
-        </dtml-in>
-        <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
-         <dtml-if expr="_.has_key('cod_proposicao_doc')">
-             <dtml-let id_proposicao="_.str(cod_proposicao_doc)+'_signed.pdf'">
-               <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
-                 <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
-                    <a target="blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
-                      <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0,tip_documento=tip_documento)">
-                          <b><dtml-var des_tipo_documento></b>
-                      </dtml-in>
-                    </a>
-                 </dtml-let>
-               </dtml-if>
-             </dtml-let>
-         <dtml-elif expr="_.hasattr(sapl_documentos.materia,id_documento)">
-             <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-                 <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
-                    <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0,tip_documento=tip_documento)">
-                        <b><dtml-var des_tipo_documento></b>
-                    </dtml-in>
+         <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
+          <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+            <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+              <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                 <a target="blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
+                   <dtml-var des_tipo_documento>
                  </a>
-             </dtml-let>
+              </dtml-let>
+            </dtml-if>
+          </dtml-let>
          <dtml-else>
-             <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0,tip_documento=tip_documento)">
-               <dtml-var des_tipo_documento>
-             </dtml-in>
-         </dtml-if>
+          <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
+          <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
+            <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
+              <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                <dtml-var des_tipo_documento>
+              </a>
+            </dtml-let>
+          <dtml-else>
+              <dtml-var des_tipo_documento>
+          </dtml-if>
+         </dtml-in>
       </td>
       <td class="texto">
          <dtml-var nom_documento missing null="">
@@ -472,7 +465,7 @@ $(document).ready(function() {
 
 <dtml-in expr="zsql.materia_apresentada_sessao_obter_zsql(cod_materia=cod_materia)">
   <dtml-if sequence-start>
-  <legend>Leitura / Apresentação em Plenário</legend>
+  <legend>Apresentação em Plenário</legend>
   <table style="margin-bottom: 1em;">
   </dtml-if>
      <tr class="even">

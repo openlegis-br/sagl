@@ -205,20 +205,29 @@ $(document).ready(function() {
                    <dtml-if sequence-start>            
                       <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Acessório<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>:</b>
                    </dtml-if>
-                     <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
-                     <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
+                   <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
+                    <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+                      <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+                        <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                           <a target="blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
+                             <dtml-var nom_documento>
+                           </a>
+                        </dtml-let>
+                      </dtml-if>
+                    </dtml-let>
+                   <dtml-else>
+                    <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
+                    <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
                       <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-                        <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
-                          <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0,tip_documento=tip_documento)">
-                            <b><dtml-var nom_documento></b>
-                          </dtml-in>
+                        <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                          <dtml-var nom_documento>
                         </a>
                       </dtml-let>
-                      <dtml-else>
-                         <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0,tip_documento=tip_documento)">
-                           <dtml-var nom_documento>
-                         </dtml-in>
-                      </dtml-if><dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end><br /></dtml-if>
+                    <dtml-else>
+                        <dtml-var nom_documento>
+                    </dtml-if>
+                   </dtml-in>
+                   <dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end><br /></dtml-if>
                  </dtml-in>
                 </dtml-if>
 
