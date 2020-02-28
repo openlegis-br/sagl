@@ -37,7 +37,7 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
 
 for norma in context.zsql.norma_juridica_obter_zsql(cod_norma=REQUEST['cod_norma']):
 #Abaixo é gerado os dados para o bloco das informações básicas da norma
- inf_basicas_dic['titulo']= norma.des_tipo_norma.upper()+" N° "+str(norma.num_norma)+" DE "+str(norma.dat_norma)
+ inf_basicas_dic['titulo']= norma.des_tipo_norma.decode('utf-8').upper()+" N° "+str(norma.num_norma)+" DE "+str(norma.dat_norma)
  inf_basicas_dic['txt_ementa']=norma.txt_ementa
  inf_basicas_dic['dat_norma']= norma.dat_norma
  inf_basicas_dic['dat_publicacao']= norma.dat_publicacao

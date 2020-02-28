@@ -71,7 +71,7 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia, n
 
         dic={}
 
-        dic['titulo']=materia.des_tipo_materia.upper()+" N° "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+        dic['titulo']=materia.des_tipo_materia.decode('utf-8').upper()+" N° "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
 
         if context.portal_membership.isAnonymousUser() and materia.sgl_tipo_materia=='PDL' and materia.txt_indexacao == "TÍTULO" and materia.ano_ident_basica>=2014:
           for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=materia.cod_materia):

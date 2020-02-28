@@ -60,7 +60,7 @@ for requerimentos in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=
   for materia in context.zsql.materia_obter_zsql(cod_materia=requerimentos.cod_materia, des_tipo_materia='Requerimento', ind_excluido=0):
     dic_requerimentos["tipo_item"] = 'Matéria'
     dic_requerimentos["nom_fase"] = 'Expediente'
-    dic_requerimentos["txt_exibicao"] = materia.sgl_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa
+    dic_requerimentos["txt_exibicao"] = materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa
     dic_requerimentos["cod_materia"] = materia.cod_materia
     dic_requerimentos["txt_autoria"] = ''
     autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
@@ -81,7 +81,7 @@ for mocoes in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=int(con
   for materia in context.zsql.materia_obter_zsql(cod_materia=mocoes.cod_materia, des_tipo_materia='Moção', ind_excluido=0):
     dic_mocoes["tipo_item"] = 'Matéria'
     dic_mocoes["nom_fase"] = 'Expediente'
-    dic_mocoes["txt_exibicao"] = materia.sgl_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa
+    dic_mocoes["txt_exibicao"] = materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa
     dic_mocoes["cod_materia"] = materia.cod_materia
     dic_mocoes["txt_autoria"] = ''
     autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
@@ -125,7 +125,7 @@ for ordem_dia in context.zsql.ordem_dia_obter_zsql(cod_sessao_plen=int(context.R
   turno = context.zsql.turno_discussao_obter_zsql(cod_turno=ordem_dia.tip_turno)[0]
   dic_ordem_dia["tipo_item"] = 'Matéria'
   dic_ordem_dia["nom_fase"] = 'Ordem do Dia'
-  dic_ordem_dia["txt_exibicao"] =  materia.sgl_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa
+  dic_ordem_dia["txt_exibicao"] =  materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa
   dic_ordem_dia["cod_materia"] = ordem_dia.cod_materia
   dic_ordem_dia["txt_autoria"] = ''
   autores = context.zsql.autoria_obter_zsql(cod_materia=ordem_dia.cod_materia)

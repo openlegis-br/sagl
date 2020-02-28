@@ -14,11 +14,11 @@ if context.REQUEST['data']!='':
         # seleciona o tipo da sessao plenaria
         tipo_sessao = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao,ind_excluido=0)[0]
         inf_basicas_dic["num_sessao_plen"] = sessao.num_sessao_plen
-        inf_basicas_dic["nom_sessao"] = tipo_sessao.nom_sessao.upper()
+        inf_basicas_dic["nom_sessao"] = tipo_sessao.nom_sessao.decode('utf-8').upper()
         inf_basicas_dic["num_legislatura"] = sessao.num_legislatura
         inf_basicas_dic["num_sessao_leg"] = sessao.num_sessao_leg
         inf_basicas_dic["dat_inicio_sessao"] = sessao.dat_inicio_sessao
-        inf_basicas_dic["dia_sessao"] = context.pysc.data_converter_por_extenso_pysc(data=sessao.dat_inicio_sessao).upper()
+        inf_basicas_dic["dia_sessao"] = context.pysc.data_converter_por_extenso_pysc(data=sessao.dat_inicio_sessao).decode('utf-8').upper()
         inf_basicas_dic["hr_inicio_sessao"] = sessao.hr_inicio_sessao
         inf_basicas_dic["dat_fim_sessao"] = sessao.dat_fim_sessao
         inf_basicas_dic["hr_fim_sessao"] = sessao.hr_fim_sessao
@@ -41,7 +41,7 @@ if context.REQUEST['data']!='':
                dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
                dic_materia_apresentada["txt_ementa"] = materia.txt_ementa
                dic_materia_apresentada["id_materia"] = materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
-               dic_materia_apresentada["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+materia.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+               dic_materia_apresentada["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+materia.cod_materia+'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
                dic_materia_apresentada["nom_autor"] = ""
                autores = context.zsql.autoria_obter_zsql(cod_materia=materia_apresentada.cod_materia)
                fields = autores.data_dictionary().keys()
@@ -59,7 +59,7 @@ if context.REQUEST['data']!='':
                    dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
                    dic_materia_apresentada["txt_ementa"] = emenda.txt_ementa
                    dic_materia_apresentada["id_materia"] = 'Emenda ' + emenda.des_tipo_emenda + ' nº ' + str(emenda.num_emenda) + " ao " + materia.sgl_tipo_materia + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
-                   dic_materia_apresentada["link_materia"] = '<link href="' + context.consultas.absolute_url() + '/materia/materia_mostrar_proc?cod_materia=' + materia.cod_materia+ '">' + 'EMENDA ' + emenda.des_tipo_emenda.upper() + ' Nº ' + str(emenda.num_emenda) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+                   dic_materia_apresentada["link_materia"] = '<link href="' + context.consultas.absolute_url() + '/materia/materia_mostrar_proc?cod_materia=' + materia.cod_materia+ '">' + 'EMENDA ' + emenda.des_tipo_emenda..decode('utf-8').decode('utf-8').upper() + ' Nº ' + str(emenda.num_emenda) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
                    dic_materia_apresentada["nom_autor"] = ""
                    autores = context.zsql.autoria_emenda_obter_zsql(cod_emenda=emenda.cod_emenda)
                    fields = autores.data_dictionary().keys()
@@ -94,7 +94,7 @@ if context.REQUEST['data']!='':
                dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
                dic_materia_apresentada["txt_ementa"] = materia.txt_assunto
                dic_materia_apresentada["id_materia"] = materia.des_tipo_documento+" "+str(materia.num_documento)+"/"+str(materia.ano_documento)
-               dic_materia_apresentada["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento='+materia.cod_documento+'">'+materia.des_tipo_documento.upper()+' Nº '+str(materia.num_documento)+'/'+str(materia.ano_documento)+'</link>'
+               dic_materia_apresentada["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento='+materia.cod_documento+'">'+materia.des_tipo_documento.decode('utf-8').upper()+' Nº '+str(materia.num_documento)+'/'+str(materia.ano_documento)+'</link>'
                dic_materia_apresentada["nom_autor"] = materia.txt_interessado
                lst_materia_apresentada.append(dic_materia_apresentada)
 
@@ -105,7 +105,7 @@ if context.REQUEST['data']!='':
             dic_mocoes = {}
             dic_mocoes["num_ordem"] = item.num_ordem
             dic_mocoes['txt_ementa'] = materia.txt_ementa
-            dic_mocoes["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+            dic_mocoes["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
             dic_mocoes["nom_autor"] = ""
             autores = context.zsql.autoria_obter_zsql(cod_materia=item.cod_materia)
             fields = autores.data_dictionary().keys()
@@ -137,7 +137,7 @@ if context.REQUEST['data']!='':
             dic_indicacoes = {}
             dic_indicacoes["num_ordem"] = item.num_ordem
             dic_indicacoes['txt_ementa'] = materia.txt_ementa
-            dic_indicacoes["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+            dic_indicacoes["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
             dic_indicacoes["nom_autor"] = ""
             autores = context.zsql.autoria_obter_zsql(cod_materia=item.cod_materia)
             fields = autores.data_dictionary().keys()
@@ -171,7 +171,7 @@ if context.REQUEST['data']!='':
             dic_requerimentos = {}
             dic_requerimentos["num_ordem"] = item.num_ordem
             dic_requerimentos['txt_ementa'] = materia.txt_ementa
-            dic_requerimentos["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+            dic_requerimentos["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
             dic_requerimentos["nom_autor"] = ""
             autores = context.zsql.autoria_obter_zsql(cod_materia=item.cod_materia)
             fields = autores.data_dictionary().keys()

@@ -69,7 +69,7 @@ for norma in context.zsql.norma_juridica_obter_zsql(tip_norma=tipo_norma, num_no
 
         dic={}
 
-        dic['titulo']= norma.des_tipo_norma.upper()+" N° "+str(norma.num_norma)+", DE "+str(norma.dat_norma)
+        dic['titulo']= norma.des_tipo_norma.decode('utf-8').upper()+" N° "+str(norma.num_norma)+", DE "+str(norma.dat_norma)
         dic['txt_ementa']=norma.txt_ementa 
 
         dic['materia_vinculada']=" "

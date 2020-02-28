@@ -15,10 +15,10 @@ if context.REQUEST['cod_sessao_plen']!='':
     for sp in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
         dicsp = {}
         ts = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sp.tip_sessao)[0]
-        dicsp["sessao"] = str(sp.num_sessao_plen)+"ª SESSÃO "+ts.nom_sessao.upper()+" DA "+str(sp.num_legislatura)+"ª LEGISLATURA"
+        dicsp["sessao"] = str(sp.num_sessao_plen)+"ª SESSÃO "+ts.nom_sessao.decode('utf-8').upper()+" DA "+str(sp.num_legislatura)+"ª LEGISLATURA"
         dia = context.pysc.data_converter_por_extenso_pysc(data=sp.dat_inicio_sessao)
         hora = context.pysc.hora_formatar_pysc(hora=sp.hr_inicio_sessao)
-        dicsp["datasessao"] = str(dia).upper()
+        dicsp["datasessao"] = str(dia).decode('utf-8').upper()
         splen.append(dicsp) 
         # seleciona as matérias que compõem a pauta na data escolhida
     for ordem in context.zsql.ordem_dia_obter_zsql(dat_ordem=data, cod_sessao_plen=cod_sessao_plen, ind_excluido=0):
@@ -27,8 +27,8 @@ if context.REQUEST['cod_sessao_plen']!='':
         dic = {} 
         dic["num_ordem"] = ordem.num_ordem
         dic["cod_materia"] = ordem.cod_materia
-        dic["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+ordem.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
-        dic["id_materia"] = materia.des_tipo_materia.upper()+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica) 
+        dic["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+ordem.cod_materia+'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+        dic["id_materia"] = materia.des_tipo_materia.decode('utf-8').upper()+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica) 
         dic["txt_ementa"] = ordem.txt_observacao
         dic["des_numeracao"]=""
         numeracao = context.zsql.numeracao_obter_zsql(cod_materia=ordem.cod_materia)

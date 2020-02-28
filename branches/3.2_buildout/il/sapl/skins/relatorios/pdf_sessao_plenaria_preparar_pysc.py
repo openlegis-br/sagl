@@ -16,7 +16,7 @@ if context.REQUEST['data']!='':
         # seleciona o tipo da sessao plenaria
         tipo_sessao = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao,ind_excluido=0)[0]
         inf_basicas_dic["num_sessao_plen"] = sessao.num_sessao_plen
-        inf_basicas_dic["nom_sessao"] = tipo_sessao.nom_sessao.upper()
+        inf_basicas_dic["nom_sessao"] = tipo_sessao.nom_sessao.decode('utf-8').upper()
         inf_basicas_dic["num_legislatura"] = sessao.num_legislatura
         inf_basicas_dic["num_sessao_leg"] = sessao.num_sessao_leg
         inf_basicas_dic["dat_inicio_sessao"] = sessao.dat_inicio_sessao
