@@ -59,7 +59,7 @@ if context.REQUEST['data']!='':
                    dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
                    dic_materia_apresentada["txt_ementa"] = emenda.txt_ementa
                    dic_materia_apresentada["id_materia"] = 'Emenda ' + emenda.des_tipo_emenda + ' nº ' + str(emenda.num_emenda) + " ao " + materia.sgl_tipo_materia + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
-                   dic_materia_apresentada["link_materia"] = '<link href="' + context.consultas.absolute_url() + '/materia/materia_mostrar_proc?cod_materia=' + materia.cod_materia+ '">' + 'EMENDA ' + emenda.des_tipo_emenda..decode('utf-8').decode('utf-8').upper() + ' Nº ' + str(emenda.num_emenda) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+                   dic_materia_apresentada["link_materia"] = '<link href="' + context.consultas.absolute_url() + '/materia/materia_mostrar_proc?cod_materia=' + materia.cod_materia+ '">' + 'EMENDA ' + emenda.des_tipo_emenda.decode('utf-8').decode('utf-8').upper() + ' Nº ' + str(emenda.num_emenda) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
                    dic_materia_apresentada["nom_autor"] = ""
                    autores = context.zsql.autoria_emenda_obter_zsql(cod_emenda=emenda.cod_emenda)
                    fields = autores.data_dictionary().keys()

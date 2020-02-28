@@ -905,7 +905,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
           num_documento = documento.num_documento
           nom_autor = documento.txt_interessado
           for tipo_documento in self.zsql.tipo_documento_administrativo_obter_zsql(tip_documento=documento.tip_documento):
-            texto = str(tipo_documento.des_tipo_documento.upper())+' Nº '+ str(documento.num_documento)+'/'+str(documento.ano_documento)
+            texto = str(tipo_documento.des_tipo_documento.decode('utf-8').upper())+' Nº '+ str(documento.num_documento)+'/'+str(documento.ano_documento)
             nom_pdf_amigavel = str(tipo_documento.sgl_tipo_documento)+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+".pdf"
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por '+nom_autor+'.'
         mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/consultas/documento_validar?codigo='+str(string)
@@ -1442,14 +1442,14 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
           for tipo_proposicao in self.zsql.tipo_proposicao_obter_zsql(tip_proposicao=proposicao.tip_proposicao):
             if tipo_proposicao.ind_mat_ou_doc == "M":
               for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
-                texto = str(materia.des_tipo_materia.upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+                texto = str(materia.des_tipo_materia.decode('utf-8').upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
                 storage_path = self.sapl_documentos.materia
                 nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
             elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao!='Emenda' and tipo_proposicao.des_tipo_proposicao!='Mensagem Aditiva' and tipo_proposicao.des_tipo_proposicao!='Substitutivo'):
               for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=proposicao.cod_mat_ou_doc):
                 for materia in self.zsql.materia_obter_zsql(cod_materia=documento.cod_materia):
                     materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-                texto = str(documento.des_tipo_documento.upper())+'- '+ str(documento.nom_documento) + ' - ' + str(materia)
+                texto = str(documento.des_tipo_documento.decode('utf-8').upper())+'- '+ str(documento.nom_documento) + ' - ' + str(materia)
                 storage_path = self.sapl_documentos.materia
                 nom_pdf_saida = str(documento.cod_documento) + ".pdf"
             elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao=='Emenda' or tipo_proposicao.des_tipo_proposicao=='Mensagem Aditiva'):
@@ -1847,14 +1847,14 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               for metodo in self.zsql.materia_obter_zsql(cod_materia=codigo):
                   num_documento = metodo.num_ident_basica
                   if tipo_doc == 'materia':
-                     texto = str(metodo.des_tipo_materia.upper())+' Nº '+ str(metodo.num_ident_basica) + '/' + str(metodo.ano_ident_basica)
+                     texto = str(metodo.des_tipo_materia.decode('utf-8').upper())+' Nº '+ str(metodo.num_ident_basica) + '/' + str(metodo.ano_ident_basica)
                   elif tipo_doc == 'redacao_final':
                      texto = 'REDAÇÃO FINAL - ' + str(metodo.sgl_tipo_materia)+' Nº '+ str(metodo.num_ident_basica) + '/' + str(metodo.ano_ident_basica)
            elif tipo_doc == 'doc_acessorio':
               for metodo in self.zsql.documento_acessorio_obter_zsql(cod_documento=codigo):
                   for materia in self.zsql.materia_obter_zsql(cod_materia=metodo.cod_materia):
                       materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-              texto = str(metodo.des_tipo_documento.upper())+'- '+ str(metodo.nom_documento) + ' - ' + str(materia)
+              texto = str(metodo.des_tipo_documento.decode('utf-8').upper())+'- '+ str(metodo.nom_documento) + ' - ' + str(materia)
         elif tipo_doc == 'emenda':
            storage_path = self.sapl_documentos.emenda
            for metodo in self.zsql.emenda_obter_zsql(cod_emenda=codigp):
@@ -1893,13 +1893,13 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif tipo_doc == 'norma':
            storage_path = self.sapl_documentos.norma_juridica
            for metodo in self.zsql.norma_juridica_obter_zsql(cod_norma=codigo):
-               texto = str(metodo.des_tipo_norma.upper())+' Nº '+ str(metodo.num_norma) + '/' + str(metodo.ano_norma)
+               texto = str(metodo.des_tipo_norma.decode('utf-8').upper())+' Nº '+ str(metodo.num_norma) + '/' + str(metodo.ano_norma)
         elif tipo_doc == 'documento' or tipo_doc == 'doc_acessorio_adm':
            storage_path = self.sapl_documentos.administrativo
            if tipo_doc == 'documento':
               for metodo in self.zsql.documento_administrativo_obter_zsql(cod_documento=codigo):
                   num_documento = metodo.num_documento
-              texto = str(metodo.des_tipo_documento.upper())+' Nº '+ str(metodo.num_documento)+ '/' +str(metodo.ano_documento)
+              texto = str(metodo.des_tipo_documento.decode('utf-8').upper())+' Nº '+ str(metodo.num_documento)+ '/' +str(metodo.ano_documento)
            elif tipo_doc == 'doc_acessorio_adm':
               for metodo in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=codigo):
                   for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=metodo.cod_documento):
@@ -1913,7 +1913,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif tipo_doc == 'proposicao':
            storage_path = self.sapl_documentos.proposicao
            for metodo in self.zsql.proposicao_obter_zsql(cod_proposicao=codigo):
-               texto = str(metodo.des_tipo_proposicao.upper())+' Nº '+ str(metodo.cod_proposicao)
+               texto = str(metodo.des_tipo_proposicao.decode('utf-8').upper())+' Nº '+ str(metodo.cod_proposicao)
         elif tipo_doc == 'protocolo':
            storage_path = self.sapl_documentos.protocolo
            for metodo in self.zsql.protocolo_obter_zsql(cod_protocolo=codigo):
