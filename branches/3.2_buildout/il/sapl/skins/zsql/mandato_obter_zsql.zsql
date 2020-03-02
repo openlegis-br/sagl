@@ -2,7 +2,7 @@
 connection_id : dbcon_interlegis
 max_rows : 1000
 max_cache : 100
-arguments : cod_mandato="" num_legislatura="" cod_parlamentar="" nom_parlamentar="" ind_titular="" ind_excluido=0
+arguments : cod_mandato="" num_legislatura="" cod_parlamentar="" nom_parlamentar="" data_atual="" ind_titular="" ind_excluido=0
 </dtml-comment>
 SELECT REPLACE(mandato.cod_mandato,               'L', '') as cod_mandato,
        mandato.num_legislatura,
@@ -40,5 +40,8 @@ WHERE
   <dtml-if expr="ind_titular and ind_titular!=''">
     and mandato.ind_titular = <dtml-sqlvar ind_titular type="int">
   </dtml-if> 
+  <dtml-if expr="data_atual and data_atual!=''">
+    and (DATE(<dtml-var data_atual>) BETWEEN DATE(legislatura.dat_inicio) AND DATE(legislatura.dat_fim))
+  </dtml-if>
 
 ORDER BY mandato.num_legislatura desc, mandato.dat_inicio_mandato desc, mandato.cod_mandato asc, mandato.cod_parlamentar asc
