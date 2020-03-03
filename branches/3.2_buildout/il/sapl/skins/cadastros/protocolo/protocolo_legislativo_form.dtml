@@ -41,7 +41,7 @@ function campos_criticar(){
   }
 
   var tip_natureza = document.getElementById('lst_tip_natureza').value;
-  if (tip_natureza=='2' || tip_natureza=='3') {
+  if (tip_natureza=='2' || tip_natureza=='3' || tip_natureza=='4') {
       if ((form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value == "") ||
          (form.txt_num_ident_basica.value == "") || (form.txt_ano_ident_basica.value == ""))  {
           alert("Devem ser informados tipo, número e ano da Matéria Legislativa à qual este protocolo será vinculado!");
@@ -154,7 +154,7 @@ $(document).ready(function() {
               <dtml-unless tip_natureza>
                  <dtml-call expr="REQUEST.set('tip_natureza', '1')">
              </dtml-unless>
-              <dtml-in expr="[('Principal', '1'), ('Acessória', '2'), ('Documento Acessório', '3')]">
+              <dtml-in expr="[('Principal', '1'), ('Acessória', '2'), ('Documento Acessório', '3'), ('Parecer de Comissão', '4')]">
                <option <dtml-if expr="REQUEST.has_key('tip_natureza') and int(_['sequence-item'])==_.int(REQUEST['tip_natureza'])">
                       selected </dtml-if>
                       value="<dtml-var expr="int(_['sequence-item'])">">
@@ -189,8 +189,8 @@ $(document).ready(function() {
                    <dtml-var des_tipo_materia>
                  </option>
                <dtml-else>
-                  <option value="98">Emenda</option>
-                  <option value="99">Substitutivo</option>
+                  <option value="97">Emenda</option>
+                  <option value="98">Substitutivo</option>
                </dtml-in>
              <dtml-elif expr="tip_natureza=='3'">
                <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0)">
@@ -204,7 +204,9 @@ $(document).ready(function() {
                    <dtml-var des_tipo_documento>
                  </option>
                </dtml-in>
-            </dtml-if>
+             <dtml-elif expr="tip_natureza=='4'">
+                  <option value="99" selected>Parecer</option>
+             </dtml-if>
         </select>
       </td>
     </tr>
@@ -216,6 +218,10 @@ $(document).ready(function() {
       <tr> 
         <td width="50%"><label for="lst_tip_autor">Tipo de Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
               <select name="lst_tip_autor" size="1" onChange="tipo_autor_mudou(document.protocolo_legislativo_form)" style="max-width: 240px; width: 100%;">
+             <dtml-if expr="tip_natureza and tip_natureza=='4'">
+               <dtml-call expr="REQUEST.set('tip_autor', 2)">
+               <dtml-call expr="REQUEST.set('des_tipo_autor', 'Comissao')">
+             </dtml-if>
               <dtml-unless tip_autor>
                <option value="0"></option>
              </dtml-unless>
@@ -276,7 +282,7 @@ $(document).ready(function() {
              </td>
            </tr>
            <tr>
-             <td><label for="file_nom_arquivo">Matéria Digitalizada (PDF)</label><br />
+             <td><label for="file_nom_arquivo">Arquivo Digitalizado (PDF)</label><br />
                  <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="20" maxlength="100" />
              </td>
            <td>
@@ -284,7 +290,7 @@ $(document).ready(function() {
                 <input type="text" id="txt_num_paginas" name="txt_num_paginas" size="6 maxlength="3" value="<dtml-var num_dias_prazo missing null="">"/>
            </td> 
            </tr>
-  <dtml-if expr="tip_natureza=='2' or tip_natureza=='3'"> 
+  <dtml-if expr="tip_natureza=='2' or tip_natureza=='3' or tip_natureza=='4'"> 
    <tr>
       <td>
          <label for="lst_tip_id_basica">Matéria a Vincular </label> <span class="campoObrigatorio">&nbsp;</span> <br />

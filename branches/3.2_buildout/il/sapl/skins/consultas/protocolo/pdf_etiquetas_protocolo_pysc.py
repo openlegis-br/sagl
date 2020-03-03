@@ -84,6 +84,15 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
              for documento in context.zsql.documento_acessorio_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
                des_tipo_materia = documento.des_tipo_documento
                dic['num_materia'] = documento.des_tipo_documento + str(materia_principal)
+        elif protocolo.tip_natureza_materia == 4:
+             for materia in context.zsql.materia_obter_zsql(cod_materia=protocolo.cod_materia_principal):
+               materia_principal = ' - ' + materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+             for autor in context.zsql.autor_obter_zsql(cod_autor=protocolo.cod_autor):
+                 for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
+                     sgl_comissao = comissao.sgl_comissao
+             for parecer in context.zsql.relatoria_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
+               des_tipo_materia = 'Parecer ' + sgl_comissao
+               dic['num_materia'] = des_tipo_materia + ' nº ' + str(parecer.num_parecer)+'/'+str(parecer.ano_parecer) + str(materia_principal)
 
         dic['num_documento']=''
         for documento in context.zsql.documento_administrativo_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_documento=protocolo.ano_protocolo):
