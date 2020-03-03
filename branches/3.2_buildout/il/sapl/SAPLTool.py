@@ -1919,7 +1919,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            for metodo in self.zsql.protocolo_obter_zsql(cod_protocolo=codigo):
                texto = 'PROTOCOLO Nº '+ str(metodo.num_protocolo)+'/'+ str(metodo.ano_protocolo)
         elif tipo_doc == 'peticao':
-           storage_path = self.temp_folder
+           storage_path = self.sapl_documentos.administrativo
            texto = 'PETIÇÃO ELETRÔNICA'
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros + '.'
