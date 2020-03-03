@@ -1918,6 +1918,9 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            storage_path = self.sapl_documentos.protocolo
            for metodo in self.zsql.protocolo_obter_zsql(cod_protocolo=codigo):
                texto = 'PROTOCOLO Nº '+ str(metodo.num_protocolo)+'/'+ str(metodo.ano_protocolo)
+        elif tipo_doc == 'peticao':
+           storage_path = self.temp_folder
+           texto = 'PETIÇÃO ELETRÔNICA'
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros + '.'
         mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ string
