@@ -1620,7 +1620,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signature_starter.set_pdf_path(pdf_path)
         signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
         signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
-        if tipo_doc == 'documento' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm' or tipo_doc == 'norma':
+        if tipo_doc == 'peticao' or tipo_doc == 'documento' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm' or tipo_doc == 'norma':
            signature_starter.visual_representation = ({
                'text': {
                    # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
