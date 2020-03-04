@@ -51,19 +51,20 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
     if REQUEST.form['hdn_codigo']:
        hdn_codigo =  REQUEST.form['hdn_codigo']
        peticao = str(hdn_codigo)+'.pdf'
-       peticao_signed = str(hdn_codigo)+'_signed.pdf'
 
-       if hasattr(context.sapl_documentos.administrativo,peticao_signed):
-          tmp_copy = context.sapl_documentos.administrativo.manage_copyObjects(ids=peticao_signed)
-          tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
-          context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
-          context.sapl_documentos.administrativo.manage_delObjects(ids=peticao_signed)
-
-       elif hasattr(context.sapl_documentos.administrativo,peticao):
-          tmp_copy = context.sapl_documentos.administrativo.manage_copyObjects(ids=peticao)
-          tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
-          context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
-          context.sapl_documentos.administrativo.manage_delObjects(ids=peticao)
+       for item in context.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao',codigo=hdn_codigo):
+           peticao_signed = str(item.cod_assinatura_doc)+'.pdf'
+           if hasattr(context.sapl_documentos.documentos_assinados,peticao_signed):
+              tmp_copy = context.sapl_documentos.documentos_assinados.manage_copyObjects(ids=peticao_signed)
+              tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
+              context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
+              context.temp_folder.manage_delObjects(ids=peticao)
+       else:
+           if hasattr(context.temp_folder,peticao):
+              tmp_copy = context.temp_folder.manage_copyObjects(ids=peticao)
+              tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
+              context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
+              context.temp_folder.manage_delObjects(ids=peticao)
 
     return tramitar_documento(cod_documento)
 

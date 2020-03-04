@@ -143,10 +143,15 @@ closeEffect : 'fade'
 		<tr>
                 <input type="hidden" name="hdn_codigo" value="<dtml-var codigo missing>" />
      </form>
-                         <td>
-                        <dtml-if expr="_.has_key('codigo') and _.hasattr(sapl_documentos.administrativo,codigo+'.pdf')">
+                        <td>
+                        <dtml-if codigo>
+                          <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao',codigo=codigo)">
+                            <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+                          </dtml-in>
+                        </dtml-if>
+                        <dtml-if expr="_.has_key('codigo') and _.hasattr(temp_folder,codigo+'.pdf')">
                           <b>Arquivo PDF:</b>
-                          <a href="<dtml-var portal_url>/sapl_documentos/administrativo/<dtml-var filename>" target="_blank">
+                          <a href="<dtml-var portal_url>/temp_folder/<dtml-var filename>" target="_blank">
                              <dtml-var filename>
                           </a>
                           <dtml-if "sapl_documentos.props_sapl.restpki_access_token!=''">
@@ -167,10 +172,10 @@ closeEffect : 'fade'
 			           });
 			         </script>
                           <input type="button" class="botao" id="excluir" name="excluir" value="Excluir"  onClick="arquivo_excluir(<dtml-var codigo>)"/>
-                        <dtml-elif expr="_.has_key('codigo') and _.hasattr(sapl_documentos.administrativo,codigo+'_signed.pdf')">
+                        <dtml-elif expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados,cod_assinatura_doc+'.pdf')">
                           <b>Arquivo PDF:</b>
-                          <a href="<dtml-var portal_url>/sapl_documentos/administrativo/<dtml-var codigo>_signed.pdf" target="_blank">
-                             <dtml-var codigo>_signed.pdf
+                          <a href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf" target="_blank">
+                             <dtml-var cod_assinatura_doc>.pdf
                           </a>
                           <input type="button" class="botao" id="excluir" name="excluir" value="Excluir"  onClick="arquivo_excluir(<dtml-var codigo>)"/>
                           </dtml-if>

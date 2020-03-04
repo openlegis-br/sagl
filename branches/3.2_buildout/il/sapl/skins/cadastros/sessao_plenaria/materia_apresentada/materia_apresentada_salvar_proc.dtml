@@ -93,6 +93,34 @@
               <dtml-var mensagem_popup_emitir>
            </dtml-let>
      </dtml-try>
+  <dtml-elif cod_parecer>
+     <dtml-try>
+        <dtml-call expr="metodo(cod_ordem = cod_ordem,
+                                cod_sessao_plen = cod_sessao_plen,
+                                cod_parecer = cod_parecer,
+                                dat_ordem = pysc.data_converter_pysc(data = txt_dat_ordem),
+                                num_ordem = txt_num_ordem,
+                                txt_observacao = txa_txt_observacao)">
+     <dtml-except>
+           <dtml-let mensagem="'Não foi possível incluir o Parecer de Comissão. Tente novamente.'">
+             <dtml-var REQUEST>
+           </dtml-let>
+     <dtml-else>
+           <dtml-if hdn_cod_ordem>
+               <dtml-in expr="zsql.materia_apresentada_sessao_obter_zsql(cod_ordem = hdn_cod_ordem)">
+                   <dtml-call expr="REQUEST.set('dat_ordem', dat_ordem)">
+               </dtml-in>
+           <dtml-else>
+               <dtml-in expr="zsql.materia_apresentada_sessao_obter_zsql(cod_parecer = cod_parecer,
+                                         cod_sessao_plen = cod_sessao_plen,
+                                         ind_excluido=0)">
+                   <dtml-call expr="REQUEST.set('dat_ordem', dat_ordem)">
+                </dtml-in>
+           </dtml-if>          
+           <dtml-let mensagem="'Parecer de Comissão incluído com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close();'">
+              <dtml-var mensagem_popup_emitir>
+           </dtml-let>
+     </dtml-try>
   <dtml-elif cod_doc_acessorio>
      <dtml-try>
         <dtml-call expr="metodo(cod_ordem = cod_ordem,
