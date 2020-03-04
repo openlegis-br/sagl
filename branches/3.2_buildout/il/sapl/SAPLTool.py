@@ -372,7 +372,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
         id_logo = portal.sapl_documentos.props_sapl.id_logo
-        url = self.url() + '/sapl_documentos/props_sapl/logo_casa.gif'
+        if hasattr(self.sapl_documentos.props_sapl, id_logo):
+           url = self.url() + '/sapl_documentos/props_sapl/' + id_logo
+        else:
+           url = self.url() + '/imagens/brasao.gif'
         opener = urllib.urlopen(url)
         open('/tmp/' + id_logo, 'wb').write(opener.read())
         brasao = open('/tmp/' + id_logo, 'rb')
@@ -1603,7 +1606,10 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         # Read the PDF stamp image
         id_logo = portal.sapl_documentos.props_sapl.id_logo
-        url = self.url() + '/sapl_documentos/props_sapl/logo_casa.gif'
+        if hasattr(self.sapl_documentos.props_sapl, id_logo):
+           url = self.url() + '/sapl_documentos/props_sapl/' + id_logo
+        else:
+           url = self.url() + '/imagens/brasao.gif'
         opener = urllib.urlopen(url)
         open('/tmp/' + id_logo, 'wb').write(opener.read())
         f = open('/tmp/' + id_logo, 'rb')
@@ -1919,7 +1925,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            for metodo in self.zsql.protocolo_obter_zsql(cod_protocolo=codigo):
                texto = 'PROTOCOLO Nº '+ str(metodo.num_protocolo)+'/'+ str(metodo.ano_protocolo)
         elif tipo_doc == 'peticao':
-           storage_path = self.sapl_documentos.administrativo
+           storage_path = self.temp_folder
            texto = 'PETIÇÃO ELETRÔNICA'
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros + '.'

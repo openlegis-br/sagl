@@ -143,51 +143,50 @@ closeEffect : 'fade'
 		<tr>
                 <input type="hidden" name="hdn_codigo" value="<dtml-var codigo missing>" />
      </form>
-                        <td>
-                        <dtml-if codigo>
-                          <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao',codigo=codigo)">
-                            <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
-                          </dtml-in>
-                        </dtml-if>
-                        <dtml-if expr="_.has_key('codigo') and _.hasattr(temp_folder,codigo+'.pdf')">
-                          <b>Arquivo PDF:</b>
-                          <a href="<dtml-var portal_url>/temp_folder/<dtml-var filename>" target="_blank">
-                             <dtml-var filename>
+                   <td>
+                     <dtml-if codigo>
+                       <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao',codigo=codigo)">
+                         <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+                       </dtml-in>
+                     </dtml-if>
+                     <dtml-if expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados,cod_assinatura_doc+'.pdf')">
+                          <b>Arquivo PDF Assinado:</b>
+                          <a href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf" target="_blank">
+                             <dtml-var cod_assinatura_doc>.pdf
                           </a>
-                          <dtml-if "sapl_documentos.props_sapl.restpki_access_token!=''">
-                            <input id="solicitar-assinatura" type="button" class="botao" value="Assinar" />
-			         <script type="text/javascript">
-			           $('#solicitar-assinatura').click(function () {
-    			           $.fancybox({
-        			   type: 'iframe',
+                          <input type="button" class="botao" id="excluir" name="excluir" value="Excluir"  onClick="arquivo_excluir(<dtml-var codigo>)"/>
+                     <dtml-elif expr="_.has_key('codigo') and _.hasattr(temp_folder,codigo+'.pdf')">
+                        <b>Arquivo PDF:</b>
+                        <a href="<dtml-var portal_url>/temp_folder/<dtml-var filename>" target="_blank">
+                           <dtml-var filename>
+                        </a>
+                        <dtml-if "sapl_documentos.props_sapl.restpki_access_token!=''">
+                          <input id="solicitar-assinatura" type="button" class="botao" value="Assinar" />
+			       <script type="text/javascript">
+			         $('#solicitar-assinatura').click(function () {
+    			         $.fancybox({
+        		           type: 'iframe',
         			   href: '&dtml-portal_url;/generico/assinador/pades-signature_html?codigo=<dtml-var codigo>&tipo_doc=peticao',
 				   width	   : '70%',
 				   height	   : '50%',
                                    minHeight	   : 320,
         			   preload         : true,
                                    afterClose      : function() {
-                                     window.location.href = "peticionamento_eletronico_form?codigo=<dtml-var codigo>&hdn_lst_assunto=<dtml-var hdn_lst_assunto missing>&txa_txt_assunto=<dtml-var txa_txt_assunto missing>&filename=<dtml-var filename>";},
+                                   window.location.href = "peticionamento_eletronico_form?codigo=<dtml-var codigo>&hdn_lst_assunto=<dtml-var hdn_lst_assunto missing>&txa_txt_assunto=<dtml-var txa_txt_assunto missing>&filename=<dtml-var filename>";},
 		                   closeEffect	: 'fade'
     			           });
-			           });
-			         </script>
-                          </dtml-if>
-                          <input type="button" class="botao" id="excluir" name="excluir" value="Excluir"  onClick="arquivo_excluir(<dtml-var codigo>)"/>
-                        <dtml-elif expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados,cod_assinatura_doc+'.pdf')">
-                          <b>Arquivo PDF:</b>
-                          <a href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf" target="_blank">
-                             <dtml-var cod_assinatura_doc>.pdf
-                          </a>
-                          <input type="button" class="botao" id="excluir" name="excluir" value="Excluir"  onClick="arquivo_excluir(<dtml-var codigo>)"/>
-                          </dtml-if>
-                        <dtml-else>
+			          });
+			       </script>
+                        </dtml-if>
+                        <input type="button" class="botao" id="excluir" name="excluir" value="Excluir"  onClick="arquivo_excluir(<dtml-var codigo>)"/>
+                     <dtml-else>
                                <form action="upload" id="arquivo_form" name="arquivo_form" method="post" enctype="multipart/form-data">
 				 <label for="anexo">Arquivo PDF</label><br />
 				 <input type="file" id="anexo" name="anexo" accept="application/pdf" />                                <input type="button" class="botao" id="upload" name="upload" value="Carregar"  onClick="arquivo_carregar()"/>
                                  <input type="hidden" name="hdn_lst_assunto" value="" />
                                  <input type="hidden" name="hdn_txt_assunto" value="" />
                                <form>
-                       </dtml-if>
+                     </dtml-if>
 			 </td>
 		</tr>
 	</table>
