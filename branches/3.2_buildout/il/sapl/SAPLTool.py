@@ -1725,8 +1725,6 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         signature_finisher.write_signed_pdf(os.path.join(tmp_path, filename))
 
-        signature_finisher.write_signed_pdf(filename)
-
         data = open('/tmp/' + filename, "rb").read()
 
         for file in [filename]:
@@ -1925,7 +1923,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            for metodo in self.zsql.protocolo_obter_zsql(cod_protocolo=codigo):
                texto = 'PROTOCOLO Nº '+ str(metodo.num_protocolo)+'/'+ str(metodo.ano_protocolo)
         elif tipo_doc == 'peticao':
-           storage_path = self.temp_folder
+           storage_path = self.sapl_documentos.administrativo
            texto = 'PETIÇÃO ELETRÔNICA'
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros + '.'
