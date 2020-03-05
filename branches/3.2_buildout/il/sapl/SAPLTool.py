@@ -1464,9 +1464,9 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 nom_pdf_saida = str(emenda.cod_emenda) + "_emenda.pdf"
             elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao=='Substitutivo'):
               for substitutivo in self.zsql.substitutivo_obter_zsql(cod_substitutivo=proposicao.cod_substitutivo):
-                for materia in self.zsql.materia_obter_zsql(cod_materia=substitivo.cod_materia):
+                for materia in self.zsql.materia_obter_zsql(cod_materia=substitutivo.cod_materia):
                     materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-                texto = 'SUBSTITUTIVO' + ' Nº '+ str(substitutivo.num_substitivo) + ' - ' + str(materia)
+                texto = 'SUBSTITUTIVO' + ' Nº '+ str(substitutivo.num_substitutivo) + ' - ' + str(materia)
                 storage_path = self.sapl_documentos.substitutivo
                 nom_pdf_saida = str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
 
@@ -1870,7 +1870,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
            for metodo in self.zsql.substitutivo_obter_zsql(cod_substitutivo=codigo):
                for materia in self.zsql.materia_obter_zsql(cod_materia=metodo.cod_materia):
                    materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-               texto = 'SUBSTITUTIVO Nº '+ str(metodo.num_substitivo) + ' - ' + str(materia)
+               texto = 'SUBSTITUTIVO Nº '+ str(metodo.num_substitutivo) + ' - ' + str(materia)
         elif tipo_doc == 'tramitacao':
            storage_path = self.sapl_documentos.materia.tramitacao
            for metodo in self.zsql.tramitacao_obter_zsql(cod_tramitacao=codigo):
