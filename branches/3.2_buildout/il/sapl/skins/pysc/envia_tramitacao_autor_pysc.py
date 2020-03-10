@@ -38,6 +38,9 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
    lista_autor.append(nome_autor)
  nom_autor = ', '.join(['%s' % (value) for (value) in lista_autor])
 
+ data = ''
+ status = ''
+ texto_acao = ''
  for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1):
    data = tramitacao.dat_tramitacao
    status = tramitacao.des_status

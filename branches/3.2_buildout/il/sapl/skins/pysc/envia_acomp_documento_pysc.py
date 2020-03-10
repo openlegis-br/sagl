@@ -27,6 +27,9 @@ for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=
  proc_adm = documento.des_tipo_documento+" nº "+str(documento.num_documento)+"/"+str(documento.ano_documento)
  nom_autor = documento.txt_interessado
 
+ end_email = ''
+ txt_nome = ''
+ texto_acao = ''
  for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento, ind_ult_tramitacao=1, ind_excluido=0):
    data = tramitacao.dat_encaminha
    status = tramitacao.des_status
@@ -37,17 +40,15 @@ for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=
    unidade_local = ""
    for unid_local in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tramitacao.cod_unid_tram_local):
        unidade_local = unid_local.nom_unidade_join
-   end_email = ''
-   txt_nome = ''
    if tramitacao.cod_usuario_dest != None:
       for usuario_destino in context.zsql.usuario_obter_zsql(cod_usuario=tramitacao.cod_usuario_dest):
-          if usuario_destino.end_email != None:
+          if usuario_destino.end_email != None and unid_destino.end_email_join != '':
              end_email=usuario_destino.end_email
              txt_nome=usuario_destino.nom_completo
    else:
       for unid_destino in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tramitacao.cod_unid_tram_dest):
           unidade_destino = unid_destino.nom_unidade_join
-          if unid_destino.end_email_join != None:
+          if unid_destino.end_email_join != None and unid_destino.end_email_join != '':
              end_email=unid_destino.end_email_join
              txt_nome=unidade_destino
 
