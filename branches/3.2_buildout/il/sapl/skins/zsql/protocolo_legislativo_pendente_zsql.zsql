@@ -16,7 +16,9 @@ SELECT
  cod_autor,
  txt_user_protocolo
 FROM 
- protocolo WHERE cod_protocolo NOT IN (
+ protocolo 
+WHERE 
+   cod_protocolo NOT IN (
    SELECT
      p.cod_protocolo
    FROM
@@ -30,10 +32,60 @@ FROM
    ORDER BY
      p.cod_protocolo
    )
+   AND cod_protocolo NOT IN (
+   SELECT
+     p.cod_protocolo
+   FROM
+     protocolo p,
+     emenda e
+   WHERE
+     p.tip_processo = 1
+     AND p.num_protocolo = e.num_protocolo
+     AND p.ano_protocolo = YEAR(NOW())
+   ORDER BY
+     p.cod_protocolo
+   )
+   AND cod_protocolo NOT IN (
+   SELECT
+     p.cod_protocolo
+   FROM
+     protocolo p,
+     substitutivo s
+   WHERE
+     p.tip_processo = 1
+     AND p.num_protocolo = s.num_protocolo
+     AND p.ano_protocolo = YEAR(NOW())
+   ORDER BY
+     p.cod_protocolo
+   )
+   AND cod_protocolo NOT IN (
+   SELECT
+     p.cod_protocolo
+   FROM
+     protocolo p,
+     documento_acessorio d
+   WHERE
+     p.tip_processo = 1
+     AND p.num_protocolo = d.num_protocolo
+     AND p.ano_protocolo = YEAR(NOW())
+   ORDER BY
+     p.cod_protocolo
+   )
+   AND cod_protocolo NOT IN (
+   SELECT
+     p.cod_protocolo
+   FROM
+     protocolo p,
+     relatoria r
+   WHERE
+     p.tip_processo = 1
+     AND p.num_protocolo = r.num_protocolo
+     AND p.ano_protocolo = YEAR(NOW())
+   ORDER BY
+     p.cod_protocolo
+   )
 AND 
  tip_processo = 1
- AND tip_materia != 9
- AND tip_materia != 10
  AND ano_protocolo = YEAR(NOW())
  AND ind_anulado = 0
 ORDER BY
