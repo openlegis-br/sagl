@@ -106,7 +106,7 @@ if context.REQUEST['data']!='':
                dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
                dic_materia_apresentada["txt_ementa"] = materia.txt_assunto
                dic_materia_apresentada["id_materia"] = materia.des_tipo_documento+" "+str(materia.num_documento)+"/"+str(materia.ano_documento)
-               dic_materia_apresentada["link_materia"] = '<link href="'+context.sapl_documentos.absolute_url()+'/administrativo'+ str(materia_apresentada.cod_documento) + '_texto_integral.pdf' +'">'+materia.des_tipo_documento.decode('utf-8').upper()+' Nº '+str(materia.num_documento)+'/'+str(materia.ano_documento)+'</link>'
+               dic_materia_apresentada["link_materia"] = '<link href="'+context.sapl_documentos.absolute_url()+'/administrativo/'+ str(materia_apresentada.cod_documento) + '_texto_integral.pdf' +'">'+materia.des_tipo_documento.decode('utf-8').upper()+' Nº '+str(materia.num_documento)+'/'+str(materia.ano_documento)+'</link>'
                dic_materia_apresentada["nom_autor"] = materia.txt_interessado
                lst_materia_apresentada.append(dic_materia_apresentada)
 
