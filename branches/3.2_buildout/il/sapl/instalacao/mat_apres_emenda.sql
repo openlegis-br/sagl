@@ -1,7 +1,3 @@
-ALTER TABLE `materia_apresentada_sessao` DROP INDEX `cod_materia_2`;
-
-ALTER TABLE `materia_apresentada_sessao` DROP INDEX `cod_materia`;
-
 ALTER TABLE `materia_apresentada_sessao` ADD `cod_emenda` INT(11) NULL AFTER `cod_materia`;
 
 ALTER TABLE `materia_apresentada_sessao` ADD INDEX(`cod_emenda`);

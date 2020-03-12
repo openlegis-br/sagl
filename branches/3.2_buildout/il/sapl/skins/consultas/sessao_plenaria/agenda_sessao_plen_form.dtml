@@ -304,18 +304,14 @@ $(document).ready(function() {
          <dtml-else>
           <tr class="even">
          </dtml-if>
-        <dtml-in expr="zsql.votacao_expediente_materia_obter_zsql(cod_ordem = cod_ordem, ind_excluido=0)"> 
             <td class="texto" valign="top">
               <b><dtml-var num_ordem></b> 
             </td>
+        <dtml-if cod_materia>
             <td class="texto" valign="top">
                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
                     <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
                         <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></a></b><br />
-               <dtml-if num_protocolo>
-                  <b>Protocolo:</b> <dtml-var num_protocolo>/<dtml-var ano_ident_basica>
-                  <br />
-               </dtml-if>
                 </dtml-in>
                 <dtml-comment>obtém a autoria da matéria.</dtml-comment>
                 <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
@@ -336,6 +332,7 @@ $(document).ready(function() {
                 </dtml-in>
             </td>
             <td class="texto" valign="top">
+             <dtml-in expr="zsql.votacao_expediente_materia_obter_zsql(cod_ordem = cod_ordem, ind_excluido=0)"> 
                <dtml-if tip_resultado_votacao>
                   <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
                      <dtml-if expr="tip_votacao==2 ">
@@ -348,9 +345,43 @@ $(document).ready(function() {
                <dtml-else>
                      <i>Matéria não votada</i>
                </dtml-if>
+             </dtml-in> 
             </td>
+        <dtml-elif cod_parecer>
+                <td class="texto" valign="top">
+                 <dtml-in expr="zsql.relatoria_obter_zsql(cod_relatoria=cod_parecer,ind_excluido=0)">
+                   <dtml-call "REQUEST.set('cod_materia_sel', cod_materia)">
+                   <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_sel)">
+                        <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
+                           <b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> ao <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b><br />
+                        </a>
+                      </dtml-in>
+                      <b>Autoria:</b> <dtml-var nom_comissao>
+                   </dtml-in>
+                 </dtml-in>
+                </td>
+               <td class="texto" valign="top">
+                  <dtml-var txt_observacao>
+               </td>
+               <td>
+                 <dtml-in expr="zsql.votacao_expediente_materia_obter_zsql(cod_parecer=cod_parecer,cod_ordem=cod_ordem, ind_excluido=0)"> 
+                   <dtml-if tip_resultado_votacao>
+                      <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                         <dtml-if expr="tip_votacao==2 ">
+                            <a href="sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_parecer=<dtml-var cod_parecer>&tipo_materia=expediente" class="popup" data-fancybox-type="iframe">
+                             <b><dtml-var nom_resultado></a></b><br />
+                         <dtml-else>
+                             <b><dtml-var nom_resultado></b><br />
+                         </dtml-if>
+                      </dtml-in>
+                   <dtml-else>
+                     <i>Matéria não votada</i>
+                   </dtml-if>
+                 </dtml-in> 
+               </td>
+        </dtml-if cod_materia>
         </tr>
-        </dtml-in> 
         </dtml-in>
     </table>
  </div>
@@ -492,16 +523,12 @@ $(document).ready(function() {
           <tr class="even">
          </dtml-if>
             <td class="texto" valign="top">
-              <b><dtml-var num_ordem></b> 
+              <div align="center"><b><dtml-var num_ordem></b></div>
             </td>   
             <td class="texto" valign="top">
  	  <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
 	    <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
                         <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a><br />
-               <dtml-if num_protocolo>
-                  <b>Protocolo:</b> <dtml-var num_protocolo>/<dtml-var ano_ident_basica>
-                  <br />
-               </dtml-if>
             <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">
                <dtml-if num_materia>
                   <b>Processo:</b> <dtml-var num_materia>/<dtml-var ano_materia>
@@ -550,9 +577,14 @@ $(document).ready(function() {
              </dtml-in> 
             </td>
         </tr>
+
    <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+        <dtml-if sequence-start>
+           <dtml-call "REQUEST.set('contador_sub', int(_['sequence-number']))">
+        </dtml-if>
         <tr class="<dtml-var class>">
-            <td valign="top" style="padding-left: 50px" colspan="2" class="texto">
+            <td><div align="center"><b><dtml-var num_ordem>.<dtml-var contador_sub></b></div></td>
+            <td valign="top" class="texto">
                    <b>Substitutivo <dtml-var num_substitutivo></b><br />
               <b>Autoria:</b> 
               <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
@@ -583,10 +615,18 @@ $(document).ready(function() {
             </td>
         </tr>
    </dtml-in>
-   <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+   <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, exc_pauta=0, ind_excluido=0)">
+
+           <dtml-if contador_sub>
+             <dtml-call "REQUEST.set('contador', int(contador_sub) + int(_['sequence-number']))">
+           <dtml-else>
+             <dtml-call "REQUEST.set('contador', int(_['sequence-number']))">
+           </dtml-if>
+
     <dtml-if expr="exc_pauta!=1">
         <tr class="<dtml-var class>">
-            <td valign="top" style="padding-left: 50px" colspan="2" class="texto">
+            <td><div align="center"><b><dtml-var num_ordem>.<dtml-var contador></b></div></td>
+            <td class="texto">
  <b>Emenda <dtml-var des_tipo_emenda> nº <dtml-var num_emenda></b><br />
               <b>Autoria:</b> 
               <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">

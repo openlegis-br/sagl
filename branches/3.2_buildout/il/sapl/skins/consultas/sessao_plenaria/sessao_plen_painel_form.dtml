@@ -59,6 +59,7 @@ $('#print_button').show();
   <dtml-else>
      <dtml-call expr="REQUEST.set('zsqlmethod',zsql.votacao_ordem_dia_obter_zsql)">
   </dtml-if>
+  <dtml-if cod_materia>
    <table>
       <dtml-in expr="zsqlmethod(cod_ordem = cod_ordem, cod_materia=cod_materia, ind_excluido=0)">
        <tr>
@@ -136,6 +137,90 @@ $('#print_button').show();
        </dtml-if>
      </dtml-in>
  </fieldset>
+
+<dtml-elif cod_parecer>
+   <table>
+      <dtml-in expr="zsqlmethod(cod_ordem = cod_ordem, cod_parecer=cod_parecer, ind_excluido=0)">
+       <tr>
+          <th class="texto">
+                 <dtml-in expr="zsql.relatoria_obter_zsql(cod_relatoria=cod_parecer,ind_excluido=0)">
+                   <dtml-call "REQUEST.set('cod_materia_sel', cod_materia)">
+                   <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_sel)">
+                        <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
+                           <b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> ao <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b><br />
+                        </a>
+                      </dtml-in>
+                      <b>Autoria:</b> <dtml-var nom_comissao>
+                   </dtml-in>
+                 </dtml-in>
+             </p>
+          </th>
+       </tr>
+       <tr>
+          <td class="texto">
+            <b>Resultado da Votação</b>: 
+            <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao)">
+                <dtml-var nom_resultado>
+            </dtml-in>
+          </td>
+       </tr>
+       <tr>
+          <td class="texto">
+             <b>Quantidade de votos sim:</b> <dtml-var num_votos_sim>
+          </td>
+       </tr>
+       <tr>
+          <td class="texto">
+            <b>Quantidade de votos não:</b> <dtml-var num_votos_nao>
+          </td>
+       </tr>
+       <tr>
+          <td class="texto">
+             <b>Quantidade de abstenções:</b> <dtml-var num_abstencao>
+          </td>
+       </tr>
+      </dtml-in>
+   </table>
+<fieldset>
+    <legend>Votação</legend>
+     <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_inicio_sessao)">
+      <dtml-if sequence-start>
+       <table>
+        <tr>
+         <th width="50%" class="label">Parlamentar</th>
+         <th width="50%" class="label">Votação (Sim / Não / Abstenção)</th>
+        </tr>
+      </dtml-if>
+        <tr>
+         <td class="texto">
+           <dtml-var nom_parlamentar> 
+         </td>
+         <td class="texto">
+           <dtml-call expr="REQUEST.set('voto', 0)">
+            <dtml-in expr="zsqlmethod(cod_ordem = cod_ordem, cod_parecer=cod_parecer, ind_excluido=0)">
+              <dtml-in expr="zsql.votacao_obter_zsql(cod_ordem = cod_ordem, cod_parecer=cod_parecer, ind_excluido=0)">
+                <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao = cod_votacao, cod_parlamentar = cod_parlamentar, ind_excluido=0)">        
+                 <span>
+                    <dtml-if expr="vot_parlamentar!='-1'">
+                       <dtml-var vot_parlamentar>
+                       <dtml-call expr="REQUEST.set('voto', 1)">
+                    </dtml-if>
+                 </span>
+                </dtml-in>
+              </dtml-in>
+            </dtml-in>
+            <dtml-unless voto>
+                <span>Não votou</span>            
+            </dtml-unless>
+            </td>
+           </tr>
+       <dtml-if sequence-end>
+        </table>
+       </dtml-if>
+     </dtml-in>
+ </fieldset>
+</dtml-if>
 
 <p align="center">
 <input type="button" class="botao" id="hideprint" name="print_button" value="Imprimir" onClick="printFrame();return false;" />

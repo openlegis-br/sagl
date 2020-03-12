@@ -120,10 +120,6 @@ $(document).ready(function() {
                      <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
                      <dtml-if sequence-end><br /></dtml-if>
                    </dtml-in>
-                   <dtml-if num_protocolo>
-                     <b>Protocolo:</b> <dtml-var num_protocolo>/<dtml-var ano_ident_basica>
-                     <br />
-                   </dtml-if>
                    <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">
                      <dtml-if num_materia>
                         <b>Processo:</b> <dtml-var num_materia>/<dtml-var ano_materia>
@@ -169,8 +165,12 @@ $(document).ready(function() {
             </td>
         </tr>
    <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+        <dtml-if sequence-start>
+           <dtml-call "REQUEST.set('contador_sub', int(_['sequence-number']))">
+        </dtml-if>
         <tr class="<dtml-var class>">
-            <td style="padding-left: 56px" valign="top" colspan="2" class="texto">
+            <td><div align="center"><b><dtml-var num_ordem>.<dtml-var contador_sub></b></div></td>
+            <td>
               <a target="_blank" href="&dtml-portal_url;/cadastros/materia/substitutivo/substitutivo_mostrar_proc?cod_substitutivo=<dtml-var cod_substitutivo>&cod_materia=<dtml-var cod_materia>">
                 <b>Substitutivo nº <dtml-var num_substitutivo></b>
               </a><br />
@@ -183,32 +183,42 @@ $(document).ready(function() {
               <dtml-var txt_ementa>
             </td>
             <td class="texto">
-             <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+             <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_materia=cod_materia,cod_substitutivo=cod_substitutivo,cod_ordem=cod_ordem, ind_excluido=0)">
                 <dtml-if expr="(_.has_key(cod_votacao) and cod_substitutivo==cod_substitutivo) or tip_resultado_votacao!=0">
                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
-                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="popup">
+                  <p align="center">
+                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup">
                     <b><dtml-var nom_resultado></a></b><br />
+                  </p>
                     <dtml-if votacao_observacao>
                         <dtml-var votacao_observacao>
                     </dtml-if>
                 </dtml-in>
                 <dtml-elif expr="(_.has_key(cod_votacao) and cod_substitutivo==cod_substitutivo) or tip_resultado_votacao==0">
                   <p align="center">
-                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup">Votação</a>
+                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup">Registrar Votação</a>
                   </p>
                 </dtml-if>
                 <dtml-else>
                   <p align="center">
-                    <a href="votacao/votacao_form?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup"/>Votação</a>
+                    <a href="votacao/votacao_form?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup"/>Registrar Votação</a>
                   </p>
               </dtml-in>
             </td>
         </tr>
    </dtml-in>
-   <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+   <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, exc_pauta=0, ind_excluido=0)">
+
+           <dtml-if contador_sub>
+             <dtml-call "REQUEST.set('contador', int(contador_sub) + int(_['sequence-number']))">
+           <dtml-else>
+             <dtml-call "REQUEST.set('contador', int(_['sequence-number']))">
+           </dtml-if>
+
     <dtml-if expr="exc_pauta!=1">
         <tr class="<dtml-var class>">
-            <td style="padding-left: 56px" valign="top" colspan="2" class="texto">
+            <td><div align="center"><b><dtml-var num_ordem>.<dtml-var contador></b></div></td>
+            <td class="texto">
               <a target="_blank" href="&dtml-portal_url;/cadastros/materia/emenda/emenda_mostrar_proc?cod_emenda=<dtml-var cod_emenda>&cod_materia=<dtml-var cod_materia>">
                 <b>Emenda <dtml-var des_tipo_emenda> nº <dtml-var num_emenda></b>
               </a><br />
@@ -222,24 +232,28 @@ $(document).ready(function() {
             </td>
             <td class="texto">
             <dtml-call "REQUEST.set('cod_ordem_materia', cod_ordem)">
-             <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, ind_excluido=0)">
+             <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_materia=cod_materia,cod_emenda=cod_emenda,cod_ordem=cod_ordem, ind_excluido=0)">
                 <dtml-if expr="(_.has_key(cod_votacao) or cod_emenda==cod_emenda) and tip_resultado_votacao!=0">
                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)" prefix="votacao_emenda">
-                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="popup">
+                  <p align="center">
+                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup">
                     <b><dtml-var nom_resultado></a></b><br />
+                  </p>
                     <dtml-if votacao_observacao>
                         <dtml-var votacao_observacao>
                     </dtml-if>
                 </dtml-in>
                 <dtml-elif expr="(_.has_key(cod_votacao) and cod_emenda==cod_emenda) or tip_resultado_votacao==0">
                   <p align="center">
-                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup">Votação</a>
+                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup">Registrar Votação</a>
                   </p>
                 </dtml-if>
                 <dtml-else>
                   <p align="center">
-                    <a href="votacao/votacao_form?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup"/>Votação</a>
+                    <a href="votacao/votacao_form?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup"/>Registrar Votação</a>
                   </p>
+              <dtml-if next-sequence>
+              </dtml-if>
               </dtml-in>
             </td>
         </tr>
