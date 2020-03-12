@@ -211,7 +211,7 @@ def mocoes(lst_mocoes):
        tmp+='\t\t<para style="P2" spaceAfter="6">\n'
        tmp+='\t\t\t<font color="white"> </font>\n'
        tmp+='\t\t</para>\n'
-    for mocao in lst_mocoes:
+    for i, mocao in lst_mocoes:
      if lst_mocoes != []:
         tmp+='\t\t<para style="P1">'+ str(i) +') <font color="#126e90">' + mocao['link_materia']+'</font> - '+ mocao['nom_autor'] + '</para>\n'
         tmp+='\t\t<para style="P2" spaceAfter="2">\n'
