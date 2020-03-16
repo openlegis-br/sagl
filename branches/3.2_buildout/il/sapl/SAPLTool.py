@@ -1459,7 +1459,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               for emenda in self.zsql.emenda_obter_zsql(cod_emenda=proposicao.cod_emenda):
                 for materia in self.zsql.materia_obter_zsql(cod_materia=emenda.cod_materia):
                     materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-                texto = 'EMENDA' + str(emenda.des_tipo_emenda.decode('utf-8').upper())+' Nº '+ str(emenda.num_emenda) + ' - ' + str(materia)
+                texto = 'EMENDA ' + str(emenda.des_tipo_emenda.decode('utf-8').upper())+' Nº '+ str(emenda.num_emenda) + ' - ' + str(materia)
                 storage_path = self.sapl_documentos.emenda
                 nom_pdf_saida = str(emenda.cod_emenda) + "_emenda.pdf"
             elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao=='Substitutivo'):
