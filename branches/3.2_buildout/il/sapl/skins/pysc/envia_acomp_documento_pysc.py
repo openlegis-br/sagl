@@ -42,7 +42,7 @@ for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=
        unidade_local = unid_local.nom_unidade_join
    if tramitacao.cod_usuario_dest != None:
       for usuario_destino in context.zsql.usuario_obter_zsql(cod_usuario=tramitacao.cod_usuario_dest):
-          if usuario_destino.end_email != None and unid_destino.end_email_join != '':
+          if usuario_destino.end_email != None:
              end_email=usuario_destino.end_email
              txt_nome=usuario_destino.nom_completo
    else:
