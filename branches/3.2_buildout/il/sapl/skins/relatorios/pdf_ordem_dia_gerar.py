@@ -46,10 +46,10 @@ def paraStyle():
     tmp+='\t\t<initialize>\n'
     tmp+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp+='\t\t</initialize>\n'
-    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="12" alignment="CENTER"/>\n'
-    tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
-    tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="9" alignment="LEFT"/>\n'
-    tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="9.0" leading="11" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="13" alignment="CENTER"/>\n'
+    tmp+='\t\t<paraStyle name="P1" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
+    tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="10" alignment="LEFT"/>\n'
+    tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="10" leading="12" alignment="JUSTIFY"/>\n'
     tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
     tmp+='\t</stylesheet>\n'
     return tmp
@@ -90,13 +90,13 @@ def pauta(lst_splen, lst_pauta):
 
         #pauta
         if dic['num_ordem']!=None:
-            tmp+='\t\t<para style="P4"><font color="#222">Item nº ' + str(dic['num_ordem']) + '</font></para>\n'
+            tmp+='\t\t<para style="P4"><font color="#222"><b>Item nº ' + str(dic['num_ordem']) + '</b></font></para>\n'
             tmp+='\t\t<para style="P2" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
         if dic['id_materia']!=None:
-            tmp+='\t\t<para style="P1"><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</para>\n'
-            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+            tmp+='\t\t<para style="P4"><b><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</b></para>\n'
+            tmp+='\t\t<para style="P3" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
         if dic['txt_ementa']!=None:
@@ -104,10 +104,25 @@ def pauta(lst_splen, lst_pauta):
             tmp+='\t\t<para style="P2" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
-            tmp+='\t\t<para style="P3"><b>Turno</b>: '+ dic['des_turno'] +' | <b>Quorum</b>: '+ dic['des_quorum']+' | <b>Tipo de Votação</b>: '+ dic['tip_votacao'] + '' + '</para>\n'
-            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
-            tmp+='\t\t\t<font color="white"> </font>\n'
-            tmp+='\t\t</para>\n'
+
+        if dic['substitutivo']!= 0:
+            for substitutivo in dic['substitutivos']:
+                tmp+='\t\t<para style="P3"><font color="#126e90"><b>' + substitutivo["id_substitutivo"] + '</b></font> - ' + substitutivo["autoria"] + ' - ' + substitutivo["txt_ementa"] + '</para>\n'
+                tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+                tmp+='\t\t\t<font color="white"> </font>\n'
+                tmp+='\t\t</para>\n'
+
+        if dic['emenda']!= 0:
+            for emenda in dic['emendas']:
+                tmp+='\t\t<para style="P3"><font color="#126e90"><b>' + emenda["id_emenda"] + '</b></font> - ' + emenda["autoria"] + ' - ' + emenda["txt_ementa"] + '</para>\n'
+                tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+                tmp+='\t\t\t<font color="white"> </font>\n'
+                tmp+='\t\t</para>\n'
+
+        tmp+='\t\t<para style="P3"><b>Turno</b>: '+ dic['des_turno'] +' | <b>Quorum</b>: '+ dic['des_quorum']+' | <b>Tipo de Votação</b>: '+ dic['tip_votacao'] + '' + '</para>\n'
+        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
+        tmp+='\t\t\t<font color="white"> </font>\n'
+        tmp+='\t\t</para>\n'
 
     return tmp
 

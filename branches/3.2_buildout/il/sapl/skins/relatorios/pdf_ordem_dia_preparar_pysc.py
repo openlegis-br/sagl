@@ -64,6 +64,50 @@ if context.REQUEST['cod_sessao_plen']!='':
             lst_relator = ['']            
         dic["lst_relator"] = lst_relator
 
+        dic["substitutivo"] = ''
+        lst_qtde_substitutivos=[]
+        lst_substitutivos=[]
+        for substitutivo in context.zsql.substitutivo_obter_zsql(cod_materia=ordem.cod_materia,ind_excluido=0):
+            autores = context.zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=substitutivo.cod_substitutivo, ind_excluido=0)
+            dic_substitutivo = {}
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+                for field in fields:
+                    nome_autor = autor['nom_autor_join']
+	        lista_autor.append(nome_autor)
+            autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
+            dic_substitutivo["id_substitutivo"] = '<link href="' + context.sapl_documentos.absolute_url() + '/substitutivo/' + str(substitutivo.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'Substitutivo nº ' + str(substitutivo.num_substitutivo) + '</link>'
+            dic_substitutivo["txt_ementa"] = substitutivo.txt_ementa
+            dic_substitutivo["autoria"] = autoria
+            lst_substitutivos.append(dic_substitutivo)
+            cod_substitutivo = substitutivo.cod_substitutivo
+            lst_qtde_substitutivos.append(cod_substitutivo)
+        dic["substitutivos"] = lst_substitutivos
+        dic["substitutivo"] = len(lst_qtde_substitutivos)
+
+        dic["emenda"] = ''
+        lst_qtde_emendas=[]
+        lst_emendas=[]
+        for emenda in context.zsql.emenda_obter_zsql(cod_materia=ordem.cod_materia,ind_excluido=0,exc_pauta=0):
+            autores = context.zsql.autoria_emenda_obter_zsql(cod_emenda=emenda.cod_emenda,ind_excluido=0)
+            dic_emenda = {}
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+                for field in fields:
+                    nome_autor = autor['nom_autor_join']
+	        lista_autor.append(nome_autor)
+            autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
+            dic_emenda["id_emenda"] = '<link href="' + context.sapl_documentos.absolute_url() + '/emenda/' + str(emenda.cod_emenda) + '_emenda.pdf' + '">' + 'Emenda nº ' + str(emenda.num_emenda) + ' (' + emenda.des_tipo_emenda.decode('utf-8') + ')</link>'
+            dic_emenda["txt_ementa"] = emenda.txt_ementa
+            dic_emenda["autoria"] = autoria
+            lst_emendas.append(dic_emenda)
+            cod_emenda = emenda.cod_emenda
+            lst_qtde_emendas.append(cod_emenda)
+        dic["emendas"] = lst_emendas
+        dic["emenda"] = len(lst_qtde_emendas)
+
         # adiciona o dicionário na pauta
         pauta.append(dic) 
 
