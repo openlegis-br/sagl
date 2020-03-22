@@ -107,14 +107,14 @@ def pauta(lst_splen, lst_pauta):
 
         if dic['substitutivo']!= 0:
             for substitutivo in dic['substitutivos']:
-                tmp+='\t\t<para style="P3"><font color="#126e90"><b>' + substitutivo["id_substitutivo"] + '</b></font> - ' + substitutivo["autoria"] + ' - ' + substitutivo["txt_ementa"] + '</para>\n'
+                tmp+='\t\t<para style="P3"><b><font color="#126e90">' + substitutivo["id_substitutivo"] + '</font> - ' + substitutivo["autoria"] + '</b> - ' + substitutivo["txt_ementa"] + '</para>\n'
                 tmp+='\t\t<para style="P2" spaceAfter="4">\n'
                 tmp+='\t\t\t<font color="white"> </font>\n'
                 tmp+='\t\t</para>\n'
 
         if dic['emenda']!= 0:
             for emenda in dic['emendas']:
-                tmp+='\t\t<para style="P3"><font color="#126e90"><b>' + emenda["id_emenda"] + '</b></font> - ' + emenda["autoria"] + ' - ' + emenda["txt_ementa"] + '</para>\n'
+                tmp+='\t\t<para style="P3"><b><font color="#126e90">' + emenda["id_emenda"] + '</font> - ' + emenda["autoria"] + '</b> - ' + emenda["txt_ementa"] + '</para>\n'
                 tmp+='\t\t<para style="P2" spaceAfter="4">\n'
                 tmp+='\t\t\t<font color="white"> </font>\n'
                 tmp+='\t\t</para>\n'
