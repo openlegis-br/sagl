@@ -161,7 +161,7 @@ if context.REQUEST['data']!='':
                               if votacao.votacao_observacao:
                                  dic_expediente_materia["votacao_observacao"] = votacao.votacao_observacao
                        else:
-                          dic_expediente_materia["nom_resultado"] = "Matéria não votada"
+                          dic_expediente_materia["nom_resultado"] = "(Matéria não votada)"
                           dic_expediente_materia["votacao_observacao"] = ""
                    lst_expediente_materia.append(dic_expediente_materia)
             # Pareceres
@@ -189,7 +189,7 @@ if context.REQUEST['data']!='':
                               if votacao.votacao_observacao:
                                  dic_expediente_materia["votacao_observacao"] = votacao.votacao_observacao
                        else:
-                          dic_expediente_materia["nom_resultado"] = "Parecer não votado"
+                          dic_expediente_materia["nom_resultado"] = "(Parecer não votado)"
                           dic_expediente_materia["votacao_observacao"] = ""
                    lst_expediente_materia.append(dic_expediente_materia)
 
@@ -243,7 +243,7 @@ if context.REQUEST['data']!='':
                   for i in resultado:
                       dic_votacao["nom_resultado"] = '(' + i.nom_resultado+ ' em ' + turno_discussao + votacao_observacao + ')'
                else:
-                  dic_votacao["nom_resultado"] = "Materia não votada"
+                  dic_votacao["nom_resultado"] = "(Matéria não votada)"
                   dic_votacao["votacao_observacao"] = ""
 
             dic_votacao["substitutivo"] = ''
@@ -277,7 +277,7 @@ if context.REQUEST['data']!='':
                           if votacao.votacao_observacao:
                               dic_substitutivo["votacao_observacao"] = votacao.ordem_observacao
                    else:
-                      dic_substitutivo["nom_resultado"] = "Substitutivo não votado"
+                      dic_substitutivo["nom_resultado"] = "(Substitutivo não votado)"
                       dic_substitutivo["votacao_observacao"] = ""
                 lst_substitutivos.append(dic_substitutivo)
                 cod_substitutivo = substitutivo.cod_substitutivo
@@ -316,7 +316,7 @@ if context.REQUEST['data']!='':
                           if votacao.votacao_observacao:
                               dic_emenda["votacao_observacao"] = votacao.ordem_observacao
                    else:
-                      dic_emenda["nom_resultado"] = "Emenda não votada"
+                      dic_emenda["nom_resultado"] = "(Emenda não votada)"
                       dic_emenda["votacao_observacao"] = ""
                 lst_emendas.append(dic_emenda)
                 cod_emenda = emenda.cod_emenda
