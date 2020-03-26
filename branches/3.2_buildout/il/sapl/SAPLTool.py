@@ -382,7 +382,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         os.unlink('/tmp/' + id_logo)
         return brasao
 
-    def ata_gerar_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, lst_psecretario, lst_ssecretario, nom_arquivo):
+    def ata_gerar_odt(self, ata_dic, nom_arquivo):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/ata.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
@@ -898,7 +898,35 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         if arquivoPdf in self.sapl_documentos.administrativo.tramitacao:
            self.sapl_documentos.administrativo.tramitacao.manage_delObjects(arquivoPdf)
            tmp_id = self.sapl_documentos.administrativo.tramitacao.manage_pasteObjects(tmp_copy)[0]['new_id']
-           self.sapl_documentos.administrativo.tramitacao.manage_renameObjects(ids=list([tmp_id]),new_ids=list([arquivoPdf]))
+           self.sapl_documentos.administrativo.tramitacao.manage_renameObjects(ids=list([tmp_id]), new_ids=list([arquivoPdf]))
+        self.temp_folder.manage_delObjects(ids=arquivoPdf)
+
+    def tramitacao_materia_juntar(self,cod_tramitacao):
+        merger = PdfWriter()
+        arquivoPdf=str(cod_tramitacao)+"_tram.pdf"
+        arquivoPdfAnexo=str(cod_tramitacao)+"_tram_anexo1.pdf"
+        arquivoFinal=str(cod_tramitacao)+".pdf"
+        if hasattr(self.sapl_documentos.materia.tramitacao,arquivoPdf):
+           arq = getattr(self.sapl_documentos.materia.tramitacao, arquivoPdf)
+           arquivo = cStringIO.StringIO(str(arq.data))
+           texto_tram = PdfReader(arquivo, decompress=False).pages
+           merger.addpages(texto_tram)
+        if hasattr(self.sapl_documentos.materia.tramitacao,arquivoPdfAnexo):
+           arq = getattr(self.sapl_documentos.materia.tramitacao, arquivoPdfAnexo)
+           arquivo = cStringIO.StringIO(str(arq.data))
+           texto_anexo = PdfReader(arquivo, decompress=False).pages
+           merger.addpages(texto_anexo)
+           self.sapl_documentos.materia.tramitacao.manage_delObjects(ids=arquivoPdfAnexo)
+        outputStream = cStringIO.StringIO()
+        self.temp_folder.manage_addFile(arquivoPdf)
+        merger.write(outputStream)
+        arq=self.temp_folder[arquivoPdf]
+        arq.manage_edit(title=arquivoPdf,filedata=outputStream.getvalue(),content_type='application/pdf')
+        tmp_copy = self.temp_folder.manage_copyObjects(ids=arquivoPdf)
+        if arquivoPdf in self.sapl_documentos.materia.tramitacao:
+           self.sapl_documentos.materia.tramitacao.manage_delObjects(arquivoPdf)
+           tmp_id = self.sapl_documentos.materia.tramitacao.manage_pasteObjects(tmp_copy)[0]['new_id']
+           self.sapl_documentos.materia.tramitacao.manage_renameObjects(ids=list([tmp_id]),new_ids=list([arquivoPdf]))
         self.temp_folder.manage_delObjects(ids=arquivoPdf)
 
     def documento_assinado_imprimir(self,cod_documento):
@@ -1146,8 +1174,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         sgl_casa = self.sapl_documentos.props_sapl.sgl_casa
         for protocolo in self.zsql.protocolo_obter_zsql(cod_protocolo=cod_protocolo):
           string = str(protocolo.cod_protocolo).zfill(7)
-          texto = 'PRT '+ str(protocolo.num_protocolo)+'/'+str(protocolo.ano_protocolo)
-          data = self.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' '+protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
+          texto = 'PROT-'+ str(sgl_casa) + ' ' + str(protocolo.num_protocolo)+'/'+str(protocolo.ano_protocolo)
+          data = self.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' - '+protocolo.hor_protocolo[0:2] + ':' + protocolo.hor_protocolo[3:5]
           des_tipo_materia=""
           num_materia = ""
           materia_principal = ""
@@ -1162,15 +1190,23 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
                   for tipo in self.zsql.tipo_materia_legislativa_obter_zsql(tip_materia=protocolo.tip_materia,tip_natureza='A'):
                       if tipo.des_tipo_materia == 'Emenda':
                          for emenda in self.zsql.emenda_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
-                             num_materia = 'Emenda' + ' nº ' +str(emenda.num_emenda) + str(materia_principal)
+                             num_materia = 'EME' + ' ' +str(emenda.num_emenda) + str(materia_principal)
                       elif tipo.des_tipo_materia == 'Substitutivo':
                            for substitutivo in self.zsql.substitutivo_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
-                               num_materia = 'Subst. nº ' +str(substitutivo.num_substitutivo) + str(materia_principal)
+                               num_materia = 'SUB ' +str(substitutivo.num_substitutivo) + str(materia_principal)
              elif protocolo.tip_natureza_materia == 3:
                   for materia in self.zsql.materia_obter_zsql(cod_materia=protocolo.cod_materia_principal):
                       materia_principal = ' - ' + materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
                   for documento in self.zsql.documento_acessorio_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
                       num_materia = documento.des_tipo_documento + str(materia_principal)
+             elif protocolo.tip_natureza_materia == 4:
+                  for materia in self.zsql.materia_obter_zsql(cod_materia=protocolo.cod_materia_principal):
+                      materia_principal = ' - ' + materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+                  for autor in self.zsql.autor_obter_zsql(cod_autor=protocolo.cod_autor):
+                      for comissao in self.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
+                          sgl_comissao = comissao.sgl_comissao
+                  for parecer in self.zsql.relatoria_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
+                      materia_principal = 'PAR ' + sgl_comissao +' ' + str(parecer.num_parecer)+'/'+str(parecer.ano_parecer) + str(materia_principal)
           elif protocolo.tip_processo==0:
                for documento in self.zsql.documento_administrativo_obter_zsql(num_protocolo=protocolo.num_protocolo, ano_documento=protocolo.ano_protocolo):
                    num_materia = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
@@ -1184,11 +1220,12 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
         packet = os.path.normpath('temp.pdf')
         slab = canvas.Canvas(packet, pagesize=A4)
         slab.setFillColorRGB(0,0,0) 
-        barcode = barcode128 = code128.Code128(string,barWidth=.38*mm,barHeight=4*mm)
+        barcode = barcode128 = code128.Code128(string,barWidth=.34*mm,barHeight=6*mm)
         barcode.drawOn(slab, x_var*mm , y_var*mm)
         slab.setFont("Arial_Bold", 7)
-        slab.drawString(485, 810, texto + " - " + data)
-        slab.drawString(485, 803, num_materia)
+        slab.drawString(485, 809, texto)
+        slab.drawString(485, 802, data)
+        slab.drawString(485, 795, num_materia)
         slab.save()
         barcode_pdf = open(packet, 'rb')
         new_pdf = PdfReader(barcode_pdf)
@@ -1252,12 +1289,7 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if existe_arquivo == 1:
                arquivo_tram = cStringIO.StringIO(str(tram.data))
                texto_tramitacao = PdfReader(arquivo_tram).pages
-               for page_num, i in enumerate(texto_tramitacao):
-                   if page_num > 0:
-	              writer.addpage(texto_tramitacao[page_num])
-               for page_num, i in enumerate(texto_tramitacao):
-                   if page_num == 0:
-	              writer.addpage(texto_tramitacao[0])
+               writer.addpages(texto_tramitacao)
         output_file_pdf = cStringIO.StringIO()
         writer.write(output_file_pdf)
         output_file_pdf.seek(0)

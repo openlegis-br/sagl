@@ -47,8 +47,7 @@
 
 </script>
 
-<h1 class="firstHeading">Painel de Acompanhamento da Sessão</h1>
-
+<h1 class="firstHeading">Plenário Virtual</h1>
  <dtml-in expr="zsql.sessao_plenaria_painel_obter_zsql()">
      <dtml-if sequence-even>
         <dtml-call "REQUEST.set ('class', 'odd')">
@@ -56,29 +55,38 @@
         <dtml-call "REQUEST.set ('class', 'even')">
      </dtml-if>
      <dtml-if sequence-start>
+
+<dtml-if cod_sessao_plen>
+    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
+      <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+       <table>
+        <tr><td class="form-label" colspan="4"><div align="center">
+        <h2 style="font-size: 130% !important;letter-spacing:-0.03em !important;line-height:1.5em;"><dtml-var num_sessao_plen missing>ª Sessão <dtml-var nom_sessao> da <dtml-var num_sessao_leg>ª Sessão Legislativa da <dtml-var num_legislatura>ª Legislatura <br /></h2><h4 style="font-size: 110% !important;letter-spacing:-0.03em !important; color: #555;"><dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_inicio_sessao)"> (<dtml-var dia_sessao>) - <dtml-var expr="pysc.hora_formatar_pysc(hora=hr_inicio_sessao)"></h4>
+        </div></td></tr>
+       </table>
+      </dtml-in>
+    </dtml-in>
+</dtml-if>
       <form name="acompanhamento_sessao_form" method="post">
        <fieldset>
         <table>
           <thead>
             <tr>
-              <th width="4%"  class="form-label">Item</th>
-              <th width="12%" class="form-label">Fase</th>
-              <th width="8%" class="form-label">Tipo</th>
-              <th width="55%" class="form-label">Texto para exibição</th>
+              <th width="5%"  class="form-label">Item</th>
+              <th width="13%" class="form-label">Fase</th>
+              <th width="47%" class="form-label">Texto para exibição</th>
               <th width="10%" class="form-label">Ações</th>
+              <th width="20%" class="form-label">Resultado</th>
             </tr>
           </thead>
           <tbody>
      </dtml-if sequence-start>
             <tr class="<dtml-var class>">
               <td class="texto" valign="top">
-                 <b><p align="center"><a name="<dtml-var num_ordem>"><dtml-var num_ordem></a></p></b>
+                 <b><div align="center"><a name="<dtml-var num_ordem>"><dtml-var num_ordem></a></div></b>
               </td>
               <td class="texto" valign="top">
                 <dtml-var nom_fase>
-              </td>
-              <td class="texto" valign="top">
-                <dtml-var tip_item>
               </td>
               <td class="texto" valign="top">
                  <dtml-if cod_materia>
@@ -88,17 +96,42 @@
                  <dtml-else>
                   <div class="edit" id="<dtml-var cod_item>" style="display: inline; cursor: pointer;"><dtml-var txt_exibicao></div>
                  </dtml-if>
+                 <dtml-if expr="nom_fase == 'Presença'">
+                    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
+                      <dtml-call expr="REQUEST.set('dat_sessao', dat_inicio_sessao)">
+                    </dtml-in>
+                      <dtml-in expr="zsql.presenca_ordem_dia_obter_zsql(dat_sessao=dat_sessao, cod_sessao_plen=cod_sessao_plen, tip_frequencia='P', ind_excluido=0)">
+                       <dtml-if sequence-start><b>PARLAMENTARES PRESENTES:</b></dtml-if sequence-start>
+                       <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                          <dtml-var nom_parlamentar> (<dtml-var sgl_partido missing null="">)</dtml-in><dtml-unless sequence-end>,</dtml-unless>
+                       </dtml-in>
+                 </dtml-if>
               </td>
-              <td class="texto" <dtml-if expr="ind_exibicao==1">style="background: #55C84C"</dtml-if>>
+              <td class="texto" <dtml-if expr="dat_fim!=None">style="background: #c0d6f1"</dtml-if> <dtml-if expr="ind_exibicao==1">style="background: #55C84C"</dtml-if>>
                 <dtml-if expr="ind_exibicao==1">
                   <p align="center">
                     <a class="botao" href="item_finalizar_proc?cod_item=<dtml-var cod_item>">Finalizar</a>
                   </p>
+                <dtml-elif expr="dat_fim!=None">
+                  <p align="center">
+                    <a class="botao" href="item_exibir_proc?cod_item=<dtml-var cod_item>">Reniciar</a>
+                  </p>
                 <dtml-else>
                   <p align="center">
-                    <a class="botao" href="item_exibir_proc?cod_item=<dtml-var cod_item>">Exibir</a>
+                    <a class="botao" href="item_exibir_proc?cod_item=<dtml-var cod_item>">Iniciar</a>
                   </p>
                 </dtml-if>
+              </td>
+              <td>
+                 <dtml-if dat_inicio>
+                     <b>Início</b>: <dtml-var hr_inicio>
+                 </dtml-if>
+                 <dtml-if dat_fim>
+                     <b>Fim</b>: <dtml-var hr_fim>
+                 </dtml-if>
+                 <dtml-if expr="nom_fase == 'Presença'">
+                    <br /><b>Presenças:</b> <dtml-var expr="pysc.quantidade_presentes_ordem_dia_pysc(cod_sessao_plen=cod_sessao_plen,dat_ordem=dat_sessao)">
+                 </dtml-if>
               </td>
             </tr>
      <dtml-if sequence-end>
@@ -120,9 +153,11 @@
                 <select class="pf-field" id="lst_cod_sessao" name="lst_cod_sessao">
                   <option value="0"></option>
                   <dtml-in expr="zsql.sessao_plenaria_obter_zsql(ano_sessao=ano_sessao,ind_excluido=0)">
-                    <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+                    <dtml-if expr="hr_fim_sessao==''">
+                      <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
                        <option value="<dtml-var cod_sessao_plen>"><dtml-var num_sessao_plen missing>ª Sessão <dtml-var nom_sessao> - <dtml-var dat_inicio_sessao></option>
-                    </dtml-in>
+                      </dtml-in>
+                    </dtml-if>
                   </dtml-in>
                 </select>
               </div>
