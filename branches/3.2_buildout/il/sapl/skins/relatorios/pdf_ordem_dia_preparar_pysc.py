@@ -114,7 +114,7 @@ if context.REQUEST['cod_sessao_plen']!='':
     # obtém o nome do Presidente da Câmara titular
     lst_presidente = []
     for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sp.num_legislatura,data=data):
-      for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
+      for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,des_cargo='Presidente'):
         for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
           lst_presidente = presidencia.nom_parlamentar
 
