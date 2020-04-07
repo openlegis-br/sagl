@@ -26,9 +26,9 @@ if context.REQUEST['data']!='':
         # obtém o nome do Presidente da Câmara titular
         lst_presidente = []
         for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sessao.num_legislatura,data=data):
-          for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
-            for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-              lst_presidente = presidencia.nom_parlamentar
+            for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
+                for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
+                    lst_presidente = presidencia.nom_parlamentar
 
         # Lista das matérias apresentadas
         lst_materia_apresentada=[]
@@ -47,9 +47,9 @@ if context.REQUEST['data']!='':
                fields = autores.data_dictionary().keys()
                lista_autor = []
                for autor in autores:
-             for field in fields:
-                     nome_autor = autor['nom_autor_join']
-             lista_autor.append(nome_autor)
+                   for field in fields:
+                       nome_autor = autor['nom_autor_join']
+               lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
 
@@ -65,9 +65,9 @@ if context.REQUEST['data']!='':
                    fields = autores.data_dictionary().keys()
                    lista_autor = []
                    for autor in autores:
-                 for field in fields:
-                         nome_autor = autor['nom_autor_join']
-                 lista_autor.append(nome_autor)
+                       for field in fields:
+                           nome_autor = autor['nom_autor_join']
+                   lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
 
@@ -83,9 +83,9 @@ if context.REQUEST['data']!='':
                    fields = autores.data_dictionary().keys()
                    lista_autor = []
                    for autor in autores:
-                 for field in fields:
-                         nome_autor = autor['nom_autor_join']
-                 lista_autor.append(nome_autor)
+                       for field in fields:
+                           nome_autor = autor['nom_autor_join']
+                   lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
 
@@ -99,7 +99,7 @@ if context.REQUEST['data']!='':
                        nom_comissao = comissao.nom_comissao
                    dic_materia_apresentada["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/parecer_comissao/' + str(materia_apresentada.cod_parecer) + '_parecer.pdf' + '">' + 'PARECER ' + sgl_comissao+ ' Nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
                    dic_materia_apresentada["nom_autor"] = nom_comissao.decode('utf-8').upper()
-               lst_materia_apresentada.append(dic_materia_apresentada)
+                   lst_materia_apresentada.append(dic_materia_apresentada)
 
             elif materia_apresentada.cod_documento != None:
                materia = context.zsql.documento_administrativo_obter_zsql(cod_documento=materia_apresentada.cod_documento)[0]
@@ -154,10 +154,10 @@ if context.REQUEST['data']!='':
                       for autor in autores:
                           for field in fields:
                               nome_autor = autor['nom_autor_join']
-                      lista_autor.append(nome_autor)
                           for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor[1]):
                               dic_autores["nome_completo"] = parlamentar['nom_completo']
                               dic_autores["txt_autoria"] = parlamentar['nom_parlamentar']
+                      lista_autor.append(nome_autor)
                       vereadoresind.append(dic_autores)
                       dic_indicacoes["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                       lst_indicacoes.append(dic_indicacoes)

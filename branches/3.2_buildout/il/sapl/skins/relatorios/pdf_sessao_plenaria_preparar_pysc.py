@@ -72,9 +72,9 @@ if context.REQUEST['data']!='':
                fields = autores.data_dictionary().keys()
                lista_autor = []
                for autor in autores:
-             for field in fields:
-                     nome_autor = autor['nom_autor_join']
-             lista_autor.append(nome_autor)
+                   for field in fields:
+                       nome_autor = autor['nom_autor_join']
+               lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
             # seleciona os detalhes de uma emenda
@@ -89,9 +89,9 @@ if context.REQUEST['data']!='':
                    fields = autores.data_dictionary().keys()
                    lista_autor = []
                    for autor in autores:
-                 for field in fields:
-                         nome_autor = autor['nom_autor_join']
-                 lista_autor.append(nome_autor)
+                       for field in fields:
+                           nome_autor = autor['nom_autor_join']
+                   lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
             # seleciona os detalhes de um substitutivo
@@ -106,9 +106,9 @@ if context.REQUEST['data']!='':
                    fields = autores.data_dictionary().keys()
                    lista_autor = []
                    for autor in autores:
-                 for field in fields:
-                         nome_autor = autor['nom_autor_join']
-                 lista_autor.append(nome_autor)
+                       for field in fields:
+                           nome_autor = autor['nom_autor_join']
+                   lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
             # seleciona os detalhes de um parecer
@@ -148,7 +148,7 @@ if context.REQUEST['data']!='':
                    fields = autores.data_dictionary().keys()
                    lista_autor = []
                    for autor in autores:
-                   for field in fields:
+                       for field in fields:
                            nome_autor = autor['nom_autor_join']
                    lista_autor.append(nome_autor)
                    dic_expediente_materia["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
@@ -226,9 +226,9 @@ if context.REQUEST['data']!='':
             fields = autores.data_dictionary().keys()
             lista_autor = []
             for autor in autores:
-          for field in fields:
-                      nome_autor = autor['nom_autor_join']
-          lista_autor.append(nome_autor)
+                for field in fields:
+                    nome_autor = autor['nom_autor_join']
+            lista_autor.append(nome_autor)
             dic_votacao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
             dic_votacao["nom_resultado"] = ''
             for votacao in context.zsql.votacao_ordem_dia_obter_zsql(cod_materia=ordem.cod_materia, cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):

@@ -50,9 +50,9 @@ if context.REQUEST['cod_sessao_plen']!='':
         fields = autores.data_dictionary().keys()
         lista_autor = []
         for autor in autores:
-      for field in fields:
-                  nome_autor = autor['nom_autor_join']
-      lista_autor.append(nome_autor)
+            for field in fields:
+                nome_autor = autor['nom_autor_join']
+        lista_autor.append(nome_autor)
         dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
 
         lst_relator = [] # lista contendo os relatores da matéria
