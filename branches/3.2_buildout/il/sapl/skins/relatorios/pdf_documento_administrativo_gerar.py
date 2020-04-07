@@ -72,7 +72,7 @@ def documentos(lst_documentos):
         #condicao para a quebra de pagina
         tmp_data+='\t\t<condPageBreak height="1.5cm"/>\n'
 
-        #materias	
+        #materias   
         if dic['titulo']!=None:
             tmp_data+='\t\t<para style="P1">' + dic['titulo'] + '</para>\n'
         if dic['txt_assunto']!=None:

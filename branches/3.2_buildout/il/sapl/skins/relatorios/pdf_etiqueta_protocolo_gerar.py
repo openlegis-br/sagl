@@ -79,7 +79,7 @@ def protocolos(lst_protocolos):
             tmp_data+='\t\t<para style="P1">\n'
             tmp_data+='\t\t\t<font color="white">-</font>\n'
             tmp_data+='\t\t</para>\n'
-	    tmp_data+='\t\t<barCode code="Code128" x="0.5cm" y="0.5cm" barHeight="0.35in" barWidth="0.0193in">' +dic['codigo']+ '</barCode>\n'
+        tmp_data+='\t\t<barCode code="Code128" x="0.5cm" y="0.5cm" barHeight="0.35in" barWidth="0.0193in">' +dic['codigo']+ '</barCode>\n'
             tmp_data+='\t\t<para style="P2"><b>Protocolo Geral nº '+dic['titulo']+'/'+dic['ano']+'</b></para>\n'
         if dic['data']!=None:
             tmp_data+='\t\t<para style="P2"><b>'+dic['data']+'</b></para>\n'

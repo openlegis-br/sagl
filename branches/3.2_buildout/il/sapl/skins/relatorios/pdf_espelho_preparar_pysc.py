@@ -60,10 +60,10 @@ if REQUEST.txt_check=='1':
   REQUEST=context.REQUEST
   for materia in context.zsql.materia_obter_zsql(cod_materia=cod_mat):
         dic={}
-	dic['titulo']="INDICAÇÃO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
-	dic['materia']=str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
-	dic['dat_apresentacao']=materia.dat_apresentacao
-	dic['txt_ementa']=materia.txt_ementa
+    dic['titulo']="INDICAÇÃO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
+    dic['materia']=str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+    dic['dat_apresentacao']=materia.dat_apresentacao
+    dic['txt_ementa']=materia.txt_ementa
 
         dic['nom_autor'] = " "
         for autoria in context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia):
@@ -81,7 +81,7 @@ if REQUEST.txt_check=='1':
         txt_tramitacao=''
         data_ultima_acao = ''
 
-	dic['localizacao_atual']=" "
+    dic['localizacao_atual']=" "
         for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=materia.cod_materia,ind_ult_tramitacao=1):
             if tramitacao.cod_unid_tram_dest:
                 cod_unid_tram = tramitacao.cod_unid_tram_dest
@@ -100,7 +100,7 @@ if REQUEST.txt_check=='1':
             txt_tramitacao=tramitacao.txt_tramitacao
             data_ultima_acao = tramitacao.dat_tramitacao
 
-	dic['des_situacao']=des_status
+    dic['des_situacao']=des_status
         dic['ultima_acao']=txt_tramitacao
         dic['data_ultima_acao']=data_ultima_acao
 
@@ -117,7 +117,7 @@ else:
   for cod_mat in codigo:
    for materia in context.zsql.materia_obter_zsql(cod_materia=cod_mat):
         dic={}
-	dic['titulo']="INDICAÇÃO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
+    dic['titulo']="INDICAÇÃO: "+str(materia.num_ident_basica)+" "+str(materia.ano_ident_basica)
         dic['materia']=str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
         dic['dat_apresentacao']=materia.dat_apresentacao
         dic['txt_ementa']=materia.txt_ementa
@@ -136,11 +136,11 @@ else:
             
         des_status = ''
         txt_tramitacao=''
-	data_ultima_acao = ''
+    data_ultima_acao = ''
 
         dic['localizacao_atual']=" "
         for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=materia.cod_materia,ind_ult_tramitacao=1):
-	    if tramitacao.cod_unid_tram_dest:
+        if tramitacao.cod_unid_tram_dest:
                 cod_unid_tram = tramitacao.cod_unid_tram_dest
             else:
                 cod_unid_tram = tramitacao.cod_unid_tram_local
@@ -148,22 +148,22 @@ else:
             for unidade_tramitacao in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = cod_unid_tram):
                 if unidade_tramitacao.cod_orgao:
                     dic['localizacao_atual']=unidade_tramitacao.nom_orgao
-		elif unidade_tramitacao.cod_parlamentar:
-		    dic['localizacao_atual']=unidade_tramitacao.nom_parlamentar
+        elif unidade_tramitacao.cod_parlamentar:
+            dic['localizacao_atual']=unidade_tramitacao.nom_parlamentar
                 else:
                     dic['localizacao_atual']=unidade_tramitacao.nom_comissao
         
             des_status=tramitacao.des_status
             txt_tramitacao=tramitacao.txt_tramitacao
-	    data_ultima_acao = tramitacao.dat_tramitacao
+        data_ultima_acao = tramitacao.dat_tramitacao
 
         dic['des_situacao']=des_status
         dic['ultima_acao']=txt_tramitacao
-	dic['data_ultima_acao']=data_ultima_acao
+    dic['data_ultima_acao']=data_ultima_acao
 
-	dic['norma_juridica_vinculada'] = "Não há nenhuma norma jurídica vinculada"
-	for norma in context.zsql.materia_buscar_norma_juridica_zsql(cod_materia=materia.cod_materia):
-	    dic['norma_juridica_vinculada']=norma.des_norma+" "+str(norma.num_norma)+"/"+str(norma.ano_norma)
+    dic['norma_juridica_vinculada'] = "Não há nenhuma norma jurídica vinculada"
+    for norma in context.zsql.materia_buscar_norma_juridica_zsql(cod_materia=materia.cod_materia):
+        dic['norma_juridica_vinculada']=norma.des_norma+" "+str(norma.num_norma)+"/"+str(norma.ano_norma)
 
         materias.append(dic)
 

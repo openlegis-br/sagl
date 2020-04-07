@@ -47,9 +47,9 @@ if context.REQUEST['data']!='':
                fields = autores.data_dictionary().keys()
                lista_autor = []
                for autor in autores:
-	         for field in fields:
+             for field in fields:
                      nome_autor = autor['nom_autor_join']
-	         lista_autor.append(nome_autor)
+             lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
 
@@ -65,9 +65,9 @@ if context.REQUEST['data']!='':
                    fields = autores.data_dictionary().keys()
                    lista_autor = []
                    for autor in autores:
-	             for field in fields:
+                 for field in fields:
                          nome_autor = autor['nom_autor_join']
-	             lista_autor.append(nome_autor)
+                 lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
 
@@ -83,9 +83,9 @@ if context.REQUEST['data']!='':
                    fields = autores.data_dictionary().keys()
                    lista_autor = []
                    for autor in autores:
-	             for field in fields:
+                 for field in fields:
                          nome_autor = autor['nom_autor_join']
-	             lista_autor.append(nome_autor)
+                 lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
 
@@ -137,7 +137,7 @@ if context.REQUEST['data']!='':
                       for autor in autores:
                           for field in fields:
                               nome_autor = autor['nom_autor_join']
-   	                  lista_autor.append(nome_autor)
+                      lista_autor.append(nome_autor)
                       dic_mocoes["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                       lst_mocoes.append(dic_mocoes)
                    # Indicacoes
@@ -154,7 +154,7 @@ if context.REQUEST['data']!='':
                       for autor in autores:
                           for field in fields:
                               nome_autor = autor['nom_autor_join']
-   	                  lista_autor.append(nome_autor)
+                      lista_autor.append(nome_autor)
                           for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor[1]):
                               dic_autores["nome_completo"] = parlamentar['nom_completo']
                               dic_autores["txt_autoria"] = parlamentar['nom_parlamentar']

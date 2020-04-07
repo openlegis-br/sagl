@@ -56,9 +56,9 @@ for norma in context.zsql.norma_juridica_obter_zsql(cod_norma=REQUEST['cod_norma
       fields = autores.data_dictionary().keys()
       lista_autor = []
       for autor in autores:
-	for field in fields:
+    for field in fields:
                 nome_autor = autor['nom_autor_join']
-	lista_autor.append(nome_autor)
+    lista_autor.append(nome_autor)
       nom_autor = ', '.join(['%s' % (value) for (value) in lista_autor]) 
       inf_basicas_dic['materia_vinculada'] = materia_vinculada.des_tipo_materia+"  n°  "+str(materia_vinculada.num_ident_basica)+"/"+str(materia_vinculada.ano_ident_basica)+" - Autor: "+ str(nom_autor)
 

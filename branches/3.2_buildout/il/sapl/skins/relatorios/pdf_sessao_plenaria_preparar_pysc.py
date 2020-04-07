@@ -72,9 +72,9 @@ if context.REQUEST['data']!='':
                fields = autores.data_dictionary().keys()
                lista_autor = []
                for autor in autores:
-	         for field in fields:
+             for field in fields:
                      nome_autor = autor['nom_autor_join']
-	         lista_autor.append(nome_autor)
+             lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
             # seleciona os detalhes de uma emenda
@@ -89,9 +89,9 @@ if context.REQUEST['data']!='':
                    fields = autores.data_dictionary().keys()
                    lista_autor = []
                    for autor in autores:
-	             for field in fields:
+                 for field in fields:
                          nome_autor = autor['nom_autor_join']
-	             lista_autor.append(nome_autor)
+                 lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
             # seleciona os detalhes de um substitutivo
@@ -106,9 +106,9 @@ if context.REQUEST['data']!='':
                    fields = autores.data_dictionary().keys()
                    lista_autor = []
                    for autor in autores:
-	             for field in fields:
+                 for field in fields:
                          nome_autor = autor['nom_autor_join']
-	             lista_autor.append(nome_autor)
+                 lista_autor.append(nome_autor)
                dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
                lst_materia_apresentada.append(dic_materia_apresentada)
             # seleciona os detalhes de um parecer
@@ -148,9 +148,9 @@ if context.REQUEST['data']!='':
                    fields = autores.data_dictionary().keys()
                    lista_autor = []
                    for autor in autores:
-  	               for field in fields:
+                   for field in fields:
                            nome_autor = autor['nom_autor_join']
-	               lista_autor.append(nome_autor)
+                   lista_autor.append(nome_autor)
                    dic_expediente_materia["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
                    dic_expediente_materia["nom_resultado"] = ''
                    for votacao in context.zsql.votacao_expediente_materia_obter_zsql(cod_materia=item.cod_materia, cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):
@@ -218,7 +218,7 @@ if context.REQUEST['data']!='':
             dic_votacao = {}
             dic_votacao["num_ordem"] = ordem.num_ordem
             dic_votacao["id_materia"] = materia.des_tipo_materia.decode('utf-8').upper() +" Nº " + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
-       	    dic_votacao["des_numeracao"]=""
+            dic_votacao["des_numeracao"]=""
             dic_votacao["txt_ementa"] = materia.txt_ementa
             dic_votacao["ordem_observacao"] = ordem.txt_observacao
             dic_votacao["nom_autor"] = ""
@@ -226,9 +226,9 @@ if context.REQUEST['data']!='':
             fields = autores.data_dictionary().keys()
             lista_autor = []
             for autor in autores:
-	      for field in fields:
+          for field in fields:
                       nome_autor = autor['nom_autor_join']
-	      lista_autor.append(nome_autor)
+          lista_autor.append(nome_autor)
             dic_votacao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
             dic_votacao["nom_resultado"] = ''
             for votacao in context.zsql.votacao_ordem_dia_obter_zsql(cod_materia=ordem.cod_materia, cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):
@@ -257,7 +257,7 @@ if context.REQUEST['data']!='':
                 for autor in autores:
                     for field in fields:
                         nome_autor = autor['nom_autor_join']
-	            lista_autor.append(nome_autor)
+                lista_autor.append(nome_autor)
                 autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
                 dic_substitutivo["id_substitutivo"] = '<link href="' + context.sapl_documentos.absolute_url() + '/substitutivo/' + str(substitutivo.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'SUBSTITUTIVO Nº ' + str(substitutivo.num_substitutivo) + '</link>'
                 dic_substitutivo["txt_ementa"] = substitutivo.txt_ementa
@@ -296,7 +296,7 @@ if context.REQUEST['data']!='':
                 for autor in autores:
                     for field in fields:
                         nome_autor = autor['nom_autor_join']
-	            lista_autor.append(nome_autor)
+                lista_autor.append(nome_autor)
                 autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
                 dic_emenda["id_emenda"] = '<link href="' + context.sapl_documentos.absolute_url() + '/emenda/' + str(emenda.cod_emenda) + '_emenda.pdf' + '">' + 'EMENDA Nº ' + str(emenda.num_emenda) + ' (' + emenda.des_tipo_emenda.decode('utf-8').upper() + ')</link>'
                 dic_emenda["txt_ementa"] = emenda.txt_ementa

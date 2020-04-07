@@ -38,7 +38,7 @@ if context.REQUEST['data']!='':
             dic_expediente_materia["txt_ementa"] = materia.txt_ementa
             dic_expediente_materia["ordem_observacao"] = expediente_materia.ordem_observacao
 
-       	    dic_expediente_materia["des_numeracao"]=""
+            dic_expediente_materia["des_numeracao"]=""
             numeracao = context.zsql.numeracao_obter_zsql(cod_materia=expediente_materia.cod_materia)
             if len(numeracao):
                numeracao = numeracao[0]
@@ -49,9 +49,9 @@ if context.REQUEST['data']!='':
             fields = autores.data_dictionary().keys()
             lista_autor = []
             for autor in autores:
-	      for field in fields:
+          for field in fields:
                       nome_autor = autor['nom_autor_join']
-	      lista_autor.append(nome_autor)
+          lista_autor.append(nome_autor)
             dic_expediente_materia["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
             
             dic_expediente_materia["des_turno"]=""
@@ -83,7 +83,7 @@ if context.REQUEST['data']!='':
             dic_votacao["txt_ementa"] = materia.txt_ementa
             dic_votacao["ordem_observacao"] = votacao.ordem_observacao
 
-       	    dic_votacao["des_numeracao"]=""
+            dic_votacao["des_numeracao"]=""
             numeracao = context.zsql.numeracao_obter_zsql(cod_materia=votacao.cod_materia)
             if len(numeracao):
                numeracao = numeracao[0]
@@ -94,9 +94,9 @@ if context.REQUEST['data']!='':
             fields = autores.data_dictionary().keys()
             lista_autor = []
             for autor in autores:
-	      for field in fields:
+          for field in fields:
                       nome_autor = autor['nom_autor_join']
-	      lista_autor.append(nome_autor)
+          lista_autor.append(nome_autor)
             dic_votacao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
 
             dic_votacao["des_turno"]=""

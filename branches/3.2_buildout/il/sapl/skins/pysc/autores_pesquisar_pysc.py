@@ -15,20 +15,20 @@ autores = context.zsql.autor_obter_zsql(nom_autor_match = context.REQUEST.get('n
  
 fields = autores.data_dictionary().keys()
 
-listaDic={} 	
+listaDic={}     
 autorArray = []
 for autor in autores:
-	autorDict = {}
-	for field in fields:
+    autorDict = {}
+    for field in fields:
                 autorDict['text'] = autor['nom_autor_join']
                 autorDict['value'] = autor['cod_autor']
 #                autor['value'] = field['nom_autor_join']
-#		autorDict[field] = autor[field]
-	
-	autorArray.append(autorDict)
+#       autorDict[field] = autor[field]
+    
+    autorArray.append(autorDict)
 
 listaDic.update({'options': autorArray})
- 	
+    
 return json.dumps(listaDic)
 
 #j = json.dumps(listaDic)

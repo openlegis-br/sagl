@@ -87,9 +87,9 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia, n
         fields = autores.data_dictionary().keys()
         lista_autor = []
         for autor in autores:
-	  for field in fields:
+      for field in fields:
                   nome_autor = autor['nom_autor_join']
-	  lista_autor.append(nome_autor)
+      lista_autor.append(nome_autor)
         dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
            
         des_status = " "

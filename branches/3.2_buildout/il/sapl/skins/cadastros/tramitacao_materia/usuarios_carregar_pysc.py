@@ -15,16 +15,16 @@ usuarios = context.zsql.usuario_unid_tram_obter_zsql(cod_unid_tramitacao = conte
  
 fields = usuarios.data_dictionary().keys()
 
-listaDic={} 	
+listaDic={}     
 usuarioArray = []
 for usuario in usuarios:
-	usuarioDict = {}
-	for field in fields:
+    usuarioDict = {}
+    for field in fields:
                 usuarioDict['text'] = usuario['nom_completo']
                 usuarioDict['value'] = usuario['cod_usuario']
-	usuarioArray.append(usuarioDict)
+    usuarioArray.append(usuarioDict)
 
 listaDic.update({'options': usuarioArray})
- 	
+    
 return json.dumps(listaDic)
 

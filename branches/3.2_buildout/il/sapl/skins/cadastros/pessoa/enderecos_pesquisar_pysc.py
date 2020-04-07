@@ -11,7 +11,7 @@ import simplejson as json
 
 context.REQUEST.RESPONSE.setHeader("Access-Control-Allow-Origin", "*")
 
-listaDic={} 	
+listaDic={}     
 enderecoArray = []
 
 for endereco in context.zsql.pessoa_endereco_obter_zsql():
