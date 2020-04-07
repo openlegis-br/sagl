@@ -398,16 +398,16 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def ata_gerar_pdf(self, cod_sessao_plen):
         nom_arquivo_odt = "%s"%cod_sessao_plen+'_ata_sessao.odt'
-    	nom_arquivo_pdf = "%s"%cod_sessao_plen+'_ata_sessao.pdf'
-    	url = self.sapl_documentos.ata_sessao.absolute_url() + "/%s"%nom_arquivo_odt
-    	odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
-    	output_file_pdf = os.path.normpath(nom_arquivo_pdf)
-    	renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-    	renderer.run()
-    	data = open(output_file_pdf, "rb").read()
-    	for file in [output_file_pdf]:
-    	    os.unlink(file)
-    	    self.sapl_documentos.ata_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
+        nom_arquivo_pdf = "%s"%cod_sessao_plen+'_ata_sessao.pdf'
+        url = self.sapl_documentos.ata_sessao.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.ata_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
 
     def iom_gerar_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, lst_psecretario, lst_ssecretario):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/iom.odt"
@@ -467,26 +467,26 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def ordem_dia_gerar_pdf(self, cod_sessao_plen):
         nom_arquivo_odt = "%s"%cod_sessao_plen+'_pauta_sessao.odt'
-    	nom_arquivo_pdf = "%s"%cod_sessao_plen+'_pauta_sessao.pdf'
-    	url = self.sapl_documentos.pauta_sessao.absolute_url() + "/%s"%nom_arquivo_odt
-    	odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
-    	output_file_pdf = os.path.normpath(nom_arquivo_pdf)
-    	renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-    	renderer.run()
-    	data = open(output_file_pdf, "rb").read()
-    	for file in [output_file_pdf]:
+        nom_arquivo_pdf = "%s"%cod_sessao_plen+'_pauta_sessao.pdf'
+        url = self.sapl_documentos.pauta_sessao.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()
+        for file in [output_file_pdf]:
             if nom_arquivo_pdf in self.sapl_documentos.pauta_sessao:
               documento = getattr(self.sapl_documentos.pauta_sessao,nom_arquivo_pdf)
               documento.manage_upload(file=data)
             else:
-    	      self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
+              self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
             os.unlink(file)
 
     def pdf_completo(self, cod_sessao_plen):
         writer = PdfWriter()
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         for pauta in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen):
-    	  nom_pdf_amigavel = str(pauta.num_sessao_plen)+'-sessao-'+ str(pauta.dat_inicio)+'-pauta_completa.pdf'
+          nom_pdf_amigavel = str(pauta.num_sessao_plen)+'-sessao-'+ str(pauta.dat_inicio)+'-pauta_completa.pdf'
           nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
           if hasattr(self.sapl_documentos.pauta_sessao, str(cod_sessao_plen) + '_pauta_sessao.pdf'):
              arq = getattr(self.sapl_documentos.pauta_sessao, str(cod_sessao_plen) + '_pauta_sessao.pdf')
@@ -618,16 +618,16 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def expediente_gerar_pdf(self, cod_sessao_plen):
         nom_arquivo_odt = "%s"%cod_sessao_plen+'_expediente.odt'
-    	nom_arquivo_pdf = "%s"%cod_sessao_plen+'_expediente.pdf'
-    	url = self.sapl_documentos.pauta_sessao.absolute_url() + "/%s"%nom_arquivo_odt
-    	odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
-    	output_file_pdf = os.path.normpath(nom_arquivo_pdf)
-    	renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-    	renderer.run()
-    	data = open(output_file_pdf, "rb").read()
-    	for file in [output_file_pdf]:
-    	    os.unlink(file)
-    	    self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
+        nom_arquivo_pdf = "%s"%cod_sessao_plen+'_expediente.pdf'
+        url = self.sapl_documentos.pauta_sessao.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
 
     def resumo_gerar_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, lst_psecretario, lst_ssecretario):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/resumo.odt"

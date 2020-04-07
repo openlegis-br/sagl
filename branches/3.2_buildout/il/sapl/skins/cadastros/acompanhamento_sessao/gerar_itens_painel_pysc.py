@@ -52,45 +52,47 @@ itens.append(dic_presenca)
 #dic_correspondencias["ind_exibicao"] = 0
 #itens.append(dic_correspondencias)
 
-#lst_indicacoes = []
-#for indicacoes in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=int(context.REQUEST['cod_sessao_plen']),ind_excluido=0):
-#  for materia in context.zsql.materia_obter_zsql(cod_materia=indicacoes.cod_materia, des_tipo_materia='Indicação', ind_excluido=0):
-#    num_ident_basica = materia.num_ident_basica
-#    lst_indicacoes.append(num_ident_basica)
+lst_indicacoes = []
+for indicacoes in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=int(context.REQUEST['cod_sessao_plen']),ind_excluido=0):
+  for materia in context.zsql.materia_obter_zsql(cod_materia=indicacoes.cod_materia, des_tipo_materia='Indicação', ind_excluido=0):
+    num_ident_basica = materia.num_ident_basica
+    lst_indicacoes.append(num_ident_basica)
 
-#if len(lst_indicacoes) > 0:
-#  dic_indicacoes = {}
-#  dic_indicacoes["tipo_item"] = 'Mensagem'
-#  dic_indicacoes["nom_fase"] = 'Expediente'
-#  ano = DateTime().strftime('%Y')
-#  dic_indicacoes["txt_exibicao"] = '<b>Indicações de números '+str(min(lst_indicacoes))+'/'+ano+ ' a '+str(max(lst_indicacoes))+'/'+ano + '</b><br />' + dic_sessao["txt_exibicao"]
-#  dic_indicacoes["cod_materia"] = ''
-#  dic_indicacoes["txt_autoria"] = ''
-#  dic_indicacoes["txt_turno"] = ''
-#  dic_indicacoes["ind_extrapauta"] = 0
-#  dic_indicacoes["ind_exibicao"] = 0
-#  itens.append(dic_indicacoes)
+if len(lst_indicacoes) > 0:
+  dic_indicacoes = {}
+  dic_indicacoes["tipo_item"] = 'Mensagem'
+  dic_indicacoes["cod_sessao_plen"] = sessao.cod_sessao_plen
+  dic_indicacoes["nom_fase"] = 'Expediente'
+  ano = DateTime().strftime('%Y')
+  dic_indicacoes["txt_exibicao"] = '<b>Indicações de números '+str(min(lst_indicacoes))+'/'+ano+ ' a '+str(max(lst_indicacoes))+'/'+ano + '</b><br />' + dic_sessao["txt_exibicao"]
+  dic_indicacoes["cod_materia"] = ''
+  dic_indicacoes["txt_autoria"] = ''
+  dic_indicacoes["txt_turno"] = ''
+  dic_indicacoes["ind_extrapauta"] = 0
+  dic_indicacoes["ind_exibicao"] = 0
+  itens.append(dic_indicacoes)
 
-#for requerimentos in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=int(context.REQUEST['cod_sessao_plen']),ind_excluido=0):
-#  dic_requerimentos = {}
-#  for materia in context.zsql.materia_obter_zsql(cod_materia=requerimentos.cod_materia, des_tipo_materia='Requerimento', ind_excluido=0):
-#    dic_requerimentos["tipo_item"] = 'Matéria'
-#    dic_requerimentos["nom_fase"] = 'Expediente'
-#    dic_requerimentos["txt_exibicao"] = materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa
-#    dic_requerimentos["cod_materia"] = materia.cod_materia
-#    dic_requerimentos["txt_autoria"] = ''
-#    autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
-#    fields = autores.data_dictionary().keys()
-#    lista_autor = []
-#    for autor in autores:
-#      for field in fields:
-#        nome_autor = autor['nom_autor_join']
-#      lista_autor.append(nome_autor)
-#    dic_requerimentos["txt_autoria"] = ', '.join(['%s' % (value) for (value) in lista_autor])
-#    dic_requerimentos["txt_turno"] = ''
-#    dic_requerimentos["ind_extrapauta"] = 0
-#    dic_requerimentos["ind_exibicao"] = 0
-#    itens.append(dic_requerimentos)
+for requerimentos in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=int(context.REQUEST['cod_sessao_plen']),ind_excluido=0):
+  dic_requerimentos = {}
+  for materia in context.zsql.materia_obter_zsql(cod_materia=requerimentos.cod_materia, des_tipo_materia='Requerimento', ind_excluido=0):
+    dic_requerimentos["tipo_item"] = 'Matéria'
+    dic_requerimentos["cod_sessao_plen"] = sessao.cod_sessao_plen
+    dic_requerimentos["nom_fase"] = 'Expediente'
+    dic_requerimentos["txt_exibicao"] = materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa
+    dic_requerimentos["cod_materia"] = materia.cod_materia
+    dic_requerimentos["txt_autoria"] = ''
+    autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
+    fields = autores.data_dictionary().keys()
+    lista_autor = []
+    for autor in autores:
+      for field in fields:
+        nome_autor = autor['nom_autor_join']
+      lista_autor.append(nome_autor)
+    dic_requerimentos["txt_autoria"] = ', '.join(['%s' % (value) for (value) in lista_autor])
+    dic_requerimentos["txt_turno"] = ''
+    dic_requerimentos["ind_extrapauta"] = 0
+    dic_requerimentos["ind_exibicao"] = 0
+    itens.append(dic_requerimentos)
 
 #for mocoes in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=int(context.REQUEST['cod_sessao_plen']),ind_excluido=0):
 #  dic_mocoes = {}
