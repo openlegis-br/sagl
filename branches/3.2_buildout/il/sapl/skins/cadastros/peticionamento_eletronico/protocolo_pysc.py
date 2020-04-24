@@ -75,10 +75,10 @@ def tramitar_documento(cod_documento):
     for status in context.zsql.status_tramitacao_administrativo_obter_zsql(sgl_status='PRT'):
         cod_status = status.cod_status
     for usuario in context.zsql.usuario_obter_zsql(col_username=REQUEST['AUTHENTICATED_USER'].getUserName()):
-    if usuario.cod_usuario:
-        cod_usuario_corrente = int(usuario.cod_usuario)
-    else:
-        cod_usuario_corrente = 0
+        if usuario.cod_usuario:
+           cod_usuario_corrente = int(usuario.cod_usuario)
+        else:
+           cod_usuario_corrente = 0
     if cod_unid_tram_local != None and cod_unid_tram_dest != None and cod_status != None:
         context.zsql.tramitacao_administrativo_incluir_zsql(cod_documento=cod_documento,dat_tramitacao=DateTime().strftime('%Y-%m-%d'),cod_unid_tram_local=cod_unid_tram_local,cod_usuario_local=cod_usuario_corrente,cod_unid_tram_dest=cod_unid_tram_dest,dat_encaminha=DateTime().strftime('%Y-%m-%d %H:%M:%S'),cod_status=cod_status,ind_urgencia=0,ind_ult_tramitacao=1)
 
