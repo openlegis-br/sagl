@@ -12,6 +12,7 @@ import time
 
 def cabecalho(inf_basicas_dic,imagem):
     """Gera o codigo rml do cabecalho"""
+
     tmp_data=''
     tmp_data+='\t\t\t\t<image x="2.1cm" y="25.7cm" width="59" height="62" file="' + imagem + '"/>\n'
     tmp_data+='\t\t\t\t<lines>2cm 25.4cm 19cm 25.4cm</lines>\n'
@@ -79,11 +80,11 @@ def protocolos(lst_protocolos):
             tmp_data+='\t\t<para style="P1">\n'
             tmp_data+='\t\t\t<font color="white">-</font>\n'
             tmp_data+='\t\t</para>\n'
-        tmp_data+='\t\t<barCode code="Code128" x="0.5cm" y="0.5cm" barHeight="0.35in" barWidth="0.0193in">' +dic['codigo']+ '</barCode>\n'
+            tmp_data+='\t\t<barCode code="Code128" x="0.5cm" y="0.5cm" barHeight="0.35in" barWidth="0.0193in">' +dic['codigo']+ '</barCode>\n'
             tmp_data+='\t\t<para style="P2"><b>Protocolo Geral nº '+dic['titulo']+'/'+dic['ano']+'</b></para>\n'
         if dic['data']!=None:
             tmp_data+='\t\t<para style="P2"><b>'+dic['data']+'</b></para>\n'
-        tmp_data+='\t\t<para style="P2"><b>'+dic['natureza']+' - '+dic['ident_processo']+'</b></para>\n'
+            tmp_data+='\t\t<para style="P2"><b>'+dic['natureza']+' - '+dic['ident_processo']+'</b></para>\n'
 
     tmp_data+='\t</story>\n'
     return tmp_data
