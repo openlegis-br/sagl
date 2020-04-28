@@ -1,42 +1,23 @@
--- Tempo de Geração: 07/01/2015 às 18:08
--- Versão do servidor: 5.6.17-0ubuntu0.14.04.1
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES utf8mb4 */;
 
---
--- Banco de dados: `interlegis`
---
-
---
--- Fazendo dump de dados para tabela `arquivo_tipo_recipiente`
---
 
 INSERT INTO `arquivo_tipo_recipiente` (`tip_recipiente`, `des_tipo_recipiente`, `ind_excluido`) VALUES
 (1, 'Caixa Arquivo', 0),
 (2, 'Pasta Suspensa', 0),
 (3, 'Pasta A-Z', 0);
-SET FOREIGN_KEY_CHECKS=1;
-
---
--- Fazendo dump de dados para tabela `arquivo_tipo_suporte`
---
 
 INSERT INTO `arquivo_tipo_suporte` (`tip_suporte`, `des_tipo_suporte`, `ind_excluido`) VALUES
 (1, 'Papel', 0),
 (2, 'Fita Magnética', 0),
 (3, 'CD / DVD', 0);
-SET FOREIGN_KEY_CHECKS=1;
-
---
--- Fazendo dump de dados para tabela `arquivo_tipo_tit_documental`
---
 
 INSERT INTO `arquivo_tipo_tit_documental` (`tip_tit_documental`, `sgl_tip_tit_documental`, `des_tipo_tit_documental`, `ind_excluido`) VALUES
 (1, 'PL', 'LEI', 0),
@@ -47,10 +28,6 @@ INSERT INTO `arquivo_tipo_tit_documental` (`tip_tit_documental`, `sgl_tip_tit_do
 (6, 'AM', 'ATO DA MESA', 0),
 (7, 'EM', 'EMENDA LOM', 0),
 (8, 'SEP', 'CEI', 0);
-
---
--- Fazendo dump de dados para tabela `assunto_norma`
---
 
 INSERT INTO `assunto_norma` (`cod_assunto`, `des_assunto`, `des_estendida`, `ind_excluido`) VALUES
 (1, 'Nao classificada', ' ', 1),
@@ -77,43 +54,24 @@ INSERT INTO `assunto_norma` (`cod_assunto`, `des_assunto`, `des_estendida`, `ind
 (30, 'Servidor Público', ' \r\n           ', 0),
 (31, 'Remuneração / Vencimentos / Salários / Subsídios', ' \r\n           ', 0);
 
---
--- Fazendo dump de dados para tabela `autor`
---
-
 INSERT INTO `autor` (`cod_autor`, `cod_partido`, `cod_comissao`, `cod_bancada`, `cod_parlamentar`, `tip_autor`, `nom_autor`, `des_cargo`, `col_username`, `end_email`, `ind_excluido`) VALUES
 (1, NULL, NULL, NULL, NULL, 7, 'Prefeito Municipal', 'Prefeito', NULL, NULL, 0),
 (2, NULL, NULL, NULL, NULL, 5, 'Mesa Diretora', 'Mesa', NULL, NULL, 0),
 (3, NULL, NULL, NULL, NULL, 4, 'Iniciativa Popular', 'Cidadão', NULL, NULL, 0);
-
---
--- Fazendo dump de dados para tabela `cargo_bancada`
---
 
 INSERT INTO `cargo_bancada` (`cod_cargo`, `des_cargo`, `ind_unico`, `ind_excluido`) VALUES
 (1, 'Líder', 1, 0),
 (2, 'Vice-Líder', 1, 0),
 (3, 'Membro', 0, 0);
 
---
--- Fazendo dump de dados para tabela `cargo_comissao`
---
-
 INSERT INTO `cargo_comissao` (`cod_cargo`, `des_cargo`, `ind_unico`, `ind_excluido`) VALUES
 (1, 'Presidente', 1, 0),
 (2, 'Membro', 0, 0),
 (3, 'Suplente', 0, 0);
 
---
--- Fazendo dump de dados para tabela `cargo_executivo`
---
-
-INSERT INTO `cargo_executivo` (`cod_cargo`, `des_cargo`, `ind_excluido`) VALUES ('1', 'Prefeito ', '0');
-INSERT INTO `cargo_executivo` (`cod_cargo`, `des_cargo`, `ind_excluido`) VALUES ('2', 'Vice-prefeito', '0');
-
---
--- Fazendo dump de dados para tabela `cargo_mesa`
---
+INSERT INTO `cargo_executivo` (`cod_cargo`, `des_cargo`, `ind_excluido`) VALUES
+(1, 'Prefeito ', 0),
+(2, 'Vice-prefeito', 0);
 
 INSERT INTO `cargo_mesa` (`cod_cargo`, `des_cargo`, `ind_unico`, `ind_excluido`) VALUES
 (1, 'Presidente', 1, 0),
@@ -121,13 +79,9 @@ INSERT INTO `cargo_mesa` (`cod_cargo`, `des_cargo`, `ind_unico`, `ind_excluido`)
 (3, '1º Secretário', 1, 0),
 (4, '2º Secretário', 1, 0);
 
---
--- Fazendo dump de dados para tabela `localidade`
---
-
 INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
 (1100000, 'Rondônia', 'RONDONIA', 'U', 'RO', 'NO', 0),
-(1100015, 'Alta Floresta D''oeste', 'ALTA FLORESTA D''OESTE', 'M', 'RO', 'NO', 0),
+(1100015, 'Alta Floresta D\'oeste', 'ALTA FLORESTA D\'OESTE', 'M', 'RO', 'NO', 0),
 (1100023, 'Ariquemes', 'ARIQUEMES', 'M', 'RO', 'NO', 0),
 (1100031, 'Cabixi', 'CABIXI', 'M', 'RO', 'NO', 0),
 (1100049, 'Cacoal', 'CACOAL', 'M', 'RO', 'NO', 0),
@@ -135,23 +89,23 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (1100064, 'Colorado do Oeste', 'COLORADO DO OESTE', 'M', 'RO', 'NO', 0),
 (1100072, 'Corumbiara', 'CORUMBIARA', 'M', 'RO', 'NO', 0),
 (1100080, 'Costa Marques', 'COSTA MARQUES', 'M', 'RO', 'NO', 0),
-(1100098, 'Espigão D''oeste', 'ESPIGAO D''OESTE', 'M', 'RO', 'NO', 0),
+(1100098, 'Espigão D\'oeste', 'ESPIGAO D\'OESTE', 'M', 'RO', 'NO', 0),
 (1100106, 'Guajará-Mirim', 'GUAJARA-MIRIM', 'M', 'RO', 'NO', 0),
 (1100114, 'Jaru', 'JARU', 'M', 'RO', 'NO', 0),
 (1100122, 'Ji-paraná', 'JI-PARANA', 'M', 'RO', 'NO', 0),
-(1100130, 'Machadinho D''oeste', 'MACHADINHO D''OESTE', 'M', 'RO', 'NO', 0),
-(1100148, 'Nova Brasilândia D''oeste', 'NOVA BRASILANDIA D''OESTE', 'M', 'RO', 'NO', 0),
+(1100130, 'Machadinho D\'oeste', 'MACHADINHO D\'OESTE', 'M', 'RO', 'NO', 0),
+(1100148, 'Nova Brasilândia D\'oeste', 'NOVA BRASILANDIA D\'OESTE', 'M', 'RO', 'NO', 0),
 (1100155, 'Ouro Preto do Oeste', 'OURO PRETO DO OESTE', 'M', 'RO', 'NO', 0),
 (1100189, 'Pimenta Bueno', 'PIMENTA BUENO', 'M', 'RO', 'NO', 0),
 (1100205, 'Porto Velho', 'PORTO VELHO', 'M', 'RO', 'NO', 0),
 (1100254, 'Presidente Médici', 'PRESIDENTE MEDICI', 'M', 'RO', 'NO', 0),
 (1100262, 'Rio Crespo', 'RIO CRESPO', 'M', 'RO', 'NO', 0),
 (1100288, 'Rolim de Moura', 'ROLIM DE MOURA', 'M', 'RO', 'NO', 0),
-(1100296, 'Santa Luzia D''oeste', 'SANTA LUZIA D''OESTE', 'M', 'RO', 'NO', 0),
+(1100296, 'Santa Luzia D\'oeste', 'SANTA LUZIA D\'OESTE', 'M', 'RO', 'NO', 0),
 (1100304, 'Vilhena', 'VILHENA', 'M', 'RO', 'NO', 0),
 (1100320, 'São Miguel do Guaporé', 'SAO MIGUEL DO GUAPORE', 'M', 'RO', 'NO', 0),
 (1100338, 'Nova Mamoré', 'NOVA MAMORE', 'M', 'RO', 'NO', 0),
-(1100346, 'Alvorada D''oeste', 'ALVORADA D''OESTE', 'M', 'RO', 'NO', 0),
+(1100346, 'Alvorada D\'oeste', 'ALVORADA D\'OESTE', 'M', 'RO', 'NO', 0),
 (1100379, 'Alto Alegre do Parecis', 'ALTO ALEGRE DO PARECIS', 'M', 'RO', 'NO', 0),
 (1100403, 'Alto Paraíso', 'ALTO PARAISO', 'M', 'RO', 'NO', 0),
 (1100452, 'Buritis', 'BURITIS', 'M', 'RO', 'NO', 0),
@@ -171,7 +125,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (1101450, 'Parecis', 'PARECIS', 'M', 'RO', 'NO', 0),
 (1101468, 'Pimenteiras do Oeste', 'PIMENTEIRAS DO OESTE', 'M', 'RO', 'NO', 0),
 (1101476, 'Primavera de Rondônia', 'PRIMAVERA DE RONDONIA', 'M', 'RO', 'NO', 0),
-(1101484, 'São Felipe D''Oeste', 'SAO FELIPE D''OESTE', 'M', 'RO', 'NO', 0),
+(1101484, 'São Felipe D\'Oeste', 'SAO FELIPE D\'OESTE', 'M', 'RO', 'NO', 0),
 (1101492, 'São Francisco do Guaporé', 'SAO FRANCISCO DO GUAPORE', 'M', 'RO', 'NO', 0),
 (1101500, 'Seringueiras', 'SERINGUEIRAS', 'M', 'RO', 'NO', 0),
 (1101559, 'Teixeirópolis', 'TEIXEIROPOLIS', 'M', 'RO', 'NO', 0),
@@ -371,7 +325,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (1505494, 'Palestina do Pará', 'PALESTINA DO PARA', 'M', 'PA', 'NO', 0),
 (1505502, 'Paragominas', 'PARAGOMINAS', 'M', 'PA', 'NO', 0),
 (1505536, 'Parauapebas', 'PARAUAPEBAS', 'M', 'PA', 'NO', 0),
-(1505551, 'Pau D''Arco', 'PAU D''ARCO', 'M', 'PA', 'NO', 0),
+(1505551, 'Pau D\'Arco', 'PAU D\'ARCO', 'M', 'PA', 'NO', 0),
 (1505601, 'Peixe-Boi', 'PEIXE-BOI', 'M', 'PA', 'NO', 0),
 (1505635, 'Piçarra', 'PICARRA', 'M', 'PA', 'NO', 0),
 (1505650, 'Placas', 'PLACAS', 'M', 'PA', 'NO', 0),
@@ -535,7 +489,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (1715754, 'Palmeirópolis', 'PALMEIROPOLIS', 'M', 'TO', 'NO', 0),
 (1716109, 'Paraíso do Tocantins', 'PARAISO DO TOCANTINS', 'M', 'TO', 'NO', 0),
 (1716208, 'Paranã', 'PARANA', 'M', 'TO', 'NO', 0),
-(1716307, 'Pau D''Arco', 'PAU D''ARCO', 'M', 'TO', 'NO', 0),
+(1716307, 'Pau D\'Arco', 'PAU D\'ARCO', 'M', 'TO', 'NO', 0),
 (1716505, 'Pedro Afonso', 'PEDRO AFONSO', 'M', 'TO', 'NO', 0),
 (1716604, 'Peixe', 'PEIXE', 'M', 'TO', 'NO', 0),
 (1716653, 'Pequizeiro', 'PEQUIZEIRO', 'M', 'TO', 'NO', 0),
@@ -710,7 +664,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2107258, 'Nova Colinas', 'NOVA COLINAS', 'M', 'MA', 'NE', 0),
 (2107308, 'Nova Iorque', 'NOVA IORQUE', 'M', 'MA', 'NE', 0),
 (2107357, 'Nova Olinda do Maranhão', 'NOVA OLINDA DO MARANHAO', 'M', 'MA', 'NE', 0),
-(2107407, 'Olho D''agua das Cunhas', 'OLHO D''AGUA DAS CUNHAS', 'M', 'MA', 'NE', 0),
+(2107407, 'Olho D\'agua das Cunhas', 'OLHO D\'AGUA DAS CUNHAS', 'M', 'MA', 'NE', 0),
 (2107456, 'Olinda Nova do Maranhão', 'OLINDA NOVA DO MARANHAO', 'M', 'MA', 'NE', 0),
 (2107506, 'Paço do Lumiar', 'PACO DO LUMIAR', 'M', 'MA', 'NE', 0),
 (2107605, 'Palmeirândia', 'PALMEIRANDIA', 'M', 'MA', 'NE', 0),
@@ -818,7 +772,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2201051, 'Assunção do Piauí', 'ASSUNCAO DO PIAUI', 'M', 'PI', 'NE', 0),
 (2201101, 'Avelino Lopes', 'AVELINO LOPES', 'M', 'PI', 'NE', 0),
 (2201150, 'Baixa Grande do Ribeiro', 'BAIXA GRANDE DO RIBEIRO', 'M', 'PI', 'NE', 0),
-(2201176, 'Barra D''Alcântara', 'BARRA D''ALCANTARA', 'M', 'PI', 'NE', 0),
+(2201176, 'Barra D\'Alcântara', 'BARRA D\'ALCANTARA', 'M', 'PI', 'NE', 0),
 (2201200, 'Barras', 'BARRAS', 'M', 'PI', 'NE', 0),
 (2201309, 'Barreiras do Piauí', 'BARREIRAS DO PIAUI', 'M', 'PI', 'NE', 0),
 (2201408, 'Barro Duro', 'BARRO DURO', 'M', 'PI', 'NE', 0),
@@ -913,15 +867,15 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2205532, 'Jurema', 'JUREMA', 'M', 'PI', 'NE', 0),
 (2205540, 'Lagoinha do Piauí', 'LAGOINHA DO PIAUI', 'M', 'PI', 'NE', 0),
 (2205557, 'Lagoa Alegre', 'LAGOA ALEGRE', 'M', 'PI', 'NE', 0),
-(2205565, 'Lagoa do Barro do Piauí', 'LAGOA DO BARRO DO PIAUI', 'M', 'PI', 'NE', 0);
-INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
+(2205565, 'Lagoa do Barro do Piauí', 'LAGOA DO BARRO DO PIAUI', 'M', 'PI', 'NE', 0),
 (2205573, 'Lagoa de São Francisco', 'LAGOA DE SAO FRANCISCO', 'M', 'PI', 'NE', 0),
 (2205581, 'Lagoa do Piauí', 'LAGOA DO PIAUI', 'M', 'PI', 'NE', 0),
 (2205599, 'Lagoa do Sítio', 'LAGOA DO SITIO', 'M', 'PI', 'NE', 0),
 (2205607, 'Landri Sales', 'LANDRI SALES', 'M', 'PI', 'NE', 0),
 (2205706, 'Luís Correia', 'LUIS CORREIA', 'M', 'PI', 'NE', 0),
 (2205805, 'Luzilândia', 'LUZILANDIA', 'M', 'PI', 'NE', 0),
-(2205854, 'Madeiro', 'MADEIRO', 'M', 'PI', 'NE', 0),
+(2205854, 'Madeiro', 'MADEIRO', 'M', 'PI', 'NE', 0);
+INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
 (2205904, 'Manoel Emidio', 'MANOEL EMIDIO', 'M', 'PI', 'NE', 0),
 (2205953, 'Marcolândia', 'MARCOLANDIA', 'M', 'PI', 'NE', 0),
 (2206001, 'Marcos Parente', 'MARCOS PARENTE', 'M', 'PI', 'NE', 0),
@@ -942,7 +896,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2206902, 'Novo Oriente do Piauí', 'NOVO ORIENTE DO PIAUI', 'M', 'PI', 'NE', 0),
 (2206951, 'Novo Santo Antônio', 'NOVO SANTO ANTONIO', 'M', 'PI', 'NE', 0),
 (2207009, 'Oeiras', 'OEIRAS', 'M', 'PI', 'NE', 0),
-(2207108, 'Olho D''Água do Piauí', 'OLHO D''AGUA DO PIAUI', 'M', 'PI', 'NE', 0),
+(2207108, 'Olho D\'Água do Piauí', 'OLHO D\'AGUA DO PIAUI', 'M', 'PI', 'NE', 0),
 (2207207, 'Padre Marcos', 'PADRE MARCOS', 'M', 'PI', 'NE', 0),
 (2207306, 'Paes Landim', 'PAES LANDIM', 'M', 'PI', 'NE', 0),
 (2207355, 'Pajeu do Piauí', 'PAJEU DO PIAUI', 'M', 'PI', 'NE', 0),
@@ -953,7 +907,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2207702, 'Parnaíba', 'PARNAIBA', 'M', 'PI', 'NE', 0),
 (2207751, 'Passagem Franca do Piauí', 'PASSAGEM FRANCA DO PIAUI', 'M', 'PI', 'NE', 0),
 (2207777, 'Patos do Piauí', 'PATOS DO PIAUI', 'M', 'PI', 'NE', 0),
-(2207793, 'Pau D''Arco do Piauí', 'PAU D''ARCO DO PIAUI', 'M', 'PI', 'NE', 0),
+(2207793, 'Pau D\'Arco do Piauí', 'PAU D\'ARCO DO PIAUI', 'M', 'PI', 'NE', 0),
 (2207801, 'Paulistana', 'PAULISTANA', 'M', 'PI', 'NE', 0),
 (2207850, 'Pavussu', 'PAVUSSU', 'M', 'PI', 'NE', 0),
 (2207900, 'Pedro II', 'PEDRO II', 'M', 'PI', 'NE', 0),
@@ -1278,7 +1232,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2406007, 'José da Penha', 'JOSE DA PENHA', 'M', 'RN', 'NE', 0),
 (2406106, 'Jucurutu', 'JUCURUTU', 'M', 'RN', 'NE', 0),
 (2406155, 'Jundiá', 'JUNDIA', 'M', 'RN', 'NE', 0),
-(2406205, 'Lagoa D''Anta', 'LAGOA D''ANTA', 'M', 'RN', 'NE', 0),
+(2406205, 'Lagoa D\'Anta', 'LAGOA D\'ANTA', 'M', 'RN', 'NE', 0),
 (2406304, 'Lagoa de Pedras', 'LAGOA DE PEDRAS', 'M', 'RN', 'NE', 0),
 (2406403, 'Lagoa de Velhos', 'LAGOA DE VELHOS', 'M', 'RN', 'NE', 0),
 (2406502, 'Lagoa Nova', 'LAGOA NOVA', 'M', 'RN', 'NE', 0),
@@ -1301,7 +1255,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2408102, 'Natal', 'NATAL', 'M', 'RN', 'NE', 0),
 (2408201, 'Nísia Floresta', 'NISIA FLORESTA', 'M', 'RN', 'NE', 0),
 (2408300, 'Nova Cruz', 'NOVA CRUZ', 'M', 'RN', 'NE', 0),
-(2408409, 'Olho-d''Água do Borges', 'OLHO-D''AGUA DO BORGES', 'M', 'RN', 'NE', 0),
+(2408409, 'Olho-d\'Água do Borges', 'OLHO-D\'AGUA DO BORGES', 'M', 'RN', 'NE', 0),
 (2408508, 'Ouro Branco', 'OURO BRANCO', 'M', 'RN', 'NE', 0),
 (2408607, 'Paranã', 'PARANA', 'M', 'RN', 'NE', 0),
 (2408706, 'Paraú', 'PARAU', 'M', 'RN', 'NE', 0),
@@ -1486,7 +1440,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2508505, 'Livramento', 'LIVRAMENTO', 'M', 'PB', 'NE', 0),
 (2508554, 'Logradouro', 'LOGRADOURO', 'M', 'PB', 'NE', 0),
 (2508604, 'Lucena', 'LUCENA', 'M', 'PB', 'NE', 0),
-(2508703, 'Mãe D''Água', 'MAE D''AGUA', 'M', 'PB', 'NE', 0),
+(2508703, 'Mãe D\'Água', 'MAE D\'AGUA', 'M', 'PB', 'NE', 0),
 (2508802, 'Malta', 'MALTA', 'M', 'PB', 'NE', 0),
 (2508901, 'Mamanguape', 'MAMANGUAPE', 'M', 'PB', 'NE', 0),
 (2509008, 'Manaíra', 'MANAIRA', 'M', 'PB', 'NE', 0),
@@ -1508,7 +1462,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2510105, 'Nova Floresta', 'NOVA FLORESTA', 'M', 'PB', 'NE', 0),
 (2510204, 'Nova Olinda', 'NOVA OLINDA', 'M', 'PB', 'NE', 0),
 (2510303, 'Nova Palmeira', 'NOVA PALMEIRA', 'M', 'PB', 'NE', 0),
-(2510402, 'Olho D''Água', 'OLHO D''AGUA', 'M', 'PB', 'NE', 0),
+(2510402, 'Olho D\'Água', 'OLHO D\'AGUA', 'M', 'PB', 'NE', 0),
 (2510501, 'Olivedos', 'OLIVEDOS', 'M', 'PB', 'NE', 0),
 (2510600, 'Ouro Velho', 'OURO VELHO', 'M', 'PB', 'NE', 0),
 (2510659, 'Parari', 'PARARI', 'M', 'PB', 'NE', 0),
@@ -1751,8 +1705,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2612802, 'Santa Terezinha', 'SANTA TEREZINHA', 'M', 'PE', 'NE', 0),
 (2612901, 'São Benedito do Sul', 'SAO BENEDITO DO SUL', 'M', 'PE', 'NE', 0),
 (2613008, 'São Bento do Una', 'SAO BENTO DO UNA', 'M', 'PE', 'NE', 0),
-(2613107, 'São Caitano', 'SAO CAITANO', 'M', 'PE', 'NE', 0);
-INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
+(2613107, 'São Caitano', 'SAO CAITANO', 'M', 'PE', 'NE', 0),
 (2613206, 'São João', 'SAO JOAO', 'M', 'PE', 'NE', 0),
 (2613305, 'São Joaquim do Monte', 'SAO JOAQUIM DO MONTE', 'M', 'PE', 'NE', 0),
 (2613404, 'São José da Coroa Grande', 'SAO JOSE DA COROA GRANDE', 'M', 'PE', 'NE', 0),
@@ -1764,7 +1717,8 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2614006, 'Serrita', 'SERRITA', 'M', 'PE', 'NE', 0),
 (2614105, 'Sertânia', 'SERTANIA', 'M', 'PE', 'NE', 0),
 (2614204, 'Sirinhaém', 'SIRINHAEM', 'M', 'PE', 'NE', 0),
-(2614303, 'Moreilândia', 'MOREILANDIA', 'M', 'PE', 'NE', 0),
+(2614303, 'Moreilândia', 'MOREILANDIA', 'M', 'PE', 'NE', 0);
+INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
 (2614402, 'Solidao', 'SOLIDAO', 'M', 'PE', 'NE', 0),
 (2614501, 'Surubim', 'SURUBIM', 'M', 'PE', 'NE', 0),
 (2614600, 'Tabira', 'TABIRA', 'M', 'PE', 'NE', 0),
@@ -1849,9 +1803,9 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2705408, 'Monteirópolis', 'MONTEIROPOLIS', 'M', 'AL', 'NE', 0),
 (2705507, 'Murici', 'MURICI', 'M', 'AL', 'NE', 0),
 (2705606, 'Novo Lino', 'NOVO LINO', 'M', 'AL', 'NE', 0),
-(2705705, 'Olho D''Água das Flores', 'OLHO D''AGUA DAS FLORES', 'M', 'AL', 'NE', 0),
-(2705804, 'Olho D''Água do Casado', 'OLHO D''AGUA DO CASADO', 'M', 'AL', 'NE', 0),
-(2705903, 'Olho D''Água Grande', 'OLHO D''AGUA GRANDE', 'M', 'AL', 'NE', 0),
+(2705705, 'Olho D\'Água das Flores', 'OLHO D\'AGUA DAS FLORES', 'M', 'AL', 'NE', 0),
+(2705804, 'Olho D\'Água do Casado', 'OLHO D\'AGUA DO CASADO', 'M', 'AL', 'NE', 0),
+(2705903, 'Olho D\'Água Grande', 'OLHO D\'AGUA GRANDE', 'M', 'AL', 'NE', 0),
 (2706000, 'Olivença', 'OLIVENCA', 'M', 'AL', 'NE', 0),
 (2706109, 'Ouro Branco', 'OURO BRANCO', 'M', 'AL', 'NE', 0),
 (2706208, 'Palestina', 'PALESTINA', 'M', 'AL', 'NE', 0),
@@ -1885,7 +1839,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2708808, 'São Sebastião', 'SAO SEBASTIAO', 'M', 'AL', 'NE', 0),
 (2708907, 'Satuba', 'SATUBA', 'M', 'AL', 'NE', 0),
 (2708956, 'Senador Rui Palmeira', 'SENADOR RUI PALMEIRA', 'M', 'AL', 'NE', 0),
-(2709004, 'Tanque D''arca', 'TANQUE D''ARCA', 'M', 'AL', 'NE', 0),
+(2709004, 'Tanque D\'arca', 'TANQUE D\'ARCA', 'M', 'AL', 'NE', 0),
 (2709103, 'Taquarana', 'TAQUARANA', 'M', 'AL', 'NE', 0),
 (2709152, 'Teotônio Vilela', 'TEOTONIO VILELA', 'M', 'AL', 'NE', 0),
 (2709202, 'Traipu', 'TRAIPU', 'M', 'AL', 'NE', 0),
@@ -1921,7 +1875,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2802908, 'Itabaiana', 'ITABAIANA', 'M', 'SE', 'NE', 0),
 (2803005, 'Itabaianinha', 'ITABAIANINHA', 'M', 'SE', 'NE', 0),
 (2803104, 'Itabi', 'ITABI', 'M', 'SE', 'NE', 0),
-(2803203, 'Itaporanga D''ajuda', 'ITAPORANGA D''AJUDA', 'M', 'SE', 'NE', 0),
+(2803203, 'Itaporanga D\'ajuda', 'ITAPORANGA D\'AJUDA', 'M', 'SE', 'NE', 0),
 (2803302, 'Japaratuba', 'JAPARATUBA', 'M', 'SE', 'NE', 0),
 (2803401, 'Japoatã', 'JAPOATA', 'M', 'SE', 'NE', 0),
 (2803500, 'Lagarto', 'LAGARTO', 'M', 'SE', 'NE', 0),
@@ -2087,7 +2041,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (2909802, 'Cruz das Almas', 'CRUZ DAS ALMAS', 'M', 'BA', 'NE', 0),
 (2909901, 'Curaçá', 'CURACA', 'M', 'BA', 'NE', 0),
 (2910008, 'Dário Meira', 'DARIO MEIRA', 'M', 'BA', 'NE', 0),
-(2910057, 'Dias D''Ávila', 'DIAS D''AVILA', 'M', 'BA', 'NE', 0),
+(2910057, 'Dias D\'Ávila', 'DIAS D\'AVILA', 'M', 'BA', 'NE', 0),
 (2910107, 'Dom Basílio', 'DOM BASILIO', 'M', 'BA', 'NE', 0),
 (2910206, 'Dom Macedo Costa', 'DOM MACEDO COSTA', 'M', 'BA', 'NE', 0),
 (2910305, 'Elísio Medrado', 'ELISIO MEDRADO', 'M', 'BA', 'NE', 0),
@@ -2590,8 +2544,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3118304, 'Conselheiro Lafaiete', 'CONSELHEIRO LAFAIETE', 'M', 'MG', 'SD', 0),
 (3118403, 'Conselheiro Pena', 'CONSELHEIRO PENA', 'M', 'MG', 'SD', 0),
 (3118502, 'Consolação', 'CONSOLACAO', 'M', 'MG', 'SD', 0),
-(3118601, 'Contagem', 'CONTAGEM', 'M', 'MG', 'SD', 0);
-INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
+(3118601, 'Contagem', 'CONTAGEM', 'M', 'MG', 'SD', 0),
 (3118700, 'Coqueiral', 'COQUEIRAL', 'M', 'MG', 'SD', 0),
 (3118809, 'Coração de Jesus', 'CORACAO DE JESUS', 'M', 'MG', 'SD', 0),
 (3118908, 'Cordisburgo', 'CORDISBURGO', 'M', 'MG', 'SD', 0),
@@ -2609,7 +2562,8 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3120003, 'Corrego Novo', 'CORREGO NOVO', 'M', 'MG', 'SD', 0),
 (3120102, 'Couto de Magalhães de Minas', 'COUTO DE MAGALHAES DE MINAS', 'M', 'MG', 'SD', 0),
 (3120151, 'Crisólita', 'CRISOLITA', 'M', 'MG', 'SD', 0),
-(3120201, 'Cristais', 'CRISTAIS', 'M', 'MG', 'SD', 0),
+(3120201, 'Cristais', 'CRISTAIS', 'M', 'MG', 'SD', 0);
+INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
 (3120300, 'Cristália', 'CRISTALIA', 'M', 'MG', 'SD', 0),
 (3120409, 'Cristiano Otoni', 'CRISTIANO OTONI', 'M', 'MG', 'SD', 0),
 (3120508, 'Cristina', 'CRISTINA', 'M', 'MG', 'SD', 0),
@@ -2916,7 +2870,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3145356, 'Novo Oriente de Minas', 'NOVO ORIENTE DE MINAS', 'M', 'MG', 'SD', 0),
 (3145372, 'Novorizonte', 'NOVORIZONTE', 'M', 'MG', 'SD', 0),
 (3145406, 'Olaria', 'OLARIA', 'M', 'MG', 'SD', 0),
-(3145455, 'Olhos-D''Água', 'OLHOS-D''AGUA', 'M', 'MG', 'SD', 0),
+(3145455, 'Olhos-D\'Água', 'OLHOS-D\'AGUA', 'M', 'MG', 'SD', 0),
 (3145505, 'Olimpio Noronha', 'OLIMPIO NORONHA', 'M', 'MG', 'SD', 0),
 (3145604, 'Oliveira', 'OLIVEIRA', 'M', 'MG', 'SD', 0),
 (3145703, 'Oliveira Fortes', 'OLIVEIRA FORTES', 'M', 'MG', 'SD', 0),
@@ -2977,7 +2931,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3150307, 'Piedade do Rio Grande', 'PIEDADE DO RIO GRANDE', 'M', 'MG', 'SD', 0),
 (3150406, 'Piedade dos Gerais', 'PIEDADE DOS GERAIS', 'M', 'MG', 'SD', 0),
 (3150505, 'Pimenta', 'PIMENTA', 'M', 'MG', 'SD', 0),
-(3150539, 'Pingo D''agua', 'PINGO D''AGUA', 'M', 'MG', 'SD', 0),
+(3150539, 'Pingo D\'agua', 'PINGO D\'AGUA', 'M', 'MG', 'SD', 0),
 (3150570, 'Pintópolis', 'PINTOPOLIS', 'M', 'MG', 'SD', 0),
 (3150604, 'Piracema', 'PIRACEMA', 'M', 'MG', 'SD', 0),
 (3150703, 'Pirajuba', 'PIRAJUBA', 'M', 'MG', 'SD', 0),
@@ -3397,8 +3351,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3305109, 'São João de Meriti', 'SAO JOAO DE MERITI', 'M', 'RJ', 'SD', 0),
 (3305133, 'São José de Ubá', 'SAO JOSE DE UBA', 'M', 'RJ', 'SD', 0),
 (3305158, 'São José do Vale do Rio Preto', 'SAO JOSE DO VALE DO RIO PRETO', 'M', 'RJ', 'SD', 0),
-(3305208, 'São Pedro da Aldeia', 'SAO PEDRO DA ALDEIA', 'M', 'RJ', 'SD', 0);
-INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
+(3305208, 'São Pedro da Aldeia', 'SAO PEDRO DA ALDEIA', 'M', 'RJ', 'SD', 0),
 (3305307, 'São Sebastião do Alto', 'SAO SEBASTIAO DO ALTO', 'M', 'RJ', 'SD', 0),
 (3305406, 'Sapucaia', 'SAPUCAIA', 'M', 'RJ', 'SD', 0),
 (3305505, 'Saquarema', 'SAQUAREMA', 'M', 'RJ', 'SD', 0),
@@ -3425,7 +3378,8 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3500758, 'Alambari', 'ALAMBARI', 'M', 'SP', 'SD', 0),
 (3500808, 'Alfredo Marcondes', 'ALFREDO MARCONDES', 'M', 'SP', 'SD', 0),
 (3500907, 'Altair', 'ALTAIR', 'M', 'SP', 'SD', 0),
-(3501004, 'Altinópolis', 'ALTINOPOLIS', 'M', 'SP', 'SD', 0),
+(3501004, 'Altinópolis', 'ALTINOPOLIS', 'M', 'SP', 'SD', 0);
+INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
 (3501103, 'Alto Alegre', 'ALTO ALEGRE', 'M', 'SP', 'SD', 0),
 (3501152, 'Alumínio', 'ALUMINIO', 'M', 'SP', 'SD', 0),
 (3501202, 'Álvares Florence', 'ALVARES FLORENCE', 'M', 'SP', 'SD', 0),
@@ -3442,7 +3396,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3502309, 'Anhembi', 'ANHEMBI', 'M', 'SP', 'SD', 0),
 (3502408, 'Anhumas', 'ANHUMAS', 'M', 'SP', 'SD', 0),
 (3502507, 'Aparecida', 'APARECIDA', 'M', 'SP', 'SD', 0),
-(3502606, 'Aparecida D''oeste', 'APARECIDA D''OESTE', 'M', 'SP', 'SD', 0),
+(3502606, 'Aparecida D\'oeste', 'APARECIDA D\'OESTE', 'M', 'SP', 'SD', 0),
 (3502705, 'Apiaí', 'APIAI', 'M', 'SP', 'SD', 0),
 (3502754, 'Aracariguama', 'ARACARIGUAMA', 'M', 'SP', 'SD', 0),
 (3502804, 'Aracatuba', 'ARACATUBA', 'M', 'SP', 'SD', 0),
@@ -3587,7 +3541,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3515152, 'Engenheiro Coelho', 'ENGENHEIRO COELHO', 'M', 'SP', 'SD', 0),
 (3515186, 'Espírito Santo do Pinhal', 'ESPIRITO SANTO DO PINHAL', 'M', 'SP', 'SD', 0),
 (3515194, 'Espírito Santo do Turvo', 'ESPIRITO SANTO DO TURVO', 'M', 'SP', 'SD', 0),
-(3515202, 'Estrela D''Oeste', 'ESTRELA D''OESTE', 'M', 'SP', 'SD', 0),
+(3515202, 'Estrela D\'Oeste', 'ESTRELA D\'OESTE', 'M', 'SP', 'SD', 0),
 (3515301, 'Estrela do Norte', 'ESTRELA DO NORTE', 'M', 'SP', 'SD', 0),
 (3515350, 'Euclides da Cunha Paulista', 'EUCLIDES DA CUNHA PAULISTA', 'M', 'SP', 'SD', 0),
 (3515400, 'Fartura', 'FARTURA', 'M', 'SP', 'SD', 0),
@@ -3618,7 +3572,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3517703, 'Guará', 'GUARA', 'M', 'SP', 'SD', 0),
 (3517802, 'Guaraca', 'GUARACAI', 'M', 'SP', 'SD', 0),
 (3517901, 'Guaraçaí', 'GUARACI', 'M', 'SP', 'SD', 0),
-(3518008, 'Guarani D''Oeste', 'GUARANI D''OESTE', 'M', 'SP', 'SD', 0),
+(3518008, 'Guarani D\'Oeste', 'GUARANI D\'OESTE', 'M', 'SP', 'SD', 0),
 (3518107, 'Guarantã', 'GUARANTA', 'M', 'SP', 'SD', 0),
 (3518206, 'Guararapes', 'GUARARAPES', 'M', 'SP', 'SD', 0),
 (3518305, 'Guararema', 'GUARAREMA', 'M', 'SP', 'SD', 0),
@@ -3810,7 +3764,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3534906, 'Pacaembu', 'PACAEMBU', 'M', 'SP', 'SD', 0),
 (3535002, 'Palestina', 'PALESTINA', 'M', 'SP', 'SD', 0),
 (3535101, 'Palmares Paulista', 'PALMARES PAULISTA', 'M', 'SP', 'SD', 0),
-(3535200, 'Palmeira D''Oeste', 'PALMEIRA D''OESTE', 'M', 'SP', 'SD', 0),
+(3535200, 'Palmeira D\'Oeste', 'PALMEIRA D\'OESTE', 'M', 'SP', 'SD', 0),
 (3535309, 'Palmital', 'PALMITAL', 'M', 'SP', 'SD', 0),
 (3535408, 'Panorama', 'PANORAMA', 'M', 'SP', 'SD', 0),
 (3535507, 'Paraguaçu Paulista', 'PARAGUACU PAULISTA', 'M', 'SP', 'SD', 0),
@@ -3927,9 +3881,9 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3545506, 'Sandovalina', 'SANDOVALINA', 'M', 'SP', 'SD', 0),
 (3545605, 'Santa Adélia', 'SANTA ADELIA', 'M', 'SP', 'SD', 0),
 (3545704, 'Santa Albertina', 'SANTA ALBERTINA', 'M', 'SP', 'SD', 0),
-(3545803, 'Santa Bárbara D''oeste', 'SANTA BARBARA D''OESTE', 'M', 'SP', 'SD', 0),
+(3545803, 'Santa Bárbara D\'oeste', 'SANTA BARBARA D\'OESTE', 'M', 'SP', 'SD', 0),
 (3546009, 'Santa Branca', 'SANTA BRANCA', 'M', 'SP', 'SD', 0),
-(3546108, 'Santa Clara D''Oeste', 'SANTA CLARA D''OESTE', 'M', 'SP', 'SD', 0),
+(3546108, 'Santa Clara D\'Oeste', 'SANTA CLARA D\'OESTE', 'M', 'SP', 'SD', 0),
 (3546207, 'Santa Cruz da Conceição', 'SANTA CRUZ DA CONCEICAO', 'M', 'SP', 'SD', 0),
 (3546256, 'Santa Cruz da Esperança', 'SANTA CRUZ DA ESPERANCA', 'M', 'SP', 'SD', 0),
 (3546306, 'Santa Cruz das Palmeiras', 'SANTA CRUZ DAS PALMEIRAS', 'M', 'SP', 'SD', 0),
@@ -3943,7 +3897,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3547106, 'Santa Mercedes', 'SANTA MERCEDES', 'M', 'SP', 'SD', 0),
 (3547205, 'Santana da Ponte Pensa', 'SANTANA DA PONTE PENSA', 'M', 'SP', 'SD', 0),
 (3547304, 'Santana de Parnaíba', 'SANTANA DE PARNAIBA', 'M', 'SP', 'SD', 0),
-(3547403, 'Santa Rita D''oeste', 'SANTA RITA D''OESTE', 'M', 'SP', 'SD', 0),
+(3547403, 'Santa Rita D\'oeste', 'SANTA RITA D\'OESTE', 'M', 'SP', 'SD', 0),
 (3547502, 'Santa Rita do Passa Quatro', 'SANTA RITA DO PASSA QUATRO', 'M', 'SP', 'SD', 0),
 (3547601, 'Santa Rosa de Viterbo', 'SANTA ROSA DE VITERBO', 'M', 'SP', 'SD', 0),
 (3547650, 'Santa Salete', 'SANTA SALETE', 'M', 'SP', 'SD', 0),
@@ -3965,7 +3919,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (3549102, 'São João da Boa Vista', 'SAO JOAO DA BOA VISTA', 'M', 'SP', 'SD', 0),
 (3549201, 'São João das Duas Pontes', 'SAO JOAO DAS DUAS PONTES', 'M', 'SP', 'SD', 0),
 (3549250, 'São João de Iracema', 'SAO JOAO DE IRACEMA', 'M', 'SP', 'SD', 0),
-(3549300, 'São João do Pau D''alho', 'SAO JOAO DO PAU D''ALHO', 'M', 'SP', 'SD', 0),
+(3549300, 'São João do Pau D\'alho', 'SAO JOAO DO PAU D\'ALHO', 'M', 'SP', 'SD', 0),
 (3549409, 'São Joaquim da Barra', 'SAO JOAQUIM DA BARRA', 'M', 'SP', 'SD', 0),
 (3549508, 'São José da Bela Vista', 'SAO JOSE DA BELA VISTA', 'M', 'SP', 'SD', 0),
 (3549607, 'São José do Barreiro', 'SAO JOSE DO BARREIRO', 'M', 'SP', 'SD', 0),
@@ -4157,7 +4111,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (4107009, 'Curiúva', 'CURIUVA', 'M', 'PR', 'SL', 0),
 (4107108, 'Diamante do Norte', 'DIAMANTE DO NORTE', 'M', 'PR', 'SL', 0),
 (4107124, 'Diamante do Sul', 'DIAMANTE DO SUL', 'M', 'PR', 'SL', 0),
-(4107157, 'Diamante D''Oeste', 'DIAMANTE D''OESTE', 'M', 'PR', 'SL', 0),
+(4107157, 'Diamante D\'Oeste', 'DIAMANTE D\'OESTE', 'M', 'PR', 'SL', 0),
 (4107207, 'Dois Vizinhos', 'DOIS VIZINHOS', 'M', 'PR', 'SL', 0),
 (4107256, 'Douradina', 'DOURADINA', 'M', 'PR', 'SL', 0),
 (4107306, 'Doutor Camargo', 'DOUTOR CAMARGO', 'M', 'PR', 'SL', 0),
@@ -4218,7 +4172,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (4110953, 'Itaipulândia', 'ITAIPULANDIA', 'M', 'PR', 'SL', 0),
 (4111001, 'Itambaracá', 'ITAMBARACA', 'M', 'PR', 'SL', 0),
 (4111100, 'Itambé', 'ITAMBE', 'M', 'PR', 'SL', 0),
-(4111209, 'Itapejara D''Oeste', 'ITAPEJARA D''OESTE', 'M', 'PR', 'SL', 0),
+(4111209, 'Itapejara D\'Oeste', 'ITAPEJARA D\'OESTE', 'M', 'PR', 'SL', 0),
 (4111258, 'Itaperuçu', 'ITAPERUCU', 'M', 'PR', 'SL', 0),
 (4111308, 'Itaúna do Sul', 'ITAUNA DO SUL', 'M', 'PR', 'SL', 0),
 (4111407, 'Ivaí', 'IVAI', 'M', 'PR', 'SL', 0),
@@ -4244,8 +4198,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (4113106, 'Kaloré', 'KALORE', 'M', 'PR', 'SL', 0),
 (4113205, 'Lapa', 'LAPA', 'M', 'PR', 'SL', 0),
 (4113254, 'Laranjal', 'LARANJAL', 'M', 'PR', 'SL', 0),
-(4113304, 'Laranjeiras do Sul', 'LARANJEIRAS DO SUL', 'M', 'PR', 'SL', 0);
-INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
+(4113304, 'Laranjeiras do Sul', 'LARANJEIRAS DO SUL', 'M', 'PR', 'SL', 0),
 (4113403, 'Leópolis', 'LEOPOLIS', 'M', 'PR', 'SL', 0),
 (4113429, 'Lidianópolis', 'LIDIANOPOLIS', 'M', 'PR', 'SL', 0),
 (4113452, 'Lindoeste', 'LINDOESTE', 'M', 'PR', 'SL', 0),
@@ -4280,7 +4233,8 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (4115739, 'Mato Rico', 'MATO RICO', 'M', 'PR', 'SL', 0),
 (4115754, 'Mauá da Serra', 'MAUA DA SERRA', 'M', 'PR', 'SL', 0),
 (4115804, 'Medianeira', 'MEDIANEIRA', 'M', 'PR', 'SL', 0),
-(4115853, 'Mercedes', 'MERCEDES', 'M', 'PR', 'SL', 0),
+(4115853, 'Mercedes', 'MERCEDES', 'M', 'PR', 'SL', 0);
+INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
 (4115903, 'Mirador', 'MIRADOR', 'M', 'PR', 'SL', 0),
 (4116000, 'Miraselva', 'MIRASELVA', 'M', 'PR', 'SL', 0),
 (4116059, 'Missal', 'MISSAL', 'M', 'PR', 'SL', 0),
@@ -4323,7 +4277,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (4118808, 'Peabiru', 'PEABIRU', 'M', 'PR', 'SL', 0),
 (4118857, 'Perobal', 'PEROBAL', 'M', 'PR', 'SL', 0),
 (4118907, 'Pérola', 'PEROLA', 'M', 'PR', 'SL', 0),
-(4119004, 'Pérola d''Oeste', 'PEROLA D''OESTE', 'M', 'PR', 'SL', 0),
+(4119004, 'Pérola d\'Oeste', 'PEROLA D\'OESTE', 'M', 'PR', 'SL', 0),
 (4119103, 'Piên', 'PIEN', 'M', 'PR', 'SL', 0),
 (4119152, 'Pinhais', 'PINHAIS', 'M', 'PR', 'SL', 0),
 (4119202, 'Pinhalão', 'PINHALAO', 'M', 'PR', 'SL', 0),
@@ -4357,7 +4311,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (4121208, 'Quitandinha', 'QUITANDINHA', 'M', 'PR', 'SL', 0),
 (4121257, 'Ramilândia', 'RAMILANDIA', 'M', 'PR', 'SL', 0),
 (4121307, 'Rancho Alegre', 'RANCHO ALEGRE', 'M', 'PR', 'SL', 0),
-(4121356, 'Rancho Alegre D''Oeste', 'RANCHO ALEGRE D''OESTE', 'M', 'PR', 'SL', 0),
+(4121356, 'Rancho Alegre D\'Oeste', 'RANCHO ALEGRE D\'OESTE', 'M', 'PR', 'SL', 0),
 (4121406, 'Realeza', 'REALEZA', 'M', 'PR', 'SL', 0),
 (4121505, 'Rebouças', 'REBOUCAS', 'M', 'PR', 'SL', 0),
 (4121604, 'Renascenca', 'RENASCENCA', 'M', 'PR', 'SL', 0),
@@ -4405,7 +4359,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (4124905, 'São João do Caiuá', 'SAO JOAO DO CAIUA', 'M', 'PR', 'SL', 0),
 (4125001, 'São João do Ivaí', 'SAO JOAO DO IVAI', 'M', 'PR', 'SL', 0),
 (4125100, 'São João do Triunfo', 'SAO JOAO DO TRIUNFO', 'M', 'PR', 'SL', 0),
-(4125209, 'São Jorge D''Oeste', 'SAO JORGE D''OESTE', 'M', 'PR', 'SL', 0),
+(4125209, 'São Jorge D\'Oeste', 'SAO JORGE D\'OESTE', 'M', 'PR', 'SL', 0),
 (4125308, 'São Jorge do Ivaí', 'SAO JORGE DO IVAI', 'M', 'PR', 'SL', 0),
 (4125357, 'São Jorge do Patrocínio', 'SAO JORGE DO PATROCINIO', 'M', 'PR', 'SL', 0),
 (4125407, 'São José da Boa Vista', 'SAO JOSE DA BOA VISTA', 'M', 'PR', 'SL', 0),
@@ -4565,7 +4519,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (4206504, 'Guaramirim', 'GUARAMIRIM', 'M', 'SC', 'SL', 0),
 (4206603, 'Guaruja do Sul', 'GUARUJA DO SUL', 'M', 'SC', 'SL', 0),
 (4206652, 'Guatambú', 'GUATAMBU', 'M', 'SC', 'SL', 0),
-(4206702, 'Herval D''oeste', 'HERVAL D''OESTE', 'M', 'SC', 'SL', 0),
+(4206702, 'Herval D\'oeste', 'HERVAL D\'OESTE', 'M', 'SC', 'SL', 0),
 (4206751, 'Ibiam', 'IBIAM', 'M', 'SC', 'SL', 0),
 (4206801, 'Ibicaré', 'IBICARE', 'M', 'SC', 'SL', 0),
 (4206900, 'Ibirama', 'IBIRAMA', 'M', 'SC', 'SL', 0),
@@ -5071,8 +5025,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (4314464, 'Pinhal da Serra', 'PINHAL DA SERRA', 'M', 'RS', 'SL', 0),
 (4314472, 'Pinhal Grande', 'PINHAL GRANDE', 'M', 'RS', 'SL', 0),
 (4314498, 'Pinheirinho do Vale', 'PINHEIRINHO DO VALE', 'M', 'RS', 'SL', 0),
-(4314506, 'Pinheiro Machado', 'PINHEIRO MACHADO', 'M', 'RS', 'SL', 0);
-INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
+(4314506, 'Pinheiro Machado', 'PINHEIRO MACHADO', 'M', 'RS', 'SL', 0),
 (4314530, 'Pinto Bandeira', 'PINTO BANDEIRA', 'M', 'RS', 'SL', 0),
 (4314555, 'Pirapó', 'PIRAPO', 'M', 'RS', 'SL', 0),
 (4314605, 'Piratini', 'PIRATINI', 'M', 'RS', 'SL', 0),
@@ -5111,7 +5064,8 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (4316303, 'Roque Gonzales', 'ROQUE GONZALES', 'M', 'RS', 'SL', 0),
 (4316402, 'Rosário do Sul', 'ROSARIO DO SUL', 'M', 'RS', 'SL', 0),
 (4316428, 'Sagrada Família', 'SAGRADA FAMILIA', 'M', 'RS', 'SL', 0),
-(4316436, 'Saldanha Marinho', 'SALDANHA MARINHO', 'M', 'RS', 'SL', 0),
+(4316436, 'Saldanha Marinho', 'SALDANHA MARINHO', 'M', 'RS', 'SL', 0);
+INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pesq`, `tip_localidade`, `sgl_uf`, `sgl_regiao`, `ind_excluido`) VALUES
 (4316451, 'Salto do Jacuí', 'SALTO DO JACUI', 'M', 'RS', 'SL', 0),
 (4316477, 'Salvador das Missões', 'SALVADOR DAS MISSOES', 'M', 'RS', 'SL', 0),
 (4316501, 'Salvador do Sul', 'SALVADOR DO SUL', 'M', 'RS', 'SL', 0),
@@ -5367,7 +5321,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (5103254, 'Colniza', 'COLNIZA', 'M', 'MT', 'CO', 0),
 (5103304, 'Comodoro', 'COMODORO', 'M', 'MT', 'CO', 0),
 (5103353, 'Confresa', 'CONFRESA', 'M', 'MT', 'CO', 0),
-(5103361, 'Conquista D''Oeste', 'CONQUISTA D''OESTE', 'M', 'MT', 'CO', 0),
+(5103361, 'Conquista D\'Oeste', 'CONQUISTA D\'OESTE', 'M', 'MT', 'CO', 0),
 (5103379, 'Cotriguaçu', 'COTRIGUACU', 'M', 'MT', 'CO', 0),
 (5103403, 'Cuiabá', 'CUIABA', 'M', 'MT', 'CO', 0),
 (5103437, 'Curvelândia', 'CURVELANDIA', 'M', 'MT', 'CO', 0),
@@ -5375,10 +5329,10 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (5103502, 'Diamantino', 'DIAMANTINO', 'M', 'MT', 'CO', 0),
 (5103601, 'Dom Aquino', 'DOM AQUINO', 'M', 'MT', 'CO', 0),
 (5103700, 'Feliz Natal', 'FELIZ NATAL', 'M', 'MT', 'CO', 0),
-(5103809, 'Figueirópolis D''Oeste', 'FIGUEIROPOLIS D''OESTE', 'M', 'MT', 'CO', 0),
+(5103809, 'Figueirópolis D\'Oeste', 'FIGUEIROPOLIS D\'OESTE', 'M', 'MT', 'CO', 0),
 (5103858, 'Gaúcha do Norte', 'GAUCHA DO NORTE', 'M', 'MT', 'CO', 0),
 (5103908, 'General Carneiro', 'GENERAL CARNEIRO', 'M', 'MT', 'CO', 0),
-(5103957, 'Glória D''Oeste', 'GLORIA D''OESTE', 'M', 'MT', 'CO', 0),
+(5103957, 'Glória D\'Oeste', 'GLORIA D\'OESTE', 'M', 'MT', 'CO', 0),
 (5104104, 'Guarantã do Norte', 'GUARANTA DO NORTE', 'M', 'MT', 'CO', 0),
 (5104203, 'Guiratinga', 'GUIRATINGA', 'M', 'MT', 'CO', 0),
 (5104500, 'Indiavaí', 'INDIAVAI', 'M', 'MT', 'CO', 0),
@@ -5391,13 +5345,13 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (5105150, 'Juína', 'JUINA', 'M', 'MT', 'CO', 0),
 (5105176, 'Juruena', 'JURUENA', 'M', 'MT', 'CO', 0),
 (5105200, 'Juscimeira', 'JUSCIMEIRA', 'M', 'MT', 'CO', 0),
-(5105234, 'Lambari D''Oeste', 'LAMBARI D''OESTE', 'M', 'MT', 'CO', 0),
+(5105234, 'Lambari D\'Oeste', 'LAMBARI D\'OESTE', 'M', 'MT', 'CO', 0),
 (5105259, 'Lucas do Rio Verde', 'LUCAS DO RIO VERDE', 'M', 'MT', 'CO', 0),
 (5105309, 'Luciara', 'LUCIARA', 'M', 'MT', 'CO', 0),
 (5105507, 'Vila Bela da Santíssima Trindade', 'VILA BELA DA SANTISSIMA TRINDADE', 'M', 'MT', 'CO', 0),
 (5105580, 'Marcelandia', 'MARCELANDIA', 'M', 'MT', 'CO', 0),
 (5105606, 'Matupá', 'MATUPA', 'M', 'MT', 'CO', 0),
-(5105622, 'Mirassol D''Oeste', 'MIRASSOL D''OESTE', 'M', 'MT', 'CO', 0),
+(5105622, 'Mirassol D\'Oeste', 'MIRASSOL D\'OESTE', 'M', 'MT', 'CO', 0),
 (5105903, 'Nobres', 'NOBRES', 'M', 'MT', 'CO', 0),
 (5106000, 'Nortelândia', 'NORTELANDIA', 'M', 'MT', 'CO', 0),
 (5106109, 'Nossa Senhora do Livramento', 'NOSSA SENHORA DO LIVRAMENTO', 'M', 'MT', 'CO', 0),
@@ -5687,7 +5641,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (5219753, 'Santo Antônio do Descoberto', 'SANTO ANTONIO DO DESCOBERTO', 'M', 'GO', 'CO', 0),
 (5219803, 'São Domingos', 'SAO DOMINGOS', 'M', 'GO', 'CO', 0),
 (5219902, 'São Francisco de Goiás', 'SAO FRANCISCO DE GOIAS', 'M', 'GO', 'CO', 0),
-(5220009, 'São João D''Aliança', 'SAO JOAO D''ALIANCA', 'M', 'GO', 'CO', 0),
+(5220009, 'São João D\'Aliança', 'SAO JOAO D\'ALIANCA', 'M', 'GO', 'CO', 0),
 (5220058, 'São João da Paraúna', 'SAO JOAO DA PARAUNA', 'M', 'GO', 'CO', 0),
 (5220108, 'São Luis de Montes Belos', 'SAO LUIS DE MONTES BELOS', 'M', 'GO', 'CO', 0),
 (5220157, 'São Luiz do Norte', 'SAO LUIZ DO NORTE', 'M', 'GO', 'CO', 0),
@@ -5699,7 +5653,7 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (5220504, 'Serranópolis', 'SERRANOPOLIS', 'M', 'GO', 'CO', 0),
 (5220603, 'Silvânia', 'SILVANIA', 'M', 'GO', 'CO', 0),
 (5220686, 'Simolândia', 'SIMOLANDIA', 'M', 'GO', 'CO', 0),
-(5220702, 'Sítio D''Abadia', 'SITIO D''ABADIA', 'M', 'GO', 'CO', 0),
+(5220702, 'Sítio D\'Abadia', 'SITIO D\'ABADIA', 'M', 'GO', 'CO', 0),
 (5221007, 'Taquaral de Goiás', 'TAQUARAL DE GOIAS', 'M', 'GO', 'CO', 0),
 (5221080, 'Teresina de Goiás', 'TERESINA DE GOIAS', 'M', 'GO', 'CO', 0),
 (5221197, 'Terezópolis de Goiás', 'TEREZOPOLIS DE GOIAS', 'M', 'GO', 'CO', 0),
@@ -5728,10 +5682,6 @@ INSERT INTO `localidade` (`cod_localidade`, `nom_localidade`, `nom_localidade_pe
 (9400000, 'Região Sul', 'REGIAO SUL', 'R', 'SL', 'SL', 0),
 (9500000, 'Região Centro Oeste', 'REGIAO CENTRO OESTE', 'R', 'CO', 'CO', 0);
 
---
--- Fazendo dump de dados para tabela `nivel_instrucao`
---
-
 INSERT INTO `nivel_instrucao` (`cod_nivel_instrucao`, `des_nivel_instrucao`, `ind_excluido`) VALUES
 (1, 'Fundamental', 0),
 (2, 'Médio', 0),
@@ -5739,23 +5689,15 @@ INSERT INTO `nivel_instrucao` (`cod_nivel_instrucao`, `des_nivel_instrucao`, `in
 (4, 'Mestrado', 0),
 (5, 'Doutorado', 0);
 
---
--- Fazendo dump de dados para tabela `orgao`
---
-
-INSERT INTO `orgao` (`cod_orgao`, `nom_orgao`, `sgl_orgao`, `ind_unid_deliberativa`, `end_orgao`, `num_tel_orgao`, `ind_excluido`) VALUES
-(1, 'Plenário', 'PLEN', 1, NULL, NULL, 0),
-(2, 'Protocolo', 'PROT', 0, NULL, NULL, 0),
-(3, 'Mesa Diretora', 'MESA', 0, NULL, NULL, 0),
-(4, 'Externo - Executivo', 'PM', 0, NULL, NULL, 0),
-(5, 'Externo - Outros', 'EXT', 0, NULL, NULL, 0),
-(6, 'Departamento Legislativo', 'DL', 0, NULL, NULL, 0),
-(7, 'Arquivo', 'ARQ', 0, NULL, NULL, 0),
-(8, 'Assessoria Legislativa', 'AL', 0, NULL, NULL, 0);
-
---
--- Fazendo dump de dados para tabela `partido`
---
+INSERT INTO `orgao` (`cod_orgao`, `nom_orgao`, `sgl_orgao`, `ind_unid_deliberativa`, `end_orgao`, `num_tel_orgao`, `end_email`, `ind_excluido`) VALUES
+(1, 'Plenário', 'PLEN', 1, NULL, NULL, NULL, 0),
+(2, 'Protocolo', 'PROT', 0, NULL, NULL, NULL, 0),
+(3, 'Mesa Diretora', 'MESA', 0, NULL, NULL, NULL, 0),
+(4, 'Externo - Executivo', 'PM', 0, NULL, NULL, NULL, 0),
+(5, 'Externo - Outros', 'EXT', 0, NULL, NULL, NULL, 0),
+(6, 'Departamento Legislativo', 'DL', 0, NULL, NULL, NULL, 0),
+(7, 'Arquivo', 'ARQ', 0, NULL, NULL, NULL, 0),
+(8, 'Assessoria Legislativa', 'AL', 0, NULL, NULL, NULL, 0);
 
 INSERT INTO `partido` (`cod_partido`, `sgl_partido`, `nom_partido`, `dat_criacao`, `dat_extincao`, `ind_excluido`) VALUES
 (1, 'PMDB', 'Partido do Movimento Democrático Brasileiro', '1981-06-30', NULL, 0),
@@ -5803,20 +5745,12 @@ INSERT INTO `partido` (`cod_partido`, `sgl_partido`, `nom_partido`, `dat_criacao
 (43, 'SDD', 'Solidariedade', '2013-09-24', NULL, 0),
 (44, 'REDE', 'REDE', '2013-02-16', NULL, 0);
 
---
--- Fazendo dump de dados para tabela `quorum_votacao`
---
-
 INSERT INTO `quorum_votacao` (`cod_quorum`, `des_quorum`, `txt_formula`, `ind_excluido`) VALUES
 (1, 'Maioria simples', '(NP/2)+1', 0),
 (2, 'Maioria absoluta', '(NT/2)+1', 0),
 (3, 'Maioria qualificada - 1/3', '(NT/3)+1', 0),
 (4, 'Maioria qualificada - 2/3', '{(NT/3)x2}+1', 0),
 (5, 'Maioria qualificada - 3/5', '{(NT/5)x3}+1', 0);
-
---
--- Fazendo dump de dados para tabela `regime_tramitacao`
---
 
 INSERT INTO `regime_tramitacao` (`cod_regime_tramitacao`, `des_regime_tramitacao`, `ind_excluido`) VALUES
 (1, 'Ordinário', 0),
@@ -5825,79 +5759,70 @@ INSERT INTO `regime_tramitacao` (`cod_regime_tramitacao`, `des_regime_tramitacao
 (4, 'Especial - Veto', 0),
 (5, 'Especial - Leis Orçamentárias', 0);
 
---
--- Fazendo dump de dados para tabela `status_tramitacao`
---
+INSERT INTO `status_tramitacao` (`cod_status`, `sgl_status`, `des_status`, `ind_fim_tramitacao`, `ind_retorno_tramitacao`, `num_dias_prazo`, `ind_excluido`) VALUES
+(1, 'APRESPLEN', 'Proposição apresentada em Plenário', 1, 0, NULL, 1),
+(2, 'AGPARECER', 'Aguardando emissão de parecer da comissão', 0, 1, NULL, 0),
+(3, 'INCLORDIA', 'Proposição inclusa na ordem do dia', 0, 1, NULL, 0),
+(4, 'RETAUTOR', 'Proposição retirada pelo autor', 1, 0, NULL, 0),
+(5, 'AUTUAPAUTA', 'Proposição autuada e cumprindo prazo de pauta', 0, 1, NULL, 0),
+(6, 'PARECERFAV', 'Parecer favorável da comissão', 0, 1, NULL, 0),
+(7, 'PARECCONTR', 'Parecer contrário da comissão de mérito', 0, 1, NULL, 0),
+(8, 'PARECERARQ', 'Parecer da CCJR ou da CFO pelo arquivamento da proposição', 1, 0, NULL, 0),
+(9, 'APROVADA', 'Proposição aprovada', 1, 0, NULL, 0),
+(10, 'REJEITADA', 'Proposição rejeitada pelo Plenário', 1, 0, NULL, 0),
+(11, 'MAT', 'Matéria', 1, 0, NULL, 1),
+(12, 'DISTRCOMIS', 'Proposição distribuída às comissões', 0, 1, NULL, 0),
+(13, 'ORDDIA', 'Proposição inclusa na ordem do dia', 0, 1, NULL, 1),
+(14, 'ARQUIVADA', 'Proposição arquivada', 1, 0, NULL, 0),
+(15, 'DESARQUIV', 'Proposição desarquivada pelo Autor', 0, 1, NULL, 0),
+(16, 'AGAUTOGR', 'Aguardando assinatura do autógrafo', 0, 1, NULL, 0),
+(17, 'AGSANCAO', 'Aguardando sanção governamental', 1, 0, NULL, 0),
+(18, 'TRANSFLEI', 'Proposição transformada em lei', 1, 0, NULL, 0),
+(19, 'VETOLIDO', 'Veto sobre a proposição lido em sessão plenária', 0, 1, NULL, 0),
+(20, 'VETOTOTAL', 'Proposição com veto total', 0, 1, NULL, 0),
+(21, 'VETOREJEI', 'Veto sobre a proposição rejeitado', 1, 0, NULL, 0),
+(22, 'VETOMANT', 'Veto sobre a proposição mantido', 1, 0, NULL, 0),
+(23, 'AGPROMLEI', 'Aguardando promulgação da lei', 1, 0, NULL, 0),
+(24, 'DESPCOMIS', 'Proposição despachada às Comissões', 0, 1, NULL, 1),
+(25, 'AUTUADA', 'Proposição autuada', 0, 1, NULL, 1),
+(26, 'VETOPAUTA', 'Veto autuado e incluso em pauta', 1, 0, NULL, 0),
+(27, 'PREJUD', 'Proposição prejudicada', 1, 0, NULL, 0),
+(28, 'APRESENT', 'Proposição apresentada em Plenário', 0, 1, NULL, 0),
+(29, 'EMITEPAREC', 'Para emitir parecer sobre a proposição', 0, 1, NULL, 1),
+(30, 'AGORDIA', 'Aguardando a inclusão na ordem do dia', 0, 1, NULL, 0),
+(31, 'PARFAVCCJ', 'Parecer favorável da Comissão de Constituição e Justiça', 0, 1, NULL, 0),
+(32, 'PARFAVCFO', 'Parecer favorável da Comissão de Finanças e Orçamento', 0, 1, NULL, 0),
+(33, 'APROV1TUR', 'Proposição aprovada em 1º turno', 0, 1, NULL, 0),
+(34, 'LEIVETPAR', 'Transformada em lei com veto parcial', 0, 1, NULL, 0),
+(35, 'LEIPROMUL', 'Proposição transformada em lei por promulgação', 1, 0, NULL, 0),
+(36, 'VETODISTR', 'Veto distribuido para emissão de parecer', 0, 1, NULL, 0),
+(37, 'MANUTVETO', 'Parecer pelo manutenção do veto', 0, 1, NULL, 0),
+(38, 'REJEIVETO', 'Parecer pela rejeição do veto', 0, 1, NULL, 0),
+(39, 'VETOORDIA', 'Veto  incluso na ordem do dia', 1, 0, NULL, 0),
+(40, 'AGMENSVET', 'Aguardando assinatura da mensagem sobre o veto', 0, 1, NULL, 0),
+(41, 'ANEXADA', 'Proposição anexada à outra análoga ou conexa mais antiga.', 0, 1, NULL, 0),
+(42, 'PROMULVETO', 'Veto total ou parcial promulgado', 1, 0, NULL, 0),
+(43, 'AGPROMNOR', 'Aguardando promulgação da norma jurídica', 1, 0, NULL, 0),
+(44, 'NORMPROMUL', 'Norma promulgada', 1, 0, NULL, 0),
+(45, 'AGPROMVET', 'Aguardando promulgação de lei com veto rejeitado', 0, 1, NULL, 0),
+(46, 'VETOPROMUL', 'Projeto com veto total ou parcial promulgado', 1, 0, NULL, 1),
+(47, 'PARECPLEN', 'Parecer em Plenário pelas comissões pertinentes', 1, 0, NULL, 0),
+(48, 'ADIADA', 'Adiada discussão e votação', 0, 1, NULL, 0),
+(49, 'RETORDIA', 'Proposição retirada da Ordem do Dia.', 0, 1, NULL, 0),
+(50, 'PAREUCONJ', 'Parecer em reunião conjunta das Comissões pertinentes', 0, 1, NULL, 0),
+(51, 'INCLEXP', 'Incluído na pauta do expediente', 0, 1, NULL, 0),
+(52, 'DESPACHADA', 'Indicação despachada ao Executivo', 1, 0, NULL, 0),
+(53, 'EXE', 'Encaminhamento ao Executivo', 1, 0, NULL, 0),
+(54, 'RECEXE', 'Recebimento no Executivo', 1, 0, NULL, 0),
+(55, 'PRT', 'Recebimento no Protocolo', 1, 0, NULL, 0),
+(56, 'EME', 'Emenda apresentada', 0, 1, NULL, 0),
+(57, 'SUB', 'Substitutivo apresentado', 0, 1, NULL, 0),
+(58, 'PAR', 'Parecer de Comissão apresentado', 0, 1, NULL, 0);
 
-INSERT INTO `status_tramitacao` (`cod_status`, `sgl_status`, `des_status`, `ind_fim_tramitacao`, `ind_retorno_tramitacao`, `ind_excluido`) VALUES
-(1, 'APRESPLEN', 'Proposição apresentada em Plenário', 1, 0, 1),
-(2, 'AGPARECER', 'Aguardando emissão de parecer da comissão', 0, 1, 0),
-(3, 'INCLORDIA', 'Proposição inclusa na ordem do dia', 0, 1, 0),
-(4, 'RETAUTOR', 'Proposição retirada pelo autor', 1, 0, 0),
-(5, 'AUTUAPAUTA', 'Proposição autuada e cumprindo prazo de pauta', 0, 1, 0),
-(6, 'PARECERFAV', 'Parecer favorável da comissão', 0, 1, 0),
-(7, 'PARECCONTR', 'Parecer contrário da comissão de mérito', 0, 1, 0),
-(8, 'PARECERARQ', 'Parecer da CCJR ou da CFO pelo arquivamento da proposição', 1, 0, 0),
-(9, 'APROVADA', 'Proposição aprovada', 1, 0, 0),
-(10, 'REJEITADA', 'Proposição rejeitada pelo Plenário', 1, 0, 0),
-(11, 'MAT', 'Matéria', 1, 0, 1),
-(12, 'DISTRCOMIS', 'Proposição distribuída às comissões', 0, 1, 0),
-(13, 'ORDDIA', 'Proposição inclusa na ordem do dia', 0, 1, 1),
-(14, 'ARQUIVADA', 'Proposição arquivada', 1, 0, 0),
-(15, 'DESARQUIV', 'Proposição desarquivada pelo Autor', 0, 1, 0),
-(16, 'AGAUTOGR', 'Aguardando assinatura do autógrafo', 0, 1, 0),
-(17, 'AGSANCAO', 'Aguardando sanção governamental', 1, 0, 0),
-(18, 'TRANSFLEI', 'Proposição transformada em lei', 1, 0, 0),
-(19, 'VETOLIDO', 'Veto sobre a proposição lido em sessão plenária', 0, 1, 0),
-(20, 'VETOTOTAL', 'Proposição com veto total', 0, 1, 0),
-(21, 'VETOREJEI', 'Veto sobre a proposição rejeitado', 1, 0, 0),
-(22, 'VETOMANT', 'Veto sobre a proposição mantido', 1, 0, 0),
-(23, 'AGPROMLEI', 'Aguardando promulgação da lei', 1, 0, 0),
-(24, 'DESPCOMIS', 'Proposição despachada às Comissões', 0, 1, 1),
-(25, 'AUTUADA', 'Proposição autuada', 0, 1, 1),
-(26, 'VETOPAUTA', 'Veto autuado e incluso em pauta', 1, 0, 0),
-(27, 'PREJUD', 'Proposição prejudicada', 1, 0, 0),
-(28, 'APRESENT', 'Proposição apresentada em Plenário', 0, 1, 0),
-(29, 'EMITEPAREC', 'Para emitir parecer sobre a proposição', 0, 1, 1),
-(30, 'AGORDIA', 'Aguardando a inclusão na ordem do dia', 0, 1, 0),
-(31, 'PARFAVCCJ', 'Parecer favorável da Comissão de Constituição e Justiça', 0, 1, 0),
-(32, 'PARFAVCFO', 'Parecer favorável da Comissão de Finanças e Orçamento', 0, 1, 0),
-(33, 'APROV1TUR', 'Proposição aprovada em 1º turno', 0, 1, 0),
-(34, 'LEIVETPAR', 'Transformada em lei com veto parcial', 0, 1, 0),
-(35, 'LEIPROMUL', 'Proposição transformada em lei por promulgação', 1, 0, 0),
-(36, 'VETODISTR', 'Veto distribuido para emissão de parecer', 0, 1, 0),
-(37, 'MANUTVETO', 'Parecer pelo manutenção do veto', 0, 1, 0),
-(38, 'REJEIVETO', 'Parecer pela rejeição do veto', 0, 1, 0),
-(39, 'VETOORDIA', 'Veto  incluso na ordem do dia', 1, 0, 0),
-(40, 'AGMENSVET', 'Aguardando assinatura da mensagem sobre o veto', 0, 1, 0),
-(41, 'ANEXADA', 'Proposição anexada à outra análoga ou conexa mais antiga.', 0, 1, 0),
-(42, 'PROMULVETO', 'Veto total ou parcial promulgado', 1, 0, 0),
-(43, 'AGPROMNOR', 'Aguardando promulgação da norma jurídica', 1, 0, 0),
-(44, 'NORMPROMUL', 'Norma promulgada', 1, 0, 0),
-(45, 'AGPROMVET', 'Aguardando promulgação de lei com veto rejeitado', 0, 1, 0),
-(46, 'VETOPROMUL', 'Projeto com veto total ou parcial promulgado', 1, 0, 1),
-(47, 'PARECPLEN', 'Parecer em Plenário pelas comissões pertinentes', 1, 0, 0),
-(48, 'ADIADA', 'Adiada discussão e votação', 0, 1, 0),
-(49, 'RETORDIA', 'Proposição retirada da Ordem do Dia.', 0, 1, 0),
-(50, 'PAREUCONJ', 'Parecer em reunião conjunta das Comissões pertinentes', 0, 1, 0),
-(51, 'INCLEXP', 'Incluído na pauta do expediente', 0, 1, 0),
-(52, 'DESPACHADA', 'Indicação despachada ao Executivo', 1, 0, 0),
-(53, 'EXE', 'Encaminhamento ao Executivo', 1, 0, 0),
-(54, 'RECEXE', 'Recebimento no Executivo', 1, 0, 0),
-(55, 'PRT', 'Recebimento no Protocolo', 1, 0, 0);
-
---
--- Fazendo dump de dados para tabela `status_tramitacao_administrativo`
---
-
-INSERT INTO `status_tramitacao_administrativo` (`cod_status`, `sgl_status`, `des_status`, `ind_fim_tramitacao`, `ind_retorno_tramitacao`, `ind_excluido`) VALUES
-(1, 'DEF', 'Deferido', 1, 0, 0),
-(2, 'IND', 'Indeferido', 1, 0, 0),
-(3, 'AP', 'Aguardando Parecer', 0, 1, 0);
-
---
--- Fazendo dump de dados para tabela `tipo_afastamento`
---
+INSERT INTO `status_tramitacao_administrativo` (`cod_status`, `sgl_status`, `des_status`, `ind_fim_tramitacao`, `ind_retorno_tramitacao`, `num_dias_prazo`, `ind_excluido`) VALUES
+(1, 'DEF', 'Deferido', 1, 0, NULL, 0),
+(2, 'IND', 'Indeferido', 1, 0, NULL, 0),
+(3, 'AP', 'Aguardando Parecer', 0, 1, NULL, 0);
 
 INSERT INTO `tipo_afastamento` (`tip_afastamento`, `des_afastamento`, `ind_afastamento`, `ind_fim_mandato`, `des_dispositivo`, `ind_excluido`) VALUES
 (1, 'Licença Saúde', 1, 0, NULL, 0),
@@ -5905,40 +5830,24 @@ INSERT INTO `tipo_afastamento` (`tip_afastamento`, `des_afastamento`, `ind_afast
 (3, 'Interesse particular', 1, 0, NULL, 0),
 (4, 'Suspensão do mandato', 1, 0, NULL, 0);
 
---
--- Fazendo dump de dados para tabela `tipo_autor`
---
-
-INSERT INTO `tipo_autor` (`tip_autor`, `des_tipo_autor`, `ind_excluido`) VALUES
-(1, 'Parlamentar', 0),
-(2, 'Comissao', 0),
-(3, 'Bancada', 0),
-(4, 'Externo', 0),
-(5, 'Mesa Diretora', 0),
-(6, 'Líderes', 0),
-(7, 'Poder Executivo', 0),
-(8, 'Câmara Municipal', 0);
-
---
--- Fazendo dump de dados para tabela `tipo_comissao`
---
+INSERT INTO `tipo_autor` (`tip_autor`, `des_tipo_autor`, `tip_proposicao`, `ind_excluido`) VALUES
+(1, 'Parlamentar', NULL, 0),
+(2, 'Comissao', NULL, 0),
+(3, 'Bancada', NULL, 0),
+(4, 'Externo', NULL, 0),
+(5, 'Mesa Diretora', NULL, 0),
+(6, 'Líderes', NULL, 0),
+(7, 'Poder Executivo', NULL, 0),
+(8, 'Câmara Municipal', NULL, 0);
 
 INSERT INTO `tipo_comissao` (`tip_comissao`, `nom_tipo_comissao`, `sgl_natureza_comissao`, `sgl_tipo_comissao`, `des_dispositivo_regimental`, `ind_excluido`) VALUES
 (1, 'Permanente', 'P', 'CP', NULL, 0),
 (2, 'Especial de Inquérito', 'T', 'CEI', NULL, 0),
 (3, 'Especial', 'T', 'CE', NULL, 0);
 
---
--- Fazendo dump de dados para tabela `tipo_dependente`
---
-
 INSERT INTO `tipo_dependente` (`tip_dependente`, `des_tipo_dependente`, `ind_excluido`) VALUES
 (1, 'Esposa', 0),
 (2, 'Filho', 0);
-
---
--- Fazendo dump de dados para tabela `tipo_documento`
---
 
 INSERT INTO `tipo_documento` (`tip_documento`, `des_tipo_documento`, `ind_excluido`) VALUES
 (1, 'Parecer', 0),
@@ -5949,18 +5858,10 @@ INSERT INTO `tipo_documento` (`tip_documento`, `des_tipo_documento`, `ind_exclui
 (6, 'Ofício / Resposta', 0),
 (7, 'Mensagem Aditiva', 0);
 
---
--- Fazendo dump de dados para tabela `tipo_documento_administrativo`
---
-
 INSERT INTO `tipo_documento_administrativo` (`tip_documento`, `sgl_tipo_documento`, `des_tipo_documento`, `ind_publico`, `ind_excluido`) VALUES
 (1, 'CNV', 'Convite', 0, 0),
 (2, 'OFC', 'Oficio', 0, 0),
 (3, 'REQ', 'Requerimento', 0, 0);
-
---
--- Fazendo dump de dados para tabela `tipo_emenda`
---
 
 INSERT INTO `tipo_emenda` (`tip_emenda`, `des_tipo_emenda`, `ind_excluido`) VALUES
 (1, 'Aditiva', 0),
@@ -5969,27 +5870,15 @@ INSERT INTO `tipo_emenda` (`tip_emenda`, `des_tipo_emenda`, `ind_excluido`) VALU
 (4, 'Supressiva', 0),
 (5, 'Mensagem Aditiva', 0);
 
---
--- Fazendo dump de dados para tabela `tipo_expediente`
---
-
 INSERT INTO `tipo_expediente` (`cod_expediente`, `nom_expediente`, `ind_excluido`) VALUES
 (1, 'Correspondências Recebidas', 0),
 (2, 'Expedientes Diversos', 0),
 (3, 'Tribuna Livre', 0),
 (4, 'Expedientes do Executivo', 0);
 
---
--- Fazendo dump de dados para tabela `tipo_fim_relatoria`
---
-
 INSERT INTO `tipo_fim_relatoria` (`tip_fim_relatoria`, `des_fim_relatoria`, `ind_excluido`) VALUES
 (1, 'Aprovado', 0),
 (2, 'Rejeitado', 0);
-
---
--- Fazendo dump de dados para tabela `tipo_instituicao`
---
 
 INSERT INTO `tipo_instituicao` (`tip_instituicao`, `nom_tipo_instituicao`, `ind_excluido`) VALUES
 (1, 'ESCOLAS MUNICIPAIS', 0),
@@ -5997,10 +5886,6 @@ INSERT INTO `tipo_instituicao` (`tip_instituicao`, `nom_tipo_instituicao`, `ind_
 (3, 'ENSINO SUPERIOR', 0),
 (4, 'ENTIDADES DE CLASSE', 0),
 (5, 'SECRETÁRIOS MUNICIPAIS', 0);
-
---
--- Fazendo dump de dados para tabela `tipo_materia_legislativa`
---
 
 INSERT INTO `tipo_materia_legislativa` (`tip_materia`, `sgl_tipo_materia`, `des_tipo_materia`, `tip_natureza`, `ind_num_automatica`, `quorum_minimo_votacao`, `ind_excluido`) VALUES
 (1, 'PL', 'Projeto de Lei', 'P', 0, 1, 0),
@@ -6010,13 +5895,11 @@ INSERT INTO `tipo_materia_legislativa` (`tip_materia`, `sgl_tipo_materia`, `des_
 (5, 'PLC', 'Projeto de Lei Complementar', 'P', 0, 1, 0),
 (6, 'PDL', 'Projeto de Decreto Legislativo', 'P', 0, 1, 0),
 (7, 'MOC', 'Moção', 'P', 0, 1, 0),
-(8, 'IND', 'Indicação', 'P',  0, 1, 0),
+(8, 'IND', 'Indicação', 'P', 0, 1, 0),
 (9, 'PEL', 'Proposta de Emenda à Lei Orgânica', 'P', 0, 1, 0),
-(10, 'VET', 'Veto', 'P', 0, 1, 0);
-
---
--- Fazendo dump de dados para tabela `tipo_norma_juridica`
---
+(10, 'VET', 'Veto', 'P', 0, 1, 0),
+(11, 'EME', 'Emenda', 'A', 0, 1, 0),
+(12, 'SUB', 'Substitutivo', 'A', 0, 1, 0);
 
 INSERT INTO `tipo_norma_juridica` (`tip_norma`, `voc_lexml`, `sgl_tipo_norma`, `des_tipo_norma`, `ind_excluido`) VALUES
 (1, 'lei', 'LEI', 'Lei', 0),
@@ -6027,10 +5910,6 @@ INSERT INTO `tipo_norma_juridica` (`tip_norma`, `voc_lexml`, `sgl_tipo_norma`, `
 (6, '', 'AM', 'Ato da Mesa', 0),
 (7, '', 'POR', 'Portaria', 0),
 (8, 'decreto', 'DE', 'Decreto do Executivo', 0);
-
---
--- Fazendo dump de dados para tabela `tipo_proposicao`
---
 
 INSERT INTO `tipo_proposicao` (`tip_proposicao`, `des_tipo_proposicao`, `ind_mat_ou_doc`, `tip_mat_ou_doc`, `nom_modelo`, `ind_excluido`) VALUES
 (1, 'Requerimento', 'M', 3, '', 0),
@@ -6047,10 +5926,6 @@ INSERT INTO `tipo_proposicao` (`tip_proposicao`, `des_tipo_proposicao`, `ind_mat
 (12, 'Parecer Jurídico', 'D', 17, '', 0),
 (13, 'Ofício / Resposta', 'D', 6, '', 0);
 
---
--- Fazendo dump de dados para tabela `tipo_resultado_votacao`
---
-
 INSERT INTO `tipo_resultado_votacao` (`tip_resultado_votacao`, `nom_resultado`, `ind_excluido`) VALUES
 (1, 'Aprovado', 0),
 (2, 'Rejeitado', 0),
@@ -6059,20 +5934,12 @@ INSERT INTO `tipo_resultado_votacao` (`tip_resultado_votacao`, `nom_resultado`, 
 (5, 'Despachada', 0),
 (6, 'Retirado', 0);
 
---
--- Fazendo dump de dados para tabela `tipo_sessao_plenaria`
---
-
 INSERT INTO `tipo_sessao_plenaria` (`tip_sessao`, `nom_sessao`, `ind_excluido`, `num_minimo`) VALUES
 (1, 'Ordinária', 0, 6),
 (2, 'Extraordinária', 0, 6),
 (3, 'Solene', 0, 6),
 (4, 'Especial', 0, 6),
 (5, 'Audiência Púbica', 0, 2);
-
---
--- Fazendo dump de dados para tabela `tipo_situacao_materia`
---
 
 INSERT INTO `tipo_situacao_materia` (`tip_situacao_materia`, `des_tipo_situacao`, `ind_excluido`) VALUES
 (1, 'VETADO', 0),
@@ -6158,17 +6025,9 @@ INSERT INTO `tipo_situacao_materia` (`tip_situacao_materia`, `des_tipo_situacao`
 (81, 'ADIADO INCONSTITUCIONAL', 0),
 (82, 'PAUTADO PARA EXTRAORDINÁRIA', 0);
 
---
--- Fazendo dump de dados para tabela `tipo_situacao_militar`
---
-
 INSERT INTO `tipo_situacao_militar` (`tip_situacao_militar`, `des_tipo_situacao`, `ind_excluido`) VALUES
 (1, 'Reservista', 0),
 (2, 'Excesso de Contingente', 0);
-
---
--- Fazendo dump de dados para tabela `tipo_situacao_norma`
---
 
 INSERT INTO `tipo_situacao_norma` (`tip_situacao_norma`, `des_tipo_situacao`, `ind_excluido`) VALUES
 (1, 'Em vigor', 0),
@@ -6192,10 +6051,6 @@ INSERT INTO `tipo_situacao_norma` (`tip_situacao_norma`, `des_tipo_situacao`, `i
 (19, 'Sem efeito', 0),
 (20, 'Em vigor, com alterações posteriores', 0);
 
---
--- Fazendo dump de dados para tabela `tipo_vinculo_norma`
---
-
 INSERT INTO `tipo_vinculo_norma` (`cod_tip_vinculo`, `tipo_vinculo`, `des_vinculo`, `des_vinculo_passivo`, `tip_situacao`, `ind_excluido`) VALUES
 (1, 'A', 'Altera a', 'Alterada pela', 22, 0),
 (2, 'C', 'Norma correlata', 'Norma correlata', NULL, 0),
@@ -6205,18 +6060,10 @@ INSERT INTO `tipo_vinculo_norma` (`cod_tip_vinculo`, `tipo_vinculo`, `des_vincul
 (6, 'R', 'Revoga a', 'Revogada pela', 2, 0),
 (7, 'T', 'Revoga por consolidação', 'Revogação por consolidação', NULL, 0);
 
---
--- Fazendo dump de dados para tabela `tipo_votacao`
---
-
 INSERT INTO `tipo_votacao` (`tip_votacao`, `des_tipo_votacao`, `ind_excluido`) VALUES
 (1, 'Simbólica', 0),
 (2, 'Nominal', 0),
 (3, 'Secreta', 1);
-
---
--- Fazendo dump de dados para tabela `turno_discussao`
---
 
 INSERT INTO `turno_discussao` (`cod_turno`, `sgl_turno`, `des_turno`, `ind_excluido`) VALUES
 (1, 'P', '1ª Discussão', 0),
@@ -6224,19 +6071,16 @@ INSERT INTO `turno_discussao` (`cod_turno`, `sgl_turno`, `des_turno`, `ind_exclu
 (3, 'U', 'Único', 0),
 (4, 'R', 'Redação Final', 0);
 
---
--- Fazendo dump de dados para tabela `unidade_tramitacao`
---
-
-INSERT INTO `unidade_tramitacao` (`cod_unid_tramitacao`, `cod_comissao`, `cod_orgao`, `cod_parlamentar`, `ind_excluido`) VALUES
-(1, NULL, 1, NULL, 0),
-(2, NULL, 2, NULL, 0),
-(3, NULL, 3, NULL, 0),
-(4, NULL, 4, NULL, 0),
-(5, NULL, 5, NULL, 0),
-(6, NULL, 6, NULL, 0),
-(7, NULL, 7, NULL, 0),
-(8, NULL, 8, NULL, 0);
+INSERT INTO `unidade_tramitacao` (`cod_unid_tramitacao`, `cod_comissao`, `cod_orgao`, `cod_parlamentar`, `ind_leg`, `unid_dest_permitidas`, `status_permitidos`, `ind_adm`, `status_adm_permitidos`, `ind_excluido`) VALUES
+(1, NULL, 1, NULL, 1, NULL, NULL, 0, NULL, 0),
+(2, NULL, 2, NULL, 1, NULL, NULL, 1, NULL, 0),
+(3, NULL, 3, NULL, 1, NULL, NULL, 1, NULL, 0),
+(4, NULL, 4, NULL, 1, NULL, NULL, 0, NULL, 0),
+(5, NULL, 5, NULL, 1, NULL, NULL, 0, NULL, 0),
+(6, NULL, 6, NULL, 1, NULL, NULL, 0, NULL, 0),
+(7, NULL, 7, NULL, 1, NULL, NULL, 1, NULL, 0),
+(8, NULL, 8, NULL, 0, NULL, NULL, 0, NULL, 1);
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
