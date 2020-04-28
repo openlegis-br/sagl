@@ -8,7 +8,7 @@ max_cache : 100
 SELECT 
     REPLACE(p.cod_proposicao, 'L', '') as cod_proposicao,
     p.txt_justif_devolucao,
-    DATE_FORMAT(p.dat_devolucao, '%d/%m/%Y %T') as dat_devolucao,
+    DATE_FORMAT(p.dat_devolucao, '%d/%m/%Y %H:%i:%s') as dat_devolucao,
     p.cod_autor,    
     p.txt_descricao,
     p.txt_observacao,
@@ -16,8 +16,8 @@ SELECT
     REPLACE(p.cod_materia, 'L', '') as cod_materia,
     t.des_tipo_proposicao,
     DATE_FORMAT(p.dat_envio, '%d/%m/%Y') as data_envio,
-    DATE_FORMAT(p.dat_envio, '%d/%m/%Y %T') as dat_envio,
-    DATE_FORMAT(p.dat_recebimento, '%d/%m/%Y %T') as dat_recebimento,
+    DATE_FORMAT(p.dat_envio, '%d/%m/%Y %H:%i:%s') as dat_envio,
+    DATE_FORMAT(p.dat_recebimento, '%d/%m/%Y %H:%i:%s') as dat_recebimento,
     p.ind_excluido,
     a.col_username,
     ta.des_tipo_autor,
@@ -61,28 +61,28 @@ FROM
     </dtml-if>
     <dtml-and>
     <dtml-if expr="ind_pendente==1">
-        p.dat_envio != '' 
+        p.dat_envio IS NOT NULL
         AND p.dat_recebimento IS NULL
     <dtml-elif expr="ind_pendente=='0'">
-        p.dat_envio = ''
+        p.dat_envio IS NULL
     </dtml-if>
     <dtml-and>
     <dtml-if expr="ind_recebido==1">
-        p.dat_recebimento != '' 
+        p.dat_recebimento IS NOT NULL 
         AND p.cod_mat_ou_doc IS NULL
     <dtml-elif expr="ind_recebido==0">
         p.dat_recebimento IS NULL
     </dtml-if>
     <dtml-and>
     <dtml-if expr="ind_devolvido==1">
-        p.dat_devolucao != ''
+        p.dat_devolucao IS NOT NULL
         AND YEAR(p.dat_devolucao) = YEAR(now())
     <dtml-elif expr="ind_devolvido==0">
         p.dat_devolucao IS NULL
     </dtml-if>
     <dtml-and>
     <dtml-if expr="ind_incorporado==1">
-        p.dat_recebimento != ''
+        p.dat_recebimento IS NOT NULL
         AND p.cod_mat_ou_doc IS NOT NULL
         AND YEAR(p.dat_recebimento) = YEAR(now())
     <dtml-elif expr="ind_incorporado==0">
