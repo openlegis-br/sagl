@@ -30,6 +30,7 @@ def setupConteudo(portal):
             'parecer_comissao.zexp',
             'parlamentar.zexp',
             'pauta_sessao.zexp',
+            'partido.zexp',
             'pessoa.zexp',
             'proposicao.zexp',
             'props_sapl.zexp',
