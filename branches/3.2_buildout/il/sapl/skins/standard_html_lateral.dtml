@@ -3,6 +3,12 @@
   .ui-widget-header { padding: 7px 0 8px 7px; }
   </style>
 
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+   <dtml-if cod_usuario>
+      <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+   </dtml-if>
+</dtml-in>
+
 <dtml-let isAnon="portal_membership.isAnonymousUser()">
 
   <dtml-if isAnon>
@@ -91,8 +97,10 @@
   </script>
   <ul id="assinaturas">
        <li class="ui-widget-header">Assinatura Digital</li>
+         <dtml-if cod_usuario_corrente>
             <li><span class="ui-icon ui-icon-pencil"></span><a href="&dtml-portal_url;/cadastros/assinatura/assinaturas_pendentes">Assinar Documentos</a></li>
             <li><span class="ui-icon ui-icon-key"></span><a href="&dtml-portal_url;/cadastros/assinatura/assinaturas_efetivadas">Histórico de Assinaturas</a></li>
+         </dtml-if>
             <li><span class="ui-icon ui-icon-check"></span><a href="&dtml-portal_url;/conferir_assinatura">Conferir Assinaturas</a></li>
   </ul>
  </dtml-if>
@@ -201,11 +209,6 @@
   });
   </script>
   <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
-    <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
-       <dtml-if cod_usuario>
-         <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
-       </dtml-if>
-    </dtml-in>
     <dtml-if cod_usuario_corrente>
      <dtml-if expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
       <ul id="tram-materias">
@@ -308,27 +311,6 @@
       </dtml-if>
      </dtml-if>
 </dtml-if>
-
-<dtml-comment>
-<dtml-if expr="AUTHENTICATED_USER.has_role(['Autor'])">
-<dtml-in expr="zsql.autor_obter_zsql(col_username=AUTHENTICATED_USER.getUserName(), des_tipo_autor = 'Poder Executivo')">
- <dtml-if expr="des_tipo_autor=='Poder Executivo'">
-  <script>
-  $(function() {
-    $( "#executivo" ).menu({
-      items: "> :not(.ui-widget-header)"
-    });
-  });
-  </script>
-  <ul id="executivo">
-       <li class="ui-widget-header">Poder Executivo</li>
-       <li><span class="ui-icon ui-icon-clock"></span><a href="<dtml-var diretorio>poder_executivo/materias_receber_form">Receber Matérias</a></li>
-       <li><span class="ui-icon ui-icon-check"></span><a href="<dtml-var diretorio>poder_executivo/materias_recebidas_listar">Matérias Recebidas</a></li>
-  </ul>
- </dtml-if>
-</dtml-in>
-</dtml-if>
-</dtml-comment>
 
 <dtml-comment>###### MENU ADMINISTRATIVO #######</dtml-comment>
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Arquivo', 'Operador Recepção', 'Operador Materia'])">
@@ -514,7 +496,7 @@
                <li><span class="ui-icon ui-icon-search"></span><a href="&dtml-portal_url;/consultas/materia">Pesquisar Matérias</a></li>
                <li><span class="ui-icon ui-icon-tag"></span><a href="#">Matérias por Tipo</a>
                 <ul>
-                <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+                <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)">
                   <li><a href="&dtml-portal_url;/consultas/materia/materia_pesquisar_proc?incluir=1&amp;existe_ocorrencia=0&amp;lst_tip_materia=<dtml-var tip_materia>&amp;txt_numero=&amp;txt_prot_pref=&amp;txt_ano=&amp;txt_npc=&amp;txt_num_protocolo=&amp;dt_apres=&amp;dt_apres2=&amp;dt_public=&amp;dt_public2=&amp;hdn_txt_autor=&amp;hdn_cod_autor=&amp;lst_tip_autor=&amp;lst_cod_partido=&amp;txt_relator=&amp;txt_assunto=&amp;rad_tramitando=&amp;lst_localizacao=&amp;lst_status=&amp;rd_ordenacao=1&amp;chk_coautor=0&amp;btn_materia_pesquisar=Pesquisar"><dtml-var des_tipo_materia></a></li>
                 </dtml-in>
                 </ul>
