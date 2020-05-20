@@ -41,7 +41,7 @@
 </dtml-if>
 <dtml-call "REQUEST.set('start',(page-1) * step + 1)">
 
-<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Consulta Modulo Administrativo'])">
   <dtml-call expr="REQUEST.set('metodo', zsql.documento_administrativo_pesquisar_zsql)">
 <dtml-else>
   <dtml-call expr="REQUEST.set('metodo', zsql.documento_administrativo_pesquisar_publico_zsql)">
@@ -109,23 +109,35 @@
                     </dtml-in>
                 </dtml-in>
 
-                <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculado=cod_documento)">
-                 <dtml-if sequence-start>
-                   <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculante<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </b>
-                 </dtml-if>
-                    <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculante>">
-                      <dtml-var sgl_tipo_documento_vinculante> <dtml-var num_documento_vinculante>/<dtml-var ano_documento_vinculante>
-                    </a><dtml-unless sequence-end>,</dtml-unless>
+                <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculado = cod_documento)">
+                   <dtml-if sequence-start>
+                       <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculante<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </b>
+                   </dtml-if>
+                   <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                      <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculante>">
+                  <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                      <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculante>">
+                  <dtml-else>
+                      <a href="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculante>" >
+                  </dtml-if>             
+                         <dtml-var sgl_tipo_documento_vinculante> <dtml-var num_documento_vinculante>/<dtml-var ano_documento_vinculante>
+                      </a><dtml-unless sequence-end>,</dtml-unless>
                     <dtml-if sequence-end><br /></dtml-if>
                 </dtml-in>
 
-                <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante=cod_documento)">
-                 <dtml-if sequence-start>
-                   <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculado<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </b> 
-                 </dtml-if>
-                    <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>">
-                      <dtml-var sgl_tipo_documento_vinculado> <dtml-var num_documento_vinculado>/<dtml-var ano_documento_vinculado>
-                    </a><dtml-unless sequence-end>,</dtml-unless>
+                <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante = cod_documento)">
+                   <dtml-if sequence-start>
+                     <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculado<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </b> 
+                   </dtml-if>
+                   <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                      <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>">
+                  <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                      <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>">
+                  <dtml-else>
+                      <a href="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>" >  
+                  </dtml-if>                            
+                         <dtml-var sgl_tipo_documento_vinculado> <dtml-var num_documento_vinculado>/<dtml-var ano_documento_vinculado>
+                      </a><dtml-unless sequence-end>,</dtml-unless>
                     <dtml-if sequence-end><br /></dtml-if>
                 </dtml-in>
 
