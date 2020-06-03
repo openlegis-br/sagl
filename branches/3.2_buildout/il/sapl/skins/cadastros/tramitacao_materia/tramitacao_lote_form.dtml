@@ -85,7 +85,7 @@ $(function() {
 <script type="text/javascript" src="javascript/data_validar.js" "></script>
 
 <script type="text/javascript">
-<!--
+
   function campos_criticar(form){
 
       var form = document.getElementById('tramitacao_lote_tramitar_proc');
@@ -102,18 +102,25 @@ $(function() {
           return false;
       }
 
- <dtml-comment>
-      if (form.lst_cod_usuario_dest.value==form.hdn_cod_usuario_local.value){
-          alert("O usuário de destino deve ser diferente do usuário local!");
-          form.lst_cod_usuario_dest.focus();
-          return false;
-      }
- </dtml-comment>
-      
       if (form.lst_cod_status.selectedIndex == ""){
           alert("O status da nova tramitação deve ser selecionado!");
           form.lst_cod_status.focus();
           return false;
+      }
+
+      if (form.txt_dat_tramitacao.value == "") {
+         alert("A data de tramitação deve ser preenchida!");
+         form.txt_dat_tramitacao.focus();
+         return false;
+      }
+
+      if (form.txt_dat_tramitacao.value!="") {
+         if (!IsValidDate(form.txt_dat_tramitacao.value)){
+           alert("Digite uma data de tramitação válida!");
+           form.txt_dat_tramitacao.focus();
+           form.txt_dat_tramitacao.select();
+           return false;
+         }
       }
 
      if (!(form.rad_ind_urgencia[0].checked || form.rad_ind_urgencia[1].checked)){
@@ -170,7 +177,6 @@ $(function() {
      form.reset();
   }
 
-//-->
 </script>
 
 <script type="text/javascript">
@@ -186,6 +192,7 @@ $(function() {
 <script type="text/javascript">
   $(function() {
         $('#txt_dat_fim_prazo').datepick();
+        $('#txt_dat_tramitacao').datepick();
   });
 </script>
 
@@ -276,7 +283,7 @@ $(function() {
         </td>
         <style scoped>div.dhxcombo_dhx_skyblue{margin-left: 0;}</style>
         <td class="form-element">Usuário de Destino</br>
-             <select name="lst_cod_usuario_dest" id="lst_cod_usuario_dest" style="max-width: 110.25px; width: 100%;">
+             <select name="lst_cod_usuario_dest" id="lst_cod_usuario_dest" style="max-width: 200px; width: 100%;">
 
              </select>
 		<script type="text/javascript">
@@ -322,9 +329,14 @@ $(function() {
             </dtml-in>
          </td>
       </tr>
-      <tr>          
-         <td colspan="2">
-           <label>Data Fim Prazo</label> <br />
+      <tr>
+         <td>
+            <label for="tram_dat_tramitacao">Data de Tramitação</label> <span class="campoObrigatorio">&nbsp;</span><br />
+            <dtml-call expr="REQUEST.set('dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
+            <input type="text" name="txt_dat_tramitacao" id="txt_dat_tramitacao" size="12" maxlength="10" value="<dtml-var dat_tramitacao>">
+         </td>     
+         <td>
+           <label>Data Fim de Prazo</label> <br />
            <input type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" valign="top" size="12" maxlength="10" value="" onBlur="formata_data(form.txt_dat_fim_prazo)">
          </td>
       </tr>
