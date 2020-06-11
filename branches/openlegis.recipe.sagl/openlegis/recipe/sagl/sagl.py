@@ -93,7 +93,7 @@ def main(app, parser):
             cursor.execute(sagl_dbperms)
             logger.info("Concluída a criação do usuário MySQL")
 
-            sagl_sql = pkg_resources.resource_filename('il.sagl', 'instalacao/sagl.sql')
+            sagl_sql = pkg_resources.resource_filename('openlegis.sagl', 'instalacao/sagl.sql')
             process = Popen("mysql %s -u%s -p%s -h %s" % (mysql_db, mysql_user, mysql_pass, mysql_host), stdout=PIPE, stdin=PIPE, shell=True)
             process.communicate('source ' + sagl_sql)[0]
             logger.info("Estrutura de tabelas criada com sucesso")
@@ -131,7 +131,7 @@ def main(app, parser):
 
     if sagl and created:
         setup_tool = getattr(sagl, 'portal_setup')
-        setup_tool.runAllImportStepsFromProfile('profile-il.sagl:default')
+        setup_tool.runAllImportStepsFromProfile('profile-openlegis.sagl:default')
         logger.info("Finalizado")
 
     # commit the transaction
