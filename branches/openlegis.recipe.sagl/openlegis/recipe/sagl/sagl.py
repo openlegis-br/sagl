@@ -29,7 +29,7 @@ def create(container, sagl_id):
         return (sagl, created)
     if sagl_id not in oids:
         created = True
-        factory = container.manage_addProduct['il.sagl']
+        factory = container.manage_addProduct['openlegis.sagl']
         factory.manage_addSAGL(sagl_id, title='OpenLegis - Processo Legislativo Eletrônico', database="MySQL")
         transaction.commit()
         logger.info("Added SAGL")
