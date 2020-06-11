@@ -1,0 +1,83 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+<!--
+
+  function campos_criticar(){
+
+     var form = document.materias_form;
+
+     var regexp_digitos = /\D+/;
+
+     if (form.lst_tip_materia.selectedIndex==0){
+       alert("O tipo de matéria deve ser selecionado!");
+       form.lst_tip_materia.focus();
+       return false;
+    }
+
+    if (form.txt_ano_materia.value == "") {
+       alert("O ano deve ser preenchido!");
+       form.txt_ano_materia.focus();
+       return false;
+    }
+
+    if (regexp_digitos.test(form.txt_ano_materia.value)) {
+       alert("O ano deve ser um número natural!");
+       form.txt_ano_materia.focus();
+       return false;
+    }
+
+      form.submit();
+    }
+
+//-->
+</script>
+
+  <h1 class="firstHeading">Verificação de Textos Integrais</h1>
+  <legend>Matérias Legislativas</legend>
+  <form class="pf-form" method="post" name="materias_form" action="verificar_materias_html">
+    <input type="hidden" name="materia" value="1">
+    <div class="pf-element pf-full-width">
+      <label for="lst_tip_materia"><span class="pf-label">Tipo de Matéria</span></label>
+        <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia" style="max-width: 240px; width: 100%;">
+          <option value="0">Selecione</option>
+          <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+            <option 
+             <dtml-if expr="_.has_key('lst_tip_materia') and _.int(tip_materia)==_.int(lst_tip_materia)">
+              selected</dtml-if>
+               value="<dtml-var tip_materia missing>">
+               <dtml-var des_tipo_materia>
+            </option>
+          </dtml-in>
+        </select>
+    </div>
+    <div class="pf-element pf-full-width">
+      <label><span class="pf-label">Ano:</span></label>
+        <label for="txt_ano_materia">
+          <input class="pf-field" type="text" id="txt_ano_materia" name="txt_ano_materia" maxlength="4" style="min-width: 94px; max-width: 94px; width: 20%;" value="<dtml-var txt_ano_materia missing>" />
+        </label>
+    </div>
+    <div class="pf-element pf-buttons">
+        <input class="pf-button btn botao" type="button" class="botao" name="button" value="Gerar relatório" onClick="campos_criticar()" />
+        <dtml-if expr="_.has_key('materia')">
+          <a href="&dtml-portal_url;/relatorios_administrativos/verificaTextosIntegrais/verificar_materias_html" class="botao">Nova Pesquisa</a>
+        </dtml-if>
+    </div>
+  </form>
+
+<dtml-if expr="_.has_key('materia')">
+ <br /><h3>Matérias Legislativas desprovidas de Texto Integral</h3><br />
+        <dtml-in expr="zsql.materia_pesquisar_zsql(tip_id_basica=lst_tip_materia,ano_ident_basica=txt_ano_materia,ind_excluido=0)">
+               <dtml-let id_documento_pdf="_.str(cod_materia)+'_texto_integral.pdf'">
+                <dtml-if "not _.hasattr(sapl_documentos.materia,id_documento_pdf)">
+                   <p><a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank"><b><dtml-var des_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></a> - <dtml-var txt_ementa></p>
+                </dtml-if>
+               </dtml-let>
+        <dtml-else>
+          <p>Nenhuma ocorrência encontrada</p>
+        </dtml-in>
+</dtml-if>
+
+<dtml-var standard_html_footer>

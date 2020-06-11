@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+    function campos_criticar(){
+
+        var form = document.votacao_form;
+        var regexp_digitos = /\D+/;
+        var tipo_votacao = 2;
+
+        if (form.lst_tip_resultado.selectedIndex == 0){
+            alert("Selecione o Resultado da Votação!");
+            form.lst_tip_resultado.focus();
+            return false;
+        }
+        form.submit();
+    }
+
+    function submeter(endereco){
+
+            var form = document.votacao_form;
+            endereco += '?cod_sessao_plen=<dtml-var cod_sessao_plen>';
+
+            if (form.hdn_cod_sessao_plen.value!=""){
+                location.href = endereco;
+            }
+            return;
+     }
+
+     function reloadParentAndClose(){
+         parent.jQuery.fancybox.close();
+     }
+
+</script>
+</head>
+<body class="modal">
+
+<h1 class="firstHeading">Aprovação de Matérias do Expediente em Lote</h1>
+
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+<form action="aprovacao_nominal_salvar_proc" name="votacao_form">
+        <input type="hidden" name="hdn_url" value="javascript:parent.jQuery.fancybox.close();" />
+        <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+
+<fieldset>
+        <legend>Votação Nominal</legend>
+        <table>
+            <dtml-call expr="REQUEST.set('temVotacao', '0')">
+            <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+             <dtml-if cod_votacao>
+              <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao=cod_votacao,cod_parlamentar=cod_parlamentar,ind_excluido=0)">
+                 <dtml-if expr="vot_parlamentar!='' or vot_parlamentar!=None">
+                    <dtml-call expr="REQUEST.set('temVotacao', '1')">
+                 </dtml-if>
+               </dtml-in>
+              </dtml-if>
+            </dtml-in>
+            <dtml-if expr="temVotacao=='1'">
+            <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+            <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao=cod_votacao,cod_parlamentar=cod_parlamentar,ind_excluido=0)">
+            <tr>
+                <td width="45%" class="texto">
+                    <dtml-var nom_parlamentar>
+                    <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
+                </td>
+                <td>
+                  <select name="lst_voto_parlamentar" size="1">
+                   <option value="-1">Selecione </option>
+                   <dtml-in expr="[('Sim','Sim'), ('Nao', 'Não'), ('Abstencao', 'Abstenção'), ('Ausente','Ausente')]">                 
+                      <option
+                           <dtml-if expr="_.has_key('cod_votacao') and (vot_parlamentar==_['sequence-key'] or vot_parlamentar==_['sequence-item'])">
+                                selected
+                           </dtml-if>
+                           value="<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']">
+                      </option>
+                   </dtml-in>
+                  </select>
+                </td>
+            </tr>
+            </dtml-in>
+            </dtml-in>
+            <dtml-else>
+            <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+            <tr>
+                <td width="45%" class="texto">
+                    <dtml-var nom_parlamentar>
+                    <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
+                </td>
+                <td>
+                    <select name="lst_voto_parlamentar" size="1">
+                        <option value="-1">Selecione </option> 
+                        <dtml-in expr="[('Sim','Sim'),('Nao','Não'),('Abstencao','Abstenção'),('Ausente','Ausente')]">
+                           <option value="<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></option>
+                        </dtml-in>
+                    </select>
+                </td>
+            </tr>
+            </dtml-in>
+            </dtml-if>
+            <tr>
+                <th colspan="3">
+                    <label for="lst_tip_resultado">Resultado da Votação </label><span class="campoObrigatorio">&nbsp;</span>
+                    <select name="lst_tip_resultado" size="1">
+                        <option value="-1">Selecione</option>
+                        <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql()">
+                            <option
+                            <dtml-if expr="_.has_key('cod_votacao') and tip_resultado_votacao==votacao_form.tip_resultado_votacao">
+                                selected
+                            </dtml-if>
+                                value="<dtml-var tip_resultado_votacao>"><dtml-var nom_resultado>
+                            </option>
+                        </dtml-in>
+                    </select>
+                </th>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <label for="txa_txt_observacao">Observações</label>
+                    <textarea name="txa_txt_observacao" rows="4" cols="60"><dtml-var txt_observacao missing></textarea>
+                </td>
+            </tr>
+            <tr>
+        </table>
+                <p align="center" >
+                    <input class="botao" type="button" name="button" value="Salvar" onClick="campos_criticar()" />
+                    <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+                </p>
+</fieldset>
+</form>
+</body>
+</html>

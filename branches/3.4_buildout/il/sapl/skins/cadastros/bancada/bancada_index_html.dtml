@@ -1,0 +1,138 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+   function atualiza_periodo_comp(cod_periodo_comp, num_legislatura){
+        location.href = "<dtml-var absolute_url>?cod_periodo_comp_sel="+cod_periodo_comp+"&hdn_num_legislatura="+num_legislatura;
+   }   
+   function atualiza_num_leg(num_legislatura){    
+        location.href = "<dtml-var absolute_url>?hdn_num_legislatura="+num_legislatura;
+   }
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_bancada">Ajuda</a>
+<h1 class="firstHeading">Bancadas</h1>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Parlamentar', 'Operador Tabela Auxiliar'])">
+<div id="barra-conteudo">
+<ul>
+    <li>
+        <a href="&dtml-portal_url;/cadastros/auxiliares/bancada/bancada_form?num_legislatura_sel=<dtml-var hdn_num_legislatura missing>">Incluir Bancada</a>
+    </li>
+</ul>
+</div>
+</dtml-if>
+
+<form name="index_form">
+ <fieldset>
+ <div class="section group">
+   <div class="col span_1_of_2">
+         <label for="lst_num_legislatura">Legislatura:</label>
+         <select id="lst_num_legislatura" name="lst_num_legislatura" size="1" onChange="atualiza_num_leg(form.lst_num_legislatura [form.lst_num_legislatura.selectedIndex].value)" >    
+            <dtml-in expr="zsql.legislatura_obter_zsql()">
+               <option 
+                  <dtml-if expr="_.has_key('hdn_num_legislatura') and num_legislatura==_.int(hdn_num_legislatura)">
+                     selected
+                  <dtml-elif expr="not _.has_key('hdn_num_legislatura') and _.DateTime() >= dat_inicio and _.DateTime() <= dat_fim">
+                     <dtml-call expr="REQUEST.set('hdn_num_legislatura', num_legislatura)">
+                     selected
+                  </dtml-if>
+                  value="<dtml-var num_legislatura>">
+                  <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">
+                  <dtml-if expr="(_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim)">
+                     (Atual)
+                  </dtml-if>
+               </option>
+            </dtml-in>
+         </select>
+       <dtml-if expr="not _.has_key('hdn_num_legislatura')">
+        <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
+            <dtml-if sequence-start>
+               <dtml-call expr="REQUEST.set('hdn_num_legislatura', num_legislatura)">
+            </dtml-if>
+        </dtml-in>
+       </dtml-if>
+   </div>
+   <div class="col span_1_of_2">
+       <label for="lst_periodo_comp">Período:</label>
+              <select id="lst_periodo_comp" name="lst_periodo_comp" size="1" onChange="atualiza_periodo_comp(form.lst_periodo_comp[form.lst_periodo_comp.selectedIndex].value, form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value)">
+      <dtml-in expr="zsql.periodo_comp_bancada_obter_zsql(num_legislatura=hdn_num_legislatura)">
+
+              <option
+                <dtml-if expr="((not _.has_key('cod_periodo_comp_sel') and not _.has_key('prim_sel') 
+                                and (_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim)))
+                                or (_.has_key('cod_periodo_comp_sel') and cod_periodo_comp == cod_periodo_comp_sel)
+                                or (not _.has_key('cod_periodo_comp_sel') and not _.has_key('prim_sel'))">
+                     selected
+                     <dtml-call expr="REQUEST.set('prim_sel', cod_periodo_comp)">
+                     <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', cod_periodo_comp)">
+                </dtml-if>
+                 value="<dtml-var cod_periodo_comp>">
+                 <dtml-var dat_inicio_periodo> a <dtml-var dat_fim_periodo>
+		<dtml-if expr="(_.DateTime() >= dat_inicio) and (_.DateTime() <= dat_fim)">(Atual)</dtml-if>
+              </option>
+
+      </dtml-in>
+     </select>
+    </div>
+  </div>
+</fieldset>
+<dtml-call expr="REQUEST.set('existe_ocorrencia', 0)">
+<dtml-call expr="REQUEST.set('listar', 1)">
+<dtml-call expr="REQUEST.set('primeiro_listado', 1)">
+<fieldset>
+<dtml-if expr="_.has_key('hdn_num_legislatura')">
+<dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=hdn_num_legislatura,cod_periodo_comp=cod_periodo_comp_sel,ind_excluido=0)">
+  <dtml-if sequence-start>
+    <table id="bancadas" class="tablesorter">
+    <thead>
+     <tr>
+       <th class="form-label" width="45%">&nbsp;Nome da Bancada</th>
+       <th class="form-label" width="40%">&nbsp;Liderança</th>
+       <th class="form-label" width="15%">&nbsp;Parlamentares</th>
+     </tr>
+    </thead>
+  </dtml-if sequence-start>
+     <tr>
+       <td class="texto">
+         <a href="bancada_index_form?cod_bancada=<dtml-var cod_bancada>&num_legislatura=<dtml-var hdn_num_legislatura>&cod_periodo_comp=<dtml-var cod_periodo_comp_sel>">
+           <b><dtml-var nome_bancada></b>
+         </a>
+       </td>
+       <dtml-in expr="zsql.bancada_obter_lider_zsql(cod_bancada=cod_bancada,cod_periodo_comp=cod_periodo_comp_sel)">
+         <td class="texto">
+           <dtml-var nom_parlamentar>
+         </td>
+       <dtml-else>
+         <td class="texto">
+            sem registro
+         </td>
+       </dtml-in>
+       <dtml-in expr="zsql.bancada_contar_parlamentares_zsql(cod_bancada=cod_bancada, cod_periodo_comp=cod_periodo_comp_sel)">
+         <td class="texto">
+            <dtml-var num_parlamentares missing null="">
+          </td>
+       </dtml-in>
+     </tr>
+  <dtml-if sequence-end>
+   <dtml-if next-sequence>
+     <tr>
+       <td class="form-element">
+          <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
+            Próxima Página (<dtml-var next-sequence-size>)</a>
+       </td>
+     </tr>
+   </dtml-if next-sequence>
+   </table>
+  </dtml-if sequence-end>
+ <dtml-else>
+       <p class="texto">Nenhuma Bancada cadastrada</p>
+</dtml-in>
+<dtml-else>
+   <div class="vereador">
+       <span class="texto">Não há nenhuma Legislatura cadastrada</span>
+   </div>     
+</dtml-if>
+</fieldset>
+</form>
+
+<dtml-var standard_html_footer>

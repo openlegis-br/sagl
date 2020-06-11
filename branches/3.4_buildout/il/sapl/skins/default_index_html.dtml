@@ -1,0 +1,103 @@
+<dtml-var standard_html_header>
+
+<dtml-if expr="(REQUEST['HTTP_REFERER'].split('/')[-1]=='login_form') and (str(REQUEST['AUTHENTICATED_USER']).strip()=='Anonymous User')">
+  <div class="ui-state-error ui-corner-all" style="padding: 0.3em 1em; margin-bottom: 10px">
+    <p>
+      <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+      <strong>Login inválido!</strong>
+        Informe corretamente seu nome de usuário e senha.
+    </p>
+  </div>
+<dtml-else>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador','Operador Materia'])">
+
+ <dtml-with expr="_.namespace(materias=zsql.materia_prazo_deliberacao_vencido_zsql())">
+  <dtml-if expr="_.len(materias) > 0">
+    <div class="ui-state-error ui-corner-all" style="padding: 0.3em 1em; margin-bottom: 10px">
+      <p>
+        <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+        <strong>Aviso de vencimento:</strong> há <a style="text-decoration: underline" href="&dtml-portal_url;/generico/materia_listar_prazo_deliberacao"><b><dtml-var  expr="_.len(materias)"> matéria<dtml-if expr="_.len(materias) > 1">s</dtml-if> em tramitação</b></a> com <span style="font-weight:bold;">prazo<dtml-if expr="_.len(materias) > 1">s</dtml-if> de deliberação</span> vencido<dtml-if expr="_.len(materias) > 1">s</dtml-if>. 
+      </p>
+    </div>
+  </dtml-if>
+ </dtml-with>
+
+ <dtml-with expr="_.namespace(materias=zsql.tramitacao_prazo_vencido_obter_zsql())">
+  <dtml-if expr="_.len(materias) > 0">
+    <div class="ui-state-highlight ui-corner-all" style="padding: 0.3em 1em; margin-bottom: 10px">
+      <p>
+        <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+        <strong>Aviso de vencimento:</strong> há <a style="text-decoration: underline" href="&dtml-portal_url;/generico/materia_listar_prazo_vencido"><b><dtml-var  expr="_.len(materias)"> matéria<dtml-if expr="_.len(materias) > 1">s</dtml-if></b></a> com <span style="font-weight:bold;">prazo<dtml-if expr="_.len(materias) > 1">s</dtml-if> de tramitação</span> vencido<dtml-if expr="_.len(materias) > 1">s</dtml-if>. 
+      </p>
+    </div>
+  </dtml-if>
+ </dtml-with>
+
+ <dtml-with expr="_.namespace(materias=zsql.tramitacao_prazo_vincendo_obter_zsql())">
+  <dtml-if expr="_.len(materias) > 0">
+    <div class="ui-state-default ui-corner-all" style="padding: 0.3em 1em; margin-bottom: 10px">
+      <p>
+        <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+        <strong>Aviso de vencimento:</strong> há <a style="text-decoration: underline" href="&dtml-portal_url;/generico/materia_listar_prazo"><b><dtml-var  expr="_.len(materias)"> matéria<dtml-if expr="_.len(materias) > 1">s</dtml-if></b></a> com <span style="font-weight:bold;">prazo<dtml-if expr="_.len(materias) > 1">s</dtml-if> de tramitação</span> vencendo hoje (<dtml-var expr="ZopeTime().strftime('%d/%m/%Y')">). 
+      </p>
+    </div>
+  </dtml-if>
+ </dtml-with>
+</dtml-if>
+
+    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador','Operador Materia','Leitor Relatorios'])">
+    <div class="ui-state-default ui-corner-all" style="padding: 0.3em 1em; margin-bottom: 10px">
+      <p>
+        <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+        <strong>Matérias / Vencimento:</strong>  <a style="text-decoration: underline" href="&dtml-portal_url;/relatorios_administrativos/materiaVencimento/materiaVencimento">Lista ordenada pelo Prazo Final de Deliberação</a>
+      </p>
+    </div>
+    </dtml-if>
+
+    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador','Operador Modulo Administrativo','Leitor Relatorios'])">
+    <div class="ui-state-default ui-corner-all" style="padding: 0.3em 1em; margin-bottom: 10px">
+      <p>
+        <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+        <strong>Documentos Administrativos / Vencimento:</strong>  <a style="text-decoration: underline" href="&dtml-portal_url;/relatorios_administrativos/documentoVencimento/documentoVencimento_index_html">Lista ordenada pelo Prazo Final de Tramitação</a>
+      </p>
+    </div>
+    </dtml-if>
+
+<h1 class="firstHeading" style="display: none;">Página Inicial</h1>
+
+<div class="section group">
+ <div class="col span_2_of_2">
+      <div style="text-align: center">
+       <a href="http://www.openlegis.com.br" target="_blank">
+         <img class="openlegis-home" src="&dtml-portal_url;/imagens/openlegis.png" alt="OpenLegis" title="Suporte técnico: suporte@openlegis.com.br" />
+       </a>
+      </div>
+ </div>
+</div>
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="not isAnon">
+ <table>
+  <tr><th>
+   <h2 align="center">Informações de login</h2>
+  </th>
+  <td>
+   <p style="margin-left: 35px"><b>Usuário:</b> <dtml-var "AUTHENTICATED_USER.getUserName()"></p>
+   <p style="margin-left: 35px"><b>Perfil:</b>
+    <dtml-let user_roles="AUTHENTICATED_USER.getRoles()">
+     <dtml-in user_roles>
+       <dtml-if expr="(_['sequence-item']!='Authenticated')">
+        <span><dtml-var sequence-item></span>
+      </dtml-if>
+     </dtml-in>
+    </dtml-let>
+   </p>
+   <p style="margin-left: 35px"><b>IP de origem:</b> <dtml-if HTTP_X_FORWARDED_FOR><dtml-var HTTP_X_FORWARDED_FOR><dtml-else><dtml-var REMOTE_ADDR></dtml-if></p>
+  </td></tr>
+ </table>
+ </dtml-if>
+</dtml-let>
+</dtml-if>
+
+<dtml-var standard_html_footer>

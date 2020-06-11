@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+
+  function campos_criticar(){
+
+      var form = document.visitante_form;
+      if (form.txt_dat_nascimento.value!="" && !IsValidDate(form.txt_dat_nascimento.value)){
+         alert("Informa uma data de solução válida!");
+         form.txt_dat_nascimento.focus();
+         form.txt_dat_nascimento.select();
+         return false;
+      }
+
+      form.submit();
+    }
+
+  function reloadParentAndClose(){
+       parent.jQuery.fancybox.close();
+  }
+
+</script>
+
+</head>
+
+<body class="modal">
+
+<h1 class="firstHeading">Dados do Visitante</h1> 
+
+  <form name="visitante_form"  action="visitante_salvar_proc" method="post">
+    <input type="hidden" name="hdn_cod_pessoa" value="<dtml-var cod_pessoa missing>" />
+                <table>
+                        <tr>
+                          <td width="45%"><label for="txt_nom_pessoa">Nome da Pessoa</label><br />
+                            <input type="text" id="txt_nom_pessoa" name="txt_nom_pessoa" size="50" maxlength="200"  value="<dtml-var nom_pessoa missing>" disabled />
+                          </td>
+                          <td colspan="2"><label for="txt_doc_identidade">Doc. Identidade</label><br />
+                            <input type="text" id="txt_doc_identidade" name="txt_doc_identidade" size="30" maxlength="50"  value="<dtml-var doc_identidade missing>" disabled />
+                          </td>
+                          <td><label for="rad_sex_pessoa">Sexo</label><br />
+                            <dtml-in expr="['M','F']">
+                              <input type="radio" id="rad_sex_pessoa" name="rad_sex_pessoa" value="<dtml-var expr="_['sequence-item']"> disabled"
+                              <dtml-if expr="_.has_key('cod_pessoa') and sex_pessoa==_['sequence-item']">
+                                checked=1
+                              </dtml-if> />
+                              <dtml-var expr="_['sequence-item']">
+                            </dtml-in>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                             <label for="txt_end_residencial">Endereço </label><br />
+                              <input type="text" id="txt_end_residencial" name="txt_end_residencial" size="50" maxlength="80" value="<dtml-var end_residencial missing>" disabled />
+                          </td>
+                          <td><label for="txt_num_imovel">Número </label><br />
+                            <input type="text" id="txt_num_imovel" name="txt_num_imovel" size="5" maxlength="10" value="<dtml-var num_imovel missing>" disabled />
+                          </td>
+                          <td><label for="txa_txt_complemento">Complemento</label><br />
+                            <input type="text" id="txa_txt_complemento" name="txa_txt_complemento" size="10" maxlength="50" value="<dtml-var txt_complemento missing null>" disabled />
+                          </td>
+                          <td><label for="txt_num_cep">CEP </label><br />
+                            <input type="text" id="txt_num_cep" name="txt_num_cep" size="15" maxlength="15" value="<dtml-var num_cep missing>" disabled />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><label for="txt_nom_bairro">Bairro </label><br />
+                            <input type="text" id="txt_nom_bairro" name="txt_nom_bairro" size="50" maxlength="80" value="<dtml-var nom_bairro missing>" disabled />
+                          </td>
+                          <td colspan="2"><label for="txt_nom_cidade">Cidade</label><br />
+                            <input type="text" id="txt_nom_cidade" name="txt_nom_cidade" size="30" maxlength="80" value="<dtml-var nom_cidade missing>" disabled />
+                          </td>
+                          <td><label for="txt_sgl_uf">Estado</label><br />
+                            <input type="text" id="txt_sgl_uf" name="txt_sgl_uf" size="10" maxlength="2" value="<dtml-var sgl_uf missing null=SP>" disabled />
+                          </td>
+                        </tr>
+                          <td><label for="txt_end_email">E-mail</label><br />
+                            <input type="text" id="txt_end_email" name="txt_end_email" size="50" maxlength="100" value="<dtml-var end_email missing null="">" disabled />
+                          </td>
+                          <td colspan="2"><label for="txt_num_telefone">Telefone Fixo</label><br />
+                            <input type="text" id="txt_num_telefone" name="txt_num_telefone" size="20" maxlength="50" value="<dtml-var num_telefone missing null>" disabled />
+                          </td>
+                          <td><label for="txt_num_fax">Telefone Celular</label><br />
+                            <input type="text" id="txt_num_celular" name="txt_num_celular" size="20" maxlength="50" value="<dtml-var num_celular missing null>" disabled/>
+                          </td>
+                        </tr>
+                        <dtml-if txt_observacao>
+                        <tr>
+                          <td colspan="4"><label for="txa_txt_observacao">Observações</label> 
+                            <textarea id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""> disabled></textarea>
+                          </td>
+                        </tr>
+                        </dtml-if>
+                        <tr>
+                          <td class="texto" colspan="1">
+                            <label>Fotografia</label>
+                             <div style="vertical-align: middle;" align="center">
+                                 <dtml-call expr="REQUEST.set('id_foto', _.str(cod_pessoa)+'_foto_pessoa.jpg')">
+                                 <dtml-if expr="_.hasattr(sapl_documentos.pessoa,id_foto)">
+                                   <img height="100" src="&dtml-portal_url;/sapl_documentos/pessoa/<dtml-var id_foto>?<dtml-var expr="ZopeTime().timeTime()">">
+                                 <dtml-else>
+                                   <img height="100" alt="<dtml-var nom_pessoa>" src="&dtml-portal_url;/imagens/avatar.png">
+                                 </dtml-if>
+                             </div>
+                          </td>
+                          <th colspan="3" class="texto">
+                            <b>Registro atualizado em:</b> <input type="text" id="txt_dat_atualizacao" name="txt_dat_atualizacao" size="16" value="<dtml-var dat_atualizacao missing>" disabled=disabled />  
+                          </th>
+                        </tr>
+            </table>
+
+         <legend>Informações Complementares</legend>
+            <table>
+             <tr>
+              <td class="texto">
+               <label for="txt_dat_nascimento">Data de Nascimento</label><br />
+               <input type="text" id="txt_dat_nascimento" name="txt_dat_nascimento" size="13" value="<dtml-var dat_nascimento missing null>" onblur="formata_data(form.txt_dat_nascimento)" />
+              </td>
+              <td class="texto">
+               <label for="txt_des_estado_civil">Estado Civil</label><br />
+               <input type="text" id="txt_des_estado_civil" name="txt_des_estado_civil" size="20" maxlength="15" value="<dtml-var des_estado_civil missing null>" />
+              </td>
+              <td class="texto">
+               <label for="txt_nom_conjuge">Nome do Cônjuge</label><br />
+               <input type="text" id="txt_nom_conjuge" name="txt_nom_conjuge" size="30" maxlength="50" value="<dtml-var nom_conjuge missing null>" />
+              </td>
+             </tr>
+             <tr>
+              <td class="texto">
+               <label for="txt_num_dependentes">Num. Dependentes</label><br />
+               <input type="text" id="txt_num_dependentes" name="txt_num_dependentes" size="10" maxlength="2" value="<dtml-var num_dependentes missing null>" />
+              </td>
+              <td class="texto">
+               <label for="txt_num_tit_eleitor">Título de Eleitor</label><br />
+               <input type="text" id="txt_num_tit_eleitor" name="txt_num_tit_eleitor" size="20" maxlength="15" value="<dtml-var num_tit_eleitor missing null>" />
+              </td>
+              <td class="texto">
+               <label for="txt_des_tempo_residencia">Tempo de Residência</label><br />
+               <input type="text" id="txt_des_tempo_residencia" name="txt_des_tempo_residencia" size="15" maxlength="25" value="<dtml-var des_tempo_residencia missing null>" />
+              </td>
+             </tr>
+             <tr>
+              <td class="texto">
+               <label for="txt_des_profissao">Profissão</label><br />
+               <input type="text" id="txt_des_profissao" name="txt_des_profissao" size="30" maxlength="50" value="<dtml-var des_profissao missing null>" />
+              </td>
+              <td colspan="2" class="texto">
+               <label for="txt_des_local_trabalho">Local de Trabalho</label><br />
+               <input type="text" id="txt_des_local_trabalho" name="txt_des_local_trabalho" size="30" maxlength="100" value="<dtml-var des_local_trabalho missing null>" />
+              </td>
+             </tr>
+           </table>
+</form>
+
+ <p align="center">
+  <input type="button" class="botao" name="button" value="Salvar" onClick="campos_criticar()" />
+  <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+ </p>
+
+ </body>
+</html>

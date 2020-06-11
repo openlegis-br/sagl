@@ -1,0 +1,267 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 700,
+		maxHeight	: 600,
+		fitToView	: false,
+		width		: '75%',
+		height		: '82%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+</script>
+<dtml-in expr="zsql.protocolo_pesquisar_zsql(tip_protocolo=rad_tip_protocolo, tip_processo=rad_tip_processo, num_protocolo=pysc.extrai_id_pysc(txt_num_protocolo), ano_protocolo=txt_ano_protocolo, tip_materia=lst_tip_materia, tip_documento=lst_tip_documento, des_assunto=txt_assunto, des_interessado=txa_txt_interessado, cod_autor=hdn_cod_autor, dat_apres=dt_apres, dat_apres2=dt_apres2)">
+   <dtml-if cod_protocolo>
+     <dtml-call "REQUEST.set('temResultado', 1)">
+   </dtml-if>
+</dtml-in>
+
+<dtml-if temResultado>
+    <a id="ajuda" target="_blank" href="<dtml-var portal_url>/relatorios/pdf_protocolo_preparar_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">">PDF</a>
+    <a id="ajuda" target="_blank" href="&dtml-portal_url;/consultas/protocolo/pdf_etiquetas_protocolo_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">">Etiquetas</a>
+</dtml-if>
+
+<h1 class="firstHeading">Pesquisa de Protocolo</h1>
+
+<div id="barra-conteudo">
+    <ul>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_rapido_form">Protocolo Rápido</a>
+        </li>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form">Protocolo Administrativo</a>
+        </li>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form">Protocolo Legislativo</a>
+        </li>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form">Anular Protocolo</a>
+        </li>
+    </ul>
+</div>
+
+  <table>
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 12)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+<dtml-in expr="zsql.protocolo_pesquisar_zsql(tip_protocolo=rad_tip_protocolo, tip_processo=rad_tip_processo, num_protocolo=pysc.extrai_id_pysc(txt_num_protocolo), ano_protocolo=txt_ano_protocolo, tip_materia=lst_tip_materia, tip_documento=lst_tip_documento, des_assunto=txt_assunto, des_interessado=txa_txt_interessado, cod_autor=hdn_cod_autor, dat_apres=dt_apres, dat_apres2=dt_apres2)" size="step" start="start" orphan="0">
+
+ <dtml-if sequence-start>
+  <tr>
+   <th colspan="2" class="form-label">
+    <b>Resultado da Pesquisa: <dtml-var sequence-length> registro<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> encontrado<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>.</b>
+       <dtml-if expr="_['sequence-length'] == 5000"><br />LIMITE DE RESULTADOS ATINGIDO! Melhore os argumentos da pesquisa.</dtml-if>
+   </th>
+  </tr>
+    <dtml-if previous-sequence>
+      <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+    </dtml-if previous-sequence>
+   </dtml-if sequence-start>
+            <tr <dtml-if sequence-odd>class="even"</dtml-if>>            
+              <td class="texto">
+               <dtml-if expr="ind_anulado==0">
+               <a href="&dtml-portal_url;/consultas/protocolo/protocolo_mostrar_proc?cod_protocolo=<dtml-var cod_protocolo>">
+               <dtml-else>
+               <a href="#">
+               </dtml-if>
+                <span class="titulo"><b>PROTOCOLO Nº <dtml-var num_protocolo>/<dtml-var ano_protocolo></b></span></a>
+               <dtml-if expr="ind_anulado==0">&nbsp;<a href="&dtml-portal_url;/relatorios/pdf_etiqueta_protocolo_preparar_pysc?rad_tip_protocolo=&amp;txt_cod_protocolo=<dtml-var cod_protocolo>&amp;txt_num_protocolo=<dtml-var num_protocolo>&amp;txt_ano_protocolo=<dtml-var ano_protocolo>&amp;dt_apres=&amp;dt_apres2=&amp;rad_tip_processo=&amp;lst_tip_documento=&amp;lst_tip_materia=&amp;txt_assunto=&amp;txa_txt_interessado=&amp;hdn_cod_autor=" class="popup" data-fancybox-type="iframe"><img align="absmiddle" src="&dtml-portal_url;/imagens/label.png" alt="Etiqueta Individual" title="Etiqueta Individual" width="20" height="16" /></a></dtml-if>
+                   <dtml-if expr="ind_anulado==1"> <span class="anulado">&nbsp;** NULO **</span></dtml-if><br>
+
+                <dtml-var txt_assunto_ementa missing><br>
+
+                <b>Data Protocolo: </b> <dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> - <b>Horário: </b> <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"><br />
+
+       <dtml-if cod_autor>
+                <b>Autor: </b>
+                  <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+
+                       <dtml-if cod_parlamentar>
+                       <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                               <dtml-var nom_parlamentar><br /> 
+                       </dtml-in>
+
+                       <dtml-elif cod_comissao>
+                       <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                             <dtml-var nom_comissao><br />
+                       </dtml-in>
+
+                       <dtml-elif cod_bancada>
+                       <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
+                             <dtml-var nom_bancada><br />
+                       </dtml-in>
+
+                       <dtml-else>
+                      <dtml-var nom_autor missing null=""><br />
+                       </dtml-if>
+                  </dtml-in>
+       </dtml-if>
+  
+              <dtml-if txt_interessado>
+                  <b>Interessado: </b>
+                     <dtml-var txt_interessado> <br />
+              </dtml-if>
+
+              <dtml-if expr="tip_processo==0">
+              <b>Natureza do Processo: </b>Administrativo <br /> 
+              <b>Classificação:</b> <dtml-var des_tipo_documento>
+               <dtml-in expr="zsql.documento_administrativo_obter_zsql(num_protocolo=num_protocolo,ano_documento=ano_protocolo)">
+                  <dtml-if num_documento>
+                    <br /><b>Registro Derivado:</b> 
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                      <a href="&dtml-portal_url;/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                    <dtml-else>
+                      <a href="&dtml-portal_url;/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" >
+                    </dtml-if>
+                    <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></a>
+                  <dtml-else>Criar Documento
+                  </dtml-if>
+                </dtml-in>
+<br /> 
+              </dtml-if>
+
+              <dtml-if expr="tip_processo==1">
+              <b>Natureza do Processo: </b>Legislativo <br /> 
+              <dtml-if expr="tip_natureza_materia==1">
+                <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_materia,tip_natureza='P')">
+                   <b>Tipo de Matéria:</b> <dtml-var des_tipo_materia>
+                </dtml-in>
+                 <dtml-in expr="zsql.materia_obter_zsql(num_protocolo=num_protocolo,ano_ident_basica=ano_protocolo)">
+                    <dtml-if sequence-start>
+                      <br /><b>Registro Derivado:</b> 
+                    </dtml-if>
+                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                    <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                  <dtml-else>
+                    <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" >
+                  </dtml-if>
+                       <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a> 
+                    <dtml-unless sequence-end>
+                     -
+                    </dtml-unless>
+                 </dtml-in>
+               <br />
+              <dtml-elif expr="tip_natureza_materia==2">
+                <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_materia,tip_natureza='A')">
+                   <dtml-call "REQUEST.set('des_tipo_mat_acessoria', des_tipo_materia)">
+                </dtml-in>
+                <dtml-if expr="des_tipo_mat_acessoria=='Emenda' or tip_materia == 98">
+                   <b>Tipo de Matéria:</b> <dtml-var des_tipo_mat_acessoria>
+                   <dtml-in expr="zsql.emenda_obter_zsql(num_protocolo=num_protocolo,cod_materia=cod_materia_principal)">
+                      <br /><b>Registro Derivado:</b>
+                      <a href="&dtml-portal_url;/cadastros/materia/emenda/emenda_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>&cod_emenda=<dtml-var cod_emenda>">
+                        Emenda <dtml-var des_tipo_emenda> nº <dtml-var num_emenda>
+                      </a>
+                   </dtml-in>
+                <dtml-elif expr="des_tipo_mat_acessoria=='Substitutivo' or tip_materia == 99">
+                   <b>Tipo de Matéria:</b> <dtml-var des_tipo_mat_acessoria>
+                   <dtml-in expr="zsql.substitutivo_obter_zsql(num_protocolo=num_protocolo,cod_materia=cod_materia_principal)">
+                      <br /><b>Registro Derivado:</b>
+                      <a href="&dtml-portal_url;/cadastros/materia/substitutivo/substitutivo_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>&cod_substitutivo=<dtml-var cod_substitutivo>">
+                         Substitutivo nº <dtml-var num_substitutivo>
+                      </a>
+                   </dtml-in>
+                </dtml-if>
+                <br /><b>Matéria Principal:</b>       
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal,ind_excluido=0)">
+                   <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                </dtml-in>
+              <dtml-elif expr="tip_natureza_materia==3">
+                 <dtml-in expr="zsql.tipo_documento_obter_zsql(tip_documento=tip_materia,ind_excluido=0)">
+                   <b>Tipo de Documento:</b> <dtml-var des_tipo_documento>
+                     <dtml-in expr="zsql.documento_acessorio_obter_zsql(num_protocolo=num_protocolo,cod_materia=cod_materia_principal)">
+                      <br /><b>Registro Derivado:</b>
+                     <a href="&dtml-portal_url;/cadastros/materia/documento_acessorio/documento_acessorio_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                        <dtml-var nom_documento>
+                     </a>
+                     </dtml-in>
+                </dtml-in>
+                <br /><b>Matéria Principal:</b>       
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal,ind_excluido=0)">
+                   <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                </dtml-in>
+              <dtml-elif expr="tip_natureza_materia==4">
+                   <b>Tipo de Matéria:</b> Parecer de Comissão
+                   <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+                       <dtml-call "REQUEST.set('cod_comissao', cod_comissao)">
+                   </dtml-in>
+                   <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                       <dtml-call "REQUEST.set('sgl_comissao', sgl_comissao)">
+                   </dtml-in>
+                   <br /><b>Registro Derivado:</b>
+                   <dtml-in expr="zsql.relatoria_obter_zsql(cod_comissao=cod_comissao, cod_materia=cod_materia_principal, num_protocolo=num_protocolo)">
+                     <a href="&dtml-portal_url;/cadastros/comissao/materia/relatoria_mostrar_proc?cod_relatoria=<dtml-var cod_relatoria>&cod_materia=<dtml-var cod_materia>&cod_comissao=<dtml-var cod_comissao>&num_ordem=<dtml-var num_ordem>" class="popup" data-fancybox-type="iframe">
+                        Parecer <dtml-var sgl_comissao> <dtml-var num_parecer missing null>/<dtml-var ano_parecer>
+                     </a>
+                   </dtml-in>
+                   <br /><b>Matéria Principal:</b>       
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal,ind_excluido=0)">
+                   <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                </dtml-in>
+              </dtml-if>
+
+              </dtml-if>
+
+                <dtml-if expr="ind_anulado==1">
+                 <b>Anulado</b> por <dtml-var txt_user_anulacao> - IP <dtml-var txt_ip_anulacao><br>
+                 <b>Motivo Anulação:</b> <dtml-var txt_just_anulacao>
+                </dtml-if>
+               </td>
+              <td width="10%">
+               <div align="center">
+                <dtml-let id_documento="_.str(cod_protocolo)+'_protocolo.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">
+                    <dtml-let documento="_.getattr(sapl_documentos.protocolo,id_documento).absolute_url">
+                      <a target="_blank" href="<dtml-var documento>"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo Digitalizado" title="Arquivo Digitalizado"></a>
+                    </dtml-let>
+                  <dtml-else>
+                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                  </dtml-if>
+                </dtml-let>
+               </div>
+              </td>
+            </tr>
+  <dtml-if sequence-end>
+</table>
+    <dtml-if next-sequence>
+      <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+    </dtml-if next-sequence>
+    <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+      <p align="center" class="texto"><b>          
+          <dtml-var "pysc.PageListOutput_pysc('protocolo_pesquisar_proc', page, step, _['sequence-length'], incluir=incluir, existe_ocorrencia=existe_ocorrencia, rad_tip_protocolo=rad_tip_protocolo, rad_tip_processo=rad_tip_processo, lst_tip_materia=lst_tip_materia, lst_tip_documento=lst_tip_documento, txt_num_protocolo=txt_num_protocolo, txt_ano_protocolo=txt_ano_protocolo, txt_assunto=txt_assunto, txa_txt_interessado=txa_txt_interessado, hdn_cod_autor=hdn_cod_autor, dt_apres=dt_apres, dt_apres2=dt_apres2)">
+      </p>
+    </dtml-if>
+</dtml-if sequence-end>
+<dtml-else>
+        <tr>
+          <th class="texto"><b>Resultado da Pesquisa</b></th>
+        </tr>
+        <tr>
+          <td class="texto">Nenhuma ocorrência encontrada.</td>
+        </tr>
+</table>
+</dtml-in>
+
+<p align="center">
+   <input class="botao" type="button" value="Voltar" onClick="history.back()">
+</p>
+
+<dtml-var standard_html_footer>

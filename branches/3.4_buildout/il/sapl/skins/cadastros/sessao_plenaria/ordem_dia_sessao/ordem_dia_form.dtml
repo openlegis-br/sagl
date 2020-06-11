@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+<!--
+  function campos_criticar(form){
+     var regexp_digitos = /\D+/;
+     var selecionado = false;
+     for (i=0;i<form.rad_tip_votacao.length;i++) {
+        if(form.rad_tip_votacao[i].checked) {
+            selecionado = true;
+        }
+     }
+
+     if (selecionado==false){
+         alert("O tipo da votação deve ser selecionado");
+         form.rad_tip_votacao.focus();
+         return false;
+      }
+
+     if (form.txt_dat_ordem.value==""){
+         alert("A data da ordem do dia deve ser preenchida");
+         form.txt_dat_ordem.focus();
+         return false;
+      }
+     if (form.txt_dat_ordem.value!="" && !IsValidDate(form.txt_dat_ordem.value)){
+         alert("Digite uma data da ordem do dia válida!");
+         form.txt_dat_ordem.focus();
+         form.txt_dat_ordem.select();
+         return false;
+      }
+     if (form.txt_num_ordem.value==""){
+         alert("O número da ordem deve ser preenchido");
+         form.txt_num_ordem.focus();
+         return false;
+      }
+     if (regexp_digitos.test(form.txt_num_ordem.value)){
+        alert("O número da ordem deve ser um número natural!");
+        form.txt_num_ordem.focus();
+        return false;
+      }  
+      if ((form.lst_tip_id_basica.selectedIndex==0) ||
+          (form.lst_tip_sessao.selectedIndex==0) ||
+          (form.txt_num_ident_basica.value=="") || 
+          (form.txt_ano_ident_basica.value=="")){
+          alert("Os campos de identificação da matéria devem ser preenchidos!");
+          form.txt_num_ident_basica.focus();
+          return false;
+      }
+      if (form.txa_txt_observacao.value==""){
+         alert("A ementa deve ser preenchida");
+         form.txa_txt_observacao.focus();
+         return false;
+      }
+
+     if (form.lst_tip_quorum.selectedIndex==0){
+         alert("O quórum de votação deve ser informado");
+         form.lst_tip_quorum.focus();
+         return false;
+      }
+
+     if (form.lst_tip_turno.selectedIndex==0){
+         alert("O turno de votação deve ser informado");
+         form.lst_tip_turno.focus();
+         return false;
+      }
+
+      form.submit();
+  }
+
+  function ordem_dia_excluir(){
+       if (confirm("Deseja realmente excluir?")) {
+          location.href="ordem_dia_excluir_proc?cod_ordem=<dtml-var cod_ordem missing>&cod_sessao_plen=<dtml-var cod_sessao_plen>";
+       }
+  }
+
+  function ementa_buscar(form){
+     if ((form.lst_tip_id_basica.selectedIndex != 0) &&
+	 (form.txt_num_ident_basica.value!="") && 
+	 (form.txt_ano_ident_basica.value!="")){
+	location.href="ementa_buscar_proc?tip_ident_basica="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+
+          "&num_ident_basica="+form.txt_num_ident_basica.value+"&ano_ident_basica="+
+          form.txt_ano_ident_basica.value+"&cod_ordem="+form.cod_ordem.value+
+          "&dat_ordem="+form.txt_dat_ordem.value+"&num_ordem="+form.txt_num_ordem.value+"&tip_votacao="+form.rad_tip_votacao.value+"&tip_sessao_plen="+form.lst_tip_sessao[form.lst_tip_sessao.selectedIndex].value+"&cod_sessao_plen=<dtml-var cod_sessao_plen>";
+     }
+  }
+
+//-->
+
+function reloadParentAndClose()
+{
+  parent.jQuery.fancybox.close();
+} 
+</script>
+<head>
+<body class="modal">
+
+<h1 class="firstHeading">Matéria da Ordem do Dia </h1> 
+
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+<form name="ordem_dia_form" method="post" action="ordem_dia_salvar_proc">
+<fieldset>
+    <legend>Cadastro de Matéria na Ordem do Dia</legend>
+      <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+        <table>
+            <tr>
+                <td>
+                    <label for="txt_dat_ordem">Data da Sessão <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <input type="text" name="txt_dat_ordem"
+                           id="txt_dat_ordem"
+                           size="10" maxlength="10" readonly="readonly"
+                           onBlur="formata_data(form.txt_dat_ordem)"
+                        <dtml-if lst_dat_ordem> value="<dtml-var lst_dat_ordem>"
+                            <dtml-else> value="<dtml-var dat_inicio_sessao>"
+	                    </dtml-if> />
+                </td>
+                <td>
+                    <label for="lst_tip_sessao">Tipo da Sessão<span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <select name="lst_tip_sessao" onfocus="this.initialSelect = this.selectedIndex;" onchange="this.selectedIndex = this.initialSelect;">
+                        <option value=""></option>
+                        <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(ind_excluido=0)">
+                        <option
+                            <dtml-if expr="_.has_key('cod_ordem') and _.int(tip_sessao)==_.int(ordem_dia_form.tip_sessao)">
+                                selected
+                            <dtml-elif expr="_.int(tip_sessao)==_.int(ordem_dia_form.tip_sessao)">
+                                selected
+                            </dtml-if>
+                            value="<dtml-var tip_sessao>"><dtml-var nom_sessao>
+                        </option>
+                        </dtml-in>
+                    </select>
+                </td>
+	            <td>
+                    <label for="txt_num_ordem">Nº Ordem <span class="campoObrigatorio">&nbsp;</span></label><br />
+                        <dtml-unless cod_ordem>
+                          <dtml-in expr="zsql.ordem_dia_numero_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
+                            <dtml-call expr="REQUEST.set('num_ordem', _.int(novo_item))">
+                          </dtml-in>
+                        </dtml-unless>
+	                <input type="text" name="txt_num_ordem" value="<dtml-var num_ordem missing>" size="3" maxlength="3"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="lst_tip_id_basica">Tipo Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <select name="lst_tip_id_basica" onChange="ementa_buscar(document.ordem_dia_form)">
+                        <option value="0">Selecione</option>
+                        <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+                        <option
+                            <dtml-if cod_materia>
+                                <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
+                                    <dtml-if expr="_.int(tip_id_basica) == _.int(tip_materia)">
+                                        selected
+                                    </dtml-if>
+                                </dtml-in>
+                            <dtml-elif expr="REQUEST.has_key('tip_ident_basica') and _.int(tip_materia) == _.int(tip_ident_basica)">
+                                selected
+                            </dtml-if>
+                            value="<dtml-var tip_materia>">
+                            <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia missing>
+                        </option>
+                        </dtml-in>
+                    </select>
+                </td>
+                <td>
+                    <label for="txt_num_ident_basica" >Nº Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <input type="text" name="txt_num_ident_basica" size="4" maxlength="5" onChange="ementa_buscar(document.ordem_dia_form)"
+                        <dtml-if cod_materia>
+                            <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
+                                value="<dtml-var num_ident_basica missing>"
+                            </dtml-in>
+                        <dtml-else> value="<dtml-var num_ident_basica missing>"
+                        </dtml-if>/>
+                </td>
+                <td>
+                    <dtml-unless ano_ident_basica>
+                     <dtml-call expr="REQUEST.set('ano_ident_basica', _.DateTime.year(_.DateTime()))">
+                    </dtml-unless>
+                    <label for="txt_ano_ident_basica">Ano Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <input type="text" name="txt_ano_ident_basica" size="4" maxlength="4" onChange="ementa_buscar(document.ordem_dia_form)"
+                        <dtml-if cod_materia>
+                            <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
+                                value="<dtml-var ano_ident_basica missing>"
+                            </dtml-in>
+                        <dtml-else> value="<dtml-var ano_ident_basica missing>"
+                        </dtml-if>/>
+                </td>
+               </tr>
+               <tr>
+                <td>
+                    <label for="rad_tip_votacao">Tipo de Votação <span class="campoObrigatorio">&nbsp;</span></label><br />
+
+                     <dtml-in expr="zsql.tipo_votacao_obter_zsql(tip_votacao='')">
+                      <input class="texto" type="radio" id="rad_tip_votacao" name="rad_tip_votacao" value="<dtml-var tip_votacao_sel>"
+                        <dtml-if expr="(_.has_key('cod_ordem') and cod_ordem!='')">
+                          <dtml-if expr="_.int(ordem_dia_form.tip_votacao)==_.int(tip_votacao_sel)">
+                                    checked=1
+                          </dtml-if>
+                        <dtml-elif expr="des_tipo_votacao == 'Nominal'">checked=1
+                        </dtml-if>>
+                            <span class="texto"><dtml-var des_tipo_votacao></span>
+                      </dtml-in>
+                </td>
+                <td>
+                    <label for="lst_tip_quorum">Quórum de Votação<span class="campoObrigatorio">&nbsp;</span></label><br />
+                      <select name="lst_tip_quorum">
+                        <option value="0"></option>
+                        <dtml-in expr="zsql.quorum_votacao_obter_zsql()">
+                          <option <dtml-if expr="_.has_key('tip_quorum') and tip_quorum==cod_quorum"> selected<dtml-elif expr="des_quorum == 'Maioria simples'">selected</dtml-if> value="<dtml-var cod_quorum>"><dtml-var des_quorum></option>
+                        </dtml-in>
+                      </select>
+                </td>
+                <td>
+                    <label for="lst_tip_turno">Turno de Discussão<span class="campoObrigatorio">&nbsp;</span></label><br />
+                      <select name="lst_tip_turno">
+                        <option value="0"></option>
+                        <dtml-in expr="zsql.turno_discussao_obter_zsql()">
+                          <option <dtml-if expr="_.has_key('tip_turno') and _.int(cod_turno)==_.int(ordem_dia_form.tip_turno)"> selected</dtml-if> value="<dtml-var cod_turno>"><dtml-var des_turno></option>
+                        </dtml-in>
+                      </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <label for="txa_txt_observacao">Ementa <span class="campoObrigatorio">&nbsp;</span></label><br />
+                    <textarea name="txa_txt_observacao" cols="60" rows="4"><dtml-var txt_observacao missing></textarea>
+                </td>
+            </tr>
+        </table>
+</dtml-in>
+ </fieldset>
+         <p align="center">
+            <input type="button" class="botao" name="btn_salvar" value="Salvar" onClick="campos_criticar(document.ordem_dia_form)" />
+            <dtml-if cod_ordem>
+                <input type="hidden" name="flag_atualizar" value="<dtml-var cod_ordem missing>" />
+                <input type="button" class="botaoExtra" name="btn_excluir" value="Excluir" onClick="ordem_dia_excluir()" />
+            </dtml-if>
+            <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+        <dtml-if cod_materia>
+          <a class="botao-link" target="_blank" href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">Ver Matéria</a>
+         </dtml-if>
+        </p>
+        <input type="hidden" name="cod_ordem" value="<dtml-var cod_ordem missing>" />
+        <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+        <dtml-unless cod_ordem>
+            <input type="hidden" name="txa_txt_resultado" value="" />
+        </dtml-unless>
+</form>
+</body>
+</html>

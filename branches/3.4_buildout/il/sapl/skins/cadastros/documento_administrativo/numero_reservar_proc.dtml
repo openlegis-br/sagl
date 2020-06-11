@@ -1,0 +1,45 @@
+<dtml-if expr="lst_tip_id_basica!=''">
+    <dtml-in expr="zsql.materia_obter_zsql(tip_id_basica=lst_tip_id_basica, num_ident_basica=txt_num_ident_basica, ano_ident_basica=txt_ano_ident_basica)">
+        <dtml-call expr="REQUEST.set('cod_materia', int(cod_materia))">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+        <dtml-let mensagem="'A matéria informada não existe no sistema!'">
+            <dtml-var mensagem_emitir>
+        </dtml-let>         
+    </dtml-in>
+<dtml-else>
+    <dtml-call expr="REQUEST.set('cod_materia', 0)">
+</dtml-if>
+
+<dtml-if expr="lst_tip_documento_vinculado!=''">
+    <dtml-in expr="zsql.documento_administrativo_obter_zsql(tip_documento=lst_tip_documento_vinculado, num_documento=txt_num_documento_vinculado, ano_documento=txt_ano_documento_vinculado)">
+        <dtml-call expr="REQUEST.set('cod_documento', int(cod_documento))">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+        <dtml-let mensagem="'O documento informado não existe no sistema!'">
+            <dtml-var mensagem_emitir>
+        </dtml-let>         
+    </dtml-in>
+<dtml-else>
+    <dtml-call expr="REQUEST.set('cod_documento', 0)">
+</dtml-if>
+
+<dtml-unless erro>
+<dtml-try>
+  <dtml-call expr="numero_reservar_pysc(
+                   tip_documento           = lst_tip_documento,
+                   txt_qtde                = txt_qtde,
+                   txt_interessado         = txa_txt_interessado,
+                   txt_assunto             = txa_txt_assunto,
+                   cod_materia             = cod_materia,
+                   cod_documento_vinculado = cod_documento)">
+<dtml-except>
+
+
+<dtml-else>
+   <dtml-let mensagem="'Faixa de numeração reservada com sucesso!'" sucesso="1" url=hdn_url>
+      <dtml-var mensagem_emitir>
+   </dtml-let>
+
+</dtml-try>
+</dtml-unless>

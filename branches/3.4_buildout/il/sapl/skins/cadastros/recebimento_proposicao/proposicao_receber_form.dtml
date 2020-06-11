@@ -1,0 +1,127 @@
+<dtml-var standard_html_header>
+ 
+  <a id="ajuda" href="&dtml-portal_url;/ajuda/recebimento_proposicao">Ajuda</a>
+
+  <h1 class="firstHeading">Protocolo Eletrônico de Proposições</h1> 
+
+  <form method="post" action="proposicao_buscar_proc"> 
+    <fieldset>
+	<legend>Incorporar Proposição</legend>
+        <table>
+        	<tr>
+            	 <th class="form-text" colspan="3">
+                   <b>Código de Autenticidade:</b>
+  		   <dtml-if txtCodDoc>
+                     <dtml-var txtCodDoc>
+                     <input type="hidden" name="txtCodDoc" value="<dtml-var txtCodDoc>" />
+  		   <dtml-else>
+                     <input type="text" name="txtCodDoc" size="15" />
+                   </dtml-if>
+                 </th>
+                <dtml-if txtCodDoc>
+                  <tr>
+                    <td class="form-text" colspan="3">
+	               <b>Tipo:</b> <dtml-var des_tipo_proposicao>
+                    </td>
+                  </tr>
+                <dtml-else>
+                  <th class="form-text" colspan="3" align="center">
+                	<input class="botao" type="submit" value="Buscar Dados" />
+                  </th>
+                </dtml-if>
+               </tr>
+            <dtml-if txtCodDoc>
+              <tr>
+                <td class="form-text" colspan="3">
+                    <b>Autor:</b> <dtml-var nom_autor>
+                </td>
+              </tr>
+              <tr>
+                <td class="form-text" colspan="3">
+                    <b>Descrição:</b> <dtml-var txt_descricao>
+                </td>
+              </tr>
+              <tr>
+                <td class="form-text" colspan="3">
+                    <b>Data de Envio:</b> <dtml-var dat_envio missing>
+                </td>
+              </tr>  
+             <dtml-if cod_materia>
+               <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+                 <tr>
+                  <td class="form-text">
+                    <b>Matéria Vinculada:</b>&nbsp;<dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+                  </td>
+                  <td class="form-text">
+                    <b>Número:</b> <dtml-var num_ident_basica>
+                  </td>
+                  <td class="form-text">
+                    <b>Ano:</b> <dtml-var ano_ident_basica>
+                  </td>
+                 </tr>
+               </dtml-in> 
+             </dtml-if>
+            </dtml-if>
+        </table>
+    </fieldset>
+  </form>
+
+      <dtml-if txtCodDoc>
+          <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+             <dtml-call expr="REQUEST.set('tip_autor', tip_autor)">
+             <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
+                 <dtml-call expr="REQUEST.set('des_tipo_autor', des_tipo_autor)">
+             </dtml-in>
+          </dtml-in>
+          <dtml-in expr="zsql.tipo_proposicao_obter_zsql(tip_proposicao=tip_proposicao)">
+              <dtml-call expr="REQUEST.set('des_tipo_proposicao', des_tipo_proposicao)">
+          </dtml-in>
+        <dtml-if expr="ind_mat_ou_doc=='M'">
+            <form method="post" action="../materia/numero_materia_buscar_proc">
+                <input type="hidden" name="hdnCodProposicao" value="<dtml-var cod_proposicao>" />
+                <input type="hidden" name="hdnCodCompleto" value="<dtml-var txtCodDoc>" />
+                <input type="hidden" name="txt_ementa" value="<dtml-var txt_descricao>" />
+                <p align="center">
+                    <input class="botao"type="submit" name="cmdReceber" value="Criar Matéria" />
+
+        <dtml-elif expr="ind_mat_ou_doc=='D' and des_tipo_proposicao!='Emenda' and des_tipo_proposicao!='Mensagem Aditiva' and des_tipo_proposicao!='Substitutivo'">
+            <form method="post" action="../materia/documento_acessorio/documento_acessorio_form">
+                <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" />
+                <input type="hidden" name="nom_autor_documento" value="<dtml-var cod_autor>" />
+                <input type="hidden" name="nom_documento" value="des_tipo_proposicao" />
+                <input type="hidden" name="txt_ementa" value="<dtml-var txt_descricao>" />
+                <input type="hidden" name="hdnCodProposicao" value="<dtml-var cod_proposicao>" />    
+                <input type="hidden" name="hdnCodCompleto" value="<dtml-var txtCodDoc>" />
+                <p align="center">
+                    <input class="botao" type="submit" value="Criar Documento Acessório">
+
+        <dtml-elif expr="ind_mat_ou_doc=='D' and (des_tipo_proposicao=='Emenda' or des_tipo_proposicao=='Mensagem Aditiva')">
+            <form method="post" action="../materia/emenda/emenda_form">
+                <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" />
+                <input type="hidden" name="tip_autor" value="<dtml-var tip_autor>" />
+                <input type="hidden" name="des_tipo_autor" value="<dtml-var des_tipo_autor>" />
+                <input type="hidden" name="cod_autor_prop" value="<dtml-var cod_autor>" />
+                <input type="hidden" name="txt_ementa" value="<dtml-var txt_descricao>" />
+                <input type="hidden" name="hdnCodProposicao" value="<dtml-var cod_proposicao>" />    
+                <input type="hidden" name="hdnCodCompleto" value="<dtml-var txtCodDoc>" />
+                <p align="center">
+                    <input class="botao" type="submit" value="Criar Emenda">
+
+        <dtml-elif expr="ind_mat_ou_doc=='D' and des_tipo_proposicao=='Substitutivo'">
+            <form method="post" action="../materia/substitutivo/substitutivo_form">
+                <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" />
+                <input type="hidden" name="tip_autor" value="<dtml-var tip_autor>" />
+                <input type="hidden" name="des_tipo_autor" value="<dtml-var des_tipo_autor>" />
+                <input type="hidden" name="cod_autor_prop" value="<dtml-var cod_autor>" />
+                <input type="hidden" name="txt_ementa" value="<dtml-var txt_descricao>" />
+                <input type="hidden" name="hdnCodProposicao" value="<dtml-var cod_proposicao>" />    
+                <input type="hidden" name="hdnCodCompleto" value="<dtml-var txtCodDoc>" />
+                <p align="center">
+                    <input class="botao" type="submit" value="Criar Substitutivo">
+        </dtml-if>
+               <input class="botao" type="button" value="Voltar" onClick="history.go(-1)" />
+               </p>
+           </form>
+      </dtml-if>
+
+<dtml-var standard_html_footer>

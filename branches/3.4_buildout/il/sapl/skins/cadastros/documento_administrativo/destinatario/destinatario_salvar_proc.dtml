@@ -1,0 +1,26 @@
+<dtml-try>
+ <dtml-if expr="pysc.verifica_string_pysc(lst_cod_instituicao)">
+   <dtml-call expr="REQUEST.set('cod_instituicao', lst_cod_instituicao)">
+   <dtml-call expr="zsql.destinatario_oficio_incluir_zsql(
+                                cod_documento   = hdn_cod_documento,
+                                cod_instituicao = cod_instituicao)">
+
+ <dtml-else>
+   <dtml-in lst_cod_instituicao>
+      <dtml-call expr="REQUEST.set('cod_instituicao', int(_['sequence-item']))">
+      <dtml-call expr="zsql.destinatario_oficio_incluir_zsql(
+                                   cod_documento   = hdn_cod_documento,
+                                   cod_instituicao = cod_instituicao)">
+   </dtml-in>
+ </dtml-if>
+
+ <dtml-let mensagem="'Destinatários adicionados com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close()'">
+    <dtml-var mensagem_popup_emitir>
+ </dtml-let>
+
+<dtml-except>
+ <dtml-let mensagem="'Houve um erro!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close()'">
+    <dtml-var mensagem_popup_emitir>
+ </dtml-let>
+
+</dtml-try>

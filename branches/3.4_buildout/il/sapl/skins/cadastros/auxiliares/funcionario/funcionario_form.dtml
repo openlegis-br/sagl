@@ -1,0 +1,101 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+
+function campos_criticar(form){  
+
+  if (form.txt_nom_funcionario.value == "") {
+    alert("O nome do Funcionário deve ser preenchido.");
+    form.txt_nom_funcionario.focus();
+    return false;
+  }
+
+  if (form.txt_des_cargo.value == "") {
+    alert("O Cargo / Função deve ser preenchido.");
+    form.txt_des_cargo.focus();
+    return false;
+  }
+
+  form.submit();
+}
+
+function funcionario_excluir() {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "funcionario_excluir_proc?cod_funcionario=<dtml-var cod_funcionario missing>";
+  }
+}
+
+//-->
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/funcionario">Ajuda</a>
+
+<h1 class="firstHeading">Tabelas Auxiliares</h1> 
+
+<table>
+  <tr> 
+    <td class="form-label">| <a href="index_html">Início</a> |</td>
+   </tr>
+</table>
+
+<form name="funcionario_form" method="post" action="funcionario_salvar_proc">
+<fieldset><legend>Funcionário</legend>
+  <input type="hidden" name="hdn_cod_funcionario" value="<dtml-var cod_funcionario missing>" />
+       <table>
+        <tr> 
+           <td class="form-element">Nome do Funcionário <span class="campoObrigatorio">&nbsp;</span><br />
+            <input type="text" name="txt_nom_funcionario" value="<dtml-var nom_funcionario missing>" size="40" maxlength="255" /></td>
+           <td class="form-element">Cargo / Função <span class="campoObrigatorio">&nbsp;</span><br />
+            <input type="text" name="txt_des_cargo" value="<dtml-var des_cargo missing>" size="40" maxlength="255" /></td>
+        </tr>
+        <tr>
+           <td class="form-element">Ativo ? <span class="campoObrigatorio">&nbsp;</span><br />
+             <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+                <input type="radio" id="rad_ind_ativo" name="rad_ind_ativo" value="<dtml-var expr="_ ['sequence-key']">"
+                 <dtml-if expr="REQUEST.has_key('cod_funcionario')">
+                   <dtml-if expr="ind_ativo==_['sequence-key']">
+                     checked=1
+                   </dtml-if>
+                 <dtml-elif expr="_['sequence-item']=='Sim'">checked=1
+                 </dtml-if>
+                 onChange="javascript:form.hdn_alterou.value=1" />
+                 <dtml-var expr="_['sequence-item']">
+             </dtml-in>
+           </td>
+           <td class="form-element">Data de Cadastro <span class="campoObrigatorio">&nbsp;</span><br />
+              <dtml-unless dat_cadastro>
+                  <dtml-call expr="REQUEST.set('dat_cadastro', _.DateTime().strftime('%d/%m/%Y'))">
+              </dtml-unless>
+              <input type="text" name="txt_dat_cadastro" value="<dtml-var dat_cadastro missing>" size="15" maxlength="15" readonly />
+           </td>
+        </tr>
+        <tr>
+           <td colspan="2" class="form-element">Usuário Vinculado<br />
+             <select id="lst_cod_usuario" name="lst_cod_usuario">
+                <option value=""></option>
+                <dtml-in expr="zsql.usuario_obter_zsql(ind_excluido=0)">
+                  <option
+                    <dtml-if expr="REQUEST.has_key('cod_funcionario') and cod_usuario_sel!=None">
+                      <dtml-if expr="_.int(cod_usuario) == _.int(cod_usuario_sel)">
+                         selected
+                      </dtml-if>
+                    </dtml-if>
+                    value="<dtml-var cod_usuario>" >
+                    <dtml-var nom_completo> (<dtml-var col_username missing>)
+                  </option>
+                </dtml-in>
+             </select>
+           </td>
+        </tr>
+      </table>
+  <p align="center">
+  <input type="button" class="botao" name="btn_funcionario_salvar" value="Salvar" onClick="campos_criticar(document.funcionario_form)" />
+  <dtml-if cod_funcionario>
+    <input type="button" class="botao" name="btn_funcionario_excluir" value="Excluir" onClick="funcionario_excluir(document.funcionario_form)" />
+  </dtml-if>
+  </p>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

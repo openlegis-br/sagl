@@ -1,0 +1,60 @@
+<dtml-var standard_html_header>
+
+  <h1 class="firstHeading">Assinar com Certificado Digital</h1> 
+
+  <fieldset>
+  <dtml-in expr="zsql.assinatura_documento_obter_zsql(cod_usuario=cod_usuario_corrente, ind_assinado=0)">
+    <dtml-if cod_assinatura_doc>
+       <dtml-call expr="REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+       <dtml-call expr="REQUEST.set('formatted_code', format_verification_code(cod_assinatura_doc))">
+    </dtml-if>
+    <dtml-if sequence-start>
+      <table>
+         <tr>
+           <th width="5%"></th>
+           <th>Código do Documento</th>
+           <th>Tipo</th>
+           <th>Data da Solicitação</th>
+           <th>Ações</th>
+         </tr>
+    </dtml-if>
+         <tr>
+           <td></td>
+           <td><dtml-var formatted_code></td>
+           <td><dtml-var tipo_doc></td>
+           <td><dtml-var dat_solicitacao></td>
+           <td>
+              <div align="center">
+              <a href="<dtml-var portal_url>/<dtml-var expr="gerar_link_pysc(tipo_doc,codigo)">" target="_blank">Visualizar</a>
+            | <a id="solicitar-assinatura-<dtml-var formatted_code>" href="#">Assinar</a></div>
+
+			         <script type="text/javascript">
+			           $('#solicitar-assinatura-<dtml-var formatted_code>').click(function () {
+    			           $.fancybox({
+        			   type: 'iframe',
+        			   href: '&dtml-portal_url;/generico/assinador/pades-signature_html?codigo=<dtml-var codigo>&tipo_doc=<dtml-var tipo_doc>',
+				   width	   : '70%',
+				   height	   : '50%',
+                                   minHeight	   : 320,
+        			   preload         : true,
+                                   afterClose      : function() {
+                                     window.location.href = "assinaturas_pendentes";},
+		                   closeEffect	: 'fade'
+    			           });
+			           });
+			         </script>
+           </td>
+         </tr>
+    <dtml-if sequence-end>
+      </table>
+    </dtml-if>
+  <dtml-else>
+       <div class="ui-state-highlight ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
+         <p>
+           <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+           <strong>Não há nenhum documento para assinatura.</strong>
+         </p>
+       </div>
+  </dtml-in>
+  </fieldset>
+<dtml-var standard_html_footer>

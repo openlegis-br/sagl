@@ -1,0 +1,49 @@
+<dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+  <dtml-call expr="REQUEST.set('nom_parlamentar', nom_parlamentar)">
+</dtml-in>
+<dtml-in expr="zsql.parlamentar_somar_proposicao_zsql(cod_parlamentar=cod_parlamentar)">
+  <dtml-call expr="REQUEST.set('total', total)">
+</dtml-in>
+<table>
+<dtml-in expr="zsql.filiacao_obter_zsql(ind_excluido=0, cod_parlamentar=cod_parlamentar)" size=8 start=query_start orphan=2>
+  <dtml-if sequence-start>
+          <tr> 
+             <th class="form-label">Partido</th>
+             <th class="form-label">Filiação</th>
+             <th class="form-label">Desfiliação</th>
+             </tr>
+             
+      <dtml-if previous-sequence>
+             <tr><td colspan="3" class="form-element">
+                <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
+                Página Anterior (<dtml-var previous-sequence-size> resultados)</a>
+             </td></tr>
+             <tr><td><font size="1">&nbsp;</font></td></tr>
+      </dtml-if previous-sequence>
+  </dtml-if sequence-start>
+       <tr>
+        <td class="texto">
+             <dtml-in expr="zsql.partido_obter_zsql(ind_excluido=0, cod_partido=cod_partido)">
+               <dtml-var sgl_partido>
+             </dtml-in></td>
+        <td class="texto">
+          <dtml-if dat_filiacao>
+            &nbsp; <dtml-var dat_filiacao>
+          </dtml-if></td>
+        <td  class="texto">
+          <dtml-if dat_desfiliacao>
+            &nbsp; <dtml-var dat_desfiliacao null="">
+          </dtml-if></td>
+      </tr>
+ <dtml-if sequence-end>
+    <dtml-if next-sequence>
+        <tr> 
+          <td colspan="3" class="texto"><a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
+          Próxima Página (<dtml-var next-sequence-size> resultados)</a></td>
+        </tr>
+    </dtml-if next-sequence>
+  </dtml-if sequence-end>
+<dtml-else>
+        <p class="texto">Este parlamentar não possui nenhuma filiação partidária cadastrada.</p>
+</dtml-in>
+</table>

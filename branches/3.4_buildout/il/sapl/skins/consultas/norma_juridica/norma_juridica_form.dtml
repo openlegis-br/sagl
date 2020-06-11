@@ -1,0 +1,293 @@
+<dtml-var standard_html_header>
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+  <dtml-if expr="not isAnon">
+    <a id="ajuda" target="_blank" href="&dtml-portal_url;/relatorios/pdf_detalhe_norma_preparar_pysc?cod_norma=<dtml-var cod_norma>">PDF</a>
+  </dtml-if>
+</dtml-let>
+
+<h1 class="firstHeading"><dtml-var des_tipo_norma> nº <dtml-var num_norma>, de <dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_norma)"></h1>
+
+<div class="social-likes" data-title="<dtml-var des_tipo_norma> nº <dtml-var num_norma missing>/<dtml-var ano_norma missing>" data-counter="no">
+        <meta property="og:title" content="<dtml-var des_tipo_norma> nº <dtml-var num_norma missing>/<dtml-var ano_norma missing>">
+	<div class="facebook" title="Compartilhar no Facebook">Compartilhar</div>
+	<div class="twitter"  title="Compartilhar no Twitter">Tweetar</div>
+</div>
+
+ <fieldset>
+   <legend>Identificação Básica</legend>
+      <table>
+            <tr> 
+              <th width="20%" class="form-label">Tipo:</th>
+              <td class="texto">
+                 <b><dtml-var sgl_tipo_norma> - <dtml-var des_tipo_norma></b>
+              </td>
+              <td class="form-label"><b>Número:</b></td>
+              <td class="texto">
+                 <b><dtml-var num_norma>/<dtml-var ano_norma></b>
+              </td>
+            </tr>
+           <tr>
+              <th class="form-label">Esfera Federação:</th>
+              <td class="texto">
+               <dtml-in expr="['Municipal', 'Estadual', 'Federal']">
+                   <dtml-if expr="tip_esfera_federacao==_['sequence-item'][0]">
+                       <dtml-var expr="_['sequence-item']">
+                   </dtml-if>
+               </dtml-in>
+               <dtml-in expr="['Selecione']">
+                   <dtml-if expr="tip_esfera_federacao==_['sequence-item'][0]">
+                       Municipal
+                   </dtml-if>
+               </dtml-in>
+              </td>
+              <td class="form-label"><b>Data:</b></td>
+              <td class="texto">
+                  <dtml-var dat_norma>
+              </td>
+          </tr>
+          <tr>
+             <th class="form-label">Ementa:</th>
+             <td colspan="3" class="texto">
+               <b><dtml-var txt_ementa missing></b>
+             </td>
+          </tr>
+ 	<dtml-if txt_indexacao>
+          <tr>
+             <th class="form-label">Indexação:</th> 
+             <td colspan="3" class="texto">
+               <dtml-var txt_indexacao missing>
+             </td>
+          </tr>
+	</dtml-if>
+	<dtml-if txt_observacao>
+          <tr>
+             <th class="form-label">Observação:</th> 
+             <td colspan="3" class="texto">
+               <dtml-var txt_observacao missing>
+             </td>
+          </tr>
+	</dtml-if>
+
+	<dtml-if tip_id_basica_sel>
+          <tr> 
+            <th width="20%" class="form-label">Matéria Legislativa:</th>
+            <td class="texto">
+                <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+                  <dtml-if tip_id_basica_sel>
+                    <dtml-if expr="_.int(tip_materia) == _.int(tip_id_basica_sel)">
+                     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+		      <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                     <dtml-else>
+		      <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
+                     </dtml-if>
+                        <dtml-var sgl_tipo_materia> nº <dtml-var num_ident_basica_sel missing>/<dtml-var ano_ident_basica_sel missing></a>
+                    </dtml-if>
+                  </dtml-if> 
+                </dtml-in>
+            </td>
+            <td width="20%" class="form-label">
+                <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
+                   <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
+                     <b>Autores:</b>
+                   <dtml-else>
+                     <b>Autoria:<b>
+                   </dtml-if>
+                 </dtml-if>
+            </td>
+            <td class="texto">
+                <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                   <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                 </dtml-in>
+            </td>
+          </tr>
+	</dtml-if>
+
+	  <dtml-if des_veiculo_publicacao>
+          <tr> 
+              <th width="20%" class="form-label">Veículo Publicação:</th>
+              <td class="texto">
+                  <dtml-var des_veiculo_publicacao missing null=""> <dtml-if num_pag_inicio_publ> Pág. <dtml-var num_pag_inicio_publ missing null=""></dtml-if> <dtml-if num_pag_fim_public> <dtml-var num_pag_fim_publ missing null=""></dtml-if>
+              </td>
+              <td width="20%" class="form-label"><b>Data Publicação:</b></td>
+              <td class="texto">
+                  <dtml-var dat_publicacao missing null="">
+              </td>
+          </tr>
+	  </dtml-if>
+
+            <tr>
+              <th width="20%" class="form-label">Texto Digitalizado:</th> 
+              <td class="texto">
+                <dtml-call expr="REQUEST.set('texto_original', _.str(cod_norma)+'_texto_integral.pdf')">
+                <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_original)">
+                    <a target="_blank" href="&dtml-portal_url;/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1">
+                      <img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto original" title="Texto original">
+                    </a>
+                <dtml-else>
+                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                </dtml-if>  
+              </td>
+              <td width="20%" class="form-label"><b>Texto Compilado:</b></td>
+              <td class="texto">
+                <dtml-call expr="REQUEST.set('texto_consolidado', _.str(cod_norma)+'_texto_consolidado.pdf')">
+                <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
+                    <a target="_blank" href="&dtml-portal_url;/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_consolidado=1">
+                      <img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto compilado" title="Texto compilado">
+                    </a>
+                <dtml-else>
+                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                </dtml-if> 
+              </td>
+           </tr>
+           <dtml-if cod_situacao>
+            <tr> 
+              <th width="20%" class="form-label"><b>Situação:</b></th>
+              <td colspan="3" class="texto">
+             <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(tip_situacao_norma=cod_situacao)">
+               <dtml-var des_tipo_situacao missing null="0">
+             </dtml-in>
+              </td>
+            </tr> 
+          </dtml-if>
+     </table>
+</fieldset>
+
+<dtml-comment>Visulizador ODT</dtml-comment>
+<dtml-call expr="REQUEST.set('texto_odt', _.str(cod_norma)+'_texto_integral.odt')">
+<dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_odt)">
+<fieldset class="iframe_norma" >
+   <legend>Texto Integral</legend>
+    <dtml-let documento_odt="_.getattr(sapl_documentos.norma_juridica,texto_odt).absolute_url">
+      <iframe style="float:left;" src = "&dtml-portal_url;/generico/viewerJS/?zoom=page-width#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()">" width='100%' height='550' allowfullscreen webkitallowfullscreen></iframe>
+    </dtml-let>
+</fieldset>
+</dtml-if>
+
+<dtml-if expr="zsql.anexo_norma_obter_zsql(cod_norma=cod_norma)">
+<fieldset>
+ <legend>Anexos</legend>
+    <dtml-in expr="zsql.anexo_norma_obter_zsql(cod_norma=cod_norma)">
+     <dtml-if sequence-start>
+       <table>
+         <tr>
+             <th width="20%"  class="form-label">Arquivo</th>
+             <th class="form-label">Descrição</th>
+         </tr>
+     </dtml-if>
+         <tr>
+             <td class="texto">
+              <div align="center">
+              <dtml-let id_anexo="_.str(cod_norma)+'_anexo_'+ _.str(cod_anexo)">
+               <dtml-if expr="_.hasattr(sapl_documentos.norma_juridica,id_anexo)">
+                  <dtml-let anexo="_.getattr(sapl_documentos.norma_juridica,id_anexo).absolute_url">
+                    <dtml-call expr="REQUEST.set('nome_anexo',_.str(cod_norma)+'_anexo_'+ _.str(cod_anexo))">
+                    <a href="&dtml-portal_url;/sapl_documentos/norma_juridica/<dtml-var nome_anexo>" target="_blank">
+                      <img src="&dtml-portal_url;/imagens/procurar.gif" alt="<dtml-var txt_descricao>" title="<dtml-var txt_descricao>">
+                    </a>
+                  </dtml-let>
+               </dtml-if>
+              </dtml-let>
+              </div>
+             </td>
+             <td class="texto"><dtml-var txt_descricao></td>
+         </tr>
+     <dtml-if sequence-end>
+       </table>
+     </dtml-if>
+    </dtml-in>
+</fieldset>
+</dtml-if>
+
+<dtml-if expr="cod_assunto_sel!='1'">
+<fieldset>
+   <legend>Classificação</legend>
+     <table>
+       <tr>
+         <th width="20%" class="form-label">Assuntos:</th> 
+         <td class="texto"> 
+            <dtml-in prefix="loop" expr="_.string.split(cod_assunto_sel,',')">
+              <dtml-in expr="zsql.assunto_norma_juridica_obter_zsql(cod_assunto=loop_item)">
+              <dtml-call expr="REQUEST.set('_.str(loop_item)','des_assunto')">
+                 <dtml-var des_assunto><br />
+              </dtml-in>
+            </dtml-in>
+          </td>
+       <tr>
+     </table>
+</fieldset>
+</dtml-if>
+
+<dtml-if expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma) or zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)"> 
+<fieldset>
+   <legend>Normas Relacionadas</legend>
+     <table>
+  <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+    <dtml-if sequence-start>
+      <tr>  
+         <th class="form-label" width="20%">Vinculação Passiva</th>
+         <th class="form-label">Norma</th>
+         <th width="20%" class="form-label">Observação</th>
+      </tr>
+    </dtml-if>
+      <tr> 
+         <td class="texto" valign="top">
+            <b><dtml-var des_vinculo_passivo></b>
+         </td>
+         <td class="texto" valign="top">
+            <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
+              <b><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b>
+            </a><br />
+             <dtml-var txt_ementa_referente>
+         </td>
+         <td valign="top">
+             <dtml-var txt_observacao_vinculo missing null="">
+         </td>
+      </tr>
+  </dtml-in>
+  <dtml-in expr="zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)">
+    <dtml-if sequence-start>
+      <tr>  
+         <th class="form-label" width="20%">Vinculação Ativa</th>
+         <th class="form-label">Norma</th>
+         <th width="20%" class="form-label">Observação</th>
+      </tr>
+    </dtml-if>
+      <tr> 
+         <td class="texto" valign="top">
+              <b><dtml-var des_vinculo></b>
+         </td>
+         <td class="texto" valign="top">
+            <a href="&dtml-portal_url;/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
+               <b><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b>
+            </a><br/>
+            <dtml-var txt_ementa_referida>
+         </td>
+         <td valign="top">
+           <dtml-var txt_observacao_vinculo missing null="">
+         </td>
+         </tr>
+         </dtml-in>
+  </table>
+</fieldset>
+</dtml-if>
+
+<div align="center" id="toolbar" class="ui-widget ui-corner-all">
+  <button class="retornar" onClick="history.go(-1)"/>Voltar</button>
+</div>
+
+	<script>
+	  $(function() {
+	    $( ".retornar" )
+ 	     .button({
+ 		     icons: {
+        primary: "ui-icon-arrowreturnthick-1-w"
+ 	     }
+  	  })
+  	    .click(function( event ) {
+ 	       event.preventDefault();
+ 	     });
+ 	 });
+	</script>
+
+<dtml-var standard_html_footer>

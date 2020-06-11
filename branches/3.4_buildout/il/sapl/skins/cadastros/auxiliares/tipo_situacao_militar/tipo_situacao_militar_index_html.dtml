@@ -1,0 +1,70 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+    function submeter(tip_situacao_militar, campo, form) {
+
+    if (campo.value == "") {
+      alert("O campo não pode ficar vazio!");
+      campo.focus();
+      return;
+    }
+
+    form.hdn_tip_situacao_militar.value = tip_situacao_militar;
+    form.hdn_des_tipo_situacao.value = campo.value;
+
+    form.submit();
+
+  }
+
+  function excluir(tip_situacao_militar) {
+    location.href = "<dtml-var absolute_url>/tipo_situacao_militar_excluir_proc?tip_situacao_militar=" + tip_situacao_militar;
+  }
+
+//-->
+</script>
+
+<form name="tipo_situacao_militar_form" method="post" action="tipo_situacao_militar_salvar_proc">  
+
+<input type="hidden" name="hdn_tip_situacao_militar" value=0 />  
+<input type="hidden" name="hdn_des_tipo_situacao" /> 
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/tipo_situa_militar">Ajuda</a>
+<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+
+<fieldset><legend>Tipo Situação Militar</legend>
+   <dtml-in expr="zsql.tipo_situacao_militar_obter_zsql(ind_excluido=0)">
+    <dtml-if sequence-start>
+       <table>
+         <tr>
+           <th width="10%" class="form-label">Código</th>
+           <th width="65%" class="form-label">Situação Militar</th>
+           <th width="25%" class="form-label">Ação</th>
+         </tr>
+      </dtml-if sequence-start>
+         <tr> 
+           <td class="form-text"><dtml-var tip_situacao_militar></td>
+           <td class="form-text"> <input type="text" name="txt_des_tipo_situacao_<dtml-var tip_situacao_militar>" value="<dtml-var des_tipo_situacao missing>" size="40" /></td>
+           <td class="form-element"><a href="javascript:submeter(<dtml-var tip_situacao_militar>,document.tipo_situacao_militar_form.txt_des_tipo_situacao_<dtml-var tip_situacao_militar>,document.tipo_situacao_militar_form)">Atualizar</a> / <a href="javascript:excluir(<dtml-var tip_situacao_militar>)">Excluir</a>
+         </tr>
+    <dtml-if sequence-end>
+       </table>
+    </dtml-if sequence-end>
+   <dtml-else>
+       <table>
+          <tr><td class="form-text">Nenhuma Situação Militar cadastrada.</td></tr>
+       </table>
+   </dtml-in>
+ <table>
+  <tr>
+    <td>
+     <input type="text" name="txt_des_tipo_situacao" value="<dtml-var des_tipo_situacao missing>" size="40" /><br>
+     <input type="button" class="botao" name="btn_tipo_situacao_militar_incluir" value="Incluir Tipo de Situação Militar" 
+                onClick="submeter(0, document.tipo_situacao_militar_form.txt_des_tipo_situacao, document.tipo_situacao_militar_form)" />
+     
+     </td>
+  </tr>
+ </table>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

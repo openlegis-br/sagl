@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+
+<script type="text/javascript">
+<!--
+
+function campos_criticar(form){  
+
+  var regexp_digitos = /\D+/; 
+
+  if (form.lst_tip_vinculo.value == "") {
+     alert("A natureza do relacionamento deve ser selecionada!");
+     form.lst_tip_vinculo.focus();
+     return false;
+  }
+
+  if (form.lst_tip_norma.value == "") {
+     alert("O tipo de norma deve ser selecionado!");
+     form.lst_tip_norma.focus();
+     return false;
+  }
+
+  if (form.txt_num_norma.value == "") {
+     alert("O número da norma deve ser preenchido!");
+     form.txt_num_norma.focus();
+     return false;
+  }
+
+  if (form.txt_ano_norma.value == "") {
+     alert("O ano da norma deve ser preenchido!");
+     form.txt_ano_norma.focus();
+     return false;
+  }
+
+  form.submit();
+}
+
+function vinculo_norma_juridica_excluir() {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "vinculo_norma_juridica_excluir_proc?cod_vinculo=<dtml-var cod_vinculo missing>&cod_norma=<dtml-var cod_norma missing>";
+  }
+  
+}
+//-->
+</script>
+</head>
+<body class="modal">
+<form name="vinculo_norma_juridica_form" method="post" action="vinculo_norma_juridica_salvar_proc">
+   <h1>Cadastro de Norma Relacionada</h1>
+   <table>
+    <tr>
+       <td colspan="3"><label for="lst_tipo_vinculo">Natureza do Relacionamento<span class="campoObrigatorio"</span></label><br />
+                <select name="lst_tip_vinculo">
+                  <option value=""></option>
+                    <dtml-in expr="zsql.tipo_vinculo_norma_obter_zsql(ind_excluido=0)">
+                      <option
+                       <dtml-if expr="_.has_key('tip_vinculo') and tip_vinculo==tipo_vinculo">selected</dtml-if>
+                       value="<dtml-var tipo_vinculo>">
+                       <dtml-var des_vinculo>
+                     </option>
+                </dtml-in>
+              </select>
+      </td>
+      </tr>
+             <tr>
+                <td><label for="lst_tipo_norma">Tipo Norma<span class="campoObrigatorio"></span></label><br />
+              <select name="lst_tip_norma">
+               <option> 
+               <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
+                  <option
+                      <dtml-if expr="_.has_key('tip_norma_juridica') and _.int(tip_norma) == _.int(tip_norma_juridica)">
+                        selected
+                      </dtml-if>
+                   value="<dtml-var tip_norma missing>"> 
+                   <dtml-var sgl_tipo_norma> - <dtml-var des_tipo_norma></option>
+               </dtml-in>
+              </select>
+       </td>
+       <td><label for="txt_num_norma">Número<span class="campoObrigatorio"></span></label><br />
+              <input type="text" name="txt_num_norma" size="6" maxlength="6" value="<dtml-var num_norma missing null="">">
+       </td>
+       <td><label for="txt_ano_norma">Ano<span class="campoObrigatorio"></span></label><br />
+             <input type="text" name="txt_ano_norma" size="4" maxlength="4" value="<dtml-var ano_norma missing>">
+       </td>
+    </tr>
+      <td colspan="3">
+        <label for="txa_txt_observacao_vinculo">Observação</label><br />
+        <textarea name="txa_txt_observacao_vinculo" cols="65" rows="3"><dtml-var txt_observacao_vinculo missing null=""></textarea>
+      </td>
+    <tr>
+    </tr>
+  </table>
+ </fieldset>
+  <p align="center">
+  <input type="button" class="botao" value="Salvar" onClick="campos_criticar(document.vinculo_norma_juridica_form)">
+  <dtml-if cod_vinculo>
+    <input type="button" class="botao" value="Excluir" onClick="vinculo_norma_juridica_excluir(document.vinculo_norma_juridica_form)">
+  <dtml-else>
+    <input type="reset" class="botaoExtra" value="Limpar">
+  </dtml-if>
+  </p>
+ <input type="hidden" name="cod_norma_referente" value="<dtml-var cod_norma>">
+ <input type="hidden" name="cod_vinculo" value="<dtml-var cod_vinculo missing>">
+</form>
+</body>

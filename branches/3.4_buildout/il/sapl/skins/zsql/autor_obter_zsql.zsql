@@ -1,0 +1,70 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : parlamentar="" comissao="" cod_parlamentar="" cod_comissao="" bancada="" cod_bancada="" cod_autor="" ind_excluido=0 ncod_autor="" nom_autor="" nom_autor_match="" des_tipo_autor="" col_username="" ind_col_username="" ind_autor_materia=""
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+SELECT DISTINCT
+     REPLACE(autor.cod_autor, 'L', '') as cod_autor,
+     autor.tip_autor,
+     REPLACE(autor.cod_parlamentar, 'L', '') as cod_parlamentar,
+     REPLACE(autor.cod_comissao, 'L', '') as cod_comissao,
+     REPLACE(autor.cod_bancada, 'L', '') as cod_bancada,
+     autor.nom_autor,
+     autor.des_cargo,
+     REPLACE(autor.cod_partido, 'L', '') as cod_partido,
+     tipo_autor.des_tipo_autor,
+     autor.col_username,
+     autor.end_email,
+     if(tipo_autor.des_tipo_autor='Parlamentar',parlamentar.nom_parlamentar, 
+     if(tipo_autor.des_tipo_autor='Bancada',CONCAT(bancada.nom_bancada," (", DATE_FORMAT(legislatura.dat_inicio, "%Y"),"-",DATE_FORMAT(legislatura.dat_fim, "%Y"),")"),
+     if(tipo_autor.des_tipo_autor='Comissao', comissao.nom_comissao, autor.nom_autor))) as nom_autor_join
+
+FROM 
+  tipo_autor, 
+  autor LEFT JOIN parlamentar on autor.cod_parlamentar=parlamentar.cod_parlamentar and parlamentar.ind_excluido=0  
+        LEFT JOIN comissao on autor.cod_comissao=comissao.cod_comissao and comissao.ind_excluido=0 
+        LEFT JOIN bancada on autor.cod_bancada=bancada.cod_bancada and bancada.ind_excluido=0 
+        LEFT JOIN legislatura on bancada.num_legislatura = legislatura.num_legislatura
+
+<dtml-sqlgroup where>  ((parlamentar.cod_parlamentar is not null and tipo_autor.des_tipo_autor='Parlamentar') or
+                        (bancada.cod_bancada         is not null and (tipo_autor.des_tipo_autor='Bancada')) or  
+                        (comissao.cod_comissao       is not null and (tipo_autor.des_tipo_autor='Comissao')) or 
+                        (tipo_autor.des_tipo_autor!='Parlamentar' and tipo_autor.des_tipo_autor!='Bancada' and tipo_autor.des_tipo_autor!='Comissao')) <dtml-and>
+  <dtml-sqltest cod_parlamentar column="autor.cod_parlamentar"     op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest cod_comissao    column="autor.cod_comissao"        op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest cod_bancada     column="autor.cod_bancada"        op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest ncod_autor      column="autor.cod_autor"           op="!=" type="int" optional><dtml-and>
+  <dtml-sqltest nom_autor       column="autor.nom_autor"           op="=" type="nb"   optional><dtml-and>
+  <dtml-sqltest col_username    column="autor.col_username"        op="=" type="nb"   optional><dtml-and>
+  <dtml-sqltest cod_autor       column="autor.cod_autor"           op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest des_tipo_autor  column="tipo_autor.des_tipo_autor" op="=" type="nb"   optional><dtml-and>
+  <dtml-sqltest ind_excluido    column="autor.ind_excluido"        op="=" type="int"  optional><dtml-and>
+  autor.tip_autor = tipo_autor.tip_autor <dtml-and>
+  <dtml-if expr="parlamentar!=''">
+     autor.cod_parlamentar is not null 
+     <dtml-if expr="ind_autor_materia=='1'"> 
+           and  parlamentar.ind_ativo=1 
+           <dtml-if expr="ind_col_username!=''"> 
+               and autor.col_username is not null 
+           </dtml-if>
+     </dtml-if>
+     <dtml-if nom_autor_match> and </dtml-if>
+  <dtml-elif expr="bancada!=''">
+     autor.cod_bancada is not null
+     <dtml-if nom_autor_match> and </dtml-if>
+  <dtml-elif expr="comissao!=''">
+     autor.cod_comissao is not null
+     <dtml-if nom_autor_match> and </dtml-if>
+  </dtml-if>
+  <dtml-if nom_autor_match>
+     if(tipo_autor.des_tipo_autor='Parlamentar',parlamentar.nom_completo LIKE '%<dtml-var nom_autor_match>%' OR 
+                                                parlamentar.nom_parlamentar LIKE '%<dtml-var nom_autor_match>%', 
+     if(tipo_autor.des_tipo_autor='Bancada',bancada.nom_bancada LIKE '%<dtml-var nom_autor_match>%',
+     if(tipo_autor.des_tipo_autor='Comissao',comissao.nom_comissao LIKE '%<dtml-var nom_autor_match>%', 
+     autor.nom_autor LIKE '%<dtml-var nom_autor_match>%')))
+  </dtml-if>
+</dtml-sqlgroup>
+
+order by nom_autor_join

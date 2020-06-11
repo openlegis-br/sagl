@@ -1,0 +1,39 @@
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+  <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+  </dtml-in>
+<dtml-elif expr="AUTHENTICATED_USER.has_role(['Autor'])">
+  <dtml-in expr="zsql.autor_obter_zsql(parlamentar=1,col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-if cod_parlamentar>
+          <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+      </dtml-if>
+  </dtml-in>
+</dtml-if>
+
+<dtml-if hdn_cod_atendimento>
+  <dtml-call expr="REQUEST.set('metodo', zsql.gabinete_atendimento_atualizar_zsql)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.gabinete_atendimento_incluir_zsql)">
+</dtml-if>
+
+  <dtml-try>
+    <dtml-call expr="metodo(
+        cod_atendimento		= hdn_cod_atendimento,
+        cod_parlamentar		= cod_parlamentar_corrente,
+        cod_eleitor		= hdn_cod_eleitor,
+        dat_atendimento		= pysc.data_converter_pysc(data=txt_dat_atendimento),
+        txt_assunto		= txa_txt_assunto,
+        dat_resultado		= pysc.data_converter_pysc(data=txt_dat_resultado),
+        txt_status		= lst_txt_status,
+        nom_atendente		= txt_nom_atendente,
+	txt_resultado 		= txa_txt_resultado
+        )">
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('erro', 0)">
+    <dtml-let mensagem="'Atendimento salvo com sucesso!'" sucesso="1" url="'javascript:parent.jQuery.fancybox.close();'" >
+      <dtml-var mensagem_popup_emitir>
+    </dtml-let>
+ 
+  </dtml-try>
+
+

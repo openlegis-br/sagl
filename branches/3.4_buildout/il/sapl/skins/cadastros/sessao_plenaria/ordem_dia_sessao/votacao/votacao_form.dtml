@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+
+    function campos_criticar(){
+
+        var form = document.votacao_form;
+        var regexp_digitos = /\D+/;
+        var tipo_votacao = "<dtml-var tip_votacao>";
+
+        if (form.rad_votacao_branco.checked == true) { 
+            form.submit(); 
+        }
+
+        if ((tipo_votacao == 1) || (tipo_votacao == 3)) {
+            if (form.txt_votos_sim.value == "" && form.rad_votacao_branco.checked == false) {
+                alert("O numero de votos SIM deve ser preenchido!");
+                form.txt_votos_sim.focus();
+                return false;
+            }
+
+            if (form.txt_votos_nao.value == "" && form.rad_votacao_branco.checked == false) {
+                alert("O numero de votos NÃO deve ser preenchido!");
+                form.txt_votos_nao.focus();
+                return false;
+            }
+
+            if (form.txt_votos_abstencao.value == "" && form.rad_votacao_branco.checked == false) {
+                alert("O numero de abstenções deve ser preenchido!");
+                form.txt_votos_abstencao.focus();
+                return false;
+            }
+
+<dtml-comment>                            
+            if (tipo_votacao == 1) {
+              if (!(form.rad_ind_votacao_presidente[0].checked || form.rad_ind_votacao_presidente[1].checked)){
+                  alert("Indique se o total de votos inclui o voto do Presidente!");
+                  form.rad_ind_votacao_presidente[0].focus();
+                  return false;
+              }
+
+              var qtv = 0;
+              var qp  = 0;
+              var qvs = parseInt(form.txt_votos_sim.value,10); 
+              var qvn = parseInt(form.txt_votos_nao.value,10);
+              var qab = parseInt(form.txt_votos_abstencao.value,10);
+              var quo = parseInt(form.hdn_nro_presentes.value,10);
+              qp = quo;
+              qtv = qvs + qvn + qab;
+              if (form.rad_ind_votacao_presidente[0].checked) {
+                 qp = quo - 1;
+              }
+	      if (qtv != qp) {
+                 alert("O total de votos não confere com o quorum de presentes na Ordem do Dia. Reinforme corretamente!"); 
+                 form.rad_ind_votacao_presidente[0].focus();
+                 return false;
+              } 
+              if (qp == quo) {
+                 form.rad_ind_votacao_presidente[1].focus();
+              }
+             form.submit(); 
+            }
+</dtml-comment>
+
+            if (tipo_votacao == 3) {
+               var qtv = 0
+               var qvs = parseInt(form.txt_votos_sim.value,10);
+               var qvn = parseInt(form.txt_votos_nao.value,10);
+               var qva = parseInt(form.txt_votos_abstencao.value,10);
+               var quo = parseInt(form.hdn_nro_presentes.value,10);
+               qtv = qvs + qvn + qva;
+               if (quo != qtv) {
+                  alert("Votos indicados não conferem com o quorum de presentes na Ordem do Dia. Reinforme! - quorum= " + quo + " - Sim= " + qvs + " - Não= " + qvn + " - Abstenção= " + qva);
+                  form.txt_votos_sim.focus();
+                  return false;
+               }   
+            }
+        }
+
+        if (form.lst_tip_resultado.selectedIndex == 0 && form.rad_votacao_branco.checked == false){
+            alert("Selecione o Resultado da Votação!");
+            form.lst_tip_resultado.focus();
+            return false;
+        }
+        form.submit();
+    }
+
+        function submeter(endereco){
+
+            var form = document.votacao_form;
+            endereco += '?cod_sessao_plen=<dtml-var cod_sessao_plen>';
+            endereco += '&cod_sessao_leg=<dtml-var cod_sessao_leg>';
+            endereco += '&cod_num_legislatura=<dtml-var cod_num_legislatura>';
+            endereco += '&dat_sessao=<dtml-var dat_sessao>';
+            endereco += '&tip_sessao=<dtml-var tip_sessao missing>';
+
+            if (form.hdn_cod_sessao_plen.value!=""){
+                location.href = endereco;
+            }
+            return;
+        }
+
+        function votacao_em_branco(tip_votacao){
+             
+            var form = document.votacao_form;
+
+            if (tip_votacao == 1) {
+                if (form.rad_votacao_branco.checked == true) {
+                	alert("Caso exista alguma votação cadastrada ela será perdida!");
+                    form.txt_votos_sim.disabled=1;
+                    form.txt_votos_nao.disabled=1;
+                    form.txt_votos_abstencao.disabled=1;
+                    form.lst_tip_resultado.disabled=1;
+                    }
+                else {
+                    form.txt_votos_sim.disabled=0;
+                    form.txt_votos_nao.disabled=0;
+                    form.txt_votos_abstencao.disabled=0;
+                    form.lst_tip_resultado.disabled=0;
+                    }
+                }
+            if (tip_votacao == 2) {
+            	  if (form.rad_votacao_branco.checked == true) {
+            		  alert("Caso exista alguma votação cadastrada ela será perdida!");
+            		  form.lst_voto_parlamentar.disabled=1;
+            		  form.lst_tip_resultado.disabled=1;
+            		  }
+            	  else {
+                	  form.lst_voto_parlamentar.disabled=0;
+                	  form.lst_tip_resultado.disabled=0;
+                	  }
+            	  }
+            if (tip_votacao == 3) {
+                if (form.rad_votacao_branco.checked == true) {
+                        alert("Caso exista alguma votação cadastrada ela será perdida!");
+                	form.txt_votos_sim.disabled=1;
+                    form.txt_votos_nao.disabled=1;
+                    form.txt_votos_abstencao.disabled=1;
+                    form.lst_tip_resultado.disabled=1;
+                    }
+                else {
+                    form.txt_votos_sim.disabled=0;
+                    form.txt_votos_nao.disabled=0;
+                    form.txt_votos_abstencao.disabled=0;
+                    form.lst_tip_resultado.disabled=0;
+                    }
+                }
+            return;
+        } 
+
+function reloadParentAndClose()
+{
+    parent.jQuery.fancybox.close();
+}
+
+</script>
+</head>
+<body class="modal">
+
+<h1 class="firstHeading">Votação de Matéria da Ordem do Dia</h1>
+
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+<form action="votacao_salvar_proc" name="votacao_form">
+        <input type="hidden" name="hdn_url" value="javascript:parent.jQuery.fancybox.close();" />
+        <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+        <input type="hidden" name="hdn_cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>"/>
+        <input type="hidden" name="hdn_dat_sessao" value="<dtml-var dat_sessao missing>"/>
+        <input type="hidden" name="hdn_num_legislatura" value="<dtml-var cod_num_legislatura missing>"/>
+        <input type="hidden" name="hdn_cod_ordem" value="<dtml-var cod_ordem missing>"/>
+        <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia missing>"/>
+        <input type="hidden" name="hdn_cod_emenda" value="<dtml-var cod_emenda missing null="">"/>
+        <input type="hidden" name="hdn_cod_subemenda" value="<dtml-var cod_subemenda missing null="">"/>
+        <input type="hidden" name="hdn_cod_substitutivo" value="<dtml-var cod_substitutivo missing null="">"/>
+        <input type="hidden" name="hdn_tip_votacao" value="<dtml-var tip_votacao missing>"/>
+        <input type="hidden" name="hdn_cod_votacao" value="<dtml-var cod_votacao missing>"/>
+        <input type="hidden" name="hdn_tip_sessao" value="<dtml-var tip_sessao missing>"/>
+        <dtml-in expr="zsql.presenca_ordem_dia_contar_zsql(cod_sessao_plen=cod_sessao_plen)">
+	  <input type="hidden" name="hdn_nro_presentes" value="<dtml-var presenca>" />
+        </dtml-in>
+
+<dtml-if expr="tip_votacao=='1'">
+<fieldset>
+        <legend>Votação Simbólica</legend>
+        <table>
+            <tr>
+               <th class="texto" colspan="3">
+           <dtml-if cod_subemenda>
+                <dtml-in expr="zsql.subemenda_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, cod_subemenda=cod_subemenda,ind_excluido=0)">
+                  <p><b>SUBEMENDA <dtml-var num_subemenda> - <dtml-var tip_subemenda></b></p>
+                </dtml-in>
+           </dtml-if>
+           <dtml-if cod_emenda>
+                <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, ind_excluido=0)">
+                  <p><b>EMENDA <dtml-var des_tipo_emenda> Nº <dtml-var num_emenda></b></p>
+                </dtml-in>
+           </dtml-if>
+           <dtml-if cod_substitutivo>
+                <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+                  <p><b>SUBSTITUTIVO Nº <dtml-var num_substitutivo></b></p>
+                </dtml-in>
+           </dtml-if>
+           <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+           <p><b><dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></b><br />
+            <dtml-var txt_ementa>
+           </p>
+           </dtml-in>
+               </th>
+            </tr>
+            <tr>
+                <td>
+                    <label for="txt_votos_sim">Sim: </label><span class="campoObrigatorio">&nbsp;</span>
+                    <input type="text" name="txt_votos_sim" id="txt_votos_sim" value="<dtml-var num_votos_sim missing null="">" size="3" maxlength="3" />
+                </td>
+                <td>
+                    <label for="txt_votos_nao">Não: </label><span class="campoObrigatorio">&nbsp;</span>
+                    <input type="text" name="txt_votos_nao" id="txt_votos_nao" value="<dtml-var num_votos_nao missing null="">" size="3" maxlength="3" />
+                </td>
+                <td>
+                    <label for="txt_votos_abstencao">Abstenções: </label><span class="campoObrigatorio">&nbsp;</span>
+                    <input type="text" name="txt_votos_abstencao" id="txt_votos_abstencao" value="<dtml-var num_abstencao missing null="">" size="3" maxlength="3" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label for="lst_tip_resultado">Resultado da Votação </label><span class="campoObrigatorio">&nbsp;</span>
+                    <select name="lst_tip_resultado" size="1">
+                        <option value="0">Selecione </option>
+                        <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql()">
+                            <option
+                            <dtml-if expr="_.has_key('cod_votacao') and tip_resultado_votacao==votacao_form.tip_resultado_votacao">
+                                selected
+                            </dtml-if>
+                                value="<dtml-var tip_resultado_votacao>"><dtml-var nom_resultado>
+                            </option>
+                        </dtml-in>
+                    </select>
+                </td>
+                <td colspan="1">
+                    <label for="rad_votacao_branco">Anular Votação?</label>
+                    <input type="checkbox" name="rad_votacao_branco" onchange="javascript:votacao_em_branco(tip_votacao=1)">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <label for="txa_txt_observacao">Observações</label>
+                    <textarea name="txa_txt_observacao" rows="4" cols="60"><dtml-var txt_observacao missing null=""></textarea>
+                </td>
+            </tr>
+        </table> 
+            <p align="center">
+               <input class="botao" type="button" name="button" value="Salvar" onClick="campos_criticar()" />
+               <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+            </p>
+</fieldset>
+</dtml-if>
+
+<dtml-if expr="tip_votacao=='2'">
+<fieldset>
+        <legend>Votação Nominal</legend>
+        <table>
+            <tr>
+               <th class="texto" colspan="3">
+           <dtml-if cod_subemenda>
+                <dtml-in expr="zsql.subemenda_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, cod_subemenda=cod_subemenda,ind_excluido=0)">
+                  <p><b>SUBEMENDA <dtml-var num_subemenda> - <dtml-var tip_subemenda></b></p>
+                </dtml-in>
+           </dtml-if>
+           <dtml-if cod_emenda>
+                <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, ind_excluido=0)">
+                  <p><b>EMENDA <dtml-var des_tipo_emenda> Nº <dtml-var num_emenda></b></p>
+                </dtml-in>
+           </dtml-if>
+           <dtml-if cod_substitutivo>
+                <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+                  <p><b>SUBSTITUTIVO Nº <dtml-var num_substitutivo></b></p>
+                </dtml-in>
+           </dtml-if>
+           <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+           <p><b><dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></b><br />
+            <dtml-var txt_ementa>
+           </p>
+           </dtml-in>
+               </th>
+            </tr>
+
+            <dtml-call expr="REQUEST.set('temVotacao', '0')">
+            <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+             <dtml-if cod_votacao>
+              <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao=cod_votacao,cod_parlamentar=cod_parlamentar,ind_excluido=0)">
+                 <dtml-if expr="vot_parlamentar!='' or vot_parlamentar!=None">
+                    <dtml-call expr="REQUEST.set('temVotacao', '1')">
+                 </dtml-if>
+               </dtml-in>
+              </dtml-if>
+            </dtml-in>
+
+          <dtml-if expr="temVotacao=='1'">
+            <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+            <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao=cod_votacao,cod_parlamentar=cod_parlamentar,ind_excluido=0)">
+            <tr>
+                <td width="45%" class="texto">
+                    <dtml-var nom_parlamentar>
+                    <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
+                </td>
+                <td>
+                  <select name="lst_voto_parlamentar" size="1">
+                   <option value="-1">Selecione </option>
+                   <dtml-in expr="[('Sim','Sim'), ('Nao', 'Não'), ('Abstencao', 'Abstenção'), ('Ausente', 'Ausente'),('Na Presid.','Na Presidência')]">                 
+                      <option
+                           <dtml-if expr="_.has_key('cod_votacao') and (vot_parlamentar==_['sequence-key'] or vot_parlamentar==_['sequence-item'])">
+                                selected
+                           </dtml-if>
+                           value="<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']">
+                      </option>
+                   </dtml-in>
+                  </select>
+                </td>
+            </tr>
+            </dtml-in>
+            </dtml-in>
+          <dtml-else>
+            <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+            <tr>
+                <td width="45%" class="texto">
+                    <dtml-var nom_parlamentar>
+                    <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
+                </td>
+                <td>
+                    <select name="lst_voto_parlamentar" size="1">
+                        <option value="-1">Selecione </option> 
+                        <dtml-in expr="[('Sim','Sim'),('Nao','Não'),('Abstencao','Abstenção'),('Ausente', 'Ausente'),('Na Presid.','Na Presidência')]">
+                          <option value="<dtml-var expr="_['sequence-key']">"<dtml-if expr="_['sequence-item']=='Sim'"> selected </dtml-if>><dtml-var expr="_['sequence-item']"></option>
+                        </dtml-in>
+                    </select>
+                </td>
+            </tr>
+            </dtml-in>
+          </dtml-if>
+            <tr>
+                <td>
+                    <label for="lst_tip_resultado">Resultado da Votação </label><span class="campoObrigatorio">&nbsp;</span>
+                    <select name="lst_tip_resultado" size="1">
+                        <option value="0">Selecione</option>
+                        <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql()">
+                            <option
+                            <dtml-if expr="_.has_key('cod_votacao') and tip_resultado_votacao==votacao_form.tip_resultado_votacao">
+                                selected
+                            </dtml-if>
+                                value="<dtml-var tip_resultado_votacao>"><dtml-var nom_resultado>
+                            </option>
+                        </dtml-in>
+                    </select>
+                </td>
+                <td>
+                    <label for="rad_votacao_branco">Anular Votação?</label>
+                    <input type="checkbox" name="rad_votacao_branco" onchange="javascript:votacao_em_branco(tip_votacao=2)">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <label for="txa_txt_observacao">Observações</label>
+                    <textarea name="txa_txt_observacao" rows="4" cols="60"><dtml-var txt_observacao missing></textarea>
+                </td>
+            </tr>
+        </table>
+            <p align="center">
+               <input class="botao" type="button" name="button" value="Salvar" onClick="campos_criticar()" />
+               <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+            </p>
+</fieldset>
+</dtml-if>
+
+<dtml-if expr="tip_votacao=='3'">
+<fieldset>
+        <legend>Votação Secreta</legend>
+        <table>
+            <tr>
+              <th class="texto" colspan="3">
+           <dtml-if cod_subemenda>
+                <dtml-in expr="zsql.subemenda_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, cod_subemenda=cod_subemenda,ind_excluido=0)">
+                  <p><b>SUBEMENDA <dtml-var num_subemenda> - <dtml-var tip_subemenda></b></p>
+                </dtml-in>
+           </dtml-if>
+           <dtml-if cod_emenda>
+                <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, ind_excluido=0)">
+                  <p><b>EMENDA <dtml-var des_tipo_emenda> Nº <dtml-var num_emenda></b></p>
+                </dtml-in>
+           </dtml-if>
+           <dtml-if cod_substitutivo>
+                <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+                  <p><b>SUBSTITUTIVO Nº <dtml-var num_substitutivo></b></p>
+                </dtml-in>
+           </dtml-if>
+           <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+           <p><b><dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing> - <dtml-var des_tipo_materia></b><br />
+            <dtml-var txt_ementa>
+           </p>
+           </dtml-in>
+               </th>
+            </tr>
+            <tr>
+                <td>
+                    <label for="txt_votos_sim">Sim: </label><span class="campoObrigatorio">&nbsp;</span>
+                    <input type="text" name="txt_votos_sim" id="txt_votos_sim" value="<dtml-var num_votos_sim missing>" size="3" maxlength="3" />
+                </td>
+                <td>
+                    <label for="txt_votos_nao">Não: </label><span class="campoObrigatorio">&nbsp;</span>
+                    <input type="text" name="txt_votos_nao" id="txt_votos_nao" value="<dtml-var num_votos_nao missing>" size="3" maxlength="3" />
+                </td>
+                <td>
+                    <label for="txt_votos_abstencao">Abstenções: </label><span class="campoObrigatorio">&nbsp;</span>
+                    <input type="text" name="txt_votos_abstencao" id="txt_votos_abstencao" value="<dtml-var num_abstencao missing>" size="3" maxlength="3" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <label for="lst_tip_resultado">Resultado da Votação </label><span class="campoObrigatorio">&nbsp;</span>
+                    <select name="lst_tip_resultado" size="1">
+                        <option value="0">Selecione</option>
+                        <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql()">
+                            <option
+                            <dtml-if expr="_.has_key('cod_votacao') and tip_resultado_votacao==votacao_form.tip_resultado_votacao">
+                                selected
+                            </dtml-if>
+                                value="<dtml-var tip_resultado_votacao>"><dtml-var nom_resultado>
+                            </option>
+                        </dtml-in>
+                    </select>
+                </td>
+                <td colspan="1">
+                    <label for="rad_votacao_branco">Anular Votação?</label>
+                    <input type="checkbox" name="rad_votacao_branco" onchange="javascript:votacao_em_branco(tip_votacao=3)">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <label for="txa_txt_observacao">Observações</label>
+                    <textarea name="txa_txt_observacao" rows="4" cols="60"><dtml-var txt_observacao missing></textarea>
+                </td>
+            </tr>
+        </table>
+                <p align="center">
+                  <input class="botao" type="button" name="button" value="Salvar" onClick="campos_criticar()" />
+                  <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+                </p>
+</fieldset>
+</dtml-if>
+</form>
+</body>
+</html>

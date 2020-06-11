@@ -1,0 +1,44 @@
+<dtml-if hdn_cod_comp_comissao>
+    <dtml-in expr="zsql.composicao_comissao_obter_zsql(ncod_comp_comissao=hdn_cod_comp_comissao, cod_comissao=hdn_cod_comissao, cod_periodo_comp=hdn_cod_periodo_comp, cod_cargo=lst_cargo_comissao)">
+       <dtml-if expr="zsql.cargo_comissao_obter_zsql(cod_cargo=lst_cargo_comissao, ind_unico=1)">
+         <dtml-let mensagem="'O cargo selecionado não pode ser ocupado por mais de uma pessoa!'"> 
+           <dtml-var mensagem_emitir>
+         </dtml-let> 
+          <dtml-call expr="REQUEST.set('erro', 1)">
+       </dtml-if>
+    </dtml-in>
+    <dtml-unless erro>
+      <dtml-call expr="REQUEST.set('metodo', zsql.composicao_comissao_atualizar_zsql)">
+    </dtml-unless>
+<dtml-else>
+    <dtml-in expr="zsql.composicao_comissao_obter_zsql(cod_comissao=hdn_cod_comissao, 
+                   cod_periodo_comp=hdn_cod_periodo_comp, cod_cargo=lst_cargo_comissao)">
+       <dtml-if expr="zsql.cargo_comissao_obter_zsql(cod_cargo=lst_cargo_comissao, ind_unico=1)">
+         <dtml-let mensagem="'O cargo selecionado não pode ser ocupado por mais de uma pessoa!'"> 
+           <dtml-var mensagem_emitir>
+         </dtml-let> 
+          <dtml-call expr="REQUEST.set('erro', 1)">
+       </dtml-if>
+    </dtml-in>
+    <dtml-unless erro>
+      <dtml-call expr="REQUEST.set('metodo', zsql.composicao_comissao_incluir_zsql)">
+    </dtml-unless>
+</dtml-if>
+<dtml-if expr="_.has_key('metodo')">
+  <dtml-call expr="metodo(   
+    cod_comp_comissao       = hdn_cod_comp_comissao,
+    cod_periodo_comp        = hdn_cod_periodo_comp,
+    cod_comissao            = hdn_cod_comissao,
+    cod_parlamentar         = lst_parlamentar,
+    cod_cargo               = lst_cargo_comissao,
+    ind_titular             = rad_ind_titular,
+    dat_designacao          = pysc.data_converter_pysc(data=txt_dat_designacao),
+    dat_desligamento        = pysc.data_converter_pysc(data=txt_dat_desligamento),
+    des_motivo_desligamento = txt_des_motivo_desligamento,
+    obs_composicao          = txt_obs_composicao     
+  )">
+
+  <dtml-let mensagem="'Composição salva com sucesso!'" sucesso="1" url="'index_html?cod_comissao='+hdn_cod_comissao+'&cod_periodo_comp_='+hdn_cod_periodo_comp">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-if>

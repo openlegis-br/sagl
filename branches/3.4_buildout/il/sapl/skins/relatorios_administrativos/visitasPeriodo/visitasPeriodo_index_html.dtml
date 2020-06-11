@@ -1,0 +1,211 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+$(function() {
+	$('#txt_dat_visita').datepick();
+	$('#txt_dat_visita2').datepick();
+});
+</script>
+
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+<!--
+
+  function campos_criticar(){
+
+      var form = document.visita_form;
+
+      if (form.txt_dat_visita.value == "") {
+         alert("A data inicial deve ser preenchida!");
+         form.txt_dat_visita.focus();
+         return false;
+      }
+
+      if (form.txt_dat_visita2.value == "") {
+         alert("A data final deve ser preenchida!");
+         form.txt_dat_visita2.focus();
+         return false;
+      }
+
+      if (form.txt_dat_visita.value!="" && !IsValidDate(form.txt_dat_visita.value)){
+         alert("Digite uma data inicial válida!");
+         form.txt_dat_visita.focus();
+         form.txt_dat_visita.select();
+         return false;
+      }
+
+      if (form.txt_dat_visita2.value!="" && !IsValidDate(form.txt_dat_visita2.value)){
+         alert("Digite uma data final válida!");
+         form.txt_dat_visita2.focus();
+         form.txt_dat_visita2.select();
+         return false;
+      }
+
+      var txt_dat_visita = form.txt_dat_visita.value.substring(6,10) + form.txt_dat_visita.value.substring(3,5) + form.txt_dat_visita.value.substring(0,2);
+      var txt_dat_visita2 = form.txt_dat_visita2.value.substring(6,10) + form.txt_dat_visita2.value.substring(3,5) + form.txt_dat_visita2.value.substring(0,2);
+
+      if (txt_dat_visita2 < txt_dat_visita) {
+           alert("A data final deve ser igual ou posterior à data inicial!");
+           form.txt_dat_visita2.focus();
+           form.txt_dat_visita2.select();
+           return false;
+      }
+
+      form.submit();
+    }
+
+//-->
+</script>
+
+<script type="text/javascript">
+function clear_form_elements(ele) {
+
+    $(ele).find(':input').each(function() {
+        switch(this.type) {
+            case 'password':
+            case 'select-multiple':
+            case 'select-one':
+            case 'hidden':
+            case 'text':
+            case 'textarea':
+                $(this).val('');
+                break;
+            case 'checkbox':
+            case 'radio':
+                this.checked = false;
+        }
+    });
+
+}
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/relatorios#visita">Ajuda</a>
+
+<h1 class="firstHeading">Visitas por Período</h1>
+
+<dtml-if expr="not _.has_key('impressao') or (_.has_key('impressao') and not _.has_key('txt_dat_visita') and not _.has_key('txt_dat_visita2'))">
+<form class="pf-form" id="hideprint" method="post" name="visita_form" action="visitasPeriodo_index_html">
+ <fieldset>
+  <dtml-if impressao>
+    <input type="hidden" name="impressao" value="<dtml-var impressao>">
+  </dtml-if>
+
+    <div class="pf-element pf-full-width">
+      <label><span class="pf-label">Período de visita:</span></label>
+       <div class="pf-group">
+        <label for="txt_dat_visita">
+          <input class="pf-field" type="text" id="txt_dat_visita" name="txt_dat_visita" maxlength=10 style="min-width: 100px; max-width: 100px; width: 20%;" 
+            value="<dtml-var txt_dat_visita missing>" onblur="formata_data(form.txt_dat_visita)" />
+        </label>
+        <label for="txt_dat_visita2">a
+          <input class="pf-field" type="text" id="txt_dat_visita2" name="txt_dat_visita2" maxlength="10" style="min-width: 100px; max-width: 100px; width: 20%;" 
+           value="<dtml-var txt_dat_visita2 missing>" onblur="formata_data(form.txt_dat_visita2)" />
+        </label>
+        </div>
+      </div>
+
+    <div class="pf-element pf-full-width">
+      <label for="txt_autor"><span class="pf-label">Funcionário</span></label>
+       <div class="pf-group">
+             <select class="pf-field" id="lst_funcionario" name="lst_funcionario" <dtml-if dat_saida>disabled</dtml-if> >
+                <option value=""></option>
+                <dtml-in expr="zsql.funcionario_obter_zsql(ind_excluido=0)">
+                  <option
+                          <dtml-if expr="_.has_key('lst_funcionario') and lst_funcionario!='' and _.int(cod_funcionario)==_.int(lst_funcionario)">
+                          selected</dtml-if>
+                    value="<dtml-var cod_funcionario>" >
+                    <dtml-var nom_funcionario>
+                  </option>
+                </dtml-in>
+             </select>
+     </div>
+    </div>
+
+    <div class="pf-element pf-full-width">
+      <label><span class="pf-label">Modo de Exibição:</span></label>
+       <div class="pf-group">
+             <dtml-in expr="['Visitas', 'Visitantes']">
+              <input type="radio" id="mod_exibicao" name="rad_mod_exibicao" value="<dtml-var expr="_['sequence-item']">"
+                <dtml-if expr="_.has_key('rad_mod_exibicao') and rad_mod_exibicao==_['sequence-item']">
+                   checked=1
+                <dtml-elif expr="_['sequence-item']=='Visitas'">checked=1</dtml-if>>
+              <label style="vertical-align: top;" for="rad_mod_exibicao"><dtml-var expr="_['sequence-item']"></label>
+             </dtml-in>
+       </div>
+    </div>
+
+      <div class="pf-element pf-buttons">
+        <input class="pf-button btn botao" type="button" class="botao" name="button" value="Gerar relatório" onClick="campos_criticar()" />
+        <input class="pf-button btn botao" type="button" name="btn_materia_limpar" value="Limpar campos" onclick="clear_form_elements('#hideprint')" >
+      </div>
+ </fieldset>
+</form>
+</dtml-if>
+
+<dtml-if expr="_.has_key('txt_dat_visita') and _.has_key('txt_dat_visita2') and rad_mod_exibicao == 'Visitas'">
+ <dtml-in expr="zsql.visita_obter_zsql(dat_visita=txt_dat_visita,dat_visita2=txt_dat_visita2,cod_funcionario=lst_funcionario)">
+  <dtml-if sequence-start>
+ <h3>Visitas no período de <dtml-var txt_dat_visita> a <dtml-var txt_dat_visita2>: <dtml-var sequence-length> ocorrências</h3>
+ <br />
+    <table>
+     <tr>
+      <th class="form-label">Data de Entrada</th>
+      <th class="form-label">Visitante</th>
+      <th class="form-label">Data de Saída</th>
+      <th class="form-label">Crachá</th>
+      <th class="form-label">Funcionário</th>
+     </tr>
+  </dtml-if sequence-start>
+     <tr>
+      <td class="texto"><dtml-var dat_entrada></th>
+      <td class="texto"><dtml-var nom_pessoa></th>
+      <td class="texto"><dtml-var dat_saida missing null=""></th>
+      <td class="texto"><dtml-var num_cracha></th>
+      <td class="texto"><dtml-var nom_funcionario></th>
+     </tr>
+  <dtml-if sequence-end>
+    </table>
+  </dtml-if sequence-end>
+ <dtml-else>
+  <p class="texto">Nenhum registro encontrado.
+ </dtml-in>
+</dtml-if>
+
+
+<dtml-if expr="(_.has_key('txt_dat_visita') and _.has_key('txt_dat_visita2')) and rad_mod_exibicao == 'Visitantes'">
+ <dtml-in expr="listaFuncionarios(dat_visita=txt_dat_visita,dat_visita2=txt_dat_visita2)">
+   <dtml-if sequence-start>
+     <h3>Visitantes no período de <dtml-var txt_dat_visita> a <dtml-var txt_dat_visita2></h3>
+ <br />
+    <table>
+     <tr>
+      <th class="form-label">Funcionário</th>
+      <th class="form-label">Visitantes</th>
+     </tr>
+  </dtml-if sequence-start>
+     <tr>
+      <td class="texto"><dtml-var nom_funcionario></td>
+      <td class="texto">
+        <dtml-in expr="qtdeFuncionario(cod_funcionario=cod_funcionario,dat_visita=txt_dat_visita,dat_visita2=txt_dat_visita2)">
+           <div align="center"><dtml-var qtde></div>
+        </dtml-in>
+      </td>
+     </tr>
+  <dtml-if sequence-end>
+     <tr>
+      <td class="texto"><b>TOTAL DE VISITANTES</b></td>
+      <td class="texto">
+        <dtml-in expr="qtdeTotal(dat_visita=txt_dat_visita,dat_visita2=txt_dat_visita2)">
+           <div align="center"><b><dtml-var qtde></b></div>
+        </dtml-in>
+      </td>
+     </tr>
+    </table>
+  </dtml-if sequence-end>
+ <dtml-else>
+  <p class="texto">Nenhum registro encontrado.
+ </dtml-in>
+</dtml-if>
+
+<dtml-var standard_html_footer>

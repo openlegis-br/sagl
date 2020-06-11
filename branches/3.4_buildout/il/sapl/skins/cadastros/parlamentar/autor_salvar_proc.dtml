@@ -1,0 +1,24 @@
+<dtml-unless expr="pysc.username_criar_pysc(txt_login)">
+  <dtml-let mensagem="'O username informado já está em uso. Escolha outro e tente novamente!'">        
+      <dtml-var mensagem_emitir>
+  </dtml-let>
+  <dtml-call expr="REQUEST.set('erro', 1)">
+</dtml-unless>
+
+<dtml-unless erro>
+<dtml-try>
+  <dtml-in expr="zsql.tipo_autor_obter_zsql(des_tipo_autor='parlamentar')">
+    <dtml-call expr="REQUEST.set('tip_autor', tip_autor)">
+  </dtml-in>
+  <dtml-call expr="zsql.autor_incluir_zsql(tip_autor=tip_autor, cod_parlamentar=cod_parlamentar, col_username=txt_login)">
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar um autor.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
+  <dtml-let mensagem="'Autor salvo com sucesso e sua senha é \'inicial\'.'" sucesso="1" url="'parlamentar_mostrar_proc?'+QUERY_STRING">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>
+</dtml-unless>
+

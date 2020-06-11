@@ -1,0 +1,251 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 700,
+		maxHeight	: 500,
+		fitToView	: false,
+		width		: '70%',
+		height		: '72%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_materia">Ajuda</a>
+
+<h1 class="firstHeading">Pesquisa de Matérias Acessórias</h1>
+
+<dtml-if expr="REQUEST.get('g-recaptcha-response')!=''">
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 10)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+<dtml-if expr="lst_tip_materia != ''">
+    <dtml-in expr="zsql.materia_obter_zsql(tip_id_basica=lst_tip_materia, num_ident_basica=txt_numero, ano_ident_basica=txt_ano)">
+        <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+        <dtml-else>
+          <dtml-call expr="REQUEST.set('cod_materia', 0)">
+    </dtml-in>
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('cod_materia', '')">
+</dtml-if>
+
+<dtml-if expr="lst_tip_materia_acessoria == 'Emenda'">
+  <dtml-in expr="zsql.emenda_obter_zsql(num_emenda=txt_numero_acessoria, cod_materia=cod_materia, cod_autor=hdn_cod_autor, des_assunto = txt_assunto, ano_apresentacao = txt_ano_apresentacao, dat_apresentacao=dt_apres, dat_apresentacao2=dt_apres2, rd_ordem=rd_ordenacao)" size="step" start="start" orphan=0>
+    <dtml-if sequence-start>
+       <table>
+         <tr>
+            <th colspan="2" class="form-label">
+               <b>Resultado da Pesquisa: <dtml-var sequence-length> matéria<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> encontrada<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>.
+               <dtml-if expr="_['sequence-length'] == 5000"><br />LIMITE DE RESULTADOS ATINGIDO! Melhore os argumentos da pesquisa.</dtml-if></b>
+            </th>
+         </tr>
+       <dtml-if previous-sequence>
+         <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+       </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+         <tr>
+            <td width="83%" class="texto">
+              <b>
+                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
+                   <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                     <a href="&dtml-portal_url;/cadastros/materia/emenda/emenda_mostrar_proc?cod_emenda=<dtml-var cod_emenda>">
+                   <dtml-else>
+                     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" >
+                   </dtml-if>
+                      EMENDA <dtml-var des_tipo_emenda> Nº <dtml-var num_emenda> AO <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var txt_ementa></a>
+                 </dtml-in>
+              </b>
+              <br /><b>Ementa:</b> <dtml-var txt_ementa>
+              <br /><b>Autoria:</b>
+                <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
+                  <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                </dtml-in>
+               <dtml-if ano_apresentacao>
+                 <br /><b>Protocolo Geral:</b> <dtml-var ano_apresentacao>
+               </dtml-if>
+              <br /><b>Data:</b> <dtml-var dat_apresentacao>
+              <br /><b>Resultado:</b>
+             <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_materia=cod_materia,cod_emenda=cod_emenda, ind_excluido=0)">
+                <dtml-if tip_resultado_votacao>
+                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                    <dtml-if expr="tip_votacao == 2 ">
+                       <a href="&dtml-portal_url;/consultas/sessao_plenaria/sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tipo_materia=acessoria" class="popup" data-fancybox-type="iframe">
+                        <b><dtml-var nom_resultado></b></a><br />
+                    <dtml-else>
+                        <b><dtml-var nom_resultado></b><br />
+                    </dtml-if>
+                    <dtml-if votacao_observacao>
+                        <dtml-var votacao_observacao>
+                    </dtml-if>
+                </dtml-in>
+                <dtml-else><i>Matéria não votada</i>
+                </dtml-if>
+                <dtml-else><i>Matéria não votada</i>
+             </dtml-in>
+            </td>
+            <td width="17%">
+               <div align="center">
+                <dtml-let id_emenda="_.str(cod_emenda)+'_emenda.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.emenda,id_emenda)">
+                    <dtml-let emenda="_.getattr(sapl_documentos.emenda,id_emenda).absolute_url">
+                      <a target="_blank" href="<dtml-var emenda>"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                    </dtml-let>
+                  <dtml-else>
+                    <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                  </dtml-if>
+                </dtml-let>
+               </div>
+            </td>
+
+         </tr>
+    <dtml-if sequence-end>
+       </table>
+       <dtml-if next-sequence>
+         <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+       </dtml-if next-sequence>
+       <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+            <b><dtml-var "pysc.PageListOutput_pysc('materia_acessoria_pesquisar_proc', page, step, _['sequence-length'], lst_tip_materia_acessoria = lst_tip_materia_acessoria, txt_numero_acessoria = txt_numero_acessoria, lst_tip_materia = lst_tip_materia, txt_numero = txt_numero, txt_ano = txt_ano, txt_assunto = txt_assunto, cod_materia = cod_materia, dt_apres = dt_apres, dt_apres2 = dt_apres2, txt_ano_apresentacao = txt_ano_apresentacao, hdn_cod_autor = hdn_cod_autor, rd_ordenacao = rd_ordenacao)">
+            </b>
+       </dtml-if>
+    </dtml-if sequence-end>
+    <dtml-else>
+      <fieldset>
+        <table>
+           <tr>
+             <th class="form-label">Resultado da Pesquisa</th>
+           </tr>
+           <tr>
+             <td class="texto">Nenhuma ocorrência encontrada.</td>
+           </tr>
+        </table>
+      </fieldset>
+  </dtml-in>
+
+<dtml-elif expr="lst_tip_materia_acessoria == 'Substitutivo'">
+<dtml-in expr="zsql.substitutivo_obter_zsql(num_substitutivo = txt_numero_acessoria, cod_materia = cod_materia, cod_autor = hdn_cod_autor, des_assunto = txt_assunto, ano_apresentacao = txt_ano_apresentacao, dat_apresentacao=dt_apres, dat_apresentacao2=dt_apres2,rd_rdem=rd_ordenacao)" size="step" start="start" orphan=0>
+    <dtml-if sequence-start>
+       <table>
+         <tr>
+            <th colspan="2" class="form-label">
+               <b>Resultado da Pesquisa: <dtml-var sequence-length> matéria<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> encontrada<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>.
+               <dtml-if expr="_['sequence-length'] == 5000"><br />LIMITE DE RESULTADOS ATINGIDO! Melhore os argumentos da pesquisa.</dtml-if></b>
+            </th>
+         </tr>
+       <dtml-if previous-sequence>
+         <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+       </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+         <tr>
+            <td width="83%" class="texto">
+              <b>
+                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
+                   <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                     <a href="&dtml-portal_url;/cadastros/materia/substitutivo/substitutivo_mostrar_proc?cod_substitutivo=<dtml-var cod_substitutivo>">
+                   <dtml-else>
+                     <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" >
+                   </dtml-if>
+                      SUBSTITUTIVO Nº <dtml-var num_substitutivo> AO <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var txt_ementa></a>
+                 </dtml-in>
+              </b>
+              <br /><b>Ementa:</b> <dtml-var txt_ementa>
+              <br /><b>Autoria:</b>
+                <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
+                  <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                </dtml-in>
+               <dtml-if ano_apresentacao>
+                 <br /><b>Protocolo Geral:</b> <dtml-var ano_apresentacao>
+               </dtml-if>
+              <br /><b>Data:</b> <dtml-var dat_apresentacao>
+              <br /><b>Resultado:</b>
+             <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_materia=cod_materia,cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+                <dtml-if tip_resultado_votacao>
+                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                    <dtml-if expr="tip_votacao == 2 ">
+                       <a href="&dtml-portal_url;/consultas/sessao_plenaria/sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tipo_materia=acessoria" class="popup" data-fancybox-type="iframe">
+                        <b><dtml-var nom_resultado></b></a><br />
+                    <dtml-else>
+                        <b><dtml-var nom_resultado></b><br />
+                    </dtml-if>
+                    <dtml-if votacao_observacao>
+                        <dtml-var votacao_observacao>
+                    </dtml-if>
+                </dtml-in>
+                <dtml-else><i>Matéria não votada</i>
+                </dtml-if>
+                <dtml-else><i>Matéria não votada</i>
+             </dtml-in>
+            </td>
+            <td width="17%">
+               <div align="center">
+                <dtml-let id_substitutivo="_.str(cod_substitutivo)+'_substitutivo.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_substitutivo)">
+                    <dtml-let substitutivo="_.getattr(sapl_documentos.substitutivo,id_substitutivo).absolute_url">
+                      <a target="_blank" href="<dtml-var substitutivo>"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                    </dtml-let>
+                  <dtml-else>
+                    <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                  </dtml-if>
+                </dtml-let>
+               </div>
+            </td>
+
+         </tr>
+    <dtml-if sequence-end>
+       </table>
+       <dtml-if next-sequence>
+         <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+       </dtml-if next-sequence>
+       <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+            <b><dtml-var "pysc.PageListOutput_pysc('materia_acessoria_pesquisar_proc', page, step, _['sequence-length'], lst_tip_materia_acessoria = lst_tip_materia_acessoria, txt_numero_acessoria = txt_numero_acessoria, lst_tip_materia = lst_tip_materia, txt_numero = txt_numero, txt_ano = txt_ano, cod_materia = cod_materia, dt_apres = dt_apres, dt_apres2 = dt_apres2, txt_ano_apresentacao = txt_ano_apresentacao, txt_assunto = txt_assunto, hdn_cod_autor = hdn_cod_autor, rd_ordenacao = rd_ordenacao)">
+            </b>
+       </dtml-if>
+    </dtml-if sequence-end>
+    <dtml-else>
+      <fieldset>
+        <table>
+           <tr>
+             <th class="form-label">Resultado da Pesquisa</th>
+           </tr>
+           <tr>
+             <td class="texto">Nenhuma ocorrência encontrada.</td>
+           </tr>
+        </table>
+      </fieldset>
+  </dtml-in>
+</dtml-if>
+
+
+<dtml-else>
+  <div class="ui-state-error ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
+    <p>
+      <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+      <strong>Confirme que você não é um robô.</strong>
+    </p>
+  </div>
+</dtml-if>
+<p align="center">
+   <input class="botao" type="button" value="Voltar" onClick="history.back()">
+</p>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,107 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_norma="" tip_norma="" num_norma="" ano_norma="" des_assunto="" dat_norma="" dat_norma2="" dat_publicacao="" dat_publicacao2="" rd_ordem="" cod_assunto="" cod_situacao="" des_tipo_norma
+max_rows : 50000
+max_cache : 100
+</dtml-comment>
+
+  SELECT 
+       REPLACE(cod_norma,'L', '') as cod_norma,
+       norma_juridica.tip_norma as tip_norma_sel,
+       REPLACE(num_norma,'L', '') as num_norma,
+       REPLACE(ano_norma,'L', '') as ano_norma,
+       norma_juridica.tip_esfera_federacao,
+       REPLACE(cod_materia,'L', '') as cod_materia,
+       DATE_FORMAT(dat_norma,'%d/%m/%Y') as dat_norma,
+       DATE_FORMAT(dat_publicacao,'%d/%m/%Y') as dat_publicacao,
+       norma_juridica.des_veiculo_publicacao,
+       REPLACE(num_pag_inicio_publ,'L', '') as num_pag_inicio_publ,
+       REPLACE(num_pag_fim_publ,'L', '') as num_pag_fim_publ,
+    <dtml-if expr="rd_ordem == '2'">
+       match(norma_juridica.txt_ementa,norma_juridica.txt_observacao,norma_juridica.txt_indexacao)
+       against (<dtml-sqlvar des_assunto type="string"> IN BOOLEAN MODE) as relevancia,
+    <dtml-else>
+       (100000 - num_norma) as num_norma2,
+    </dtml-if>
+       norma_juridica.txt_ementa,
+       norma_juridica.txt_indexacao,
+       norma_juridica.txt_observacao,
+       norma_juridica.ind_complemento,
+       tipo_norma_juridica.sgl_tipo_norma as sgl_tipo_norma,
+       tipo_norma_juridica.des_tipo_norma,
+       norma_juridica.cod_assunto as cod_assunto_sel,
+       norma_juridica.cod_situacao
+  FROM
+       norma_juridica
+       LEFT JOIN tipo_norma_juridica ON norma_juridica.tip_norma = tipo_norma_juridica.tip_norma,
+       assunto_norma  
+
+  <dtml-sqlgroup where>      
+     norma_juridica.cod_assunto = assunto_norma.cod_assunto
+     and norma_juridica.ind_excluido = 0
+     and tipo_norma_juridica.ind_excluido = 0
+     <dtml-and> <dtml-sqltest cod_norma column="norma_juridica.cod_norma" op="=" type="int" optional>
+     <dtml-and> <dtml-sqltest num_norma column="norma_juridica.num_norma" op="=" type="int" optional>
+     <dtml-and> <dtml-sqltest ano_norma column="norma_juridica.ano_norma" op="=" type="int" optional>
+     <dtml-and> <dtml-sqltest cod_situacao column="norma_juridica.cod_situacao" op="=" type="int" optional>
+     </dtml-sqlgroup>
+
+   <dtml-if expr="tip_norma!=''">
+    AND (
+        <dtml-if expr="pysc.verifica_lista_pysc(tip_norma)">
+           norma_juridica.tip_norma in (<dtml-var "tip_norma" sql_quote>)
+         <dtml-else>
+           norma_juridica.tip_norma in (<dtml-var expr="tip_norma[1:-1]">)
+        </dtml-if>
+      )
+   </dtml-if>
+
+   <dtml-if dat_norma>
+     <dtml-if dat_norma2>
+        and ( norma_juridica.dat_norma >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_norma)" type="string"> 
+             and norma_juridica.dat_norma <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_norma2)" type="string">) 
+     <dtml-else>
+        and ( norma_juridica.dat_norma >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_norma)" type="string">)
+     </dtml-if>
+   <dtml-else>
+     <dtml-if dat_norma2>
+        and (norma_juridica.dat_norma <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_norma2)" type="string">)
+     </dtml-if>
+   </dtml-if>
+   <dtml-if dat_publicacao>
+     <dtml-if dat_publicacao2>
+       and ( norma_juridica.dat_publicacao >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_publicacao)" type="string"> 
+             and norma_juridica.dat_publicacao <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_publicacao2)" type="string">) 
+     <dtml-else>
+       and ( norma_juridica.dat_publicacao >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_publicacao)" type="string">)
+     </dtml-if>
+   <dtml-else>
+      <dtml-if dat_publicacao2>
+        and (norma_juridica.dat_publicacao <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_norma2)" type="string">)
+      </dtml-if>
+   </dtml-if>
+
+   <dtml-if des_tipo_norma>
+     and des_tipo_norma = <dtml-sqlvar des_tipo_norma type="string" optional>
+   </dtml-if>
+
+   <dtml-if des_assunto>
+      and (match(norma_juridica.txt_ementa,norma_juridica.txt_observacao, norma_juridica.txt_indexacao)
+          against (<dtml-sqlvar des_assunto type="string"> IN BOOLEAN MODE)
+      <dtml-let des_assunto="'%'+des_assunto+'%'">
+        OR <dtml-sqltest des_assunto column="norma_juridica.txt_ementa" type="string" op="like">
+        OR <dtml-sqltest des_assunto column="norma_juridica.txt_indexacao" type="string" op="like">)
+      </dtml-let>
+   </dtml-if>
+
+   <dtml-if cod_assunto>
+      and (norma_juridica.cod_assunto like <dtml-sqlvar "'%' + cod_assunto + '%'" type="string">)
+   </dtml-if>
+
+  <dtml-if expr="rd_ordem == '2'">
+   <dtml-comment> HAVING relevancia > 0.001</dtml-comment>
+    ORDER BY relevancia DESC, ano_norma DESC
+  <dtml-else>
+    ORDER BY sgl_tipo_norma, ano_norma DESC, num_norma2 ASC
+  </dtml-if>
+

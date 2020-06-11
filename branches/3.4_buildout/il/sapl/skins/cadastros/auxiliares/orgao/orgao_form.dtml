@@ -1,0 +1,102 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/email_validar.js" "></script>
+
+<script type="text/javascript">
+<!--
+
+function campos_criticar(form){  
+
+  if (form.txt_nom_orgao.value == "") {
+    alert("O nome do órgão deve ser preenchido!");
+    form.txt_nom_orgao.focus();
+    return false;
+  }
+
+  if (form.txt_sgl_orgao.value == "") {
+    alert("A sigla do órgão deve ser preenchida.");
+    form.txt_sgl_orgao.focus();
+    return false;
+  }
+
+  if (!(form.rad_ind_unidade_deliberativa[0].checked ||
+        form.rad_ind_unidade_deliberativa[1].checked)){
+      alert("O indicador de unidade deliberativa deve ser preenchido!");
+      form.rad_ind_unidade_deliberativa[0].focus;
+      return false;
+  }
+
+  if (form.txt_end_email.value != "" &&
+       !email_validar(form.txt_end_email.value)) {
+     alert("Digite um E-mail válido!");
+     form.txt_end_email.focus();
+     form.txt_end_email.select();
+     return false;
+  }
+
+  form.submit();
+}
+
+function orgao_excluir() {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "orgao_excluir_proc?cod_orgao=<dtml-var cod_orgao missing>";
+  }
+  
+}
+
+//-->
+</script>
+
+<form name="orgao_form" method="post" action="orgao_salvar_proc">
+
+<div class="helpsapl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/orgao">Ajuda</a> </div>
+
+<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+
+<table>
+  <tr class="fundo"> 
+    <td class="form-label">| <a href="index_html">Início</a> |</td>
+   </tr>
+</table> 
+
+<fieldset><legend>Órgão</legend> 
+<input type="hidden" name="hdn_cod_orgao" value="<dtml-var cod_orgao missing>" />
+       <table>
+          <tr> 
+           <td width="33%" class="form-element">Nome <span class="campoObrigatorio">&nbsp;</span><br />
+            <input type="text" name="txt_nom_orgao" value="<dtml-var nom_orgao missing>" size="45" maxlength="60" /></td>
+           <td width="15%" class="form-element">Sigla <span class="campoObrigatorio">&nbsp;</span><br />
+           <input type="text" name="txt_sgl_orgao" value="<dtml-var sgl_orgao missing>" size="10" maxlength="10"
+           onBlur="form.txt_sgl_orgao.value = form.txt_sgl_orgao.value.toUpperCase()" /></td>
+           <td width="25%" class="form-text"><b>Unidade Deliberativa</b><span class="campoObrigatorio">&nbsp;</span><br />
+             <dtml-in expr="['Não', 'Sim']">
+               <input type="radio" name="rad_ind_unidade_deliberativa" value="<dtml-var expr="_['sequence-index']">" 
+                 <dtml-if expr="_.has_key('ind_unid_deliberativa')">
+                   <dtml-if expr="ind_unid_deliberativa==1 and _['sequence-index']==1"> checked 
+                   <dtml-elif expr="ind_unid_deliberativa==0 and _['sequence-index']==0"> checked
+		   </dtml-if>
+                 </dtml-if> />
+               <dtml-var expr="_['sequence-item']">
+            </dtml-in></td>
+        </tr>
+       <tr> 
+          <td class="form-element">Endereço<br />
+           <input type="text" name="txt_end_orgao" size="45" value="<dtml-var end_orgao missing null="">" maxlength="100" />
+          </td>
+          <td class="form-element">E-mail<br />
+           <input type="text" name="txt_end_email" size="40" value="<dtml-var end_email missing null="">" maxlength="100" />
+          </td>
+          <td width="25%" class="form-element">Telefone<br />
+           <input type="text" name="txt_num_tel_orgao" value="<dtml-var num_tel_orgao missing null="">" size="15" maxlength="50" /></td>    
+       </tr>   
+      </table>
+  <center><p> 
+  <input type="button" class="botao" name="btn_orgao_salvar" value="Salvar" onClick="campos_criticar(document.orgao_form)" />
+  <dtml-if cod_orgao>
+    <input type="button" class="botao" name="btn_orgao_excluir" value="Excluir" onClick="orgao_excluir(document.orgao_form)" />
+  </dtml-if>
+  </p></center>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

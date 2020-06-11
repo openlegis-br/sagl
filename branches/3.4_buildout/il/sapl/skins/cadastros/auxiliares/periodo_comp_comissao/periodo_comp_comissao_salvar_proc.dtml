@@ -1,0 +1,33 @@
+<dtml-comment> 
+****************************************************************
+*    Função: Salva os dados do período vindos do formulário,*
+*         seja uma inclusão/atualização.                       *
+*    Argumentos: hdn_cod_periodo_comp: int - argumento que deter-*
+*         mina se esse método vai ser uma inclusão/atualização.* 
+*
+*    Retorno: Mensagem de sucesso ou erro.                     *
+*    Michael em 22/03/2001                                      *
+****************************************************************
+</dtml-comment>   
+
+<dtml-if hdn_cod_periodo_comp>
+  <dtml-call expr="REQUEST.set('metodo', zsql.periodo_comp_comissao_atualizar_zsql)">
+<dtml-else>  
+  <dtml-call expr="REQUEST.set('metodo', zsql.periodo_comp_comissao_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_periodo_comp = hdn_cod_periodo_comp,
+                          dat_inicio_periodo  = pysc.data_converter_pysc(txt_dat_inicio_periodo),
+                          dat_fim_periodo     = pysc.data_converter_pysc(txt_dat_fim_periodo),
+                          )">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar os dados do período. Tente novamente!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>   
+  <dtml-let mensagem="'Período salvo com sucesso!'" sucesso="1">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<dtml-var standard_css_slot>
+
+<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+<!--
+  function campos_criticar(form){
+
+      var form = document.atendimento_form;
+
+      if (form.txa_txt_atendimento.value == "") {
+         alert("Informe a descrição resumida do atendimento!");
+         form.txa_txt_atendimento.focus();
+         return false;
+      }
+
+      if (form.lst_des_situacao.value == "") {
+         alert("Selecione a situação atendimento!");
+         form.lst_des_situacao.focus();
+         return false;
+      }
+
+      if (form.lst_des_situacao.value=="R" && form.txt_dat_solucao.value==""){
+         alert("Informe a data de solução do atendimento!");
+         form.txt_dat_solucao.focus();
+         form.txt_dat_solucao.select();
+         return false;
+      }
+
+      if (form.txt_dat_solucao.value!="" && !IsValidDate(form.txt_dat_solucao.value)){
+         alert("Informe uma data de solução válida!");
+         form.txt_dat_solucao.focus();
+         form.txt_dat_solucao.select();
+         return false;
+      }
+
+      form.submit();
+  }
+
+  function reloadParentAndClose(){
+       parent.jQuery.fancybox.close();
+  }
+</script>
+</head>
+
+<body class="modal">
+
+  <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+       <dtml-if cod_usuario>
+         <dtml-in expr="zsql.funcionario_obter_zsql(cod_usuario=cod_usuario)">
+           <dtml-call expr="REQUEST.set('cod_funcionario_corrente', int(cod_funcionario))">
+         </dtml-in>
+       </dtml-if>
+   </dtml-in>
+
+<dtml-if expr="cod_funcionario == cod_funcionario_corrente">
+
+  <h1 class="firstHeading">Registro de Atendimento</h1>
+
+  <form name="atendimento_form" method="post" action="atendimento_salvar_proc">
+      <input type="hidden" name="hdn_cod_visita" value="<dtml-var cod_visita missing>" />
+      <table>
+         </tr>
+           <td class="texto">
+            <label for="txa_nom_pessoa">Visitante</label><br />
+            <input type="text" id="txt_nom_pessoa" name="txt_nom_pessoa" size="40" value="<dtml-var nom_pessoa>" disabled />
+           </td>
+           <td class="texto">
+            <label for="txt_num_cracha">Crachá</label><br />
+            <input type="text" id="txt_num_cracha" name="txt_num_cracha" size="18" maxlength="3" value="<dtml-var num_cracha>" disabled />
+           </td>
+         </tr>
+         <tr>
+           <td class="texto">
+             <label for="dat_entrada">Data de Entrada</label><br />
+             <input type="text" name="dat_entrada" size="18" value="<dtml-var dat_entrada>" readonly />
+           </td>
+           <td class="texto">
+             <label for="dat_saida">Data de Saída</label><br />
+             <dtml-if dat_saida>
+               <input type="text" name="dat_saida" size="18" value="<dtml-var dat_saida missing null>" readonly />
+             <dtml-else>
+               <input type="text" name="dat_saida" size="18" value="(visita ativa)" readonly />
+             </dtml-if>
+           </td>
+         </tr>
+         <tr>
+           <td colspan="2" class="texto">
+             <label for="lst_funcionario">Responsável pelo Atendimento</label><br />
+            <input type="text" id="txt_nom_funcionario" name="txt_nom_funcionario" size="40"  value="<dtml-var nom_funcionario>" disabled />
+           </td>
+         </tr>
+        <dtml-if txt_observacao>
+         <tr>
+           <td colspan="2" class="texto">
+            <label for="txa_txt_observacao">Observações</label><br />
+            <textarea name="txa_txt_observacao" cols="60" rows="4" <dtml-if dat_saida>readonly</dtml-if>><dtml-var txt_observacao missing null=""></textarea>
+           </td>
+         </tr>
+        </dtml-if>
+         <tr>
+           <td colspan="2" class="texto">
+            <label for="txa_txt_atendimento">Descrição do Atendimento</label> <span class="campoObrigatorio"></span><br />
+            <textarea name="txa_txt_atendimento" cols="60" rows="4"><dtml-var txt_atendimento missing null=""></textarea>
+           </td>
+         </tr>
+         <tr>
+           <td class="texto">
+            <label for="lst_des_situacao">Situação</label> <span class="campoObrigatorio"></span><br />
+            <select id="lst_des_situacao" name="lst_des_situacao">
+              <option value=""></option>
+              <dtml-in expr="['Pendente','Resolvido']">
+                <option value="<dtml-var expr="_['sequence-item'][0]">"
+                   <dtml-if expr="des_situacao and des_situacao==_['sequence-item'][0]">
+                        selected
+                   </dtml-if> /> 
+                <dtml-var expr="_['sequence-item']"></option>
+              </dtml-in>
+          
+            </select>
+           </td>
+           <td class="texto">
+            <label for="txt_dat_solucao">Data de Solução</label><br />
+            <input type="text" id="txt_dat_solucao" size="13" name="txt_dat_solucao" value="<dtml-var dat_solucao missing null>" onblur="formata_data(form.txt_dat_solucao)" />
+           </td>
+         </tr>
+      </table>
+      <p align="center">
+          <input type="button" class="botao" name="btn_salvar" value="Salvar" onClick="campos_criticar(document.atendimento_form)" />
+        <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+      </p>
+  </form>
+
+<dtml-else>
+  <h1 class="firstHeading">Permissão negada !</h1>
+</dtml-if>
+
+ </body>
+</html>

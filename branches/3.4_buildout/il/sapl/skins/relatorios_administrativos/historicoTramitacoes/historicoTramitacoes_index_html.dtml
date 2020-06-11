@@ -1,0 +1,102 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script language="javascript">
+
+  function campos_criticar(form){
+
+
+     if (!IsValidDate(form.txt_dat_inicio_periodo.value)) {
+         alert("Digite uma data válida!");
+         form.txt_dat_inicio_periodo.focus();
+         form.txt_dat_inicio_periodo.select();
+         return false;
+     }
+     
+     if (!IsValidDate(form.txt_dat_fim_periodo.value)) {
+         alert("Digite uma data válida!");
+         form.txt_dat_fim_periodo.focus();
+         form.txt_dat_fim_periodo.select();
+         return false;
+     }
+  form.submit();
+
+  }
+
+//-->
+</script>
+
+<script type="text/javascript">
+$(function() {
+	$('#txt_dat_inicio_periodo').datepick(),
+	$('#txt_dat_fim_periodo').datepick();
+});
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/relatorios#rel_materia">Ajuda</a>
+
+<h1 class="firstHeading">Histórico de Tramitações</h1> 
+<fieldset>
+    <legend>Tramitação - Parâmetros</legend>
+
+<form method="post" name="form" action="historicoTramitacoes_mostrar_proc">
+       <table>
+          <tr>
+            <td> <label>Início </label><span class="campoObrigatorio">&nbsp;</span> <br />
+            <input type="text"
+                   name="txt_dat_inicio_periodo"
+                   id="txt_dat_inicio_periodo"
+                   value="<dtml-var expr="tramitacaoDataObter()[0].dat_inicio" missing null="">" size="10" onBlur="formata_data(form.txt_dat_inicio_periodo)" onChange="javascript:form.hdn_alterou.value=1" />
+             </td>
+           <td><label>Término </label><span class="campoObrigatorio">&nbsp;</span> <br />
+           <input type="text"
+                  name="txt_dat_fim_periodo"
+                  id="txt_dat_fim_periodo"
+                  value="<dtml-var expr="tramitacaoDataObter()[0].dat_fim" missing null="">" size="10" onBlur="formata_data(form.txt_dat_fim_periodo)" onChange="javascript:form.hdn_alterou.value=1" />
+           </td>
+        </tr>
+        <tr>
+           <td colspan="2"><label>Localização</label> <br />
+             <select name="lst_cod_unid_tram_dest">
+               <option selected value="0">Todos</option>
+                 <dtml-in listaLocaisTramitacao>
+                   <option value="<dtml-var cod_unid_tramitacao>">
+                     <dtml-if cod_orgao><dtml-var nom_orgao missing>
+                     <dtml-elif cod_comissao><dtml-var nom_comissao missing>
+                     <dtml-else><dtml-var nom_parlamentar>
+                     </dtml-if>
+                   </option>
+                 </dtml-in>
+             </select>
+           </td>
+         </tr>
+
+         <tr>
+           <td colspan="2"> <label>Tipo Matéria </label><br />
+             <select name="lst_tip_materia">
+                <option selected value="0">Todos</option>
+                    <dtml-in listaTiposMaterias>
+                        <option value="<dtml-var tip_materia>"><dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia></option>
+                    </dtml-in>
+             </select>
+           </td>
+        </tr>
+         <tr> 
+          <td colspan="2"><label>Status Tramitação</label><br />
+           <select name="lst_status">
+             <option selected value="0">Todos</option>
+             <dtml-in listaStatusTramitacao>
+               <option value="<dtml-var cod_status>"><dtml-var sgl_status> - <dtml-var des_status></option>
+             </dtml-in>
+           </select>      
+          </td>
+         </tr>
+       </table>
+    <p align="center">
+    <input type="submit" class="botao" name="btn_materia_pesquisar" value="Pesquisar" onClick="campos_criticar(form)" />
+    <input type="reset" class="botaoExtra" name="btn_materia_limpar"  value="Limpar">
+    </p>
+</form>
+
+<dtml-var standard_html_footer>

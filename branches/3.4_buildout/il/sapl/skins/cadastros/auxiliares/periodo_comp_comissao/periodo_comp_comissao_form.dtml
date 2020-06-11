@@ -1,0 +1,92 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+<!--
+
+function campos_criticar(form){  
+
+  if (form.txt_dat_inicio_periodo.value == "") {
+    alert("A data início deve ser preenchida.");
+    form.txt_dat_inicio_periodo.focus();
+    return false;
+  }
+  
+  if (!IsValidDate(form.txt_dat_inicio_periodo.value)) {
+    alert("Digite uma data início válida!");
+    form.txt_dat_inicio_periodo.focus();
+    form.txt_dat_inicio_periodo.select();
+    return false;
+  }
+
+  if (form.txt_dat_fim_periodo.value == "") {
+    alert("A data fim deve ser preenchida.");
+    form.txt_dat_fim_periodo.focus();
+    return false;
+  }
+
+  if (!IsValidDate(form.txt_dat_fim_periodo.value)) {
+    alert("Digite uma data fim válida!");
+    form.txt_dat_fim_periodo.focus();
+    form.txt_dat_fim_periodo.select();
+    return false;
+  }
+
+  var dat_fim = form.txt_dat_fim_periodo.value;
+  dat_fim = dat_fim.substring(6,10) + dat_fim.substring(3,5) + dat_fim.substring(0,2);
+
+  var dat_inicio = form.txt_dat_inicio_periodo.value;
+  dat_inicio = dat_inicio.substring(6,10) + dat_inicio.substring(3,5) + dat_inicio.substring(0,2);
+  
+  if (dat_inicio >= dat_fim) {
+     alert("A data início deve ser menor que a data fim!");
+     return false;
+  }
+
+  form.submit();
+}
+
+function periodo_comp_comissao_excluir(form) {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "periodo_comp_comissao_excluir_proc?cod_periodo_comp=" + form.hdn_cod_periodo_comp.value;
+  }
+  
+}
+
+//-->
+</script>
+<form name="periodo_comp_comissao_form" method="post" action="periodo_comp_comissao_salvar_proc">
+
+<div class="helpsapl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/periodo_composicao_comissao">Ajuda</a> </div>
+
+<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+
+<table>
+  <tr> 
+    <td class="form-label">| <a href="index_html">Início</a> |</td>
+   </tr>
+</table>  
+
+ <input type="hidden" name="hdn_cod_periodo_comp" value="<dtml-var cod_periodo_comp missing>" />
+<fieldset><legend>Período Composição de Comissão</legend>
+       <table>
+         <tr> 
+            <td class="form-element">Data Início <span class="campoObrigatorio">&nbsp;</span><br />
+             <input type="text" name="txt_dat_inicio_periodo" value="<dtml-var dat_inicio_periodo missing>" size="10" maxlength="10" onBlur="formata_data(form.txt_dat_inicio_periodo)" />
+             <span class="nota">(dd/mm/aaaa)</span></td>
+            <td class="form-text"><b>Data Fim <span class="campoObrigatorio">&nbsp;</span></b><br />
+              <input type="text" name="txt_dat_fim_periodo" value="<dtml-var dat_fim_periodo missing>" size="10" maxlength="10" onBlur="formata_data(form.txt_dat_fim_periodo)" />
+              <span class="nota">(dd/mm/aaaa)</span></td>
+         </tr>
+       </table>
+  <center><p>
+  <input type="button" class="botao" name="btn_periodo_comp_comissao_salvar" value="Salvar" onClick="campos_criticar(document.periodo_comp_comissao_form)" />
+  <dtml-if cod_periodo_comp>
+    <input type="button" class="botao" name="btn_periodo_comp_comissao_excluir" value="Excluir" onClick="periodo_comp_comissao_excluir(document.periodo_comp_comissao_form)" />
+  </dtml-if>
+  </p></center>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

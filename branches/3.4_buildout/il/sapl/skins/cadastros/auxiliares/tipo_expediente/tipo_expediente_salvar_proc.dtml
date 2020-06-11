@@ -1,0 +1,35 @@
+<dtml-if hdn_cod_expediente>
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_expediente_atualizar_zsql)">
+<dtml-elif expr="zsql.tipo_expediente_obter_zsql(nom_expediente=txt_nom_expediente)">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+  <dtml-let mensagem="'J&aacute; existe um Tipo de Expediente com esse nome.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else> 
+  <dtml-in expr="zsql.tipo_expediente_obter_zsql(tip_cod_expediente=hdn_cod_expediente,
+                                                 nom_expediente = txt_nom_expediente,
+                                                 ind_excluido = 1)">
+        <dtml-call expr="REQUEST.set('metodo', zsql.tipo_expediente_atualizar_zsql)">
+        <dtml-call expr="REQUEST.set('hdn_cod_expediente', cod_expediente)">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('metodo', zsql.tipo_expediente_incluir_zsql)">
+    </dtml-in>
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="metodo(cod_expediente = hdn_cod_expediente,
+                            nom_expediente = txt_nom_expediente,
+                            ind_excluido = 0)">
+
+  <dtml-except>
+    <dtml-let mensagem="'N&atilde;o foi poss&iacute;vel salvar Tipo de Expediente. Tente novamente!'">
+      <dtml-var hdn_tip_sessao>
+    </dtml-let> 
+
+  <dtml-else>
+    <dtml-let mensagem="'Tipo de Expediente salvo com sucesso!'" sucesso="1">
+      <dtml-var mensagem_emitir>
+    </dtml-let> 
+  </dtml-try>
+</dtml-unless>

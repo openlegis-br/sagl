@@ -1,0 +1,282 @@
+<dtml-var standard_html_header>
+
+<style>
+.dhxcombo_dhx_skyblue {
+    margin-left: 0px !important;
+}
+</style>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/email_validar.js" "></script>
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+
+   function submeter(endereco){
+
+      var form = document.eleitor_form;
+
+      endereco += '?cod_eleitor=' + form.hdn_cod_eleitor.value;
+
+      if (form.hdn_alterou.value=="1"){
+         if (confirm("Deseja salvar os dados?")){
+            form.hdn_url.value = endereco;
+            campos_criticar(form);
+         }
+      }
+
+      if (form.hdn_cod_eleitor.value!=""){
+          location.href = endereco;
+      }
+      return;
+   }
+
+  function campos_criticar(){
+
+      var form = document.eleitor_form;
+      var regexp_digitos = /\D+/;
+
+      if (form.txt_nom_eleitor.value == "") {
+         alert("O nome do eleitor deve ser preenchido!");
+         form.txt_nom_eleitor.focus();
+         return false;
+      }
+
+      if (!(form.rad_sex_eleitor[0].checked ||
+            form.rad_sex_eleitor[1].checked)){
+         alert("O sexo do eleitor deve ser informado!");
+         form.rad_sex_eleitor[0].focus();
+         return false;
+      }
+
+      if (form.txt_end_email.value != "" &&
+           !email_validar(form.txt_end_email.value)) {
+         alert("Digite um e-mail válido!");
+         form.txt_end_email.focus();
+         form.txt_end_email.select();
+         return false;
+      }
+
+      if (form.txt_dat_nascimento.value!="" && !IsValidDate(form.txt_dat_nascimento.value)){
+         alert("Informe uma data de nascimento válida!");
+         form.txt_dat_nascimento.focus();
+         form.txt_dat_nascimento.select();
+         return false;
+      }
+
+      form.submit();
+    }
+
+  function eleitor_excluir(){
+
+       if (confirm("Deseja realmente excluir?")) {
+          location.href="eleitor_excluir_proc?cod_eleitor=<dtml-var cod_eleitor missing>&url=&dtml-portal_url;/cadastros/gabinete_parlamentar/eleitor/eleitor_index_html";
+       }
+       return;
+  }
+</script>
+
+<script type="text/javascript">
+
+(function ($) {
+  $(function () {
+    //$('input[type=submit]').hide();
+    document.onkeypress = function (event) {
+      var form = eleitor_form;
+      form.action = "eleitor_salvar_proc";
+      if (event.keyCode === 13) {
+        form.submit();
+      }
+    };
+  });
+}(jQuery));
+
+$(function() {
+        $('#txt_dat_nascimento').datepick();
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$(".popup").fancybox({
+	openEffect	: 'fade',
+        beforeShow      : function(){
+            $("body").css({'overflow-y':'hidden'});
+        },
+        afterClose      : function() {
+        		window.location.href = "&dtml-portal_url;/cadastros/gabinete_parlamentar/eleitor/eleitor_mostrar_proc?hdn_cod_eleitor=<dtml-var cod_eleitor missing>";
+        		},
+	closeEffect	: 'fade'
+	});
+});
+
+$("#botao-visita").fancybox({
+    type : "iframe",
+    href : "&dtml-portal_url;/cadastros/gabinete_parlamentar/atendimento/atendimento_form?cod_parlamentar=<dtml-var cod_parlamentar_corrente>&cod_eleitor=<dtml-var cod_eleitor missing>",
+    openEffect	: 'fade',
+    beforeShow  : function(){
+        $("body").css({'overflow-y':'hidden'});
+    },
+    afterClose  : function() {
+        	window.location.href = "&dtml-portal_url;/cadastros/gabinete_parlamentar/eleitor/eleitor_mostrar_proc?hdn_cod_eleitor=<dtml-var cod_eleitor missing>";
+        		},
+    closeEffect	: 'fade'
+});
+
+</script>
+
+<h1 class="firstHeading">Cadastro de Eleitor</h1> 
+
+  <form name="eleitor_form" action="eleitor_salvar_proc" method="post">
+    <input type="hidden" name="hdn_cod_eleitor" value="<dtml-var cod_eleitor missing>" />
+                <table>
+                        <tr>
+                          <td width="45%"><label for="txt_nom_eleitor">Nome de Eleitor</label><span class="campoObrigatorio"></span><br />
+                            <input type="text" id="txt_nom_eleitor" name="txt_nom_eleitor" size="50" maxlength="200"  value="<dtml-var nom_eleitor missing>" />
+                          </td>
+                          <td><label for="txt_doc_identidade">Número do RG</label><br />
+                            <input type="text" id="txt_doc_identidade" name="txt_doc_identidade" size="30" maxlength="50"  value="<dtml-var doc_identidade missing null>" />
+                          </td>
+                          <td><label for="rad_sex_eleitor">Sexo</label><span class="campoObrigatorio"></span><br />
+                            <dtml-in expr="['M','F']">
+                              <input type="radio" id="rad_sex_eleitor" name="rad_sex_eleitor" value="<dtml-var expr="_['sequence-item']">"
+                              <dtml-if expr="_.has_key('cod_eleitor') and sex_eleitor==_['sequence-item']">
+                                checked=1
+                              </dtml-if> />
+                              <dtml-var expr="_['sequence-item']">
+                            </dtml-in>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                             <label for="txt_end_residencial">Endereço </label><br />
+                              <input type="text" id="txt_end_residencial" name="txt_end_residencial" size="50" maxlength="80" value="<dtml-var end_residencial missing null>"/>
+                          </td>
+                          <td><label for="txt_num_cep">CEP </label><br />
+                            <input type="text" id="txt_num_cep" name="txt_num_cep" size="15" maxlength="15" value="<dtml-var num_cep missing null>" />
+                          </td>
+                          <td><label for="txt_num_cpf">CPF </label><br />
+                            <input type="text" id="txt_num_cpf" name="txt_num_cpf" size="20" maxlength="15" value="<dtml-var num_cpf missing null>" />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><label for="txt_nom_bairro">Bairro </label><br />
+                            <input type="text" id="txt_nom_bairro" name="txt_nom_bairro" size="50" maxlength="80" value="<dtml-var nom_bairro missing null>" />
+                          </td>
+                          <td><label for="txt_nom_localidade">Localidade</label><br />
+                            <input type="text" id="txt_nom_localidade" name="txt_nom_localidade" size="30" maxlength="80" value="<dtml-var nom_localidade missing null>" />
+                          </td>
+                          <td><label for="txt_sgl_uf">Estado</label><br />
+                            <input type="text" id="txt_sgl_uf" name="txt_sgl_uf" size="10" maxlength="2" value="<dtml-var sgl_uf missing null=SP>" />
+                          </td>
+                        </tr>
+                          <td><label for="txt_end_email">E-mail</label><br />
+                            <input type="text" id="txt_end_email" name="txt_end_email" size="50" maxlength="100" value="<dtml-var end_email missing null="">" />
+                          </td>
+                          <td><label for="txt_num_telefone">Telefone</label><br />
+                            <input type="text" id="txt_num_telefone" name="txt_num_telefone" size="20" maxlength="50" value="<dtml-var num_telefone missing null>" />
+                          </td>
+                          <td><label for="txt_num_fax">Celular</label><br />
+                            <input type="text" id="txt_num_celular" name="txt_num_celular" size="20" maxlength="50" value="<dtml-var num_celular missing null>" />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colspan="3"><label for="txa_txt_observacao">Observações</label> 
+                            <textarea id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th colspan="3" class="texto">
+                            <b>Registro atualizado em:</b> <input type="text" id="txt_dat_atualizacao" name="txt_dat_atualizacao" size="16" value="<dtml-var dat_atualizacao missing>" disabled=disabled />  
+                          </th>
+                        </tr>
+            </table>
+
+         <legend>Informações Complementares</legend>
+            <table>
+             <tr>
+              <td class="texto">
+               <label for="txt_dat_nascimento">Data de Nascimento</label><br />
+               <input type="text" id="txt_dat_nascimento" name="txt_dat_nascimento" size="13" value="<dtml-var dat_nascimento missing null>" onblur="formata_data(form.txt_dat_nascimento)" />
+              </td>
+              <td class="texto">
+               <label for="txt_des_estado_civil">Estado Civil</label><br />
+               <input type="text" id="txt_des_estado_civil" name="txt_des_estado_civil" size="20" maxlength="15" value="<dtml-var des_estado_civil missing null>" />
+              </td>
+              <td class="texto">
+               <label for="txt_nom_conjuge">Nome do Cônjuge</label><br />
+               <input type="text" id="txt_nom_conjuge" name="txt_nom_conjuge" size="30" maxlength="50" value="<dtml-var nom_conjuge missing null>" />
+              </td>
+             </tr>
+             <tr>
+              <td class="texto">
+               <label for="txt_num_dependentes">Num. Dependentes</label><br />
+               <input type="text" id="txt_num_dependentes" name="txt_num_dependentes" size="10" maxlength="2" value="<dtml-var num_dependentes missing null>" />
+              </td>
+              <td class="texto">
+               <label for="txt_num_tit_eleitor">Título de Eleitor</label><br />
+               <input type="text" id="txt_num_tit_eleitor" name="txt_num_tit_eleitor" size="30" maxlength="15" value="<dtml-var num_tit_eleitor missing null>" />
+              </td>
+              <td class="texto">
+               <label for="txa_txt_classe">Classificação</label><br />
+               <input type="text" id="txa_txt_classe" name="txa_txt_classe" size="30" maxlength="15" value="<dtml-var txt_classe missing null>" />
+              </td>
+             </tr>
+             <tr>
+              <td class="texto">
+               <label for="txt_des_profissao">Profissão</label><br />
+               <input type="text" id="txt_des_profissao" name="txt_des_profissao" size="30" maxlength="50" value="<dtml-var des_profissao missing null>" />
+              </td>
+              <td class="texto">
+               <label for="txt_des_local_trabalho">Local de Trabalho</label><br />
+               <input type="text" id="txt_des_local_trabalho" name="txt_des_local_trabalho" size="30" maxlength="100" value="<dtml-var des_local_trabalho missing null>" />
+              </td>
+              <td class="texto">
+               <label for="txt_des_local_trabalho">Escolaridade</label><br />
+               <input type="text" id="txt_des_escolaridade" name="txt_des_escolaridade" size="30" maxlength="100" value="<dtml-var des_escolaridade missing null>" />
+              </td>
+             </tr>
+           </table>
+  <input type="hidden" name="hdn_url" value="eleitor_mostrar_proc?hdn_cod_eleitor=<dtml-var cod_eleitor missing>" />
+</form>
+
+ <p align="center">
+  <input type="button" class="botao" name="button" value="Salvar" onClick="campos_criticar()" />
+   <dtml-if cod_eleitor>
+     <input id="botao-visita" type="button" class="botao" value="Incluir Atendimento" />
+     <input class="botao" type="button" value="Voltar" onClick="history.back()">
+     <input type="button" class="botao" name="btn_excluir" value="Excluir" onClick="eleitor_excluir()" />
+   </dtml-if>
+ </p>
+
+
+<dtml-if cod_eleitor>
+  <fieldset>
+     <legend>Histórico de Atendimentos</legend>
+     <dtml-in expr="zsql.gabinete_atendimento_obter_zsql(cod_parlamentar=cod_parlamentar_corrente, cod_eleitor=cod_eleitor)">
+       <dtml-if sequence-start>
+         <table>
+           <tr>
+              <th class="label">Data</th>
+              <th class="label">Assunto</th>
+              <th class="label">Status</th>
+           </tr>
+       </dtml-if>
+           <tr>
+              <td class="texto">
+                 <a href="&dtml-portal_url;/cadastros/gabinete_parlamentar/atendimento/atendimento_mostrar_proc?cod_atendimento=<dtml-var cod_atendimento>" class="popup" data-fancybox-type="iframe">
+                   <dtml-var dat_atendimento>
+                 </a>
+               </td>
+              <td class="texto"><dtml-var txt_assunto></td>
+              <td class="texto"><dtml-var txt_status missing null></td>
+           </tr>
+       <dtml-if sequence-end>
+          </table>
+       </dtml-if>
+     <dtml-else>
+       <p class="texto">Nenhum registro encontrado.</p>
+     </dtml-in>
+  </fieldset>
+</dtml-if>
+
+<dtml-var standard_html_footer>

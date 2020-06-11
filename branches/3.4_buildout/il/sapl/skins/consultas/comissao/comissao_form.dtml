@@ -1,0 +1,196 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+   function submeter(endereco){
+      var form = document.comissao_form;      
+      endereco += '?cod_comissao=<dtml-var cod_comissao>';
+      location.href = endereco;
+  }   
+//-->
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_comissoes">Ajuda</a>
+
+<h1 class="firstHeading"><dtml-var nom_comissao></h1>
+
+<div id="barra-conteudo">
+ <ul>
+   <li>
+      <a class="selecionado">Início</a>
+   </li>
+ <dtml-if expr="zsql.composicao_comissao_obter_zsql(cod_comissao=cod_comissao)">
+   <li> 
+      <a href="javascript:submeter('composicao/index_html')">Composição</a>
+   </li>
+ </dtml-if>
+   <li>
+      <a href="&dtml-portal_url;/consultas/comissao/materia/index_html?cod_comissao=<dtml-var cod_comissao>">Matérias</a>
+   </li>
+   <li>
+      <a href="&dtml-portal_url;/consultas/comissao/reuniao/index_html?cod_comissao=<dtml-var cod_comissao>">Reuniões</a>
+   </li>
+   <li>
+      <a href="&dtml-portal_url;/consultas/comissao/documento/index_html?cod_comissao=<dtml-var cod_comissao>">Documentos</a>
+   </li>
+ </ul>
+</div>
+  <fieldset>
+   <legend>Dados Básicos</legend>
+    <table>
+     <tr>
+        <th width="20%" class="form-label">Nome:</th>
+         <td class="texto"><dtml-var nom_comissao></td>
+        <td width="15%" class="texto"><b>Sigla:</b></td> 
+         <td class="texto"><dtml-var sgl_comissao></td>
+     </tr>
+     <tr>
+        <th class="form-label">Tipo:</th>
+           <dtml-in expr="zsql.tipo_comissao_obter_zsql(tip_comissao=tip_comissao)">
+         <td class="texto"><dtml-var nom_tipo_comissao></td>
+           </dtml-in>
+        <td class="texto"><b>Data Criação:</b></td>
+         <td class="texto"><dtml-var dat_criacao></td>
+     </tr>
+     <tr>
+         <th class="form-label">Unidade deliberativa:</th>
+          <td colspan="3" class="texto">
+            <dtml-if expr="ind_unid_deliberativa==1">Sim
+            <dtml-else>Não</dtml-if>
+          </td>
+      </tr>
+    </table>
+  </fieldset>
+
+<dtml-if expr="loc_reuniao or des_agenda_reuniao or num_tel_reuniao or end_secretaria or
+               nom_secretario or num_tel_secretaria or num_fax_secretaria or end_email or txt_finalidade">
+  <fieldset>
+   <legend>Dados Complementares</legend>
+    <table>
+    <dtml-if expr="loc_reuniao!=None">
+     <tr> 
+      <th width="20%" class="form-label">Local Reunião:</th>
+       <td colspan="3" class="texto"><dtml-var loc_reuniao missing null=""></td>
+     </tr>
+    </dtml-if>
+    <dtml-if expr="des_agenda_reuniao or num_tel_reuniao">
+     <tr> 
+      <th class="form-label">Data/Hora Reunião:</th>
+       <td class="texto"><dtml-var des_agenda_reuniao missing null=""></td>
+      <td width="15%" class="form-label">Tel. Sala Reunião:</td>
+       <td class="texto"><dtml-var num_tel_reuniao missing null=""></td>
+     </tr>
+    </dtml-if>
+    <dtml-if end_secretaria>
+     <tr>
+      <th class="form-label"">End. Secretaria</th>
+       <td colspan="3" class="texto"><dtml-var end_secretaria missing null=""></td>
+     </tr>
+    </dtml-if>
+    <dtml-if nom_secretario>
+     <tr> 
+       <th class="form-label">Secretário:</th>
+        <td colspan="3" class="texto">
+         <dtml-var nom_secretario missing null="">
+        </td>
+     </tr>
+    </dtml-if>
+    <dtml-if expr="num_tel_secretaria or num_fax_secretaria">
+     <tr> 
+       <th class="form-label">Tel. Secretaria:</th>
+        <td class="texto"><dtml-var num_tel_secretaria missing null=""></td>
+       <td class="form-label">Fax Secretaria:</td>
+        <td class="texto"><dtml-var num_fax_secretaria missing null=""></td>
+     </tr>
+    </dtml-if>
+    <dtml-if end_email>
+     <tr> 
+       <th class="form-label">E-mail:</th>
+        <td colspan="3" class="texto"><a href="mailto:<dtml-var end_email missing>"><dtml-var end_email missing null=""></a></td>
+     </tr>
+    </dtml-if>
+    <dtml-if txt_finalidade>
+     <tr> 
+       <th width="20%" valign="top" class="form-label">Finalidade:</th>
+        <td colspan="3" class="texto"><dtml-var txt_finalidade missing null=""></td>
+     </tr>
+    </dtml-if>
+    </table>
+  </fieldset>
+</dtml-if>
+
+<dtml-if expr="nom_apelido_temp or dat_instalacao_temp or dat_final_prevista_temp or
+               dat_prorrogada_temp or dat_fim_comissao">
+  <fieldset>
+   <legend>Temporária</legend>
+    <table>
+      <tr>
+        <th width="20%" class="form-label">Apelido:</th>
+         <td class="texto"><dtml-var nom_apelido_temp missing null=""></td>
+        <td  width="15%" class="form-label">Data Instalação</td>
+         <td class="texto"><dtml-var dat_instalacao_temp missing null=""></td>
+      </tr>
+      <tr> 
+        <th class="form-label">Data Prevista Término:</th>
+         <td class="texto"><dtml-var dat_final_prevista_temp missing null=""></td>
+        <td class="form-label">Novo Prazo:</td>
+         <td class="texto">
+          <dtml-if dat_prorrogada_temp>
+           <dtml-var dat_prorrogada_temp missing null="">
+          </dtml-if>
+         </td>
+      </tr>
+     <dtml-if dat_fim_comissao>
+      <tr>
+        <th class="form-label">Data Término:</th>
+         <td colspan="3" class="texto"><dtml-var dat_fim_comissao missing null=""></td>
+      </tr>
+     </dtml-if>
+    </table>
+  <fieldset>
+</dtml-if>
+
+ <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(ind_excluido=0)">
+   <dtml-if expr="(_.DateTime() >= dat_inicio) and (_.DateTime() <= dat_fim)">
+     <fieldset>
+     <legend>Composição Atual</legend>
+     <dtml-in expr="zsql.composicao_comissao_obter_zsql(cod_comissao=cod_comissao,cod_periodo_comp=cod_periodo_comp)">
+      <dtml-if sequence-start>
+       <table>
+        <thead>
+          <tr>
+            <th class="form-label">Parlamentar</th>
+            <th class="form-label">Cargo</th>
+            <th class="form-label">Data Designação</th>
+            <th class="form-label">Titular?</th>
+          </tr>
+         </thead>
+        <tbody> 
+      </dtml-if sequence-start>
+        <tr <dtml-if sequence-odd>class="fundo"</dtml-if>> 
+          <td class="texto"><a href="&dtml-portal_url;/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>"><b><dtml-var nom_parlamentar></b></a></td>
+          <td class="texto"><dtml-var des_cargo></td>
+          <td class="texto"><dtml-var dat_designacao></b></td>
+          <td class="texto">
+            <dtml-if expr="ind_titular">Sim
+            <dtml-else>Não
+            </dtml-if>
+          <dtml-if dat_desligamento>
+           <br /><b>Desligamento:</b> <dtml-var dat_desligamento null="">
+              <dtml-if des_motivo_desligamento><br /><b>Motivo:</b> <dtml-var des_motivo_desligamento></dtml-if>
+           </dtml-if>
+          </td>
+        </tr>
+      <dtml-if sequence-end>
+       </table>
+      </dtml-if>
+     </dtml-in>
+    </fieldset>
+   </dtml-if>
+ </dtml-in>
+
+<p align="center">
+  <input class="botao" type="button" value="Voltar" onClick="history.go(-1)">
+</p>
+
+<dtml-var standard_html_footer>

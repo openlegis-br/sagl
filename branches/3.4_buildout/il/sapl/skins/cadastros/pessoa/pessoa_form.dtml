@@ -1,0 +1,356 @@
+<dtml-var standard_html_header>
+
+<style>
+.dhxcombo_dhx_skyblue {
+    margin-left: 0px !important;
+}
+</style>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.maskedinput.min.js"></script>
+
+<script>
+  jQuery(function($){
+   $("#txt_num_telefone").mask("(99) 9999-9999");
+   $("#txt_num_celular").mask("(99) 99999-9999");
+   $("#txt_num_cep").mask("99999-999");
+  });
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$(".popup").fancybox({
+	maxWidth	: 500,
+	maxHeight	: 400,
+	fitToView	: true,
+	width		: '75%',
+	height		: '85%',
+	autoSize	: false,
+	closeClick	: false,
+        scrolling       : false,
+        preload         : true,
+	openEffect	: 'fade',
+        afterClose      : function() {
+        		window.location.href = "&dtml-portal_url;/cadastros/pessoa/pessoa_mostrar_proc?cod_pessoa=<dtml-var cod_pessoa missing>";
+        		},
+	closeEffect	: 'fade'
+	});
+});
+</script>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/email_validar.js" "></script>
+
+<script type="text/javascript">
+
+   function submeter(endereco){
+
+      var form = document.pessoa_form;
+
+      endereco += '?cod_pessoa=' + form.hdn_cod_pessoa.value;
+
+      if (form.hdn_alterou.value=="1"){
+         if (confirm("Deseja salvar os dados?")){
+            form.hdn_url.value = endereco;
+            campos_criticar(form);
+         }
+      }
+
+      if (form.hdn_cod_pessoa.value!=""){
+          location.href = endereco;
+      }
+      return;
+   }
+
+  function campos_criticar(){
+
+      var form = document.pessoa_form;
+      var regexp_digitos = /\D+/;
+
+      if (form.txt_nom_pessoa.value == "") {
+         alert("O nome da pessoa deve ser preenchido!");
+         form.txt_nom_pessoa.focus();
+         return false;
+      }
+
+      if (form.txt_doc_identidade.value == "") {
+         alert("O documento de identidade deve ser preenchido!");
+         form.txt_doc_identidade.focus();
+         return false;
+      }
+
+      if (!(form.rad_sex_pessoa[0].checked ||
+            form.rad_sex_pessoa[1].checked)){
+         alert("O sexo da pessoa deve ser informado!");
+         form.rad_sex_pessoa[0].focus();
+         return false;
+      }
+
+      if (form.txt_end_residencial.value == "") {
+         alert("O endereço deve ser preenchido!");
+         form.txt_end_residencial.focus();
+         return false;
+      }
+
+      if (form.txt_num_imovel.value == "") {
+         alert("O número do imóvel deve ser preenchido!");
+         form.txt_num_imovel.focus();
+         return false;
+      }
+
+      if (form.txt_num_cep.value == "") {
+         alert("O CEP deve ser preenchido!");
+         form.txt_num_cep.focus();
+         return false;
+      }
+
+      if (form.txt_nom_bairro.value == "") {
+         alert("O bairro deve ser preenchido!");
+         form.txt_nom_bairro.focus();
+         return false;
+      }
+
+      if (form.txt_nom_cidade.value == "") {
+         alert("A cidade deve ser preenchida!");
+         form.txt_nom_cidade.focus();
+         return false;
+      }
+
+      if (form.txt_sgl_uf.value == "") {
+         alert("O estado deve ser preenchido!");
+         form.txt_sgl_uf.focus();
+         return false;
+      }
+
+      if (form.txt_end_email.value != "" &&
+           !email_validar(form.txt_end_email.value)) {
+         alert("Digite um e-mail válido!");
+         form.txt_end_email.focus();
+         form.txt_end_email.select();
+         return false;
+      }
+
+      form.submit();
+    }
+
+  function pessoa_excluir(){
+
+       if (confirm("Deseja realmente excluir?")) {
+          location.href="pessoa_excluir_proc?cod_pessoa=<dtml-var cod_pessoa missing>&url=&dtml-portal_url;/cadastros/pessoa/pessoa_index_html";
+       }
+       return;
+  }
+
+</script>
+
+<h1 class="firstHeading">Cadastro de Pessoa</h1> 
+
+<fieldset>
+ <legend>Informações Básicas</legend>
+
+<form action="pessoa_salvar_proc" name="pessoa_form" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="hdn_cod_pessoa" value="<dtml-var cod_pessoa missing>" />
+  <input type="hidden" name="txt_dat_nascimento" value="<dtml-var dat_nascimento missing null>" />
+  <input type="hidden" name="txt_des_estado_civil" value="<dtml-var des_estado_civil missing>" />
+  <input type="hidden" name="txt_nom_conjuge" value="<dtml-var nom_conjuge missing>" />
+  <input type="hidden" name="txt_num_dependentes" value="<dtml-var num_dependentes missing>" />
+  <input type="hidden" name="txt_num_tit_eleitor" value="<dtml-var num_tit_eleitor missing>" />
+  <input type="hidden" name="txt_des_tempo_residencia" value="<dtml-var des_tempo_residencia missing>" />
+  <input type="hidden" name="txt_des_profissao" value="<dtml-var des_profissao missing>" />
+  <input type="hidden" name="txt_des_local_trabalho" value="<dtml-var des_local_trabalho missing>" />
+  <input type="hidden" name="hdn_url" value="pessoa_mostrar_proc?cod_pessoa=<dtml-var cod_pessoa missing>" />
+ <input type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('mudou')">1<dtml-else>0</dtml-if>" />                
+                <table>
+                        <tr>
+                          <td width="45%"><label for="txt_nom_pessoa">Nome da Pessoa</label> <span class="campoObrigatorio"></span><br />
+                            <input type="text" id="txt_nom_pessoa" name="txt_nom_pessoa" size="50" maxlength="200" onChange="javascript:form.hdn_alterou.value=1" value="<dtml-var nom_pessoa missing>" />
+                          </td>
+                          <td colspan="2"><label for="txt_doc_identidade">Doc. Identidade</label> <span class="campoObrigatorio"></span><br />
+                            <input type="text" id="txt_doc_identidade" name="txt_doc_identidade" size="30" maxlength="50"  onChange="javascript:form.hdn_alterou.value=1" value="<dtml-var doc_identidade missing>" />
+                          </td>
+                          <td><label for="rad_sex_pessoa">Sexo</label> <span class="campoObrigatorio"></span><br />
+                            <dtml-in expr="['M','F']">
+                              <input type="radio" id="rad_sex_pessoa" name="rad_sex_pessoa" value="<dtml-var expr="_['sequence-item']">"
+                              <dtml-if expr="_.has_key('cod_pessoa') and sex_pessoa==_['sequence-item']">
+                                checked=1
+                              </dtml-if> />
+                              <dtml-var expr="_['sequence-item']">
+                            </dtml-in>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                           <dtml-if cod_pessoa>
+                             <label for="txt_end_residencial">Endereço </label> <span class="campoObrigatorio"></span><br />
+                              <input type="text" id="txt_end_residencial" name="txt_end_residencial" size="50" maxlength="80" value="<dtml-var end_residencial missing>" />
+                           <dtml-else>
+                             <div class="pf-element pf-full-width">
+                                <label for="txt_autor"><span class="pf-label">Endereço</span> <span class="campoObrigatorio"></span></label>
+                                <div class="pf-group">
+ 	                          <div id="combo_zone" style="width:339px;"></div>
+                                </div>
+                             </div>
+		             <script type="text/javascript">
+			       myCombo = new dhtmlXCombo("combo_zone", "txt_end_residencial", 339);
+			       myCombo.load("&dtml-portal_url;/cadastros/pessoa/enderecos_pesquisar_pysc", function(){
+				// callback
+		               });
+		               myCombo.enableFilteringMode(true);
+		             </script>
+                           </dtml-if>
+                          </td>
+                          <td><label for="txt_num_imovel">Número </label> <span class="campoObrigatorio"></span><br />
+                            <input type="text" id="txt_num_imovel" name="txt_num_imovel" size="5" maxlength="10" value="<dtml-var num_imovel missing>" />
+                          </td>
+                          <td><label for="txa_txt_complemento">Complemento</label><br />
+                            <input type="text" id="txa_txt_complemento" name="txa_txt_complemento" size="10" maxlength="50" value="<dtml-var txt_complemento missing null>" />
+                          </td>
+                          <td><label for="txt_num_cep">CEP </label> <span class="campoObrigatorio"></span><br />
+                            <input type="text" id="txt_num_cep" name="txt_num_cep" size="15" maxlength="15" value="<dtml-var num_cep missing>" />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><label for="txt_nom_bairro">Bairro </label> <span class="campoObrigatorio"></span><br />
+                            <input type="text" id="txt_nom_bairro" name="txt_nom_bairro" size="50" maxlength="80" value="<dtml-var nom_bairro missing>" />
+                          </td>
+                          <td colspan="2"><label for="txt_nom_cidade">Cidade</label> <span class="campoObrigatorio"></span><br />
+                            <input type="text" id="txt_nom_cidade" name="txt_nom_cidade" size="30" maxlength="80" value="<dtml-var nom_cidade missing>" />
+                          </td>
+                          <td><label for="txt_sgl_uf">Estado</label> <span class="campoObrigatorio"></span><br />
+                            <input type="text" id="txt_sgl_uf" name="txt_sgl_uf" size="10" maxlength="2" value="<dtml-var sgl_uf missing null=SP>" />
+                          </td>
+                        </tr>
+                          <td><label for="txt_end_email">E-mail</label><br />
+                            <input type="text" id="txt_end_email" name="txt_end_email" size="50" maxlength="100" value="<dtml-var end_email missing null="">" />
+                          </td>
+                          <td colspan="2"><label for="txt_num_telefone">Telefone Fixo</label><br />
+                            <input type="text" id="txt_num_telefone" name="txt_num_telefone" size="20" maxlength="50" value="<dtml-var num_telefone missing>" />
+                          </td>
+                          <td><label for="txt_num_fax">Telefone Celular</label><br />
+                            <input type="text" id="txt_num_celular" name="txt_num_celular" size="20" maxlength="50" value="<dtml-var num_celular missing>" />
+                          </td>
+                        </tr>
+                        </tr>
+                          <td colspan="4"><label for="txa_txt_observacao">Observações</label> 
+                            <textarea id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
+                          </td>
+                        </tr>
+                      <dtml-if cod_pessoa>
+                        <tr>
+                          <th colspan="4">Fotografia
+                          </th>
+                        </tr>
+                        <tr>
+                          <td colspan="2">
+	                     <div id="results" align="center">
+                                 <dtml-call expr="REQUEST.set('id_foto', _.str(cod_pessoa)+'_foto_pessoa.jpg')">
+                                 <dtml-if expr="_.hasattr(sapl_documentos.pessoa,id_foto)">
+                                   <img height="200" src="&dtml-portal_url;/sapl_documentos/pessoa/<dtml-var id_foto>?<dtml-var expr="ZopeTime().timeTime()">">
+                                 <dtml-else>
+                                   <img height="200" alt="<dtml-var nom_pessoa>" src="&dtml-portal_url;/imagens/avatar.png">
+                                 </dtml-if>
+                             </div>
+	                  </td>
+                             <script type="text/javascript" src="webcam.js"></script>
+	                  <td colspan="2">
+	                     <div id="my_camera"></div>
+                             <input type=button value="Capturar Imagem" onClick="take_snapshot()">
+
+
+	<!-- Configure a few settings and attach camera -->
+	<script language="javascript">
+		Webcam.set({
+			// live preview size
+			width: 320,
+			height: 240,
+			
+			// device capture size
+			dest_width: 320,
+			dest_height: 240,
+			
+			// final cropped size
+			crop_width: 184,
+			crop_height: 200,
+			
+			// format and quality
+			image_format: 'jpeg',
+			jpeg_quality: 90
+		});
+		
+		Webcam.attach( '#my_camera' );
+	</script>
+	
+	<!-- Code to handle taking the snapshot and displaying it locally -->
+	<script language="javascript">
+		function take_snapshot() {
+			// take snapshot and get image data
+			Webcam.snap( function(data_uri) {
+                             Webcam.upload( data_uri, 'foto_salvar_proc?cod_pessoa=<dtml-var cod_pessoa>', function(code, text) {
+                             // Upload complete!
+                             // 'code' will be the HTTP response code from the server, e.g. 200
+                             // 'text' will be the raw response content
+                              alert( "Mensagem de retorno: " + code + ": " + text );
+                             } );
+		             // display results in page
+			     document.getElementById('results').innerHTML =
+				'<img src="'+data_uri+'"/>';
+			 } );
+		}
+	</script>
+
+                          </td>
+                        </tr>
+                    </dtml-if>
+                      <dtml-if cod_pessoa>
+                        <tr>
+                          <th colspan="4" class="texto">
+                            <b>Registro atualizado em:</b> <input type="text" id="txt_dat_atualizacao" name="txt_dat_atualizacao" size="16" value="<dtml-var dat_atualizacao missing>" disabled=disabled />  
+                          </th>
+                        </tr>
+                      </dtml-if>
+          </table>
+ <p align="center">
+  <input type="button" class="botao" name="button" value="Salvar" onClick="campos_criticar()" />
+  <dtml-if cod_pessoa>
+   <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador'])">
+     <input type="button" class="botao" name="btn_excluir" value="Excluir" onClick="pessoa_excluir()" />
+   </dtml-if>
+   <a href="&dtml-portal_url;/cadastros/pessoa/visita_form?cod_pessoa=<dtml-var cod_pessoa>" class="botao-link popup" data-fancybox-type="iframe"/>Registrar Visita</a>
+  </dtml-if>
+  <input type="button" class="botao" name="retornar" value="Nova Pesquisa" onClick="location.href='&dtml-portal_url;/cadastros/pessoa/pessoa_index_html'">
+  <input type="button" class="botao" name="retornar" value="Voltar" onClick="javascript:history.go(-1)">
+</p>
+</form>
+</fieldset>
+
+<dtml-if cod_pessoa>
+  <fieldset>
+     <legend>Histórico de Visitas</legend>
+     <dtml-in expr="zsql.visita_obter_zsql(cod_pessoa==cod_pessoa)">
+       <dtml-if sequence-start>
+         <table>
+           <tr>
+              <th class="label">Entrada</th>
+              <th class="label">Funcionário</th>
+              <th class="label">Crachá</th>
+              <th class="label">Saída</th>
+           </tr>
+       </dtml-if>
+           <tr>
+              <td class="texto">
+                 <a href="visita_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="popup" data-fancybox-type="iframe">
+                   <dtml-var dat_entrada>
+                 </a>
+               </td>
+              <td class="texto"><dtml-var nom_funcionario></td>
+              <td class="texto"><dtml-var num_cracha missing></td>
+              <td class="texto"><dtml-var dat_saida missing null></td>
+           </tr>
+       <dtml-if sequence-end>
+          </table>
+       </dtml-if>
+     <dtml-else>
+       <p class="texto">Nenhum registro encontrado.</p>
+     </dtml-in>
+  </fieldset>
+</dtml-if>
+
+<dtml-var standard_html_footer>

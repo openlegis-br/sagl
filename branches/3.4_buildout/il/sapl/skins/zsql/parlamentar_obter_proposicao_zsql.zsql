@@ -1,0 +1,31 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_parlamentar=""
+max_rows : 10000
+max_cache : 100
+</dtml-comment>
+SELECT 
+       m.ano_ident_basica, 
+       t.*, 
+       a.cod_autor, 
+       COUNT(*) as "qtde"
+FROM
+       materia_legislativa m
+       LEFT JOIN tipo_materia_legislativa t on m.tip_id_basica = t.tip_materia
+       LEFT JOIN autoria au ON m.cod_materia = au.cod_materia
+       LEFT JOIN autor a ON a.cod_autor = au.cod_autor
+WHERE
+       m.ind_excluido = 0 and
+       au.ind_excluido = 0 and
+       a.cod_parlamentar = <dtml-sqlvar cod_parlamentar type="int"> and
+       au.cod_materia = m.cod_materia and
+       m.tip_id_basica = t.tip_materia
+
+GROUP BY
+       m.ano_ident_basica,
+       m.tip_id_basica
+
+ORDER BY
+       m.ano_ident_basica DESC,
+       t.des_tipo_materia
+

@@ -1,0 +1,260 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/data_validar.js" "></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/email_validar.js" "></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/cpf_validar.js" "></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.js"></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.xhtml.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
+$("#txa_txt_observacao").cleditor({width:"98%", height:"100%"})[0].focus();
+});
+</script>
+
+<script type="text/javascript">
+<!--
+   function submeter(endereco){
+
+      var form = document.assessor_form;
+
+      endereco += '?cod_parlamentar=' + form.hdn_cod_parlamentar.value;
+
+      if (form.hdn_alterou.value=="1"){
+         if (confirm("Deseja salvar os dados?")){
+            form.hdn_url.value = endereco;
+            campos_criticar(form);
+         }else {location.href = endereco}
+      }else
+          location.href = endereco;
+   }  
+
+function campos_criticar(form){  
+
+  if (form.txt_nom_assessor.value == "") {
+    alert("O nome do assessor deve ser informado!");
+    form.txt_nom_assessor.focus();
+    return false;
+  }
+
+  if (form.txt_des_cargo.value == "") {
+    alert("O cargo deve ser informado!");
+    form.txt_des_cargo.focus();
+    return false;
+  }
+  
+  if (form.txt_dat_nascimento.value != "" && !IsValidDate(form.txt_dat_nascimento.value)) {
+    alert("Digite uma data de nascimento válida!");
+    form.txt_dat_nascimento.focus();
+    form.txt_dat_nascimento.select();
+    return false;
+  }      
+
+  if (form.txt_num_cpf.value != "" && !cpf_validar(form.txt_num_cpf.value)) {
+    alert("Digite um número de CPF válido!");
+    form.txt_num_cpf.focus();
+    form.txt_num_cpf.select();
+    return false;       
+  }
+
+  if (form.txt_dat_nomeacao.value == "") {
+    alert("A data de nomeação deve ser preenchida!");
+    form.txt_dat_nomeacao.focus();
+    return false;
+  }
+  
+  if (form.txt_dat_nomeacao.value != "" && !IsValidDate(form.txt_dat_nomeacao.value)) {
+    alert("Digite uma data de nomeação válida!");
+    form.txt_dat_nomeacao.focus();
+    form.txt_dat_nomeacao.select();
+    return false;
+  } 
+
+  if (form.txt_dat_exoneracao.value != "" && !IsValidDate(form.txt_dat_exoneracao.value)) {
+    alert("Digite uma data de exoneração válida!");
+    form.txt_dat_exoneracao.focus();
+    form.txt_dat_exoneracao.select();
+    return false;
+  }
+
+  if (form.txt_dat_exoneracao.value != "") {
+     var dat_nomeacao = form.txt_dat_nomeacao.value.substring(6,10) + form.txt_dat_nomeacao.value.substring(3,5) + form.txt_dat_nomeacao.value.substring(0,2);
+     var dat_exoneracao = form.txt_dat_exoneracao.value.substring(6,10) + form.txt_dat_exoneracao.value.substring(3,5) + form.txt_dat_exoneracao.value.substring(0,2);
+     if (dat_nomeacao > dat_exoneracao) {
+        alert("A data de exoneração deve ser igual ou posterior à  data de nomeação!");
+        form.txt_dat_exoneracao.focus();
+        form.txt_dat_exoneracao.select();
+        return false;
+     }
+  }
+
+  if ((form.rad_assessor_eh_usuario[0].checked) && (!form.txt_login.disabled) && (form.txt_login.value == '')) {
+     alert ("Informe um Login para o Assessor, ou marque 'Não' caso não queira credenciá-lo como usuário do sistema!");
+     form.txt_login.focus();
+     return false;
+  }
+
+  form.txt_login.disabled=0;
+
+  form.submit();
+}
+
+function assessor_excluir() {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "assessor_excluir_proc?cod_assessor=<dtml-var cod_assessor missing>&hdn_cod_parlamentar=<dtml-var cod_parlamentar missing>";
+  } 
+}
+
+function login_excluir(form) {
+ if (confirm("Excluir o Login impedirá o acesso do Assessor ao sistema. Deseja realmente excluir?")){
+    form.txt_login.value = ''; 
+    form.btn_login_excluir.readonly = 1
+ }
+}
+
+function setLogin (form, allowLogin, previousLogin) {
+   if (allowLogin) {
+      if (previousLogin) {
+         form.txt_login.value = previousLogin;
+         form.txt_login.disabled = 1
+      } else {
+         alert ("Informe um Login para o Assessor");
+         form.txt_login.disabled = 0;
+         form.txt_login.focus()
+      }
+   } else {
+      if (previousLogin) 
+         form.txt_login.value = ''; 
+      form.txt_login.disabled = 1
+   }        
+}
+
+//-->
+</script>
+
+<script type="text/javascript">
+$(function() {
+        $('#txt_dat_nascimento').datepick();
+        $('#txt_dat_nomeacao').datepick();
+        $('#txt_dat_exoneracao').datepick();
+});
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_parlamentares">Ajuda</a>
+
+<dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+  <dtml-call expr="REQUEST.set('nom_parlamentar', nom_parlamentar)">
+  <input type="hidden" name="nom_parlamentar" value="<dtml-var nom_parlamentar>"/>
+</dtml-in>
+
+<h1 class="firstHeading"><dtml-var nom_parlamentar></h1> 
+
+<form name="assessor_form" method="post" action="assessor_salvar_proc">
+  <input type="hidden" name="hdn_cod_assessor" value="<dtml-var cod_assessor missing>"/>
+  <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar>"/>
+  <input type="hidden" name="hdn_col_username" value="<dtml-var col_username missing>"/>
+  <input type="hidden" name="hdn_url" value="index_html?cod_parlamentar=<dtml-var cod_parlamentar>"/>
+  <input type="hidden" name="hdn_alterou" value="0"/>
+
+<dtml-var parlamentar_menu>
+
+<fieldset>
+ <legend>Cadastro de Assessoria Parlamentar</legend>
+  <table>
+    <tr>
+      <td class="form-element">Nome<span class="campoObrigatorio">&nbsp;</span> <br />
+        <input type="text" name="txt_nom_assessor" value="<dtml-var nom_assessor missing>" size="50" maxlength="50" onChange="javascript:form.hdn_alterou.value=1"/>
+      </td>
+      <td colspan="2" class="form-element">Data Nascimento<br/>
+        <input type="text"
+               name="txt_dat_nascimento"
+               id="txt_dat_nascimento"
+               value="<dtml-var dat_nascimento missing null="">" size="10" maxlength="10" onBlur="formata_data(form.txt_dat_nascimento)" />
+      </td>
+    </tr>
+    <tr>
+      <td class="form-element">Cargo<span class="campoObrigatorio">&nbsp;</span> <br />
+        <input type="text" name="txt_des_cargo" value="<dtml-var des_cargo missing>" size="50" maxlength="50" onChange="javascript:form.hdn_alterou.value=1"/>
+      </td>
+      <td class="form-element">Data Nomeação<span class="campoObrigatorio">&nbsp;</span><br/>
+        <input type="text"
+               name="txt_dat_nomeacao"
+               id="txt_dat_nomeacao"
+               value="<dtml-var dat_nomeacao missing null="">" size="10" maxlength="10" onBlur="formata_data(form.txt_dat_nomeacao)" onChange="javascript:form.hdn_alterou.value=1"/>
+      </td>
+      <td class="form-element">Data Exoneração<br/>
+        <input type="text"
+               name="txt_dat_exoneracao"
+               id="txt_dat_exoneracao"
+               value="<dtml-var dat_exoneracao missing null="">" size="10" maxlength="10" onBlur="formata_data(form.txt_dat_exoneracao)" onChange="javascript:form.hdn_alterou.value=1"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="form-element">CPF<br/>
+       <input type="text" name="txt_num_cpf" value="<dtml-var num_cpf missing null="">" size="14" maxlength="11" />
+      </td>
+      <td class="form-element">RG<br/>
+       <input type="text" name="txt_num_rg" value="<dtml-var num_rg missing null="">"  size="15" maxlength="15" />
+    </td>
+      <td class="form-element">Nº Tí­tulo Eleitor<br/>
+       <input type="text" name="txt_num_tit_eleitor" value="<dtml-var num_tit_eleitor missing null="">" size="15" maxlength="15" />
+      </td>
+    </tr>
+    <tr>
+      <td class="form-element">Endereço Residencial<br />
+        <input type="text" name="txt_end_residencial" value="<dtml-var end_residencial missing null="">" size="50" maxlength="100" onChange="javascript:form.hdn_alterou.value=1"/>
+      </td>
+      <td class="form-element">CEP<br />
+        <input type="text" name="txt_num_cep_resid" value="<dtml-var num_cep_resid missing null="">" size="15" maxlength="9" onChange="javascript:form.hdn_alterou.value=1"/>
+      </td>
+      <td class="form-element">Telefone Residencial<br/>
+       <input type="text" name="txt_num_tel_resid" value="<dtml-var num_tel_resid missing null="">"  size="15" maxlength="50" onChange="javascript:form.hdn_alterou.value=1"/>
+    </td>
+    </tr>
+    <tr>
+      <td class="form-element">Email<br/>
+       <input type="text" name="txt_end_email" value="<dtml-var end_email missing null="">" size="50" maxlength="100" onChange="javascript:form.hdn_alterou.value=1"/>
+      </td>
+      <td colspan="2" class="form-element">Telefone Celular<br/>
+       <input type="text" name="txt_num_tel_celular" value="<dtml-var num_tel_celular missing null="">" size="15" maxlength="50" onChange="javascript:form.hdn_alterou.value=1"/>
+      </td>
+    </tr>
+    <tr> 
+       <td colspan="3" class="form-element">Observação<br />
+	 <textarea name="txa_txt_observacao" id="txa_txt_observacao" cols="60" rows="4"><dtml-var txt_observacao missing null=""></textarea>
+       </td>
+    </tr>
+   </table>
+
+  <dtml-unless expr="_.has_key('col_username')">
+    <dtml-call expr="REQUEST.set('col_username',None)">
+  </dtml-unless>
+  <fieldset><legend>Acesso ao Sistema</legend>
+  <table align="center">
+    <tr>
+      <td class="form-element">
+              Conceder ao Assessor Parlamentar acesso ao sistema para elaboração de proposições?<br />
+              <input type="radio" name="rad_assessor_eh_usuario" value="Sim" <dtml-unless expr="col_username==None">checked</dtml-unless> onClick="setLogin(document.assessor_form,1,'<dtml-var col_username null="">')" />Sim
+              <input type="radio" name="rad_assessor_eh_usuario" value="Não" <dtml-if expr="col_username==None">checked</dtml-if> onClick="setLogin(document.assessor_form,0,'<dtml-var col_username null="">')"  />Não
+            </td>
+          </tr>
+          <tr>
+            <td class="form-element">
+              Login: <input type="text" name="txt_login" maxlength="20" size="20" value="<dtml-var col_username null="">" disabled />
+            </td>
+          </tr>
+      </td>
+    </tr>
+  </table>
+
+   </fieldset>
+  <p align="center"> 
+  <input type="button" name="btn_assessor_salvar" class="botao" value="Salvar" onClick="campos_criticar(document.assessor_form)"/>
+  <dtml-if cod_assessor>
+    <input type="button" name="btn_assessor_excluir" class="botao" value="Excluir" onClick="assessor_excluir()"/>
+  </dtml-if>
+</form>
+
+<dtml-var standard_html_footer>
