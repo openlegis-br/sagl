@@ -19,7 +19,7 @@ setup(name='openlegis.sagl',
       url='https://github.com/openlegis-br/sagl/',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
-      namespace_packages=['il'],
+      namespace_packages=['openlegis'],
       include_package_data=True,
       zip_safe=False,
       install_requires=[
