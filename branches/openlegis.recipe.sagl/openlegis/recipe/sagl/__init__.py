@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Recipe sapl"""
+"""Recipe sagl"""
 
 import os
 import subprocess
@@ -25,8 +25,8 @@ class Recipe(object):
         options['bin-directory'] = buildout['buildout']['bin-directory']
 
         # all the options that will be passed on to the 'run' script
-        self.sapl_id = options.get('sapl-id', 'sapl')
-        self.container_path = options.get('container-path', '/sapl/sapl_documentos')
+        self.sagl_id = options.get('sagl-id', 'sagl')
+        self.container_path = options.get('container-path', '/sagl/sagl_documentos')
         self.admin_user = options.get('admin-user', 'admin')
         self.mysql_user = options.get('mysql-user', 'root')
         self.mysql_pass = options.get('mysql-pass', 'root')
@@ -48,7 +48,7 @@ class Recipe(object):
 
         if self.enabled:
             options['script'] = pkg_resources.resource_filename(
-                __name__, 'sapl.py')
+                __name__, 'sagl.py')
             # run the script
             cmd = ("%(bin-directory)s/%(instance-script)s run "
                    "%(script)s %(args)s") % options
@@ -64,7 +64,7 @@ class Recipe(object):
         """Helper method to create an argument list
         """
         args = []
-        args.append("--sapl-id=%s" % self.sapl_id)
+        args.append("--sagl-id=%s" % self.sagl_id)
         args.append("--admin-user=%s" % self.admin_user)
         args.append("--container-path=%s" % self.container_path)
         args.append("--mysql-user=%s" % self.mysql_user)
