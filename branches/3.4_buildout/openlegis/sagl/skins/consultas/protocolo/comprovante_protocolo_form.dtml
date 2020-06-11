@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Comprovante de Protocolo</title>
+
+<dtml-var standard_css_slot>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
+
+<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
+
+<script type="text/javascript">
+     //<![CDATA[
+         function printFrame() {
+             $('#print_button').hide();
+             window.print();
+             $('#print_button').show();
+         }
+     //]]>
+</script>
+</head>
+<body class="modal">
+ <table class="borda-prot">
+  <tr>
+    <td colspan="2">
+<div id="topo">
+  <dtml-call expr="REQUEST.set('existe_logo', 0)">
+  <dtml-call expr="REQUEST.set('id_logo', sagl_documentos.props_sagl.id_logo)">
+  <dtml-in expr="sagl_documentos.props_sagl.objectValues('Image')">
+    <dtml-if expr="id() == id_logo">
+      <dtml-call expr="REQUEST.set('existe_logo', 1)">
+    </dtml-if>
+  </dtml-in>
+  <h1 id="logo-prot">
+    <dtml-if "not existe_logo">
+      <img src="&dtml-portal_url;/imagens/brasao.gif" alt="Brasão da Casa Legislativa" />
+    <dtml-else>
+      <img src="sagl_documentos/props_sagl/<dtml-var id_logo>" alt="Brasão da Casa Legislativa" />
+    </dtml-if>
+  </h1>
+  <div id="identidade-prot">
+    <h2><dtml-var "sagl_documentos.props_sagl.nom_casa" missing></h2>
+    <h3>Estado de 
+      <dtml-call expr="REQUEST.set('cod_localidade', sagl_documentos.props_sagl.cod_localidade)">
+      <dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade)">
+       <dtml-call expr="REQUEST.set('estado', sgl_uf)">
+       <dtml-in expr="zsql.localidade_obter_zsql(tip_localidade='U',sgl_uf=estado)">
+         <dtml-var nom_localidade>
+       </dtml-in>
+      </dtml-in>
+     </h3>
+  </div>
+</div>
+    </td class="texto">
+  </tr>
+  <tr>
+   <td class="texto" colspan="2">
+<dtml-if expr="ind_anulado==1"> <span class="anulado">** NULO **&nbsp;&nbsp;</span></dtml-if>
+   <h3 align="center">COMPROVANTE DE PROTOCOLO</h3>
+<dtml-if expr="ind_anulado==1"> <span class="anulado"> &nbsp;&nbsp;** NULO **</span></dtml-if>
+   </td class="texto">
+  </tr>
+  <tr>
+   <td class="texto" width="30%">
+     <div>
+       <dtml-call expr="REQUEST.set('barcode', modelo_proposicao.protocolo_barcode_png(cod_protocolo))">
+       <img src="data:image/png;base64,<dtml-var barcode>" width="140" height="30">
+     </div>
+   </td class="texto">
+   <td class="texto" width="70%">Código de Autenticidade: 
+   <dtml-if expr="ind_anulado==1"> <span class="anulado"> ** NULO **</span>
+   <dtml-else>
+     <dtml-call "REQUEST.set('codb64', pysc.b64encode_pysc(codigo=cod_protocolo))">
+     <dtml-call "REQUEST.set('autenticacao', codb64)">
+     <dtml-var autenticacao></td class="texto">
+   </dtml-if>
+  </tr>  
+  <tr>
+   <td class="texto"><b>Número / Ano</b></td class="texto">
+   <td class="texto"><dtml-var num_protocolo>/<dtml-var ano_protocolo></td class="texto">
+  </tr>
+  <tr>
+   <td class="texto"><b>Data / Horário</b></td class="texto">
+   <td class="texto"><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> - <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td class="texto">
+  </tr>
+  <tr>
+<dtml-if expr="tip_processo==''">
+    <td class="texto"><b>Assunto/Ementa</b></td>
+<dtml-elif expr="tip_processo==0">
+    <td class="texto"><b>Assunto</b></td>
+<dtml-elif expr="tip_processo==1">
+    <td class="texto"><b>Ementa</b></td>
+</dtml-if>
+    <td class="texto" style="text-align:justify"><dtml-var txt_assunto_ementa></td class="texto">
+  </tr>
+<dtml-if expr="tip_processo!=''">
+  <tr>
+   <td class="texto">
+	<dtml-if cod_autor>
+		<b>Autoria</b>
+        </dtml-if>
+
+	<dtml-if txt_interessado>
+		<b>Interessado(a)</b>
+        </dtml-if>
+   </td class="texto">
+   <td class="texto">
+	<dtml-if cod_autor>
+		<dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+
+	<dtml-if cod_parlamentar>
+		<dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+		<dtml-var nom_parlamentar><br /> 
+		</dtml-in>
+
+	<dtml-elif cod_comissao>
+		<dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+		<dtml-var nom_comissao><br />
+		</dtml-in>
+
+	<dtml-else>
+		<dtml-var nom_autor missing null=""><br />
+	</dtml-if>
+		</dtml-in>
+	</dtml-if>
+
+	<dtml-if txt_interessado>
+		<dtml-var txt_interessado> <br />
+	</dtml-if>
+   </td class="texto">
+  </tr>
+  <tr>
+   <td class="texto"><b>Natureza do Processo</b></td class="texto">
+   <td class="texto">
+	<dtml-if expr="tip_processo==0">
+		Administrativo
+	</dtml-if>
+
+	<dtml-if expr="tip_processo==1">
+		Legislativo
+	</dtml-if>
+   </td class="texto">
+  </tr>
+  <tr>
+   <td class="texto">
+	<dtml-if expr="tip_processo==0">
+		<b>Tipo de Documento</b>
+	</dtml-if>
+
+	<dtml-if expr="tip_processo==1">
+		<b>Tipo de Matéria</b>
+	</dtml-if>
+  </td class="texto">
+   <td class="texto">
+	<dtml-if expr="tip_processo==0">
+		<dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento> 
+	<dtml-elif expr="tip_processo==1 and tip_natureza_materia==1">
+            <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_materia,tip_natureza='P',ind_excluido=0)">
+                  <dtml-var des_tipo_materia>
+            </dtml-in>
+	<dtml-elif expr="tip_processo==1 and tip_natureza_materia==2">
+            <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_materia,tip_natureza='A',ind_excluido=0)">
+                  <dtml-var des_tipo_materia>
+            </dtml-in>
+            <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal,ind_excluido=0)">
+              - <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+            </dtml-in>
+	<dtml-elif expr="tip_processo==1 and tip_natureza_materia==3">
+            <dtml-in expr="zsql.tipo_documento_obter_zsql(tip_documento=tip_materia, ind_excluido=0)">
+                  <dtml-var des_tipo_documento>
+            </dtml-in>
+            <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal,ind_excluido=0)">
+              - <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+            </dtml-in>
+	<dtml-elif expr="tip_processo==1 and tip_natureza_materia==4">
+            <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor, ind_excluido=0)">
+               <dtml-call "REQUEST.set('cod_comissao', cod_comissao)">
+            </dtml-in>
+            <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao, ind_excluido=0)">
+               <dtml-call "REQUEST.set('sgl_comissao', sgl_comissao)">
+            </dtml-in>
+            <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia_principal, cod_comissao=cod_comissao, num_protocolo=num_protocolo, ind_excluido=0)">
+                  Parecer <dtml-var sgl_comissao>
+            </dtml-in>
+            <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal,ind_excluido=0)">
+              - <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+            </dtml-in>
+	</dtml-if>
+  </td class="texto">
+  </tr>
+</dtml-if>
+<dtml-if num_paginas>
+  <tr>
+   <td class="texto"><b>Número de Páginas</b></td class="texto">
+   <td class="texto"><dtml-var num_paginas></td class="texto">
+  </tr>
+</dtml-if>
+ <dtml-if txt_observacao>
+  <tr>
+   <td class="texto" valign="top"><b>Observações</b></td class="texto">
+   <td class="texto" style="text-align:justify"><dtml-var txt_observacao missing></td class="texto">
+  </tr>
+ </dtml-if>
+  <tr>
+   <td class="texto" width="30%"><b>Recebido por:</b></td>
+   <td class="texto" width="70%"><dtml-var txt_user_protocolo missing null></td>
+  </tr>
+<dtml-if expr="tip_processo==0 and codigo_acesso!=None">
+  <tr>
+    <td class="texto">
+       <b>Chave de Acesso</b>
+    </td>
+    <td>
+       <dtml-var codigo_acesso>
+    </td>
+   </tr>
+</dtml-if>
+ </table>
+ <dtml-if expr="tip_processo==0 and codigo_acesso!=None">
+    <p align="center">
+       <b>Consulta de Protocolo</b>: <dtml-var BASE1>/consultas/protocolo</br>
+    </p>
+ </dtml-if>
+<p align="center">
+  <input type="button" class="botao" id="hideprint" name="print_button" value="Imprimir" onClick="printFrame();return false;" />
+  <input class="botaoExtra" type="button" id="hideclose" value="Fechar" onClick="parent.jQuery.fancybox.close();" />
+</p>
+</body>
+</html>

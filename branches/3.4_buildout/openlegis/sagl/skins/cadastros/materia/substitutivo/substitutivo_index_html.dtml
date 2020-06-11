@@ -1,0 +1,133 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+	$(".popup").fancybox({
+		maxWidth	: 700,
+		maxHeight	: 500,
+		fitToView	: false,
+		width		: '70%',
+		height		: '72%',
+		autoSize	: false,
+		closeClick	: false,
+                scrolling       : 'auto',
+                preload         : true,
+		openEffect	: 'fade',
+		closeEffect	: 'fade'
+	});
+});
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/substitutivo">Ajuda</a>
+
+<h1 class="firstHeading">Matéria Legislativa</h1>
+
+<dtml-var materia_menu>
+<dtml-var materia_header>
+
+<form name="index_form" action="substitutivo_form">
+<input type="hidden" name="cod_materia" value="<dtml-var cod_materia missing>">
+
+<fieldset><legend>Substitutivos</legend>  
+<dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, ind_excluido=0)" size=8 start=query_start orphan=2>
+       <dtml-if previous-sequence>
+       <span class="form-element">
+         <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
+         Página Anterior (<dtml-var previous-sequence-size> resultados)</a>
+       <span>
+       </dtml-if previous-sequence>
+    <dtml-if sequence-start>   
+    <table>
+       <tr> 
+         <th class="form-label">Número</th>
+         <th class="form-label">Ementa</th>
+         <th width="20%" class="form-label">Autoria</th>
+         <th width="10%" class="form-label">PDF</th>
+         <th width="17%" class="form-label">Resultado</th>
+       </tr>  
+    </dtml-if sequence-start>
+       <tr> 
+          <td class="texto"><a href="substitutivo_mostrar_proc?cod_substitutivo=<dtml-var cod_substitutivo>&cod_materia=<dtml-var cod_materia>">
+           <b><dtml-var num_substitutivo></b></a></td>
+          <td class="texto"><dtml-var txt_ementa></td>
+          <td class="texto">
+           <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
+             <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+           </dtml-in>
+          </td>
+          <td class="texto">
+           <div align="center">
+
+               <div align="center">
+              <dtml-call expr="REQUEST.set('des_tipo_proposicao', 'Substitutivo')">
+                <dtml-in expr="zsql.proposicao_obter_zsql(cod_materia=cod_materia,cod_substitutivo=cod_substitutivo)">
+                 <dtml-if cod_proposicao>
+                 </dtml-if>
+                 <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+                   <dtml-if "_.hasattr(sagl_documentos.proposicao,id_proposicao)">
+                     <dtml-let proposicao="_.getattr(sagl_documentos.proposicao,id_proposicao).absolute_url">
+                      <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                        <a target="blank" href="<dtml-var proposicao>">
+                          <img align="middle" height="25" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
+                          <p style="line-height: 1.3em; font-size:11px"><b>Proposição Eletrônica<br /><dtml-var cod_documento></p>
+                        </a>
+                     </dtml-let>
+                   </dtml-if>
+                 </dtml-let>
+                </dtml-in>
+
+                <dtml-let id_substitutivo="_.str(cod_substitutivo)+'_substitutivo.pdf'">
+                  <dtml-if "_.hasattr(sagl_documentos.substitutivo,id_substitutivo)">
+                    <dtml-let substitutivo="_.getattr(sagl_documentos.substitutivo,id_substitutivo).absolute_url">
+                      <a target="_blank" href="<dtml-var substitutivo>"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                    </dtml-let>
+                  </dtml-if>
+                </dtml-let>
+             </div>
+          </td>
+            <td class="texto">
+             <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_materia=cod_materia,cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+              <dtml-if sequence-start>   
+                <dtml-if tip_resultado_votacao>
+                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                    <dtml-if expr="tip_votacao == 2 ">
+                       <a href="&dtml-portal_url;/consultas/sessao_plenaria/sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tipo_materia=acessoria" class="popup" data-fancybox-type="iframe">
+                        <b><dtml-var nom_resultado></a></b><br />
+                    <dtml-else>
+                        <b><dtml-var nom_resultado></b><br />
+                    </dtml-if>
+                    <dtml-if votacao_observacao>
+                        <dtml-var votacao_observacao>
+                    </dtml-if>
+                </dtml-in>
+                <dtml-else><i>Matéria não votada</i>
+                </dtml-if>
+              </dtml-if sequence-start>   
+             <dtml-else><i>Matéria não votada</i>
+             </dtml-in>
+            </td>
+       </tr>
+    <dtml-if sequence-end>
+       </table>
+    </dtml-if sequence-end>
+    <dtml-if next-sequence>
+       <span class="form-element">
+         <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
+         Próxima Página (<dtml-var next-sequence-size> resultados)</a>
+       </span>
+      </dtml-if next-sequence>
+  <dtml-else>
+      <span class="texto">Nenhum Substitutivo cadastrado para esta matéria.</span>
+      </table>
+   </dtml-in>
+   </fieldset>
+    
+  <p align="center">
+     <input type="submit" class="botao" name="btn_incluir" value="Incluir Substitutivo">
+  </p>
+
+</form>
+
+<dtml-var standard_html_footer>

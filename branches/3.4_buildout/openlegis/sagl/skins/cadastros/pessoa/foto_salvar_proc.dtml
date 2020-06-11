@@ -1,0 +1,34 @@
+<dtml-call expr="REQUEST.set('cod_pessoa', _['REQUEST']['cod_pessoa'])">
+
+<dtml-call expr="REQUEST.set('arquivo_foto', _['REQUEST']['webcam'])">
+
+<dtml-call expr="REQUEST.set('id_foto', cod_pessoa+'_foto_pessoa.jpg')">
+
+       <dtml-if expr="_.hasattr(sagl_documentos.pessoa,id_foto)">
+         <dtml-let foto="_.getattr(sagl_documentos.pessoa,id_foto) ">
+           <dtml-try>
+               <dtml-call "foto.manage_upload(file=arquivo_foto)">
+               <dtml-let mensagem="'A fotografia foi salva com sucesso!'">
+                  <dtml-var mensagem>
+               </dtml-let>
+           <dtml-except>
+               <dtml-let mensagem="'Ocorreu erro ao salvar a fotografia'+cod_pessoa">
+                  <dtml-var mensagem_emitir>
+               </dtml-let>
+           </dtml-try>
+         </dtml-let>
+       <dtml-else>
+         <dtml-try>
+           <dtml-call expr="sagl_documentos.pessoa.manage_addImage(id=id_foto,file=arquivo_foto)">
+           <dtml-let mensagem="'A fotografia foi salva com sucesso!'">
+              <dtml-var mensagem>
+           </dtml-let>
+         <dtml-except>
+           <dtml-let mensagem="'Ocorreu erro ao salvar a fotografia'+cod_pessoa">
+              <dtml-var mensagem_emitir>
+           </dtml-let>
+         </dtml-try>
+       </dtml-if>
+
+
+

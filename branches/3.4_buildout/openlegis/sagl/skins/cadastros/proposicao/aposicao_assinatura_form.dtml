@@ -1,0 +1,82 @@
+<dtml-var standard_html_header>
+
+  <script language="javascript" type="text/javascript">
+      function OpenPopupCenter(pageURL, title, w, h) {
+          var left = (screen.width - w) / 2;
+          var top = (screen.height - h) / 4;  // for 25% - devide by 4  |  for 33% - devide by 3
+          var targetWin = window.open(pageURL, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+          var win_timer = setInterval(function() {   
+            if(targetWin.closed) {
+              window.location.reload();
+              clearInterval(win_timer);
+            } 
+          }, 100);
+        } 
+  </script>
+
+  <h1 class="firstHeading">Aposição de Assinatura Digital</h1>
+
+  <dtml-call expr="REQUEST.set('username', AUTHENTICATED_USER.getUserName())">
+
+  <dtml-in expr="zsql.autor_obter_zsql(col_username=username, ind_excluido=0)">
+  <dtml-call expr="REQUEST.set('cod_autor_atual', cod_autor)">
+  </dtml-in>
+
+ <fieldset>
+  <dtml-in expr="zsql.coautoria_proposicao_obter_zsql(cod_autor=cod_autor_atual, ind_excluido=0)">
+    <dtml-if sequence-start>
+     <table>
+      <tr>
+       <th width="20%">Tipo de Proposição</th>
+       <th>Descrição</th>
+       <th width="25%">Autoria</th>
+       <th width="21%">Ações</th>
+      </tr>
+    </dtml-if>
+      <tr>
+       <td><dtml-var des_tipo_proposicao></td>
+       <td><dtml-var txt_descricao></td>
+       <td><dtml-var nom_autor_join></td>
+       <td>
+           <div id="toolbar" class="ui-widget ui-corner-all"><p></p>
+              <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
+              <dtml-if "_.hasattr(sagl_documentos.proposicao,id_documento_assinado)">
+                 <dtml-let documento_assinado="_.getattr(sagl_documentos.proposicao,id_documento_assinado).absolute_url">
+                   <a class="popup1 signed_pdf" style="cursor: pointer; float:left; margin-right: 2px;" href="<dtml-var documento_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">Texto</a>
+                 </dtml-let>
+               <dtml-if expr="ind_aderido==0">
+                 <div id="menuitem2" style="cursor: pointer; float:left;">
+                   <a class="pdf"  href="#void(0) "onclick="OpenPopupCenter('&dtml-portal_url;/generico/assinador/pades-cosignature_html?codigo=<dtml-var cod_proposicao>&tipo_doc=proposicao', 'Test!?', 800, 600);">Assinar</a>
+                 </div>
+             <dtml-else>
+                ** Assinado **
+             </dtml-if>
+              </dtml-if>
+           </div>
+       </td>
+      </tr>
+    <dtml-if sequence-end>
+     </table>
+    </dtml-if>
+  <dtml-else>
+    <p align="left">Não há nenhuma proposição disponivel para assinatura</p>
+  </dtml-in>
+ </fieldset>
+	<script>
+  	$(function() {
+ 	   $( ".pdf" )
+ 	     .button({
+ 	     icons: {
+ 	       primary: "ui-icon-pencil"
+	      }
+	    })
+ 	   $( ".signed_pdf" )
+ 	     .button({
+ 	     icons: {
+ 	       primary: "ui-icon-locked"
+	      }
+	    })
+ 	 });
+	</script>
+
+<dtml-var standard_html_footer>

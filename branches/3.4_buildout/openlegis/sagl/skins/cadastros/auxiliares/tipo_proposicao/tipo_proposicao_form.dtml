@@ -1,0 +1,106 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+  function campos_criticar(form){  
+
+     if (form.des_tipo_proposicao.value == "") {
+        alert("A descrição do tipo de proposicao deve ser preenchida.");
+        form.des_tipo_proposicao.focus();
+        return false;
+     }
+    if (form.tip_mat_ou_doc.value == ""){
+        alert("Escolha um tipo de Matéria ou Documento");
+        form.tip_mat_ou_doc.focus();
+        return false;
+    }
+
+     form.submit();
+  }
+
+  function tip_proposicao_excluir(form) {
+
+     if (confirm("Deseja realmente excluir?")) {  
+        location.href = "tipo_proposicao_excluir_proc?tip_proposicao=" + form.tip_proposicao.value;
+     }
+  }
+  function set_ind_mat_doc(valor){
+       location.href = "tipo_proposicao_form?escolha="+valor+'&des_tipo_proposicao='+document.tip_proposicao_form.des_tipo_proposicao.value+'&tip_proposicao='+'<dtml-var tip_proposicao missing>';
+  }
+
+//-->
+</script>
+
+<form name="tip_proposicao_form" method="post" action="tipo_proposicao_salvar_proc">
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/tipo_proposicao">Ajuda</a>
+
+<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+
+<table>
+  <tr> 
+    <td class="form-label">| <a href="index_html">Início</a> |</td>
+   </tr>
+</table>  
+
+<input type="hidden" name="tip_proposicao" value="<dtml-var tip_proposicao missing>" />
+<fieldset><legend>Tipo Proposição</legend>
+       <table>
+          <tr>
+           <td colspan="2" class="form-element">Descrição <span class="campoObrigatorio">&nbsp;</span><br />
+           <input type="text" name="des_tipo_proposicao" value="<dtml-var des_tipo_proposicao missing>" size="50" maxlength="50" /></td>
+          </tr>
+          <tr>
+            <td width="20%" class="form-element">Gera<br />
+             <input type="radio" name="ind_mat_ou_doc" value="M" size="50" maxlength="50" onClick="
+                   set_ind_mat_doc('M')"<dtml-if expr="REQUEST.get('escolha','')=='M' or (_.has_key('ind_mat_ou_doc') and ind_mat_ou_doc=='M')">checked</dtml-if> />Matéria<br />
+             <input type="radio" name="ind_mat_ou_doc" value="D" size="50" maxlength="50" onClick="
+                   set_ind_mat_doc('D')"<dtml-if expr="REQUEST.get('escolha','')=='D' or (_.has_key('ind_mat_ou_doc') and ind_mat_ou_doc=='D')">checked</dtml-if> />Documento / Matéria Acessória<br />
+            </td>
+ 
+           <dtml-if expr="REQUEST.get('escolha','')=='M'">
+            <td width="40%" class="form-text"><b>Tipo Matéria</b><span class="campoObrigatorio">&nbsp;</span><br />
+              <select name="tip_mat_ou_doc" size="1">
+                 <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql()">
+                   <option 
+                     value="<dtml-var tip_materia>"<dtml-if expr="tip_mat_ou_doc==tip_materia">selected</dtml-if>>
+                     <dtml-var des_tipo_materia></option>
+                </dtml-in>
+             </select></td>     
+           
+           </dtml-if>
+
+           <dtml-if expr="REQUEST.get('escolha','')=='D'">
+            <td width="40%" class="form-text"><b>Tipo Documento</b><span class="campoObrigatorio">&nbsp;</span><br />
+              <select name="tip_mat_ou_doc" size="1">
+                <dtml-in expr="zsql.tipo_documento_obter_zsql()">
+                  <option 
+                     value="<dtml-var tip_documento>"<dtml-if expr="(_.has_key('tip_mat_ou_doc') and tip_mat_ou_doc==tip_documento)">selected</dtml-if>>
+                     <dtml-var des_tipo_documento></option>
+                </dtml-in>
+             </select></td>     
+           
+           </dtml-if>         
+         </tr>
+         <tr>
+            <td colspan="2" class="form-element">Modelo ODT<br />
+            <select name="nom_modelo" size="1">
+               <option value="">Nenhum</option>
+                <dtml-in expr="sagl_documentos.modelo.objectValues('Folder')">
+                 <dtml-in "_['sequence-item'].objectValues('File')">
+                  <option 
+                     value="<dtml-var id>" <dtml-if expr="(_.has_key('nom_modelo') and nom_modelo==id)">selected</dtml-if>><dtml-var id></option>
+                 </dtml-in>
+                </dtml-in>
+             </select></td>
+         </tr>
+       </table>
+  <p align="center">
+  <input type="button" class="botao" name="btn_tip_proposicao_salvar" value="Salvar" onClick="campos_criticar(window.document.tip_proposicao_form)" />
+  <dtml-if tip_proposicao>
+    <input type="button" class="botao" name="btn_tip_proposicao_excluir" value="Excluir" onClick="tip_proposicao_excluir(window.document.tip_proposicao_form)" />
+  </dtml-if>
+  </p>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

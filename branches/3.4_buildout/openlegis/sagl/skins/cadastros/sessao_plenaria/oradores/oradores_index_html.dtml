@@ -1,0 +1,185 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+    function atualizar(cod_sessao_plen,cod_parlamentar,campo_num,form_arq) {
+        if (campo_num.value == "") {
+        alert("O campo não pode ficar vazio!");
+        campo_num.focus();
+        return;
+        }
+
+        var form = document.oradores_form;
+        var txt_num_ordem = campo_num.value;
+        location.href = "oradores_salvar_proc?hdn_cod_sessao_plen=" + cod_sessao_plen + "&lst_cod_parlamentar=" + cod_parlamentar + '&txt_num_ordem=' + txt_num_ordem + '&hdn_cod_sessao_leg='+ form.hdn_cod_sessao_leg.value + '&hdn_num_legislatura=' + form.hdn_num_legislatura.value + '&hdn_dat_sessao=' + form.hdn_dat_sessao.value + '&hdn_tip_sessao=' + form.hdn_tip_sessao.value + '&flag_atualizar=1';
+    }
+
+    function excluir(cod_sessao_plen,cod_parlamentar){
+        var form = document.oradores_form;    
+        if (confirm("Deseja realmente excluir o orador?")) {
+            location.href = "oradores_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_parlamentar=" + cod_parlamentar + '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value + '&cod_num_legislatura=' + form.hdn_num_legislatura.value + '&dat_sessao=' + form.hdn_dat_sessao.value + '&tip_sessao=' + form.hdn_tip_sessao.value;
+        }
+        return;
+    }
+
+    function discurso_excluir(cod_parlamentar){
+        var form =  document.oradores_form;
+        if (confirm("Deseja realmente excluir o discurso?")) {
+            location.href="discurso_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_parlamentar=" + cod_parlamentar + '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value + '&cod_num_legislatura=' + form.hdn_num_legislatura.value + '&dat_sessao=' + form.hdn_dat_sessao.value + '&tip_sessao=' + form.hdn_tip_sessao.value;
+        }
+        return;
+    }
+
+function submeter(endereco){
+
+        var form = document.oradores_form;
+        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
+        endereco += '&cod_sessao_leg=' + form.hdn_cod_sessao_leg.value;
+        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
+        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
+        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
+
+        if (form.hdn_cod_sessao_plen.value!=""){
+            location.href = endereco;
+        }
+        return;
+    }
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_oradores">Ajuda</a>
+
+<h1 class="firstHeading">Explicações Pessoais</h1>
+
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+
+<form name="oradores_form" method="post" action="oradores_salvar_proc" enctype="multipart/form-data">
+    <dtml-var sessao_plenaria_menu>
+    <dtml-in expr="zsql.oradores_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
+        <dtml-if sequence-start>
+        <fieldset>
+        <legend>Lista de Oradores</legend>
+        <table>
+            <tr>
+                <th class="form-label">Ordem</th>
+                <th class="form-label">Parlamentar</th>
+                <th class="form-label">Discurso</th>
+                <th class="form-label">Ação</th>
+            </tr>
+        </dtml-if sequence-start>
+         <dtml-if sequence-even>
+          <tr>
+         <dtml-else>
+          <tr class="even">
+         </dtml-if>
+            <td>
+                <input type="text" id="txt_num_ordem_<dtml-var num_ordem>" name="txt_num_ordem" size="2" value="<dtml-var num_ordem>">
+            </td>
+            <td class="texto">
+                <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                    <dtml-var nom_parlamentar>/<dtml-var sgl_partido>
+                    <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar>" />
+                </dtml-in>
+            </td>
+            <td class="texto">
+                <dtml-if expr="(_.has_key('cod_sessao_plen')) and (_.has_key('cod_parlamentar'))">
+                    <dtml-call expr="REQUEST.set('id_documento', _.str(cod_sessao_plen)+ '_' + _.str(cod_parlamentar) + '_discurso.pdf')">
+                    <dtml-if "_.hasattr(sagl_documentos.oradores,id_documento)">
+                        <dtml-let documento="_.getattr(sagl_documentos.oradores,id_documento).absolute_url">
+                            <a target="_blank" href="<dtml-var documento>">
+                                <img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Discurso" />
+                            </a>
+                            &nbsp;<a class="botao-link" href="javascript:discurso_excluir(<dtml-var cod_parlamentar missing>)">Excluir</a>
+                        </dtml-let>
+                    <dtml-else>
+                      <i>Não disponível</i>
+                    </dtml-if>
+                </dtml-if>
+            </td>
+            <td class="texto">
+                <a class="botao-link" href="javascript:atualizar(<dtml-var cod_sessao_plen>,<dtml-var cod_parlamentar>,document.oradores_form.txt_num_ordem_<dtml-var num_ordem>,document.oradores_discurso_form_<dtml-var num_ordem>)">
+                 Atualizar</a> &nbsp; <a class="botao-link" href="javascript:excluir(<dtml-var cod_sessao_plen>,<dtml-var cod_parlamentar>)">Excluir</a>
+            </td>
+        </tr>
+    <dtml-if sequence-end>
+    </table>
+    </fieldset>
+    </dtml-if sequence-end>
+    <dtml-else>
+        <table>
+            <tr>
+                <td class="form-text">Nenhum orador cadastrado.</td>
+            </tr>
+       </table>
+    </dtml-in>
+</form>
+<form name="oradores_cadastro_form" method="post" action="oradores_salvar_proc" enctype="multipart/form-data">
+<fieldset>
+<legend>Cadastro de Oradores</legend>
+<table>
+    <tr>
+        <th class="form-label">Ordem</th>
+        <th class="form-label">Parlamentar</th>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" name="txt_num_ordem" size="3" maxlength="3" />
+        </td>
+        <td>
+            <select name="lst_cod_parlamentar" size="1">
+                <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+                    <option
+                        value="<dtml-var cod_parlamentar >">
+                        <dtml-var nom_parlamentar>
+                    </option>
+                </dtml-in>
+            </select>
+        </td>
+    </tr>
+</table>
+    <p align="center">
+            <input class="botao" type="submit" size="10" name="btn_oradores" value="Incluir Orador" />
+    </p>
+    <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+    <input type="hidden" name="hdn_cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>"/>
+    <input type="hidden" name="hdn_dat_sessao" value="<dtml-var dat_sessao missing>"/>
+    <input type="hidden" name="hdn_num_legislatura" value="<dtml-var cod_num_legislatura missing>"/>
+    <input type="hidden" name="hdn_tip_sessao" value="<dtml-var tip_sessao missing>"/>
+</fieldset>
+</form>
+<form name="discurso_cadastro_form" method="post" action="discurso_salvar_proc" enctype="multipart/form-data">
+<fieldset>
+<legend>Cadastro de Discursos</legend>
+<table>
+    <tr>
+        <th class="form-label">Parlamentar</th>
+        <th class="form-label">Arquivo PDF</th>
+    </tr>
+    <tr>
+        <td>
+            <select name="lst_cod_parlamentar" size="1">
+                <dtml-in expr="zsql.oradores_parlamentar_incl_obter_zsql(cod_sessao_plen=cod_sessao_plen,num_legislatura=cod_num_legislatura,ind_excluido=0)">
+                    <option
+                        value="<dtml-var cod_parlamentar >">
+                        <dtml-var nom_parlamentar>/<dtml-var sgl_partido>
+                    </option>
+                    </dtml-in>
+            </select>
+        </td>
+        <td>
+            <input type="file" name="file_nom_arquivo" size="40" maxlength="100" accept="application/pdf" />
+        </td>
+    </tr>
+</table>
+        <p align="center">
+            <input class="botao" type="submit" size="10" name="btn_oradores" value="Incluir Discurso" />
+            <input type="hidden" name="flag_discurso" value="1"/>
+            <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+            <input type="hidden" name="hdn_cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>"/>
+            <input type="hidden" name="hdn_dat_sessao" value="<dtml-var dat_sessao missing>"/>
+            <input type="hidden" name="hdn_num_legislatura" value="<dtml-var cod_num_legislatura missing>"/>
+            <input type="hidden" name="hdn_tip_sessao" value="<dtml-var tip_sessao missing>"/>
+        </p>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

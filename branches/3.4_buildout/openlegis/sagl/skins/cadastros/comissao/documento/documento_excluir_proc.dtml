@@ -1,0 +1,26 @@
+<dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_documento.pdf')">
+<dtml-if expr="_.hasattr(sagl_documentos.documento_comissao,id_documento)">
+    <dtml-try>
+	  <dtml-call expr="sagl_documentos.documento_comissao.manage_delObjects(id_documento)">
+	  <dtml-except>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-try>
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="zsql.documento_comissao_excluir_zsql(cod_documento=cod_documento)">
+  <dtml-except>  
+    <dtml-call expr="REQUEST.set('erro', 1)">   
+  <dtml-else>
+    <dtml-let mensagem="'Documento excluído com sucesso.'" sucesso="1" url="'documento_index_html?cod_comissao='+cod_comissao">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+</dtml-unless>
+
+<dtml-if erro>
+  <dtml-let mensagem="'Não foi possível excluir o Documento. Tente novamente!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-if>

@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 import os
 
-version = '3.2'
+version = '3.4'
 
-setup(name='il.sapl',
+setup(name='openlegis.sagl',
       version=version,
       description="",
       long_description=open("README.txt").read() + "\n" +
@@ -16,7 +16,7 @@ setup(name='il.sapl',
       keywords='',
       author='OpenLegis',
       author_email='contato@openlegis.com.br',
-      url='http://svn.plone.org/svn/collective/',
+      url='https://github.com/openlegis-br/sagl/',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['il'],

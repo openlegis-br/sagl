@@ -1,0 +1,146 @@
+<dtml-in expr="zsql.documento_administrativo_obter_zsql(ncod_documento = hdn_cod_documento,
+                                       tip_documento = lst_tip_documento,
+                                       num_documento = hdn_num_documento,
+                                       ano_documento = txt_ano_documento)">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+  <dtml-let mensagem="'Já existe um documento administrativo idêntico.'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-in>
+
+<dtml-unless erro>
+
+<dtml-if hdn_cod_documento>
+  <dtml-call expr="REQUEST.set('metodo', zsql.documento_administrativo_atualizar_zsql)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.documento_administrativo_incluir_zsql)">
+</dtml-if>
+
+  <dtml-try>
+    <dtml-call expr="metodo(
+        cod_documento            = hdn_cod_documento,
+        num_documento            = txt_num_documento,
+        ano_documento            = txt_ano_documento,
+        dat_documento            = pysc.data_converter_pysc(data=txt_dat_documento),
+        tip_documento            = lst_tip_documento,
+        num_protocolo            = txt_num_protocolo,
+        txt_interessado          = txa_txt_interessado,
+        num_dias_prazo           = txt_num_dias_prazo,
+        dat_fim_prazo            = pysc.data_converter_pysc(data=txt_dat_fim_prazo),
+        ind_tramitacao           = rad_ind_tramitacao,
+        txt_assunto              = txa_txt_assunto,
+        txt_observacao           = txa_txt_observacao)">
+
+  <dtml-else>
+
+    <dtml-if expr="hdn_url[-1:]=='='">
+        <dtml-in expr="zsql.documento_administrativo_incluido_codigo_obter_zsql()">
+          <dtml-call expr="REQUEST.set('hdn_url', hdn_url + _.str(cod_documento))">
+          <dtml-call expr="REQUEST.set('hdn_cod_documento', cod_documento)">
+        </dtml-in>
+        <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
+          <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=txt_ano_documento)">
+             <dtml-if cod_protocolo>
+               <dtml-call expr="REQUEST.set('cod_protocolo', int(cod_protocolo))">
+             </dtml-if>
+          </dtml-in>
+          <dtml-if cod_protocolo>
+            <dtml-call expr="REQUEST.set('id_protocolo', _.str(cod_protocolo)+'_protocolo.pdf')">
+            <dtml-call expr="REQUEST.set('id_protocolo_assinado', _.str(cod_protocolo)+'_protocolo_signed.pdf')">
+              <dtml-if "_.hasattr(sagl_documentos.protocolo,id_protocolo_assinado)">
+                <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_documento1_pysc(cod_protocolo,hdn_cod_documento)">
+                <dtml-call expr="pysc.assinaturas_obter_pysc(codigo_origem=cod_protocolo, tipo_doc_origem='protocolo', codigo_destino=hdn_cod_documento, tipo_doc_destino='documento')">
+              <dtml-elif "_.hasattr(sagl_documentos.protocolo,id_protocolo) and not _.hasattr(sagl_documentos.protocolo,id_protocolo_assinado)">
+                <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_documento_pysc(cod_protocolo,hdn_cod_documento)">
+              </dtml-if>
+          </dtml-if>
+        </dtml-if>
+    </dtml-if>
+
+    <dtml-call expr="REQUEST.set('erro', 0)">
+
+    <dtml-call expr="REQUEST.set('existe_arquivo', 0)">
+    <dtml-if file_nom_arquivo>
+       <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
+       <dtml-if expr="_.hasattr(sagl_documentos.administrativo,id_documento)">
+           <dtml-let documento="_.getattr(sagl_documentos.administrativo,id_documento) ">
+           <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
+           <dtml-try>
+               <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
+           <dtml-except>
+               <dtml-call expr="REQUEST.set('erro', 1)">
+               <dtml-let mensagem="'Ocorreu erro ao tentar salvar texto integral'+str(hdn_cod_documento)">
+                  <dtml-var mensagem_emitir>
+               </dtml-let>
+           </dtml-try>
+           </dtml-let>
+       </dtml-if>
+       <dtml-if expr="not existe_arquivo">
+        <dtml-try>
+         <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
+         <dtml-call expr="sagl_documentos.administrativo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+        </dtml-try>
+       </dtml-if>
+    </dtml-if>
+
+    <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
+        <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=txt_ano_documento)">
+         <dtml-if cod_protocolo>
+            <dtml-call expr="REQUEST.set('cod_protocolo', int(cod_protocolo))">
+            <dtml-call expr="REQUEST.set('id_protocolo', _.str(cod_protocolo)+'_protocolo.pdf')">
+            <dtml-call expr="REQUEST.set('id_protocolo_assinado', _.str(cod_protocolo)+'_protocolo_signed.pdf')">
+            <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
+            <dtml-unless expr="_.hasattr(sagl_documentos.administrativo,id_documento)">
+              <dtml-if "_.hasattr(sagl_documentos.protocolo,id_protocolo_assinado)">
+                <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_documento1_pysc(cod_protocolo,hdn_cod_documento)">
+                <dtml-call expr="pysc.assinaturas_obter_pysc(codigo_origem=cod_protocolo, tipo_doc_origem='protocolo', codigo_destino=hdn_cod_documento, tipo_doc_destino='documento')">
+              <dtml-elif "_.hasattr(sagl_documentos.protocolo,id_protocolo) and not _.hasattr(sagl_documentos.protocolo,id_protocolo_assinado)">
+                <dtml-call expr="pysc.protocolo_salvar_como_texto_integral_documento_pysc(cod_protocolo,hdn_cod_documento)">              
+              </dtml-if>
+            </dtml-unless>
+         </dtml-if>
+       </dtml-in>
+       <dtml-if cod_protocolo>
+         <dtml-let mensagem="'Documento salvo com sucesso!'" sucesso="1" cod_documento="hdn_cod_documento" cod_protocolo="cod_protocolo" url="hdn_url" >
+           <dtml-var mensagem_emitir>
+         </dtml-let>
+       <dtml-else>
+         <dtml-let mensagem="'Documento salvo com sucesso!'" sucesso="1" cod_documento="hdn_cod_documento" url="hdn_url" >
+           <dtml-var mensagem_emitir>
+         </dtml-let>
+       </dtml-if>
+    <dtml-else>
+      <dtml-let mensagem="'Documento salvo com sucesso!'" sucesso="1" cod_documento="hdn_cod_documento" url="hdn_url" >
+           <dtml-var mensagem_emitir>
+      </dtml-let>
+    </dtml-if>
+
+</dtml-try>
+
+ <dtml-if hdn_cod_documento>
+   <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
+   <dtml-if "_.hasattr(sagl_documentos.administrativo,id_documento)">
+     <dtml-let documento="_.getattr(sagl_documentos.administrativo,id_documento) ">
+       <dtml-if expr="zsql.tipo_documento_administrativo_obter_zsql(tip_documento=lst_tip_documento,ind_publico=1,ind_excluido=0)">
+         <dtml-call "documento.manage_permission('View', roles=['Anonymous','Manager','Operador','Operador Modulo Administrativo'], acquire=0)">
+         <dtml-call "documento.manage_permission('Delete objects', roles=['Manager','Operador','Operador Materia','Operador Modulo Administrativo'], acquire=0)">
+       <dtml-else>
+         <dtml-call "documento.manage_permission('View', roles=['Authenticated', 'Manager','Operador','Operador Modulo Administrativo'], acquire=1)">
+       </dtml-if>
+     </dtml-let>
+   </dtml-if>
+   <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(hdn_cod_documento)+ '_' + 'texto_integral_signed.pdf')">
+   <dtml-if "_.hasattr(sagl_documentos.administrativo,id_documento_assinado)">
+     <dtml-let documento_assinado="_.getattr(sagl_documentos.administrativo,id_documento_assinado) ">
+       <dtml-if expr="zsql.tipo_documento_administrativo_obter_zsql(tip_documento=lst_tip_documento,ind_publico=1,ind_excluido=0)">
+         <dtml-call "documento_assinado.manage_permission('View', roles=['Anonymous','Manager','Operador','Operador Modulo Administrativo'], acquire=0)">
+         <dtml-call "documento_assinado.manage_permission('Delete objects', roles=['Manager','Operador','Operador Materia','Operador Modulo Administrativo'], acquire=0)">
+
+       <dtml-else>
+         <dtml-call "documento_assinado.manage_permission('View', roles=['Authenticated', 'Manager','Operador','Operador Modulo Administrativo'], acquire=1)">
+       </dtml-if>
+     </dtml-let>
+   </dtml-if>
+ </dtml-if>
+
+</dtml-unless>

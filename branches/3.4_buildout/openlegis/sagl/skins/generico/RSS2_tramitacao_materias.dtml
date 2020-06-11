@@ -1,0 +1,52 @@
+<dtml-call expr="RESPONSE.setHeader('content-type', 'text/xml; charset=utf-8')">
+<?xml version="1.0" encoding="utf-8" ?>
+<?xml-stylesheet type="text/css" href="&dtml-portal_url;/generico/rss2feed.css" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<dtml-if expr="cod_materia.isdigit()">
+   <dtml-call "REQUEST.set('cod_materia', int(cod_materia))">
+<dtml-else>
+   <dtml-call "REQUEST.set('cod_materia', pysc.b64decode_pysc(codigo=cod_materia))">
+</dtml-if> 
+     <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+     <title>Tramitação - <dtml-var des_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var "sagl_documentos.props_sagl.nom_casa" missing></title>
+     <link>&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia></link>
+     <description><dtml-var txt_ementa></description>
+     </dtml-in>
+     <image>
+      <dtml-call expr="REQUEST.set('existe_logo', 0)">
+      <dtml-call expr="REQUEST.set('id_logo', sagl_documentos.props_sagl.id_logo)">
+        <dtml-in expr="sagl_documentos.props_sagl.objectValues('Image')">
+          <dtml-if expr="id() == id_logo">
+            <dtml-call expr="REQUEST.set('existe_logo', 1)">
+          </dtml-if>
+        </dtml-in>
+        <dtml-if "not existe_logo">
+<url>&dtml-portal_url;/imagens/brasao.gif</url>
+       <dtml-else>
+<url>&dtml-portal_url;/sagl_documentos/props_sagl/logo_casa.gif</url>
+       </dtml-if>
+     <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+     <title>Tramitação - <dtml-var des_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - <dtml-var "sagl_documentos.props_sagl.nom_casa" missing></title>
+     </dtml-in>
+     <link>&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia></link>
+     </image>
+     <dc:language>pt-BR</dc:language>
+     <ttl>10</ttl>
+    <atom:link href="&dtml-portal_url;/generico/RSS2_tramitacao_materias?cod_materia=<dtml-var cod_materia>" rel="self" type="application/rss+xml" />
+     <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+     <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia)">
+    <item>
+     <title><dtml-var dat_tramitacao> - <dtml-var des_status></title>
+     <description><dtml-var txt_tramitacao></description>
+     <link>&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>&amp;cod_tramitacao=<dtml-var cod_tramitacao></link>
+     <guid>&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>&amp;cod_tramitacao=<dtml-var cod_tramitacao></guid>
+<category><dtml-var des_status></category>
+     <pubDate><dtml-var expr="DateTime(dat_tramitacao).rfc822()" missing null=""></pubDate>
+     </item>
+  </dtml-in>
+  </dtml-in>
+</channel>
+</rss>
+
+

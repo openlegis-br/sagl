@@ -1,0 +1,99 @@
+<dtml-var standard_html_header>
+
+<h1 class="firstHeading">Cadastro de Pessoas</h1>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Recepção'])">
+<div id="barra-conteudo">
+    <ul>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/pessoa/pessoa_index_html">Nova Pesquisa</a>
+        </li>
+        <li>
+            <a href="&dtml-portal_url;/cadastros/pessoa/pessoa_form">Incluir Pessoa</a>
+        </li>
+    </ul>
+</div>
+</dtml-if>
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 12)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+<dtml-if lst_localidade>
+  <dtml-call "REQUEST.set('lst_localidade', _.int(lst_localidade))">
+</dtml-if>
+
+<dtml-in expr="zsql.pessoa_obter_zsql(nom_pessoa=txt_nom_pessoa, doc_identidade=txt_doc_identidade, ind_excluido=0)" size="step" start="start" orphan=0>
+  <dtml-if sequence-start>
+   <table>
+    <tr>
+         <th colspan="2" class="form-label">Resultado da Pesquisa: <dtml-var sequence-length> ocorrência<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> encontrada<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>.
+         <dtml-if expr="_['sequence-length'] == 20000"><br />LIMITE DE RESULTADOS ATINGIDO! Melhore os argumentos da pesquisa.</dtml-if>
+         </th>
+    </tr>
+     <dtml-if previous-sequence>
+       <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+     </dtml-if>
+  </dtml-if sequence-start>
+         <tr <dtml-if sequence-odd>class="even"</dtml-if>>
+           <td class="texto" width="10%">
+              <div align="center">
+                                 <dtml-call expr="REQUEST.set('id_foto', _.str(cod_pessoa)+'_foto_pessoa.jpg')">
+                                 <dtml-if expr="_.hasattr(sagl_documentos.pessoa,id_foto)">
+                                   <img height="90" src="&dtml-portal_url;/sagl_documentos/pessoa/<dtml-var id_foto>?<dtml-var expr="ZopeTime().timeTime()">">
+                                 <dtml-else>
+                                   <img height="90" alt="<dtml-var nom_pessoa>" src="&dtml-portal_url;/imagens/avatar.png">
+                                 </dtml-if>
+              </div>
+           </td>            
+           <td class="texto" width="90%">
+             <a href="&dtml-portal_url;/cadastros/pessoa/pessoa_mostrar_proc?cod_pessoa=<dtml-var cod_pessoa>">
+                <b><dtml-var nom_pessoa></b> 
+             </a>
+            <dtml-if doc_identidade><br /><b>Doc. Identidade:</b> <dtml-var doc_identidade missing null=""></dtml-if>
+            <dtml-if end_residencial>
+              <br /><b>Endereço:</b> 
+              <dtml-var end_residencial><dtml-if num_imovel>, <dtml-var num_imovel></dtml-if><dtml-if txt_complemento> - <dtml-var txt_complemento></dtml-if><br /> 
+              <dtml-if nom_bairro><b>Bairro: </b><dtml-var nom_bairro missing null=""></dtml-if> 
+              <dtml-if num_cep> - <b>CEP:</b> <dtml-var num_cep missing null=""></dtml-if><br /> 
+              <dtml-if nom_cidade><b>Localidade:</b> <dtml-var nom_cidade></dtml-if><dtml-if sgl_uf> - <dtml-var sgl_uf></dtml-if>
+            </dtml-if>
+           </td>
+          </tr>
+  <dtml-if sequence-end>
+   </table>
+  <dtml-if next-sequence>
+    <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+  </dtml-if>
+  <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+      <p align="center" class="texto"><b>          
+          <dtml-var "pysc.PageListOutput_pysc('pessoa_pesquisar_proc', page, step, _['sequence-length'], existe_ocorrencia=existe_ocorrencia, txt_nom_pessoa=txt_nom_pessoa, txt_doc_identidade=txt_doc_identidade)">
+      </b></p>
+    </dtml-if>
+  </dtml-if sequence-end>
+
+<dtml-else>
+  <table>
+    <tr>
+      <th class="form-label">Resultado da Pesquisa</th>
+    </tr>
+    <tr>
+      <td class="texto">Nenhuma ocorrência encontrada.</td>
+    </tr>
+  </table>
+</dtml-in>
+
+ <p align="center">
+  <input type="button" class="botao" name="retornar" value="Voltar" onClick="javascript:history.go(-1)">
+</p>
+
+<dtml-var standard_html_footer>

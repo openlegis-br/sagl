@@ -1,0 +1,61 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+   function submeter(endereco){
+        var form = document.materia_expediente_sessao_form;
+        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
+        endereco += '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value;
+        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
+        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
+        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
+
+        if (form.hdn_cod_sessao_plen.value!=""){
+            location.href = endereco;
+        }
+        return;
+   }
+
+    function ata_excluir(){
+        if (confirm("Deseja realmente excluir a Ata?")) {
+        location.href=" ata_sessao_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>&cod_sessao_leg=<dtml-var cod_sessao_leg missing>&cod_num_legislatura=<dtml-var cod_num_legislatura missing>&dat_sessao=<dtml-var dat_sessao missing>&tip_sessao=<dtml-var tip_sessao missing>";
+       }
+        return;
+    }
+
+</script>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_ata">Ajuda</a>
+
+<h1 class="firstHeading">Ata da Sessão</h1>
+
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+<dtml-var sessao_plenaria_menu>
+
+<fieldset>
+<legend>Ata da Sessão</legend>
+<form name="ata_sessao_form" method="post" action="ata_sessao_salvar_proc" enctype="multipart/form-data">
+  <table>
+    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
+        <tr>
+            <td><label for="nom_arquivo">Arquivo:</label>
+                <dtml-if expr="(_.has_key('cod_sessao_plen'))">
+                    <dtml-call expr="REQUEST.set('id_documento', _.str(cod_sessao_plen)+ '_' + 'ata_sessao.pdf')">
+                    <dtml-if "_.hasattr(sagl_documentos.ata_sessao,id_documento)">
+                        <dtml-let documento="_.getattr(sagl_documentos.ata_sessao,id_documento).absolute_url">
+                            <a target="_blank" href="<dtml-var documento>">
+                             <img align="bottom" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Ata" /></a>
+                             <input type="button" name="delAta" class="botao" value="Excluir Arquivo" onClick="javascript:ata_excluir()" />
+                        </dtml-let> 
+                    <dtml-else>
+                  <input type="file" name="file_nom_arquivo" size="30" maxlength="100" accept="application/pdf" />&nbsp;
+                  <input class="botao" type="submit" size="10" name="btn_ata_sessao" value="Salvar"/>
+                </dtml-if>
+              </dtml-if>
+             </td>
+        </tr>
+    </dtml-in>
+  </form>
+</table>
+</fieldset>
+<dtml-var standard_html_footer>

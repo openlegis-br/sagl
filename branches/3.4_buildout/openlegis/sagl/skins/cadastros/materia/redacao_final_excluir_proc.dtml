@@ -1,0 +1,46 @@
+<dtml-call expr="REQUEST.set('erro', 0)">
+<dtml-call expr="REQUEST.set('id_texto', _.str(cod_materia)+'_redacao_final.pdf')">
+<dtml-call expr="REQUEST.set('id_texto_assinado', _.str(cod_materia)+'_redacao_final_signed.pdf')">
+
+<dtml-if expr="_.hasattr(sagl_documentos.materia,id_texto)">
+ <dtml-let documento="_.getattr(sagl_documentos.materia,id_texto) ">
+  <dtml-try>
+    <dtml-call "sagl_documentos.materia.manage_delObjects(id_texto)">
+  <dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-try>
+ </dtml-let>
+</dtml-if>
+
+<dtml-if expr="_.hasattr(sagl_documentos.materia,id_texto_assinado)">
+ <dtml-let documento="_.getattr(sagl_documentos.materia,id_texto_assinado) ">
+  <dtml-try>
+    <dtml-call "sagl_documentos.materia.manage_delObjects(id_texto_assinado)">
+  <dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-try>
+ </dtml-let>
+</dtml-if>
+
+    <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_materia,tipo_doc='redacao_final')">
+       <dtml-try>
+         <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                       cod_assinatura_doc  = cod_assinatura_doc,
+                       codigo              = codigo,
+                       tipo_doc            = tipo_doc)">
+       <dtml-except>
+         <dtml-call expr="REQUEST.set('erro', 1)">
+       </dtml-try>
+    </dtml-in>
+
+  <dtml-if erro>
+    <dtml-let mensagem="'Ocorreu um erro ao tentar excluir o arquivo PDF da redação final!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-let mensagem="'Arquivo PDF da redação final excluído com sucesso!'" sucesso="1" url="'materia_mostrar_proc?cod_materia='+cod_materia">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-if>
+
+

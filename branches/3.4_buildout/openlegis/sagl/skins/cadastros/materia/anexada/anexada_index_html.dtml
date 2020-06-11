@@ -1,0 +1,98 @@
+<dtml-var standard_html_header>
+
+<a id="ajuda" href="&dtml-portal_url;/ajuda/matanexada">Ajuda</a>
+
+<h1 class="firstHeading">Matéria Legislativa</h1>
+
+<form name="index_form" action="anexada_form" >
+   <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" />
+   <input type="hidden" name="incluir_anexada" value="1" />
+   <dtml-var materia_menu>  
+   <dtml-var materia_header>
+
+  <dtml-if cod_materia_principal>
+    <dtml-call expr="REQUEST.set('cod_materia', cod_materia_principal)">
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('cod_materia_principal', cod_materia)">
+  </dtml-if>
+
+<fieldset>
+   <legend>Matéria Anexada</legend>   
+   <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_principal=cod_materia_principal,ind_excluido=0)">
+    <dtml-if sequence-start>
+       <table>
+         <tr> 
+           <th class="form-label">Matéria Anexada</th>
+           <th class="form-label">Data Anexação </th>
+           <th class="form-label">Data Desanexação</th>
+           <th class="form-label">Texto Integral</th>
+         </tr>
+    </dtml-if sequence-start>
+         <tr>
+           <td  class="texto">
+              <a href="anexada_mostrar_proc?cod_materia_anexada=<dtml-var cod_materia_anexada>&cod_materia_principal=<dtml-var cod_materia_principal>&dat_anexacao=<dtml-var dat_anexacao>">
+                 <b><dtml-var tip_materia_anexada> <dtml-var num_materia_anexada>/<dtml-var ano_materia_anexada></b>
+              </a>
+           </td>        
+           <td class="texto"><dtml-var dat_anexacao missing></td>
+           <td class="texto"><dtml-var dat_desanexacao missing null=""></td>
+           <td class="texto">
+               <div align="center">
+                <dtml-call expr="REQUEST.set('redacao_final', _.str(cod_materia_anexada)+'_redacao_final.pdf')">
+                <dtml-call expr="REQUEST.set('texto_original', _.str(cod_materia_anexada)+'_texto_integral.pdf')">
+                <dtml-if "_.hasattr(sagl_documentos.materia,redacao_final)">
+                   <a target="_blank" href="&dtml-portal_url;/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia_anexada)">&redacao_final=1" alt="Redação Final" title="Redação Final">
+                      <img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Redação Final" title="Redação Final" />
+                      <p style="line-height: 1.3em; font-size:11px"><b>Redação Final</b></p>
+                   </a>
+                <dtml-elif "_.hasattr(sagl_documentos.materia,texto_original)">
+                   <a target="_blank" href="&dtml-portal_url;/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia_anexada)">&texto_original=1" alt="Texto Integral" title="Texto Integral">
+                      <img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral" />
+                      <p style="line-height: 1.3em; font-size:11px"><b>Texto Integral</b></p>
+                   </a>
+                <dtml-else>
+                  <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                </dtml-if>
+               </div>
+           </td>
+         </tr>
+    <dtml-if sequence-end> 
+      </table>  
+    </dtml-if sequence-end>
+   <dtml-else>
+    <span class="texto">Não há nenhuma matéria anexada.</span>
+  </dtml-in>
+</fieldset>
+
+<p align="center">
+  <input type="submit" class="botao" name="btn_incluir" value="Incluir Matéria Anexada" />
+</p>
+</form>
+
+<dtml-in expr="zsql.anexada_obter_zsql(cod_materia_anexada=cod_materia,ind_excluido=0)">
+    <dtml-if sequence-start>
+     <fieldset>
+      <legend>Matéria Anexadora</legend>
+       <table>
+         <tr> 
+           <th class="form-label">Matéria Anexadora</th>
+           <th class="form-label">Data Anexação </th>
+           <th class="form-label">Data Desanexação</th>
+         </tr>
+    </dtml-if sequence-start>
+         <tr>
+           <td  class="texto">
+              <a href="../materia_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>">
+                <b><dtml-var tip_materia_principal> <dtml-var num_materia_principal>/<dtml-var ano_materia_principal></b>
+              </a>
+           </td>        
+           <td class="texto"><dtml-var dat_anexacao missing></td>
+           <td class="texto"><dtml-var dat_desanexacao missing null=""></td>
+         </tr>
+   <dtml-if sequence-end>
+       </table>
+     </fieldset>
+   </dtml-if>
+</dtml-in>
+
+<dtml-var standard_html_footer>

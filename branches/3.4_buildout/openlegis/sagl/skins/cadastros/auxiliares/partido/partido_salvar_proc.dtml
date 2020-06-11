@@ -1,0 +1,55 @@
+<dtml-if hdn_cod_partido>
+  <dtml-call expr="REQUEST.set('metodo', zsql.partido_atualizar_zsql)">
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.partido_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_partido  = hdn_cod_partido,
+                          sgl_partido  = txt_sgl_partido,
+                          nom_partido  = txt_nom_partido,
+                          dat_criacao  = pysc.data_converter_pysc(txt_dat_criacao),
+                          dat_extincao = pysc.data_converter_pysc(txt_dat_extincao)
+                          )">
+
+<dtml-except>
+  <dtml-var REQUEST>
+  <dtml-let mensagem="'Não foi possível salvar o partido. Tente novamente!'"> 
+     <dtml-var mensagem_emitir>
+  </dtml-let> 
+  
+<dtml-else>
+
+  <dtml-if expr="(_.int(hdn_file)==1)">
+    <dtml-if hdn_cod_partido>
+        <dtml-call expr="REQUEST.set('logo_partido', _.str(hdn_cod_partido)+'_logo.png')">
+    <dtml-else>
+       <dtml-in expr="zsql.partido_incluido_codigo_obter_zsql()">
+         <dtml-call expr="REQUEST.set('logo_partido', _.str(cod_partido)+'_logo.png')">
+       </dtml-in>
+    </dtml-if>
+    <dtml-if expr="_.hasattr(sagl_documentos.partido,logo_partido)">
+        <dtml-let imagem="_.getattr(sagl_documentos.partido,logo_partido) ">
+          <dtml-try>
+            <dtml-call expr="imagem.manage_upload(file=file_nom_imagem)">
+          <dtml-except>
+            <dtml-let mensagem="'Ocorreu erro ao atualizar o logotipo do partido !'">
+               <dtml-var mensagem_emitir>
+            </dtml-let>
+          </dtml-try>
+        </dtml-let>
+    <dtml-else>
+       <dtml-try>
+          <dtml-call expr="sagl_documentos.partido.manage_addImage(id=logo_partido, file=file_nom_imagem)">
+       <dtml-except>
+          <dtml-let mensagem="'Ocorreu erro ao carregar o logotipo do partido !'">
+             <dtml-var mensagem_emitir>
+          </dtml-let>
+       </dtml-try>
+    </dtml-if> 
+  </dtml-if>
+
+  <dtml-let mensagem="'Partido salvo com sucesso!'" sucesso="1">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+ </dtml-try>

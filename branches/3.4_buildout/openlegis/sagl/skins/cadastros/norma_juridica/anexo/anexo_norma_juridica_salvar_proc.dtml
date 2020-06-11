@@ -1,0 +1,28 @@
+<dtml-call expr="REQUEST.set('metodo', zsql.anexo_norma_incluir_zsql)">
+<dtml-try>
+   <dtml-call "metodo(txt_descricao=txa_txt_descricao,cod_norma=hdn_cod_norma,ind_excluido=0)">
+<dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+    <dtml-let mensagem="'Houve erro ao gravar o registro no banco de dados!. Tipo: '+_.str(_['error_type'])+' Valor: '+_.str(_['error_value'])">
+         <dtml-var mensagem_popup_emitir>
+    </dtml-let>
+<dtml-else>
+    <dtml-try>
+         <dtml-in expr="zsql.anexo_norma_incluido_codigo_obter_zsql()">
+             <dtml-call expr="REQUEST.set('hdn_cod_anexo', cod_anexo)">
+             <dtml-call expr="REQUEST.set('id_anexo', _.str(hdn_cod_norma)+'_anexo_'+ _.str(hdn_cod_anexo))">
+             <dtml-call expr="sagl_documentos.norma_juridica.manage_addFile(id_anexo,file=file_nom_anexo)">
+         </dtml-in>
+    <dtml-except>
+         <dtml-call expr="REQUEST.set('erro', 1)">
+         <dtml-let mensagem="'Houve erro ao salvar o texto integral do anexo!. Tipo: '+_.str(_['error_type'])+' Valor: '+_.str(_['error_value'])">
+             <dtml-var mensagem_popup_emitir>
+        </dtml-let>
+    </dtml-try>
+    <dtml-unless erro>
+        <dtml-let mensagem="'Anexo salvo com sucesso!'" sucesso="1"  url="'javascript:parent.jQuery.fancybox.close();'">
+             <dtml-var mensagem_popup_emitir>
+        </dtml-let>
+    </dtml-unless>
+</dtml-try>
+
