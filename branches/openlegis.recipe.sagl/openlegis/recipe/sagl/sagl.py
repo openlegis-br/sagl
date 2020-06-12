@@ -85,7 +85,7 @@ def main(app, parser):
 
         if not created:
             # create SAGL user
-            sagl_dbuser = "GRANT ALL PRIVILEGES ON openlegis.* TO 'sagl'@'localhost' IDENTIFIED BY 'sagl';"
+            sagl_dbuser = "CREATE USER 'sagl'@'localhost' IDENTIFIED BY 'sagl'; GRANT ALL ON openlegis.* TO 'sagl'@'localhost';"
             cursor.execute(sagl_dbuser)
             logger.info("Concluída a criação do usuário MySQL")
 
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     parser.add_option("-P", "--mysql-pass", dest="mysql_pass", default="root")
     parser.add_option("-H", "--mysql-host", dest="mysql_host", default="localhost")
     parser.add_option("-D", "--mysql-db", dest="mysql_db", default="interlegis_teste")
-    parser.add_option("-M", "--add-mountpoint", dest="add_mountpoint", default="/sagl/sagl_documentos")
+    parser.add_option("-M", "--add-mountpoint", dest="add_mountpoint", default="/sagl/sapl_documentos")
 
     parser.add_option("--log-level", dest="log_level", default='20')
     main(app, parser)
