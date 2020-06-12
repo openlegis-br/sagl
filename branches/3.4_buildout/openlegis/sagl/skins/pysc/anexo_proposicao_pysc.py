@@ -8,12 +8,12 @@
 ##title=
 ##
 if listar:
-    documentos = context.sagl_documentos.proposicao.objectIds()
+    documentos = context.sapl_documentos.proposicao.objectIds()
     existentes = [documento for documento in documentos if documento.startswith(cod_proposicao) and len(documento) == len(cod_proposicao) or documento.startswith(cod_proposicao + '_anexo_')]
     return existentes
 
 if nomear:
-    documentos = context.sagl_documentos.proposicao.objectIds()
+    documentos = context.sapl_documentos.proposicao.objectIds()
     existentes = [documento for documento in documentos if documento.startswith(cod_proposicao) and len(documento) == len(cod_proposicao) or documento.startswith(cod_proposicao + '_anexo_')]
     count = 1
     while True:

@@ -15,7 +15,7 @@ mailhost = context.MailHost
 data_registro=DateTime().strftime('%d/%m/%Y às %H:%M')
 
 casa={}
-aux=context.sagl_documentos.props_sagl.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
   casa[item[0]] = item[1]
 email_casa = casa['end_email_casa']

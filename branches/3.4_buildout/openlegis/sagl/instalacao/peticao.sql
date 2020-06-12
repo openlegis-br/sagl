@@ -1,1 +1,1 @@
-INSERT INTO `assinatura_storage` (`tip_documento`, `pdf_location`, `storage_path`, `pdf_file`, `pdf_signed`) VALUES ('peticao', 'sagl_documentos/administrativo/', 'sagl_documentos.administrativo', '.pdf', '_signed.pdf');
+INSERT INTO `assinatura_storage` (`tip_documento`, `pdf_location`, `storage_path`, `pdf_file`, `pdf_signed`) VALUES ('peticao', 'sapl_documentos/administrativo/', 'sapl_documentos.administrativo', '.pdf', '_signed.pdf');

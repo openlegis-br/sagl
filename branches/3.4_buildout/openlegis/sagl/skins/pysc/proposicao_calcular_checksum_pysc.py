@@ -7,7 +7,7 @@
 ##parameters=cod_proposicao
 ##title=
 ##
-txtint_path = 'sagl_documentos/proposicao/' + str(cod_proposicao) + '_signed.pdf'
+txtint_path = 'sapl_documentos/proposicao/' + str(cod_proposicao) + '_signed.pdf'
 try:
   txtint = context.restrictedTraverse (txtint_path)
 

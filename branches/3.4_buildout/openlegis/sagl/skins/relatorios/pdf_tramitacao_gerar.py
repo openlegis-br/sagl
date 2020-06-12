@@ -188,12 +188,12 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url,sessao=''
     tmp+='</document>\n'
     tmp_pdf=parseString(tmp)
 
-    if hasattr(context.sagl_documentos.materia.tramitacao,arquivoPdf):
-        context.sagl_documentos.materia.tramitacao.manage_delObjects(ids=arquivoPdf)
-    if hasattr(context.sagl_documentos.materia.tramitacao,arquivoAssinado):
-        context.sagl_documentos.materia.tramitacao.manage_delObjects(ids=arquivoAssinado)
-    context.sagl_documentos.materia.tramitacao.manage_addFile(arquivoPdf)
-    arq=context.sagl_documentos.materia.tramitacao[arquivoPdf]
+    if hasattr(context.sapl_documentos.materia.tramitacao,arquivoPdf):
+        context.sapl_documentos.materia.tramitacao.manage_delObjects(ids=arquivoPdf)
+    if hasattr(context.sapl_documentos.materia.tramitacao,arquivoAssinado):
+        context.sapl_documentos.materia.tramitacao.manage_delObjects(ids=arquivoAssinado)
+    context.sapl_documentos.materia.tramitacao.manage_addFile(arquivoPdf)
+    arq=context.sapl_documentos.materia.tramitacao[arquivoPdf]
     arq.manage_edit(title='PDF Tramitação Matéria',filedata=tmp_pdf,content_type='application/pdf')
 
     return hdn_url

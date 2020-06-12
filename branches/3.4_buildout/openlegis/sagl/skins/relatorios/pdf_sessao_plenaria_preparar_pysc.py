@@ -259,7 +259,7 @@ if context.REQUEST['data']!='':
                         nome_autor = autor['nom_autor_join']
                 lista_autor.append(nome_autor)
                 autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
-                dic_substitutivo["id_substitutivo"] = '<link href="' + context.sagl_documentos.absolute_url() + '/substitutivo/' + str(substitutivo.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'SUBSTITUTIVO Nº ' + str(substitutivo.num_substitutivo) + '</link>'
+                dic_substitutivo["id_substitutivo"] = '<link href="' + context.sapl_documentos.absolute_url() + '/substitutivo/' + str(substitutivo.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'SUBSTITUTIVO Nº ' + str(substitutivo.num_substitutivo) + '</link>'
                 dic_substitutivo["txt_ementa"] = substitutivo.txt_ementa
                 dic_substitutivo["autoria"] = autoria
                 dic_substitutivo["nom_resultado"] = ''
@@ -298,7 +298,7 @@ if context.REQUEST['data']!='':
                         nome_autor = autor['nom_autor_join']
                 lista_autor.append(nome_autor)
                 autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
-                dic_emenda["id_emenda"] = '<link href="' + context.sagl_documentos.absolute_url() + '/emenda/' + str(emenda.cod_emenda) + '_emenda.pdf' + '">' + 'EMENDA Nº ' + str(emenda.num_emenda) + ' (' + emenda.des_tipo_emenda.decode('utf-8').upper() + ')</link>'
+                dic_emenda["id_emenda"] = '<link href="' + context.sapl_documentos.absolute_url() + '/emenda/' + str(emenda.cod_emenda) + '_emenda.pdf' + '">' + 'EMENDA Nº ' + str(emenda.num_emenda) + ' (' + emenda.des_tipo_emenda.decode('utf-8').upper() + ')</link>'
                 dic_emenda["txt_ementa"] = emenda.txt_ementa
                 dic_emenda["autoria"] = autoria
                 dic_emenda["nom_resultado"] = ''
@@ -363,14 +363,14 @@ if context.REQUEST['data']!='':
     cabecalho={}
 
     # tenta buscar o logotipo da casa LOGO_CASA
-    if hasattr(context.sagl_documentos.props_sagl,'logo_casa.gif'):
-        imagem = context.sagl_documentos.props_sagl['logo_casa.gif'].absolute_url()
+    if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+        imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
     else:
         imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
     
     #Abaixo é gerado o dic do rodapé da página (linha 7)
     casa={}
-    aux=context.sagl_documentos.props_sagl.propertyItems()
+    aux=context.sapl_documentos.props_sagl.propertyItems()
     for item in aux:
         casa[item[0]]=item[1]
     localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])

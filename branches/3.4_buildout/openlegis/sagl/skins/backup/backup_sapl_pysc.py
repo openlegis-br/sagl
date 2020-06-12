@@ -27,7 +27,7 @@ horas=string.split( horas,':')[0]+string.split( horas,':')[1]+string.split( hora
 nome=data+'_'+horas+'_'+'bkpsagl.tgz'
 
 #empacota dados
-caminho='tar -zcvf '+pasta+nome+' '+diretorio_var+'/sagl_documentos.fs '+diretorio_var+'/dados.sql'
+caminho='tar -zcvf '+pasta+nome+' '+diretorio_var+'/sapl_documentos.fs '+diretorio_var+'/dados.sql'
 documentos=os.system(caminho)
 
 remover=os.system('rm '+diretorio_var+'/dados.sql')

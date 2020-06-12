@@ -41,7 +41,7 @@ if context.REQUEST['data']!='':
                dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
                dic_materia_apresentada["txt_ementa"] = materia.txt_ementa
                dic_materia_apresentada["id_materia"] = materia.des_tipo_materia+" "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
-               dic_materia_apresentada["link_materia"] = '<link href="'+context.sagl_documentos.absolute_url()+'/materia/'+ str(materia_apresentada.cod_materia) + '_texto_integral.pdf' +'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+               dic_materia_apresentada["link_materia"] = '<link href="'+context.sapl_documentos.absolute_url()+'/materia/'+ str(materia_apresentada.cod_materia) + '_texto_integral.pdf' +'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
                dic_materia_apresentada["nom_autor"] = ""
                autores = context.zsql.autoria_obter_zsql(cod_materia=materia_apresentada.cod_materia)
                fields = autores.data_dictionary().keys()
@@ -59,7 +59,7 @@ if context.REQUEST['data']!='':
                    dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
                    dic_materia_apresentada["txt_ementa"] = emenda.txt_ementa
                    dic_materia_apresentada["id_materia"] = 'Emenda ' + emenda.des_tipo_emenda + ' nº ' + str(emenda.num_emenda) + " ao " + materia.sgl_tipo_materia + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
-                   dic_materia_apresentada["link_materia"] = '<link href="' + context.sagl_documentos.absolute_url() + '/emenda/' + str(materia_apresentada.cod_emenda) + '_emenda.pdf' + '">' + 'EMENDA ' + emenda.des_tipo_emenda.decode('utf-8').upper() + ' Nº ' + str(emenda.num_emenda) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+                   dic_materia_apresentada["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/emenda/' + str(materia_apresentada.cod_emenda) + '_emenda.pdf' + '">' + 'EMENDA ' + emenda.des_tipo_emenda.decode('utf-8').upper() + ' Nº ' + str(emenda.num_emenda) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
                    dic_materia_apresentada["nom_autor"] = ""
                    autores = context.zsql.autoria_emenda_obter_zsql(cod_emenda=emenda.cod_emenda)
                    fields = autores.data_dictionary().keys()
@@ -77,7 +77,7 @@ if context.REQUEST['data']!='':
                    dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
                    dic_materia_apresentada["txt_ementa"] = substitutivo.txt_ementa
                    dic_materia_apresentada["id_materia"] = 'Substitutivo ' + ' nº ' + str(substitutivo.num_substitutivo) + " ao " + materia.sgl_tipo_materia + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
-                   dic_materia_apresentada["link_materia"] = '<link href="' + context.sagl_documentos.absolute_url() + '/substitutivo/' + str(materia_apresentada.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'SUBSTITUTIVO Nº ' + str(substitutivo.num_substitutivo) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+                   dic_materia_apresentada["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/substitutivo/' + str(materia_apresentada.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'SUBSTITUTIVO Nº ' + str(substitutivo.num_substitutivo) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
                    dic_materia_apresentada["nom_autor"] = ""
                    autores = context.zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=substitutivo.cod_substitutivo)
                    fields = autores.data_dictionary().keys()
@@ -97,7 +97,7 @@ if context.REQUEST['data']!='':
                    for comissao in context.zsql.comissao_obter_zsql(cod_comissao=parecer.cod_comissao):
                        sgl_comissao = comissao.sgl_comissao
                        nom_comissao = comissao.nom_comissao
-                   dic_materia_apresentada["link_materia"] = '<link href="' + context.sagl_documentos.absolute_url() + '/parecer_comissao/' + str(materia_apresentada.cod_parecer) + '_parecer.pdf' + '">' + 'PARECER ' + sgl_comissao+ ' Nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+                   dic_materia_apresentada["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/parecer_comissao/' + str(materia_apresentada.cod_parecer) + '_parecer.pdf' + '">' + 'PARECER ' + sgl_comissao+ ' Nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
                    dic_materia_apresentada["nom_autor"] = nom_comissao.decode('utf-8').upper()
                    lst_materia_apresentada.append(dic_materia_apresentada)
 
@@ -106,7 +106,7 @@ if context.REQUEST['data']!='':
                dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
                dic_materia_apresentada["txt_ementa"] = materia.txt_assunto
                dic_materia_apresentada["id_materia"] = materia.des_tipo_documento+" "+str(materia.num_documento)+"/"+str(materia.ano_documento)
-               dic_materia_apresentada["link_materia"] = '<link href="'+context.sagl_documentos.absolute_url()+'/administrativo/'+ str(materia_apresentada.cod_documento) + '_texto_integral.pdf' +'">'+materia.des_tipo_documento.decode('utf-8').upper()+' Nº '+str(materia.num_documento)+'/'+str(materia.ano_documento)+'</link>'
+               dic_materia_apresentada["link_materia"] = '<link href="'+context.sapl_documentos.absolute_url()+'/administrativo/'+ str(materia_apresentada.cod_documento) + '_texto_integral.pdf' +'">'+materia.des_tipo_documento.decode('utf-8').upper()+' Nº '+str(materia.num_documento)+'/'+str(materia.ano_documento)+'</link>'
                dic_materia_apresentada["nom_autor"] = materia.txt_interessado
                lst_materia_apresentada.append(dic_materia_apresentada)
 
@@ -241,14 +241,14 @@ if context.REQUEST['data']!='':
     cabecalho={}
 
     # tenta buscar o logotipo da casa LOGO_CASA
-    if hasattr(context.sagl_documentos.props_sagl,'logo_casa.gif'):
-        imagem = context.sagl_documentos.props_sagl['logo_casa.gif'].absolute_url()
+    if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+        imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
     else:
         imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
     
     #Abaixo é gerado o dic do rodapé da página (linha 7)
     casa={}
-    aux=context.sagl_documentos.props_sagl.propertyItems()
+    aux=context.sapl_documentos.props_sagl.propertyItems()
     for item in aux:
         casa[item[0]]=item[1]
     localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])

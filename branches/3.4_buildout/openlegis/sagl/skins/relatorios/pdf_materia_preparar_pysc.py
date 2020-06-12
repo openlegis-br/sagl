@@ -8,7 +8,7 @@ data=DateTime().strftime('%d/%m/%Y')
 
 # string para o rodapé da página
 casa={}
-aux=context.sagl_documentos.props_sagl.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
  casa[item[0]]=item[1]
 localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])
@@ -47,8 +47,8 @@ cabecalho["nom_casa"]=casa["nom_casa"]
 cabecalho["nom_estado"]="Estado de "+nom_estado
 
 # tenta buscar o logotipo da casa LOGO_CASA
-if hasattr(context.sagl_documentos.props_sagl,'logo_casa.gif'):
-  imagem = context.sagl_documentos.props_sagl['logo_casa.gif'].absolute_url()
+if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+  imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
   imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
 

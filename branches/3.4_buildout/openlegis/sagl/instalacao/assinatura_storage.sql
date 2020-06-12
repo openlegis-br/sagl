@@ -21,21 +21,21 @@ CREATE TABLE `assinatura_storage` (
 --
 
 INSERT INTO `assinatura_storage` (`tip_documento`, `pdf_location`, `storage_path`, `pdf_file`, `pdf_signed`) VALUES
-('ata', 'sagl_documentos/ata_sessao/', 'sagl_documentos.ata_sessao', '_ata_sessao.pdf', '_ata_sessao_signed.pdf'),
-('doc_acessorio', 'sagl_documentos/materia/', 'sagl_documentos.materia', '.pdf', '_signed.pdf'),
-('doc_acessorio_adm', 'sagl_documentos/administrativo/', 'sagl_documentos.administrativo', '.pdf', '_signed.pdf'),
-('documento', 'sagl_documentos/administrativo/', 'sagl_documentos.administrativo', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
-('emenda', 'sagl_documentos/emenda/', 'sagl_documentos.emenda', '_emenda.pdf', '_emenda_signed.pdf'),
-('materia', 'sagl_documentos/materia/', 'sagl_documentos.materia', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
-('norma', 'sagl_documentos/norma_juridica/', 'sagl_documentos.norma_juridica', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
-('parecer_comissao', 'sagl_documentos/parecer_comissao/', 'sagl_documentos.parecer_comissao', '_parecer.pdf', '_parecer_signed.pdf'),
-('pauta', 'sagl_documentos/pauta_sessao/', 'sagl_documentos.pauta_sessao', '_pauta_sessao.pdf', '_pauta_sessao_signed.pdf'),
-('proposicao', 'sagl_documentos/proposicao/', 'sagl_documentos.proposicao', '.pdf', '_signed.pdf'),
-('protocolo', 'sagl_documentos/protocolo/', 'sagl_documentos.protocolo', '_protocolo.pdf', '_protocolo_signed.pdf'),
-('redacao_final', 'sagl_documentos/materia/', 'sagl_documentos.materia', '_redacao_final.pdf', '_redacao_final_signed.pdf'),
-('substitutivo', 'sagl_documentos/substitutivo/', 'sagl_documentos.substitutivo', '_substitutivo.pdf', '_substitutivo_signed.pdf'),
-('tramitacao', 'sagl_documentos/materia/tramitacao/', 'sagl_documentos.materia.tramitacao', '_tram.pdf', '_tram_signed.pdf'),
-('tramitacao_adm', 'sagl_documentos/administrativo/tramitacao/', 'sagl_documentos.administrativo.tramitacao', '_tram.pdf', '_tram_signed.pdf');
+('ata', 'sapl_documentos/ata_sessao/', 'sapl_documentos.ata_sessao', '_ata_sessao.pdf', '_ata_sessao_signed.pdf'),
+('doc_acessorio', 'sapl_documentos/materia/', 'sapl_documentos.materia', '.pdf', '_signed.pdf'),
+('doc_acessorio_adm', 'sapl_documentos/administrativo/', 'sapl_documentos.administrativo', '.pdf', '_signed.pdf'),
+('documento', 'sapl_documentos/administrativo/', 'sapl_documentos.administrativo', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
+('emenda', 'sapl_documentos/emenda/', 'sapl_documentos.emenda', '_emenda.pdf', '_emenda_signed.pdf'),
+('materia', 'sapl_documentos/materia/', 'sapl_documentos.materia', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
+('norma', 'sapl_documentos/norma_juridica/', 'sapl_documentos.norma_juridica', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
+('parecer_comissao', 'sapl_documentos/parecer_comissao/', 'sapl_documentos.parecer_comissao', '_parecer.pdf', '_parecer_signed.pdf'),
+('pauta', 'sapl_documentos/pauta_sessao/', 'sapl_documentos.pauta_sessao', '_pauta_sessao.pdf', '_pauta_sessao_signed.pdf'),
+('proposicao', 'sapl_documentos/proposicao/', 'sapl_documentos.proposicao', '.pdf', '_signed.pdf'),
+('protocolo', 'sapl_documentos/protocolo/', 'sapl_documentos.protocolo', '_protocolo.pdf', '_protocolo_signed.pdf'),
+('redacao_final', 'sapl_documentos/materia/', 'sapl_documentos.materia', '_redacao_final.pdf', '_redacao_final_signed.pdf'),
+('substitutivo', 'sapl_documentos/substitutivo/', 'sapl_documentos.substitutivo', '_substitutivo.pdf', '_substitutivo_signed.pdf'),
+('tramitacao', 'sapl_documentos/materia/tramitacao/', 'sapl_documentos.materia.tramitacao', '_tram.pdf', '_tram_signed.pdf'),
+('tramitacao_adm', 'sapl_documentos/administrativo/tramitacao/', 'sapl_documentos.administrativo.tramitacao', '_tram.pdf', '_tram_signed.pdf');
 
 --
 -- Indexes for table `assinatura_storage`

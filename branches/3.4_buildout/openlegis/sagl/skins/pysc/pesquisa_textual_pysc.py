@@ -27,14 +27,14 @@ if txt_texto.isspace() == False:
     if norma_or_materia == 1:
 
         #Chama o Catalog do Zope para realizar a busca textual no ZODB
-        lista_catalog = context.sagl_documentos.materia.Catalog(PrincipiaSearchSource=txt_texto)
+        lista_catalog = context.sapl_documentos.materia.Catalog(PrincipiaSearchSource=txt_texto)
 
         #Utiliza este script para realizar a busca no DB de todos os registros do tipo de materia
         lista_DB = context.zsql.materia_obter_zsql(tip_id_basica=lst_tipo)
     
     else:
         #Chama o Catalog do Zope para realizar a busca textual no ZODB
-        lista_catalog = context.sagl_documentos.norma_juridica.Catalog(PrincipiaSearchSource=txt_texto)
+        lista_catalog = context.sapl_documentos.norma_juridica.Catalog(PrincipiaSearchSource=txt_texto)
 
         #Utiliza este script para realizar a busca no DB de todos os registros do tipo de materia
         lista_DB = context.zsql.norma_juridica_obter_zsql(tip_norma=lst_tipo)

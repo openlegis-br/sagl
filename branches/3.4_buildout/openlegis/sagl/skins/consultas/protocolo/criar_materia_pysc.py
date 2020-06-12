@@ -37,14 +37,14 @@ def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, 
     id_protocolo = str(cod_protocolo)+'_protocolo.pdf'
     id_protocolo_signed = str(cod_protocolo)+'_protocolo_signed.pdf'
     
-    if hasattr(context.sagl_documentos.protocolo,id_protocolo_signed):
-       tmp_copy = context.sagl_documentos.protocolo.manage_copyObjects(ids=id_protocolo_signed)
-       tmp_id = context.sagl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
-       context.sagl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_materia]))
-    elif hasattr(context.sagl_documentos.protocolo,id_protocolo):
-       tmp_copy = context.sagl_documentos.protocolo.manage_copyObjects(ids=id_protocolo)
-       tmp_id = context.sagl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
-       context.sagl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_materia]))
+    if hasattr(context.sapl_documentos.protocolo,id_protocolo_signed):
+       tmp_copy = context.sapl_documentos.protocolo.manage_copyObjects(ids=id_protocolo_signed)
+       tmp_id = context.sapl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
+       context.sapl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_materia]))
+    elif hasattr(context.sapl_documentos.protocolo,id_protocolo):
+       tmp_copy = context.sapl_documentos.protocolo.manage_copyObjects(ids=id_protocolo)
+       tmp_id = context.sapl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
+       context.sapl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_materia]))
 
     return inserir_autoria(cod_materia, cod_autor)
     

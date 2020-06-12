@@ -3,18 +3,18 @@ SAGL - OpenLegis setup handlers.
 """
 
 def setupMountPoint(portal):
-    # Metodo para adicionar o mount point do sagl_documentos
-    if not hasattr(portal, 'sagl_documentos'):
+    # Metodo para adicionar o mount point do sapl_documentos
+    if not hasattr(portal, 'sapl_documentos'):
         path_sagl = portal.getId()
         try:
-            portal.manage_addProduct['ZODBMountPoint'].manage_addMounts(paths=["/%s/sagl_documentos" % path_sagl],create_mount_points=1)
+            portal.manage_addProduct['ZODBMountPoint'].manage_addMounts(paths=["/%s/sapl_documentos" % path_sagl],create_mount_points=1)
         except:
-            portal.manage_addProduct['OFSP'].manage_addFolder(id='sagl_documentos')
+            portal.manage_addProduct['OFSP'].manage_addFolder(id='sapl_documentos')
 
 def setupConteudo(portal):
     # Metodo para a importacao do SAGL-OpenLegis
     # estrutura do diretorio para armazenamento de documentos
-    if hasattr(portal, 'sagl_documentos'):
+    if hasattr(portal, 'sapl_documentos'):
         for o in [
             'administrativo.zexp',
             'ata_sessao.zexp',
@@ -38,8 +38,8 @@ def setupConteudo(portal):
             'reuniao_comissao.zexp',
             'substitutivo.zexp',
         ]:
-            if o[:len(o)-5] not in portal.sagl_documentos.objectIds():
-                portal.sagl_documentos.manage_importObject(o)
+            if o[:len(o)-5] not in portal.sapl_documentos.objectIds():
+                portal.sapl_documentos.manage_importObject(o)
 
     # importar conteudos na raiz do SAGL - OpenLegis
     for o in ['modelo_proposicao.zexp', 'webeditor.zexp', 'pdflabels.zexp', 'gerar_etiquetas_pdf.zexp', 'upload_form.zexp', 'trigger_upload.zexp']:
@@ -54,7 +54,7 @@ def setupAdicionarUsuarios(portal):
     
 
 def setupAdicionaAcomp(portal):
-    props = portal.sagl_documentos.props_sagl
+    props = portal.sapl_documentos.props_sagl
     try:
         props.manage_addProperty('acompanhamento_materia', '1', 'int')
     except:

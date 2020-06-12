@@ -8,7 +8,7 @@
 ##title=
 ##
 try:
-    if (context.sagl_documentos.proposicao[cod_proposicao].meta_type == 'File'):
+    if (context.sapl_documentos.proposicao[cod_proposicao].meta_type == 'File'):
         return 'ODT'
     else:
         return 'ArqExt'

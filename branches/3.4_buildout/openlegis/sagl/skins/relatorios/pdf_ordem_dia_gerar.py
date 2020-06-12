@@ -178,12 +178,12 @@ def principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_roda
     tmp+='</document>\n'
     tmp_pdf=parseString(tmp)   
 
-    if hasattr(context.sagl_documentos.pauta_sessao,arquivoPdf):
-        context.sagl_documentos.pauta_sessao.manage_delObjects(ids=arquivoPdf)
-    context.sagl_documentos.pauta_sessao.manage_addFile(arquivoPdf)
-    arq=context.sagl_documentos.pauta_sessao[arquivoPdf]
+    if hasattr(context.sapl_documentos.pauta_sessao,arquivoPdf):
+        context.sapl_documentos.pauta_sessao.manage_delObjects(ids=arquivoPdf)
+    context.sapl_documentos.pauta_sessao.manage_addFile(arquivoPdf)
+    arq=context.sapl_documentos.pauta_sessao[arquivoPdf]
     arq.manage_edit(title='Ordem do Dia',filedata=tmp_pdf,content_type='application/pdf')
    
-    return "sagl_documentos/pauta_sessao/"+arquivoPdf
+    return "sapl_documentos/pauta_sessao/"+arquivoPdf
 
 return principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente)

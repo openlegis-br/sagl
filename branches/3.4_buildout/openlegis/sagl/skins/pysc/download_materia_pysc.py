@@ -25,7 +25,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
     download_name = materia.des_tipo_materia.replace(" ", "_")+"-"+str(materia.num_ident_basica)+"-"+str(materia.ano_ident_basica)+"_redacao_final.pdf"
     id_documento = "%s"%cod_materia+'_redacao_final.pdf'
 
-  arquivo = getattr(context.sagl_documentos.materia,id_documento) 
+  arquivo = getattr(context.sapl_documentos.materia,id_documento) 
 
 context.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
 context.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; Filename=%s' % download_name)

@@ -11,18 +11,18 @@ ok = 1
 id = str(cod_documento) + '_texto_integral.pdf'
 
 try:
-    doc = context.sagl_documentos.administrativo[id]
+    doc = context.sapl_documentos.administrativo[id]
     if (int(ind_sobrescrever)==1):
         doc=''     
-        context.sagl_documentos.administrativo.manage_delObjects(id)
-        tmp_copy = context.sagl_documentos.protocolo.manage_copyObjects(ids=str(cod_protocolo)+'_protocolo.pdf')
-        tmp_id = context.sagl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
-        context.sagl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
+        context.sapl_documentos.administrativo.manage_delObjects(id)
+        tmp_copy = context.sapl_documentos.protocolo.manage_copyObjects(ids=str(cod_protocolo)+'_protocolo.pdf')
+        tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
+        context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
         ok = 1
 except KeyError:
-    tmp_copy = context.sagl_documentos.protocolo.manage_copyObjects(ids=str(cod_protocolo)+ '_protocolo.pdf')
-    tmp_id = context.sagl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
-    context.sagl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
+    tmp_copy = context.sapl_documentos.protocolo.manage_copyObjects(ids=str(cod_protocolo)+ '_protocolo.pdf')
+    tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
+    context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
     ok = 1
 return ok
 
