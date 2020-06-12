@@ -26,12 +26,12 @@ class Recipe(object):
 
         # all the options that will be passed on to the 'run' script
         self.sagl_id = options.get('sagl-id', 'sagl')
-        self.container_path = options.get('container-path', '/sagl/sagl_documentos')
+        self.container_path = options.get('container-path', '/sagl/sapl_documentos')
         self.admin_user = options.get('admin-user', 'admin')
         self.mysql_user = options.get('mysql-user', 'root')
         self.mysql_pass = options.get('mysql-pass', 'root')
         self.mysql_host = options.get('mysql-host', 'localhost')
-        self.mysql_db = options.get('mysql-db', 'interlegis')
+        self.mysql_db = options.get('mysql-db', 'openlegis')
         self.add_mountpoint = options.get('add-mountpoint', '').lower() in TRUISMS
         self.log_level = buildout._log_level
         options['args'] = self.createArgs()
