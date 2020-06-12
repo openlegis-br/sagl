@@ -85,12 +85,8 @@ def main(app, parser):
 
         if not created:
             # create SAGL user
-            sagl_dbuser = "CREATE USER 'sagl'@'localhost' IDENTIFIED BY 'sagl';"
-            sagl_dbperms = "GRANT ALL ON openlegis.* TO 'sagl'@'localhost' WITH GRANT OPTION;"
-            
-            sagl_dbuser = "GRANT ALL PRIVILEGES ON interlegis.* TO 'sagl'@'localhost' IDENTIFIED BY 'sagl';"
+            sagl_dbuser = "GRANT ALL PRIVILEGES ON openlegis.* TO 'sagl'@'localhost' IDENTIFIED BY 'sagl';"
             cursor.execute(sagl_dbuser)
-            cursor.execute(sagl_dbperms)
             logger.info("Concluída a criação do usuário MySQL")
 
             sagl_sql = pkg_resources.resource_filename('openlegis.sagl', 'instalacao/sagl.sql')
