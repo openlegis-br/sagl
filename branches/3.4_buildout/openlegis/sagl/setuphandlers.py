@@ -42,7 +42,7 @@ def setupConteudo(portal):
                 portal.sapl_documentos.manage_importObject(o)
 
     # importar conteudos na raiz do SAGL - OpenLegis
-    for o in ['modelo_proposicao.zexp', 'webeditor.zexp', 'pdflabels.zexp', 'gerar_etiquetas_pdf.zexp', 'upload_form.zexp', 'trigger_upload.zexp']:
+    for o in ['extensions.zexp', 'webeditor.zexp', 'pdflabels.zexp', 'gerar_etiquetas_pdf.zexp', 'upload_form.zexp', 'trigger_upload.zexp']:
         if o[:len(o)-5] not in portal.objectIds():
             portal.manage_importObject(o)
 
