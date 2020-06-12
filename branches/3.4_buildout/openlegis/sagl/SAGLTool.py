@@ -2076,7 +2076,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            msg = 'Endereço de email não cadastrado'
            raise ValueError(msg)
 
-        method = self.password_email
+        method = self.pysc.password_email
         kw = {'email': email, 'member': member, 'password': member.getPassword()}
 
         if getattr(aq_base(method), 'isDocTemp', 0):
@@ -2088,7 +2088,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         host.send( mail_text )
 
-        return self.mail_password_response( self, REQUEST )
+        return self.generico.mail_password_response( self, REQUEST )
 
 InitializeClass(SAGLTool)
 
