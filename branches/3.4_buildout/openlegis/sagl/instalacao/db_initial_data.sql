@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
@@ -28,6 +29,24 @@ INSERT INTO `arquivo_tipo_tit_documental` (`tip_tit_documental`, `sgl_tip_tit_do
 (6, 'AM', 'ATO DA MESA', 0),
 (7, 'EM', 'EMENDA LOM', 0),
 (8, 'SEP', 'CEI', 0);
+
+INSERT INTO `assinatura_storage` (`tip_documento`, `pdf_location`, `storage_path`, `pdf_file`, `pdf_signed`) VALUES
+('ata', 'sapl_documentos/ata_sessao/', 'sapl_documentos.ata_sessao', '_ata_sessao.pdf', '_ata_sessao_signed.pdf'),
+('doc_acessorio', 'sapl_documentos/materia/', 'sapl_documentos.materia', '.pdf', '_signed.pdf'),
+('doc_acessorio_adm', 'sapl_documentos/administrativo/', 'sapl_documentos.administrativo', '.pdf', '_signed.pdf'),
+('documento', 'sapl_documentos/administrativo/', 'sapl_documentos.administrativo', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
+('emenda', 'sapl_documentos/emenda/', 'sapl_documentos.emenda', '_emenda.pdf', '_emenda_signed.pdf'),
+('materia', 'sapl_documentos/materia/', 'sapl_documentos.materia', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
+('norma', 'sapl_documentos/norma_juridica/', 'sapl_documentos.norma_juridica', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
+('parecer_comissao', 'sapl_documentos/parecer_comissao/', 'sapl_documentos.parecer_comissao', '_parecer.pdf', '_parecer_signed.pdf'),
+('pauta', 'sapl_documentos/pauta_sessao/', 'sapl_documentos.pauta_sessao', '_pauta_sessao.pdf', '_pauta_sessao_signed.pdf'),
+('peticao', 'sapl_documento\r\ns/administrativo/', 'sapl_documentos.administrativo', '.pdf', '_signed.pdf'),
+('proposicao', 'sapl_documentos/proposicao/', 'sapl_documentos.proposicao', '.pdf', '_signed.pdf'),
+('protocolo', 'sapl_documentos/protocolo/', 'sapl_documentos.protocolo', '_protocolo.pdf', '_protocolo_signed.pdf'),
+('redacao_final', 'sapl_documentos/materia/', 'sapl_documentos.materia', '_redacao_final.pdf', '_redacao_final_signed.pdf'),
+('substitutivo', 'sapl_documentos/substitutivo/', 'sapl_documentos.substitutivo', '_substitutivo.pdf', '_substitutivo_signed.pdf'),
+('tramitacao', 'sapl_documentos/materia/tramitacao/', 'sapl_documentos.materia.tramitacao', '_tram.pdf', '_tram_signed.pdf'),
+('tramitacao_adm', 'sapl_documentos/administrativo/tramitacao/', 'sapl_documentos.administrativo.tramitacao', '_tram.pdf', '_tram_signed.pdf');
 
 INSERT INTO `assunto_norma` (`cod_assunto`, `des_assunto`, `des_estendida`, `ind_excluido`) VALUES
 (1, 'Nao classificada', ' ', 1),
@@ -6080,6 +6099,7 @@ INSERT INTO `unidade_tramitacao` (`cod_unid_tramitacao`, `cod_comissao`, `cod_or
 (6, NULL, 6, NULL, 1, NULL, NULL, 0, NULL, 0),
 (7, NULL, 7, NULL, 1, NULL, NULL, 1, NULL, 0),
 (8, NULL, 8, NULL, 0, NULL, NULL, 0, NULL, 1);
+SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

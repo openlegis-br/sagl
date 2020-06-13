@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
@@ -191,7 +192,8 @@ CREATE TABLE IF NOT EXISTS `assessor_parlamentar` (
   `ind_excluido` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_assessor`),
   UNIQUE KEY `assessor_parlamentar` (`cod_assessor`,`cod_parlamentar`,`ind_excluido`),
-  KEY `cod_parlamentar` (`cod_parlamentar`)
+  KEY `cod_parlamentar` (`cod_parlamentar`),
+  KEY `col_username` (`col_username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `assinatura_documento` (
@@ -204,7 +206,8 @@ CREATE TABLE IF NOT EXISTS `assinatura_documento` (
   `ind_assinado` tinyint NOT NULL DEFAULT '0',
   `ind_prim_assinatura` tinyint NOT NULL,
   `ind_excluido` tinyint NOT NULL DEFAULT '0',
-  UNIQUE KEY `cod_assinatura_doc_2` (`cod_assinatura_doc`,`codigo`,`tipo_doc`,`cod_usuario`)
+  UNIQUE KEY `cod_assinatura_doc_2` (`cod_assinatura_doc`,`codigo`,`tipo_doc`,`cod_usuario`),
+  KEY `cod_usuario` (`cod_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `assinatura_storage` (
@@ -241,7 +244,8 @@ CREATE TABLE IF NOT EXISTS `autor` (
   KEY `idx_parlamentar` (`cod_parlamentar`),
   KEY `idx_comissao` (`cod_comissao`),
   KEY `idx_partido` (`cod_partido`),
-  KEY `idx_bancada` (`cod_bancada`)
+  KEY `idx_bancada` (`cod_bancada`),
+  KEY `col_username` (`col_username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci PACK_KEYS=0;
 
 CREATE TABLE IF NOT EXISTS `autoria` (
@@ -317,6 +321,24 @@ CREATE TABLE IF NOT EXISTS `cargo_mesa` (
   `ind_excluido` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_cargo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci PACK_KEYS=0;
+
+CREATE TABLE IF NOT EXISTS `casa_legislativa` (
+  `cod_casa` int NOT NULL AUTO_INCREMENT,
+  `nom_casa` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sgl_casa` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `end_casa` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cod_localidade` int NOT NULL,
+  `num_cep` int NOT NULL,
+  `num_tel` varchar(14) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `website` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `end_email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `txt_senha_inicial` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `num_protocolo_anual` tinyint(1) NOT NULL,
+  `acompanhamento_materia` tinyint(1) NOT NULL,
+  `restpki_access_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  KEY `idx_localidade` (`cod_localidade`),
+  KEY `cod_casa` (`cod_casa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `categoria_instituicao` (
   `tip_instituicao` int NOT NULL,
@@ -425,7 +447,7 @@ CREATE TABLE IF NOT EXISTS `composicao_comissao` (
 
 CREATE TABLE IF NOT EXISTS `composicao_executivo` (
   `cod_composicao` int NOT NULL AUTO_INCREMENT,
-  `num_legislatura` tinyint NOT NULL,
+  `num_legislatura` int NOT NULL,
   `nom_completo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `cod_cargo` tinyint NOT NULL,
   `cod_partido` int DEFAULT NULL,
@@ -869,7 +891,8 @@ CREATE TABLE IF NOT EXISTS `logradouro` (
   `ind_excluido` tinyint NOT NULL DEFAULT '0',
   PRIMARY KEY (`cod_logradouro`),
   KEY `num_cep` (`num_cep`),
-  KEY `cod_localidade` (`cod_localidade`)
+  KEY `cod_localidade` (`cod_localidade`),
+  KEY `cod_norma` (`cod_norma`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `mandato` (
@@ -951,6 +974,7 @@ CREATE TABLE IF NOT EXISTS `materia_legislativa` (
   `cod_materia_principal` int DEFAULT NULL,
   `ind_excluido` tinyint NOT NULL,
   PRIMARY KEY (`cod_materia`),
+  UNIQUE KEY `tip_id_basica` (`tip_id_basica`,`num_ident_basica`,`ano_ident_basica`,`ind_excluido`) USING BTREE,
   KEY `cod_local_origem_externa` (`cod_local_origem_externa`),
   KEY `tip_origem_externa` (`tip_origem_externa`),
   KEY `cod_regime_tramitacao` (`cod_regime_tramitacao`),
@@ -959,7 +983,6 @@ CREATE TABLE IF NOT EXISTS `materia_legislativa` (
   KEY `cod_situacao` (`cod_situacao`),
   KEY `idx_mat_principal` (`cod_materia_principal`),
   KEY `tip_quorum` (`tip_quorum`),
-  KEY `tip_id_basica` (`tip_id_basica`) USING BTREE,
   KEY `idx_matleg_ident` (`ind_excluido`,`tip_id_basica`,`ano_ident_basica`,`num_ident_basica`) USING BTREE,
   KEY `idx_tramitacao` (`ind_tramitacao`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci PACK_KEYS=0;
@@ -1922,37 +1945,8 @@ ALTER TABLE `subemenda` ADD FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`);
 ALTER TABLE `substitutivo` ADD FULLTEXT KEY `idx_txt_ementa` (`txt_ementa`);
 ALTER TABLE `substitutivo` ADD FULLTEXT KEY `txt_observacao` (`txt_observacao`);
 
+SET FOREIGN_KEY_CHECKS=1;
 
-ALTER TABLE `autoria`
-  ADD CONSTRAINT `autoria_ibfk_1` FOREIGN KEY (`cod_materia`) REFERENCES `materia_legislativa` (`cod_materia`) ON DELETE CASCADE,
-  ADD CONSTRAINT `autoria_ibfk_2` FOREIGN KEY (`cod_autor`) REFERENCES `autor` (`cod_autor`) ON DELETE CASCADE;
-
-ALTER TABLE `categoria_instituicao`
-  ADD CONSTRAINT `idx_tip_instituicao` FOREIGN KEY (`tip_instituicao`) REFERENCES `tipo_instituicao` (`tip_instituicao`) ON DELETE CASCADE;
-
-ALTER TABLE `composicao_comissao`
-  ADD CONSTRAINT `composicao_comissao_ibfk_1` FOREIGN KEY (`cod_parlamentar`) REFERENCES `parlamentar` (`cod_parlamentar`),
-  ADD CONSTRAINT `composicao_comissao_ibfk_2` FOREIGN KEY (`cod_cargo`) REFERENCES `cargo_comissao` (`cod_cargo`) ON DELETE CASCADE,
-  ADD CONSTRAINT `composicao_comissao_ibfk_3` FOREIGN KEY (`cod_comissao`) REFERENCES `comissao` (`cod_comissao`) ON DELETE CASCADE;
-
-ALTER TABLE `documento_comissao`
-  ADD CONSTRAINT `documento_comissao_ibfk_1` FOREIGN KEY (`cod_comissao`) REFERENCES `comissao` (`cod_comissao`);
-
-ALTER TABLE `expediente_discussao`
-  ADD CONSTRAINT `fk_cod_ordem` FOREIGN KEY (`cod_ordem`) REFERENCES `expediente_materia` (`cod_ordem`) ON DELETE CASCADE;
-
-ALTER TABLE `gabinete_atendimento`
-  ADD CONSTRAINT `gabinete_atendimento_ibfk_1` FOREIGN KEY (`cod_eleitor`) REFERENCES `gabinete_eleitor` (`cod_eleitor`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `gabinete_atendimento_ibfk_2` FOREIGN KEY (`cod_parlamentar`) REFERENCES `parlamentar` (`cod_parlamentar`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-ALTER TABLE `materia_legislativa`
-  ADD CONSTRAINT `materia_legislativa_ibfk_1` FOREIGN KEY (`tip_id_basica`) REFERENCES `tipo_materia_legislativa` (`tip_materia`);
-
-ALTER TABLE `oradores`
-  ADD CONSTRAINT `oradores_ibfk_1` FOREIGN KEY (`cod_sessao_plen`) REFERENCES `sessao_plenaria` (`cod_sessao_plen`) ON DELETE CASCADE;
-
-ALTER TABLE `ordem_dia_discussao`
-  ADD CONSTRAINT `ordem_dia_discussao_ibfk_1` FOREIGN KEY (`cod_ordem`) REFERENCES `ordem_dia` (`cod_ordem`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
