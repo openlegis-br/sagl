@@ -14,7 +14,7 @@ session = REQUEST.SESSION
 
 lst_assunto = REQUEST.form['lst_assunto']
 txa_txt_assunto = REQUEST.form['txa_txt_assunto']
-if context.sapl_documentos.props_sagl.numero_protocolo_anual == 1:
+if context.sapl_documentos.props_sapl.numero_protocolo_anual == 1:
     for numero in context.zsql.protocolo_numero_obter_zsql(ano_protocolo = DateTime().strftime('%Y')):
         hdn_num_protocolo = int(numero.novo_numero)
 else:
@@ -22,7 +22,7 @@ else:
         hdn_num_protocolo =  int(numero.novo_codigo)
 tip_protocolo = 0
 for tipo_doc in context.zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0):
-    if 'Requerimento' in tipo_doc.des_tipo_documento:
+    if 'Requerimento' == tipo_doc.des_tipo_documento:
         tip_documento = tipo_doc.tip_documento
 tip_processo = 0
 txt_assunto_ementa = lst_assunto + ' - ' + txa_txt_assunto
@@ -70,8 +70,12 @@ def tramitar_documento(cod_documento):
     for unidade in context.zsql.unidade_tramitacao_obter_zsql(ind_excluido=0):
         if 'Protocolo' in unidade.nom_unidade_join:
             cod_unid_tram_local =  int(unidade.cod_unid_tramitacao)
-        if 'Administra' in unidade.nom_unidade_join:
-            cod_unid_tram_dest = int(unidade.cod_unid_tramitacao)
+        if REQUEST.form['lst_assunto'] == 'Adiantamento de 13º salário' or REQUEST.form['lst_assunto'] == 'Licença-prêmio' or REQUEST.form['lst_assunto'] == 'Férias':
+           if 'Recursos Humanos' == unidade.nom_unidade_join:
+              cod_unid_tram_dest = int(unidade.cod_unid_tramitacao)
+        else:
+           if 'Diretor Geral' == unidade.nom_unidade_join:
+              cod_unid_tram_dest = int(unidade.cod_unid_tramitacao)
     for status in context.zsql.status_tramitacao_administrativo_obter_zsql(sgl_status='PRT'):
         cod_status = status.cod_status
     for usuario in context.zsql.usuario_obter_zsql(col_username=REQUEST['AUTHENTICATED_USER'].getUserName()):
@@ -85,5 +89,4 @@ def tramitar_documento(cod_documento):
     return 'Petição protocolada com sucesso !'
 
 return criar_protocolo(hdn_num_protocolo,tip_protocolo,tip_processo,tip_documento,txt_assunto_ementa,txt_interessado,txt_user_protocolo,numero,ano,data)
-    
-    
+
