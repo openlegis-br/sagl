@@ -38,6 +38,13 @@ $(document).ready(function() {
        return;
   }
 
+  function arquivo_digitalizado_excluir(){
+       if (confirm("Deseja realmente excluir o arquivo digitalizado?")) {
+          location.href="arquivo_digitalizado_excluir_proc?cod_protocolo=<dtml-var cod_protocolo>";
+       }
+       return;
+  }
+
 </script>
 
 <a id="ajuda" href="&dtml-portal_url;/ajuda/protocolo_administrativo">Ajuda</a>
@@ -145,9 +152,12 @@ $(document).ready(function() {
                 <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento) and not _.hasattr(sapl_documentos.protocolo,id_documento_assinado)">
                     <dtml-let documento="_.getattr(sapl_documentos.protocolo,id_documento).absolute_url">
                       <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">"><img align="absmiddle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo Digitalizado" title="Arquivo Digitalizado"></a>
+                     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador'])">
+                       <input type="button" class="botao" value="Excluir" onclick="javascript:arquivo_digitalizado_excluir()" />
+                     </dtml-if>
                     </dtml-let>
                     <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
-                      <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                      <dtml-if "sapl_documentos.props_sapl.restpki_access_token!=''">
                         <input id="solicitar-assinatura" type="button" class="botao" value="Assinar" />
 			         <script type="text/javascript">
 			           $('#solicitar-assinatura').click(function () {
@@ -170,7 +180,11 @@ $(document).ready(function() {
                 <dtml-elif "_.hasattr(sapl_documentos.protocolo,id_documento_assinado)">
                     <dtml-let documento="_.getattr(sapl_documentos.protocolo,id_documento_assinado).absolute_url">
                       <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
-                        <img align="absmiddle" height="27" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Documento Assinado" title="Documento Assinado"></a>
+                        <img align="absmiddle" height="27" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Documento Assinado" title="Documento Assinado">
+                      </a>
+                      <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador'])">
+                        <input type="button" class="botao" value="Excluir" onclick="javascript:arquivo_digitalizado_excluir()" />
+                      </dtml-if>
                     </dtml-let>
                 <dtml-else>
                      <form action="arquivo_digitalizado_salvar_proc" id="arquivo_form" name="arquivo_form" method="post" enctype="multipart/form-data">
