@@ -49,9 +49,9 @@ if context.REQUEST['data']!='':
             fields = autores.data_dictionary().keys()
             lista_autor = []
             for autor in autores:
-          for field in fields:
-                      nome_autor = autor['nom_autor_join']
-          lista_autor.append(nome_autor)
+                for field in fields:
+                    nome_autor = autor['nom_autor_join']
+                lista_autor.append(nome_autor)
             dic_expediente_materia["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
             
             dic_expediente_materia["des_turno"]=""
@@ -94,9 +94,9 @@ if context.REQUEST['data']!='':
             fields = autores.data_dictionary().keys()
             lista_autor = []
             for autor in autores:
-          for field in fields:
-                      nome_autor = autor['nom_autor_join']
-          lista_autor.append(nome_autor)
+                for field in fields:
+                    nome_autor = autor['nom_autor_join']
+                lista_autor.append(nome_autor)
             dic_votacao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
 
             dic_votacao["des_turno"]=""
