@@ -276,7 +276,7 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     arq=context.temp_folder[arquivoPdf]
     arq.manage_edit(title='Arquivo PDF temporario.',filedata=tmp_pdf,content_type='application/pdf')
 
-#    return "/temp_folder/"+arquivoPdf
+    return "/temp_folder/"+arquivoPdf
 
 
 #    if hasattr(context.sapl_documentos.pauta_sessao,arquivoPdf):
