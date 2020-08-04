@@ -241,8 +241,8 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     """
     """
 
-    #arquivoPdf=str(int(time.time()*100))+".pdf"
-    arquivoPdf=str(inf_basicas_dic["cod_sessao_plen"])+"_pauta_expediente.pdf"
+    arquivoPdf=str(int(time.time()*100))+".pdf"
+    #arquivoPdf=str(inf_basicas_dic["cod_sessao_plen"])+"_pauta_expediente.pdf"
 
     tmp=''
     tmp+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
