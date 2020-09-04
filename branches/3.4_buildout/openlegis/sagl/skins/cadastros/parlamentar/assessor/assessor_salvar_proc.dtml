@@ -3,7 +3,6 @@
 <dtml-else> 
   <dtml-call expr="REQUEST.set('metodo', zsql.assessor_parlamentar_incluir_zsql)">
 </dtml-if>
-
   <dtml-call expr="REQUEST.set('old_username', None)">
   <dtml-call expr="REQUEST.set('login_criado',0)">
   <dtml-call expr="REQUEST.set('login_excluido',0)">
@@ -20,7 +19,7 @@
     <dtml-call expr="REQUEST.set('login_excluido',1)">
   <dtml-elif expr="(txt_login!='') and (old_username==None)">    
     <dtml-unless expr="pysc.username_assessor_criar_pysc(txt_login)">
-      <dtml-let mensagem="'O Login informado já está em uso. Escolha outro e tente novamente!'">        
+      <dtml-let mensagem="'O login informado já está existe. Escolha outro e tente novamente!'" tipo_mensagem="'warning'" modal="1">        
         <dtml-var mensagem_emitir>
       </dtml-let>
       <dtml-call expr="REQUEST.set('erro', 1)">
@@ -51,23 +50,41 @@
                           col_username    = txt_login)">
 
 <dtml-except>
-  <dtml-let mensagem="'Não foi possível salvar os dados do Assessor. Tente novamente!'"> 
+  <dtml-let mensagem="'Não foi possível salvar os dados do assessor. Tente novamente!'" tipo_mensagem="'danger'" modal="1"> 
     <dtml-var mensagem_emitir>
   </dtml-let> 
   
 <dtml-else>
       <dtml-if login_criado>
-        <dtml-let mensagem="'Assessor salvo com sucesso! Criada conta para acesso ao Sistema com as seguintes credenciais: Login: ' + txt_login + ' / Senha: ' + sapl_documentos.props_sagl.txt_senha_inicial" sucesso="1" url=hdn_url>
-          <dtml-var mensagem_emitir>
-        </dtml-let>
+        <dtml-if hdn_url>
+          <dtml-let mensagem="'Assessor salvo com sucesso!'" mensagem_obs="'Criada conta de acesso com as seguintes credenciais: Login: ' + txt_login + ' / Senha: ' + sapl_documentos.props_sagl.txt_senha_inicial" tipo_mensagem="'success'" modal="1" url=hdn_url>
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        <dtml-else>
+          <dtml-let mensagem="'Assessor salvo com sucesso!'" mensagem_obs="'Criada conta de acesso com as seguintes credenciais: Login: ' + txt_login + ' / Senha: ' + sapl_documentos.props_sagl.txt_senha_inicial" tipo_mensagem="'success'" modal="1">
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        </dtml-if>
       <dtml-elif login_excluido>
-        <dtml-let mensagem="'Dados do Assessor salvos com sucesso! Excluída a conta para acesso ao Sistema.'" sucesso="1" url=hdn_url>
-          <dtml-var mensagem_emitir>
-        </dtml-let>
+        <dtml-if hdn_url>
+          <dtml-let mensagem="'Dados do assessor salvos com sucesso!'" mensagem_obs="'Excluída a conta de acesso ao sistema.'" tipo_mensagem="'success'" modal="1" url=hdn_url>
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        <dtml-else>
+          <dtml-let mensagem="'Dados do assessor salvos com sucesso!'" mensagem_obs="'Excluída a conta de acesso ao sistema.'" tipo_mensagem="'success'" modal="1">
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        </dtml-if>
       <dtml-else>
-        <dtml-let mensagem="'Assessor salvo com sucesso!'" sucesso="1" url=hdn_url>
-          <dtml-var mensagem_emitir>
-        </dtml-let>
+        <dtml-if hdn_url>
+          <dtml-let mensagem="'Assessor salvo com sucesso!'" tipo_mensagem="'success'" modal="1" url=hdn_url>
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        <dtml-else>
+          <dtml-let mensagem="'Assessor salvo com sucesso!'" tipo_mensagem="'success'" modal="1">
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        </dtml-if>
       </dtml-if>
 </dtml-try>
 </dtml-unless>

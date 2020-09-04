@@ -1,124 +1,80 @@
 <dtml-var standard_html_header>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.maskedinput.min.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/cpf_validar.js" "></script>
+<script type="text/javascript" src="&dtml-portal_url;/javascript/cpf_validar.js"></script>
 <script type="text/javascript" src="&dtml-portal_url;/javascript/email_validar.js" "></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.cleditor.xhtml.min.js"></script>
 
 <script type="text/javascript">
-$(document).ready(function() {
-$.cleditor.defaultOptions.controls = "bold italic underline strikethrough style superscript indent outdent bullets numbering alignleft center alignright justify image undo redo cut copy pastetext print source";
-$("#txa_txt_biografia").cleditor({width:"98%", height:"100%"})[0].focus();
-$("#txa_txt_observacao").cleditor({width:"98%", height:"100%"})[0].focus();
-});
-</script>
-
-<script type="text/javascript">
-   function submeter(endereco){
-      var form = document.parlamentar_form;
-
-      endereco += '?&cod_parlamentar=' + form.hdn_cod_parlamentar.value; 
-
-      if (form.hdn_alterou.value == 1) {  
-         if (confirm("Deseja salvar os dados?")){
-            form.hdn_url.value = endereco;
-            campos_criticar(form);
-            return;
-         }
-      }
-
-      if (form.hdn_cod_parlamentar.value != ""){
-         location.href = endereco;
-      }
-      return;           
-   }  
+  var form = document.parlamentar_form;
   function setar_hdn_file(form){
       if (form.file_nom_imagem.value != "") {
          form.hdn_file.value = 1;
       }
   }
-  function campos_criticar(form){
-          
+
+  function parlamentar_criticar(form){    
+
+    var form = document.parlamentar_form;
+
+      if (form.txt_nom_completo.value==""){
+         $('#txt_nom_completo').addClass('is-invalid');
+          form.txt_nom_completo.focus();
+          return false;
+      }
+
       if (form.txt_nom_parlamentar.value==""){
-          alert("O nome do Parlamentar deve ser preenchido!");
+         $('#txt_nom_parlamentar').addClass('is-invalid');
           form.txt_nom_parlamentar.focus();
           return false;
       }
-        
-      if (form.txt_nom_completo.value == "") {
-         alert("O nome completo deve ser preenchido!");
-         form.txt_nom_completo.focus();
-         return false;
-      } 
 
-      if (!(form.rad_sex_parlamentar[0].checked ||
-            form.rad_sex_parlamentar[1].checked)){
-         alert("O sexo do parlamentar deve ser preenchido!");
-         form.rad_sex_parlamentar[0].focus();
+      if (form.rad_ind_ativo.value ==""){
+         $('#rad_ind_ativo').addClass('is-invalid');
+         form.rad_ind_ativo.focus();
+         return false;
+       }
+
+      if (form.rad_sex_parlamentar.value ==""){
+         $('#rad_sex_parlamentar').addClass('is-invalid');
+         form.rad_sex_parlamentar.focus();
          return false;
       }
 
       if (form.txt_num_cpf.value != "" && !cpf_validar(form.txt_num_cpf.value)){
-         alert("Digite um CPF válido!");
+         $.showAlert({title: "Mensagem do Sistema", body: "Digite um CPF válido  válido!"});
          form.txt_num_cpf.focus();
-         form.txt_num_cpf.select();
          return false;       
       }
 
-      if (form.txt_end_email.value != "" &&
-           !email_validar(form.txt_end_email.value)) {
-         alert("Digite um e-mail válido!");
-         form.txt_end_email.focus();
-         form.txt_end_email.select();
-         return false;
+      if (form.txt_end_email.value != "" && !email_validar(form.txt_end_email.value)) {
+        $.showAlert({title: "Mensagem do Sistema", body: "Digite um endereço de email  válido!"});
+        form.txt_end_email.focus();
+        return false;
       }
-
+         
       if (form.txt_municipio.value == "" && form.lst_sgl_uf.selectedIndex != 0) {
-         alert("O campo Município deve ser preenchido uma vez que UF está preenchido!");
+         $.showAlert({title: "Mensagem do Sistema", body: "O campo Município deve ser preenchido uma vez que UF está preenchido!"});
          form.txt_municipio.focus();
          return false;
       } 
 
       if (form.txt_municipio.value != "" && form.lst_sgl_uf.selectedIndex == 0) {
-         alert("O campo UF deve ser preenchido uma vez que Município está preenchido!");
+         $.showAlert({title: "Mensagem do Sistema", body: "O campo UF deve ser preenchido uma vez que Município está preenchido!"});
          form.lst_sgl_uf.focus();
          return false;
       } 
 
-      if (!(form.rad_ind_ativo[0].checked || 
-            form.rad_ind_ativo[1].checked)){
-         alert("A opção 'Ativo na Casa' deve ser preenchida!"); 
-         return false;
-      }
       return form.submit();
     }
-
-  function parlamentar_excluir(){
-      
-       if (confirm("Deseja realmente excluir?")) {
-          location.href="parlamentar_excluir_proc?cod_parlamentar=<dtml-var cod_parlamentar missing>";
-       }
-       return; 
-  } 
-
-function fotografia_excluir(){
-
-       if (confirm("Deseja realmente excluir a Fotografia?")) {
-          location.href=" parlamentar_excluir_foto?cod_parlamentar=<dtml-var cod_parlamentar missing>";
-       }
-       return;
-  }
 
   function localidade_mostrar(form) {
 
      if (form.txt_municipio.value=="") {
-        alert("Preencha parte do município!");
+        $.showAlert({title: "Preenchimento obrigatório", body: "Preencha parte do nome do Município."});
         form.txt_municipio.focus();
         return false;
      }
 
      if (form.lst_sgl_uf.selectedIndex==0) {
-        alert("Selecione uma UF!");
+        $.showAlert({title: "Preenchimento obrigatório", body: "Selecione uma UF."});
         form.lst_sgl_uf.focus();
         return false;
      }
@@ -135,102 +91,143 @@ function fotografia_excluir(){
 
      var url="municipio_listar_form?municipio=" + municipio +
               "&municipio_pesq=" + municipio_pesq + "&sgl_uf=" + sgl_uf;
-     MunicipioWin = window.open(url , "MunicipioWin", "width=350,height=250,resizable=0");
+     MunicipioWin = window.open(url , "MunicipioWin", "width=500,height=330,resizable=0");
      return;
   } 
-</script>
-<script type="text/javascript">
-$(function() {
-        $('#txt_dat_nascimento').datepick();
+
+window.onload = function(){  
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
+    //Change hash for page-reload
+    $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').on('shown', function (e) {
+        window.location.hash = e.target.hash;
+    }); 
+} 
+
+$(document).ready(() => {
+  let url = location.href.replace(/\/$/, "");
+   if (location.hash) {
+    const hash = url.split("#");
+    $('#myTab a[href="#'+hash[1]+'"]').tab("show");
+    url = location.href.replace(/\/#/, "#");
+    history.replaceState(null, null, url);
+  } 
+
+  $('a[data-toggle="tab"]').on("click", function() {
+    let newUrl;
+    const hash = $(this).attr("href");
+    if(hash == "#home") {
+      newUrl = url.split("#")[0];
+    } else {
+      newUrl = url.split("#")[0] + hash;
+    }
+    newUrl += "";
+    history.replaceState(null, null, newUrl);
+  });
 });
+
 </script>
-<script>
-jQuery(function($){
-   $("#txt_dat_nascimento").mask("99/99/9999");
-   $("#txt_num_cpf").mask("999.999.999-99");
-   $("#txt_num_rg").mask("99.999.999-*");
-   $("#txt_num_tit_eleitor").mask("9999.9999.9999");
-   $("#txt_num_tel_parlamentar").mask("(99) 9999-9999");
-   $("#txt_num_fax_parlamentar").mask("(99) 9999-9999");
-   $("#txt_num_tel_resid").mask("(99) 9999-9999");
-   $("#txt_num_fax_resid").mask("(99) 9999-9999");
-   $("#txt_num_cep_resid").mask("99999-999");
-});
-</script>
-<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_parlamentares">Ajuda</a>
+
 <dtml-if cod_parlamentar>
   <h1 class="firstHeading"><dtml-var nom_parlamentar></h1> 
 <dtml-else>
-  <h1 class="firstHeading">Parlamentares</h1> 
+  <h1 class="firstHeading">Cadastro de Vereador</h1> 
 </dtml-if>
-   <form name="parlamentar_form" method="post" action="parlamentar_salvar_proc" enctype="multipart/form-data" />
-      <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>" />
-      <input type="hidden" name="nom_parlamentar"  value="<dtml-var nom_parlamentar missing>" />
-      <input type="hidden" name="hdn_cod_casa" value="<dtml-var expr="sapl_documentos.props_sagl.cod_casa" missing>" />
-      <input type="hidden" name="hdn_url" value="parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar missing>" />
-      <input type="hidden" name="hdn_alterou" value=0 />
-<div id="barra-conteudo">
-      <ul>
-        <li>
-            <a href="javascript:submeter('&dtml-portal_url;/cadastros/parlamentar/mandato/index_html')">Mandatos</a>
-        </li>
-        <li>
-            <a href="javascript:submeter('&dtml-portal_url;/cadastros/parlamentar/filiacao_partidaria/index_html')">Filiações Partidárias</a>
-        </li>
-        <li>
-            <a href="javascript:submeter('&dtml-portal_url;/cadastros/parlamentar/assessor/index_html')">Assessoria</a>
-        </li>
-        <li>
-            <a href="javascript:submeter('&dtml-portal_url;/cadastros/parlamentar/dependente/index_html')">Dependentes</a>
-        </li>
-      </ul>
-</div>
-     <fieldset><legend>Cadastro do Parlamentar</legend>
-               <table>
-                  <tr>
-                     <td colspan="2" class="form-element">
-                        Nome Parlamentar <span class="campoObrigatorio">&nbsp;</span> <br />
-                        <input type="text" name="txt_nom_parlamentar" value="<dtml-var nom_parlamentar missing>"
-                               size="50" maxlength="50"
-			       onChange="javascript:form.hdn_alterou.value=1" />
-                     </td>
-                     <td class="form-text">
-                        <b>Ativo na Casa?</b><span class="campoObrigatorio">&nbsp;</span> <br />
-                        <dtml-in expr="[(1,'Sim'),(0,'Não')]">
-                           <input type="radio" name="rad_ind_ativo" value="<dtml-var expr="_['sequence-key']">"
-                            <dtml-if expr="_.has_key('cod_parlamentar') and ind_ativo==_['sequence-key']">
-			    checked=1</dtml-if>
-			    onChange="javascript:form.hdn_alterou.value=1"
-			   />
-                           <dtml-var expr="_['sequence-item']">
-                        </dtml-in>
-                     </td>
-                  </tr>
-        <tr>
-          <td colspan="2" class="form-element">Nome Completo<span class="campoObrigatorio">&nbsp;</span><br />
-            <input type="text" name="txt_nom_completo"
-	    value="<dtml-var nom_completo missing>" size="50" maxlength="50" onChange="javascript:form.hdn_alterou.value=1" />
-          </td>
-          <td class="form-element">Login:<br />
-           <dtml-if cod_parlamentar>
-            <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
-             <dtml-if expr="col_username!=''">
-               <input type="text" name="txt_loginname" size="15" value="<dtml-var col_username missing null>" disabled />
-                 <a href="&dtml-portal_url;/cadastros/auxiliares/autor/autor_mostrar_proc?tip_autor=1&cod_parlamentar=<dtml-var cod_parlamentar>&cod_autor=<dtml-var cod_autor>" class="botao-link">Editar</a>
-             <dtml-else>
-               <input type="text" name="txt_loginname" size="15" value="Não possui" disabled> 
-                <dtml-if cod_autor>
-                 <a href="&dtml-portal_url;/cadastros/auxiliares/autor/autor_mostrar_proc?tip_autor=1&cod_parlamentar=<dtml-var cod_parlamentar>&cod_autor=<dtml-var cod_autor>" class="botao-link">Criar</a>
-                </dtml-if>
-             </dtml-if>
-           </dtml-in>
-          </dtml-if>
-          </td>
-        </tr>
-        <tr>
-          <td class="form-element">Nível Instrução<br />
-            <select name="lst_cod_nivel_instrucao" size="1" onChange="javascript:form.hdn_alterou.value=1">
-                 <option value="">Selecione</option>
+
+<ul class="nav nav-tabs border-0 mt-4" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="index-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dados Pessoais</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_parlamentar>disabled</dtml-unless>" id="partido-tab" data-toggle="tab" href="#filiacao" role="tab" aria-controls="filiacao" aria-selected="false">Filiações</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_parlamentar>disabled</dtml-unless>" id="mandato-tab" data-toggle="tab" href="#mandato" role="tab" aria-controls="mandato" aria-selected="false">Mandatos</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_parlamentar>disabled</dtml-unless>" id="assessoria-tab" data-toggle="tab" href="#assessoria" role="tab" aria-controls="assessoria" aria-selected="false">Assessoria</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_parlamentar>disabled</dtml-unless>" id="dependente-tab" data-toggle="tab" href="#dependentes" role="tab" aria-controls="dependentes" aria-selected="false">Dependentes</a>
+  </li>
+</ul>
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active" id="home">
+
+<form name="parlamentar_form" id="parlamentar_form" method="post" action="parlamentar_salvar_proc" enctype="multipart/form-data" />
+
+  <legend>Dados Pessoais</legend>
+
+  <div class="form-row">
+     <div class="col-12 col-md-6 mb-3">
+       <label for="txt_nom_completo" class="form-label required">Nome Completo</label>
+       <input class="form-control" type="text" name="txt_nom_completo" id="txt_nom_completo" value="<dtml-var nom_completo missing>" size="50" maxlength="50" required />
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+       <label for="txt_nom_parlamentar" class="form-label required">Nome Parlamentar</label>
+       <input class="form-control" type="text" name="txt_nom_parlamentar" id="txt_nom_parlamentar" value="<dtml-var nom_parlamentar missing>" size="50" maxlength="50" required/>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-6 col-md-2">
+      <label for="rad_ind_ativo" class="form-label required">Ativo?</label>
+      <select class="custom-select" name="rad_ind_ativo" id="rad_ind_ativo" required="">
+        <option value=""></option>
+        <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+            <option  
+               <dtml-if expr="_.has_key('cod_parlamentar') and ind_ativo==_['sequence-key']"> 
+                   selected
+               </dtml-if>
+               value="<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']">
+            </option>
+        </dtml-in>
+      </select>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+    </div>
+    <div class="form-group col-6 col-md-3">
+      <label for="rad_sex_parlamentar" class="form-label required">Sexo</label>
+      <select class="custom-select" name="rad_sex_parlamentar" id="rad_sex_parlamentar" required="">
+        <option value=""></option>
+        <dtml-in expr="[('M','Masculino'),('F','Feminino')]">
+            <option  
+               <dtml-if expr="_.has_key('cod_parlamentar') and sex_parlamentar==_['sequence-item'][0]"> 
+                   selected
+               </dtml-if>
+               value="<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']">
+            </option>
+        </dtml-in>
+      </select>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+    </div>
+    <div class="col-6 col-sm-6 col-md-3 mb-3">
+        <label for="txt_dat_nascimento">Data de Nascimento</label>
+        <input type="text" class="form-control date" name="txt_dat_nascimento" id="txt_dat_nascimento" value="<dtml-var dat_nascimento missing null>" autocomplete="off" pattern=".{10,}">
+        <script>
+        $('#txt_dat_nascimento').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>
+     </div>
+     <div class="col-6 col-sm-6 col-md-4 mb-3">
+        <label for="lst_cod_nivel_instrucao" class="form-label">Nível de Instrução</label>
+        <select class="custom-select" name="lst_cod_nivel_instrucao" id="lst_cod_nivel_instrucao">
+              <option value=""></option>
               <dtml-in expr="zsql.nivel_instrucao_obter_zsql()">
                  <option  
                     <dtml-if expr="_.has_key('cod_parlamentar') and cod_nivel_instrucao==parlamentar_form.cod_nivel_instrucao"> 
@@ -239,36 +236,29 @@ jQuery(function($){
                     value="<dtml-var cod_nivel_instrucao>"><dtml-var des_nivel_instrucao>
                  </option>
               </dtml-in>
-            </select>
-          </td>
-          <td class="form-text"><b>Sexo</b><span class="campoObrigatorio">&nbsp;</span><br />
-            <dtml-in expr="['Masculino', 'Feminino']">
-              <input type="radio" name="rad_sex_parlamentar" value="<dtml-var expr="_['sequence-item'][0]">" 
-                     <dtml-if expr="_.has_key('cod_parlamentar') and sex_parlamentar==_['sequence-item'][0]"> checked=1
-                     </dtml-if>
-		     onChange="javascript:form.hdn_alterou.value=1" /> 
-              <dtml-var expr="_['sequence-item']">
-            </dtml-in></td>
-          <td class="form-text"><b>Data Nascimento</b><br />
-            <input type="text" name="txt_dat_nascimento" id="txt_dat_nascimento" value="<dtml-var dat_nascimento missing>" size="10" maxlength="10" />
-            <span class="nota">(dd/mm/aaaa)</span></td>
-        </tr>
-        <tr align="left"> 
-          <td class="form-element">C.P.F<br />
-            <input type="text" name="txt_num_cpf" id="txt_num_cpf" value="<dtml-var num_cpf missing>" size="14" maxlength="14"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-          <td class="form-element">R.G.<br />
-            <input type="text" name="txt_num_rg" id="txt_num_rg" value="<dtml-var num_rg missing>" size="15" maxlength="15"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-          <td class="form-element">Título de Eleitor<br />
-            <input type="text" name="txt_num_tit_eleitor"  id="txt_num_tit_eleitor" value="<dtml-var num_tit_eleitor missing>"  size="15"
-	    maxlength="15" onChange="javascript:form.hdn_alterou.value=1" /></td>
-        </tr>
-        <tr> 
-          <td class="form-element">Situação Militar<br />
-            <select name="lst_tip_situacao_militar" size="1" onChange="javascript:form.hdn_alterou.value=1">
-                 <option value="">Selecione</option>
-              <dtml-in expr="zsql.tipo_situacao_militar_obter_zsql()">             
+        </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-6 col-md-4 mb-3">
+       <label for="txt_num_rg" class="form-label">Cédula de Identidade</label>
+       <input class="form-control" type="text" name="txt_num_rg" id="txt_num_rg" value="<dtml-var num_rg missing>" maxlength="15" />
+    </div>
+    <div class="col-6 col-md-4 mb-3">
+       <label for="txt_num_cpf" class="form-label">CPF</label>
+       <input class="form-control cpf" type="text" name="txt_num_cpf" id="txt_num_cpf" value="<dtml-var num_cpf missing>" minlenght="14" maxlength="14" />
+    </div>
+    <div class="col-12 col-md-4 mb-3">
+       <label for="txt_num_tit_eleitor" class="form-label">Título de Eleitor</label>
+       <input class="form-control" type="text" name="txt_num_tit_eleitor" id="txt_num_tit_eleitor" value="<dtml-var num_tit_eleitor missing>" maxlength="15" />
+    </div>
+  </div>
+  <div class="form-row">
+     <div class="col-6 col-md-4 mb-3">
+        <label for="lst_tip_situacao_militar" class="form-label">Situação Militar</label>
+        <select class="custom-select" name="lst_tip_situacao_militar" id="lst_tip_situacao_militar">
+              <option value=""></option>
+              <dtml-in expr="zsql.tipo_situacao_militar_obter_zsql()">
                  <option 
                     <dtml-if expr="tip_situacao_militar==parlamentar_form.tip_situacao_militar and _.has_key('cod_parlamentar')">
                         selected 
@@ -276,140 +266,220 @@ jQuery(function($){
                     value="<dtml-var tip_situacao_militar>"><dtml-var des_tipo_situacao>
                  </option>
               </dtml-in>
-            </select></td>
-          <td colspan="2" class="form-element">Profissão<br />
-            <input type="text" name="txt_nom_profissao"
-	    value="<dtml-var nom_profissao missing null>" size="25"
-	    maxlength="50"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-        </tr>
-        <tr align="left"> 
-          <td colspan="3" class="form-element">HomePage<br />
-            <input type="text" name="txt_end_web" value="<dtml-var
-	    end_web missing null>" size="60" maxlength="100"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-        </tr>
-        <tr>   
-          <td colspan="3" class="form-element">Correio Eletrônico<br />
-            <input type="text" name="txt_end_email" value="<dtml-var
-	    end_email missing null>" size="60" maxlength="100"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-        </tr>
-        <tr> 
-          <td class="form-element">Nº Gabinete<br />
-            <input type="text" name="txt_num_gab_parlamentar"
-	    value="<dtml-var num_gab_parlamentar missing null>" size="10"
-	    maxlength="10"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-          <td class="form-element">Telefone <br />
-            <input type="text" name="txt_num_tel_parlamentar" id="txt_num_tel_parlamentar"
-	    value="<dtml-var num_tel_parlamentar missing>" size="15"
-	    maxlength="50"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-          <td class="form-element">Fax <br />
-            <input type="text" name="txt_num_fax_parlamentar" id="txt_num_fax_parlamentar"
-	    value="<dtml-var num_fax_parlamentar missing>" size="15"
-	    maxlength="50"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-        </tr>
-        <tr> 
-          <td colspan="2" class="form-element">Endereço Residencial<br />
-            <input type="text" name="txt_end_residencial"
-	    value="<dtml-var end_residencial missing>" size="35" maxlength="100"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-          <td class="form-element">CEP<br />
-            <input type="text" name="txt_num_cep_resid" id="txt_num_cep_resid"
-	    value="<dtml-var num_cep_resid missing>" size="9"
-	    maxlength="9"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-        </tr>
-        <tr> 
-          <td colspan="2" class="form-element">Município<br />
-            <input type="text" name="txt_municipio" value="<dtml-if
-	    cod_localidade_resid><dtml-var nom_localidade missing
-	    null=""></dtml-if>" size="35" maxlength="50"
-	    onChange="javascript:form.hdn_alterou.value=1" />
-            <input type="button" name="btn_localidade" value=" ? "
-	    onClick="localidade_mostrar(document.parlamentar_form)" /></td>
-          <td class="form-element">UF<br />
-            <select name="lst_sgl_uf" size="1" onChange="javascript:form.hdn_alterou.value=1">
-                <option>Selecione</option>
-              <dtml-in expr="zsql.localidade_obter_zsql(tip_localidade='U')">
-                <option 
-                  <dtml-if expr="sgl_uf==parlamentar_form.sgl_uf and _.has_key('cod_parlamentar')">
-                      selected 
-                  </dtml-if>
-                  value="<dtml-var sgl_uf>"><dtml-var sgl_uf>
-                </option>
-              </dtml-in>
-            </select></td>
-        </tr>
-        <tr> 
-          <td colspan="2" class="form-element">Telefone Residencial<br />
-            <input type="text" name="txt_num_tel_resid" id="txt_num_tel_resid"
-	    value="<dtml-var num_tel_resid missing>" size="15" maxlength="50"
-	    onChange="javascript:form.hdn_alterou.value=1"></td>
-          <td class="form-element">Fax Residencial<br />
-            <input type="text" name="txt_num_fax_resid" id="txt_num_fax_resid"
-	    value="<dtml-var num_fax_resid missing>" size="15"
-	    maxlength="50"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-        </tr>
-        <tr> 
-          <td colspan="3" class="form-element">Locais de Atuação<br />
-            <input type="text" name="txt_des_local_atuacao"
-	    value="<dtml-var des_local_atuacao missing null>" size="60" maxlength="100"
-	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-        </tr>
-        <tr>
-           <td colspan="3" class="form-element" align="left">Fotografia<br/>
+        </select>
+    </div>
+    <div class="col-6 col-md-4 mb-3">
+       <label for="txt_nom_profissao" class="form-label">Profissão</label>
+       <input class="form-control" type="text" name="txt_nom_profissao" id="txt_nom_profissao" value="<dtml-var nom_profissao missing null>" maxlength="50" />
+    </div>
+    <div class="col-12 col-md-4 mb-3">
+       <label for="txt_loginname" class="form-label">Login</label>    
+       <div class="input-group">
+         <dtml-if cod_parlamentar>
+           <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+              <dtml-if expr="col_username">
+                 <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
+                 <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button" name="btn_incluir" onclick="location.href='&dtml-portal_url;/cadastros/auxiliares/autor/autor_mostrar_proc?tip_autor=1&cod_parlamentar=<dtml-var cod_parlamentar>&cod_autor=<dtml-var cod_autor>';">Editar</button>
+                 </div>
+              <dtml-else>
+                 <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
+                 <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button" name="btn_incluir" onclick="location.href='&dtml-portal_url;/cadastros/auxiliares/autor/autor_mostrar_proc?tip_autor=1&cod_parlamentar=<dtml-var cod_parlamentar>&cod_autor=<dtml-var cod_autor>';">Criar</button>
+                 </div>
+              </dtml-if>
+           <dtml-else>
+                 <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
+                 <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button" name="btn_incluir" onclick="location.href='&dtml-portal_url;/cadastros/auxiliares/autor/autor_form?tip_autor=1&des_tipo_autor=Parlamentar&cod_parlamentar=<dtml-var cod_parlamentar>';">Criar</button>
+                 </div>
+           </dtml-in>
+         <dtml-else>
+           <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
+         </dtml-if>
+        </div>
+       </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+       <label for="txt_end_email" class="form-label">E-mail</label>
+       <input class="form-control" type="email" name="txt_end_email" id="txt_end_email" value="<dtml-var end_email missing null>" maxlength="100"  />
+       <div class="invalid-feedback">
+        Não é um endereço de email válido!
+       </div>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+       <label for="txt_end_web" class="form-label">Homepage</label>
+       <input class="form-control" type="text" name="txt_end_web" id="txt_end_web" value="<dtml-var end_web missing null>" maxlength="100" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-4 col-md-2 mb-3">
+       <label for="txt_num_gab_parlamentar" class="form-label">Gabinete</label>
+       <input class="form-control" type="text" name="txt_num_gab_parlamentar" id="txt_num_gab_parlamentar" value="<dtml-var num_gab_parlamentar missing null>" maxlength="3" />
+    </div>
+    <div class="col-8 col-md-5 mb-3">
+       <label for="txt_num_tel_parlamentar" class="form-label">Telefone do Gabinete</label>
+       <input class="form-control phone" type="text" name="txt_num_tel_parlamentar" id="txt_num_tel_parlamentar" value="<dtml-var num_tel_parlamentar missing null>" maxlength="50" />
+    </div>
+    <div class="col-12 col-md-5 mb-3">
+       <label for="txt_num_fax_parlamentar" class="form-label">Fax do Gabinete</label>
+       <input class="form-control phone" type="text" name="txt_num_fax_parlamentar" id="txt_num_fax_parlamentar" value="<dtml-var num_fax_parlamentar missing null>" maxlength="50" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-8 col-md-8 mb-3">
+       <label for="txt_end_residencial" class="form-label">Endereço Residencial</label>
+       <input class="form-control" type="text" name="txt_end_residencial" id="txt_end_residencial" value="<dtml-var end_residencial missing null>" maxlength="500" />
+    </div>
+    <div class="col-4 col-md-4 mb-3">
+       <label for="txt_num_cep_resid" class="form-label">CEP</label>
+       <input class="form-control cep" type="text" name="txt_num_cep_resid" id="txt_num_cep_resid" value="<dtml-var num_cep_resid missing null>" maxlength="9" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-8 col-md-8 mb-3">
+       <label for="txt_municipio" class="form-label">Município</label>
+       <div class="input-group">
+          <input class="form-control" type="text" name="txt_municipio" id="txt_municipio" value="<dtml-if
+	    cod_localidade_resid><dtml-var nom_localidade missing null=""></dtml-if>" maxlength="50" />
+          <div class="input-group-append">
+             <button class="btn btn-secondary" type="button" name="btn_incluir" onClick="localidade_mostrar(document.parlamentar_form)">Buscar</button>
+          </div>
+        </div>
+    </div>
+    <div class="col-4 col-md-4 mb-3">
+       <label for="lst_sgl_uf" class="form-label">Estado</label>
+       <select class="custom-select"  name="lst_sgl_uf">
+         <option>Selecione</option>
+         <dtml-in expr="zsql.localidade_obter_zsql(tip_localidade='U')">
+           <option 
+             <dtml-if expr="sgl_uf==parlamentar_form.sgl_uf and _.has_key('cod_parlamentar')">
+                 selected 
+             </dtml-if>
+             value="<dtml-var sgl_uf>"><dtml-var sgl_uf>
+           </option>
+         </dtml-in>
+       </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-6 mb-3">
+       <label for="txt_num_tel_resid" class="form-label">Telefone Residencial</label>
+       <input class="form-control phone" type="text" name="txt_num_tel_resid" id="txt_num_tel_resid" value="<dtml-var num_tel_resid missing null>" maxlength="50" />
+    </div>
+    <div class="col-6 mb-3">
+       <label for="txt_num_fax_resid" class="form-label">Fax Residencial</label>
+       <input class="form-control phone" type="text" name="txt_num_fax_resid" id="txt_num_fax_resid" value="<dtml-var num_fax_resid missing null>" maxlength="50" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12 col-sm-6 mb-3">
+       <label for="txt_des_local_atuacao" class="form-label">Locais de Atuação</label>
+       <input class="form-control" type="text" name="txt_des_local_atuacao" id="txt_des_local_atuacao" value="<dtml-var des_local_atuacao missing null>" maxlength="100" />
+    </div>
+    <div class="col-12 col-sm-6 mb-3">
+       <label for="txa_txt_observacao" class="form-label">Observações</label>
+       <textarea class="form-control auto-resize" name="txa_txt_observacao" id="txa_txt_observacao" rows="1" cols="40"><dtml-var txt_observacao missing null></textarea>
+
+
+    </div>
+  </div>
+  <div class="form-row d-flex">
+    <div class="col-12 col-md-8 mb-3 align-self-stretch">
+       <label for="txa_txt_biografia" class="form-label">Biografia</label>
+       <textarea name="txa_txt_biografia" id="txa_txt_biografia" ><dtml-var txt_biografia missing null=""></textarea>
+    </div>
+    <div class="col-12 col-md-4 mb-3 align-self-stretch">
+       <label class="form-label">Fotografia</label>
               <dtml-if cod_parlamentar>
                  <dtml-call expr="REQUEST.set('id_foto', _.str(cod_parlamentar)+'_foto_parlamentar')">
-                 <dtml-if "_.hasattr(sapl_documentos.parlamentar.fotos,id_foto)">                     
-                   <div align="center">
-                    <img align="absmiddle" style="max-width: 100%;" src="&dtml-portal_url;/sapl_documentos/parlamentar/fotos/<dtml-var id_foto>?<dtml-var expr="ZopeTime().timeTime()">">
-                   </div>
-                   <p align="center">
-                    <input type="button" name="delFoto" class="botao" value="Excluir fotografia"
-		    onClick="javascript:fotografia_excluir()" />
-                    <input type="button" name="delFoto" class="botao" value="Ajustar dimensões"
-		    onClick="location.href='parlamentar_ajustar_foto?cod_parlamentar=<dtml-var cod_parlamentar missing>'" />
+                 <dtml-if "_.hasattr(sapl_documentos.parlamentar.fotos,id_foto)">    
+                   <div class="item text-center py-4 px-4 bg-light border">                 
+                      <img class="img-fluid mb-3 img-thumbnail shadow-sm" src="&dtml-portal_url;/sapl_documentos/parlamentar/fotos/<dtml-var id_foto>?<dtml-var expr="ZopeTime().timeTime()">">
+                    <a class="btn btn-sm btn-primary mb-2" href="<dtml-var portal_url>/cadastros/parlamentar/parlamentar_ajustar_foto?cod_parlamentar=<dtml-var cod_parlamentar>" data-confirm="Deseja ajustar automaticamente as dimensões da fotografia?"><i class="fas fa-arrows-alt"></i> Autoajustar</a>
+                    <a class="btn btn-sm btn-danger mb-2" href="<dtml-var portal_url>/cadastros/parlamentar/parlamentar_excluir_foto?cod_parlamentar=<dtml-var cod_parlamentar>" data-confirm="Deseja realmente excluir a fotografia?"><i class="fas fa-trash"></i> Excluir</a>
                     <input type="hidden" name="hdn_file" value=0 />
-                   </p>
+                  </div>
                  <dtml-else>   
-                    <input type="hidden" name="hdn_file" value=0 />  
-                    <input type="file" name="file_nom_imagem" size="40" maxlength="100"
-		     onChange="setar_hdn_file(form)" />
+                    <input type="hidden" name="hdn_file" value=0 /> 
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" name="file_nom_imagem" onChange="setar_hdn_file(form)">
+                      <label class="custom-file-label" for="customFile">Selecionar imagem</label>
+                    </div>
                  </dtml-if>
               <dtml-else>
                  <input type="hidden" name="hdn_file" value=0 />
-                 <input type="file" name="file_nom_imagem" size="40" maxlength="100" 
-                  onChange="setar_hdn_file(form)" />
+                 <div class="custom-file">
+                   <input type="file" class="custom-file-input" name="file_nom_imagem" onChange="setar_hdn_file(form)">
+                   <label class="custom-file-label" for="customFile">Selecionar imagem</label>
+                 </div>                 
               </dtml-if>
-            </td></tr>
-          <tr> 
-          <td colspan="3" class="form-element">Biografia<br />
-		<textarea name="txa_txt_biografia" id="txa_txt_biografia" cols="60" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_biografia missing null=""></textarea>
-          </td>
-        </tr>
-          <tr> 
-          <td colspan="3" class="form-element">Observação<br />
-	    <textarea name="txa_txt_observacao" id="txa_txt_observacao" cols="60" rows="4">
-               <dtml-var txt_observacao missing null="">
-            </textarea>
-          </td>
-        </tr>
-        <tr>
-      </table>
-   </form>
-           <p align="center">
-           <input type="button" name="btn_parlamentar_salvar" class="botao" value="Salvar" onClick="campos_criticar(document.parlamentar_form)" />
-           <dtml-if cod_parlamentar>
-             <input type="button" name="btn_parlamentar_excluir" class="botao" value="Excluir" onClick="parlamentar_excluir()" />
-           <dtml-else>
-             <input type="hidden" name="hdn_num_leg" value="<dtml-var lst_num_legislatura>" />
-           </dtml-if>
-          </p>
- </fieldset>
+    </div>
+  </div>
+
+  <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>" />
+  <input type="hidden" name="nom_parlamentar"  value="<dtml-var nom_parlamentar missing>" />
+  <input type="hidden" name="hdn_cod_casa" value="<dtml-var expr="sapl_documentos.props_sagl.cod_casa" missing>" />
+  <input type="hidden" name="hdn_url" value="parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar missing>" />
+
+ <div class="text-left">
+   <button class="btn btn-primary" onClick="return parlamentar_criticar()">Salvar</button>
+   <dtml-if cod_parlamentar>
+      <a class="btn btn-danger d-print-none" href="<dtml-var portal_url>/cadastros/parlamentar/parlamentar_excluir_proc?cod_parlamentar=<dtml-var cod_parlamentar>" data-confirm="Deseja realmente excluir o Vereador?">Excluir</a>
+   </dtml-if>
+ </div>
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+ </div>
+</div>    
+</form>
+
+<dtml-if cod_parlamentar>
+   <div class="tab-pane p-3 border fade" id="filiacao">
+        <dtml-with filiacao_partidaria>
+          <dtml-var filiacao_partidaria_index_html>
+        </dtml-with>
+   </div>
+   <div class="tab-pane p-3 border fade" id="mandato">
+       <dtml-with mandato>
+         <dtml-var mandato_index_html>
+       </dtml-with>
+   </div>
+   <div class="tab-pane p-3 border fade" id="assessoria">
+       <dtml-with assessor>
+         <dtml-var assessor_index_html>
+       </dtml-with>
+   </div>
+   <div class="tab-pane p-3 border fade" id="dependentes">
+       <dtml-with dependente>
+         <dtml-var dependente_index_html>
+       </dtml-with>
+   </div>
+</dtml-if>
+</div>
+
+<script>
+tinymce.init({
+  selector: '#txa_txt_biografia',
+  language: 'pt_BR',
+  height: 400,
+  plugins: [
+    'advlist autolink link image lists charmap print preview hr anchor pagebreak',
+    'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+    'table emoticons template paste help'
+  ],
+  toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
+    ' link image | print preview media fullpage | ',
+  menubar: 'edit view insert format tools help',
+  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+});
+</script>
+
+<script>
+autoResizeTextarea(document.querySelectorAll("textarea.auto-resize"), {maxHeight: 120})
+</script>
 
 <dtml-var standard_html_footer>

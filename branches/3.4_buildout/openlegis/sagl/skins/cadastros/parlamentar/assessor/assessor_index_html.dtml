@@ -1,56 +1,40 @@
-<dtml-var standard_html_header>
-
-<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_parlamentares">Ajuda</a>
-
-<dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
-  <dtml-call expr="REQUEST.set('nom_parlamentar', nom_parlamentar)">
-  <input type="hidden" name="nom_parlamentar" value="<dtml-var nom_parlamentar>"/>
-</dtml-in>
-
-<h1 class="firstHeading"><dtml-var nom_parlamentar></h1> 
-
-<form name="index_form" method="post" action="assessor_form">
-  <input type="hidden" name="cod_parlamentar" value="<dtml-var cod_parlamentar>"/>
-
-<dtml-var parlamentar_menu>
-
+<legend>Assessoria Parlamentar</legend>
+<dtml-if cod_parlamentar>
 <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)"> 
   <dtml-if sequence-start>
-       <fieldset><legend>Assessoria Parlamentar</legend>
-       <table>
+       <div class="table-responsive">
+         <table class="table table-bordered">
+           <thead class="table-secondary">
+           <tr> 
+            <th>Nome</th>
+            <th>Cargo</th>
+            <th>Login?</th>
+            <th>Nomeação</th>
+            <th>Exoneração</th>
+           </tr>
+          </thead>
+  </dtml-if sequence-start>
          <tr> 
-            <th class="form-label">Nome</th>
-            <th class="form-label">Cargo</th>
-            <th class="form-label">Data Nomeação</th>
-            <th class="form-label">Data Exoneração</th>
-            <th class="form-label">Login?</th>
-         </tr>
-  </dtml-if sequende-start>
-         <tr> 
-           <td class="texto">
-              <a href="assessor_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>&amp;cod_assessor=<dtml-var cod_assessor>"><b><dtml-var nom_assessor></b></a>
+           <td>
+              <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Assessoria - <dtml-var nom_parlamentar>" data-src="assessor/assessor_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>&cod_assessor=<dtml-var cod_assessor>&modal=1"><b><dtml-var nom_assessor></b></a>
            </td>
-           <td class="texto">
+           <td>
               <dtml-var des_cargo>
            </td>
-           <td class="texto"><dtml-var dat_nomeacao null=""></td>
-           <td class="texto"><dtml-var dat_exoneracao null=""></td>
-           <td class="texto" align="center">
-                <dtml-if col_username>Sim<dtml-else>Não</dtml-if>                
+           <td>
+              <dtml-if col_username>Sim<dtml-else>Não</dtml-if>                
            </td>
+           <td><dtml-var dat_nomeacao null></td>
+           <td><dtml-var dat_exoneracao null></td>
          </tr>
   <dtml-if sequence-end>
        </table>
-       </fieldset>
+     </div>
   </dtml-if sequence-end>
 <dtml-else>
-   <fieldset><legend>Assessores</legend>
-      <p class="texto">Não há nenhum assessor cadastrado para esse parlamentar.</p>
-   </fieldset>
+     <p>Não há nenhum assessor cadastrado.</p>
 </dtml-in>
-  <p align="center">
-    <input type="submit" name="btn_incluir" class="botao" value="Incluir Assessor"/>
-  </p><br />
-</form>
-</body>
-<dtml-var standard_html_footer>
+  <div class="text-left">
+     <button type="button" class="btn m btn-primary d-print-none" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Assessor - <dtml-var nom_parlamentar>" data-src="assessor/assessor_form?cod_parlamentar=<dtml-var cod_parlamentar>&modal=1">Incluir</button>
+  </div>
+</dtml-if>
