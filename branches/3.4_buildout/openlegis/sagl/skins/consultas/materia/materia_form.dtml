@@ -83,13 +83,16 @@
  </dtml-in>
 
  <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">
-   <dtml-if num_materia>
-     <div class="row">
-          <p class="col-12 col-md-6"><b>Processo:</b> <dtml-var num_materia missing null="">/<dtml-var ano_materia missing null=""></p>
-        </div>
-     </div>
-   </dtml-if>
+   <dtml-call expr="REQUEST.set('temProcesso', num_materia)">
  </dtml-in>
+
+ <dtml-if temProcesso>
+    <div class="row">
+      <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">    
+          <p class="col-12 col-md-6"><b>Processo:</b> <dtml-var num_materia missing null="">/<dtml-var ano_materia missing null=""></p>
+      </dtml-in>
+    </div>
+</dtml-if>
 
  <dtml-if num_protocolo>
   <div class="row"> 
@@ -663,9 +666,7 @@
                     <tr>
                       <th>Data</th>
                       <th>Origem</th>
-                      <dtml-if cod_unid_tram_dest>                                            
-                        <th>Destino</th>
-                      </dtml-if>
+                      <th>Destino</th>
                       <th>Status</th>                      
                     </tr>
                   </thead>
@@ -677,13 +678,14 @@
                          <dtml-var nom_unidade_join>
                        </dtml-in>                       
                       </td>
-                    <dtml-if cod_unid_tram_dest>                      
                       <td>
-                         <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
-                           <dtml-var nom_unidade_join>
-                         </dtml-in>
+                         <dtml-if cod_unid_tram_dest>                      
+                          <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
+                            <dtml-var nom_unidade_join>
+                          </dtml-in>
+                         <dtml-else>
+                         </dtml-if>
                       </td>
-                    </dtml-if>
                       <td>
                         <dtml-if expr="dat_encaminha!=None">
                           <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
