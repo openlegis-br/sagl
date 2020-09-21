@@ -1,36 +1,5 @@
-<dtml-var standard_html_header>
+<h1 class="firstHeading">Emendas</h1>
 
-<script type="text/javascript">
-
-$(document).ready(function() {
-	$(".popup").fancybox({
-		maxWidth	: 700,
-		maxHeight	: 500,
-		fitToView	: false,
-		width		: '70%',
-		height		: '72%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-		closeEffect	: 'fade'
-	});
-});
-
-</script>
-
-<a id="ajuda" href="&dtml-portal_url;/ajuda/emenda">Ajuda</a>
-
-<h1 class="firstHeading">Matéria Legislativa</h1>
-
-<dtml-var materia_menu>
-<dtml-var materia_header>
-
-<form name="index_form" action="emenda_form">
-<input type="hidden" name="cod_materia" value="<dtml-var cod_materia>">
-
-<fieldset><legend>Emendas</legend>
 <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
 <dtml-call "REQUEST.set('existe_seq_posterior', 0)">
 <dtml-if page>
@@ -49,28 +18,33 @@ $(document).ready(function() {
     <dtml-if previous-sequence>
       <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
     </dtml-if previous-sequence>
-    <table>
+    <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead class="table-secondary">
        <tr> 
-         <th class="form-label">Número</th>
-         <th class="form-label">Tipo</th>
-         <th class="form-label">Ementa</th>
-         <th class="form-label">Autoria</th>
-         <th width="10%" class="form-label">PDF</th>
-         <th width="17%" class="form-label">Resultado</th>
+         <th width="10%">Número</th>
+         <th>Tipo</th>
+         <th width="35%">Ementa</th>
+         <th width="20%">Autoria</th>
+         <th width="10%">Arquivo</th>
+         <th width="15%">Resultado</th>
        </tr> 
+     </thead>
     </dtml-if sequence-start>
        <tr> 
-          <td class="texto"><a href="emenda_mostrar_proc?cod_emenda=<dtml-var cod_emenda>&cod_materia=<dtml-var cod_materia>">
-           <b><dtml-var num_emenda></b></a></td>
-             <td class="texto"><dtml-var des_tipo_emenda></td>
-          <td class="texto"><dtml-var txt_ementa></td>
-          <td class="texto">
+          <td>
+            <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Emenda" data-src="emenda/emenda_mostrar_proc?cod_emenda=<dtml-var cod_emenda>&cod_materia=<dtml-var cod_materia>&modal=1">
+               <b><dtml-var num_emenda></b>
+            </a>
+          </td>
+          <td><dtml-var des_tipo_emenda></td>
+          <td><dtml-var txt_ementa></td>
+          <td>
            <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
-             <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+             <dtml-var nom_autor_join><dtml-unless sequence-end>, </dtml-unless>
            </dtml-in>
           </td>
-          <td class="texto">
-               <div align="center">
+          <td>
               <dtml-call expr="REQUEST.set('des_tipo_proposicao', 'Emenda')">
                 <dtml-in expr="zsql.proposicao_obter_zsql(cod_materia=cod_materia,cod_emenda=cod_emenda)">
                  <dtml-if cod_proposicao>
@@ -79,9 +53,8 @@ $(document).ready(function() {
                    <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
                      <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
                       <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
-                        <a target="blank" href="<dtml-var proposicao>">
-                          <img align="middle" height="25" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica">
-                          <p style="line-height: 1.3em; font-size:11px"><b>Proposição Eletrônica<br /><dtml-var cod_documento></p>
+                        <a target="blank" href="<dtml-var proposicao>" title="Proposição Eletrônica">
+                          <i class="fas fa-certificate" style="font-size: 21px;margin-right: 3px;"></i>
                         </a>
                      </dtml-let>
                    </dtml-if>
@@ -91,24 +64,23 @@ $(document).ready(function() {
                 <dtml-let id_emenda="_.str(cod_emenda)+'_emenda.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.emenda,id_emenda)">
                     <dtml-let emenda="_.getattr(sapl_documentos.emenda,id_emenda).absolute_url">
-                      <a target="_blank" href="<dtml-var emenda>"><img align="middle" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                      <a target="_blank" href="<dtml-var emenda>" title="Texto Original">
+                        <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 3px;"></i>
+                      </a>
                     </dtml-let>
                   </dtml-if>
                 </dtml-let>
-            </div>
           </td>
-            <td class="texto">
+            <td>
              <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_materia=cod_materia,cod_emenda=cod_emenda, ind_excluido=0)">
                 <dtml-if tip_resultado_votacao>
                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
                     <dtml-if expr="tip_votacao == 2 ">
-                       <a href="&dtml-portal_url;/consultas/sessao_plenaria/sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tipo_materia=acessoria" class="popup" data-fancybox-type="iframe">
-                        <b><dtml-var nom_resultado></a></b><br />
+                       <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Resultado de Votação" data-src="<dtml-var portal_url>/consultas/sessao_plenaria/sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tipo_materia=acessoria&modal=1">  
+                         <b><dtml-var nom_resultado></b>
+                       </a>
                     <dtml-else>
-                        <b><dtml-var nom_resultado></b><br />
-                    </dtml-if>
-                    <dtml-if votacao_observacao>
-                        <dtml-var votacao_observacao>
+                       <dtml-var nom_resultado>
                     </dtml-if>
                 </dtml-in>
                 <dtml-else><i>Matéria não votada</i>
@@ -119,24 +91,21 @@ $(document).ready(function() {
        </tr>
     <dtml-if sequence-end>
       </table>
+      </div>
       <dtml-if next-sequence>
 	<dtml-call "REQUEST.set('existe_seq_posterior', 1)">
       </dtml-if next-sequence>
       <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
-        <p align="center" class="texto"><b>          
+      <nav aria-label="Paginação">
+        <ul class="pagination justify-content-center">       
           <dtml-var "pysc.PageListOutput_pysc('emenda_index_html', page, step, _['sequence-length'], cod_materia=cod_materia)">
-        </b></p>
+       </ul>
+      </nav>
       </dtml-if>
     </dtml-if sequence-end>
    <dtml-else>
-      <span class="texto">Não há nenhuma emenda cadastrada.</span>
+      <p>Nenhuma emenda cadastrada.</p>
    </dtml-in>
-   </fieldset>
     
-  <p align="center">
-     <input type="submit" class="botao" name="btn_incluir" value="Incluir Emenda">
-  </p>
+  <button type="button" class="btn m btn-primary d-print-none" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Emenda" data-src="emenda/emenda_form?cod_materia=<dtml-var cod_materia>&modal=1">Incluir Emenda</button>
 
-</form>
-
-<dtml-var standard_html_footer>

@@ -2,114 +2,113 @@
 
 <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
   <dtml-call expr="REQUEST.set('nom_comissao', nom_comissao)">
+  <dtml-call expr="REQUEST.set('sgl_comissao', sgl_comissao)">
 </dtml-in>
+
+<h1 class="firstHeading"><dtml-var nom_comissao> - <dtml-var sgl_comissao></h1> 
+
+<legend>Documentos Publicados</legend>
 
 <script type="text/javascript">
-<!--
-function submeter(endereco){
-var form = document.comissao_form;      
-endereco += '?cod_comissao=<dtml-var cod_comissao>&incluir=1';
-location.href = endereco;
-}   
-//-->
-</SCRIPT>
+$(document).ready(function() {
+    var table = $('#documentos_table').DataTable( {
+        "responsive": true,
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_comissoes">Ajuda</a>
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
+});
+</script>
 
-<h1 class="firstHeading"><dtml-var nom_comissao></h1> 
-
-<dtml-if cod_comissao>
-<div id="barra-conteudo">
-<ul>
-   <li>
-      <a href="&dtml-portal_url;/consultas/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>">Início</a>
-   </li>
-   <li>
-      <a href="&dtml-portal_url;/consultas/comissao/composicao/index_html?cod_comissao=<dtml-var cod_comissao>">Composição</a>
-   </li>
-   <li>
-      <a href="&dtml-portal_url;/consultas/comissao/materia/index_html?cod_comissao=<dtml-var cod_comissao>">Matérias</a>
-   </li>
-   <li>
-      <a href="&dtml-portal_url;/consultas/comissao/reuniao/index_html?cod_comissao=<dtml-var cod_comissao>">Reuniões</a>
-   </li>
-   <li>
-      <a class="selecionado">Documentos</a>
-   </li>
-</ul>
-</div>
-</dtml-if>
-
-<form name="documento_index_form" action="documento_form">
- <input type="hidden" name="cod_comissao" value="<dtml-var cod_comissao>" />
-<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
-<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
-<dtml-if page>
-<dtml-call "REQUEST.set('page', _.int(page))">
-<dtml-else>
-<dtml-call "REQUEST.set('page', 1)">
-</dtml-if>
-<dtml-if step>
-<dtml-call "REQUEST.set('step', _.int(step))">
-<dtml-else>
-<dtml-call "REQUEST.set('step', 12)">
-</dtml-if>
-<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
- <dtml-in expr="zsql.documento_comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)" size="step" start="start" orphan=0>
-    <dtml-if sequence-start>
-      <fieldset><legend>Documentos</legend>
-      <table>
-        <tr>
-          <th width="15%" class="form-label">Data</th>
-          <th width="45%" class="form-label">Descrição</th>
-          <th width="25%" class="form-label">Observações</th>
-          <th width="15%" class="form-label">Arquivo</th>
-        </tr>
-  <dtml-if previous-sequence>
-     <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
-  </dtml-if previous-sequence>
-    </dtml-if sequence-start>
-       <dtml-if sequence-even>
+   <table id="documentos_table" class="table table-bordered responsive nowrap" style="width:100%">
+      <thead class="table-secondary">
          <tr>
-       <dtml-else>
-         <tr class="even">
-       </dtml-if>
-             <td class="texto"><b><dtml-var dat_documento></b></td>
-             <td class="texto"><dtml-var txt_descricao></td>
-             <td class="texto"><dtml-var txt_observacao missing null=""></td>
-             <td class="texto">
-                <dtml-let id_documento="_.str(cod_documento)+'_documento.pdf'">
-                  <dtml-if "_.hasattr(sapl_documentos.documento_comissao,id_documento)">
-                    <dtml-let documento="_.getattr(sapl_documentos.documento_comissao,id_documento).absolute_url">
-	             <div align="center">
-                      <a target="_blank" href="<dtml-var documento>"><img align="middle" border="0" src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
-		     </div>
-                    </dtml-let>
-                  <dtml-else>
-	            <div align="center">
-                      <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
-		    </div>
-                  </dtml-if>
-                </dtml-let>
-             </td>
+           <th>Data</th>
+           <th>Descrição</th>
+           <th>Arquivo</th>
          </tr>
-    <dtml-if sequence-end>
-      </table>
-     </fieldset>
-  <dtml-if next-sequence>
-    <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
- </dtml-if next-sequence>
- <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
-  <p align="center" class="form-text"><b> 
-   <dtml-var "pysc.PageListOutput_pysc('documento_index_html', page, step, _['sequence-length'], cod_comissao=cod_comissao)">
-  </p>
-  </dtml-if>
-    </dtml-if sequence-end>
-<dtml-else>
- <fieldset><legend>Documentos</legend>
- <p class="texto">Nenhum documento cadastrado.</p>
- </fieldset>
-</dtml-in>
-</form>
+      </thead>
+   <tbody>
+   <dtml-in expr="zsql.documento_comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
+     <tr>
+       <td>
+         <dtml-var dat_documento>
+       </td>
+       <td><dtml-var txt_descricao></td>
+       <td>
+         <dtml-let id_documento="_.str(cod_documento)+'_documento.pdf'">
+            <dtml-if "_.hasattr(sapl_documentos.documento_comissao,id_documento)">
+               <dtml-let documento="_.getattr(sapl_documentos.documento_comissao,id_documento).absolute_url">
+                    <a target="_blank" href="<dtml-var documento>"><i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;"></i></a>
+               </dtml-let>
+            <dtml-else>
+                 <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;color: #e9e9e9"></i>
+            </dtml-if>
+         </dtml-let>
+       </td>
+     </tr>
+   </dtml-in>
+     </tbody>
+    </table>
+    
+  <button type="button" class="btn btn-secondary d-print-none mt-3" onClick="history.go(-1)">Voltar</button>
+
+
 <dtml-var standard_html_footer>
 

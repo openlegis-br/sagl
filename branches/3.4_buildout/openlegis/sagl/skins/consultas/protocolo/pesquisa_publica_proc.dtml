@@ -1,25 +1,34 @@
 <dtml-var standard_html_header>
 
+<h1 class="firstHeading">Consulta de Protocolo</h1>
+
 <dtml-in expr="zsql.protocolo_pesquisa_publica_zsql(chave_acesso=txt_chave_acesso)">
   <dtml-call expr="REQUEST.set('resultado', '1')">
-  <h1 class="firstHeading">Protocolo nº <dtml-var num_protocolo>/<dtml-var ano_protocolo></h1>
-  <div style="font-size:13px ;margin-top: 7px;">
-    <table>
+  <legend>Informações do Protocolo</legend>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+     <thead>
+      <tr>
+         <td colspan="2">
+           Protocolo nº <dtml-var num_protocolo>/<dtml-var ano_protocolo>
+         </td>
+      </tr>
+     </thead>
       <tr>
         <th width="25%"><b>Entrada</b></th>
         <td><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> - <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td>
       </tr>
       <tr>
         <th><b>Assunto</b></th>
-        <td colspan="3"><dtml-var txt_assunto_ementa></td>
+        <td><dtml-var txt_assunto_ementa></td>
       </tr>
       <tr>
         <th><b>Interessado</b></th>
-        <td colspan="3"><dtml-var txt_interessado></td>
+        <td><dtml-var txt_interessado></td>
       </tr>
       <tr>
         <th><b>Processo</b></th>
-        <td colspan="3">
+        <td>
          <dtml-if cod_documento>
            <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento>
          <dtml-else>
@@ -30,11 +39,12 @@
     </table>
   </div>
 <dtml-if cod_documento>
-  <div style="font-size:13px ;margin-top: 15px;">
+  <div>
     <legend>Movimentações</legend>
     <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento)">
      <dtml-if sequence-start>
-      <table>
+      <table class="table tablep-bordered">
+       <thead>
         <tr>
           <th width="25%">
             Data
@@ -43,6 +53,7 @@
             Movimento
           </th>
         </tr>
+       </thead>
      </dtml-if sequence-start>
         <tr>
           <td><dtml-var dat_tramitacao></td>
@@ -61,30 +72,32 @@
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
        </dtml-in> 
-              <br/><b>Situação:</b> <dtml-var expr="des_status" missing null=""> <dtml-var expr="txt_tramitacao" missing null> <dtml-if expr="txt_tramitacao!=''"> - <dtml-var expr="txt_tramitacao" missing null></dtml-if>
+       <br/><b>Situação:</b> <dtml-var expr="des_status" missing null=""> <dtml-var expr="txt_tramitacao" missing null> <dtml-if expr="txt_tramitacao!=''"> - <dtml-var expr="txt_tramitacao" missing null></dtml-if>
           </td>
         </tr>
      <dtml-if sequence-end>
       </table>
      </dtml-if sequence-end>
     <dtml-else>
-      <p>Não há nenhuma movimentação registrada.</p>
+      <p>Nenhuma movimentação registrada.</p>
     </dtml-in>
   </div>
 </dtml-if>
 <dtml-else>
-  <h1 class="firstHeading">Consulta de Protocolo</h1>
-  <div class="ui-state-error ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
-    <p>
-      <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
-      <strong>A Chave de Acesso informada é inválida!</strong>
-    </p>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5>Chave de acesso <b><dtml-var txt_chave_acesso></b> não localizada!</h5>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
   </div>
 </dtml-in>
-  <p align="center">
-    <dtml-if resultado>
-      <input type="button" class="botao" id="hideprint" name="print_button" value="Imprimir" onClick="window.print();return false;" />
-    </dtml-if>
-    <input class="botao" type="button" value="Nova Consulta" onClick="history.back()">
-  </p>
+</div>
+
+  <div class="text-center">
+    <button class="btn btn-primary d-print-none" onClick="history.back()"><i class="fas fa-fw fa-barcode"></i> Nova Consulta</button>
+    <button class="btn btn-secondary d-print-none" onClick="window.print();return false;"><i class="fas fa-fw fa-print"></i> Imprimir</button>
+  </div>
+  
 <dtml-var standard_html_footer>
+

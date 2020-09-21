@@ -6,13 +6,15 @@ max_cache : 100
 </dtml-comment>
 
 SELECT
-       REPLACE(bancada.cod_bancada, 'L', '') as cod_bancada,
+       DISTINCT REPLACE(bancada.cod_bancada, 'L', '') as cod_bancada,
        bancada.nom_bancada as nome_bancada,
        CONCAT (bancada.nom_bancada, ' (', DATE_FORMAT(legislatura.dat_inicio, '%Y'),"/",DATE_FORMAT(legislatura.dat_fim, '%Y'),')') as nom_bancada,
        bancada.num_legislatura as num_legislatura_sel,
        bancada.cod_partido as cod_partido_sel,
        DATE_FORMAT(bancada.dat_criacao, '%d/%m/%Y') as dat_criacao,
-       DATE_FORMAT(bancada.dat_extincao, '%d/%m/%Y') as dat_extincao
+       DATE_FORMAT(bancada.dat_extincao, '%d/%m/%Y') as dat_extincao,
+       bancada.dat_criacao as data_criacao,
+       bancada.dat_extincao as data_extincao
 
 FROM   
        bancada
@@ -30,7 +32,7 @@ FROM
 </dtml-sqlgroup>
 
 <dtml-if cod_periodo_comp>
-  and periodo_comp_bancada.cod_periodo =  cod_periodo_comp
+  and periodo_comp_bancada.cod_periodo_comp =  cod_periodo_comp
 </dtml-if>
 
 <dtml-if nom_bancada_match>

@@ -29,10 +29,17 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
     inf_basicas_dic['sgl_uf']= local.sgl_uf
 
 for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
- for protocolo in context.zsql.protocolo_pesquisar_zsql(num_protocolo=materia.num_protocolo,ano_protocolo=materia.ano_ident_basica):
-   num_protocolo = str(protocolo.num_protocolo) + '/' + str(protocolo.ano_protocolo)
-   dat_protocolo = context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)
-   hor_protocolo = protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
+ if materia.num_protocolo:
+    for protocolo in context.zsql.protocolo_pesquisar_zsql(num_protocolo=materia.num_protocolo,ano_protocolo=materia.ano_ident_basica):
+      if protocolo.cod_protocolo:
+         num_protocolo = str(protocolo.num_protocolo) + '/' + str(protocolo.ano_protocolo)
+         dat_protocolo = context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)
+         hor_protocolo = protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
+ else:
+    num_protocolo = ''
+    dat_protocolo = materia.dat_apresentacao
+    hor_protocolo = ''
+  
  dat_vencimento = " "
  if materia.dat_fim_prazo != None:
    dat_vencimento = context.pysc.iso_to_port_pysc(materia.dat_fim_prazo)

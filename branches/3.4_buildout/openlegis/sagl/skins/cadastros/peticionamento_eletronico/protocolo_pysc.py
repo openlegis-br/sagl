@@ -14,7 +14,7 @@ session = REQUEST.SESSION
 
 lst_assunto = REQUEST.form['lst_assunto']
 txa_txt_assunto = REQUEST.form['txa_txt_assunto']
-if context.sapl_documentos.props_sapl.numero_protocolo_anual == 1:
+if context.sapl_documentos.props_sagl.numero_protocolo_anual == 1:
     for numero in context.zsql.protocolo_numero_obter_zsql(ano_protocolo = DateTime().strftime('%Y')):
         hdn_num_protocolo = int(numero.novo_numero)
 else:

@@ -1,15 +1,5 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript">
-   function atualiza_periodo_comp(cod_periodo_comp, num_legislatura){
-        location.href = "<dtml-var absolute_url>?cod_periodo_comp_sel="+cod_periodo_comp+"&hdn_num_legislatura="+num_legislatura;
-   }   
-   function atualiza_num_leg(num_legislatura){    
-        location.href = "<dtml-var absolute_url>?hdn_num_legislatura="+num_legislatura;
-   }
-</script>
-
-<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_bancada">Ajuda</a>
 <h1 class="firstHeading">Bancadas</h1>
 
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Parlamentar', 'Operador Tabela Auxiliar'])">
@@ -23,116 +13,129 @@
 </dtml-if>
 
 <form name="index_form">
- <fieldset>
- <div class="section group">
-   <div class="col span_1_of_2">
-         <label for="lst_num_legislatura">Legislatura:</label>
-         <select id="lst_num_legislatura" name="lst_num_legislatura" size="1" onChange="atualiza_num_leg(form.lst_num_legislatura [form.lst_num_legislatura.selectedIndex].value)" >    
+ <div class="row">
+  <div class="col-12 col-sm-6 mb-3">
+    <label for="lst_num_legislatura">Selecione a Legislatura:</label>
+         <select class="form-control selectpicker show-tick jumpmenu" data-dropup-auto="false" data-size="6" id="lst_num_legislatura" name="lst_num_legislatura">    
             <dtml-in expr="zsql.legislatura_obter_zsql()">
                <option 
                   <dtml-if expr="_.has_key('hdn_num_legislatura') and num_legislatura==_.int(hdn_num_legislatura)">
                      selected
+                     <dtml-call expr="REQUEST.set('data_fim_leg', dat_fim)">
                   <dtml-elif expr="not _.has_key('hdn_num_legislatura') and _.DateTime() >= dat_inicio and _.DateTime() <= dat_fim">
                      <dtml-call expr="REQUEST.set('hdn_num_legislatura', num_legislatura)">
+                     <dtml-call expr="REQUEST.set('data_fim_leg', dat_fim)">
                      selected
                   </dtml-if>
-                  value="<dtml-var num_legislatura>">
+                  value="<dtml-var ACTUAL_URL>?hdn_num_legislatura=<dtml-var num_legislatura>">
                   <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">
                   <dtml-if expr="(_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim)">
                      (Atual)
                   </dtml-if>
                </option>
             </dtml-in>
-         </select>
-       <dtml-if expr="not _.has_key('hdn_num_legislatura')">
-        <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
-            <dtml-if sequence-start>
-               <dtml-call expr="REQUEST.set('hdn_num_legislatura', num_legislatura)">
+            <option 
+               <dtml-if expr="_.has_key('hdn_num_legislatura') and hdn_num_legislatura=='-1'">
+                  selected
+               </dtml-if>
+               value="<dtml-var ACTUAL_URL>?hdn_num_legislatura=-1">sem registro
+            </option>
+            <dtml-if expr="not _.has_key('hdn_num_legislatura')">
+               <dtml-call expr="REQUEST.set('hdn_num_legislatura', '-1')">
             </dtml-if>
-        </dtml-in>
-       </dtml-if>
+         </select>
    </div>
-   <div class="col span_1_of_2">
-       <label for="lst_periodo_comp">Período:</label>
-              <select id="lst_periodo_comp" name="lst_periodo_comp" size="1" onChange="atualiza_periodo_comp(form.lst_periodo_comp[form.lst_periodo_comp.selectedIndex].value, form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value)">
-      <dtml-in expr="zsql.periodo_comp_bancada_obter_zsql(num_legislatura=hdn_num_legislatura)">
-
-              <option
-                <dtml-if expr="((not _.has_key('cod_periodo_comp_sel') and not _.has_key('prim_sel') 
-                                and (_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim)))
-                                or (_.has_key('cod_periodo_comp_sel') and cod_periodo_comp == cod_periodo_comp_sel)
-                                or (not _.has_key('cod_periodo_comp_sel') and not _.has_key('prim_sel'))">
-                     selected
-                     <dtml-call expr="REQUEST.set('prim_sel', cod_periodo_comp)">
-                     <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', cod_periodo_comp)">
-                </dtml-if>
-                 value="<dtml-var cod_periodo_comp>">
-                 <dtml-var dat_inicio_periodo> a <dtml-var dat_fim_periodo>
-		<dtml-if expr="(_.DateTime() >= dat_inicio) and (_.DateTime() <= dat_fim)">(Atual)</dtml-if>
+   <div class="col-12 col-sm-6 mb-3">
+     <label for="lst_periodo_comp">Selecione o Período:</label>
+     <select class="form-control selectpicker show-tick jumpmenu" data-size="6" data-dropup-auto="false" id="lst_periodo_comp" name="lst_periodo_comp">
+       <dtml-in expr="zsql.periodo_comp_bancada_obter_zsql(num_legislatura=hdn_num_legislatura)">
+          <option
+            <dtml-if expr="((not _.has_key('cod_periodo_comp_sel') and not _.has_key('prim_sel') 
+                            and (_.DateTime() >= dat_inicio and _.DateTime() <= dat_fim)))
+                            or (not _.has_key('cod_periodo_comp_sel') and not _.has_key('prim_sel')) 
+                            or (_.has_key('cod_periodo_comp_sel') and cod_periodo_comp == cod_periodo_comp_sel)">
+                 selected
+                 <dtml-call expr="REQUEST.set('prim_sel', cod_periodo_comp)">
+                 <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', cod_periodo_comp)">
+            </dtml-if>
+            value="<dtml-var ACTUAL_URL>?cod_periodo_comp_sel=<dtml-var cod_periodo_comp>&hdn_num_legislatura=<dtml-var num_legislatura>">
+            <dtml-var dat_inicio_periodo> a <dtml-var dat_fim_periodo>
+            <dtml-if expr="(_.DateTime() >= dat_inicio) and (_.DateTime() <= dat_fim)">(Atual)</dtml-if>
               </option>
-
-      </dtml-in>
+       </dtml-in>
      </select>
-    </div>
+   </div>
   </div>
-</fieldset>
-<dtml-call expr="REQUEST.set('existe_ocorrencia', 0)">
-<dtml-call expr="REQUEST.set('listar', 1)">
-<dtml-call expr="REQUEST.set('primeiro_listado', 1)">
-<fieldset>
-<dtml-if expr="_.has_key('hdn_num_legislatura')">
-<dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=hdn_num_legislatura,cod_periodo_comp=cod_periodo_comp_sel,ind_excluido=0)">
-  <dtml-if sequence-start>
-    <table id="bancadas" class="tablesorter">
-    <thead>
-     <tr>
-       <th class="form-label" width="45%">&nbsp;Nome da Bancada</th>
-       <th class="form-label" width="40%">&nbsp;Liderança</th>
-       <th class="form-label" width="15%">&nbsp;Parlamentares</th>
-     </tr>
-    </thead>
-  </dtml-if sequence-start>
-     <tr>
-       <td class="texto">
-         <a href="bancada_index_form?cod_bancada=<dtml-var cod_bancada>&num_legislatura=<dtml-var hdn_num_legislatura>&cod_periodo_comp=<dtml-var cod_periodo_comp_sel>">
-           <b><dtml-var nome_bancada></b>
-         </a>
-       </td>
-       <dtml-in expr="zsql.bancada_obter_lider_zsql(cod_bancada=cod_bancada,cod_periodo_comp=cod_periodo_comp_sel)">
-         <td class="texto">
-           <dtml-var nom_parlamentar>
-         </td>
-       <dtml-else>
-         <td class="texto">
-            sem registro
-         </td>
-       </dtml-in>
-       <dtml-in expr="zsql.bancada_contar_parlamentares_zsql(cod_bancada=cod_bancada, cod_periodo_comp=cod_periodo_comp_sel)">
-         <td class="texto">
-            <dtml-var num_parlamentares missing null="">
-          </td>
-       </dtml-in>
-     </tr>
-  <dtml-if sequence-end>
-   <dtml-if next-sequence>
-     <tr>
-       <td class="form-element">
-          <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
-            Próxima Página (<dtml-var next-sequence-size>)</a>
-       </td>
-     </tr>
-   </dtml-if next-sequence>
-   </table>
-  </dtml-if sequence-end>
- <dtml-else>
-       <p class="texto">Nenhuma Bancada cadastrada</p>
-</dtml-in>
-<dtml-else>
-   <div class="vereador">
-       <span class="texto">Não há nenhuma Legislatura cadastrada</span>
-   </div>     
-</dtml-if>
-</fieldset>
 </form>
+
+<dtml-if expr="_.has_key('hdn_num_legislatura') and _.has_key('cod_periodo_comp_sel')">
+ <dtml-in expr="zsql.periodo_comp_bancada_obter_zsql(cod_periodo_comp=cod_periodo_comp_sel,ind_excluido=0)">
+    <dtml-call expr="REQUEST.set('data_inicio', dat_inicio)">
+    <dtml-call expr="REQUEST.set('data_fim', dat_fim)">
+ </dtml-in>
+ <table class="table" id="bancadas">
+   <thead>
+     <tr>
+       <th width="45%">Nome</th>
+       <th width="40%">Liderança</th>
+       <th width="15%">Vereadores</th>
+     </tr>
+   </thead>
+   <tbody>
+   <dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=hdn_num_legislatura, cod_periodo_comp=cod_periodo_comp_sel,ind_excluido=0)">
+     <dtml-if expr="(dat_extincao and _.DateTime(data_criacao) >= _.DateTime(data_inicio)) and (_.DateTime(data_extincao) <= _.DateTime(data_fim))">
+        <tr>
+          <td>
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Parlamentar', 'Operador Tabela Auxiliar'])">
+               <a href="<dtml-var portal_url>/cadastros/bancada/bancada_index_form?cod_bancada=<dtml-var cod_bancada>&num_legislatura=<dtml-var hdn_num_legislatura>&cod_periodo_comp=<dtml-var cod_periodo_comp_sel>">
+            <dtml-else>
+                <a href="<dtml-var portal_url>/consultas/bancada/composicao_bancada_mostrar_proc?cod_bancada=<dtml-var cod_bancada>&num_legislatura=<dtml-var hdn_num_legislatura>&cod_periodo_comp=<dtml-var cod_periodo_comp_sel>">            
+            </dtml-if>
+              <b><dtml-var nome_bancada></b>
+            </a>
+          </td>
+          <dtml-in expr="zsql.bancada_obter_lider_zsql(cod_bancada=cod_bancada,cod_periodo_comp=cod_periodo_comp_sel)">
+             <td>
+               <dtml-var nom_parlamentar>
+             </td>
+          <dtml-else>
+             <td>
+                sem registro
+             </td>
+          </dtml-in>
+          <dtml-in expr="zsql.bancada_contar_parlamentares_zsql(cod_bancada=cod_bancada, cod_periodo_comp=cod_periodo_comp_sel)">
+            <td>
+               <dtml-var num_parlamentares missing null="">
+             </td>
+          </dtml-in>
+        </tr>
+     </dtml-if>
+  </dtml-in>
+   </tbody>
+  </table>   
+</dtml-if>
+
+<script type="text/javascript">
+    function initJumpMenus() {
+        // Turns all <select> elements with the 'jumpmenu' class into jump menus
+        var selectElements = document.getElementsByTagName("select");
+        for( i = 0; i < selectElements.length; i++ ) {
+            // Check for the class and make sure the element has an ID
+            if( selectElements[i].className == "form-control selectpicker show-tick jumpmenu" && document.getElementById(selectElements[i].id) != "" ) {
+                jumpmenu = document.getElementById(selectElements[i].id);
+                jumpmenu.onchange = function() {
+                    if( this.options[this.selectedIndex].value != '' ) {
+                        // Redirect
+                        location.href=this.options[this.selectedIndex].value;
+                    }
+                }
+            }
+        }
+    }
+    window.onload = function() {
+        initJumpMenus();
+    }
+</script>
+
 
 <dtml-var standard_html_footer>

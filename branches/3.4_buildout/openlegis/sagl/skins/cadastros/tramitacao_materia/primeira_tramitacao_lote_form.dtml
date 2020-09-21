@@ -1,35 +1,13 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="javascript/data_validar.js" "></script>
+<script src="javascript/data_validar.js"></script>
 
-<script type="text/javascript">
-<!--
+<script>
+
   function campos_criticar(form){
 
-      var dat_tramitacao = form.tram_dat_tramitacao.value.substring(6,10) + form.tram_dat_tramitacao.value.substring(3,5) + form.tram_dat_tramitacao.value.substring(0,2);
-      /*
-      if (dat_tramitacao > <dtml-var expr="_.DateTime.strftime(_.DateTime(), '%Y%m%d')">) {
-           alert("Data de tramitação deve ser menor ou igual à data corrente!");
-           form.tram_dat_tramitacao.focus();
-           form.tram_dat_tramitacao.select();
-           return false;
-      }
-      */
-      if (form.tram_dat_tramitacao.value == ""){
-         alert("A data de tramitação deve ser preenchida!");
-         form.tram_dat_tramitacao.focus();
-         return false;
-      }
-
-      if (!IsValidDate(form.tram_dat_tramitacao.value)){
-         alert("Digite uma data de tramitação válida!");
-         form.tram_dat_tramitacao.focus();
-         form.tram_dat_tramitacao.select();
-         return false;
-      }
-
-      if (form.tram_tip_materia.selectedIndex == 0){
-          alert("O Tipo da Matéria deve ser selecionado!");
+      if (form.tram_tip_materia.selectedIndex == ''){
+          alert("O tipo da matéria deve ser selecionado!");
           form.lst_tip_materia.focus();
           return false;
       }
@@ -66,74 +44,73 @@
 
       form.submit();
   }
-//-->
+
 </script>
 
-<script type="text/javascript">
-$(function() {
-	$('#tram_dat_tramitacao').datepick();
-	$('#txt_data_inicial').datepick();
-        $('#txt_data_final').datepick();
-});
-</script>
+<h1 class="firstHeading">Primeira Tramitação - Matérias</h1>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/tramitacao_lote">Ajuda</a>
-<h1 class="firstHeading">Primeira Tramitação de Matérias em Lote</h1>
+   <a class="btn btn-sm btn-primary mb-3 disabled" href="<dtml-var portal_url>/cadastros/tramitacao_materia/primeira_tramitacao_lote_form">Primeira Tramitação</a>
+   <a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_materia/cadastros/tramitacao_materia/tramitacao_lote_form">Tramitação em Lote</a>
 
-<div id="barra-conteudo">
-<ul>
-    <li>
-      <a href="&dtml-portal_url;/cadastros/tramitacao_materia/tramitacao_lote_form">Tramitação em Lote</a>
-    </li>
-    <li>
-      <a class="selecionado">Primeira Tramitação</a>
-    </li>
-</ul>
-</div>
+<form name="primeira_tramitacao_lote_form" method="post" action="primeira_tramitacao_lote_tramitar_proc" >
 
-<form name="primeira_tramitacao_lote_form" method="post" action="primeira_tramitacao_lote_tramitar_proc">
- <table>
-    <tr>
-     <th colspan="2" class="label">1. Selecione um tipo de matéria e preencha a data da primeira tramitação</th>
-    </tr>
-    <tr>
-     <td width="50%">
-      <label for="tram_tip_materia">Tipo de Matéria</label> <span class="campoObrigatorio">&nbsp;</span><br />
-      <select name="tram_tip_materia">
-      <option value=""></option>
-      <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
-      <option value="<dtml-var tip_materia missing>"> 
-      <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
-      </option>
-      </dtml-in>
-      </select>  
-     </td>
-     <td width="50%">
-      <label for="tram_dat_tramitacao">Data da Ação</label> <span class="campoObrigatorio">&nbsp;</span><br />
-      <dtml-call expr="REQUEST.set('data_atual', _.DateTime().strftime('%d/%m/%Y'))">
-      <input type="text" name="tram_dat_tramitacao" id="tram_dat_tramitacao" size="10" maxlength="10" value="<dtml-var data_atual>" onBlur="formata_data(form.tram_dat_tramitacao)">
-     </td>
-    </tr>
-    <tr><th colspan="2" class="label">2. Informe um período de apresentação de matérias sem registro de tramitação</th></tr>
-    <tr>
-     <td>
-      <label for="txt_data_inicial">Data Inicial</label> <span class="campoObrigatorio">&nbsp;</span><br />
-      <input type="text" name="txt_data_inicial" id="txt_data_inicial" size="10" maxlength="10" value="" onBlur="formata_data(form.txt_data_inicial)">
-     </td>
-     <td>
-      <label for="txt_data_final">Data Final</label> <span class="campoObrigatorio">&nbsp;</span><br />
-      <input type="text" name="txt_data_final" id="txt_data_final" size="10" maxlength="10" value="" onBlur="formata_data(form.txt_data_final)">
-     </td>
-    </tr>
-    <tr>
- </table>
+  <p class="h5">Localizar matérias sem tramitação</p>
 
-     <p align="center" p>
-      <input type="button" name="btn__primeira_tramitacao_lote_pesquisar" class="botao" value="Pesquisar" 
-       onClick="campos_criticar(document.primeira_tramitacao_lote_form)">&nbsp;&nbsp;
-      <input type="reset" name="btn_form_limpar" class="botaoExtra" value="Limpar">
-     </p>
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="tram_tip_materia" class="required">Tipo de Matéria</label>
+      <select id="tram_tip_materia" name="tram_tip_materia" class="custom-select" required>
+         <option>Selecione</option>
+         <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)">
+            <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia></option>
+         </dtml-in>
+      </select>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_data_inicial" class="required">Data Inicial</label>
+        <dtml-call expr="REQUEST.set('data_atual', _.DateTime().strftime('%d/%m/%Y'))">      
+        <input type="text" class="form-control date" id="txt_data_inicial" name="txt_data_inicial" autocomplete="off" required />
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_data_final" class="required">Data Final</label>
+      <input type="text" class="form-control date" id="txt_data_final" name="txt_data_final" autocomplete="off" required />
+    </div>
+    <script>
+        $('#txt_data_inicial').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#txt_data_final').val();
+            }
+        });
+        $('#txt_data_final').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#txt_data_inicial').val();
+            }
+        });      
+    </script>    
+ </div>  
+      
+ <div class="row">
+   <div class="col-12 text-left">
+    <input class="btn btn-primary" type="button" name="btn__primeira_tramitacao_lote_pesquisar" value="Pesquisar" onClick="campos_criticar(document.primeira_tramitacao_lote_form)" />
+   </div>
+ </div>
 
 </form>
+
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+</div>
 
 <dtml-var standard_html_footer>

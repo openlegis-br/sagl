@@ -54,7 +54,7 @@ for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_tramitac
   tramitacao_dic['dat_encaminha'] = tramitacao.dat_encaminha
   tramitacao_dic['des_status'] = tramitacao.des_status
   if tramitacao.txt_tramitacao != None and tramitacao.txt_tramitacao!='':
-     tramitacao_dic['txt_tramitacao'] = context.modelo_proposicao.xhtml2rml(tramitacao.txt_tramitacao,'P2')
+     tramitacao_dic['txt_tramitacao'] = context.extensions.xhtml2rml(tramitacao.txt_tramitacao,'P2')
   else:
      tramitacao_dic['txt_tramitacao'] = ''
   if tramitacao.dat_fim_prazo != None:

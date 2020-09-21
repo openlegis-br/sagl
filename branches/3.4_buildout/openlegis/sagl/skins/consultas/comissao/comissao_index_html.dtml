@@ -1,126 +1,115 @@
 <dtml-var standard_html_header>
 
-<link rel="stylesheet" href="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
-
 <script type="text/javascript">
-<!--
-   function comissao_listar(form){
-      if (form.chk_mostrar_extintas.checked)
-          var valchk = 1
-      else
-          var valchk = 0;
-      var URL = '<dtml-var absolute_url>?hdn_mostrar_extintas=' + valchk;
-      location.href = URL;
-   }
--->
+/* Formatting function for row details - modify as you need */
+$(document).ready(function() {
+    var table = $('#jdTable').DataTable( {
+        "responsive": true,
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
+});
 </script>
 
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
-
-<script type="text/javascript">
-<!--
-   $(document).ready(function() { 
-    $("#comissoes")
-    .tablesorter({
-	           theme: 'blue', 
-	           widgets:['filter'], 
-	           sortInitialOrder: 'desc',
-	           sortRestart: true,
-	           sortList: [[3,1],[0,0]]
-                })
-    .tablesorterPager({container: $("#pager")}); 
-    }); 
--->
-</script>
-
-<a id="ajuda" href="&dtml-portal_url;/ajuda/consultas#cons_comissoes">Ajuda</a>
 <h1 class="firstHeading">Comissões</h1>
 
-<form name="index_form">
-<div class="section group" style="padding-bottom:15px;">
- <label for="chk_mostrar_extintas">Mostrar extintas?</label>
-          <input type="checkbox" id="chk_mostrar_extintas" name="chk_mostrar_extintas"
-              <dtml-if hdn_mostrar_extintas>
-                  <dtml-if expr="hdn_mostrar_extintas=='1'">
-                      checked
-                  </dtml-if>
-              </dtml-if>
-           onChange="comissao_listar(document.index_form)">
-</div>
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
+   <div class="row">
+    <div class="col-12 text-left">
+       <a class="btn btn-sm btn-primary d-print-none mb-3" href="<dtml-var portal_url>/cadastros/comissao/comissao_form"><i class="fa fa-fw fa-plus"></i> Incluir Comissão</a>
+    </div>
+   </div>
+</dtml-if>  
 
-<dtml-call expr="REQUEST.set('param_sql', '0')">
-<dtml-if hdn_mostrar_extintas>
-    <dtml-if expr="hdn_mostrar_extintas=='1'">
-        <dtml-call expr="REQUEST.set('param_sql', '1')">
-    </dtml-if>
-</dtml-if>
 
-<dtml-if expr=" not _.has_key('tip_comissao')">
-  <dtml-call expr="REQUEST.set('tip_comissao', '')">
-</dtml-if>
+        <table id="jdTable" class="table table-bordered">
+            <thead class="table-secondary">
+                <tr>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <dtml-in expr="zsql.comissao_obter_zsql(ind_excluido=0,)">
+                    <tr>
+                        <td>
+                           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
+                              <b><a href="<dtml-var portal_url>/cadastros/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><dtml-var nom_comissao></a></b>
+                           <dtml-else>
+                              <b><a href="<dtml-var portal_url>/consultas/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><dtml-var nom_comissao></a></b>
+                           </dtml-if>
+                        </td>
+                        <td><dtml-var nom_tipo_comissao></td>
+                        <td>
+                            <dtml-if dat_extincao>Inativa<dtml-else>Ativa</dtml-if>
+                        </td>
+                    </tr>
+                </dtml-in>
+            </tbody>
+        </table>
 
- <dtml-in expr="zsql.comissao_obter_zsql(ind_excluido=0,tip_comissao=tip_comissao,ind_extintas=_.int(param_sql))">
-     <dtml-if previous-sequence>
-        <span class="form-element">
-            <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
-            Página Anterior (<dtml-var previous-sequence-size>)</a>
-        </span>
-      </dtml-if previous-sequence>
-    <dtml-if sequence-start>
-    <table id="comissoes" class="tablesorter">
-    <thead>
-     <tr>
-      <th class="form-label">Nome da Comissão</th>
-      <th class="form-label">Sigla</th>
-      <th class="form-label">Tipo</th>
-      <th class="form-label">Ativa?</th>
-     </tr>
-    </thead>
-    <tbody>
-    </dtml-if sequence-start>
-       <dtml-if sequence-even>
-        <tr>
-       <dtml-else>
-        <tr class="even">
-       </dtml-if>
-           <td class="texto"><b><a href="comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao >"><dtml-var nom_comissao></a></b></td>
-           <td class="texto"><dtml-var sgl_comissao></td>
-           <td class="texto"><dtml-var nom_tipo_comissao></td>
-           <td class="texto"><dtml-if dat_extincao>Não<dtml-else>Sim</dtml-if></td>
-        </tr>
-     <dtml-if sequence-end>
-   </tbody> 
-   </table>
-<div id="pager" class="pager">
-	<form>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
-		<input type="text" class="pagedisplay"/>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
-		<select class="pagesize">
-			<option selected="selected"  value="30">30</option>
-			<option value="60">60</option>
-		</select>
-	</form>
-</div>
-      <dtml-if next-sequence>
-        <span class="form-element">
-            <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
-            Próxima Página (<dtml-var next-sequence-size>)</a>
-        </span>
-      </dtml-if next-sequence>
-  </dtml-if sequence-end>
- <dtml-else>
-  <table>
-    <tr>
-      <td class="texto">Nenhuma comissão cadastrada.</td>
-    </tr>
-  </table>
- </dtml-in>
+    <div id="panelBtn" class="d-print-none" style="margin-bottom: 20px;">
+      <div class="row">
+         <div class="col-sm-12 mt-2"></div>
+      </div>
+    </div>
 
-</form>
 <dtml-var standard_html_footer>
-

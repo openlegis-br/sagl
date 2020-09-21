@@ -2,58 +2,52 @@
 <script type="text/javascript" src="javascript/data_validar.js" "></script>
 <script type="text/javascript">
 function campos_criticar(form){
-if (form.lst_parlamentar.selectedIndex == 0){
-alert("Selecione um parlamentar!");
-form.lst_parlamentar.focus();
-return false;
-}       
-if (form.lst_cargo_bancada.selectedIndex == 0){
-alert("Selecione um cargo!");
-form.lst_cargo_bancada.focus();
-return false;
-}
-if (!(form.rad_ind_titular[0].checked ||
-form.rad_ind_titular[1].checked)){
-alert("Selecione a opção titular!");
-form.rad_ind_titular[0].focus();
-return false;
-}
-if (form.txt_dat_designacao.value == "") {
-alert("Digite uma data de designação!");
-form.txt_dat_designacao.focus();
-return false;
-}
-if (!IsValidDate(form.txt_dat_designacao.value)) {
-alert("Digite uma data de designação válida!");
-form.txt_dat_designacao.focus();
-return false;     
-}
-if (form.txt_dat_desligamento.value != "" && 
-!IsValidDate(form.txt_dat_desligamento.value)) {
-alert("Digite uma data de desligamento válida!");
-form.txt_dat_desligamento.focus();
-return false;
-}
-form.submit();
+  if (form.lst_parlamentar.selectedIndex == 0){
+     $('#lst_parlamentar').addClass('is-invalid');
+     form.lst_parlamentar.focus();
+     return false;
+  }       
+  if (form.rad_ind_titular.selectedIndex==""){
+     $('#rad_ind_titular').addClass('is-invalid');
+     form.rad_ind_titular.focus();
+     return false;
+    }
+  if (form.lst_cargo_bancada.selectedIndex == 0){
+     $('#lst_cargo_bancada').addClass('is-invalid');
+     form.lst_cargo_bancada.focus();
+     return false;
+    }
+  if (form.txt_dat_designacao.value == "") {
+    $('#txt_dat_designacao').addClass('is-invalid');
+    form.txt_dat_designacao.focus();
+    return false;
+    }
+  if (!IsValidDate(form.txt_dat_designacao.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data de designação válida!"});
+    form.txt_dat_designacao.focus();
+    return false;     
+    }
+  if (form.txt_dat_desligamento.value != "" && 
+    !IsValidDate(form.txt_dat_desligamento.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data de desligamento válida!"});
+    form.txt_dat_desligamento.focus();
+    return false;
+  }
+  form.submit();
 }
 function composicao_excluir(form){
-if (confirm("Deseja realmente excluir?")) {  
-location.href="composicao_bancada_excluir_proc?cod_comp_bancada=" + form.hdn_cod_comp_bancada.value +
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href="composicao_bancada_excluir_proc?cod_comp_bancada=" + form.hdn_cod_comp_bancada.value +
 "&cod_bancada=" + form.hdn_cod_bancada.value +
+"&cod_periodo_comp=" + form.hdn_cod_periodo_comp.value +
 "&num_legislatura=" + form.hdn_num_legislatura.value;
-}
+   }
 }   
 </script>
-<script type="text/javascript">
-$(function() {
-$('#txt_dat_designacao').datepick();
-$('#txt_dat_desligamento').datepick();
-});
-</script>
-<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_comissoes">Ajuda</a>
 
 <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
   <dtml-call expr="REQUEST.set('nom_bancada', nom_bancada)">
+  <dtml-call expr="REQUEST.set('nome_bancada', nome_bancada)">
   <dtml-call expr="REQUEST.set('cod_partido_sel', cod_partido_sel)">
 </dtml-in>
 
@@ -62,7 +56,9 @@ $('#txt_dat_desligamento').datepick();
   <dtml-call expr="REQUEST.set('dat_fim', dat_fim_periodo)">
 </dtml-in>
 
-<h1 class="firstHeading"><dtml-var nom_bancada></h1> 
+<h1 class="firstHeading">Cadastro de Membro - <dtml-var nom_bancada></h1> 
+
+<h6 class="mb-3">Período de Composição: <dtml-var dat_inicio> a <dtml-var dat_fim></h6>
 
 <form name="composicao_bancada_form" method="post" action="composicao_bancada_salvar_proc">
   <input type="hidden" name="hdn_cod_comp_bancada" value="<dtml-var cod_comp_bancada missing>">
@@ -70,104 +66,118 @@ $('#txt_dat_desligamento').datepick();
   <input type="hidden" name="hdn_cod_periodo_comp" value="<dtml-var cod_periodo_comp missing>">
   <input type="hidden" name="hdn_cod_bancada" value="<dtml-var cod_bancada missing>">
   <input type="hidden" name="hdn_nom_bancada" value="<dtml-var nom_bancada missing>">
-<fieldset>
- <legend>Composição no período de <dtml-var dat_inicio> a <dtml-var dat_fim></legend>
-    <table>
-        <tr> 
-            <td class="form-element" colspan="2">Parlamentar<span class="campoObrigatorio">&nbsp;</span> <br />
-             <dtml-if expr="_.has_key('cod_comp_bancada')">
-                <input type="text" size="40" value="<dtml-var nom_parlamentar>" disabled /> 
-                <input type="hidden" name="lst_parlamentar" value="<dtml-var cod_parlamentar>">   
-             <dtml-else>
-                <select name="lst_parlamentar" size="1">
-                    <option>Selecione</option>
-                    <dtml-if expr="_.int(cod_partido_sel)!=0">
-                    <dtml-in expr="zsql.bancada_obter_parlamentares_zsql(num_legislatura=num_legislatura,cod_partido=cod_partido_sel)">
-                          <option 
-                            <dtml-if expr="cod_parlamentar_sel==composicao_bancada_form.cod_parlamentar_sel">
-                               selected 
-                            </dtml-if>
-                            value="<dtml-var cod_parlamentar_sel>">
-                            <dtml-var nom_parlamentar>
-                         </option>
-                    </dtml-in> 
-                    <dtml-else>
-                    <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=num_legislatura,ind_excluido=0)">
-                          <option 
-                            <dtml-if expr="cod_parlamentar==composicao_bancada_form.cod_parlamentar and _.has_key('cod_comp_bancada')">
-                               selected 
-                            </dtml-if>
-                            value="<dtml-var cod_parlamentar>">
-                            <dtml-var nom_parlamentar> / <dtml-var sgl_partido null="">
-                         </option>
-                    </dtml-in> 
-                    </dtml-if>
-                </select>
-            </dtml-if>
-            </td>
-            <td class="form-element">Titular <span class="campoObrigatorio">&nbsp;</span> <br />
-	            <dtml-in expr="['Não', 'Sim']">
-	            <input type="radio" name="rad_ind_titular" value="<dtml-var expr="_['sequence-index']">"
-                    <dtml-if expr="_.has_key('cod_comp_bancada') and _.has_key('ind_titular')"> 
-                    <dtml-if expr="ind_titular==1 and _['sequence-index']==1"> checked=1
-                    <dtml-elif expr="ind_titular==0 and _['sequence-index']==0"> checked=1
-                    </dtml-if>
-                    <dtml-else>
-                    </dtml-if> />
-                    <dtml-var expr="_['sequence-item']">
-                </dtml-in>
-            </td>
-        </tr>
-        <tr> 
-            <td class="form-element">Cargo <span class="campoObrigatorio">&nbsp;</span> <br />
-                <select name="lst_cargo_bancada">
-                    <option></option>
-                    <dtml-in expr="zsql.cargo_bancada_obter_zsql()">
-                    <option 
-	                    <dtml-if expr="cod_cargo==composicao_bancada_form.cod_cargo and _.has_key('cod_comp_bancada')">
-	                        selected 
-	                    </dtml-if>
-                        value="<dtml-var cod_cargo>">
-                        <dtml-var des_cargo>
-                    </option>
-                    </dtml-in>
-                </select>
-            </td>
-            <td class="form-element">Data Designação <span class="campoObrigatorio">&nbsp;</span> <br />
-                <input type="text"
-                       name="txt_dat_designacao"
-                       id="txt_dat_designacao"
-                       size="10"
-                       value="<dtml-var dat_designacao missing>" maxlength="10" onBlur="formata_data(form.txt_dat_designacao)">
-            </td>
-            <td class="form-element">Data Desligamento <br />
-                <input type="text"
-                       name="txt_dat_desligamento"
-                       id="txt_dat_desligamento"
-                       size="10"
-                       value="<dtml-var dat_desligamento missing null="">" maxlength="10" onBlur="formata_data(form.txt_dat_desligamento)">
-            </td>
-        </tr>
-        <tr> 
-            <td colspan="3" class="form-element">Motivo Desligamento <br />
-                <input type="text" name="txt_des_motivo_desligamento" size="60" value="<dtml-var des_motivo_desligamento missing null="">" maxlength="150">
-            </td>
-        </tr>
-        <tr> 
-            <td colspan="3" class="form-element">Observação <br />
-                <input type="text" name="txt_obs_composicao" size="60" value="<dtml-var obs_composicao missing null="">" maxlength="150">
-            </td>
-        </tr>
-    </table>
-</fieldset>
+  <dtml-if cod_comp_bancada>
+     <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/consultas/bancada/composicao_bancada_mostrar_proc?cod_bancada=<dtml-var cod_bancada>&cod_periodo_comp=<dtml-var cod_periodo_comp>&num_legislatura=<dtml-var num_legislatura>" />
+  </dtml-if>
 
-<p align="center">
-    <input type="button" name="btn_composicao_salvar" class="botao" value="Salvar"
+  <div class="form-row">
+     <div class="col-8 col-sm-8 mb-3">
+       <label for="lst_parlamentar" class="required">Vereador</label>
+       <dtml-if expr="_.has_key('cod_comp_bancada')">
+          <input class="form-control" type="text" size="40" value="<dtml-var nom_parlamentar>" disabled /> 
+          <input class="form-control" type="hidden" id="lst_parlamentar" name="lst_parlamentar" value="<dtml-var cod_parlamentar>">   
+       <dtml-else>
+          <select class="custom-select" id="lst_parlamentar" name="lst_parlamentar" size="1" required>
+              <option>Selecione</option>
+              <dtml-if expr="_.int(cod_partido_sel)!=0">
+                 <dtml-in expr="zsql.bancada_obter_parlamentares_zsql(num_legislatura=num_legislatura, cod_partido=cod_partido_sel)">
+                    <option 
+                      <dtml-if expr="_.has_key('cod_comp_bancada') and cod_parlamentar_sel == composicao_bancada_form.cod_parlamentar_sel">
+                         selected 
+                      </dtml-if>
+                      value="<dtml-var cod_parlamentar_sel>">
+                      <dtml-var nom_parlamentar>
+                    </option>
+                 </dtml-in> 
+              <dtml-else>
+                 <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=num_legislatura,ind_excluido=0)">
+                    <option 
+                      <dtml-if expr="_.has_key('cod_comp_bancada') and cod_parlamentar == composicao_bancada_form.cod_parlamentar">
+                         selected 
+                      </dtml-if>
+                      value="<dtml-var cod_parlamentar>">
+                      <dtml-var nom_parlamentar> / <dtml-var sgl_partido null="">
+                    </option>
+                 </dtml-in> 
+              </dtml-if>
+          </select>
+          <div class="invalid-feedback">
+             Este campo é obrigatório !
+          </div>
+       </dtml-if>
+     </div>
+     <div class="col-4 col-sm-4 mb-3">
+        <label for="rad_ind_titular" class="form-label required">Titular ?</label>
+        <select id="rad_ind_titular" name="rad_ind_titular" class="custom-select" required>
+         <option value="">Selecione</option>
+         <dtml-in expr="[(1,'Sim'),(0,'Não')]">      
+            <option value="<dtml-var expr="_['sequence-key']">" <dtml-if expr="_.has_key('cod_comp_bancada') and ind_titular==_['sequence-key']">selected</dtml-if>><dtml-var expr="_['sequence-item']"></option>
+         </dtml-in>
+        </select>
+        <div class="invalid-feedback">
+          Este campo é obrigatório !
+        </div>
+     </div>
+  </div>
+  <div class="form-row">
+     <div class="col-12 col-sm-6 mb-3">
+       <label for="lst_cargo_bancada" class="required">Cargo</label>
+          <select class="custom-select" id="lst_cargo_bancada" name="lst_cargo_bancada" required>
+             <option></option>
+             <dtml-in expr="zsql.cargo_bancada_obter_zsql()">
+                <option 
+	           <dtml-if expr="cod_cargo==composicao_bancada_form.cod_cargo and _.has_key('cod_comp_bancada')">
+	              selected 
+	           </dtml-if>
+                   value="<dtml-var cod_cargo>">
+                   <dtml-var des_cargo>
+                </option>
+             </dtml-in>
+          </select>
+          <div class="invalid-feedback">
+            Este campo é obrigatório !
+          </div>
+     </div>
+     <div class="col-6 col-sm-3 mb-3">
+        <label for="txt_dat_designacao" class="required">Data de Designação</label>
+        <dtml-unless dat_designacao>
+          <dtml-call expr="REQUEST.set('dat_designacao', dat_inicio)">
+        </dtml-unless>
+        <input class="form-control date" type="text" name="txt_dat_designacao" id="txt_dat_designacao" value="<dtml-var dat_designacao missing>" maxlength="10" required>
+        <div class="invalid-feedback">
+           Este campo é obrigatório !
+        </div>
+     </div>
+     <div class="col-6 col-sm-3 mb-3">
+        <label for="txt_dat_desligamento">Data de Desligamento</label>
+        <input class="form-control date" type="text" name="txt_dat_desligamento" id="txt_dat_desligamento" value="<dtml-var dat_desligamento missing>" maxlength="10">
+     </div>
+  </div>
+  <div class="form-row">
+     <div class="col-12 col-sm-6 mb-3">
+        <label for="txt_des_motivo_desligamento">Motivo de Desligamento</label>
+        <input class="form-control" type="text" id="txt_des_motivo_desligamento"  name="txt_des_motivo_desligamento" value="<dtml-var des_motivo_desligamento missing null="">" maxlength="150">
+     </div>
+     <div class="col-12 col-sm-6 mb-3">
+        <label for="txt_obs_composicao">Observações</label>
+        <input class="form-control" type="text" id="txt_obs_composicao" name="txt_obs_composicao" value="<dtml-var obs_composicao missing null="">" maxlength="150">
+     </div>
+  </div>
+
+
+<div class="text-left">
+   <input class="btn btn-primary" type="button" name="btn_composicao_salvar" value="Salvar"
       onClick="campos_criticar(document.composicao_bancada_form)" />
    <dtml-if cod_comp_bancada>
-     <input type="button" name="btn_composicao_excluir" class="botao" value="Excluir" onClick="composicao_excluir(document.composicao_bancada_form)">
+     <input class="btn btn-danger" type="button" name="btn_composicao_excluir" value="Excluir" onClick="composicao_excluir(document.composicao_bancada_form)">
    </dtml-if>
-     <input type="button" class="botao" name="retornar" value="Voltar" onClick="javascript:history.go(-1)">
-</p>
+   <input class="btn btn-secondary" type="button" name="retornar" value="Voltar" onClick="javascript:history.go(-1)">
+</div>
+
+   <div class="row">
+      <div class="col-md-12 mt-2">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+      </div>
+   </div>
 </form>
 <dtml-var standard_html_footer>

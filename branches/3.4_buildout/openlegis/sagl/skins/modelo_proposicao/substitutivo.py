@@ -40,28 +40,13 @@ for substitutivo in context.zsql.substitutivo_obter_zsql(cod_substitutivo=cod_su
 
  for materia_vinculada in context.zsql.materia_obter_zsql(cod_materia = substitutivo.cod_materia):
   materia_vinculada = ' - ' +materia_vinculada.des_tipo_materia.upper().encode('utf-8') + '  ' + str(materia_vinculada.num_ident_basica) + '/' + str(materia_vinculada.ano_ident_basica)
-  nom_arquivo = str(substitutivo.num_substitutivo) + '_substitutivo.odt'
+  nom_arquivo = str(substitutivo.cod_substitutivo) + '_substitutivo.odt'
 
- for autor in context.zsql.autor_obter_zsql(cod_autor = substitutivo.cod_autor):
-  nom_autor = " "
-  apelido_autor = " "
-  if autor.des_tipo_autor=='Parlamentar':
-   for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar):
-    nom_autor = parlamentar.nom_completo.encode('utf-8')
-    if parlamentar.nom_parlamentar != parlamentar.nom_completo:
-     apelido_autor = "'"+parlamentar.nom_parlamentar.encode('utf-8')+"'"
-    else:
-     apelido_autor = " "
-  elif autor.des_tipo_autor=='Comissao':
-   for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
-    nom_autor = comissao.nom_comissao.encode('utf-8')
-    apelido_autor = " "
-  elif autor.des_tipo_autor=='Bancada':
-   for bancada in context.zsql.bancada_obter_zsql(cod_bancada=autor.cod_bancada):
-    nom_autor = bancada.nom_bancada.encode('utf-8')
-    apelido_autor = " "
-  else:
-   nom_autor=autor.nom_autor
-   apelido_autor = " "
+ nom_autor = []
+ apelido_autor = " "
+ for autoria in context.zsql.autoria_substitutivo_obter_zsql(cod_substitutivo = substitutivo.cod_substitutivo):
+     autor_dic = {}
+     autor_dic['nome_autor'] = autoria.nom_autor_join
+     nom_autor.append(autor_dic)    
 
 return context.substitutivo_gerar_odt(inf_basicas_dic,num_proposicao,nom_arquivo,des_tipo_materia,num_ident_basica,ano_ident_basica,txt_ementa,materia_vinculada,dat_apresentacao,nom_autor,apelido_autor,modelo_proposicao)

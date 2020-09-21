@@ -20,16 +20,16 @@ autorArray = []
 for autor in autores:
     autorDict = {}
     for field in fields:
-                autorDict['text'] = autor['nom_autor_join']
-                autorDict['value'] = autor['cod_autor']
+                autorDict['value'] = autor['nom_autor_join']
+                autorDict['key'] = autor['cod_autor']
 #                autor['value'] = field['nom_autor_join']
 #       autorDict[field] = autor[field]
     
     autorArray.append(autorDict)
 
-listaDic.update({'options': autorArray})
+#listaDic.update({'options': autorArray})
     
-return json.dumps(listaDic)
+return json.dumps(autorArray)
 
 #j = json.dumps(listaDic)
 #autores_file = 'lista_autores.json'

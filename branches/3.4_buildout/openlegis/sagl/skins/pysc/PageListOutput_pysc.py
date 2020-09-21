@@ -57,7 +57,7 @@ DisplayAll = 0                              # set flag to 1 to display every pag
                                             # will be ignored. WARNING: this could cause
                                             # quite a bit of trouble if you have an excessively
                                             # large list with a comparatively low batch size!
-PageRange = 3                               # number of pages before and after the current page
+PageRange = 2                               # number of pages before and after the current page
                                             # to display
 #
 # show item flags. Set to 1 to enable, set to 0 to disable.
@@ -72,14 +72,14 @@ showLast = 1                                # show a link to the last page
 #
 # output strings. Modify to alter what is returned by the script.
 #
-TotalPagesFormatString = "Páginas (%s):"    # String to use when showing total number of pages.
-                                            # Use %s to signify where the page number will be displayed.
-EllipsesString = "..."                      # String signifying that not all pages numbers are displayed
+TotalPagesFormatString = "<li class='page-item disabled'><a class='page-link'>Páginas (%s):</a></li>"    # String to use when showing total number of pages.
+# Use %s to signify where the page number will be displayed.
+EllipsesString = "<li class='page-item disabled'><a class='page-link'>...</a></li>"  # String signifying that not all pages numbers are displayed
 NextString = ">>"                           # content of the "Next Page" link                 
 PreviousString = "<<"                       # content of the "Previous Page" link
-FirstString = "<"                           # content of the "First Page" link
-LastString = ">"                            # content of the "Last Page" link
-CurrentPageFormatString = "<li class='pagination active'><a>%s</a></li>" # String to use when showing the current page (which is not a link).
+FirstString = "Início"                           # content of the "First Page" link
+LastString = "Fim"                            # content of the "Last Page" link
+CurrentPageFormatString = "<li class='page-item active'><a class='page-link'>%s</a></li>" # String to use when showing the current page (which is not a link).
 # Use %s to signify where the current page number is displayed.
 #
 #####################
@@ -99,7 +99,7 @@ except:
     return "error building page list"
 # build the format string we'll be using for all page links. The only thing that will change
 # is the page number and the content of the link.
-linkString = '<li class="pagination"><a href="' + linkLocation + "?page=%s&amp;step=" + str(step)
+linkString = '<li class="page-item"><a class="page-link" href="' + linkLocation + "?page=%s&amp;step=" + str(step)
 for item, value in extras.items():
   if item == 'txt_assunto':
     value = '%22'.join(value.split('\"'))

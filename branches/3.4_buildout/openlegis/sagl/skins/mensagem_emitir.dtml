@@ -1,53 +1,54 @@
 <dtml-var standard_html_header>
 
-<h1 class="firstHeading" style="display: none;"><dtml-var mensagem></h1>
+<h1 class="firstHeading mb-3" style="display:none;"><dtml-var mensagem></h1>
 
-<dtml-if expr="_.has_key('sucesso')">
-  <div class="ui-state-highlight ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
-    <p>
-      <span class="ui-icon ui-icon-check" style="float: left; margin-right: .3em;"></span>
-      <strong><dtml-var mensagem></strong>
-    </p>
-  </div>
-  <div align="center" id="toolbar" class="ui-widget ui-corner-all">
-    <dtml-if expr="_.has_key('url')">
-      <input type="submit" name="btn_continuar" value="Continuar" onClick="location.href='<dtml-var url>'" />
+<dtml-unless tipo_mensagem>
+  <dtml-call expr="REQUEST.set('tipo_mensagem', 'success')">
+</dtml-unless>
+
+<dtml-if expr="_.has_key('tipo_mensagem') or _.has_key('sucesso')">
+    <div class="alert alert-<dtml-var tipo_mensagem missing=success html_quote> alert-dismissible fade show" role="alert">
+        <h5><dtml-var mensagem newline_to_br html_quote></h5>
+        <dtml-if mensagem_obs>
+          <p class="mb-0"><dtml-var mensagem_obs newline_to_br html_quote></p>
+        </dtml-if>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="text-center">
+    <dtml-if expr="tipo_mensagem=='success'">
+         <dtml-if expr="_.has_key('url')">
+             <dtml-if expr="_.has_key('modal') or REQUEST.get('modal', '')">
+                <dtml-if expr="_.has_key('url')">
+                  <a class="btn btn-success" href="<dtml-var url>"><i class="fa fa-fw fa-check"></i> Continuar</a>
+                </dtml-if>
+                <input class="btn btn-primary" type="button" id="closeBtn" onclick="var modal1 = $('#close', window.parent.document); modal1.click();" value="Fechar" />
+             <dtml-else>
+                <a class="btn btn-success" href="<dtml-var url>"><i class="fa fa-fw fa-check"></i> Continuar</a>
+             </dtml-if>
+         <dtml-else>
+             <dtml-if expr="_.has_key('modal') or REQUEST.get('modal', '')">
+                <input class="btn btn-primary" type="button" id="closeBtn" onclick="var modal1 = $('#close', window.parent.document); modal1.click();" value="Fechar" />
+             <dtml-else>
+                <a class="btn btn-success" href="index_html"><i class="fa fa-fw fa-check"></i> Continuar</a>
+             </dtml-if>
+         </dtml-if>
     <dtml-else>
-      <input type="submit" name="btn_continuar" value="Continuar" onClick="location.href='index_html'" />
+         <dtml-if expr="_.has_key('url')">
+             <a class="btn btn-danger" href="<dtml-var url>"><i class="fa fa-fw fa-undo"></i> Voltar</a>
+         <dtml-else> 
+             <a class="btn btn-danger" href="javascript:void(0)" onClick="window.history.go(-1); return false;"><i class="fa fa-fw fa-undo"></i> Voltar</a>
+         </dtml-if>
     </dtml-if>
     <dtml-if expr="_.has_key('cod_protocolo')">
-      <input type="submit" name="btn_continuar" value="Visualizar Protocolo" onClick="location.href='<dtml-var portal_url>/consultas/protocolo/protocolo_mostrar_proc?cod_protocolo=<dtml-var cod_protocolo>'" />
+      <input class="btn btn-primary" type="button" value="Visualizar Protocolo" onClick="location.href='<dtml-var portal_url>/consultas/protocolo/protocolo_mostrar_proc?cod_protocolo=<dtml-var cod_protocolo>'" />
     </dtml-if>
     <dtml-if expr="_.has_key('cod_mat')">
-      <input type="submit" name="btn_continuar" value="Incluir outra matéria" onClick="location.href='<dtml-var portal_url>/cadastros/materia/materia_form_resumido'" />
+      <input class="btn btn-primary" type="button" value="Incluir Matéria" onClick="location.href='<dtml-var portal_url>/cadastros/materia/materia_form_resumido'" />
     </dtml-if>
- </div>
-
-<dtml-else>
-  <div class="ui-state-error ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
-    <p>
-      <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
-      <strong><dtml-var mensagem></strong>
-    </p>
-  </div>
-  <div align="center" id="toolbar" class="ui-widget ui-corner-all">
-    <dtml-if expr="_.has_key('url')">
-      <input type="submit" name="btn_voltar" value="Voltar" onClick="location.href='<dtml-var url>'" />
-    <dtml-else>  
-      <input type="submit" name="btn_voltar" value="Voltar" onClick="javascript:history.go(-1)" />
-    </dtml-if>
-  </div>
+    </div>
 </dtml-if>
-
-  <script>
-  $(function() {
-    $( "input[type=submit]" )
-      .button()
-      .click(function( event ) {
-        event.preventDefault();
-      });
-  });
-  </script>
 
 <dtml-var standard_html_footer>
 

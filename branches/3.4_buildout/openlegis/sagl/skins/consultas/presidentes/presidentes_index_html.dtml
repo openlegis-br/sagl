@@ -1,32 +1,38 @@
 <dtml-var standard_html_header>
 
- <h1 class="firstHeading">Galeria de Presidentes</h1>
+    <h1 class="firstHeading">Presidentes</h1>
 
- <fieldset>
-   <dtml-in expr="zsql.presidentes_obter_zsql()">
-      <div class="photoAlbumEntry">
-        <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
-                  <a href="&dtml-portal_url;/cadastros/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>" title="<dtml-var nom_completo>">
-        <dtml-else>
-                  <a href="&dtml-portal_url;/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>" title="<dtml-var nom_completo>">
-        </dtml-if>
-             <span class="photoAlbumEntryWrapper">
-                 <dtml-call expr="REQUEST.set('id_foto', _.str(cod_parlamentar)+'_foto_parlamentar')">
-                 <dtml-if expr="_.hasattr(sapl_documentos.parlamentar.fotos,id_foto)">
-                   <img height="138" alt="<dtml-var nom_completo>" src="&dtml-portal_url;/sapl_documentos/parlamentar/fotos/<dtml-var id_foto>">
-                 <dtml-else>
-                    <img height="138" alt="<dtml-var nom_completo>" src="&dtml-portal_url;/imagens/avatar.png">
-                 </dtml-if>
-             </span>
-             <span class="photoAlbumEntryTitle">
-                <dtml-var nom_parlamentar><br />
-                <dtml-in expr="zsql.presidentes_periodos_obter_zsql(cod_parlamentar=cod_parlamentar)"><dtml-var ano_inicio missing null><dtml-if expr="ano_inicio<ano_fim">-<dtml-var ano_fim missing null></dtml-if><dtml-unless sequence-end> / </dtml-unless></dtml-in>
-             </span>
-          </a>
-      </div>
-   <dtml-else>
-      Não há nenhum Presidente cadastrado.
-   </dtml-in>  
- </fieldset>
+  <div class="mt-2 mb-3">
+      <p class="h6 text-left">Galeria de Presidentes da Câmara</p>
+  </div>
+
+    <div class="row text-center">
+     <dtml-in expr="zsql.presidentes_obter_zsql()">
+        <!-- Presidente -->
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                  <a href="&dtml-portal_url;/cadastros/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>" title="<dtml-var nom_parlamentar>" style="color: #333;">
+           <dtml-else>
+                  <a href="&dtml-portal_url;/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>" title="<dtml-var nom_parlamentar>" style="color: #333;">
+           </dtml-if>
+            <div class="py-4 px-2 border rounded bg-light">
+             <dtml-call expr="REQUEST.set('id_foto', _.str(cod_parlamentar)+'_foto_parlamentar')">
+             <dtml-if expr="_.hasattr(sapl_documentos.parlamentar.fotos,id_foto)">
+                 <img alt="<dtml-var nom_completo>" alt="<dtml-var nom_parlamentar>" src="&dtml-portal_url;/sapl_documentos/parlamentar/fotos/<dtml-var id_foto>" width="140" class="img-fluid mb-0 img-thumbnail shadow-sm" style="filter: grayscale(100%);">
+             <dtml-else>
+                 <img alt="<dtml-var nom_completo>" alt="<dtml-var nom_completo>" src="&dtml-portal_url;/imagens/avatar.png" width="140" class="img-fluid mb-0 img-thumbnail shadow-sm" style="filter: grayscale(100%);">
+             </dtml-if>
+                <p class="h6 mt-1 mb-0 font-weight-bold">
+                   <dtml-var nom_completo>
+                </p>
+                <span class="small text-uppercase text-muted">
+                   <dtml-in expr="zsql.presidentes_periodos_obter_zsql(cod_parlamentar=cod_parlamentar)"><dtml-var ano_inicio missing null><dtml-if expr="ano_inicio<ano_fim">-<dtml-var ano_fim missing null></dtml-if><dtml-unless sequence-end> / </dtml-unless></dtml-in>
+                </span>
+            </div></a>
+        </div><!-- Fim -->
+     <dtml-else>
+        Não há nenhum presidente cadastrado.
+     </dtml-in>  
+    </div>
 
 <dtml-var standard_html_footer>

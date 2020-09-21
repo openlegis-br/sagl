@@ -1,10 +1,9 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_comissao=""  nom_comissao="" nom_comissao_match="" sgl_comissao="" tip_comissao="" dat_criacao="" dat_extincao="" ind_extintas="" ind_excluido=0
-max_rows : 1000
+arguments : cod_comissao=""  nom_comissao="" nom_comissao_match="" sgl_comissao="" tip_comissao="" dat_criacao="" dat_extincao="" ind_extintas="" order limit ind_excluido=0
+max_rows : 0
 max_cache : 100
 </dtml-comment>
-<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
 
 SELECT
      REPLACE(comissao.cod_comissao, 'L', '') as cod_comissao,
@@ -49,56 +48,16 @@ FROM
 </dtml-sqlgroup>
 
 <dtml-if nom_comissao_match>
-  and match (comissao.nom_comissao) against (<dtml-sqlvar nom_comissao_match type="string">)
+  AND ( comissao.nom_comissao LIKE '%<dtml-var nom_comissao_match>%' 
+  OR  tipo_comissao.nom_tipo_comissao LIKE '%<dtml-var nom_comissao_match>%')
 </dtml-if>
 
-ORDER BY nom_comissao
-
+<dtml-if order>
+  <dtml-var order>
 <dtml-else>
-
-SELECT
-     comissao.cod_comissao as cod_comissao,
-     comissao.tip_comissao,
-     comissao.nom_comissao,
-     comissao.sgl_comissao,
-     TO_CHAR(comissao.dat_criacao, 'DD/MM/YYYY') as dat_criacao,
-     TO_CHAR(comissao.dat_extincao, 'DD/MM/YYYY') as dat_extincao,
-     comissao.nom_apelido_temp,
-     TO_CHAR(comissao.dat_instalacao_temp, 'DD/MM/YYYY') as dat_instalacao_temp,
-     TO_CHAR(comissao.dat_final_prevista_temp, 'DD/MM/YYYY') as dat_final_prevista_temp,
-     TO_CHAR(comissao.dat_prorrogada_temp, 'DD/MM/YYYY') as dat_prorrogada_temp, 
-     TO_CHAR(comissao.dat_fim_comissao, 'DD/MM/YYYY') as dat_fim_comissao,
-     comissao.nom_secretario,
-     comissao.num_tel_reuniao,
-     comissao.num_tel_secretaria,
-     comissao.num_fax_secretaria,
-     comissao.end_secretaria,
-     comissao.des_agenda_reuniao,
-     comissao.loc_reuniao,
-     comissao.txt_finalidade,
-     comissao.end_email,
-     comissao.ind_unid_deliberativa,
-     tipo_comissao.nom_tipo_comissao,
-     tipo_comissao.sgl_tipo_comissao
-
-FROM   
-     comissao, tipo_comissao
-
-<dtml-sqlgroup where>
-  <dtml-sqltest cod_comissao op="=" type="int" column="comissao.cod_comissao" optional> <dtml-and>
-  <dtml-sqltest nom_comissao op="=" type="nb" column="comissao.nom_comissao" optional> <dtml-and>
-  <dtml-sqltest sgl_comissao op="=" type="nb" column="comissao.sgl_comissao" optional> <dtml-and>
-  <dtml-sqltest tip_comissao op="=" type="nb" column="comissao.tip_comissao" optional> <dtml-and>
-  <dtml-sqltest dat_criacao  op="=" type="nb" column="comissao.dat_criacao" optional> <dtml-and>
-  <dtml-sqltest dat_extincao op="=" type="nb" column="comissao.dat_extincao" optional> <dtml-and>
-  <dtml-sqltest ind_excluido op="=" type="int" column="comissao.ind_excluido" optional> <dtml-and>
-  comissao.tip_comissao = tipo_comissao.tip_comissao  
-</dtml-sqlgroup>
-
-<dtml-if nom_comissao_match>
-  and match (comissao.nom_comissao) against (<dtml-sqlvar nom_comissao_match type="string">)
+   ORDER BY nom_comissao
 </dtml-if>
 
-ORDER BY nom_comissao
-
+<dtml-if limit>
+  <dtml-var limit>
 </dtml-if>

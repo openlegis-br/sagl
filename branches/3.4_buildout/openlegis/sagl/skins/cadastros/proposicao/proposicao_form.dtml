@@ -267,29 +267,29 @@ $(document).ready(function() {
           </dtml-if>
 
 <form name="proposicao_form" method="post" action="proposicao_salvar_proc" enctype="multipart/form-data">
-                <input type="hidden" name="hdn_alterou" value="0" />                      
-                <input type="hidden" name="hdn_tip_proposicao" value="" />
-                <input type="hidden" name="hdn_url" value="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao missing>" />
+                <input class="form-control" type="hidden" name="hdn_alterou" value="0" />                      
+                <input class="form-control" type="hidden" name="hdn_tip_proposicao" value="" />
+                <input class="form-control" type="hidden" name="hdn_url" value="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao missing>" />
                 <dtml-if cod_proposicao>
-                   <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var cod_proposicao>" />
+                   <input class="form-control" type="hidden" name="hdn_cod_proposicao" value="<dtml-var cod_proposicao>" />
                 <dtml-else>
-                   <input type="hidden" name="hdn_cod_proposicao" value="" />
+                   <input class="form-control" type="hidden" name="hdn_cod_proposicao" value="" />
                 </dtml-if>
-                <table id="proposicoes">
+                <table class="table"  id="proposicoes">
                   <dtml-if cod_proposicao>
                     <tr>
-                      <th colspan=1 class="form-element">
+                      <th colspan=1>
                           Dados Básicos
                        </th>
-                       <th colspan=2 class="form-element">
+                       <th colspan=2>
                           Código de Autenticidade: <dtml-var expr="pysc.proposicao_calcular_checksum_pysc(cod_proposicao)">
                        </th>
                     </tr>
                   </dtml-if>
                     <tr>
-                        <td width="44%" class="form-element" valign="top">
+                        <td width="44%" valign="top">
                           Tipo de Proposição <span class="campoObrigatorio">&nbsp;</span> <br />   
-                            <select name="lst_tip_proposicao" onChange="javascript:tipo_proposicao_mudou()"
+                            <select class="custom-select"  name="lst_tip_proposicao" onChange="javascript:tipo_proposicao_mudou()"
                                 <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar']) and prop_enviada)">
                                   disabled
                                 <dtml-elif expr="(AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']) and prop_recebida)">
@@ -321,25 +321,25 @@ $(document).ready(function() {
                                   </dtml-in>
                             </select>
                         </td>
-                        <td width="28%" class="form-text" valign="top">
+                        <td width="28%" valign="top">
                           <dtml-if cod_proposicao>
                             <b>Data de Envio</b><br />
                             <dtml-if prop_enviada>
-                               <input type="text" name="txt_dat_criacao" value="<dtml-var dat_envio missing null>"
+                               <input class="form-control" type="text" name="txt_dat_criacao" value="<dtml-var dat_envio missing null>"
                                       size="19" maxlength="19" onChange="javascript:form.hdn_alterou.value=1"
                                 readonly /> 
                             <dtml-else>
                                 <i>Não enviada.</i> 
                             </dtml-if>
                           <dtml-else>
-                            <input type="hidden" name="txt_dat_criacao" value="00/00/0000 00:00:00" />
+                            <input class="form-control" type="hidden" name="txt_dat_criacao" value="00/00/0000 00:00:00" />
                           </dtml-if>
                         </td>
-                        <td width="28%" class="form-text" valign="top">
+                        <td width="28%" valign="top">
                           <dtml-if cod_proposicao>
                             <dtml-if dat_recebimento>
                               <b>Data de Incorporação</b><br />
-                              <input type="text" name="txt_dat_recebimento" value="<dtml-var dat_recebimento missing>" size="19" maxlength="19" onChange="javascript:form.hdn_alterou.value=1" readonly />
+                              <input class="form-control" type="text" name="txt_dat_recebimento" value="<dtml-var dat_recebimento missing>" size="19" maxlength="19" onChange="javascript:form.hdn_alterou.value=1" readonly />
                               <dtml-if cod_mat_ou_doc>
                                  <dtml-if expr="ind_mat_ou_doc=='D'">
                                        <dtml-call expr="REQUEST.set('cod_mat', cod_materia)">
@@ -358,34 +358,34 @@ $(document).ready(function() {
                               </dtml-if>
                             <dtml-elif dat_devolucao>
                               <b>Data de Devolução</b><br />
-                              <input type="text" name="txt_dat_devolucao" value="<dtml-var dat_devolucao missing>" size="19" maxlength="19" onChange="javascript:form.hdn_alterou.value=1" readonly />
+                              <input class="form-control" type="text" name="txt_dat_devolucao" value="<dtml-var dat_devolucao missing>" size="19" maxlength="19" onChange="javascript:form.hdn_alterou.value=1" readonly />
                             </dtml-if>
                           <dtml-else>
-                            <input type="hidden" name="txt_dat_recebimento" value="" />
+                            <input class="form-control" type="hidden" name="txt_dat_recebimento" value="" />
                           </dtml-if>
                         </td>                                
                     </tr>
                     <tr> 
-                        <td colspan="3" class="form-element">Descrição <span class="campoObrigatorio">&nbsp;</span> <br />
-                          <textarea name="txt_descricao" cols="65" rows="5" maxlength="400" <dtml-if prop_enviada>readonly</dtml-if>><dtml-var txt_descricao missing></textarea>
+                        <td colspan="3">Descrição <span class="campoObrigatorio">&nbsp;</span> <br />
+                          <textarea class="form-control"  name="txt_descricao" cols="65" rows="5" maxlength="400" <dtml-if prop_enviada>readonly</dtml-if>><dtml-var txt_descricao missing></textarea>
                         </td>
                     </tr>
                 <dtml-if cod_proposicao>
                     <tr>
-                        <td colspan="1" class="form-element" valign="top">
+                        <td colspan="1" valign="top">
                           Autor <br /> 
-                          <input type="text" name="txt_nom_autor" size="50" value="<dtml-var nom_autor missing>" disabled />
+                          <input class="form-control" type="text" name="txt_nom_autor" size="50" value="<dtml-var nom_autor missing>" disabled />
                         </td>
-                        <td colspan="2" class="form-element" valign="top">
+                        <td colspan="2" valign="top">
                           Tipo de Autor <br /> 
-                          <input type="text" name="txt_nom_autor" size="30" value="<dtml-var des_tipo_autor missing>" disabled />
+                          <input class="form-control" type="text" name="txt_nom_autor" size="30" value="<dtml-var des_tipo_autor missing>" disabled />
                         </td>
                     </tr>
                 </dtml-if>
 
                     <tr> 
-                        <td width="44%" class="form-element">Matéria a Vincular<br />
-                          <select name="lst_tip_id_basica" 
+                        <td width="44%">Matéria a Vincular<br />
+                          <select class="custom-select"  name="lst_tip_id_basica" 
                             <dtml-if "not _.has_key('tip_id_basica_sel') or prop_enviada">                                       
                               disabled
                             </dtml-if> >   
@@ -402,15 +402,15 @@ $(document).ready(function() {
                                </dtml-in>
                           </select>
                         </td>
-                        <td width="28%" class="form-element">Número<br />
-                          <input type="text" name="txt_num_ident_basica" size="5" value="<dtml-var num_ident_basica_sel missing>"
+                        <td width="28%">Número<br />
+                          <input class="form-control" type="text" name="txt_num_ident_basica" size="5" value="<dtml-var num_ident_basica_sel missing>"
                                  maxlength="5"
                           <dtml-if "not _.has_key('num_ident_basica_sel') or prop_enviada">
                             disabled />
                           </dtml-if>
                         </td>
-                        <td width="28%" class="form-element">Ano<br />
-                         <input type="text" name="txt_ano_ident_basica" size="4" value="<dtml-var ano_ident_basica_sel missing>"
+                        <td width="28%">Ano<br />
+                         <input class="form-control" type="text" name="txt_ano_ident_basica" size="4" value="<dtml-var ano_ident_basica_sel missing>"
                                 maxlength="4"<dtml-if "not _.has_key('ano_ident_basica_sel') or prop_enviada"> 
                                               disabled />
                                             </dtml-if>
@@ -421,12 +421,12 @@ $(document).ready(function() {
                   <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
                     <dtml-if dat_devolucao>
 		    <tr>
-                        <td colspan=2 class="form-element">Justificativa da Devolução <span class="campoObrigatorio">&nbsp;</span>
-                         <textarea name="txa_txt_justificativa" cols="70" rows="5" onChange="javascript:form.hdn_alterou.value=1"<dtml-if txt_justif_devolucao>readonly</dtml-if>><dtml-if txt_justif_devolucao><dtml-var txt_justif_devolucao missing></dtml-if></textarea>
+                        <td colspan=2>Justificativa da Devolução <span class="campoObrigatorio">&nbsp;</span>
+                         <textarea class="form-control"  name="txa_txt_justificativa" cols="70" rows="5" onChange="javascript:form.hdn_alterou.value=1"<dtml-if txt_justif_devolucao>readonly</dtml-if>><dtml-if txt_justif_devolucao><dtml-var txt_justif_devolucao missing></dtml-if></textarea>
                         </td>
-                        <td colspan=1 class="form-element">
+                        <td colspan=1>
                           <b>Data de devolução</b><br />
-                          <input type="text" name="txt_dat_devolucao" value="<dtml-var dat_devolucao missing>" size="19"maxlength="19" onChange="javascript:form.hdn_alterou.value=1" readonly>
+                          <input class="form-control" type="text" name="txt_dat_devolucao" value="<dtml-var dat_devolucao missing>" size="19"maxlength="19" onChange="javascript:form.hdn_alterou.value=1" readonly>
                         </td>
                     </tr>
                     </dtml-if>
@@ -434,8 +434,8 @@ $(document).ready(function() {
                   <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
                   <dtml-unless cod_mat_ou_doc>
                     <tr>
-                        <td colspan=3 class="form-element">Justificativa da Devolução <span class="campoObrigatorio">&nbsp;</span>
-                           <textarea name="txa_txt_justificativa"cols="70" rows="5" onChange="javascript:form.hdn_alterou.value=1" <dtml-if txt_justif_devolucao>readonly</dtml-if>><dtml-if txt_justif_devolucao><dtml-var txt_justif_devolucao missing></dtml-if></textarea>
+                        <td colspan=3>Justificativa da Devolução <span class="campoObrigatorio">&nbsp;</span>
+                           <textarea class="form-control"  name="txa_txt_justificativa"cols="70" rows="5" onChange="javascript:form.hdn_alterou.value=1" <dtml-if txt_justif_devolucao>readonly</dtml-if>><dtml-if txt_justif_devolucao><dtml-var txt_justif_devolucao missing></dtml-if></textarea>
                          </td>
                     </tr>
                   </dtml-unless cod_mat_ou_doc>	
@@ -443,13 +443,13 @@ $(document).ready(function() {
                 </table>
 
                <dtml-if cod_proposicao>
-                <table>
+                <table class="table" >
                     <tr>
-                      <th class="form-element" colspan="2">Textos da Proposição <span class="campoObrigatorio">&nbsp;</span></th>
+                      <th colspan="2">Textos da Proposição <span class="campoObrigatorio">&nbsp;</span></th>
                     </tr>
                   <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
                     <tr>
-                        <td width="50%" colspan="1" valign="top" class="form-text">
+                        <td width="50%" colspan="1" valign="top">
                           <b>Documento para edição</b> 
                          <div id="toolbar" class="ui-widget ui-corner-all"><p></p>
                          <dtml-let id_documento="_.str(cod_proposicao)+'.odt'">
@@ -482,7 +482,7 @@ $(document).ready(function() {
                              </dtml-let>
                            <dtml-else>
                             <dtml-if expr="(not dat_devolucao and not prop_recebida)">
-                                  <select name="lst_modelo" id="lst_modelo">
+                                  <select class="custom-select"  name="lst_modelo" id="lst_modelo">
                                      <option value="0">Selecione um modelo</option>
                                      <dtml-with expr="sapl_documentos.modelo.materia">
                                        <dtml-in expr="objectValues('File')" sort="id">
@@ -498,7 +498,7 @@ $(document).ready(function() {
                          </dtml-let>
                         </div>
                         </td>
-                        <td colspan="2" class="form-text" valign="top">
+                        <td colspan="2" valign="top">
                           <b>Documento em PDF</b> 
                           <div id="toolbar" class="ui-widget ui-corner-all"><p></p>
                           <dtml-if expr="_.has_key('cod_proposicao')">
@@ -565,7 +565,7 @@ $(document).ready(function() {
                               </dtml-unless>
                              </dtml-let>
                             <dtml-else>
-                              <input type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="15" maxlength="100" />
+                              <input class="form-control" type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" size="15" maxlength="100" />
                               <dtml-let id_documento_odt="_.str(cod_proposicao)+'.odt'">
                                 <dtml-if "_.hasattr(sapl_documentos.proposicao, id_documento_odt)">
                                   <dtml-call expr="REQUEST.set('temODT', 1)">
@@ -581,10 +581,10 @@ $(document).ready(function() {
                     </tr>
                  <dtml-if expr="(not prop_enviada)">
                     <tr>
-                      <th class="form-element" colspan="2">Anexos em PDF</th>
+                      <th colspan="2">Anexos em PDF</th>
                     </tr>
                     <tr>
-                      <td class="form-element" colspan="2">
+                      <td colspan="2">
                         <dtml-in expr="pysc.anexo_proposicao_pysc(cod_proposicao, listar=True)" prefix="file">
                           <dtml-if expr="_.hasattr(sapl_documentos.proposicao, file_item)">
                               <dtml-let documento="_.getattr(sapl_documentos.proposicao,file_item).absolute_url">
@@ -605,7 +605,7 @@ $(document).ready(function() {
                 </dtml-if>
                   <dtml-else>
                     <tr>
-                        <td width="50%" colspan="1" class="form-text">
+                        <td width="50%" colspan="1">
                          <div id="toolbar" class="ui-widget ui-corner-all">
                          <dtml-let id_documento="_.str(cod_proposicao)+'.odt'">
                            <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento)">
@@ -636,7 +636,7 @@ $(document).ready(function() {
                            <dtml-else>
                            <dtml-if expr="(not prop_recebida)">
                              <b>Modelo ODT</b> <span class="campoObrigatorio">&nbsp;</span><br />
-                                  <select name="lst_modelo" id="lst_modelo">
+                                  <select class="custom-select"  name="lst_modelo" id="lst_modelo">
                                      <option value="0">Selecione um modelo</option>
                                      <dtml-with expr="sapl_documentos.modelo.materia">
                                        <dtml-in expr="objectValues('File')" sort="title">
@@ -652,7 +652,7 @@ $(document).ready(function() {
                          </dtml-let>
                         </div>
                         </td>
-                        <td colspan="2" class="form-text" valign="top">
+                        <td colspan="2" valign="top">
                          <div id="toolbar" class="ui-widget ui-corner-all">
                           <b>Texto Final em PDF</b><p></p>
                             <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.pdf')">
@@ -672,14 +672,14 @@ $(document).ready(function() {
                </dtml-if cod_proposicao>
                      <p align="center">
                     <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar']) and not prop_enviada)">
-                           <input class="botao"
+                           <input class="form-control" class="botao"
                                type="button"
                                id="btn_proposicao_salvar"
                                name="btn_proposicao_salvar"
                                value="Salvar"
                                onClick="campos_criticar(document.proposicao_form)" />
                     <dtml-elif expr="(AUTHENTICATED_USER.has_role(['Operador','Operador Materia']) and not prop_recebida)">
-                           <input class="botao"
+                           <input class="form-control" class="botao"
                                type="button"
                                id="btn_proposicao_salvar"
                                name="btn_proposicao_salvar"
@@ -692,13 +692,13 @@ $(document).ready(function() {
                             <dtml-unless dat_recebimento>
                              <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor'])">
                               <dtml-if dat_devolucao>
-                                <input class="botao" 
+                                <input class="form-control" class="botao" 
                                    type="button"
                                    name="btn_proposicao_retomar"
                                    value="Reaproveitar proposição devolvida"
                                    onClick="proposicao_retomar()" />
                               <dtml-else>
-                                <input class="botao" 
+                                <input class="form-control" class="botao" 
                                    type="button"
                                    name="btn_proposicao_retomar"
                                    value="Retomar proposição enviada"
@@ -709,7 +709,7 @@ $(document).ready(function() {
                           <dtml-else>
                         <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
                         <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento_assinado) and AUTHENTICATED_USER.has_role(['Autor'])">
-                          <input class="botao"
+                          <input class="form-control" class="botao"
                                type="button"
                                id="btn_proposicao_enviar"
                                name="btn_proposicao_enviar"
@@ -717,7 +717,7 @@ $(document).ready(function() {
                                onClick="proposicao_enviar()" />
                         </dtml-if>
                         <dtml-if "AUTHENTICATED_USER.has_role(['Autor'])">
-                           <input class="botao"
+                           <input class="form-control" class="botao"
                                type="button"
                                name="btn_proposicao_excluir"
                                value="Excluir"
@@ -725,34 +725,34 @@ $(document).ready(function() {
                         </dtml-if>
                           </dtml-if>
                          </dtml-if>
-                        <input class="botao" type="button" value="Voltar" onClick="location.href='index_html'" />
+                        <input class="form-control" class="botao" type="button" value="Voltar" onClick="location.href='index_html'" />
                       <dtml-else>
                          <dtml-unless cod_mat_ou_doc> 
                            <dtml-unless dat_devolucao>
                              <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
                              <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento_assinado)">
-                             <input class="botao"
+                             <input class="form-control" class="botao"
                                type="button"
                                name="btn_proposicao_incorporar"
                                value="Incorporar Proposição"
                                onClick="proposicao_incorporar(document.proposicao_form)" />
                              </dtml-if>
-                             <input class="botao"
+                             <input class="form-control" class="botao"
                                type="button"
                                name="btn_proposicao_devolver"
                                value="Devolver ao autor"
                                onClick="proposicao_devolver(document.proposicao_form)" />
 			   </dtml-unless> 
 		         </dtml-unless>   
-                         <input class="botao" type="button" value="Voltar" onClick="history.go(-1)" />
+                         <input class="form-control" class="botao" type="button" value="Voltar" onClick="history.go(-1)" />
                       </dtml-if>
                     </p>  
         </form>
       <dtml-if cod_proposicao>
         <form name="observacao_form" method="post" action="proposicao_salvar_observacao_proc">
-                  <table>
+                  <table class="table" >
                     <tr>
-                      <th class="form-element">Observações <span class="campoObrigatorio">&nbsp;</span></th>
+                      <th>Observações <span class="campoObrigatorio">&nbsp;</span></th>
                     </tr>
                     <tr>
                       <td>
@@ -767,11 +767,11 @@ $(document).ready(function() {
                           });
                         </script>
                       </dtml-if>
-                      <textarea name="txa_txt_observacao" id="txa_txt_observacao" cols="65" rows="4" <dtml-if cod_mat_ou_doc>readonly</dtml-if>><dtml-if txt_observacao><dtml-var txt_observacao missing></dtml-if></textarea>
-                       <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var cod_proposicao missing>" />
+                      <textarea class="form-control"  name="txa_txt_observacao" id="txa_txt_observacao" cols="65" rows="4" <dtml-if cod_mat_ou_doc>readonly</dtml-if>><dtml-if txt_observacao><dtml-var txt_observacao missing></dtml-if></textarea>
+                       <input class="form-control" type="hidden" name="hdn_cod_proposicao" value="<dtml-var cod_proposicao missing>" />
                     <dtml-unless cod_mat_ou_doc>
                       <p align="center">
-                        <input class="botao"
+                        <input class="form-control" class="botao"
                                type="button"
                                id="btn_observacao_salvar"
                                name="btn_observacao_salvar"

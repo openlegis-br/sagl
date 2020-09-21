@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<meta charset="utf-8">
-<title>Sistema Aberto de Gestão Legislativa</title>
-<dtml-var standard_css_slot>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/email_validar.js" "></script>
+
 <script type="text/javascript">
 <!--
   function campos_criticar(form){
@@ -18,42 +15,61 @@
         || document.forms[0].txt_end_email.value.indexOf('@')==-1 
           || document.forms[0].txt_end_email.value.indexOf('.')==-1 )
           	  {
-	           alert(unescape('Informe um endere\u00e7o de email v\u00e1lido!'));
+	           alert(unescape('Informe um e-mail v\u00e1lido!'));
 	           return false;
 	           }
       form.submit();
 }
 //-->
 </script>
-</head>
-<body class="modal">
+
 <dtml-if expr="cod_materia.isdigit()">
    <dtml-call "REQUEST.set('cod_materia', int(cod_materia))">
 <dtml-else>
    <dtml-call "REQUEST.set('cod_materia', pysc.b64decode_pysc(codigo=cod_materia))">
 </dtml-if> 
-<h1 class="firstHeading">Acompanhamento por E-mail</h1>
-<dtml-var materia_header>
-<fieldset>
-<legend>Cadastre-se para receber as tramitações desta matéria</legend>
+
+<dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+  <div class="row">
+    <div class="col-12 col-mb-2"> 
+        <p class="h5"><b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></p>
+    </div>
+  </div>
+  <div class="row mb-2">  
+    <div class="col-12">
+      <dtml-var txt_ementa>    
+    </div>
+  </div>    
+  <div class="row mb-3">  
+    <div class="col-12">
+       Autoria:
+      <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+         <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+      </dtml-in>  
+    </div>
+  </div>         
+</dtml-in>
+
+<hr />
+
 <form action="acomp_materia_salvar_proc" name="acomp_materia_form" method="post">
-<table>
-  <tr>
-     <th><label for="txt_end_email">Endereço de E-mail </label><span class="campoObrigatorio"></span></th>
-  </tr>
-  <tr>
-     <td>
-         <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia>" />
-         <input type="text" id="txt_end_email" name="txt_end_email" size="35" maxlength="100" />&nbsp;
-         <input type="button" class="botao" name="button" value="Cadastrar" onClick="campos_criticar()" />
-     </td>
-  </tr> 
-</table> 
+  <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia>" />
+  <input type="hidden" name="modal" value="1" />  
+  <div class="form-row">
+    <div class="col-12 mb-3">
+       <label for="txt_end_email" class="required">E-mail </label>
+       <input class="form-control" type="text" id="txt_end_email" name="txt_end_email" maxlength="100" required/>
+    </div>
+   </div>
+   <div class="text-left">
+     <input class="btn btn-primary" type="button"name="button" value="Cadastrar" onClick="campos_criticar()" />
+   </div>
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+    </div>
+</div>
 </form>
-</fieldset>
-<p align="center"> 
-  <input type="button" class="botao" name="btn_fechar" value="Fechar Janela" onclick="javascript:parent.jQuery.fancybox.close();" />
-</p>
-</body>
-</html>              
+
+<dtml-var standard_html_footer>             
 

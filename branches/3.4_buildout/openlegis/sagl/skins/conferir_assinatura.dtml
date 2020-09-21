@@ -1,62 +1,42 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.maskedinput.min.js"></script>
-
-<script>
-jQuery(function($){
-   $("#txt_codigo_verificacao").mask("****-****-****-****");
-});
-</script>
-
 <script type="text/javascript">
-  function campos_criticar(){
-      var form = document.conferir_assinatura_form;
-      if (form.txt_codigo_verificacao.value == "") {
-         alert("Formato do código inválido! Verifique os dados no documento e tente novamente.");
-         form.txt_codigo_verificacao.focus();
-         return false;
-      }
-      form.submit();
-    }
-
-  function validate() {
-      var value = document.getElementById('txt_codigo_verificacao').value;
-      if (value.length < 18) {
-         return false;
-      }
-      return true;
-    }
-</script>
-
-<script type="text/javascript">
-(function ($) {
-  $(function () {
-    document.onkeypress = function (event) {
-      var form = conferir_assinatura_form;
-      if (event.keyCode === 13) {
-        campos_criticar();
-      }
-    };
+  $(document).ready(function () {
+        $("#btn_consultar").click(function () {
+            var form = document.conferir_assinatura_form;
+            var chave = $('#txt_codigo_verificacao');
+            if (chave.val() === '') {
+                $.showAlert({title: "Preenchimento obrigatório", body: "É necessário informar o código de validação!"});
+                $("#txt_codigo_verificacao").focus();
+                return false;
+            }
+           if ($("#txt_chave_acesso").val().length < 18) {
+                $.showAlert({title: "Mensagem do SIstema", body: "Formato do código inválido. Informe os dados corretamente."});
+                return false;
+            }
+            return form.submit();
+        });
   });
-}(jQuery));
 </script>
 
-<h1 class="firstHeading">Conferir Assinatura Digital</h1> 
+<h1 class="firstHeading">Validação Digital</h1> 
 
-<p style="font-size:14px">
-Informe o código de verificação constante do documento assinado.
-</p>
+<p>Informe o código de validação do documento assinado digitalmente.</p>
 
-<form class="pf-form" method="post" name="conferir_assinatura_form" action="conferir_assinatura_proc" onsubmit="return validate();">
-     <div class="pf-element pf-full-width" style="padding: 0.8em 0">
-        <label for="txt_codigo_verificacao"><span class="pf-label" style="font-size:15px; margin-bottom: 8px;">Código de Verificação:</span></label>
-          <input name="txt_codigo_verificacao" id="txt_codigo_verificacao" type="text" style="font-size:15px; font-family: monospace; font-weight: 600; margin-bottom: 8px; text-transform: uppercase" autofocus minlength=18>
-     </div>
-
-     <div class="pf-element pf-buttons" style="font-size:17px ;margin-top: 7px;">
-          <input style="font-size:15px;margin-left: 0" class="pf-button btn botao" type="button" name="btn_assinatura_conferir" value="Conferir" onClick="campos_criticar()"/>
-          <input style="font-size:15px" class="pf-button btn botao" type="reset" name="btn_protocolo_limpar" value="Limpar" />
-     </div>
+<form class="form-inline" method="post" name="conferir_assinatura_form" action="conferir_assinatura_proc">
+    <label class="sr-only" for="txt_codigo_verificacao">Código de Validação</label>
+    <div class="input-group mb-3 mr-sm-2">
+      <div class="input-group-prepend">
+        <div class="input-group-text"><i class="fa fa-fw fa-key"></i></div>
+      </div>
+      <input type="text" class="form-control form-control-lg text-uppercase chave_validacao" name="txt_codigo_verificacao" id="txt_codigo_verificacao" placeholder="____-____-____-____" size="21" minlength="18" maxlength="18" autofocus autocomplete="off" required>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+  </div>
+  <div class="btn-group mb-3">
+    <button class="btn btn-lg btn-primary" id="btn_consultar"><i class="fas fa-fw fa-check-square"></i> Validar</button>
+  </div>    
 </form>
 
 <dtml-var standard_html_footer>

@@ -78,14 +78,12 @@ def documentos(lst_documentos):
         if dic['txt_assunto']!=None:
             txt_assunto = dic['txt_assunto'].replace('&','&amp;')
             tmp_data+='\t\t<para style="P2">' + txt_assunto + '</para>\n'
-        if dic['protocolo']!=" " and dic['protocolo']!=None:
-            tmp_data+='\t\t<para style="P2">' + dic['protocolo'] + '</para>\n'
         if dic['txt_interessado']!=None:
             tmp_data+='\t\t<para style="P2"><b>Interessado:</b> ' + dic['txt_interessado'] + '</para>\n'
+        if dic['protocolo']!=" " and dic['protocolo']!=None:
+            tmp_data+='\t\t<para style="P2">' + dic['protocolo'] + '</para>\n'
         if dic['des_situacao']!="":
             tmp_data+='\t\t<para style="P2"><b>Situação:</b> ' + dic['des_situacao'] + '</para>\n'
-        if dic['ultima_acao']!="":
-            tmp_data+='\t\t<para style="P2"><b>Última Ação:</b> ' + dic['ultima_acao'] + '</para>\n'
         tmp_data+='\t\t<para style="P2" spaceAfter="8">\n'
         tmp_data+='\t\t\t<font color="white"> </font>\n'
         tmp_data+='\t\t</para>\n'
@@ -108,7 +106,7 @@ def principal(sessao,imagem,data,lst_documentos,dic_cabecalho,lst_rodape,dic_fil
     tmp_data+=cabecalho(dic_cabecalho,imagem)
     tmp_data+=rodape(lst_rodape)
     tmp_data+='\t\t\t</pageGraphics>\n'
-    tmp_data+='\t\t\t<frame id="first" x1="3cm" y1="2cm" width="16cm" height="23cm"/>\n'
+    tmp_data+='\t\t\t<frame id="first" x1="3cm" y1="3cm" width="16cm" height="22cm"/>\n'
     tmp_data+='\t\t</pageTemplate>\n'
     tmp_data+='\t</template>\n'
     tmp_data+=paraStyle()

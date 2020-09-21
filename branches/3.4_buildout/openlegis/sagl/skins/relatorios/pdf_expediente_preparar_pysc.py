@@ -1,18 +1,28 @@
+## Script (Python) "pdf_expediente_preparar_pysc"
+##bind container=container
+##bind context=context
+##bind namespace=
+##bind script=script
+##bind subpath=traverse_subpath
+##parameters= 
+##title=
+##
+
 import os
 
 request=context.REQUEST
 response=request.RESPONSE
 session= request.SESSION
 
-if context.REQUEST['data']!='':
-    dat_inicio_sessao = context.REQUEST['data']
-    data = context.pysc.data_converter_pysc(dat_inicio_sessao) # converte data para formato yyyy/mm/dd
+if context.REQUEST['cod_sessao_plen']!='':
     codigo = context.REQUEST['cod_sessao_plen']
 
-    for sessao in context.zsql.sessao_plenaria_obter_zsql(dat_inicio_sessao=data, cod_sessao_plen=codigo, ind_excluido=0):
+    for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=codigo, ind_excluido=0):
+        data = context.pysc.data_converter_pysc(sessao.dat_inicio_sessao)
         inf_basicas_dic = {} # dicionário que armazenará as informacoes basicas da sessao plenaria 
         # seleciona o tipo da sessao plenaria
         tipo_sessao = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao,ind_excluido=0)[0]
+        inf_basicas_dic["cod_sessao_plen"] = sessao.cod_sessao_plen
         inf_basicas_dic["num_sessao_plen"] = sessao.num_sessao_plen
         inf_basicas_dic["nom_sessao"] = tipo_sessao.nom_sessao.decode('utf-8').upper()
         inf_basicas_dic["num_legislatura"] = sessao.num_legislatura

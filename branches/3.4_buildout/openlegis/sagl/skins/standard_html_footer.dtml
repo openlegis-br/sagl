@@ -1,82 +1,145 @@
-<dtml-if expr="not _.has_key('impressao') and not _.has_key('iframe') and not REQUEST.SESSION.get('iframe', 0)">
+           </div>
+        </div>
       </div>
-    </div>
-   </div>
- <div class="nota">Consulta gerada em <dtml-var expr="_.DateTime()" fmt="%d/%m/%Y às %Hh%Mm"></div>
- <div id="rodape">
-  <div class="centroWrapper">
-   <div class="section group">
-     <div class="col span_1_of_2 homeGrid">
-      <address>
-      | Versão <dtml-var "sapl_documentos.props_sagl.versao"> | O sistema OpenLegis é licenciado sob os termos da <a href="http://www.gnu.org/licenses/gpl-faq.html" target="_blank">GNU General Public License</a>, conforme publicado pela Free Software Foundation.<br />
-      <a href="http://www.openlegis.com.br" target="_blank">
-       <img class="openlegis" src="&dtml-portal_url;/imagens/logo_openlegis.png" width="86" height="30" alt="Desenvolvimento OpenLegis" title="Desenvolvimento OpenLegis" />
-      </a>
-      </address>
-     </div>
-     <div class="col span_1_of_2 homeGrid right endereco">
-      <address>
-        <dtml-var "sapl_documentos.props_sagl.nom_casa">
-        <dtml-call expr="REQUEST.set('cod_localidade', sapl_documentos.props_sagl.cod_localidade)">
-        <dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade)">
-          - <dtml-var sgl_uf></dtml-in><br /> 
-        <dtml-if "str(sapl_documentos.props_sagl.end_casa).strip()">
-          <dtml-var "sapl_documentos.props_sagl.end_casa"> | 
-          <dtml-if "str(sapl_documentos.props_sagl.num_cep).strip()">
-            CEP: <dtml-var "sapl_documentos.props_sagl.num_cep"><br />
-          </dtml-if>
-        </dtml-if>
-        <dtml-if "str(sapl_documentos.props_sagl.num_tel).strip()">
-          <dtml-if "str(sapl_documentos.props_sagl.end_casa).strip()">
-          </dtml-if>
-          Fone: <dtml-var "sapl_documentos.props_sagl.num_tel">
-          <dtml-if "str(sapl_documentos.props_sagl.num_fax).strip()">
-            | Fax: <dtml-var "sapl_documentos.props_sagl.num_fax"></dtml-if></dtml-if><br />
-        <dtml-if "str(sapl_documentos.props_sagl.end_web_casa).strip()">
-          <dtml-if "str(sapl_documentos.props_sagl.end_casa).strip() or str(sapl_documentos.props_sagl.num_tel).strip()">
-          </dtml-if>
-          <a href="<dtml-var "sapl_documentos.props_sagl.end_web_casa">" target="_blank"><dtml-var "sapl_documentos.props_sagl.end_web_casa"></a><br />
-        </dtml-if>
-      </address>
-   </div>
-   </div>
-   </div>
-  </div>
-</div>
+   </main>
+
+<dtml-if expr="(not _.has_key('iframe') and not REQUEST.get('_iframe', '') and not REQUEST.get('modal', '')) or (_.has_key('iframe') and iframe=='0')">
+
+<footer class="footer d-print-none mt-auto py-3">
+      <div class="container">
+        <hr>
+        <div class="row">
+           <div class="col-lg-6 col-sm-6">
+              <span class="text-muted"><a href="https://www.openlegis.com.br"><i class="fab fa-creative-commons mr-1"></i><b>open</b>legis</a> - v4.0</span>
+           </div>
+           <div class="col-lg-6 col-sm-6 text-sm-right">
+              <span class="text-muted d-none d-md-inline small"><dtml-var expr="_.DateTime()" fmt="%d/%m/%Y - %H:%M:%S"></span>
+           </div>
+         </div>
+      </div>
+    </footer>
+
 </dtml-if>
 
-<a href="#0" class="cd-top">Top</a>
+<!-- Modal -->  
+<div class="modal fade" id="iFrameModal" tabindex="-1" role="dialog" aria-labelledby="iFrameModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="h5 modal-title" id="iFrameModalLabel">New message</p>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <iframe src="" height="500px" width="100%" frameborder="0"></iframe>
+      </div>
+        <button type="button" data-dismiss="modal" hidden="hidden" id="close"><span class="d-none">Fechar</span></button>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">  
+$('#iFrameModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var title = button.data('title') // Extract title from data-* attributes
+  var src = button.data('src') // Extract src from data-* attributes
+  var modal = $(this)
+  modal.find('.modal-title').text(title)
+  modal.find('.modal-body iframe').attr("src", src)
+})
+
+ <dtml-if expr="not portal_membership.isAnonymousUser()">
+   $('#iFrameModal').on('hidden.bs.modal', function () {
+   window.location.reload(true);
+   })
+ </dtml-if>
+</script>
+
 
 <script type="text/javascript">
-jQuery(document).ready(function($){
-	// browser window scroll (in pixels) after which the "back to top" link is shown
-	var offset = 300,
-		//browser window scroll (in pixels) after which the "back to top" link opacity is reduced
-		offset_opacity = 1200,
-		//duration of the top scrolling animation (in ms)
-		scroll_top_duration = 700,
-		//grab the "back to top" link
-		$back_to_top = $('.cd-top');
-
-	//hide or show the "back to top" link
-	$(window).scroll(function(){
-		( $(this).scrollTop() > offset ) ? $back_to_top.addClass('cd-is-visible') : $back_to_top.removeClass('cd-is-visible cd-fade-out');
-		if( $(this).scrollTop() > offset_opacity ) { 
-			$back_to_top.addClass('cd-fade-out');
-		}
+$(document).ready(function() {
+	$('a[data-confirm]').click(function(ev) {
+		var href = $(this).attr('href');
+		if (!$('#dataConfirmModal').length) {
+			$('body').append('<div class="modal fade" id="dataConfirmModal" tabindex="-1" role="dialog" aria-labelledby="dataConfirmLabel" aria-hidden="true"><div class="modal-dialog modal-md" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="exampleModalLabel">Mensagem do sistema</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body"></div><div class="modal-footer"><a class="btn btn-primary" id="dataConfirmOK">OK</a><button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">Cancelar</button></div></div></div></div>');
+		} 
+		$('#dataConfirmModal').find('.modal-body').text($(this).attr('data-confirm'));
+		$('#dataConfirmOK').attr('href', href);
+		$('#dataConfirmModal').modal({show:true});
+		return false;
 	});
-
-	//smooth scroll to top
-	$back_to_top.on('click', function(event){
-		event.preventDefault();
-		$('body,html').animate({
-			scrollTop: 0 ,
-		 	}, scroll_top_duration
-		);
-	});
-
 });
+</script>
+
+<script type="text/javascript">
+$( document ).ready( function () {
+    $( '.dropdown-menu a.dropdown-toggle' ).on( 'click', function ( e ) {
+        var $el = $( this );
+        $el.toggleClass('active-dropdown');
+        var $parent = $( this ).offsetParent( ".dropdown-menu" );
+        if ( !$( this ).next().hasClass( 'show' ) ) {
+            $( this ).parents( '.dropdown-menu' ).first().find( '.show' ).removeClass( "show" );
+        }
+        var $subMenu = $( this ).next( ".dropdown-menu" );
+        $subMenu.toggleClass( 'show' );
+        
+        $( this ).parent( "li" ).toggleClass( 'show' );
+
+        $( this ).parents( 'li.nav-item.dropdown.show' ).on( 'hidden.bs.dropdown', function ( e ) {
+            $( '.dropdown-menu .show' ).removeClass( "show" );
+            $el.removeClass('active-dropdown');
+        } );
+        
+         if ( !$parent.parent().hasClass( 'navbar-nav' ) ) {
+            $el.next().css( { "top": $el[0].offsetTop, "left": $parent.outerWidth() - 4 } );
+        }
+
+        return false;
+    } );
+} );
+</script>
+
+   <dtml-if expr="_.has_key('QUERY_STRING') and QUERY_STRING == 'retry=0'">
+      <script type="text/javascript">
+         $(window).on('load',function(){
+             $('#loginModal').modal('show');
+         });
+      </script>
+   </dtml-if>
+   <script type="text/javascript">
+     $(document).ready(function() {
+       document.title = $(".firstHeading").text() + ' — ' + document.title;
+     });
+   </script>
+
+<script>
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
 </script>
 
 </body>
 </html>
+

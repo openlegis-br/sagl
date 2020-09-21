@@ -6,23 +6,25 @@
 
  <dtml-if sequence-start> 
 
- <h1 class="firstHeading">Conferir Assinatura Digital</h1>
+ <h1 class="firstHeading">Validação Digital</h1>
  
- <p class="texto"><b>Código de Verificação:</b> <dtml-var txt_codigo_verificacao></p>
+ <p><b>Código de Validação:</b> <dtml-var txt_codigo_verificacao></p>
 
-     <table>
+     <table class="table table-bordered">
+      <thead>
         <tr>
-           <th>Documento Assinado:</th>
+           <th>Documento Original:</th>
         </tr>
+      </thead>
         <tr>
            <td>
                <dtml-if expr="tipo_doc == 'proposicao'">
                  <a target="_blank" href="<dtml-var portal_url>/sapl_documentos/proposicao/<dtml-var codigo>_signed.pdf">
-                   <dtml-var portal_url>/sapl_documentos/proposicao/<dtml-var codigo>_signed.pdf
+                   <i class="far fa-file-pdf"></i> <dtml-var portal_url>/sapl_documentos/proposicao/<dtml-var codigo>_signed.pdf
                  </a>
                <dtml-else>
                  <a target="_blank" href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var txt_codigo>.pdf">
-                   <dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var txt_codigo>.pdf
+                   <i class="far fa-file-pdf"></i> <dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var txt_codigo>.pdf
                  </a>
                </dtml-if>
            </td>
@@ -42,15 +44,15 @@
                        <dtml-elif expr="ind_mat_ou_doc == 'D'">
                           <dtml-if expr="des_tipo_proposicao!='Emenda' and des_tipo_proposicao!='Substitutivo' and des_tipo_proposicao!='Mensagem Aditiva'">
                             <a target="_blank" href="<dtml-var portal_url>/sapl_documentos/materia/<dtml-var codigo>.pdf">
-                               <dtml-var portal_url>/sapl_documentos/materia/<dtml-var codigo>.pdf
+                               <i class="far fa-file-pdf"></i> <dtml-var portal_url>/sapl_documentos/materia/<dtml-var codigo>.pdf
                             </a>
                           <dtml-elif expr="des_tipo_proposicao=='Emenda' or des_tipo_proposicao!='Mensagem Aditiva'">
                             <a target="_blank" href="<dtml-var portal_url>/sapl_documentos/emenda/<dtml-var codigo>_emenda.pdf">
-                               <dtml-var portal_url>/sapl_documentos/emenda/<dtml-var codigo>_emenda.pdf
+                               <i class="far fa-file-pdf"></i> <dtml-var portal_url>/sapl_documentos/emenda/<dtml-var codigo>_emenda.pdf
                             </a>
                           <dtml-elif expr="des_tipo_proposicao=='Substitutivo'">
                             <a target="_blank" href="<dtml-var portal_url>/sapl_documentos/substitutivo/<dtml-var codigo>_substitutivo.pdf">
-                               <dtml-var portal_url>/sapl_documentos/substitutivo/<dtml-var codigo>_substitutivo.pdf
+                               <i class="far fa-file-pdf"></i> <dtml-var portal_url>/sapl_documentos/substitutivo/<dtml-var codigo>_substitutivo.pdf
                             </a>
                           </dtml-if>
                        </dtml-if>
@@ -59,7 +61,7 @@
                <dtml-else>
                   <dtml-in expr="zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc)">
                     <a target="_blank" href="<dtml-var portal_url>/<dtml-var pdf_location><dtml-var codigo><dtml-var pdf_file>">
-                      <dtml-var portal_url>/<dtml-var pdf_location><dtml-var codigo><dtml-var pdf_file>
+                      <i class="far fa-file-pdf"></i> <dtml-var portal_url>/<dtml-var pdf_location><dtml-var codigo><dtml-var pdf_file>
                     </a>
                   </dtml-in>
                </dtml-if>
@@ -67,12 +69,14 @@
         </tr>
      </table>
 
-    <table>
+    <table class="table table-bordered">
+     <thead>
       <tr>
           <th width="50%">Reponsável pela Assinatura</th>
           <th width="30%">CPF</th>
           <th width="20%">Data da Assinatura</th>
       </tr>
+     </thead>      
   </dtml-if>
       <tr>
           <td><dtml-var nom_completo></td>
@@ -84,19 +88,18 @@
   </dtml-if>
 
 <dtml-else>
-
-  <h1 class="firstHeading">Conferir Assinatura Digital</h1>
-  <div class="ui-state-error ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
-    <p>
-      <span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
-      <strong>O código de verificação <dtml-var txt_codigo_verificacao> não foi localizado!</strong>
-    </p>
-  </div>
+  <h1 class="firstHeading">Validação Digital</h1> 
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5>Código de Validação <b><dtml-var txt_codigo_verificacao></b> não localizado!</h5>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 </dtml-in>
-  <br />
-  <p align="center">
-      <input type="button" class="botao" id="hideprint" name="print_button" value="Imprimir" onClick="window.print();return false;" />
-    <input class="botao" type="button" value="Nova Conferência" onClick="history.back()">
-  </p>
+
+<div class="text-center">
+  <button class="btn btn-primary d-print-none" onClick="history.back()"><i class="fas fa-check-square"></i> Nova Validação</button>
+  <button class="btn btn-secondary d-print-none" onClick="window.print();return false;"><i class="fas fa-print"></i> Imprimir</button>
+</div>
 
 <dtml-var standard_html_footer>

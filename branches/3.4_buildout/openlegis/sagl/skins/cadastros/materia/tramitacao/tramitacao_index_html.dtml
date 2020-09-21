@@ -1,71 +1,96 @@
-<dtml-var standard_html_header>
-
-<script type="text/javascript">
-<!--
-   function submeter(){
-      location.href="tramitacao_form?cod_materia=<dtml-var cod_materia>";
-   }   
-//--!>
-</script>
-
-<script type="text/javascript">
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js" "></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js" "></script>
+<script>
 $(document).ready(function() {
-	$(".popup1").fancybox({
-		maxWidth	: 1024,
-		maxHeight	: 800,
-		fitToView	: false,
-		width		: '95%',
-		height		: '93%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-		closeEffect	: 'fade'
-	});
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+
+    $('table.display').DataTable( {
+        "responsive": true,
+        "order": [[0, "desc"]],
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
 });
+
 </script>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/tramitacao_relatoria">Ajuda</a>
+<h1 class="firstHeading">Tramitações</h1>
 
-<h1 class="firstHeading">Matéria Legislativa</h1>
-
-<form name="tramitacao_form" action="tramitacao_form">
-  <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" />
-    <dtml-var materia_menu>
-    <dtml-var materia_header>
-
-<fieldset><legend>Histórico de Tramitações</legend>  
-  <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia)" size=12 start=query_start orphan=2>
-  <dtml-if previous-sequence>
-         <span class="form-element">
-             <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
-             Página Anterior (<dtml-var previous-sequence-size> resultados)</a>
-         </span>
-  </dtml-if previous-sequence>
+<dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia)">
   <dtml-if sequence-start>
-    <table>
+    <div class="table-responsive mb-2">
+    <table class="table table-bordered display">
+     <thead class="table-secondary">
       <tr>  
-         <th width="15%" class="form-label">Data Ação</th>
-         <th width="30%" class="form-label">Origem</th>
-         <th width="30%" class="form-label">Destino</th>
-         <th width="15%" class="form-label">Status</th>
-         <th width="10%" class="form-label">PDF</th>
+         <th width="15%">Data</th>
+         <th>Unidade de Origem</th>
+         <th>Unidade de Destino</th>
+         <th>Status</th>
+         <th width="10%">Despacho</th>
       </tr>
+     </thead>
     </dtml-if sequence-start>
-      <tr <dtml-if sequence-odd>class="fundo"</dtml-if>> 
-         <td class="texto"><a href="tramitacao_mostrar_proc?hdn_cod_tramitacao=<dtml-var cod_tramitacao>&amp;cod_materia=<dtml-var cod_materia>">
-         <b><dtml-var dat_tramitacao></b></a></td>
-         <td class="texto">
-         <dtml-comment>obtém o nome da unidade de tramitacao local. Man Qi em 01/08/2001 </dtml-comment>
+      <tr> 
+         <td>
+            <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Visualização de Tramitação" data-src="tramitacao/tramitacao_mostrar_proc?hdn_cod_tramitacao=<dtml-var cod_tramitacao>&cod_materia=<dtml-var cod_materia>&modal=1">  
+              <b><dtml-var dat_tramitacao></b>
+            </a>
+          </td>
+         <td>
          <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local)">
            <dtml-if cod_orgao><dtml-var nom_orgao>
            <dtml-elif cod_comissao><dtml-var nom_comissao>   
            <dtml-else> <dtml-var nom_parlamentar>
            </dtml-if>
          </dtml-in></td>
-         <td class="texto"><dtml-if cod_unid_tram_dest>
-           <dtml-comment>obtém o nome da unidade de tramitacao destino. Man Qi em 01/08/2001 </dtml-comment>
+         <td><dtml-if cod_unid_tram_dest>
            <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest)">
              <dtml-if cod_orgao><dtml-var nom_orgao>
              <dtml-elif cod_comissao><dtml-var nom_comissao>   
@@ -73,43 +98,33 @@ $(document).ready(function() {
              </dtml-if>
            </dtml-in>
          </dtml-if></td> 
-         <td class="texto"><dtml-var sgl_status null=""></td>
+         <td><dtml-var des_status></td>
          <td>
         <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
         <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
 
-        <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) or _.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
-           <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
-             <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
-               <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
-                 <img align="top" style="margin-left: 20px;" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF"></a>
-             </dtml-let>
-           </dtml-if>
-           <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
-             <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
-               <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
-                  <img height="22" style="margin-left: 20px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada"></a>
-             </dtml-let>
-           </dtml-if>
+        <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+           <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
+              <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate" style="font-size: 21px;"></i><span class="d-none">PDF</span>
+           </dtml-let>
+        <dtml-elif "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+           <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+              <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>
+           </dtml-let>
+        <dtml-else>
+           <i class="fa fa-file-pdf" style="font-size: 21px; color: #e9e9e9"></i>                   
         </dtml-if> 
+
          </td>
       </tr>
     <dtml-if sequence-end>   
       </table>
+      </div>
     </dtml-if sequence-end>
-    <dtml-if next-sequence>
-         <span class="form-element">
-             <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
-             Próxima Página (<dtml-var next-sequence-size> resultados)</a>
-         </span>
-    </dtml-if next-sequence>
 <dtml-else>
-    <span class="texto">Nenhuma tramitação cadastrada para esta matéria.</span>
+    <p>Nenhuma tramitação cadastrada.</p>
 </dtml-in>
-</fieldset>
-<p align="center">
-   <input type="submit" class="botao" name="btn_incluir" value="Incluir Tramitação" />
-</p>
-</form>
 
-<dtml-var standard_html_footer>
+  <div class="text-left">
+     <button type="button" class="btn btn-primary d-print-none" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Tramitação" data-src="tramitacao/tramitacao_form?cod_materia=<dtml-var cod_materia>&modal=1">Incluir Tramitação</button> 
+  </div>

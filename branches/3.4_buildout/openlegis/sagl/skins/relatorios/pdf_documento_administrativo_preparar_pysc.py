@@ -97,7 +97,7 @@ for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_docume
         dic['protocolo']= " "
         if documento.num_protocolo !=None:
           for protocolo in context.zsql.protocolo_obter_zsql(num_protocolo=documento.num_protocolo,ano_protocolo=documento.ano_documento):
-            dic['protocolo']= "Protocolo Geral: " + str(protocolo.num_protocolo) + "/" + str(documento.ano_documento) + " - Data de Entrada: " + context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)
+            dic['protocolo']= "Protocolo: " + str(protocolo.num_protocolo) + "/" + str(documento.ano_documento) + " - Data de Entrada: " + context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)
         else:
           dic['protocolo']= " "
 

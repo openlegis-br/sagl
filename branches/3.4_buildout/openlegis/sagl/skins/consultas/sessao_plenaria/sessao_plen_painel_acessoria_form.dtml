@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
 <head>
-<dtml-var standard_css_slot>
-<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
-<script type="text/javascript">
-//<![CDATA[
-function printFrame() {
-$('#print_button').hide();
-window.print();
-$('#print_button').show();
-}
-//]]>
-</script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Votação Nominal</title>
+  <dtml-var standard_css_slot>
+  <script type="text/javascript">
+    function printFrame() {
+      $('#print_button').hide();
+        window.print();
+      $('#print_button').show();
+    }
+  </script>
 </head>
-<body class="modal">
+
+<body>
 
 <dtml-if cod_emenda>
   <dtml-call expr="REQUEST.set('cod_emenda', cod_emenda)">
@@ -49,7 +48,7 @@ $('#print_button').show();
 
 <fieldset>
  <legend>Painel de Votação</legend>
-   <table>
+   <table class="table">
       <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, cod_subemenda=cod_subemenda, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
        <tr>
           <th class="texto">
@@ -76,7 +75,7 @@ $('#print_button').show();
           </th>
        </tr>
        <tr>
-          <td class="texto">
+          <td>
             <b>Resultado da Votação</b>: 
             <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao)">
                 <dtml-var nom_resultado>
@@ -84,17 +83,17 @@ $('#print_button').show();
           </td>
        </tr>
        <tr>
-          <td class="texto">
+          <td>
              <b>Quantidade de votos sim:</b> <dtml-var num_votos_sim>
           </td>
        </tr>
        <tr>
-          <td class="texto">
+          <td>
             <b>Quantidade de votos não:</b> <dtml-var num_votos_nao>
           </td>
        </tr>
        <tr>
-          <td class="texto">
+          <td>
              <b>Quantidade de abstenções:</b> <dtml-var num_abstencao>
           </td>
        </tr>
@@ -107,17 +106,17 @@ $('#print_button').show();
     <legend>Votação Nominal</legend>
      <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_inicio_sessao)">
       <dtml-if sequence-start>
-       <table>
+       <table class="table">
         <tr>
          <th width="50%" class="label">Parlamentar</th>
          <th width="50%" class="label">Votação (Sim / Não / Abstenção)</th>
         </tr>
       </dtml-if>
         <tr>
-         <td class="texto">
+         <td>
            <dtml-var nom_parlamentar> 
          </td>
-         <td class="texto">
+         <td>
            <dtml-call expr="REQUEST.set('voto', 0)">
               <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, cod_subemenda=cod_subemenda, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
                 <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao = cod_votacao, cod_parlamentar = cod_parlamentar, ind_excluido=0)">        
@@ -141,8 +140,9 @@ $('#print_button').show();
  </fieldset>
 
   <p align="center">
-   <input type="button" class="botao" id="hideprint" name="print_button" value="Imprimir" onClick="printFrame();return false;" />
-   <input class="botao" type="button" value="Fechar" OnClick="javascript:parent.jQuery.fancybox.close();" />
+     <input type="button" class="btn btn-primary d-print-none" name="print_button" value="Imprimir" onClick="printFrame();return false;" />
+     <input class="btn btn-secondary" type="button" id="closeBtn" onclick="var modal1 = $('#close', window.parent.document); modal1.click();" value="Fechar" />
   </p>
+  
 </body>
 </html>

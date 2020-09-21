@@ -29,20 +29,21 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
     inf_basicas_dic['sgl_uf']= local.sgl_uf
 
 for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
- for protocolo in context.zsql.protocolo_pesquisar_zsql(num_protocolo=materia.num_protocolo,ano_protocolo=materia.ano_ident_basica):
-   if protocolo.cod_protocolo:
-      num_protocolo = str(protocolo.num_protocolo) + '/' + str(protocolo.ano_protocolo)
-      dat_protocolo = context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)
-      hor_protocolo = protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
-      inf_basicas_dic["dia_protocolo"] = context.pysc.data_converter_por_extenso_pysc(data=context.pysc.iso_to_port_pysc(protocolo.dat_protocolo))
-      inf_basicas_dic["dia_semana"] = context.pysc.data_converter_dia_semana_pysc(data=context.pysc.iso_to_port_pysc(protocolo.dat_protocolo))
+ if materia.num_protocolo:
+    for protocolo in context.zsql.protocolo_pesquisar_zsql(num_protocolo=materia.num_protocolo,ano_protocolo=materia.ano_ident_basica):
+      if protocolo.cod_protocolo:
+         num_protocolo = str(protocolo.num_protocolo) + '/' + str(protocolo.ano_protocolo)
+         dat_protocolo = context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)
+         hor_protocolo = protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
+         inf_basicas_dic["dia_protocolo"] = context.pysc.data_converter_por_extenso_pysc(data=context.pysc.iso_to_port_pysc(protocolo.dat_protocolo))
+         inf_basicas_dic["dia_semana"] = context.pysc.data_converter_dia_semana_pysc(data=context.pysc.iso_to_port_pysc(protocolo.dat_protocolo))
 
-   else:
-      num_protocolo = str(materia.num_protocolo) + '/' + str(materia.ano_ident_basica)
-      dat_protocolo = context.pysc.iso_to_port_pysc(materia.dat_apresentacao)
-      hor_protocolo = '00;00'
-      inf_basicas_dic["dia_protocolo"] = context.pysc.data_converter_por_extenso_pysc(data=context.pysc.iso_to_port_pysc(materia.dat_apresentacao))
-      inf_basicas_dic["dia_semana"] = context.pysc.data_converter_dia_semana_pysc(data=context.pysc.iso_to_port_pysc(materia.dat_apresentacao))
+ else:
+    num_protocolo = ''
+    dat_protocolo = materia.dat_apresentacao
+    hor_protocolo = ''
+    inf_basicas_dic["dia_protocolo"] = context.pysc.data_converter_por_extenso_pysc(data=materia.dat_apresentacao)
+    inf_basicas_dic["dia_semana"] = context.pysc.data_converter_dia_semana_pysc(data=materia.dat_apresentacao)
 
  dat_vencimento = " "
  if materia.dat_fim_prazo != None:

@@ -241,7 +241,8 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     """
     """
 
-    arquivoPdf=str(int(time.time()*100))+".pdf"
+    #arquivoPdf=str(int(time.time()*100))+".pdf"
+    arquivoPdf=str(inf_basicas_dic["cod_sessao_plen"])+"_pauta_expediente.pdf"
 
     tmp=''
     tmp+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
@@ -269,12 +270,21 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     tmp+='</document>\n'
     tmp_pdf=parseString(tmp)
 
-    if hasattr(context.temp_folder,arquivoPdf):
-        context.temp_folder.manage_delObjects(ids=arquivoPdf)
-    context.temp_folder.manage_addFile(arquivoPdf)
-    arq=context.temp_folder[arquivoPdf]
-    arq.manage_edit(title='Arquivo PDF temporario.',filedata=tmp_pdf,content_type='application/pdf')
+#    if hasattr(context.temp_folder,arquivoPdf):
+#        context.temp_folder.manage_delObjects(ids=arquivoPdf)
+#    context.temp_folder.manage_addFile(arquivoPdf)
+#    arq=context.temp_folder[arquivoPdf]
+#    arq.manage_edit(title='Arquivo PDF temporario.',filedata=tmp_pdf,content_type='application/pdf')
 
-    return "/temp_folder/"+arquivoPdf
+#    return "/temp_folder/"+arquivoPdf
+
+
+    if hasattr(context.sapl_documentos.pauta_sessao,arquivoPdf):
+        context.sapl_documentos.pauta_sessao.manage_delObjects(ids=arquivoPdf)
+    context.sapl_documentos.pauta_sessao.manage_addFile(arquivoPdf)
+    arq=context.sapl_documentos.pauta_sessao[arquivoPdf]
+    arq.manage_edit(title='Expediente',filedata=tmp_pdf,content_type='application/pdf')
+   
+    return "sapl_documentos/pauta_sessao/"+arquivoPdf
 
 return principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic)

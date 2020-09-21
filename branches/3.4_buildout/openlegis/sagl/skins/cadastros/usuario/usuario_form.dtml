@@ -148,57 +148,61 @@ jQuery(function($){
 }(jQuery));
 </script>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/gerenciamento_usuarios">Ajuda</a>
-
 <h1 class="firstHeading">Cadastro de Usuário</h1>
 
 <fieldset>
   <legend>Credenciais de Acesso ao Sistema</legend>
    <form name="usuario_form" action="usuario_salvar_proc" method="post">
-    <input type="hidden" name="hdn_cod_usuario" value="<dtml-var cod_usuario missing>" />
+    <input class="form-control" type="hidden" name="hdn_cod_usuario" value="<dtml-var cod_usuario missing>" />
     <dtml-if nome>
-       <input type="hidden" name="atualizar" value="1"/>
+       <input class="form-control" type="hidden" name="atualizar" value="1"/>
        <dtml-let user="acl_users.getUser(nome)">
         <dtml-call expr="REQUEST.set('username', user.getUserName())">
          <dtml-call expr="REQUEST.set('domains', user.getDomains())">
          <dtml-call expr="REQUEST.set('roles', user.getRoles())">
        </dtml-let>
     </dtml-if>
-     <table>
-       <tr>
-          <td class="form-element">Nome do Usuário<span class="campoObrigatorio">&nbsp;</span><br />
-            <input name="txt_nome" type="text" size="12" maxlength="25" value="<dtml-var username missing>"  <dtml-if username>readonly</dtml-if> />
+     <table class="table table-borderless" >
+       <tr class="table-default">
+          <td>Nome do Usuário<span class="campoObrigatorio">&nbsp;</span><br />
+            <input class="form-control" name="txt_nome" type="text" size="12" maxlength="25" value="<dtml-var username missing>"  <dtml-if username>readonly</dtml-if> />
           </td>
-          <td class="form-element">Senha<span class="campoObrigatorio">&nbsp;</span><br />
-            <input type="password" name="password" size="12" maxlength="12" <dtml-if username> value="password" </dtml-if> />
+          <td>Senha<span class="campoObrigatorio">&nbsp;</span><br />
+            <input class="form-control" type="password" name="password" size="12" maxlength="12" <dtml-if username> value="password" </dtml-if> />
           </td>
-          <td class="form-element">Cofirmar Senha<span class="campoObrigatorio">&nbsp;</span><br />
-            <input type="password" name="confirm" size="12" maxlength="12" <dtml-if username> value="pconfirm" </dtml-if> />
+          <td>Cofirmar Senha<span class="campoObrigatorio">&nbsp;</span><br />
+            <input class="form-control" type="password" name="confirm" size="12" maxlength="12" <dtml-if username> value="pconfirm" </dtml-if> />
           </td>
        </tr>
-      <input type="hidden" name="domains:tokens" value="<dtml-if domains><dtml-in expr="domains"><dtml-var sequence-item html_quote> </dtml-in></dtml-if>" />
-       <tr>
-         <td colspan="2" class="form-element">Perfil(is)<span class="campoObrigatorio">&nbsp;</span><br />
-         <select name="roles:list" size="5" multiple style="max-width: 338px; width: 100%;">
+      <input class="form-control" type="hidden" name="domains:tokens" value="<dtml-if domains><dtml-in expr="domains"><dtml-var sequence-item html_quote> </dtml-in></dtml-if>" />
+       <tr class="table-default">
+         <td colspan="2">Perfil no Sistema<span class="campoObrigatorio">&nbsp;</span><br />
+         <select class="custom-select"  name="roles:list" size="5" multiple>
          <dtml-in valid_roles>
-         <dtml-unless expr="_['sequence-item'] in ['Anonymous', 'Manager', 'Owner', 'Alterar Senha']">
-         <option value="<dtml-var sequence-item html_quote>" 
-         <dtml-if expr="(_.has_key('roles')) and (not _['sequence-item'] in ['Anonymous', 'Manager', 'Owner']) and (_['sequence-item'] != 'Shared') and (_['sequence-item'] in roles)">
-            selected
-         </dtml-if>><dtml-var sequence-item>
-         </dtml-unless>
-         </dtml-in valid_roles>
+	 <dtml-if expr="_['sequence-item'] != 'Authenticated'">
+	   <dtml-if expr="_['sequence-item'] != 'Anonymous'"> 
+	     <dtml-if expr="_['sequence-item'] != 'Manager'">
+ 	       <dtml-if expr="_['sequence-item'] != 'Owner'">	    
+                 <option value="<dtml-var sequence-item html_quote>" 
+                   <dtml-if expr="(_.has_key('roles')) and (_['sequence-item'] in roles)">
+                      selected
+                   </dtml-if>><dtml-var sequence-item>
+               </dtml-if>
+             </dtml-if>
+           </dtml-if>
+         </dtml-if>
+         </dtml-in valid_roles>        
          </select>
-         <input type="hidden" name="name" value="<dtml-var username html_quote missing>" />
+         <input class="form-control" type="hidden" name="name" value="<dtml-var username html_quote missing>" />
          </td>
-         <td class="form-element">
+         <td>
           <dtml-if nome>
            <dtml-in expr="zsql.autor_obter_zsql(col_username=nome)">
              <dtml-if sequence-start>
-               Autor:<br />
-               <input type="text" value="<dtml-var nom_autor_join>" size="25" disabled><br /><br />
+               Nome do Autor:<br />
+               <input class="form-control" type="text" value="<dtml-var nom_autor_join>" size="25" disabled><br />
                Tipo: <br />
-               <input type="text" value="<dtml-var des_tipo_autor>" size="15" disabled><br />
+               <input class="form-control" type="text" value="<dtml-var des_tipo_autor>" size="15" disabled><br />
              </dtml-if>
            </dtml-in>
           </dtml-if>
@@ -207,44 +211,47 @@ jQuery(function($){
      </table>
 
   <legend>Dados Pessoais</legend>
-     <table>
-       </tr>
-          <td colspan="2" class="form-element">Nome Completo<span class="campoObrigatorio">&nbsp;</span><br />
-            <input type="text" name="txt_nom_completo"
+     <table class="table table-borderless" >
+        <tr class="table-default"> 
+          <td colspan="2">Nome Completo<span class="campoObrigatorio"></span><br />
+            <input class="form-control" type="text" name="txt_nom_completo"
 	    value="<dtml-var nom_completo missing>" size="50" maxlength="50" />
           </td>
-          <td class="form-text"><b>Data de Nascimento</b><br />
-            <input type="text" name="txt_dat_nascimento" id="txt_dat_nascimento" value="<dtml-var dat_nascimento missing>" size="10" maxlength="10" />
+          <td>Data de Nascimento<br />
+            <input class="form-control" type="text" name="txt_dat_nascimento" id="txt_dat_nascimento" value="<dtml-var dat_nascimento missing>" size="10" maxlength="10" />
        </tr>
-        <tr> 
-          <td width="33%" class="form-element">CPF<span class="campoObrigatorio">&nbsp;</span><br />
-            <input type="text" name="txt_num_cpf" id="txt_num_cpf" value="<dtml-var num_cpf missing>" size="14" maxlength="14" /></td>
-          <td width="33%" class="form-element">RG<br />
-            <input type="text" name="txt_num_rg" id="txt_num_rg" value="<dtml-var num_rg missing>" size="15" maxlength="15" /></td>
-          <td class="form-element">Título de Eleitor<br />
-            <input type="text" name="txt_num_tit_eleitor"  id="txt_num_tit_eleitor" value="<dtml-var num_tit_eleitor missing>"  size="15"
+        <tr class="table-default"> 
+          <td width="33%">CPF<span class="campoObrigatorio"></span><br />
+            <input class="form-control" type="text" name="txt_num_cpf" id="txt_num_cpf" value="<dtml-var num_cpf missing>" size="14" maxlength="14" /></td>
+          <td width="33%">RG<br />
+            <input class="form-control" type="text" name="txt_num_rg" id="txt_num_rg" value="<dtml-var num_rg missing>" size="15" maxlength="15" /></td>
+          <td>Título de Eleitor<br />
+            <input class="form-control" type="text" name="txt_num_tit_eleitor"  id="txt_num_tit_eleitor" value="<dtml-var num_tit_eleitor missing>"  size="15"
 	    maxlength="15" /></td>
         </tr>
-        <tr> 
-          <td colspan="2" class="form-element">Endereço Residencial<br />
-            <input type="text" name="txt_end_residencial"
+        <tr class="table-default"> 
+          <td colspan="2">Endereço Residencial<br />
+            <input class="form-control" type="text" name="txt_end_residencial"
 	    value="<dtml-var end_residencial missing>" size="50" maxlength="100"
 	    onChange="javascript:form.hdn_alterou.value=1" /></td>
-          <td class="form-element">CEP<br />
-            <input type="text" name="txt_num_cep_resid" id="txt_num_cep_resid"
+          <td>CEP<br />
+            <input class="form-control" type="text" name="txt_num_cep_resid" id="txt_num_cep_resid"
 	    value="<dtml-var num_cep_resid missing>" size="9"
 	    maxlength="9" /></td>
         </tr>
-        <tr> 
-          <td colspan="2" class="form-element">Município<br />
-            <input type="text" name="txt_municipio" value="<dtml-if
-	    cod_localidade_resid><dtml-var nom_localidade missing
-	    null=""></dtml-if>" size="45" maxlength="50"
-	    onChange="javascript:form.hdn_alterou.value=1" />
-            <input type="button" name="btn_localidade" value=" ? "
-	    onClick="localidade_mostrar(document.usuario_form)" /></td>
-          <td class="form-element">UF<br />
-            <select name="lst_sgl_uf" size="1" >
+        <tr class="table-default"> 
+          <td colspan="2">Município<br />
+            <div class="input-group">
+              <input class="form-control" type="text" id="txt_municipio" name="txt_municipio" 
+                   value="<dtml-if cod_localidade_resid><dtml-var nom_localidade missing null=""></dtml-if>" 
+                   size="45" maxlength="50" />
+              <div class="input-group-prepend">
+                <button class="btn btn-secondary" type="button" onClick="localidade_mostrar(document.usuario_form)"><i class="fa fa-search"></i><span class="d-none">OK</span></button>
+              </div>
+            </div>
+	  </td>
+          <td>UF<br />
+            <select class="custom-select"  name="lst_sgl_uf" size="1" >
                 <option value="">Selecione</option>
               <dtml-in expr="zsql.localidade_obter_zsql(tip_localidade='U')">
                 <option 
@@ -256,13 +263,13 @@ jQuery(function($){
               </dtml-in>
             </select></td>
         </tr>
-        <tr>
-          <td class="form-element">Telefone Residencial<br />
-            <input type="text" name="txt_num_tel_resid" id="txt_num_tel_resid"
+        <tr class="table-default">
+          <td>Telefone Residencial<br />
+            <input class="form-control" type="text" name="txt_num_tel_resid" id="txt_num_tel_resid"
 	    value="<dtml-var num_tel_resid missing>" size="15"
 	    maxlength="50" /></td>
-          <td class="form-element">Telefone Celular<br />
-            <input type="text" name="txt_num_tel_celular" id="txt_num_tel_celular"
+          <td>Telefone Celular<br />
+            <input class="form-control" type="text" name="txt_num_tel_celular" id="txt_num_tel_celular"
 	    value="<dtml-var num_tel_celular missing>" size="15"
 	    maxlength="50" /></td>
           <td></td>
@@ -270,23 +277,23 @@ jQuery(function($){
      </table>
 
   <legend>Informações Funcionais</legend>
-     <table>
-        <tr>
-          <td class="form-element">Correio Eletrônico<span class="campoObrigatorio">&nbsp;</span><br />
-            <input type="text" name="txt_end_email" value="<dtml-var
+     <table class="table table-borderless">
+        <tr class="table-default">
+          <td width="33%">E-mail<span class="campoObrigatorio">&nbsp;</span><br />
+            <input class="form-control" type="text" name="txt_end_email" value="<dtml-var
 	    end_email missing>" size="50" maxlength="100" /></td>
-          <td class="form-element">Telefone<br />
-            <input type="text" name="txt_num_tel_comercial" id="txt_num_tel_comercial"
+          <td>Telefone<br />
+            <input class="form-control" type="text" name="txt_num_tel_comercial" id="txt_num_tel_comercial"
 	    value="<dtml-var num_tel_comercial missing>" size="15"
 	    maxlength="50" /></td>
-          <td class="form-element">Ramal<br />
-            <input type="text" name="txt_num_ramal" id="txt_num_ramal"
+          <td>Ramal<br />
+            <input class="form-control" type="text" name="txt_num_ramal" id="txt_num_ramal"
 	    value="<dtml-var num_ramal missing>" size="15"
 	    maxlength="4" /></td>
         </tr>
-        <tr>
-          <td class="form-element">Unidade(s) de Tramitação Vinculada(s)<br/>
-             <select name="lst_cod_unid_tramitacao:list" size="5" multiple style="max-width: 338px; width: 100%;">
+        <tr class="table-default">
+          <td>Unidade(s) de Tramitação Vinculada(s)<br/>
+             <select class="custom-select"  name="lst_cod_unid_tramitacao:list" size="5" multiple>
              <option value="0"></option>
              <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
                <option value="<dtml-var cod_unid_tramitacao>"
@@ -301,8 +308,8 @@ jQuery(function($){
              </dtml-in>
              </select>
           </td>
-          <td colspan="2" valign="top" class="form-element">Cargo ou Função<br />
-            <input type="text" name="txt_nom_cargo"
+          <td colspan="2" valign="top">Cargo ou Função<br />
+            <input class="form-control" type="text" name="txt_nom_cargo"
 	    value="<dtml-var nom_cargo missing>" size="50" maxlength="50" />
             <dtml-if cod_usuario>
               <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario)">
@@ -313,20 +320,20 @@ jQuery(function($){
             <dtml-else>
               <dtml-call expr="REQUEST.set('ind_responsavel', 0)">
             </dtml-if>
-            <p><input type="checkbox" name="chk_id_responsavel" <dtml-if expr="ind_responsavel==1">checked</dtml-if> value="1">Responsável pela Unidade ?</p>
+            <p><input type="checkbox" name="chk_id_responsavel" <dtml-if expr="ind_responsavel==1">checked</dtml-if> value="1"> Responsável pela Unidade ?</p>
           </td>
         </tr>
-        <tr>
-          <td colspan="3" class="form-element">Observação<br />
-	    <textarea name="txa_txt_observacao" id="txa_txt_observacao" cols="60" rows="4"><dtml-var txt_observacao missing null=""></textarea>
+        <tr class="table-default">
+          <td colspan="3">Observações<br />
+	    <textarea class="form-control"  name="txa_txt_observacao" id="txa_txt_observacao"><dtml-var txt_observacao missing null=""></textarea>
           </td>
         </tr>
      </table>
 
-     <p align="center">
-         <input class="botao" type="button" name="btn_salvar" value="Salvar" onClick="campos_criticar()"/>
-         <input class="botao" type="button" value="Voltar" onClick="history.back()">
-     </p>
+     <div class="text-left">
+         <input class="btn btn-primary" type="button" name="btn_salvar" value="Salvar" onClick="campos_criticar()"/>
+         <input class="btn btn-secondary" type="button" value="Voltar" onClick="history.back()">
+     </div>
     </form>
 </fieldset>
 

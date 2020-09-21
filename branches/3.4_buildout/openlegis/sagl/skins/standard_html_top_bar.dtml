@@ -1,4 +1,188 @@
+<nav class="navbar navbar-expand navbar-dark bg-dark topbar fixed-top">
+  <div class="container">
+     <div class="collapse navbar-collapse" id="navbarTop">
+        <ul class="navbar-nav">
+            <li class="nav-item d-none d-md-inline">
+                <a href="<dtml-var portal_url>/generico/acessibilidade" class="nav-link"><i class="fa fa-fw fa-wheelchair"></i><span class="d-none d-lg-inline"> Acessibilidade</span></a>
+            </li>
+            <li class="nav-item align-self-center">
+                <button type="button" id="onoff" value="On" class="btn btn-sm btn-dark" onclick="onoff();" data-toggle="tooltip" data-placement="bottom" title="Ligar / Desligar Contraste"><i class="fa fa-adjust"></i><span>Contraste</span></button> 
+            </li>
+            <li class="nav-item align-self-center">
+                <button type="button" class="btn btn-sm btn-dark" onclick="javascript:setBaseFontSize('largeText',1);" data-toggle="tooltip" data-placement="bottom" title="Aumentar Fonte">A+</button> 
+            </li>
+            <li class="nav-item align-self-center">
+                <button type="button" class="btn btn-sm btn-dark" onclick="javascript:setBaseFontSize('smallText',1);" data-toggle="tooltip" data-placement="bottom" title="Diminuir Fonte">A-</button> 
+            </li>
+            <li class="nav-item align-self-center">
+               <button type="button" class="btn btn-sm btn-dark" onclick="javascript:setBaseFontSize('',1);" data-toggle="tooltip" data-placement="bottom" title="Fonte Normal">A</button> 
+            </li>
+       </ul>
+      <dtml-let isAnon="portal_membership.isAnonymousUser()">
+        <dtml-if expr="not isAnon">
+           <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+               <dtml-if cod_usuario>
+                   <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+                   <dtml-in expr="zsql.funcionario_obter_zsql(cod_usuario=cod_usuario)">
+                       <dtml-call expr="REQUEST.set('cod_funcionario_corrente', int(cod_funcionario))">
+                   </dtml-in>
+               </dtml-if>
+           </dtml-in>
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+              <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+                 <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+              </dtml-in>
+           <dtml-elif expr="AUTHENTICATED_USER.has_role(['Autor'])">
+             <dtml-in expr="zsql.autor_obter_zsql(parlamentar=1,col_username=AUTHENTICATED_USER.getUserName())">
+                <dtml-if cod_parlamentar>
+                   <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+               </dtml-if>
+             </dtml-in>
+           </dtml-if>
+      </dtml-if>
+      <ul class="navbar-nav ml-auto">
+          <dtml-if expr="isAnon">
+            <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+              <li class="nav-item dropdown">
+                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-at"></i><span class="d-none d-sm-inline"> e-Processo</span></a>
+                 <ul class="dropdown-menu dropdown-menu-right">
+                    <li><a href="<dtml-var portal_url>/conferir_assinatura" class="dropdown-item">Validação Digital</a></li>
+                 </ul>
+              </li>
+            </dtml-if>
+            <li><a href="#loginModal" data-toggle = "modal" data-target= "#loginModal" class="nav-link"><i class="fa fa-fw fa-sign-in-alt"></i> Login</a></li>
+          <dtml-else>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-cog"></i> <span class="d-none d-lg-inline"> Sistema</span></a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Tabela Auxiliar'])">
+                    <li class="dropdown-header">Administração do Sistema</li>
+	            <li><a href="<dtml-var portal_url>/cadastros/auxiliares" class="dropdown-item">Tabelas Auxiliares</a></li>
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Administrador'])">
+                      <li><a href="<dtml-var portal_url>/cadastros/usuario" class="dropdown-item">Gerenciamento de Usuários</a></li>
+                    </dtml-if>
+                    <li class="dropdown-divider"></li>
+                  </dtml-if>
+                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
+                    <li class="dropdown-header">Complementos</li>
+                    <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                       <li><a href="https://get.webpkiplugin.com/" target="_blank" class="dropdown-item">WebPKI</a></li>
+                    </dtml-if>
+                    <li><a href="https://www.libreoffice.org/download/" target="_blank" class="dropdown-item">LibreOffice</a></li>
+                    <li><a href="<dtml-var portal_url>/generico/zopeedit-win32-1.0.0.exe" class="dropdown-item">ZopeEdit</a></li>
+                  </dtml-if>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-at"></i><span class="d-none d-sm-inline"> e-Processo</span></a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                      <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar', 'Operador', 'Operador Materia'])">
+                         <li class="dropdown-header">Processo Legislativo</li>
+                         <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
+                                <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao">Proposições Eletrônicas</a></li>
+                            </dtml-if>
+                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                                <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/recebimento_proposicao">Recebimento de Proposições</a></li>
+                            </dtml-if>
+                         </dtml-if>
+                         <dtml-if cod_usuario_corrente>
+                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/tramitacao_lote_form">Tramitação de Matérias</a></li>
+                         </dtml-if> 
+                         <li class="dropdown-divider"></li>
+                      </dtml-if>
+                         <li class="dropdown-header">Processo Administrativo</li>
+                         <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/peticionamento_eletronico">Peticionamento Eletrônico</a></li>
+                         <dtml-if cod_usuario_corrente>
+                            <li><a class="dropdown-item" href="cadastros/tramitacao_documento/tramitacao_lote_form">Tramitação de Documentos</a></li>
+                         </dtml-if>
+                         <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                            <li class="dropdown-divider"></li>
+                            <li class="dropdown-header">Assinatura Digital</li>
+                            <dtml-if cod_usuario_corrente>
+                               <li><a href="<dtml-var portal_url>/cadastros/assinatura/assinaturas_pendentes" class="dropdown-item">Assinatura de Documentos</a></li>
+                            </dtml-if>
+                            <li><a href="<dtml-var portal_url>/conferir_assinatura" class="dropdown-item">Validação de Assinaturas</a></li>
+                         </dtml-if>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-fw fa-user-cog"></i> &dtml-AUTHENTICATED_USER;</a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li class="navbar-login nav-item d-flex">
+                                <div class="col-4">
+                                    <div class="text-center">
+                                        <dtml-if cod_parlamentar_corrente>
+                                          <dtml-call expr="REQUEST.set('id_foto', _.str(cod_parlamentar_corrente)+'_foto_parlamentar')">
+                                          <dtml-if expr="_.hasattr(sapl_documentos.parlamentar.fotos,id_foto)">
+                                             <img src="<dtml-var portal_url>/sapl_documentos/parlamentar/fotos/<dtml-var id_foto>" alt="<dtml-var id_foto>" width="100" class="img-fluid rounded-circle img-thumbnail shadow-sm">
+                                          <dtml-else>
+                                              <i class="fas fa-user-tie" style="font-size: 65px;"></i>
+                                          </dtml-if>
+                                         <dtml-else>
+                                              <i class="fas fa-user" style="font-size: 65px;"></i>
+                                         </dtml-if>
+                                    </div>
+                                </div>
+                                <div class="col-8 align-self-center pl-0">
+                                    <dtml-if cod_parlamentar_corrente>
+                                        <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar_corrente)">
+                                           <dtml-if expr="sex_parlamentar == 'M'">
+                                             <dtml-call expr="REQUEST.set('cargo', 'Vereador')">
+                                           <dtml-elif expr="sex_parlamentar == 'F'">
+                                             <dtml-call expr="REQUEST.set('cargo', 'Vereadora')">
+                                           </dtml-if>
+                                           <p class="text-left mb-0"><strong><dtml-var nom_parlamentar></strong></p>
+                                        </dtml-in>
+                                    <dtml-else>
+                                       <p class="text-left mb-0"><strong>&dtml-AUTHENTICATED_USER;</strong></p>
+                                    </dtml-if>
+                                    <p class="text-left text-muted small mt-0">
+                                      <dtml-if cargo>
+                                        <dtml-var cargo>
+                                      <dtml-else>
+                                        Endereço IP: <dtml-var REMOTE_ADDR>
+                                      </dtml-if>
+                                    </p>
+                                </div>
+                    </li>
+                    <li class="dropdown-divider"></li>
+                 <dtml-if cod_parlamentar_corrente>
+                    <li class="nav-item d-flex">
+                        <div class="col-12">
+                           <ul class="list-group">
+                              <li class="dropdown-header">Gabinete Parlamentar</li>
+                              <li><a href="<dtml-var portal_url>/cadastros/gabinete_parlamentar/eleitor" class="dropdown-item">Cadastro de Eleitores</a></li>
+                              <li><a href="<dtml-var portal_url>/cadastros/gabinete_parlamentar/atendimento" class="dropdown-item">Registro de Atendimentos</a></li>
+                           </ul>
+                         </div>
+                     </li>
+                     <li class="dropdown-divider"></li>
+                 </dtml-if>
+                 <dtml-if cod_funcionario_corrente>
+                    <li class="dropdown-header">Controle de Recepção</li>
+                    <li><a href="<dtml-var portal_url>/cadastros/atendimento" class="dropdown-item">Visitantes Ativos</a></li>
+                    <li><a href="<dtml-var portal_url>/cadastros/atendimento/historico_html" class="dropdown-item">Histórico de Visitas</a></li>
+                    <li><a href="<dtml-var portal_url>/cadastros/atendimento/visitante_pesquisar_form" class="dropdown-item">Pesquisar Visitantes</a></li>
+                    <li class="dropdown-divider"></li>
+                 </dtml-if>
+                    <li class="nav-item pr-2 pl-2 py-2">
+                        <a href="<dtml-var portal_url>/generico/senha_trocar_form" class="btn btn-primary btn-block"><i class="fa fa-fw fa-lock"></i> Troca de Senha</a>
+                    </li>
+                    <li class="nav-item pr-2 pl-2">
+                        <a href="<dtml-var portal_url>/generico/log_out_proc" class="btn btn-danger btn-block"><i class="fa fa-fw fa-sign-out-alt"></i> Finalizar Sessão</a>
+                    </li>
+                </ul>
+               </div>
+             </li>
+       </ul>
+     </dtml-if> 
+   </dtml-let>
+  </div>  
+</nav>
+
 <header>
+
   <dtml-call expr="REQUEST.set('existe_logo', 0)">
   <dtml-call expr="REQUEST.set('id_logo', sapl_documentos.props_sagl.id_logo)">
   <dtml-in expr="sapl_documentos.props_sagl.objectValues('Image')">
@@ -6,47 +190,20 @@
       <dtml-call expr="REQUEST.set('existe_logo', 1)">
     </dtml-if>
   </dtml-in>
- 
-  <script type="text/javascript">
-  $(document).ready(function() {
-	$(".personaltools-login").fancybox({
-		maxWidth	: 350,
-		fitToView	: false,
-		width		: '70%',
-		height		: '70%',
-		autoSize	: true,
-		closeClick	: false,
-		openEffect	: 'fade',
-		closeEffect	: 'none'
-	});
-  });
-  </script>
 
- <div class="layout-wrapper">
+ <div class="container d-md-block d-print-inline">
 
-     <!-- User -->
-   <dtml-let isAnon="portal_membership.isAnonymousUser()">
-     <ul class="actionMenu deactivated" id="portal-personaltools">
-      <dtml-if expr="not isAnon">
-        <li id="anon-personalbar">
-          <span>Usuário: <dtml-var "AUTHENTICATED_USER.getUserName()"></span>&nbsp;&nbsp;|&nbsp;&nbsp;
-           <a href="&dtml-portal_url;/generico/log_out_proc" id="personaltools-login" style="cursor: pointer;">Sair</a>
-        </li>
-      <dtml-else>
-        <li id="anon-personalbar">
-           <a class="personaltools-login fancybox.ajax" href="&dtml-portal_url;/login_form" id="personaltools-login" style="cursor: pointer;">Acessar</a>
-        </li>
-      </dtml-if>
-     </ul>
-   </dtml-let>
+   <div class="row">
 
-     <a href="&dtml-portal_url;" title="Página Inicial" id="logo" class="has-title">
+    <div class="col-12 col-lg-8 col-xl-9">
+
+     <a href="&dtml-portal_url;" title="Página Inicial" id="logo" class="d-flex mt-3 mb-3">
       <dtml-if "not existe_logo">
-        <img src="&dtml-portal_url;/imagens/brasao.gif" alt="Brasão da Casa Legislativa" title="Brasão da Casa Legislativa" />
+        <img src="&dtml-portal_url;/imagens/brasao.gif" class="image-responsive align-self-center mr-3" alt="Brasão"  />
       <dtml-else>
-        <img src="sapl_documentos/props_sagl/<dtml-var id_logo>" alt="Brasão da Casa Legislativa" title="Brasão da Casa Legislativa" />
+        <img src="sapl_documentos/props_sagl/<dtml-var id_logo>" class="image-responsive align-self-center mr-3" alt="Brasão" />
       </dtml-if>
-        <div id="titleHeader">
+        <div id="titleHeader" class="align-self-center">
            <div id="siteTitle"><dtml-var "sapl_documentos.props_sagl.nom_casa">
            <dtml-comment>
            <dtml-call expr="REQUEST.set('cod_localidade', sapl_documentos.props_sagl.cod_localidade)">
@@ -58,232 +215,243 @@
            <div id="siteDescription">Processo Legislativo Eletrônico</div>
         </div>
      </a>
+    </div>
 
-     <!-- Action Buttons -->   	
-     <ul id="portal-siteactions">
-        <li id="siteaction-sitemap"><a href="&dtml-portal_url;" accesskey="3" title="Página Inicial"><span style="float:left;" class="ui-icon ui-icon-home"></span> Página Inicial</a></li>
-        <li id="siteaction-accessibility"><a href="&dtml-portal_url;/generico/acessibilidade" accesskey="0" title="Acessibilidade"><span style="float:left;" class="ui-icon ui-icon-person"></span> Acessibilidade</a></li>
-        <li id="siteaction-contact"><a href="mailto:<dtml-var "sapl_documentos.props_sagl.end_email_casa">" accesskey="9" title="Contato"  class="link-overlay" style="cursor: pointer;"><span style="float:left;" class="ui-icon ui-icon-mail-closed"></span> Contato</a></li>
-     </ul>
-
-  <div id="busca">
-   <div id='search_box'>
-    <form action='&dtml-portal_url;/generico/palavra_chave_buscar_proc' name='search_form' id='search_form'>
-      <input id='search_text' name='txt_palavra_chave' placeholder='Pesquise aqui...' type='text'/>
-      <button type="button" name="search_button" id='search_button' onclick="javascript:palavra_chave_buscar()"><span>B</span></button>
-    </form>
-   </div>
-  </div>
-
+<div class="col d-none d-lg-block col-lg-4 col-xl-3 align-self-center text-right"> 
+  <div class="mr-2">
+       <form class="px-0 py-2" action='&dtml-portal_url;/generico/palavra_chave_buscar_proc' name='search_header' id='search_header'>
+           <div class="input-group">
+              <label class="d-none" for="txt_pesquisa">Palavra-chave</label>
+              <input type="text" id="txt_pesquisa" name="txt_palavra_chave" class="form-control" placeholder="Pequisar..." required>
+              <div class="input-group-append">
+                  <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i><span class="d-none">Pesquisar</span></button>
+              </div>
+          </div>
+       </form>
+  </div>  
+</div>
+ </div>
  </div>
 </header>
 
-<dtml-let isAnon="portal_membership.isAnonymousUser()">
-<div class="navContainer">
-<div id="funcoes">
-  <dtml-if isAnon>
-    <dtml-call expr="REQUEST.set('diretorio', portal_url() + '/consultas/')">
-  <dtml-else>
-    <dtml-call expr="REQUEST.set('diretorio', portal_url() + '/cadastros/')">
-  </dtml-if>
-  <dtml-unless senha>
-    <dtml-if expr="AUTHENTICATED_USER.has_role(['Alterar Senha'])">
-	<dtml-call expr="REQUEST.RESPONSE.redirect(portal_url() +'/generico/senha_trocar_form?senha=1')">
-    </dtml-if>
-  </dtml-unless>
-   <ul id="menu-bar">
-            <li class='has-sub'><a href="#"><span>Institucional</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
-                <ul>
-	          <li><a href='&dtml-portal_url;/consultas/legislaturas'><span>Legislaturas</span></a></li>
-               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Parlamentar'])">
-	          <li><a href='<dtml-var diretorio>parlamentar'><span>Parlamentares</span></a></li>
-               <dtml-else>
-	          <li><a href='&dtml-portal_url;/consultas/parlamentar'><span>Parlamentares</span></a></li>
-               </dtml-if>
-               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Mesa Diretora'])">
-	          <li><a href='<dtml-var diretorio>mesa_diretora'><span>Mesa Diretora</span></a></li>
-               <dtml-else>
-	          <li><a href='&dtml-portal_url;/consultas/mesa_diretora'><span>Mesa Diretora</span></a></li>
-               </dtml-if>
-               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
-	          <li><a href='<dtml-var diretorio>comissao'><span>Comissões</span></a></li>
-               <dtml-else>
-	          <li><a href='&dtml-portal_url;/consultas/comissao'><span>Comissões</span></a></li>
-               </dtml-if>
-               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Parlamentar'])">
-                  <li><a href='<dtml-var diretorio>bancada'><span>Bancadas</span></a></li>
-               <dtml-else>
-	          <li><a href='&dtml-portal_url;/consultas/bancada'><span>Bancadas</span></a></li>
-               </dtml-if>
-                  <li><a href='&dtml-portal_url;/consultas/presidentes'><span>Presidentes</span></a></li>
+    <dtml-let isAnon="portal_membership.isAnonymousUser()">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary second-nav">
+        <div class="container">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a id="dropdownMenu1" class="nav-link dropdown-toggle" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                 Institucional
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/parlamentar">Vereadores</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/mesa_diretora">Mesa Diretora</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/comissao">Comissões</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/bancada">Bancadas e Frentes</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/legislaturas">Legislaturas</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/presidentes">Presidentes</a></li>                  
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                 Atividade Legislativa
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/materia">Pesquisa de Matérias</a></li>
+                    <dtml-if cod_usuario_corrente>
+                       <li class="dropdown-submenu">
+                          <a class="dropdown-item dropdown-toggle" href="#">Tramitação de Matérias</a>
+                           <ul class="dropdown-menu">
+                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/tramitacao_lote_form">Tramitação em Lote</a></li>
+                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/caixa_entrada_html">Caixa de Entrada</a></li>
+                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/pendentes_html">Tramitações Recebidas</a></li>
+                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/rascunhos_html">Tramitações em Rascunho</a></li>
+                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/caixa_saida_html">Caixa de Saída</a></li>
+                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/itens_enviados_html">Tramitações Enviadas</a></li>
+                           </ul>
+                       </li>
+                    </dtml-if>
+                  <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Autor', 'Assessor Parlamentar'])">
+                      <li class="dropdown-submenu">
+                          <a class="dropdown-item dropdown-toggle" href="#">Proposições Eletrônicas</a>
+                          <ul class="dropdown-menu">
+                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor','Assessor Parlamentar'])">
+                              <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao/proposicao_form">Criar Proposição</a></li>
+                              <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao">Proposições em Elaboração</a></li>
+                              <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao?ind_enviado=1">Proposições Enviadas</a></li>
+                            </dtml-if>
+                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                              <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/recebimento_proposicao">Recebimento de Proposições</a></li>
+                            </dtml-if>
+                          </ul>
+                      </li>
+                    </dtml-if>
+                  </dtml-if>
+                    <li class="dropdown-submenu">
+                        <a class="dropdown-item dropdown-toggle" href="#">Sessões Plenárias</a>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/sessao_plenaria">Calendário das Sessões</a></li>
+                          <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/pauta_sessao">Pautas das Sessões</a></li>
+                          <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/ata_sessao">Atas das Sessões</a></li>
+                        </ul>
+                    </li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/reuniao_comissao">Reuniões de Comissões</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/relatorios_administrativos/relatorios_administrativos_index_html">Relatórios Estatísticos</a></li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                 Legislação
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/norma_juridica">Pesquisa de Legislação</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/legislacao">Índice Cronológico</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_indice_assunto">Legislação por Assunto</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/norma_juridica/lei_organica">Lei Orgânica Municipal</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/norma_juridica/regimento_interno">Regimento Interno</a></li>
+
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                 Processo Administrativo
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/documento_administrativo">Pesquisa de Documentos</a></li>
+                    <dtml-if cod_usuario_corrente>
+                     <li class="dropdown-submenu">
+                        <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">Tramitação de Documentos</a>
+                        <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                            <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/tramitacao_lote_form">Tramitação em Lote</a></li>
+                            <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/caixa_entrada_html">Caixa de Entrada</a></li>
+                            <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/pendentes_html">Tramitações Recebidas</a></li>
+                            <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/rascunhos_html">Tramitações em Rascunho</a></li>
+                            <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/caixa_saida_html">Caixa de Saída</a></li>
+                            <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/itens_enviados_html">Tramitações Enviadas</a></li>
+                            <dtml-if expr="pysc.arquivo_morto_adm_contar_pysc(cod_usuario=cod_usuario_corrente) > 0">
+                               <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/arquivo_morto">Arquivo</a></li>
+                            </dtml-if>
+                        </ul>
+                      </li>
+                    </dtml-if>
+                    <dtml-if cod_usuario_corrente>
+                      <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/peticionamento_eletronico">Peticionamento Eletrônico</a></li>
+                    </dtml-if>
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Recepção'])">
+                      <li class="dropdown-submenu">
+                         <a id="dropdownMenu3" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">Controle de Recepção</a>
+                        <ul aria-labelledby="dropdownMenu3" class="dropdown-menu border-0 shadow">
+                           <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/pessoa">Cadastro de Visitantes</a></li>
+                           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador'])">
+                             <li><a class="dropdown-item" href="<dtml-var portal_url>/relatorios_administrativos/visitasPeriodo">Relatório de Visitas</a></li>
+                           </dtml-if>
+                        </ul>
+                      </li>
+                    </dtml-if>
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Materia'])">
+                      <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/instituicao">Cadastro de Entidades</a></li>
+                    </dtml-if>
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Arquivo'])">
+                      <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/arquivo">Arquivo Permanente</a></li>
+                    </dtml-if>
+                  <dtml-if expr="isAnon">
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/consultas/protocolo/pesquisa_publica_form">Consulta de Protocolo</a></li>
+                  </dtml-if>
                </ul>
             </li>
-
-      <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
-          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Autor', 'Assessor Parlamentar'])">
-            <li class='has-sub'><a href="#"><span>Proposição Eletrônica</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
-                <ul>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
-                     <li><a href="<dtml-var diretorio>recebimento_proposicao"><span>Receber Proposições</span></a></li>
+          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Materia',  'Operador Modulo Administrativo'])">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                 Protocolo
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Materia',  'Operador Modulo Administrativo'])">
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/protocolo/protocolo_pesquisar_form">Pesquisa de Protocolos</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_legislativo_form">Protocolo Legislativo</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_administrativo_form">Protocolo Administrativo</a></li>
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_anular_form">Anular Protocolo</a></li>
                   </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor','Assessor Parlamentar'])">
-                     <li><a href="<dtml-var diretorio>proposicao/proposicao_form"><span>Nova Proposição</span></a></li>
-                     <li><a href="<dtml-var diretorio>proposicao"><span>Em elaboração</span></a></li>
-                     <li><a href="<dtml-var diretorio>proposicao?ind_enviado=1"><span>Enviadas</span></a></li>
+                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_legislativo_pendente_form">Incorporar Matérias</a></li>
+                  </dtml-if>
+                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Modulo Administrativo'])">
+                    <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_administrativo_pendente_form">Incorporar Documentos</a></li>
                   </dtml-if>
                 </ul>
             </li>
           </dtml-if>
-     </dtml-if>
-
-           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo',  'Operador Materia',  'Operador Modulo Administrativo'])">
-            <li class='has-sub'><a href="#"><span>Protocolo Digital</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
-                <ul>
-                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
-	          <li><a href='&dtml-portal_url;/consultas/protocolo/'><span>Pesquisar Protocolos</span></a></li>
-	          <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_rapido_form'><span>Protocolo Rápido</span></a></li>
-                </dtml-if>
-                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador',  'Operador Protocolo', 'Operador Materia'])">
-	          <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form'><span>Protocolo Legislativo</span></a></li>
-                 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
-                  <li><a href="&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_pendente_form"><span>Incorporar Matérias</span></a></li>
-                 </dtml-if>
-                </dtml-if>
-                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Modulo Administrativo', 'Operador Materia'])">
-	          <li><a href='&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form'><span>Protocolo Administrativo</span></a></li>
-                </dtml-if>
-                 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Modulo Administrativo'])">
-                  <li><a href="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_pendente_form"><span>Incorporar Documentos</span></a></li>
-                  <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
-                  <li><a href="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_leg_pendente_form"><span>Incorporar Documentos</span></a></li>
-                 </dtml-if>
-                  <li><a href="&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form"><span>Anular Protocolo</span></a></li>
-               </ul>
-            </li>
-           </dtml-if>
-
-           <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated','Operador', 'Operador Modulo Administrativo', 'Operador Arquivo', 'Operador Recepção', 'Operador Materia'])">
-            <li class='has-sub'><a href="#"><span>Administrativo</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
-                <ul>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
-                     <li><a href='&dtml-portal_url;/consultas/documento_administrativo'><span>Pesquisar Documentos</span></a></li>
-                     <li><a href='&dtml-portal_url;/cadastros/peticionamento_eletronico'><span>Peticionamento Eletrônico</span></a></li>
-                     <li><a href='&dtml-portal_url;/consultas/protocolo/pesquisa_publica_form'><span>Consulta de Protocolo</span></a></li>
-                  </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Materia'])">
-	             <li><a href='&dtml-portal_url;/consultas/instituicao'><span>Cadastro de Entidades</span></a></li>
-                 </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Recepção'])">
-	             <li><a href='&dtml-portal_url;/cadastros/pessoa'><span>Cadastro de Pessoas</span></a></li>
-                 </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador'])">
-	             <li><a href='&dtml-portal_url;/relatorios_administrativos/visitasPeriodo'><span>Relatório de Visitas</span></a></li>
-                 </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Arquivo'])">
-	             <li><a href='&dtml-portal_url;/cadastros/arquivo'><span>Arquivo Permanente</span></a></li>
-                 </dtml-if>
-               </ul>
-            </li>
-           <dtml-else>
-              <li class='has-sub'><a href="#"><span>Administrativo</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
-                <ul>
-                  <dtml-if expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
-  	             <li><a href='&dtml-portal_url;/consultas/documento_administrativo'><span>Pesquisar Documentos</span></a></li>
-                  </dtml-if>
-                  <li><a href='&dtml-portal_url;/consultas/protocolo'><span>Consulta de Protocolo</span></a></li>
+        </ul>
+        <ul class="navbar-nav ml-auto navbar-search d-lg-none">
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-search"></i> Pesquisar</a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <form class="px-3 py-2" action='&dtml-portal_url;/generico/palavra_chave_buscar_proc' name='search_form' id='search_form'>
+                   <div class="input-group">
+                     <label class="d-none" for="txt_palavra_chave">Palavra-chave</label>
+                     <input type="text" id="txt_palavra_chave" name="txt_palavra_chave" class="form-control" placeholder="" required>
+                     <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i><span class="d-none">Pesquisar</span></button>
+                     </div>
+                   </div>
+                  </form>
                 </ul>
-              </li>
-           </dtml-if>
-
-            <li class='has-sub'><a href="#"><span>Atividade Legislativa</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
-                <ul>
-	          <li><a href='&dtml-portal_url;/consultas/materia'><span>Pesquisar Matérias</span></a></li>
-                  <li><a href='&dtml-portal_url;/consultas/sessao_plenaria'><span>Sessões Plenárias</span></a></li>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador'])">
-                    <li><a href='&dtml-portal_url;/cadastros/acompanhamento_sessao'><span>Painel das Sessões</span></a></li>
-                  </dtml-if>
-	          <li><a href='&dtml-portal_url;/consultas/pauta_sessao'><span>Pautas das Sessões</span></a></li>
-	          <li><a href='&dtml-portal_url;/consultas/ata_sessao'><span>Atas das Sessões</span></a></li>
-	          <li><a href='&dtml-portal_url;/consultas/reuniao_comissao'><span>Reuniões das Comissões</span></a></li>
-	          <li><a href='&dtml-portal_url;/relatorios_administrativos'><span>Relatórios</span></a></li>
-               </ul>
             </li>
-
-
-            <li class='has-sub'><a href="#"><span>Legislação</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
-                <ul>
-	          <li><a href='&dtml-portal_url;/consultas/norma_juridica'><span>Pesquisar Legislação</span></a></li>
-	          <li><a href='&dtml-portal_url;/consultas/legislacao'><span>Índice Cronológico</span></a></li>
-	          <li><a href='&dtml-portal_url;/consultas/norma_juridica/norma_juridica_indice_assunto'><span>Índice Temático</span></a></li>
-               </ul>
-            </li>
-
-
-            <dtml-if expr="AUTHENTICATED_USER.has_role(['Administrador', 'Autor', 'Assessor Parlamentar', 'Operador', 'Operador Mesa Diretora', 'Operador Comissao', 'Operador Ordem Dia', 'Operador Parlamentar', 'Operador Materia', 'Operador Norma', 'Operador Tabela Auxiliar', 'Operador Protocolo', 'Operador Modulo Administrativo','Operador Lexml'])">
-            <li class='has-sub'><a href="#"><span>Sistema</span><span style="float: right" class="ui-icon ui-icon-carat-1-s"></span></a>
-                <ul>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Tabela Auxiliar'])">
-	            <li><a href='<dtml-var diretorio>auxiliares'><span>Tabelas Auxiliares</span></a></li>
-                  </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Lexml'])">
-                    <li><a href="<dtml-var diretorio>auxiliares/lexml/lexml_provedor"><span>Provedor LexML</span></a></li>
-                    <li><a href="<dtml-var diretorio>auxiliares/lexml/lexml_publicador"><span>Publicador LexML</span></a></li>
-                  </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Administrador'])">
-                    <li><a href="<dtml-var diretorio>usuario"><span>Gerenciar Usuários</span></a></li>
-                  <dtml-comment>
-                    <li><a href="&dtml-portal_url;/backup/backup_sagl"><span>Backup e Restauração</span></a></li>
-                    <li><a href="&dtml-portal_url;/backup/migracao"><span>Migração de Dados</span></a></li>
-                    <li><a href="&dtml-portal_url;/generico/painel_controle"><span>Sobre</span></a></li>
-                  </dtml-comment>
-                  </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor','Assessor Parlamentar','Operador', 'Operador Materia'])">
-	          <li><a href='&dtml-portal_url;/generico/zopeedit-win32-1.0.0.exe'><span>ZopeEdit Windows</span></a></li>
-                  </dtml-if>
-	          <li class='last'><a href='&dtml-portal_url;/generico/senha_trocar_form'><span>Troca de Senha</span></a></li>
-               </ul>
-            </li>
-          </dtml-if>
-    </ul>
-</div>
-</div>
+          </ul>
+    </div>
+    </nav>
+<dtml-if expr="isAnon">
+<!-- Modal HTML Markup -->
+<div class="modal fade" id="loginModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fa fa-fw fa-sign-in-alt"></i> Login
+                </h4>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+            <div class="modal-body">
+                <dtml-if expr="_.has_key('QUERY_STRING') and QUERY_STRING == 'retry=0'">
+                   <div class="alert alert-danger" role="alert">
+                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                     Informe corretamente seu nome de usuário e senha.
+                   </div>
+                </dtml-if>
+                <form class="" id="login_form" name="login_form" method="post" action="&dtml-portal_url;?retry=1">
+                  <input type="hidden" name="came_from" value="<dtml-var "REQUEST.get('came_from', '')">" />
+                  <div class="form-group">
+                    <label for="name">Usuário</label>
+                    <input type="text" class="form-control" id="name" name="__ac_name" placeholder="" autocomplete="false" value="<dtml-var "REQUEST.get('__ac_name', '')">" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="password">Senha</label>
+                    <label class="d-none" for="hide">Hide</label>
+                    <input data-toggle="password" type="password" class="form-control" id="password" name="__ac_password" placeholder="" required>
+                  </div>
+                  <div class="form-group form-check mb-2">
+                     <input type="checkbox" class="form-check-input" name="__ac_persistent"  id="persistent" checked>
+                     <label class="form-check-label" for="persistent">
+                        Lembrar de mim
+                     </label>
+                  </div>
+                  <button type="submit" class="btn btn-lg btn-primary btn-block">Entrar</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+               <p class="text-left"><a href="<dtml-var portal_url>/mail_password_form">Esqueceu a senha?</a></p>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+</dtml-if>
 </dtml-let>
-
-
 <dtml-var breadcrumbs>
-<dtml-comment>
-<div class="breadcrumbs" style="text-align:left;">
- Você está aqui: <a href="&dtml-portal_url;">Página Inicial</a>
- <dtml-in expr="bread()" prefix="breadcrumbs">
-   / <a href="<dtml-var absolute_url>"><dtml-var name="title_or_id"></a>
- </dtml-in>
-</div>
-</dtml-comment>
 
-<script type="text/javascript">
+  
 
-$(function () {
-    $(window).load(function () {
-        var menu = $('#funcoes');
-        var menuList = menu.find('ul:first');
-        var listItems = menu.find('li').not('#responsive-tab');
-        menuList.prepend('<li id="responsive-tab"><a href="#">Menu</a></li>');
-        menu.on('click', '#responsive-tab', function () {
-            listItems.slideToggle();
-            listItems.addClass('collapsed');
-        });
-    });
-});
-
-$(function () {
-     $("ul#menu-bar li ul li:has(ul)").find("a:first").addClass("subnav");
-     var $mobil = $(".has-sub");
-     $mobil.children("ul").css("display", "none");
-     $mobil.filter(":has(ul)").children(":first-child").click(function () {
-         $(this).next().slideToggle('fast'); 
-         $(this).parent().siblings().children("ul:visible").slideUp();
-         $(this).parent().removeClass('closed');
-     });
-});
-
-</script>

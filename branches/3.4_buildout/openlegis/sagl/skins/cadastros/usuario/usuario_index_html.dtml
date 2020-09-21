@@ -1,43 +1,82 @@
 <dtml-var standard_html_header>
-<a id="ajuda" href="&dtml-portal_url;/ajuda/gerenciamento_usuarios">Ajuda</a>
 <h1 class="firstHeading">Gerenciamento de Usuários</h1>
-<fieldset>
+
 <script type="text/javascript">
-<!--
+
+$(document).ready(function() {
+  $("#checkedAll").change(function(){
+    if(this.checked){
+      $(".checkSingle").each(function(){
+        this.checked=true;
+      })              
+    }else{
+      $(".checkSingle").each(function(){
+        this.checked=false;
+      })              
+    }
+  });
+
+  $(".checkSingle").click(function () {
+    if ($(this).is(":checked")){
+      var isAllChecked = 0;
+      $(".checkSingle").each(function(){
+        if(!this.checked)
+           isAllChecked = 1;
+      })              
+      if(isAllChecked == 0){ $("#checkedAll").prop("checked", true); }     
+    }else {
+      $("#checkedAll").prop("checked", false);
+    }
+  });
+});
+
+   function validate() {
+     var checkbox= document.querySelector('input[name="names:list"]:checked');
+     if(!checkbox) {
+       alert('Selecione ao menos um usuário!');
+       return false;
+     }
+     else return confirm('Confirma a exclusão?');
+   }
+
    function mostrar(){
       location.href = "usuario_form";
-   }
-//-->
+   } 
+
 </script>
 
-<form name="usuario_index" action="usuario_excluir_proc" method="post">
- <div class="form-help">
-   Clique no nome do usuário para editá-lo.
- </div>
-<table>
+<form id="usuario_index" name="usuario_index" action="usuario_excluir_proc" method="post" onsubmit="return validate()">
+<table class="table table-bordered">
+ <thead class="table-secondary">
   <tr>
-    <th class="form-label"></th>
-    <th width="20%" class="form-label">Nome do Usuário</th>
-    <th class="form-label">Perfis</th>
-  <tr>
+    <th>
+      <div class="form-check">    
+        <input class="form-check-input position-static" type="checkbox" name="checkedAll" id="checkedAll">
+        <label class="form-check-label" for="checkedAll"><b>Todos</b></label> 
+      </div>
+    </th>
+    <th width="20%">Nome do Usuário</th>
+    <th>Perfil</th>
+  </tr>
+ </thead>
+  <tr class="table-default">
 <dtml-in "acl_users.getUsers()">
   <dtml-let user_roles="_.getitem('sequence-item').getRoles()">
     <dtml-unless "('Manager' in user_roles)">
-      <dtml-if sequence-odd>
-        <tr class="even">
-      <dtml-else>
         <tr>
-      </dtml-if>
           <td width="6%">
-            <input type="checkbox" name="names:list" value="<dtml-var sequence-item>" />
+            <div class="form-check">
+               <input class="checkSingle form-check-input position-static" type="checkbox" name="names:list" value="<dtml-var sequence-item>" />
+             </div>
           </td>
           <td>
-            <a href="usuario_mostrar_proc?nome=<dtml-var sequence-item>"><img src="/p_/User_icon" alt="" border="0" /></a>
-            <a href="usuario_mostrar_proc?nome=<dtml-var sequence-item>"><dtml-var sequence-item></a>
+            <a href="usuario_mostrar_proc?nome=<dtml-var sequence-item>"><i class="fa fa-fw fa-user"></i> <dtml-var sequence-item></a>
           </td>
           <td>
              <dtml-in user_roles>
-                <dtml-var sequence-item><dtml-unless sequence-end> / </dtml-unless>
+              <dtml-if expr="_['sequence-item'] != 'Authenticated'">             
+                <i class="fas fa-fw fa-caret-right"></i><dtml-var sequence-item>
+              </dtml-if>
              </dtml-in>
           </td>
         </tr>
@@ -45,10 +84,11 @@
   </dtml-let>
 </dtml-in>
 </table>
-</fieldset>
-<p align="center">
-  <input type="button" class="botao" name="submit" value="Adicionar" onClick="mostrar()"/>
-  <input type="submit" class="botao" name="btn_excluir" value="Excluir" />
-</p>
+
+<div class="text-left mt-4">
+  <input class="btn btn-primary" type="button" name="submit" value="Incluir Usuário" onClick="mostrar()"/>
+  <input class="btn btn-danger"  type="submit" id="btn_excluir" value="Excluir" />
+</div>
+
 </form>
 <dtml-var standard_html_footer>

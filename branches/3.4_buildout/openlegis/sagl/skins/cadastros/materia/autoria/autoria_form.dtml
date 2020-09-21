@@ -18,16 +18,18 @@
 
    }
 
-   function campos_criticar(form){
+   function autoria_criticar(form){
       var tipo_autor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;
       if (tipo_autor=='0'){
-         alert("Um tipo de autor deve ser selecionado!");
+         $('#lst_tip_autor').addClass('is-invalid');
+         alert("Selecione o tipo de autor!");
          form.lst_tip_autor.focus();
          return false;
       }
 
       var cod_autor = form.chk_cod_autor[form.chk_cod_autor.selectedIndex].value;
       if (cod_autor=='0'){
+         $('#chk_cod_autor').addClass('is-invalid');
          alert("Um autor deve ser selecionado!");
          form.chk_cod_autor.focus();
          return false; 
@@ -48,25 +50,24 @@
       var URL = 'autoria_form?tip_autor=' + valor.substring(0,separador) + '&des_tipo_autor=' +
                 valor.substring(separador+1,valor.length)+ '&hdn_cod_materia=' + 
                 form.hdn_cod_materia.value + '&cod_materia=' + form.cod_materia.value + 
-                '&dat_apresentacao=' + form.dat_apresentacao.value + '&cod_autor=' + form.hdn_cod_autor.value;      
+                '&dat_apresentacao=' + form.dat_apresentacao.value + '&cod_autor=' + form.hdn_cod_autor.value
+                + '&modal=1';      
       location.href= URL;
    }
 
    function autoria_excluir(form){
 
-       var URL = 'autoria_excluir_proc?hdn_cod_materia=' + form.hdn_cod_materia.value + '&hdn_cod_autor=' + form.hdn_cod_autor.value + '&dat_apresentacao=' + form.dat_apresentacao.value;
+       var URL = 'autoria_excluir_proc?hdn_cod_materia=' + form.hdn_cod_materia.value + '&hdn_cod_autor=' + form.hdn_cod_autor.value + '&dat_apresentacao=' + form.dat_apresentacao.value + '&modal=1';
 
        if (confirm("Deseja realmente excluir?")) {
           location.href=URL;
        }
    }   
 
--->
+
 </script>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/despacho_autoria#autoria">Ajuda</a>
-
-<h1 class="firstHeading">Matéria Legislativa</h1>
+<h1 class="firstHeading">Cadastro de Autor</h1>
 
 <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
   <dtml-if expr="((_.DateTime(dat_apresentacao) >= dat_inicio and _.DateTime(dat_apresentacao) <= dat_fim))">
@@ -79,39 +80,40 @@
 <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>">
 <input type="hidden" name="dat_apresentacao" value="<dtml-var dat_apresentacao missing>">
 <input type="hidden" name="hdn_cod_autor" value="<dtml-var cod_autor missing>">
-<input type="hidden" name="hdn_url" value="index_html?cod_materia=<dtml-var cod_materia>&dat_apresentacao=<dtml-var dat_apresentacao>">
-<input type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('des_tipo_autor')">1<dtml-else>0</dtml-if>">
-    <dtml-var materia_menu>
-    <dtml-var materia_header>
+<dtml-if cod_autor>
+  <input type="hidden" name="hdn_url" value="autoria_mostrar_proc?cod_autor=<dtml-var cod_autor>&ind_primeiro_autor=<dtml-var ind_primeiro_autor>&hdn_cod_materia=<dtml-var cod_materia>&cod_materia=<dtml-var cod_materia>&dat_apresentacao=<dtml-var dat_apresentacao>&modal=1">
+</dtml-if>
+<input type="hidden" name="modal" value="1" />
 
-<fieldset><legend>Autoria</legend>
-   <table>
-      <tr> 
-        <td><label for="lst_tip_autor">Tipo de Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
-              <select name="lst_tip_autor" size="1" onChange="tipo_autor_mudou(document.autoria_form)">
+  <div class="form-row">
+     <div class="col-12 col-sm-6 mb-3">
+           <label for="lst_tip_autor" class="required">Tipo de Autor</label>
+           <select class="custom-select" name="lst_tip_autor" id="lst_tip_autor" onChange="tipo_autor_mudou(document.autoria_form)" required>
               <dtml-unless tip_autor>
-               <option value="0"></option>
-             </dtml-unless>
+                 <option value="0">Selecione</option>
+              </dtml-unless>
               <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor='')">            
-               <option <dtml-if expr="REQUEST.has_key('tip_autor') and tip_autor==_.int(REQUEST['tip_autor'])">
+                 <option <dtml-if expr="REQUEST.has_key('tip_autor') and tip_autor==_.int(REQUEST['tip_autor'])">
                       selected </dtml-if>
                       value="<dtml-var tip_autor>&<dtml-var des_tipo_autor url_quote>">
-              <dtml-var des_tipo_autor></option>
+                 <dtml-var des_tipo_autor></option>
               </dtml-in>
-             </select>
-             </td>
-             <td><label for="des_tip_autor">Nome Autor </label><span class="campoObrigatorio">&nbsp;</span><br />
-              <dtml-if expr="_.has_key('des_tipo_autor')"> 
-              <select id="chk_cod_autor" name="chk_cod_autor" size="1" onChange="javascript:form.hdn_alterou.value=1">
-               <option value=0></option>
-
+          </select>
+           <div class="invalid-feedback">
+             Este campo é obrigatório!
+           </div>
+     </div>
+     <div class="col-12 col-sm-6 mb-3">
+          <label for="des_tip_autor" class="required">Autor</label>
+          <dtml-if expr="_.has_key('des_tipo_autor')"> 
+             <select class="custom-select" id="chk_cod_autor" name="chk_cod_autor" required>
+               <option value=0>Selecione</option>
                <dtml-if expr="des_tipo_autor=='Parlamentar'">
                    <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_apresentacao)">
                          <option value="<dtml-var cod_autor>" <dtml-if expr="REQUEST.has_key('cod_parlamentar') and cod_parlamentar==REQUEST['cod_parlamentar']">selected</dtml-if>>
                               <dtml-var nom_parlamentar> 
                          </option>
                    </dtml-in>
-     
                <dtml-elif expr="des_tipo_autor=='Comissao'">
                   <dtml-in expr="zsql.autor_obter_zsql(comissao='1')">
                    <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
@@ -124,7 +126,6 @@
                     </dtml-if>
                    </dtml-in>
                   </dtml-in>
-
                <dtml-elif expr="des_tipo_autor=='Bancada'">
                  <dtml-in expr="zsql.autor_obter_zsql(bancada='1')">
                   <dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=num_legislatura_sel,cod_bancada=cod_bancada,ind_excluido=0)">
@@ -135,8 +136,7 @@
                          </option>
                    </dtml-in>
                   </dtml-in>
-
-                 <dtml-else>                                    
+               <dtml-else>                                    
                   <dtml-in expr="zsql.autor_obter_zsql(des_tipo_autor=des_tipo_autor)">
                       <option <dtml-if expr="REQUEST.has_key('cod_autor') and cod_autor==REQUEST['cod_autor']">
                          selected</dtml-if>
@@ -147,28 +147,44 @@
                    </dtml-if>
                 </select>
                 <dtml-else>
-                 <input type="text" name="txt_nom_autor" disabled>
+                 <select class="custom-select" id="txt_nom_autor" name="txt_nom_autor">
+                    <option></option>
+                 </select>
               </dtml-if>
-             </td>
-             <td class="texto">
-             <label for="rad_ind_primeiro_autor">Primeiro Autor </label><br />
+              <div class="invalid-feedback">
+                Este campo é obrigatório!
+              </div>
+     </div>
+  </div>
+
+  <div class="form-row">
+     <div class="col-12 mb-3">
+             <label for="rad_ind_primeiro_autor" class="required d-block">Primeiro Autor?</label>
                <dtml-in expr="[('1','Sim'),('0','Não')]">
-                <input type="radio" name="rad_ind_primeiro_autor" value="<dtml-var expr="_['sequence-key']">"
-                   <dtml-if expr="_.has_key('ind_primeiro_autor') and ind_primeiro_autor==_['sequence-key']">checked=1
-                   <dtml-elif  expr="not _.has_key('ind_primeiro_autor')"><dtml-call expr="REQUEST.set('ind_primeiro_autor', '0')">
-                    <dtml-if expr="ind_primeiro_autor==_['sequence-key']">checked=1</dtml-if></dtml-if>
-                    onChange="javascript:form.hdn_alterou.value=1">
-                 <dtml-var sequence-item>
+                 <input type="radio" id="rad<dtml-var expr="_['sequence-key']">" name="rad_ind_primeiro_autor" value="<dtml-var expr="_['sequence-key']">"
+                 <dtml-if expr="_.has_key('ind_primeiro_autor') and ind_primeiro_autor==_['sequence-key']">checked=1
+                 <dtml-elif  expr="not _.has_key('ind_primeiro_autor')">
+                    <dtml-call expr="REQUEST.set('ind_primeiro_autor', '0')">
+                    <dtml-if expr="ind_primeiro_autor==_['sequence-key']">checked=1</dtml-if>
+                 </dtml-if>>
+                 <label class="form-check-label" for="rad<dtml-var expr="_['sequence-key']">"><dtml-var sequence-item></label>
               </dtml-in>
-             </td>
-           </tr>
-        </table>
-        </fieldset>
-        <p align="center">
-        <input type="button" class="botao" name="btn_autoria_atualiza" value="Salvar" onClick="campos_criticar(document.autoria_form)">
-        <dtml-if expr="_.has_key('cod_autor') and cod_autor!=''">
-           <input type="button" class="botao" name="btn_autoria_excluir" value="Excluir" onClick="autoria_excluir(document.autoria_form)">
-        </dtml-if></p>
+     </div>
+  </div>
+
+  <div class="text-left">
+     <input type="button" class="btn btn-primary" name="btn_autoria_atualiza" value="Salvar" onClick="autoria_criticar(document.autoria_form)">
+     <dtml-if expr="_.has_key('cod_autor') and cod_autor!=''">
+        <input type="button" class="btn btn-danger" name="btn_autoria_excluir" value="Excluir" onClick="autoria_excluir(document.autoria_form)">
+     </dtml-if>
+  </div>
+  
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+</div>
+
 </form>
 
 <dtml-var standard_html_footer>

@@ -1,13 +1,13 @@
 <dtml-var standard_html_header>
 
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
 <script type="text/javascript">
 
 (function ($) {
   $(function () {
-    //$('input[type=submit]').hide();
     document.onkeypress = function (event) {
       var form = pesq_avancada_form;
-      form.action = "protocolo_pesquisar_proc";
       if (event.keyCode === 13) {
         form.submit();
       }
@@ -15,87 +15,155 @@
   });
 }(jQuery));
 
-$(function() {
-        $('#dt_apres').datepick();
-        $('#dt_apres2').datepick();
-});
+function protocolo_criticar(form){  
+
+  var form = document.pesq_avancada_form;
+
+  if (form.dt_apres.value != "" && !IsValidDate(form.dt_apres.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data inicial válida!"});
+    return false;
+  } 
+
+  if (form.dt_apres2.value != "" && !IsValidDate(form.dt_apres2.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data final válida!"});
+    return false;
+  } 
+
+  form.submit();
+}
+
+$(document).ready(function(){
+  $('input:radio[name="rad_tip_processo"]').change(function(){
+             if($(this).val()=="0")
+             {
+               $("#divAdm").show();
+               $("#divLeg").hide();
+               $('#lst_tip_materia').val(function() {
+                  return this.defaultValue;
+               });
+             }
+             else if($(this).val()=="1")
+             {
+                 $("#divLeg").show();
+                 $("#divAdm").hide();
+                 $('#lst_tip_documento').val(function() {
+                    return this.defaultValue;
+                 });
+                 $('#txa_txt_interessado').val(function() {
+                    return this.defaultValue;
+                 });
+             }
+             else
+             {
+                 $("#divLeg").hide();
+                 $("#divAdm").hide();
+             }
+    });
+  });
 </script>
 
-<h1 class="firstHeading">Pesquisa de Protocolo</h1> 
+<h1 class="firstHeading">Pesquisa de Protocolos</h1> 
 
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
-<div id="barra-conteudo">
-    <ul>
-        <li>
-            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_rapido_form">Protocolo Rápido</a>
-        </li>
-        <li>
-            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_administrativo_form">Protocolo Administrativo</a>
-        </li>
-        <li>
-            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_legislativo_form">Protocolo Legislativo</a>
-        </li>
-        <li>
-            <a href="&dtml-portal_url;/cadastros/protocolo/protocolo_anular_form">Anular Protocolo</a>
-        </li>
-    </ul>
-</div>
+  <div class="btn-group">
+    <button type="button" class="btn btn-sm btn-primary d-print-none mb-2 dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i class="fa fa-fw fa-plus"></i> Incluir Protocolo
+    </button>
+    <div class="dropdown-menu">
+      <a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_administrativo_form">Administrativo</a>
+      <a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_legislativo_form">Legislativo</a>
+    </div>
+  </div>
 </dtml-if>
 
-<form class="pf-form" name="pesq_avancada_form" id="pesq_avancada_form" action="protocolo_pesquisar_proc">
-  <input type="hidden" name="incluir" value="<dtml-var incluir missing>" />
-  <input type="hidden" name="existe_ocorrencia" value="0" />
-  <fieldset>
-  <div id="inputs">
-     <div class="pf-element pf-full-width">
-        <label><span class="pf-label">Tipo de Protocolo</span></label>
-        <div class="pf-group">
-          <dtml-in expr="[('Recebido', '0'), ('Enviado', '1'), ('Ambos', '')]">     
-           <input type="radio" name="rad_tip_protocolo" value="<dtml-var expr="_['sequence-item']">"
-                  id="rad_tip_protocolo<dtml-var expr="_['sequence-item']">"
-                <dtml-if expr="_['sequence-item']=='0'">checked="1"</dtml-if> />
-             <label style="vertical-align: top;" for="rad_tip_protocolo<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"> &nbsp;</label>
-          </dtml-in>
-        </div>
-     </div>
+<!-- Nav tabs -->
+<ul class="nav nav-tabs border-0 mt-2" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="protocolo-tab" data-toggle="tab" href="#protocolo" role="tab" aria-controls="principais" aria-selected="true">Pesquisa de Protocolos</a>
+  </li>
+</ul>
 
-     <div class="pf-element pf-full-width">
-        <label for="txt_num_protocolo"><span class="pf-label">Número</span></label>
-        <div class="pf-group">
-          <input class="pf-field" id="txt_num_protocolo" type="text" name="txt_num_protocolo" null="" missing="" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="6" />
-          <label for="txt_ano_protocolo">&nbsp;Ano
-            <input class="pf-field" id="txt_ano_protocolo" type="text" name="txt_ano_protocolo" null="" style="min-width: 86px; max-width: 86px; width: 20%;" maxlength="4" />
-          </label>
-        </div>
-     </div> 
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active" id="protocolo">
 
-     <div class="pf-element pf-full-width">
-       <label><span class="pf-label">Período de Protocolo:</span></label>
-        <div class="pf-group">
-          <label for="dt_apres">
-            <input class="pf-field" type="text" id="dt_apres" name="dt_apres" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength=10 onblur="formata_data(form.dt_apres)" />
-          </label>
-          <label for="dt_apres2">&nbsp;a&nbsp;
-            <input class="pf-field" type="text" id="dt_apres2" name="dt_apres2" style="min-width: 102px; max-width: 102px; width: 20%;" maxlength="10" onblur="formata_data(form.dt_apres2)" />
-          </label>
-        </div>
-     </div> 
+<form name="pesq_avancada_form" id="pesq_avancada_form" action="protocolo_pesquisar_proc">
 
-     <div class="pf-element pf-full-width">
-        <label><span class="pf-label">Natureza do Processo</span></label>
-        <div class="pf-group">
-             <input name="rad_tip_processo" value="0" id="rad_tip_processo0" type="radio" >
-             <label for="rad_tip_processo0">Administrativo</label>
-             <input name="rad_tip_processo" value="1" id="rad_tip_processo1" type="radio" >
-             <label for="rad_tip_processo1">Legislativo</label>
-             <input name="rad_tip_processo" value="" id="rad_tip_processoN" checked="1" type="radio" >
-             <label for="rad_tip_processo">Ambos</label>
-        </div>
-     </div>
+  <div class="form-row"> 
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_num_protocolo">Número</label>
+      <input name="txt_num_protocolo" id="txt_num_protocolo" type="number" min="1" maxlength="6" class="form-control number" autocomplete="off">
+    </div>
+    <div class="col-6 col-md-3 mb-3 controls">
+      <label for="txt_ano_protocolo">Ano</label>
+      <input name="txt_ano_protocolo" id="txt_ano_protocolo" type="number" min="1900" maxlength="4" class="form-control year" autocomplete="off">
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <label for="txt_assunto">Assunto</label>
+      <input class="form-control" name="txt_assunto" id="txt_assunto" type="text" autocomplete="off">
+    </div>
+  </div>
+  <div class="form-row">
+  <div class="col-6 col-lg-3 mb-3">
+      <label for="dt_apres">Data Inicial</label>
+        <input type="text" class="form-control date" id="dt_apres" name="dt_apres" autocomplete="off">
+  </div>
+  <div class="col-6 col-lg-3 mb-3">
+      <label for="dt_apres2">Data Final</label>
+      <input type="text" class="form-control date" id="dt_apres2" name="dt_apres2" autocomplete="off" autocomplete="off">
+  </div>
+    <script>
 
-     <div class="pf-element pf-full-width">
-        <label for="lst_tip_documento"><span class="pf-label">Tipo de Documento</span></label>
-          <select class="pf-field" id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
+        $('#dt_apres').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#dt_apres2').val();
+            }
+        });
+        $('#dt_apres2').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#dt_apres').val();
+            }
+        });
+    </script> 
+    <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-3">
+       <label class="form-label d-block">Tipo de Protocolo</label>
+       <div class="btn-group-toggle" data-toggle="buttons">
+         <label class="btn btn-light active">
+           <input type="radio" name="rad_tip_protocolo" id="option1" value="0" autocomplete="off" checked> Recebimento
+         </label>
+         <label class="btn btn-light">
+           <input type="radio" name="rad_tip_protocolo" id="option2" value="1" autocomplete="off"> Envio
+         </label>
+       </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-3">
+       <label class="form-label d-block">Natureza do Processo</label>
+       <div class="btn-group-toggle" data-toggle="buttons">
+         <label class="btn btn-light">
+           <input type="radio" name="rad_tip_processo" id="tp1" value="0" autocomplete="off"> ADM
+         </label>
+         <label class="btn btn-light">
+           <input type="radio" name="rad_tip_processo" id="tp2" value="1" autocomplete="off"> LEG
+         </label>
+         <label class="btn btn-light active">
+           <input type="radio" name="rad_tip_processo" id="tp2" value="" autocomplete="off" checked> Ambos
+         </label>
+       </div>
+    </div>
+  </div>
+  <div id="divAdm" class="form-row" style="display:none;">
+    <div class="col-12 col-sm-6 mb-3">
+          <label for="lst_tip_documento">Tipo de Documento</label>
+          <select class="custom-select" id="lst_tip_documento" name="lst_tip_documento">
             <option value="">Selecione</option>
             <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
               <option value="<dtml-var tip_documento missing>">
@@ -104,15 +172,15 @@ $(function() {
             </dtml-in>
           </select>
      </div>
-
-     <div class="pf-element pf-full-width">
-        <label for="txa_txt_interessado"><span class="pf-label">Interessado / Autor</span></label></th>
-          <input class="pf-field" id="txa_txt_interessado" type="text" name="txa_txt_interessado" null="" style="max-width: 230px; width: 100%;" onBlur="interessado()" />
+    <div class="col-12 col-sm-6 mb-3">
+        <label for="txa_txt_interessado">Interessado</label>
+        <input class="form-control" id="txa_txt_interessado" type="text" name="txa_txt_interessado" />
      </div>
-
-     <div class="pf-element pf-full-width">
-        <label for="lst_tip_materia"><span class="pf-label">Tipo de Matéria</span></label>
-          <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia" style="max-width: 240px; width: 100%;">
+  </div>
+  <div  id="divLeg" class="form-row" style="display:none;">
+    <div class="col-12 col-sm-6 mb-3">
+          <label for="lst_tip_materia">Tipo de Matéria</label>
+          <select class="custom-select" id="lst_tip_materia" name="lst_tip_materia">
             <option value="">Selecione</option>
             <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
               <option value="<dtml-var tip_materia missing>">
@@ -121,29 +189,24 @@ $(function() {
             </dtml-in>
           </select>
      </div>
-
-     <div class="pf-element pf-full-width">
-       <label for="txt_autor"><span class="pf-label">Autor da Matéria</span></label>
-       <div class="pf-group">
- 	<div id="combo_zone" style="width:235px;"></div>
-      </div>
-     </div> 
-		<script type="text/javascript">
-			myCombo = new dhtmlXCombo("combo_zone", "hdn_cod_autor", 240);
-                        myCombo.load("&dtml-portal_url;/pysc/autores_pesquisar_pysc");
-			myCombo.enableFilteringMode(true);
-		</script>  
-     <div class="pf-element pf-full-width">
-        <label for="txt_assunto"><span class="pf-label">Assunto</span></label></th>
-          <input class="pf-field" id="txt_assunto" type="text" name="txt_assunto" null="" style="max-width: 230px; width: 100%;" />
+    <div class="col-12 col-sm-6 mb-3">
+        <label for="hdn_cod_autor">Autoria</label>
+        <select id="hdn_cod_autor" name="hdn_cod_autor" class="form-control selectpicker show-tick" data-size="6" data-live-search="true" title="Todos" data-header="Pesquisar Autor">
+           <option value="">Todos</option>
+           <dtml-in expr="zsql.autor_obter_zsql(ind_excluido=0)">
+                <option value="<dtml-var cod_autor>"><dtml-var nom_autor_join></option>
+           </dtml-in>
+       </select>
      </div>
-
-     <div class="pf-element pf-buttons">
-          <input class="pf-button btn botao" type="submit" name="btn_protocolo_pesquisar" value="Pesquisar" />
-          <input class="pf-button btn botao" type="reset" name="btn_protocolo_limpar" value="Limpar" />
-     </div>
-
-   </div>
-  </fieldset>
+  </div>
+  <input type="hidden" name="incluir" value="<dtml-var incluir missing>" />
+  <input type="hidden" name="existe_ocorrencia" value="0" />
+  <div class="text-left mt-2">
+     <button type="button" id="search-btn" class="btn btn-primary" onClick="return protocolo_criticar()"><i class="fa fa-fw fa-search"></i> Pesquisar</button>
+     <input class="btn btn-secondary" type="reset" value="Limpar" />
+  </div>
 </form>
+</div>
+</div>
+
 <dtml-var standard_html_footer>
