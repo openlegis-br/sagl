@@ -81,8 +81,16 @@
      </tr>
    </thead>
    <tbody>
-   <dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=hdn_num_legislatura, cod_periodo_comp=cod_periodo_comp_sel,ind_excluido=0)">
-        <tr>
+
+   <dtml-if expr="portal_membership.isAnonymousUser()">
+     <dtml-call expr="REQUEST.set('metodo', zsql.bancada_obter_zsql(num_legislatura=hdn_num_legislatura, cod_periodo_comp=cod_periodo_comp_sel,ind_ativa=1,ind_excluido=0))">
+   <dtml-else>
+     <dtml-call expr="REQUEST.set('metodo', zsql.bancada_obter_zsql(num_legislatura=hdn_num_legislatura, cod_periodo_comp=cod_periodo_comp_sel,ind_excluido=0))">
+   </dtml-if>
+
+
+   <dtml-in metodo>
+       <tr>
           <td>
               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Parlamentar', 'Operador Tabela auxiliar'])">
                  <a href="<dtml-var portal_url>/cadastros/auxiliares/bancada/bancada_mostrar_proc?cod_bancada=<dtml-var cod_bancada>">
