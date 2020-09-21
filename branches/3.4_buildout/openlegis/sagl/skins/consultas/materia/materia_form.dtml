@@ -202,9 +202,15 @@
       <div class="card mb-4">
        <div class="card-body">
            <p class="card-text"><b>Último Local:</b> <dtml-var dat_tramitacao>
-           <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
-              - <dtml-var nom_unidade_join>
-           </dtml-in>
+           <dtml-if cod_unid_tram_dest>
+             <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
+                - <dtml-var nom_unidade_join>
+             </dtml-in>
+           <dtml-else>
+             <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
+                - <dtml-var nom_unidade_join>
+             </dtml-in>
+           </dtml-if>
            <dtml-if expr="dat_encaminha!=None">
               <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
               <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
@@ -657,7 +663,9 @@
                     <tr>
                       <th>Data</th>
                       <th>Origem</th>
-                      <th>Destino</th>
+                      <dtml-if cod_unid_tram_dest>                                            
+                        <th>Destino</th>
+                      </dtml-if>
                       <th>Status</th>                      
                     </tr>
                   </thead>
@@ -669,11 +677,13 @@
                          <dtml-var nom_unidade_join>
                        </dtml-in>                       
                       </td>
+                    <dtml-if cod_unid_tram_dest>                      
                       <td>
-                       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
-                         <dtml-var nom_unidade_join>
-                       </dtml-in>                       
+                         <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
+                           <dtml-var nom_unidade_join>
+                         </dtml-in>
                       </td>
+                    </dtml-if>
                       <td>
                         <dtml-if expr="dat_encaminha!=None">
                           <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
@@ -698,6 +708,7 @@
       </div>
     </div>
 </dtml-if>
+
 
 <div class="text-left">
  <input class="btn btn-secondary d-print-none" type="button" name="retornar" value="Voltar" onclick="javascript:history.go(-1)">

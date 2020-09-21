@@ -25,79 +25,79 @@ Error2 = "Erro nas etiquetas"
 
 #Para adicionar um modelo de etiqueta, inclua neste dicionário 
 LABELS = ({'cia':'test',
-       'models': ['9999'],
-       'paper': pagesizes.letter,
-       'columns': 4,
-       'rows': 9,
-       'height': 2.5,
-       'width': 4,
-       'topMargin': 1,
-       'lateralMargin': .5,   #you may define a leftMargin and rightMargin
-       'verticalSpacing': .25,  #defaults to 0
-       'horizontalSpacing': .25,#defaults to 0
-       'horizontalPadding':.5,  #defaults to +/- 7% of width
-       'verticalPadding': .5,   #defaults to +/- 7% of height
-       'units': cm,           #defaults to mm
-       },
+	   'models': ['9999'],
+	   'paper': pagesizes.letter,
+	   'columns': 4,
+	   'rows': 9,
+	   'height': 2.5,
+	   'width': 4,
+	   'topMargin': 1,
+	   'lateralMargin': .5,   #you may define a leftMargin and rightMargin
+	   'verticalSpacing': .25,  #defaults to 0
+	   'horizontalSpacing': .25,#defaults to 0
+	   'horizontalPadding':.5,  #defaults to +/- 7% of width
+	   'verticalPadding': .5,   #defaults to +/- 7% of height
+	   'units': cm,           #defaults to mm
+	   },
           {'cia':'Pimaco', #veja dimensões para Corel no site www.pimaco.com.br
-       'models': ['6081','6181','6281','0081','62581','62681',],
-       'paper': pagesizes.letter,
-       'topMargin': 1.27,
-       'bottomMargin': 1.27,
-       'lateralMargin': 0.377,
-       'leftMargin': 0.377,
-       'rightMargin': 0.377,
-       'columns': 2,
-       'rows': 10,
-       'height': 2.54,
-       'width': 10.16,
-       'units': cm,
-       },
-      {'cia':'Pimaco',
-       'models': ['6080','6180','6280','0080','62580','62680',],
-       'paper': pagesizes.letter,
-       'topMargin': 1.27,
-       'lateralMargin': 0.48,
-       'columns': 3,
-       'rows': 10,
-       'height': 2.54,
-       'width': 6.67,
-       'verticalSpacing': 0,
-       'horizontalSpacing': 0.31,
-       'horizontalPadding':.25,  
-       'units': cm,
-       },
-      {'cia':'Pimaco',
-       'models': ['6082','6182','6282','0082','62582','62682',],
-       'paper': pagesizes.letter,
-       'topMargin': 2.12,
-       'bottomMargin': 2.12,
-       'lateralMargin': 0.377,
-       'leftMargin': 0.377,
-       'rightMargin': 0.377,
-       'verticalSpacing': 0,
-       'horizontalSpacing': 0.516,
-       'columns': 2,
-       'rows': 7,
-       'height': 3.39,
-       'width': 10.16,
-       'units': cm,
-       },
-      {'cia':'Pimaco',
-       'models': ['6183'],
-       'paper': pagesizes.letter,
-       'topMargin': 1.27,
-       'bottomMargin': 1.27,
-       'lateralMargin': 0.377,
-       'verticalSpacing': 0,
-       'horizontalSpacing': 0.516,
-       'columns': 2,
-       'rows': 5,
-       'height': 5.08,
-       'width': 10.16,
-       'units': cm,
-       },
-      )
+	   'models': ['6081','6181','6281','0081','62581','62681',],
+	   'paper': pagesizes.letter,
+	   'topMargin': 1.27,
+	   'bottomMargin': 1.27,
+	   'lateralMargin': 0.377,
+	   'leftMargin': 0.377,
+	   'rightMargin': 0.377,
+	   'columns': 2,
+	   'rows': 10,
+	   'height': 2.54,
+	   'width': 10.16,
+	   'units': cm,
+	   },
+	  {'cia':'Pimaco',
+	   'models': ['6080','6180','6280','0080','62580','62680',],
+	   'paper': pagesizes.letter,
+	   'topMargin': 1.27,
+	   'lateralMargin': 0.48,
+	   'columns': 3,
+	   'rows': 10,
+	   'height': 2.54,
+	   'width': 6.67,
+	   'verticalSpacing': 0,
+	   'horizontalSpacing': 0.31,
+	   'horizontalPadding':.25,  
+	   'units': cm,
+	   },
+	  {'cia':'Pimaco',
+	   'models': ['6082','6182','6282','0082','62582','62682',],
+	   'paper': pagesizes.letter,
+	   'topMargin': 2.12,
+	   'bottomMargin': 2.12,
+	   'lateralMargin': 0.377,
+	   'leftMargin': 0.377,
+	   'rightMargin': 0.377,
+	   'verticalSpacing': 0,
+	   'horizontalSpacing': 0.516,
+	   'columns': 2,
+	   'rows': 7,
+	   'height': 3.39,
+	   'width': 10.16,
+	   'units': cm,
+	   },
+	  {'cia':'Pimaco',
+	   'models': ['6183'],
+	   'paper': pagesizes.letter,
+	   'topMargin': 1.27,
+	   'bottomMargin': 1.27,
+	   'lateralMargin': 0.377,
+	   'verticalSpacing': 0,
+	   'horizontalSpacing': 0.516,
+	   'columns': 2,
+	   'rows': 5,
+	   'height': 5.08,
+	   'width': 10.16,
+	   'units': cm,
+	   },
+	  )
 
 class LabelGenerator:
     smallestFont = 5
@@ -122,7 +122,7 @@ class LabelGenerator:
         
         self.font = "Helvetica"
         self.size = 10
-    self.leadingFactor = 1.2
+	self.leadingFactor = 1.2
         
         try:
             self.vertPadding = spec['verticalPadding'] * self.un
@@ -136,19 +136,19 @@ class LabelGenerator:
         self.maxTextWidth = self.width - 2 * self.horizPadding
         self.maxTextHeight = self.height - 2 * self.vertPadding
 
-    self.grid = 0
+	self.grid = 0
 
     def start(self, filename):
         self.canvas = canvas.Canvas(filename, self.getPageSize())
-    if hasattr(self, 'compress'):
-        self.canvas.setPageCompression(self.compress)
+	if hasattr(self, 'compress'):
+	    self.canvas.setPageCompression(self.compress)
         self.canvas.setFont(self.font, self.size, 
-                self.leadingFactor * self.size)
+			    self.leadingFactor * self.size)
 
         self.pos = 0
         
     def setCompression(self):
-    self.compress = 1
+	self.compress = 1
 
     def setVerticalPadding(self, value):
         self.vertPadding = value
@@ -182,9 +182,9 @@ class LabelGenerator:
     def fitHorizontal(self, t, fontSize, debugFile=None):
         modifiedText = []
         for line in t:
-        if debugFile: 
-        debugFile.write(line+"\n")
-        debugFile.flush()
+	    if debugFile: 
+		debugFile.write(line+"\n")
+		debugFile.flush()
             modifiedText = modifiedText + self.adaptHorizontal(line, fontSize, debugFile)
         return modifiedText
 
@@ -194,10 +194,10 @@ class LabelGenerator:
         pos = len(words)
         while pos > 0:
             width = self.canvas.stringWidth(string.join(words[:pos], ' '), 
-                        self.font, fontSize)
-        if debugFile: 
-        debugFile.write(`width` + ":" + `self.maxTextWidth` +"\n")
-        debugFile.flush()
+					    self.font, fontSize)
+	    if debugFile: 
+		debugFile.write(`width` + ":" + `self.maxTextWidth` +"\n")
+		debugFile.flush()
             if width > self.maxTextWidth:
                 pos = pos - 1
             elif pos == len(words):
@@ -205,13 +205,13 @@ class LabelGenerator:
             else:
                 return ([string.join(words[:pos], ' ')] +
                         self.adaptHorizontal(string.join(words[pos:], ' '),
-                         fontSize, debugFile))
+					     fontSize, debugFile))
         raise Exception(Error, "O texto não coube nas etiquetas. Reduza o texto ou use uma etiqueta maior")
 
     def fitVertical(self, text, fontSize):
-    numLines = len(text)
+	numLines = len(text)
         textHeight = (self.leadingFactor * fontSize  * numLines - 
-              (self.leadingFactor - 1) * fontSize)
+		      (self.leadingFactor - 1) * fontSize)
         if textHeight > self.maxTextHeight: 
             raise Exception(Error2, "Dados excedem a altura das etiquetas")
         return textHeight
@@ -243,13 +243,13 @@ class LabelGenerator:
         if self.pos != self.pos % (self.cols * self.rows):
             self.canvas.showPage()
             self.pos = self.pos % (self.cols * self.rows)
-        if self.grid:
-        self.drawGrid()
+	    if self.grid:
+		self.drawGrid()
 
     def generate(self, etiquetas, filename):
         self.start(filename)
-    if self.grid:
-        self.drawGrid()
+	if self.grid:
+	    self.drawGrid()
         self.drawDistances()
         for i in etiquetas:
             x, y = self.getCoordinates()
@@ -261,8 +261,8 @@ class LabelGenerator:
         self.canvas.save()
         
     def setGrid(self, turnOn=0):
-    "Se 1, mostra grid na primeira página"
-    self.grid = turnOn
+	"Se 1, mostra grid na primeira página"
+	self.grid = turnOn
 
     def drawGrid(self):
         borderX = [] 
@@ -285,9 +285,9 @@ class LabelGenerator:
                 
               fx = fx + self.width 
               frameX.append(fx - 2 * self.horizPadding)
-          if j != self.cols-1:
-          fx = fx + self.horizSpacing
-          frameX.append(fx)
+	      if j != self.cols-1:
+		  fx = fx + self.horizSpacing
+		  frameX.append(fx)
         for i in range(self.rows):
             by = by - self.height
             borderY.append(by)
@@ -296,9 +296,9 @@ class LabelGenerator:
             
             fy = fy - self.height
             frameY.append(fy + 2 * self.vertPadding)
-        if i != self.rows - 1:
-        fy = fy - self.vertSpacing
-        frameY.append(fy)
+	    if i != self.rows - 1:
+		fy = fy - self.vertSpacing
+		frameY.append(fy)
         self.canvas.grid(borderX, borderY)
         #self.canvas.setStrokeGray(.75)
         #self.canvas.grid(frameX, frameY)
@@ -323,10 +323,10 @@ class LabelGenerator:
 def findLabel(cia, labelsPerPage=None):
     found = []
     for spec in LABELS:
-    if string.lower(spec['cia']) == string.lower(cia):
-        if ((labelsPerPage is None) or 
-        (labelsPerPage == spec['rows']*spec['columns'])):
-        found.append(spec)
+	if string.lower(spec['cia']) == string.lower(cia):
+	    if ((labelsPerPage is None) or 
+		(labelsPerPage == spec['rows']*spec['columns'])):
+		found.append(spec)
     return found
 
 def labelTypes():
@@ -340,13 +340,13 @@ def labelTypes():
 
 def factory(cia, model):
     for spec in LABELS:
-    if string.lower(spec['cia']) == string.lower(cia):
+	if string.lower(spec['cia']) == string.lower(cia):
             if model in spec['models']:
                 return LabelGenerator(spec)
     raise Exception(Error, "Modelo de etiqueta não encontrado")
 
 def gera_etiqueta(self, dados):
-    labels = factory("Pimaco", "6182")
+    labels = factory("Pimaco", "6183")
     filename=str(int(time.time()*100))+".pdf"
     labels.setGrid()
     labels.generate(dados, filename)
