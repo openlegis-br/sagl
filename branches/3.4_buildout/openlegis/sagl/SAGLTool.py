@@ -2,6 +2,7 @@
 
 import re
 import os
+import requests
 
 import time
 
@@ -61,7 +62,6 @@ from restpki import *
 from zope.testbrowser.browser import Browser
 browser = Browser()
 
-
 ## Troca de senha
 from AccessControl.SecurityInfo import ClassSecurityInfo
 
@@ -80,7 +80,6 @@ mailPassword = 'Mail forgotten password'
 addPermission(mailPassword, ('Anonymous', 'Manager',))
 
 from Acquisition import aq_base
-
 
 
 class ISAGLTool(Interface):
@@ -552,6 +551,106 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                           arquivo = cStringIO.StringIO(str(arq.data))
                           texto_emenda = PdfReader(arquivo, decompress=False).pages
                           writer.addpages(texto_emenda)
+          output_file_pdf = cStringIO.StringIO()
+          writer.write(output_file_pdf)
+          output_file_pdf.seek(0)
+          existing_pdf = PdfFileReader(output_file_pdf)
+          numPages = existing_pdf.getNumPages()
+          # cria novo PDF
+          packet = cStringIO.StringIO()
+          can = canvas.Canvas(packet)
+          for page_num, i in enumerate(range(numPages), start=1):
+              page = existing_pdf.getPage(i)
+              pwidth = self.getPageSizeW(page)
+              pheight = self.getPageSizeH(page)
+              can.setPageSize((pwidth, pheight))
+              can.setFillColorRGB(0,0,0)
+              # Numero de pagina
+              num_pagina = "fls. %s/%s" % (page_num, numPages)
+              can.saveState()
+              can.setFont('Arial', 9)
+              can.drawCentredString(pwidth-45, pheight-60, num_pagina)
+              can.restoreState()
+              can.showPage()
+          can.save()
+          packet.seek(0)
+          new_pdf = PdfFileReader(packet)
+          # Mescla arquivos
+          output = PdfFileWriter()
+          for page in range(existing_pdf.getNumPages()):
+              pdf_page = existing_pdf.getPage(page)
+              # numeração de páginas
+              for wm in range(new_pdf.getNumPages()):
+                  watermark_page = new_pdf.getPage(wm)
+                  if page == wm:
+                     pdf_page.mergePage(watermark_page)
+              output.addPage(pdf_page)
+          outputStream = cStringIO.StringIO()
+          self.temp_folder.manage_addFile(nom_pdf_amigavel)
+          output.write(outputStream)
+          arq=self.temp_folder[nom_pdf_amigavel]
+          arq.manage_edit(title=nom_pdf_amigavel,filedata=outputStream.getvalue(),content_type='application/pdf')
+          arq = getattr(self.temp_folder,nom_pdf_amigavel)
+          self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
+          self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
+          self.temp_folder.manage_delObjects(ids=nom_pdf_amigavel)
+          return arq
+
+    def pdf_expediente_completo(self, cod_sessao_plen):
+        writer = PdfWriter()
+        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
+        for pauta in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen):
+          nom_pdf_amigavel = str(pauta.num_sessao_plen)+'-sessao-'+ str(pauta.dat_inicio)+'-expediente_completo.pdf'
+          nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
+          if hasattr(self.sapl_documentos.pauta_sessao, str(cod_sessao_plen) + '_pauta_expediente.pdf'):
+             arq = getattr(self.sapl_documentos.pauta_sessao, str(cod_sessao_plen) + '_pauta_expediente.pdf')
+             arquivo = cStringIO.StringIO(str(arq.data))
+             texto_pauta = PdfReader(arquivo, decompress=False).pages
+             writer.addpages(texto_pauta)
+          for item in self.zsql.materia_apresentada_sessao_obter_zsql(cod_sessao_plen = pauta.cod_sessao_plen, ind_excluido = 0):
+              if item.cod_materia != None:
+                 if hasattr(self.sapl_documentos.materia, str(item.cod_materia) + '_texto_integral.pdf'):
+                    arq = getattr(self.sapl_documentos.materia, str(item.cod_materia) + '_texto_integral.pdf')
+                    arquivo = cStringIO.StringIO(str(arq.data))
+                    texto_materia = PdfReader(arquivo, decompress=False).pages
+                    writer.addpages(texto_materia)
+              elif item.cod_emenda != None:
+                   if hasattr(self.sapl_documentos.emenda, str(item.cod_emenda) + '_emenda.pdf'):
+                      arq = getattr(self.sapl_documentos.emenda, str(item.cod_emenda) + '_emenda.pdf')
+                      arquivo = cStringIO.StringIO(str(arq.data))
+                      texto_emenda = PdfReader(arquivo, decompress=False).pages
+                      writer.addpages(texto_emenda)
+              elif item.cod_substitutivo != None:
+                   if hasattr(self.sapl_documentos.substitutivo, str(item.cod_substitutivo) + '_substitutivo.pdf'):
+                      arq = getattr(self.sapl_documentos.substitutivo, str(item.cod_substitutivo) + '_substitutivo.pdf')
+                      arquivo = cStringIO.StringIO(str(arq.data))
+                      texto_substitutivo = PdfReader(arquivo, decompress=False).pages
+                      writer.addpages(texto_substitutivo)
+              elif item.cod_parecer != None:
+                   if hasattr(self.sapl_documentos.parecer_comissao, str(item.cod_parecer) + '_parecer.pdf'):
+                      arq = getattr(self.sapl_documentos.parecer_comissao, str(item.cod_parecer) + '_parecer.pdf')
+                      arquivo = cStringIO.StringIO(str(arq.data))
+                      texto_parecer = PdfReader(arquivo, decompress=False).pages
+                      writer.addpages(texto_parecer)
+              elif item.cod_documento != None:
+                   if hasattr(self.sapl_documentos.administrativo, str(item.cod_documento) + '_texto_integral.pdf'):
+                      arq = getattr(self.sapl_documentos.administrativo, str(item.cod_documento) + '_texto_integral.pdf')
+                      arquivo = cStringIO.StringIO(str(arq.data))
+                      texto_documento = PdfReader(arquivo, decompress=False).pages
+                      writer.addpages(texto_documento)
+          for item in self.zsql.expediente_materia_obter_zsql(cod_sessao_plen = pauta.cod_sessao_plen, ind_excluido = 0):
+              if item.cod_materia != None:
+                 if hasattr(self.sapl_documentos.materia, str(item.cod_materia) + '_texto_integral.pdf'):
+                    arq = getattr(self.sapl_documentos.materia, str(item.cod_materia) + '_texto_integral.pdf')
+                    arquivo = cStringIO.StringIO(str(arq.data))
+                    texto_materia = PdfReader(arquivo, decompress=False).pages
+                    writer.addpages(texto_materia)
+              elif item.cod_parecer != None:
+                   if hasattr(self.sapl_documentos.parecer_comissao, str(item.cod_parecer) + '_parecer.pdf'):
+                      arq = getattr(self.sapl_documentos.parecer_comissao, str(item.cod_parecer) + '_parecer.pdf')
+                      arquivo = cStringIO.StringIO(str(arq.data))
+                      texto_parecer = PdfReader(arquivo, decompress=False).pages
+                      writer.addpages(texto_parecer)  
           output_file_pdf = cStringIO.StringIO()
           writer.write(output_file_pdf)
           output_file_pdf.seek(0)
