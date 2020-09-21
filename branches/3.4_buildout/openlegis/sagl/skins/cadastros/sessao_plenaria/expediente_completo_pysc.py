@@ -14,7 +14,7 @@ session  = REQUEST.SESSION
 
 from Products.CMFCore.utils import getToolByName
 
-st = getToolByName(context, 'portal_sapl')
+st = getToolByName(context, 'portal_sagl')
 
 return st.pdf_expediente_completo(cod_sessao_plen)
 
