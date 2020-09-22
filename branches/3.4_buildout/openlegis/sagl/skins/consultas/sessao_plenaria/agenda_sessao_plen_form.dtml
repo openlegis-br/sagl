@@ -9,78 +9,58 @@
 
 <div id="accordion">
   <legend>Dados da Sessão</legend>
-  <div class="content0">
-    <table class="table">
-      <thead>
-       <tr>
-           <th>Abertura</th>
-           <th>Encerramento</th>
-       </tr>
-      </thead>
-        <tr>
-            <td>
-                <dtml-var dat_inicio_sessao null="">
-                <dtml-if hr_inicio_sessao>
-                  às <dtml-var hr_inicio_sessao>
-                </dtml-if>
-            </td>
-            <td>
-                <dtml-var dat_fim_sessao null="">
-                <dtml-if hr_fim_sessao>
-                  às <dtml-var hr_fim_sessao null="">
-                </dtml-if>
-            </td>
-        </tr>
-    </table>
+
+  <div class="row">
+    <div class="col-12 mb-3">
+      <b>Abertura:</b> 
+         <dtml-var dat_inicio_sessao null="">
+         <dtml-if hr_inicio_sessao>
+            às <dtml-var hr_inicio_sessao>
+         </dtml-if>      
+    </div>
   </div>
-</fieldset>
+
+  <div class="row mb-3">
+    <div class="col-12 mb-3">
+      <b>Encerramento:</b> 
+      <dtml-if hr_fim_sessao>
+         às <dtml-var hr_fim_sessao null="">
+      </dtml-if>
+    </div>
+  </div>
 
 <dtml-if expr="(_.has_key('cod_sessao_plen'))">
-    <dtml-call expr="REQUEST.set('id_documento', _.str(cod_sessao_plen)+ '_' + 'ata_sessao.pdf')">
-    <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_documento)">
+   <dtml-call expr="REQUEST.set('id_documento', _.str(cod_sessao_plen)+ '_' + 'ata_sessao.pdf')">
+   <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_documento)">
       <dtml-let documento="_.getattr(sapl_documentos.ata_sessao,id_documento).absolute_url">
-    <legend>Ata da Sessão</legend>
-  <div class="content01">
-    <table class="table">
-      <thead>
-        <tr>
-            <td>
-               <a class="btn btn-sm btn-link" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Ata da Sessão</span></a>             
-            </td>
-        </tr>
-       </thead>
-     </table>
-   </div>
-       </dtml-let>
-     </dtml-if>
+         <legend>Ata da Sessão</legend>
+         <div class="row mb-3">
+           <div class="col-12">
+             <a class="btn btn-sm btn-secondary" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Ata da Sessão</span></a>             
+          </div>
+         </div>
+      </dtml-let>
+   </dtml-if>
 </dtml-if>
 
-<dtml-if expr="url_audio or url_video">
+<dtml-if expr="url_audio or url_video or url_fotos">
   <legend>Multimídia</legend>
-  <div class="content02">
-    <table class="table">
-         <tr>
-            <td width="50%">
-              <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_audio.png">
-               <dtml-if url_audio>
-                  <a href="#" onClick="javascript:window.open('sessao_plenaria_player_audio?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_audio=<dtml-var url_audio>','PlayerAudio','width=540,height=435,top=200,left=200,scrollbars=no');"/>
-                   <b>Gravação em Áudio</b></a>
-               <dtml-else>
-                  Áudio não disponível
-              </dtml-if>
-            </td>
-            <td width="50%" >
-              <img align="absmiddle" src="&dtml-portal_url;/imagens/icon_video.png">
-               <dtml-if url_video>
-                  <a href="#" onClick="javascript:window.open('sessao_plenaria_player_video?cod_sessao_plen=<dtml-var cod_sessao_plen>&url_video=<dtml-var url_video>','PlayerVideo','width=540,height=435,top=200,left=200,scrollbars=no');"/>
-                  <b>Gravação em Vídeo</b></a>
-               <dtml-else>
-                  Vídeo não disponível
-               </dtml-if>
-            </td>
-            <td></td>
-         </tr>
-    </table>
+  <div class="row mb-3 bg-light">
+    <dtml-if url_audio>
+       <div class="col-6 col-md-4 mt-3 mb-3">  
+           <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Reprodução de Áudio" data-src="sessao_plenaria_player_audio?url_audio=<dtml-var url_audio>&modal=1"><i class="fas fa-fw fa-volume-up"></i></i> Áudio da Sessão</button>
+       </div>
+    </dtml-if>
+    <dtml-if url_video>
+       <div class="col-6 col-md-4 mt-3 mb-3"> 
+         <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Reprodução de Vídeo" data-src="<dtml-var url_video>"><i class="fab fa-fw fa-youtube"></i> Vídeo da Sessão</button>
+       </div>
+    </dtml-if>
+    <dtml-if url_fotos>
+       <div class="col-6 col-md-4 mt-3 mb-3">
+           <a class="btn btn-block btn-secondary" href="<dtml-var url_fotos>" target="_blank"><i class="fas fa-fw fa-images"></i><span class="d-none">Fotos</span></a> 
+       </div>
+    </dtml-if>
    </div>
 </dtml-if>
 
@@ -730,10 +710,6 @@
    </table>
   </div>
 </dtml-if>
-</div>
-
-<div class="text-left">
-  <input class="btn btn-primary d-print-none" type="button" value="Voltar" OnClick="history.go(-1)" />
 </div>
 
 <dtml-var standard_html_footer>
