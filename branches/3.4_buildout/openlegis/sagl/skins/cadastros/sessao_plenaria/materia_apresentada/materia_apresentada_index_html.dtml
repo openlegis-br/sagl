@@ -3,20 +3,6 @@
 <script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.jeditable.js"></script>
 
 <script type="text/javascript">
-   function submeter(endereco){
-        var form = document.materia_apresentada_form;
-        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
-        endereco += '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value;
-        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
-        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
-        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
-
-        if (form.hdn_cod_sessao_plen.value!=""){
-            location.href = endereco;
-        }
-        return;
-    }
-
     function lista_apresentada_excluir(){
         if (confirm("Deseja realmente excluir a lista de matérias apresentadas?")) {
             location.href="lista_apresentada_excluir_proc?<dtml-var "REQUEST.get('QUERY_STRING','')">";
@@ -34,57 +20,14 @@
  });
 </script>
 
-<script type="text/javascript">
-$(document).ready(function() {
-	$(".materia").fancybox({
-		maxWidth	: 700,
-		maxHeight	: 680,
-		fitToView	: false,
-		width		: '75%',
-		height		: '85%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-                afterClose      : function() {
-                window.location.href = "&dtml-portal_url;/cadastros/sessao_plenaria/materia_apresentada/materia_apresentada_index_html?<dtml-var "REQUEST.get('QUERY_STRING','')">";
-                },
-		closeEffect	: 'fade'
-	});
-});
+<dtml-var sessao_plenaria_menu>
 
-$(document).ready(function() {
-	$(".popup").fancybox({
-		maxWidth	: 700,
-		maxHeight	: 680,
-		fitToView	: false,
-		width		: '75%',
-		height		: '85%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-                afterClose      : function() {
-                window.location.href = "&dtml-portal_url;/cadastros/sessao_plenaria/materia_apresentada/materia_apresentada_index_html?<dtml-var "REQUEST.get('QUERY_STRING','')">";
-                },
-		closeEffect	: 'fade'
-	});
-});
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
 
-</script>
-
-<body class="">
-
-<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_materia_apresentada">Ajuda</a>
-
-<h1 class="firstHeading">Matérias e Documentos Apresentados</h1>
-
-<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+<legend>Matérias Apresentadas</legend>
 
 <form name="materia_apresentada_form" method="post">
-    <dtml-var sessao_plenaria_menu>
 
 <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
 <dtml-call "REQUEST.set('existe_seq_posterior', 0)">
@@ -103,9 +46,7 @@ $(document).ready(function() {
     <dtml-in expr="zsql.materia_apresentada_sessao_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)" size="step" start="start" orphan=0>
 
         <dtml-if sequence-start>
-        <fieldset>
-         <legend>Itens para Leitura na Sessão</legend>
-        <table class="table" >
+        <table class="table">
             <tr>
                 <th width="5%" >Item</th>
                 <th width="30%">Identificação</th>
@@ -201,15 +142,12 @@ $(document).ready(function() {
     </dtml-if next-sequence>
     <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
      <p align="center" class="texto">
-        <b><dtml-var "pysc.PageListOutput_pysc('materia_apresentada_index_html', page, step, _['sequence-length'], cod_sessao_plen=cod_sessao_plen,cod_sessao_leg=cod_sessao_leg,cod_num_legislatura=cod_num_legislatura,dat_sessao=dat_sessao,tip_sessao=tip_sessao)">
+        <b><dtml-var "pysc.PageListOutput_pysc('materia_apresentada_index_html', page, step, _['sequence-length'], cod_sessao_plen=cod_sessao_plen,cod_sessao_leg=cod_sessao_leg,num_legislatura=num_legislatura,dat_sessao=dat_sessao,tip_sessao=tip_sessao)">
       </b></p>
     </dtml-if>
   </dtml-if sequence-end>
   <dtml-else>
-      <fieldset>
-       <legend>Matérias Apresentadas</legend>
-         <p class="texto">Não há matérias ou documentos apresentados nesta Sessão Plenária.</p>
-      </fieldset>
+         <p>Nehuma matéria ou documento cadastrado para leitura.</p>
 </dtml-in>
 
 <p align="center">
@@ -239,6 +177,7 @@ $(document).ready(function() {
 
 </form>
 
-</body>
+</div>
+</div>
 
 <dtml-var standard_html_footer>

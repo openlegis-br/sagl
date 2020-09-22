@@ -1,18 +1,5 @@
 <dtml-var standard_html_header>
 <script type="text/javascript">
-   function submeter(endereco){
-        var form = document.materia_expediente_sessao_form;
-        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
-        endereco += '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value;
-        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
-        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
-        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
-
-        if (form.hdn_cod_sessao_plen.value!=""){
-            location.href = endereco;
-        }
-        return;
-    }
 
     function pauta_expediente_excluir(){
         if (confirm("Deseja realmente excluir a pauta do expediente?")) {
@@ -36,38 +23,17 @@
     }
 </script>
 
-<script type="text/javascript">
-$(document).ready(function() {
-	$(".popup").fancybox({
-		maxWidth	: 900,
-		maxHeight	: 900,
-		fitToView	: false,
-		width		: '75%',
-		height		: '85%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-                afterClose      : function() {
-                window.location.href = "&dtml-portal_url;/cadastros/sessao_plenaria/materia_expediente_sessao/materia_expediente_sessao_index_html?<dtml-var "REQUEST.get('QUERY_STRING','')">";
-                },
-		closeEffect	: 'fade'
-	});
-});
-
-</script>
-
-<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_materias_expediente">Ajuda</a>
 <a id="ajuda" target="_blank" href="&dtml-portal_url;/cadastros/sessao_plenaria/expediente_completo_pysc?cod_sessao_plen=<dtml-var cod_sessao_plen>">PDF completo</a>
 <a id="ajuda" target="_blank" href="&dtml-portal_url;/relatorios/pdf_expediente_preparar_pysc?cod_sessao_plen=<dtml-var cod_sessao_plen>">PDF</a>
 
-<h1 class="firstHeading">Matérias do Expediente</h1>
+<dtml-var sessao_plenaria_menu>
 
-<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
+
+<legend>Matérias do Expediente</legend>
 
 <form name="materia_expediente_sessao_form" method="post">
-  <dtml-var sessao_plenaria_menu>
 
 <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
 <dtml-call "REQUEST.set('existe_seq_posterior', 0)">
@@ -86,9 +52,7 @@ $(document).ready(function() {
     <dtml-in expr="zsql.expediente_materia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)" size="step" start="start" orphan=0>
 
         <dtml-if sequence-start>
-        <fieldset>
-       <legend>Matérias do Expediente</legend>
-        <table class="table" >
+        <table class="table">
             <tr>
                 <th width="5%" >Item</th>
                 <th width="25%">Matéria</th>
@@ -131,9 +95,9 @@ $(document).ready(function() {
              <dtml-in expr="zsql.votacao_expediente_materia_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_materia=cod_materia,cod_ordem=cod_ordem, ind_excluido=0)">
                 <dtml-if expr="cod_votacao and tip_resultado_votacao!=0">
                   <p align="center">
-                    <a class="botao popup" href="discussao/discussao_index_html?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe">Discussão</a>
+                    <a class="botao popup" href="discussao/discussao_index_html?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe">Discussão</a>
                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
-                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup">
+                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup">
                     <b><dtml-var nom_resultado></a></b><br />
                     <dtml-if votacao_observacao>
                         <dtml-var votacao_observacao>
@@ -142,13 +106,13 @@ $(document).ready(function() {
                 </dtml-in>
                 <dtml-elif expr="cod_votacao and tip_resultado_votacao==0">
                   <p align="center">
-                    <a class="botao popup" href="discussao/discussao_index_html?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe">Discussão</a>
-                    <a class="botao popup" href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe">Votação</a>
+                    <a class="botao popup" href="discussao/discussao_index_html?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe">Discussão</a>
+                    <a class="botao popup" href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe">Votação</a>
                   </p>
                 <dtml-else>
                  <p align="center">
-                    <a class="botao popup" href="discussao/discussao_index_html?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe">Discussão</a>
-                  <a href="votacao/votacao_form?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" class="botao popup" data-fancybox-type="iframe" />Votação</a>
+                    <a class="botao popup" href="discussao/discussao_index_html?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe">Discussão</a>
+                  <a href="votacao/votacao_form?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" class="botao popup" data-fancybox-type="iframe" />Votação</a>
                 </p>
                 </dtml-if>
               </dtml-in>
@@ -175,7 +139,7 @@ $(document).ready(function() {
                 <dtml-if expr="cod_votacao and tip_resultado_votacao!=0">
                   <p align="center">
                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
-                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_parecer=<dtml-var cod_parecer>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup">
+                    <a href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_parecer=<dtml-var cod_parecer>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe" class="botao popup">
                     <b><dtml-var nom_resultado></a></b><br />
                     <dtml-if votacao_observacao>
                         <dtml-var votacao_observacao>
@@ -184,11 +148,11 @@ $(document).ready(function() {
                 </dtml-in>
                 <dtml-elif expr="cod_votacao and tip_resultado_votacao==0">
                   <p align="center">
-                    <a class="botao popup" href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_parecer=<dtml-var cod_parecer>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe">Registrar Votação</a>
+                    <a class="botao popup" href="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_parecer=<dtml-var cod_parecer>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>" data-fancybox-type="iframe">Registrar Votação</a>
                   </p>
                 <dtml-else>
                  <p align="center">
-                  <a href="votacao/votacao_form?cod_ordem=<dtml-var cod_ordem>&cod_parecer=<dtml-var cod_parecer>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_num_legislatura=<dtml-var cod_num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" class="botao popup" data-fancybox-type="iframe" />Registrar Votação</a>
+                  <a href="votacao/votacao_form?cod_ordem=<dtml-var cod_ordem>&cod_parecer=<dtml-var cod_parecer>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>" class="botao popup" data-fancybox-type="iframe" />Registrar Votação</a>
                 </p>
                 </dtml-if>
               </dtml-in>
@@ -197,29 +161,28 @@ $(document).ready(function() {
         </tr>
     <dtml-if sequence-end>
   </table>
-</fieldset>
+
      <dtml-if next-sequence>
       <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
     </dtml-if next-sequence>
     <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
-     <p align="center" class="texto">
-        <b><dtml-var "pysc.PageListOutput_pysc('materia_expediente_sessao_index_html', page, step, _['sequence-length'], cod_sessao_plen=cod_sessao_plen,cod_sessao_leg=cod_sessao_leg,cod_num_legislatura=cod_num_legislatura,dat_sessao=dat_sessao,tip_sessao=tip_sessao)">
-      </b></p>
+        <nav aria-label="Paginação">
+          <ul class="pagination justify-content-center">
+        <dtml-var "pysc.PageListOutput_pysc('materia_expediente_sessao_index_html', page, step, _['sequence-length'], cod_sessao_plen=cod_sessao_plen,cod_sessao_leg=cod_sessao_leg,num_legislatura=num_legislatura,dat_sessao=dat_sessao,tip_sessao=tip_sessao)">
+          </ul>
+        </nav>
     </dtml-if>
   </dtml-if sequence-end>
   <dtml-else>
-      <fieldset>
-       <legend>Matérias do Expediente</legend>
-        <p class="texto">Não constam matérias no Expediente.</p>
-      </fieldset>
+        <p>Não constam matérias no Expediente.</p>
 </dtml-in>
 
 <p align="center">
   <dtml-unless expr="zsql.expediente_materia_obter_zsql(dat_ordem = pysc.data_converter_pysc(data=dat_sessao),cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
-    <a href="pauta/pauta_expediente_form?cod_sessao_plen=<dtml-var cod_sessao_plen>"class="botao-link popup" data-fancybox-type="iframe">Gerar pauta</a>&nbsp;
+    <a class="btn btn-primary" href="pauta/pauta_expediente_form?cod_sessao_plen=<dtml-var cod_sessao_plen>">Gerar pauta</a
   </dtml-unless>
-  <a href="materia_expediente_form?cod_sessao_plen=<dtml-var cod_sessao_plen>" class="botao-link popup" data-fancybox-type="iframe">Incluir matéria</a>
-  <a href="materia_expediente_parecer_form?cod_sessao_plen=<dtml-var cod_sessao_plen>" class="botao-link popup" data-fancybox-type="iframe">Incluir parecer</a>
+  <a class="btn btn-primary" href="materia_expediente_form?cod_sessao_plen=<dtml-var cod_sessao_plen>">Incluir matéria</a>
+  <a class="btn btn-primary" href="materia_expediente_parecer_form?cod_sessao_plen=<dtml-var cod_sessao_plen>" class="botao-link popup" data-fancybox-type="iframe">Incluir parecer</a>
   <dtml-if expr="zsql.expediente_materia_obter_zsql(dat_ordem = pysc.data_converter_pysc(data=dat_sessao),cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
     <input class="btn btn-primary" type="button" class="botao" name="btn_lote" value="Aprovação em Lote" onClick="aprovacao_lote()" />
    <dtml-comment>
@@ -229,8 +192,9 @@ $(document).ready(function() {
     <input class="btn btn-primary" type="button" class="botao" name="btn_excluir" value="Excluir pauta" onClick="pauta_expediente_excluir()" />
   </dtml-if>
 
-  <input class="form-control" class="botao" type="button" value="Atualizar" onClick="window.location.reload()">
+  <input class="btn btn-primary" type="button" value="Atualizar" onClick="window.location.reload()">
 </p>
 </form>
-
+</div>
+</div>
 <dtml-var standard_html_footer>

@@ -18,21 +18,6 @@
         form.submit();
     }
 
-    function submeter(endereco){
-
-        var form = document.composicao_mesa_sessao_form;
-        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
-        endereco += '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value;
-        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
-        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
-        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
-
-        if (form.hdn_cod_sessao_plen.value!=""){
-            location.href = endereco;
-        }
-        return;
-    }
-
     function composicao_mesa_sessao_excluir(valor, valor1, valor2) {
        var form = document.composicao_mesa_sessao_form;
        if (valor.selectedIndex == -1){
@@ -47,22 +32,21 @@
        var cod_sessao_leg = valor1;
        var cod_sessao_plen = valor2;
        if (confirm("Deseja realmente excluir?")){
-          location.href="composicao_mesa_sessao_excluir_proc?&cod_sessao_leg=" + cod_sessao_leg + "&cod_parlamentar=" + cod_parlamentar + "&cod_cargo=" + cod_cargo + '&dat_sessao=' + form.hdn_dat_sessao.value + '&tip_sessao=' + form.hdn_tip_sessao.value + "&cod_sessao_plen=" + cod_sessao_plen + "&cod_num_legislatura=<dtml-var cod_num_legislatura missing>";
+          location.href="composicao_mesa_sessao_excluir_proc?&cod_sessao_leg=" + cod_sessao_leg + "&cod_parlamentar=" + cod_parlamentar + "&cod_cargo=" + cod_cargo + '&dat_sessao=' + form.hdn_dat_sessao.value + '&tip_sessao=' + form.hdn_tip_sessao.value + "&cod_sessao_plen=" + cod_sessao_plen + "&num_legislatura=<dtml-var num_legislatura missing>";
        }
     }
 
 </script>
-<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_mesa">Ajuda</a>
 
-<h1 class="firstHeading">Mesa da Sessão</h1>
+<dtml-var sessao_plenaria_menu>
 
-<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
+
+<legend>Mesa da Sessão</legend>
 
 <form name="composicao_mesa_sessao_form" method="post" action="composicao_mesa_sessao_incluir_proc">
-    <dtml-var sessao_plenaria_menu>
-    <fieldset>
-        <legend>Mesa Diretora da Sessão</legend>
-            <table class="table" >
+                    <table class="table" >
                     <tr class="fundo">
                         <th width="40%">Composição</th>
                         <th width="20%"></th>
@@ -99,7 +83,7 @@
                         </td>
                         <td>
                             <select class="custom-select"  name="lst_cod_parlamentar" size="1">
-                                <dtml-in expr="zsql.comp_mesa_sessao_parlamentar_obter_zsql(cod_sessao_plen=cod_sessao_plen,num_legislatura=cod_num_legislatura,ind_excluido=0)">
+                                <dtml-in expr="zsql.comp_mesa_sessao_parlamentar_obter_zsql(cod_sessao_plen=cod_sessao_plen,num_legislatura=num_legislatura,ind_excluido=0)">
              
                                <option
                                     <dtml-if expr=" (not _.has_key('prim_sel2') ) or (_.has_key('cod_parlamentar_sel') and cod_parlamentar == cod_parlamentar_sel)">
@@ -130,5 +114,8 @@
                     </tr>
                 </table>
 </form>
+
+</div>
+</div>
 
 <dtml-var standard_html_footer>

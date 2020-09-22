@@ -17,21 +17,7 @@
     function excluir(cod_sessao_plen,cod_parlamentar){
         var form = document.liderancas_form;    
         if (confirm("Deseja realmente excluir a liderança partidária?")) {
-            location.href = "liderancas_partidarias_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_parlamentar=" + cod_parlamentar + '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value + '&cod_num_legislatura=' + form.hdn_num_legislatura.value + '&dat_sessao=' + form.hdn_dat_sessao.value + '&tip_sessao=' + form.hdn_tip_sessao.value;
-        }
-        return;
-    }
-
-    function submeter(endereco){
-        var form = document.liderancas_form;
-        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
-        endereco += '&cod_sessao_leg=' + form.hdn_cod_sessao_leg.value;
-        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
-        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
-        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
-
-        if (form.hdn_cod_sessao_plen.value!=""){
-            location.href = endereco;
+            location.href = "liderancas_partidarias_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_parlamentar=" + cod_parlamentar + '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value + '&num_legislatura=' + form.hdn_num_legislatura.value + '&dat_sessao=' + form.hdn_dat_sessao.value + '&tip_sessao=' + form.hdn_tip_sessao.value;
         }
         return;
     }
@@ -53,19 +39,17 @@
 
 </script>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria">Ajuda</a>
+<dtml-var sessao_plenaria_menu>
 
-<h1 class="firstHeading">Lideranças Partidárias</h1>
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
 
-<h3 align="center"><dtml-var sessao_plenaria_header></h3>
-
+<legend>Lideranças Partidárias</legend>
 
 <form name="liderancas_form" method="post" action="liderancas_partidarias_salvar_proc" enctype="multipart/form-data">
-    <dtml-var sessao_plenaria_menu>
     <dtml-in expr="zsql.liderancas_partidarias_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
         <dtml-if sequence-start>
         <fieldset>
-        <legend>Cadastro de Lideranças Partidárias</legend>
         <table class="table" >
             <tr>
                 <th>Ordem</th>
@@ -123,7 +107,7 @@
                 <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
                     <option value="<dtml-var cod_parlamentar >">
                       <dtml-var nom_parlamentar>
-                      <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=cod_num_legislatura, cod_parlamentar=cod_parlamentar)">
+                      <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=num_legislatura, cod_parlamentar=cod_parlamentar)">
                         <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
                           / <dtml-var sgl_partido null="">
                         </dtml-in>
@@ -137,11 +121,13 @@
     <input class="form-control" type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
     <input class="form-control" type="hidden" name="hdn_cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>"/>
     <input class="form-control" type="hidden" name="hdn_dat_sessao" value="<dtml-var dat_sessao missing>"/>
-    <input class="form-control" type="hidden" name="hdn_num_legislatura" value="<dtml-var cod_num_legislatura missing>"/>
+    <input class="form-control" type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura missing>"/>
     <input class="form-control" type="hidden" name="hdn_tip_sessao" value="<dtml-var tip_sessao missing>"/>
     <p align="center">
        <input class="btn btn-primary" type="button" class="botao" name="btn_liderancas" value="Incluir Liderança" onClick="campos_criticar(document.liderancas_cadastro_form)"/>
     </p>
 </fieldset>
 </form>
+</div>
+</div>
 <dtml-var standard_html_footer>
