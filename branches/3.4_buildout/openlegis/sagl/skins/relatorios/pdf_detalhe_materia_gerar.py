@@ -132,7 +132,7 @@ def inf_basicas(dic_inf_basicas):
 
     observacao = dic_inf_basicas['observacao']
     if observacao != "" and observacao != None:
-        tmp+='\t\t<para style="P2"><b>Observação: </b> ' + observacao.replace('&','&amp;') + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Observações: </b> ' + observacao.replace('&','&amp;') + '</para>\n'
 
     return tmp
 
