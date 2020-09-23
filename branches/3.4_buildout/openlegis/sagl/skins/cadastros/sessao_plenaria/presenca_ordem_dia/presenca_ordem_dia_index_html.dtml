@@ -8,24 +8,28 @@
 <legend>Presença na Ordem do Dia</legend>
 
 <form name="presenca_ordem_dia_form" method="post" action="presenca_ordem_dia_salvar_proc">
-   <input class="form-control" type="hidden" name="dat_ordem" value="<dtml-var dat_sessao missing>"/>
-<fieldset>
-  <table class="table" >
+    <input type="hidden" name="hdn_url" value="index_html?cod_sessao_plen=<dtml-var cod_sessao_plen missing>&num_legislatura=<dtml-var num_legislatura missing>&cod_sessao_leg=<dtml-var cod_sessao_leg missing>&dat_sessao=<dtml-var dat_sessao missing>&tip_sessao=<dtml-var tip_sessao missing>" />
+   <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>">
+   <input type="hidden" name="dat_ordem" value="<dtml-var dat_sessao missing>"/>
+   <div class="table-reponsive">
+    <table class="table">
+          <thead class="table-secondary">
              <tr>
-                  <th width="40%" class="label">
+                  <th>
                     Parlamentar
                   </th>
-                  <th class="label">
+                  <th>
                     Registro
                   </th>
-                  <th class="label">
-                   Observações
+                  <th>
+                   Justificativa
                   </th>
              </tr>
+          </thead>
        <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
               <tr>
-                  <td width="40%" class="texto">
-                    <b><dtml-var nom_parlamentar>
+                  <td>
+                    <dtml-var nom_parlamentar>
                      <dtml-in expr="zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=num_legislatura, cod_parlamentar=cod_parlamentar)">
                        <dtml-in expr="zsql.parlamentar_partido_obter_zsql(dat_filiacao=dat_filiacao, cod_parlamentar=cod_parlamentar)">
                          - <dtml-var sgl_partido null="">
@@ -34,12 +38,12 @@
                        </dtml-in>
                      <dtml-else>
                        S/P
-                     </dtml-in></b>
-                    <input class="form-control" type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
+                     </dtml-in>
+                    <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
                   </td>
                   <td>
                     <select class="custom-select"  id="lst_tip_frequencia" name="lst_tip_frequencia" size="1">
-                        <dtml-in expr="['Presente', 'Faltou', 'Ausência Justificada']">                 
+                        <dtml-in expr="['Presença', 'Falta', 'Ausência Justificada']">                 
                          <option
                            <dtml-in expr="zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=cod_parlamentar, ind_excluido=0)">
                              <dtml-if expr="_.has_key('tip_frequencia')">
@@ -67,20 +71,21 @@
               </tr>
        <dtml-else>
               <tr>
-                  <td>Não há nenhum parlamentar com mandato cadastrado na Legislatura.</td>
+                  <td>Nenhum parlamentar com mandato cadastrado na Legislatura.</td>
               </tr>
        </dtml-in>
            <dtml-if tip_sessao>
               <tr>
-                  <th class="text" colspan="3"><legend>
-                    Parlamentares presentes: <dtml-var expr="pysc.quantidade_presentes_ordem_dia_pysc(cod_sessao_plen=cod_sessao_plen,dat_ordem=dat_sessao)"></legend>
-                  </th>
+                  <td class="text" colspan="3">
+                    <p class="h5">Parlamentares presentes: <dtml-var expr="pysc.quantidade_presentes_ordem_dia_pysc(cod_sessao_plen=cod_sessao_plen,dat_ordem=dat_sessao)"></p>
+                  </td>
                </tr>
            </dtml-if>
-  </table>
-  <p>
-     <input class="form-control" class="botao" type="submit" name="button" value="Salvar" />
-  </>
+    </table>
+   </div>
+  <div clas="text-left">
+     <input class="btn btn-primary" type="submit" name="button" value="Salvar" />
+  </div>
   </form>
 </div>
 </div>
