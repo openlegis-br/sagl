@@ -11,13 +11,13 @@
 
         var form = document.liderancas_form;
         var txt_num_ordem = campo_num.value;
-        location.href = "liderancas_partidarias_salvar_proc?hdn_cod_sessao_plen=" + cod_sessao_plen + "&lst_cod_parlamentar=" + cod_parlamentar + '&txt_num_ordem=' + txt_num_ordem + '&hdn_cod_sessao_leg='+ form.hdn_cod_sessao_leg.value + '&hdn_num_legislatura=' + form.hdn_num_legislatura.value + '&hdn_dat_sessao=' + form.hdn_dat_sessao.value + '&hdn_tip_sessao=' + form.hdn_tip_sessao.value + '&flag_atualizar=1';
+        location.href = "liderancas_partidarias_salvar_proc?hdn_cod_sessao_plen=<dtml-var cod_sessao_plen>&lst_cod_parlamentar=" + cod_parlamentar + '&txt_num_ordem=' + txt_num_ordem + '&hdn_cod_sessao_leg=&hdn_num_legislatura=<dtml-var num_legislatura>&hdn_tip_sessao=<dtml-var tip_sessao>&hdn_dat_sessao=<dtml-var dat_sessao>&flag_atualizar=1';
     }
 
     function excluir(cod_sessao_plen,cod_parlamentar){
         var form = document.liderancas_form;    
         if (confirm("Deseja realmente excluir a liderança partidária?")) {
-            location.href = "liderancas_partidarias_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_parlamentar=" + cod_parlamentar + '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value + '&num_legislatura=' + form.hdn_num_legislatura.value + '&dat_sessao=' + form.hdn_dat_sessao.value + '&tip_sessao=' + form.hdn_tip_sessao.value;
+            location.href = "liderancas_partidarias_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_parlamentar=" + cod_parlamentar + '&cod_sessao_leg=&num_legislatura=<dtml-var num_legislatura>&tip_sessao=<dtml-var tip_sessao>&dat_sessao=<dtml-var dat_sessao>';
         }
         return;
     }
@@ -49,21 +49,19 @@
 <form name="liderancas_form" method="post" action="liderancas_partidarias_salvar_proc" enctype="multipart/form-data">
     <dtml-in expr="zsql.liderancas_partidarias_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
         <dtml-if sequence-start>
-        <fieldset>
-        <table class="table" >
+        <table class="table">
+           <thead>
             <tr>
-                <th>Ordem</th>
-                <th width="70%">Parlamentar / Partido</th>
+                <th width="10%">Ordem</th>
+                <th>Vereador</th>
                 <th>Ação</th>
             </tr>
+           </thead>
         </dtml-if sequence-start>
-         <dtml-if sequence-even>
           <tr>
-         <dtml-else>
-          <tr class="even">
-         </dtml-if>
             <td>
-                <input class="form-control" type="text" id="txt_num_ordem_<dtml-var num_ordem>" name="txt_num_ordem" size="2" value="<dtml-var num_ordem>">
+                <label for="txt_num_ordem_<dtml-var num_ordem>" class="d-none">Ordem</label>
+                <input class="form-control" type="text" id="txt_num_ordem_<dtml-var num_ordem>" name="txt_num_ordem" maxlenght="2" value="<dtml-var num_ordem>">
             </td>
             <td>
                 <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
@@ -73,8 +71,8 @@
             </td>
 
             <td>
-                <a class="botao-link" href="javascript:atualizar(<dtml-var cod_sessao_plen>,<dtml-var cod_parlamentar>,document.liderancas_form.txt_num_ordem_<dtml-var num_ordem>)">
-                 Atualizar</a> &nbsp; <a class="botao-link" href="javascript:excluir(<dtml-var cod_sessao_plen>,<dtml-var cod_parlamentar>)">Excluir</a>
+                <a class="btn btn-sm btn-secondary" href="javascript:atualizar(<dtml-var cod_sessao_plen>,<dtml-var cod_parlamentar>,document.liderancas_form.txt_num_ordem_<dtml-var num_ordem>)">Atualizar</a> 
+                <a class="btn btn-sm btn-danger" href="javascript:excluir(<dtml-var cod_sessao_plen>,<dtml-var cod_parlamentar>)">Excluir</a>
             </td>
         </tr>
     <dtml-if sequence-end>
@@ -82,27 +80,25 @@
     </fieldset>
     </dtml-if sequence-end>
     <dtml-else>
-        <table class="table" >
-            <tr>
-                <td>Nenhuma liderança cadastrada.</td>
-            </tr>
-       </table>
+        <p>Nenhuma liderança cadastrada.
     </dtml-in>
 </form>
 <form name="liderancas_cadastro_form" method="post" action="liderancas_partidarias_salvar_proc" enctype="multipart/form-data">
-<fieldset>
-<legend>Inclusão de Liderança Partidária</legend>
-<table class="table" >
+
+<p class="h5">Inclusão de Liderança</p>
+<table class="table">
+   <thead>
     <tr>
-        <th>Ordem</th>
-        <th>Parlamentar / Partido</th>
+        <th><label for="txt_num_ordem" class="required">Ordem</label></th>
+        <th><label for="lst_cod_parlamentar" class="required">Vereador</label></th>
     </tr>
+   </thead>
     <tr>
-        <td>
-            <input class="form-control" type="text" name="txt_num_ordem" size="3" maxlength="3" />
+        <td width="10%">
+            <input class="form-control" type="number" id="txt_num_ordem" name="txt_num_ordem" maxlength="2" autocomplete="off" />
         </td>
         <td>
-            <select class="custom-select"  name="lst_cod_parlamentar" size="1">
+            <select class="custom-select" id="lst_cod_parlamentar"  name="lst_cod_parlamentar">
                 <option value ="0">Selecione</option>
                 <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
                     <option value="<dtml-var cod_parlamentar >">
@@ -118,16 +114,18 @@
         </td>
     </tr>
 </table>
-    <input class="form-control" type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
-    <input class="form-control" type="hidden" name="hdn_cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>"/>
-    <input class="form-control" type="hidden" name="hdn_dat_sessao" value="<dtml-var dat_sessao missing>"/>
-    <input class="form-control" type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura missing>"/>
-    <input class="form-control" type="hidden" name="hdn_tip_sessao" value="<dtml-var tip_sessao missing>"/>
-    <p align="center">
-       <input class="btn btn-primary" type="button" class="botao" name="btn_liderancas" value="Incluir Liderança" onClick="campos_criticar(document.liderancas_cadastro_form)"/>
-    </p>
-</fieldset>
+
+    <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+    <input type="hidden" name="hdn_cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>"/>
+    <input type="hidden" name="hdn_dat_sessao" value="<dtml-var dat_sessao missing>"/>
+    <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura missing>"/>
+    <input type="hidden" name="hdn_tip_sessao" value="<dtml-var tip_sessao missing>"/>
+    <div class="text-left">
+       <input class="btn btn-primary" type="button" class="botao" name="btn_liderancas" value="Incluir" onClick="campos_criticar(document.liderancas_cadastro_form)"/>
+    </div>
+
 </form>
 </div>
 </div>
+
 <dtml-var standard_html_footer>
