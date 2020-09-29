@@ -19,7 +19,7 @@ context.sagl.manage_exportObject()
 if hasattr(context.sagl.tmp,"sagl.zexp"):
     context.sagl.tmp.manage_delObjects(ids="sagl.zexp")
 context.sagl.tmp.manage_addProduct['ExternalFile'].manage_add(id="sagl.zexp", title=" ", description=" ",
-               target_filepath="./../var&dtml-portal_url;.zexp", basedir='')
+               target_filepath="./../var<dtml-var portal_url>.zexp", basedir='')
 
 context.backup_banco_pysc()
 nomearq = context.empacota(nome=nome)
