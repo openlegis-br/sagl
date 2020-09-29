@@ -160,7 +160,7 @@ $(document).ready(() => {
   let url = location.href.replace(/\/$/, "");
    if (location.hash) {
     const hash = url.split("#");
-    $('#nav_materia a[href="#'+hash[1]+'"]').tab("show");
+    $('#nav_norma a[href="#'+hash[1]+'"]').tab("show");
     url = location.href.replace(/\/#/, "#");
     history.replaceState(null, null, url);
   } 
@@ -180,30 +180,28 @@ $(document).ready(() => {
 
 </script>
 
-<div class="row">
-  <div class="col-12 col-lg-10">
+<div class="row mb-2">
+  <div class="col-12 col-lg-8">
     <dtml-if cod_norma>
       <h1 class="firstHeading"><dtml-var des_tipo_norma> nº <dtml-var num_norma>, de <dtml-var dat_norma></h1>
     <dtml-else>
       <h1 class="firstHeading">Cadastro de Norma Jurídica</h1> 
     </dtml-if>
   </div>
-  <div class="col-12 col-lg-2 text-lg-right">
-    <dtml-if cod_norma>
-     <div class="dropdown d-print-none mb-3">
-      <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-       <i class="fas fa-fw fa-file-export"></i>Gerar
-      </button>
-      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="<dtml-var portal_url>/relatorios/pdf_detalhe_norma_preparar_pysc?cod_norma=<dtml-var cod_norma>" target="_blank"> PDF</a>
-      </div>
-     </div>
-    </dtml-if>
-  </div>
+  <div class="col-12 col-lg-4 text-lg-right">
+   <dtml-if cod_norma>  
+    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+     <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/relatorios/pdf_detalhe_norma_preparar_pysc?cod_norma=<dtml-var cod_norma>" target="_blank" ><i class="fas fa-fw fa-file-pdf"></i> PDF</a> 
+     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">          
+        <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_form" ><i class="fa fa-fw fa-plus"></i> Incluir Norma</a>
+     </dtml-if>   
+    </div>
+   </dtml-if>
+    </div>
 </div>
 
 
-<ul class="nav nav-tabs border-0 mt-2" id="nav_materia" role="tablist">
+<ul class="nav nav-tabs border-0" id="nav_norma" role="tablist">
   <li class="nav-item">
     <a class="nav-link active" id="index-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dados Básicos</a>
   </li>
@@ -377,7 +375,7 @@ $(document).ready(() => {
  </div>
 
 
-  <legend>Matéria Originária</legend>
+  <legend>Matéria Legislativa</legend>
   <div class="form-row">
     <div class="col-12 col-sm-6 mb-3">
       <label for="lst_tip_id_basica">Tipo de Matéria</label>
@@ -533,33 +531,54 @@ $(document).ready(() => {
  </div>
 
  <dtml-if cod_norma>
- <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)" mapping>
-   <dtml-if sequence-start>
-    <legend>Arquivo Permanente</legend>
-     <table class="table">
-       <thead>
-         <tr>
-             <th width="20%">Recipiente</th>
-             <th width="20%">Data de Arquivamento</th>
-             <th>Observações</th>
-         </tr>
-       </thead>
-    </dtml-if>
-         <tr>
-             <td> 
-               <b><dtml-var num_recipiente></b>
-             </td>
-             <td> 
-               <dtml-var dat_arquivamento>
-             </td>
-             <td> 
-               <dtml-var txt_observacao_arquivo missing null="">
-             </td>
-         </tr>
-   <dtml-if sequence-end>
-     </table>
-   </dtml-if>
- </dtml-in>
+    <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)">
+       <dtml-call expr="REQUEST.set('temArquivo', 1)">
+    </dtml-in>
+
+    <dtml-if temArquivo> 
+      <div id="accordion" class="arquivo">
+        <div class="card mb-4">
+          <div class="card-header" id="headingOne">
+            <p class="h5 mb-0">
+              <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseArquivo" aria-expanded="false" aria-controls="collapseArquivo"> 
+                <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+                 <span class="h5">Arquivo Permanente</span>
+              </a>
+            </p>
+          </div>
+          <div id="collapseArquivo" class="collapse" aria-labelledby="headingOne" data-parent=".arquivo">
+            <div class="card-body"> 
+            <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)" mapping>
+               <dtml-if sequence-start>
+                 <table class="table">
+                  <thead>
+                   <tr>
+                    <th width="20%">Recipiente</th>
+                    <th width="20%">Data de Arquivamento</th>
+                    <th>Observações</th>
+                   </tr>
+                  </thead>
+                </dtml-if>
+                <tr>
+                  <td> 
+                    <b><dtml-var num_recipiente></b>
+                 </td>
+                 <td> 
+                   <dtml-var dat_arquivamento>
+                 </td>
+                 <td> 
+                   <dtml-var txt_observacao_arquivo missing null="">
+                 </td>
+                </tr>
+              <dtml-if sequence-end>
+                </table>
+              </dtml-if>
+            </dtml-in>
+           </div>
+          </div>
+         </div>
+        </div>
+      </dtml-if>
  </dtml-if>
 
   <div class="text-left">
