@@ -14,6 +14,7 @@ from lxml.builder import ElementMaker
 from lxml import etree
 
 from datetime import datetime
+from DateTime import DateTime
 
 from Globals import DTMLFile
 from Globals import InitializeClass
@@ -1400,6 +1401,8 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
               writer.addpages(texto_doc)
         for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,rd_ordem='1',ind_excluido=0):
             tramitacao = tram.cod_tramitacao
+            data_corte = DateTime('26/03/2020')
+            data_tram = DateTime(tram.dat_tramitacao)
             if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf'):
                tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
                existe_arquivo = 1
@@ -1411,7 +1414,15 @@ class SAPLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if existe_arquivo == 1:
                arquivo_tram = cStringIO.StringIO(str(tram.data))
                texto_tramitacao = PdfReader(arquivo_tram).pages
-               writer.addpages(texto_tramitacao)
+               if data_tram < data_corte:
+                  for page_num, i in enumerate(texto_tramitacao):
+                      if page_num > 0:
+                         writer.addpage(texto_tramitacao[page_num])
+                  for page_num, i in enumerate(texto_tramitacao):
+                      if page_num == 0:
+                         writer.addpage(texto_tramitacao[0])
+               else:
+                  writer.addpages(texto_tramitacao)
         output_file_pdf = cStringIO.StringIO()
         writer.write(output_file_pdf)
         output_file_pdf.seek(0)
