@@ -54,22 +54,18 @@
 
 </script>
 
-<h1 class="firstHeading">Reserva de Numeração de Documentos</h1>
+<h1 class="firstHeading">Reserva de Numeração</h1>
 
 <form action="numero_reservar_proc" name="numero_reservar_form">
-
   <dtml-call expr="REQUEST.set('ano_documento', _.DateTime().strftime('%Y'))">
-  <input class="form-control" type="hidden" name="txt_ano_documento" value="<dtml-var ano_documento>">
+  <input type="hidden" name="txt_ano_documento" value="<dtml-var ano_documento>">
+  <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_index_html">
 
-  <input class="form-control" type="hidden" name="hdn_url" value="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_index_html">
-
-   <fieldset>
-      <table class="table" >
-          <tr>
-              <td width="50%">
-                 <label for="lst_tip_documento">Tipo de Documento <span class="campoObrigatorio">&nbsp;</span></label><br />
+  <div class="form-row">
+     <div class="col-8 col-md-6 mb-3">
+                 <label for="lst_tip_documento" class="required">Tipo de Documento</label>
                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
-                 <select class="custom-select"  id="lst_tip_documento" name="lst_tip_documento" onChange="numero_buscar(document.numero_reservar_form)">
+                 <select class="custom-select" id="lst_tip_documento" name="lst_tip_documento" onChange="numero_buscar(document.numero_reservar_form)">
                      <option>Selecione</option>
                         <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
                            <option value="<dtml-var tip_documento>"
@@ -98,39 +94,44 @@
                            </option>
                         </dtml-in>
                  </select>
+                 </dtml-if>     
+     </div>
+     <div class="col-4 col-md-2 mb-3">
+                 <label for="txt_qtde" class="required">Quantidade</label>
+                 <input class="form-control number" type="number" id="txt_qtde" name="txt_qtde" value="<dtml-var txt_qtde missing>" onblur="numero_buscar(document.numero_reservar_form)" />
+     </div>
+     <div class="col-6 col-md-2 mb-3">
+                 <label for="txt_num_inicial">Número Inicial</label>
+                 <dtml-if num_documento>                 
+                    <input class="form-control number" type="number" id="txt_num_inicial" name="txt_num_inicial" value="<dtml-var num_documento missing>" disabled />
+                 <dtml-else>
+                    <input class="form-control number" type="number" id="txt_num_inicial" name="txt_num_inicial" disabled />                 
                  </dtml-if>
-              </td>
-              <td colspan="2">
-                 <label for="txt_qtde">Quantidade <span class="campoObrigatorio">&nbsp;</span></label><br />
-                 <input class="form-control" type="text" id="txt_qtde" name="txt_qtde" value="<dtml-var txt_qtde missing>" size="6" maxlength="2" onblur="numero_buscar(document.numero_reservar_form)" />
-              </td>
-          </tr>
-         <dtml-if num_documento>
-          <tr>
-              <td>
-                 <label for="txt_num_inicial">Número Inicial</label><br />
-                 <input class="form-control" type="text" id="txt_num_inicial" name="txt_num_inicial" value="<dtml-var num_documento missing null="">" size="6" disabled />
-              </td>
-              <td colspan="2">
-                 <label for="txt_num_final">Número Final</label><br />
+     </div>
+     <div class="col-6 col-md-2 mb-3">
+                 <label for="txt_num_final">Número Final</label>
+                 <dtml-if num_documento>
                  <dtml-call expr="REQUEST.set('num_documento_final', (int(num_documento) + int(txt_qtde)) -1)">
-                 <input class="form-control" type="text" id="txt_num_final" name="txt_num_final" value="<dtml-var num_documento_final missing null="">" size="6" disabled />
-              </td>
-          </tr>
-        </dtml-if>
-          <tr>
-              <td>
-                 <label for="txa_txt_interessado">Responsável / Solicitante <span class="campoObrigatorio">&nbsp;</span></label><br />
+                 <input class="form-control number" type="number" id="txt_num_final" name="txt_num_final" value="<dtml-var num_documento_final missing>" disabled />
+                 <dtml-else>
+                 <input class="form-control number" type="number" id="txt_num_final" name="txt_num_final" disabled />
+                 </dtml-if>
+     </div>
+  </div>
+  <div class="form-row">
+     <div class="col-12 col-sm-6 mb-3">
+                 <label for="txa_txt_interessado" class="required">Interessado</label>
                  <input class="form-control" type="text" id="txa_txt_interessado" name="txa_txt_interessado" value="<dtml-var txt_interessado missing null="">" size="40" maxlength="200" />
-              </td>
-              <td colspan="2">
-                 <label for="txa_txt_assunto">Assunto <span class="campoObrigatorio">&nbsp;</span></label><br />
+     </div>  
+     <div class="col-12 col-sm-6 mb-3">
+                 <label for="txa_txt_assunto" class="required">Assunto</label>
                  <input class="form-control" type="text" id="txa_txt_assunto" name="txa_txt_assunto" size="40" maxlength="200" value="<dtml-var txt_assunto missing>"/>
-              </td>
-          </tr>
-          <tr> 
-              <td><label for="lst_tip_id_basica">Matéria a vincular</label><br>
-                <select class="custom-select"  name="lst_tip_id_basica">
+     </div>
+  </div>
+  <div class="form-row mb-3">
+     <div class="col-6">
+                <label for="lst_tip_id_basica">Matéria a vincular</label><br>
+                <select class="custom-select" id="lst_tip_id_basica" name="lst_tip_id_basica">
                  <option>
                    <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
                      <option
@@ -138,19 +139,20 @@
                      </option>
                    </dtml-in>
                 </select>
-              </td>
-              <td>
+     </div>
+     <div class="col-3">
                 <label for="txt_num_ident_basica">Número</label><br>
-                <input class="form-control" type="text" name="txt_num_ident_basica" size="5" value="" maxlength="5">
-              </td>
-              <td>
+                <input class="form-control number" type="number" id="txt_num_ident_basica" name="txt_num_ident_basica" size="5" value="" maxlength="5">
+     </div>  
+     <div class="col-3">
                 <label for="txt_ano_ident_basica">Ano</label><br>
-                <input class="form-control" type="text" name="txt_ano_ident_basica" size="4" value="" maxlength="4">
-              </td>
-           </tr>
-          <tr> 
-              <td><label for="lst_tip_documento_vinculado">Documento a vincular</label><br>
-                <select class="custom-select"  name="lst_tip_documento_vinculado">
+                <input class="form-control year" type="number" id="txt_ano_ident_basica" name="txt_ano_ident_basica" size="4" value="" maxlength="4">
+     </div>
+  </div>
+  <div class="form-row mb-3">
+     <div class="col-6">
+               <label for="lst_tip_documento_vinculado">Documento a vincular</label><br>
+                <select class="custom-select" id="lst_tip_documento_vinculado" name="lst_tip_documento_vinculado">
                  <option>
                    <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
                      <option
@@ -158,23 +160,28 @@
                      </option>
                    </dtml-in>
                 </select>
-              </td>
-              <td>
+     </div>
+     <div class="col-3">
                 <label for="txt_num_documento_vinculado">Número</label><br>
-                <input class="form-control" type="text" name="txt_num_documento_vinculado" size="5" value="" maxlength="5">
-              </td>
-              <td>
-                <label for="txt_ano_documento_vinculado">Ano</label><br>
-                <input class="form-control" type="text" name="txt_ano_documento_vinculado" size="4" value="" maxlength="4">
-              </td>
-           </tr>
-      </table>
-   </fieldset>
+                <input class="form-control number" type="number" id="txt_num_documento_vinculado" name="txt_num_documento_vinculado" size="5" value="" maxlength="5">
+     </div>  
+     <div class="col-3">
+                 <label for="txt_ano_documento_vinculado">Ano</label><br>
+                <input class="form-control year" type="number" id="txt_ano_documento_vinculado" name="txt_ano_documento_vinculado" size="4" value="" maxlength="4">
+     </div>  
+  </div>
 
- <p align="center">
-  <input class="btn btn-primary" type="button" class="botao" name="button" value="Reservar" onClick="campos_criticar()" />
-  <a href="<dtml-var portal_url>/cadastros/documento_administrativo/numero_reservar_form" class="botao">Limpar</a>
- </p>
+
+ <div class="text-left">
+   <input class="btn btn-primary" type="button" class="botao" name="button" value="Reservar" onClick="campos_criticar()" />
+   <a class="btn btn-secondary"href="<dtml-var portal_url>/cadastros/documento_administrativo/numero_reservar_form">Limpar</a>
+ </div>
+
+<div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+ </div>
 
 </form>
 

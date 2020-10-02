@@ -1,29 +1,10 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="javascript/data_validar.js" "></script>
+<script type="text/javascript" src="javascript/data_validar.js"></script>
 
 <script type="text/javascript">
 
-   function submeter(endereco){
-
-      var form = document.documento_administrativo_form;
-
-      endereco += '?cod_documento=' + form.hdn_cod_documento.value;
-
-      if (form.hdn_alterou.value=="1"){
-         if (confirm("Deseja salvar os dados?")){
-            form.hdn_url.value = endereco;
-            campos_criticar(form);
-         }
-      }
-
-      if (form.hdn_cod_documento.value!=""){
-          location.href = endereco;
-      }
-      return;
-   }
-
-  function campos_criticar(){
+  function documento_criticar(){
 
       var form = document.documento_administrativo_form;
       var regexp_digitos = /\D+/;
@@ -86,7 +67,7 @@
 
       if (!(form.rad_ind_tramitacao[0].checked ||
             form.rad_ind_tramitacao[1].checked)){
-         alert("O índice de tramitação deve ser marcado!");
+         alert("O índice de tramitação deve ser selecionado!");
          form.rad_ind_tramitacao[0].focus();
          return false;
       }
@@ -122,13 +103,6 @@
          return;
   }
 
-  function documento_administrativo_excluir(){
-       if (confirm("Deseja realmente excluir?")) {
-          location.href="documento_administrativo_excluir_proc?cod_documento=<dtml-var cod_documento missing>&url=<dtml-var portal_url>/consultas/documento_administrativo";
-       }
-       return;
-  }
-
   function texto_pdf_gerar(){
       if (confirm("Confirma a geração do texto original em PDF?")) {
          location.href="<dtml-var portal_url>/modelo_proposicao/oficio_gerar_pdf?cod_documento=<dtml-var cod_documento missing>";
@@ -136,20 +110,6 @@
          return true;
        }
   return;
-  }
-
-  function texto_integral_excluir(){
-       if (confirm("Deseja realmente excluir o texto integral PDF?")) {
-          location.href="texto_documento_administrativo_excluir_proc?cod_documento=<dtml-var cod_documento missing>";
-       }
-       return;
-  }
-
-  function texto_integral_excluir_odt(){
-       if (confirm("Deseja realmente excluir o texto integral ODT?")) {
-          location.href="texto_documento_administrativo_excluir_odt_proc?cod_documento=<dtml-var cod_documento missing>";
-       }
-       return;
   }
 
    function numero_buscar(form){
@@ -165,85 +125,75 @@
      }
    }
 
-</script>
+$(document).ready(function () {
+  bsCustomFileInput.init()
+})
 
-<script type="text/javascript">
-$(function() {
-        $('#txt_dat_documento').datepick();
-        $('#txt_dat_fim_prazo').datepick();
+$(document).ready(function () {
+  $(".modal-dialog").css("width", "90%");
+  $(".modal-dialog").css("max-width", "900px");
+  $(".modal-content").css("min-height", "600px");
 });
-</script>
 
-<script type="text/javascript">
-<!--
-  function tipo_autor_trocar(form) {
-    form.txt_autor.value = "";
-    form.hdn_txt_autor.value = "";
-    form.hdn_cod_autor.value = "";
-  return;
-  }
-//-->
-</script>
+window.onload = function(){  
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
+    //Change hash for page-reload
+    $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').on('shown', function (e) {
+        window.location.hash = e.target.hash;
+    }); 
+} 
 
-<script type="text/javascript">
-$(document).ready(function() {
-$(".popup").fancybox({
-maxWidth : 500,
-maxHeight : 320,
-fitToView : false,
-width : '70%',
-height : '72%',
-autoSize : false,
-closeClick : false,
-scrolling : 'auto',
-preload : true,
-openEffect : 'fade',
-closeEffect : 'fade'
+$(document).ready(() => {
+  let url = location.href.replace(/\/$/, "");
+   if (location.hash) {
+    const hash = url.split("#");
+    $('#nav_materia a[href="#'+hash[1]+'"]').tab("show");
+    url = location.href.replace(/\/#/, "#");
+    history.replaceState(null, null, url);
+  } 
+
+  $('a[data-toggle="tab"]').on("click", function() {
+    let newUrl;
+    const hash = $(this).attr("href");
+    if(hash == "#home") {
+      newUrl = url.split("#")[0];
+    } else {
+      newUrl = url.split("#")[0] + hash;
+    }
+    newUrl += "";
+    history.replaceState(null, null, newUrl);
+  });
 });
-});
+
 </script>
 
-<script type="text/javascript">
-$(document).ready(function() {
-	$(".popup1").fancybox({
-		maxWidth	: 1024,
-		maxHeight	: 800,
-		fitToView	: false,
-		width		: '95%',
-		height		: '93%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-		closeEffect	: 'fade'
-	});
-});
-</script>
-
-
-
-<dtml-if expr="_.has_key('cod_documento')">
-<dtml-comment>
-   <a id="ajuda" target="_blank" href="<dtml-var portal_url>/modelo_proposicao/capa_processo_adm?cod_documento=<dtml-var cod_documento>">Capa de processo</a>
-</dtml-comment>
-   <a id="ajuda" target="_blank" href="<dtml-var portal_url>/modelo_proposicao/processo_adm_eletronico?cod_documento=<dtml-var cod_documento>">Pasta Digital</a>
-  <h1 class="firstHeading"><dtml-var des_tipo_documento> nº <dtml-var num_documento> de <dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_documento)"></h1>
-<dtml-else>
-  <h1 class="firstHeading">Cadastro de Documento Administrativo</h1>
-</dtml-if>
-
-<dtml-if expr="_.has_key('cod_documento')">
- <dtml-if expr="_.has_key('mensagem')">
-  <div class="ui-state-highlight ui-corner-all" style="padding: 0.2em; margin-bottom: 10px">
-    <p>
-      <span class="ui-icon ui-icon-check" style="float: left; margin-right: .3em;"></span>
-      <strong><dtml-var mensagem></strong>
-      Clique <a style="text-decoration: underline" href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_form"> aqui</a> para incluir um novo Documento.
-    </p>
+<div class="row mb-2">
+  <div class="col-12 col-lg-8">
+    <dtml-if expr="_.has_key('cod_documento')">
+       <h1 class="firstHeading"><dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></h1>
+    <dtml-else>
+       <h1 class="firstHeading">Cadastro de Documento</h1>
+    </dtml-if>
   </div>
- </dtml-if>
-</dtml-if>
+  <div class="col-12 col-lg-4 text-lg-right">
+   <dtml-if expr="_.has_key('cod_documento')">
+    <div class="btn-group">
+      <a class="btn btn-primary btn-sm d-print-none" href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_form" ><i class="fa fa-fw fa-plus"></i> Incluir Documento</a>    
+      <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-fw fa-file-export"></i> Gerar
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="<dtml-var portal_url>/modelo_proposicao/capa_processo_adm?cod_documento=<dtml-var cod_documento>" target="_blank"><i class="far fa-file-pdf"></i> Capa de Processo</a>
+        <a class="dropdown-item" href="<dtml-var portal_url>/modelo_proposicao/processo_adm_eletronico?cod_documento=<dtml-var cod_documento>" target="_blank"><i class="far fa-file-pdf"></i> Processo Integral</a>
+  </div>
+ </div>
+   </dtml-if>
+  </div>
+</div>
+
 
 <dtml-if cod_documento>
 <div id="barra-conteudo">
@@ -272,257 +222,295 @@ $(document).ready(function() {
 </div>
 </dtml-if>
 
+
+
+
+<ul class="nav nav-tabs border-0" id="nav_norma" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="index-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dados Básicos</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="acessorios-tab" data-toggle="tab" href="#acessorios" role="tab" aria-controls="acessorios" aria-selected="false">Documentos Acessórios</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="vinculados-tab" data-toggle="tab" href="#vinculados" role="tab" aria-controls="vinculados" aria-selected="false">Documentos Vinculados</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="materias-tab" data-toggle="tab" href="#materias" role="tab" aria-controls="materias" aria-selected="false">Matérias Vinculadas</a>
+  </li> 
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="tramitacao-tab" data-toggle="tab" href="#tramitacao" role="tab" aria-controls="tramitacao" aria-selected="false">Tramitações</a>
+  </li>   
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="destinatarios-tab" data-toggle="tab" href="#destinatarios" role="tab" aria-controls="destinatarios" aria-selected="false">Destinatários</a>
+  </li>  
+</ul>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active" id="home">
+
 <form action="documento_administrativo_salvar_proc" name="documento_administrativo_form" method="post" enctype="multipart/form-data">
 
-  <input class="form-control" type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento missing>" />
-  <input class="form-control" type="hidden" name="hdn_url" value="documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento missing>" />
-  <input class="form-control" type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('mudou')">1<dtml-else>0</dtml-if>" /> 
+  <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento missing>" />
+  <input type="hidden" name="hdn_url" value="documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento missing>" />
 
-        <fieldset>
-          <legend>Identificação Básica</legend>
-                <table class="table" >
-                      <tr>
-                         <td width="50%"><label for="lst_tip_documento">Tipo Documento<span class="campoObrigatorio">&nbsp;</span></label><br />
-                          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
-                           <select class="custom-select"  id="lst_tip_documento" name="lst_tip_documento" onChange="numero_buscar(document.documento_administrativo_form)" <dtml-if cod_documento>disabled</dtml-if>>
-                             <option>Selecione</option>
-                             <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
-                                 <option
-                                   <dtml-if tip_documento_sel>
-                                    <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_sel)">
-                                        selected
-                                    </dtml-if>     
-                                   </dtml-if>
-                                   <dtml-if expr="REQUEST.has_key('tip_documento_novo')">
-                                     <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_novo)">
-                                       selected
-                                     </dtml-if>
-                                   </dtml-if>                                                                        
-                                   value="<dtml-var tip_documento>">
-                                       <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
-                                 </option>
-                             </dtml-in>
-                           </select>
-                              <dtml-if cod_documento>
-                                <input class="form-control" type="hidden" name="lst_tip_documento" value="<dtml-var tip_documento_sel>" />
-                              </dtml-if>
-                         <dtml-else>
-                           <select class="custom-select"  id="lst_tip_documento" name="lst_tip_documento" onChange="numero_buscar(document.documento_administrativo_form)" <dtml-if cod_documento>disabled</dtml-if>>
-                             <option>Selecione</option>
-                             <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
-                                 <option
-                                   <dtml-if tip_documento_sel>
-                                    <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_sel)">
-                                        selected
-                                    </dtml-if>     
-                                   </dtml-if>
-                                   <dtml-if expr="REQUEST.has_key('tip_documento_novo')">
-                                     <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_novo)">
-                                       selected
-                                     </dtml-if>
-                                   </dtml-if>                                                                        
-                                   value="<dtml-var tip_documento>">
-                                       <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
-                                 </option>
-                             </dtml-in>
-                           </select>
-                              <dtml-if cod_documento>
-                                <input class="form-control" type="hidden" name="lst_tip_documento" value="<dtml-var tip_documento_sel>" />
-                              </dtml-if>
-                         </dtml-if>
-                         </td>
-                         <td><label for="txt_num_documento">Número <span class="campoObrigatorio">&nbsp;</span></label><br />
-                             <input class="form-control" type="hidden" name="hdn_num_documento" value="" />
-                             <input class="form-control" type="text" id="txt_num_documento" name="txt_num_documento" size="6" maxlength="6" value="<dtml-var num_documento missing null="">" />
-                         </td>
-                         <td><label for="txt_ano_documento">Ano <span class="campoObrigatorio">&nbsp;</span></label><br />
-                             <dtml-unless ano_documento>
-                              <dtml-call expr="REQUEST.set('ano_documento', _.DateTime.year(_.DateTime()))">
-                             </dtml-unless>
-                            <input class="form-control" type="text" id="txt_ano_documento" name="txt_ano_documento" size="4" maxlength="4" value="<dtml-var ano_documento missing>">
-                         </td>
-		      </tr>
-		      <tr>
-                         <td><label for="txt_dat_documento">Data <span class="campoObrigatorio">&nbsp;</span></label><br />
-                             <dtml-unless dat_documento>
-                               <dtml-call expr="REQUEST.set('dat_documento', _.DateTime().strftime('%d/%m/%Y'))">
-                             </dtml-unless>
-                            <input class="form-control" type="text" id="txt_dat_documento" name="txt_dat_documento" size="10" maxlength="10" value="<dtml-var dat_documento missing null="">" onBlur="formata_data(form.txt_dat_documento)" onChange="javascript:form.hdn_alterou.value=1" />
-                         </td>
-                         <td><label for="txt_num_protocolo">Núm. Protocolo</label><br />
-                             <input class="form-control" type="text" id="txt_num_protocolo" name="txt_num_protocolo" size="7" maxlength="7" value="<dtml-var num_protocolo missing null="">" />
-                             <dtml-if num_protocolo>
-                               <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=num_protocolo, ano_protocolo=ano_documento)">
-                                 <dtml-if cod_protocolo>
-                                    &nbsp;<a href="<dtml-var portal_url>/relatorios/pdf_etiqueta_protocolo_preparar_pysc?rad_tip_protocolo=&amp;txt_cod_protocolo=<dtml-var cod_protocolo>&amp;txt_num_protocolo=<dtml-var num_protocolo>&amp;txt_ano_protocolo=<dtml-var ano_protocolo>&amp;dt_apres=&amp;dt_apres2=&amp;rad_tip_processo=&amp;lst_tip_documento=&amp;lst_tip_materia=&amp;txt_assunto=&amp;txa_txt_interessado=&amp;hdn_cod_autor=" class="popup" data-fancybox-type="iframe"><img align="absmiddle" src="<dtml-var portal_url>/imagens/label.png" alt="Etiqueta de Protocolo" title="Etiqueta de Protocolo" width="20" height="16" /></a>
-                                   <a href="<dtml-var portal_url>/consultas/protocolo/protocolo_mostrar_proc?cod_protocolo=<dtml-var cod_protocolo>" class="botao">Visualizar</a>
-                                 </dtml-if>
-                               </dtml-in>
-                             </dtml-if>
-                         </td>
-                         <td><label>Em Tramitação? </label><span class="campoObrigatorio">&nbsp;</span> <br />
-<dtml-in expr="[(1,'Sim'),(0,'Não')]">
-                            <input class="form-control" type="radio" id="rad_ind_tramitacao" name="rad_ind_tramitacao" value="<dtml-var expr="_['sequence-key']">"
-  <dtml-if expr="_.has_key('cod_documento') and ind_tramitacao==_['sequence-key']">checked=1</dtml-if>
-  <dtml-if expr="not _.has_key('cod_documento') and _['sequence-item']=='Sim'">checked=1</dtml-if>
+  <legend>Dados Básicos</legend>
+  <div class="form-row">
+    <div class="col-12 col-lg-6 mb-3">
+       <label for="lst_tip_documento" class="required">Tipo de Documento</label>
+       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+          <select class="custom-select" id="lst_tip_documento" name="lst_tip_documento" <dtml-unless cod_documento>onChange="numero_buscar(document.documento_administrativo_form)"</dtml-unless> required>
+            <option>Selecione</option>
+            <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
+               <option
+                  <dtml-if tip_documento_sel>
+                     <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_sel)">
+                        selected
+                     </dtml-if>     
+                  </dtml-if>
+                  <dtml-if expr="REQUEST.has_key('tip_documento_novo')">
+                     <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_novo)">
+                        selected
+                     </dtml-if>
+                  </dtml-if>                                                                        
+                  value="<dtml-var tip_documento>">
+                  <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+               </option>
+            </dtml-in>
+          </select>
 
-                              onChange="javascript:form.hdn_alterou.value=1" />
-                              <span class="texto"><dtml-var expr="_['sequence-item']"></span>
-</dtml-in>
-                         </td>
-                      </tr>
-                      <tr>
-                         <td colspan="3"><label for="txa_txt_interessado">Interessado (Autor) <span class="campoObrigatorio">&nbsp;</span></label><br />
-                            <input class="form-control" type="hidden" name="hdn_txt_autor" value="" />
-                            <input class="form-control" type="hidden" name="hdn_cod_autor" value="" />
-                            <input class="form-control" type="text" id="txa_txt_interessado" name="txa_txt_interessado" size="50" maxlength="200" value="<dtml-var txt_interessado missing null="">" />
-                            <a href="autor_pesquisar_form?hdn_tipo_pesquisa=pesq_basica" class="botao-link popup" data-fancybox-type="iframe">Pesquisar</a>
-                         </td>
-                      </tr>
-                        <tr>
-                         <td colspan="3"><label for="txa_txt_assunto">Assunto </label> <span class="campoObrigatorio">&nbsp;</span>
-                            <textarea class="form-control"  id="txa_txt_assunto" name="txa_txt_assunto" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_assunto missing></textarea>
-                         </td>
-                      </tr>
-                      <tr>
-                         <td><label for="radTipTxtIntegral">Texto Original (PDF)</label><br />
-                            <dtml-if expr="_.has_key('cod_documento')">
-                             <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_texto_integral.pdf')">
-                             <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_documento)+'_texto_integral_signed.pdf')">
-                              <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento) and not _.hasattr(sapl_documentos.administrativo,id_documento_assinado)">
-                               <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
-                                <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
-                                 <img align="top" border="0" src="<dtml-var portal_url>/imagens/archiv.gif" alt="Texto integral" title="Texto integral">
-                                </a>
-                                <dtml-unless "_.hasattr(sapl_documentos.administrativo,id_documento_assinado)">
-                                <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
-                                <input class="form-control" id="solicitar-assinatura" type="button" class="botao" value="Assinaturas" />
-		                <script type="text/javascript">
-		                  $('#solicitar-assinatura').click(function () {
-    		                    $.fancybox({
-        	                     type: 'iframe',
-        	                     href: '<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_documento>&tipo_doc=documento',
-		                     width	 : '60%',
-		                     height	 : '60%',
-                                     minHeight	 : 420,
-        	                     preload     : true,
-		                     closeEffect : 'fade'
-    		                    });
-		                  });
-		                </script>
-                                </dtml-if>
-        		        </dtml-unless>
-                                <input class="btn btn-primary" type="button" class="botao" value="Excluir" onclick="javascript:texto_integral_excluir()" />
- 		               </dtml-let>
-                              <dtml-elif "_.hasattr(sapl_documentos.administrativo,id_documento_assinado)">
-                               <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento_assinado).absolute_url">
-                                <a target="_blank" href="<dtml-var documento>">
-                                 <img align="top" height="27" src="<dtml-var portal_url>/imagens/pdf_signed.gif" alt="Documento Assinado" title="Documento Assinado">
-                                </a>
-                                <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
-                                <input class="form-control" id="solicitar-assinatura" type="button" class="botao" value="Assinaturas" />
-		                <script type="text/javascript">
-		                  $('#solicitar-assinatura').click(function () {
-    		                    $.fancybox({
-        	                     type: 'iframe',
-        	                     href: '<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_documento>&tipo_doc=documento',
-		                     width	: '60%',
-		                     height	: '60%',
-                                     minHeight	: 420,
-        	                     preload     : true,
-		                     closeEffect	: 'fade'
-    		                    });
-		                  });
-		                </script>
-                                </dtml-if>
-			        <a class="botao" target="_blank" href="texto_assinado_imprimir?cod_documento=<dtml-var cod_documento>">Impressão</a>
-			       </dtml-let>
-                               <input class="btn btn-primary" type="button" class="botao" value="Excluir" onclick="javascript:texto_integral_excluir()" />
-			      <dtml-else>
-                                <input class="form-control" type="file" name="file_nom_arquivo" size="40" maxlength="100" />
-                                <dtml-let id_documento_odt="_.str(cod_documento)+'_texto_integral.odt'">
-                                 <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento_odt)">
-                                  <dtml-call expr="REQUEST.set('temODT', 1)">
-                                 </dtml-if>
-                                </dtml-let>
-                                <dtml-if expr="_.has_key('temODT')">
-                                 <input class="btn btn-primary" type="button" class="botao" value="Gerar" onclick="javascript:texto_pdf_gerar()" />
-                                </dtml-if>
-                              </dtml-if>
-                             <dtml-else>
-                              <input class="form-control" type="file" name="file_nom_arquivo" size="40" maxlength="100" />
-                            </dtml-if>
-                         </td>
-                         <td colspan="2">
-<dtml-if cod_documento>
-                         <label for="radTipTxtIntegral">Texto Editável (ODT)</label><br />
-                          <dtml-let id_documento="_.str(cod_documento)+'_texto_integral.odt'">
-                           <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
-                             <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
-                               <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_documento)+'_texto_integral.odt')">
-                               <a class="popup1" href="<dtml-var portal_url>/generico/viewerJS/#<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe"><img align="top" border="0" src="<dtml-var portal_url>/imagens/icon-odt.png" alt="Visualizar Arquivo ODT" title="Visualizar Arquivo ODT"></a>
-  		               <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_documento)+'_texto_integral.odt')">
-                               <input class="form-control" id="menuitem" type="button" class="botao" value="Editar" />
-                                 <script type="text/javascript">
-                                  $('#menuitem').click(function () {
-                                  $.fancybox({
-                                   type: 'iframe',
-                                   href: '<dtml-var portal_url>/webeditor/editorDocumento?<dtml-var documento>',
-                                   width                : '90%',
-                                   height               : '95%',
-                                   preload         : true
-                                   });
-                                   });
-                                  </script>
-				  <input class="btn btn-primary" type="button" class="botao" value="Editor Externo" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/administrativo/externalEdit_/<dtml-var nome_arquivo_odt>.zem'" />
-  		          </dtml-let>
-                          <input class="btn btn-primary" type="button" class="botao" value="Excluir" onclick="javascript:texto_integral_excluir_odt()" />
-                        </dtml-if>
-                           <dtml-unless "_.hasattr(sapl_documentos.administrativo,id_documento)">
-                              <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_documento))">
-                              <select class="custom-select"  id="lst_modelo" name="lst_modelo">
-                                <option value="0">Selecione um modelo</option>
-                                <dtml-with expr="sapl_documentos.modelo.documento_administrativo">
-                                  <dtml-in expr="objectValues('File')" sort="title">
-                                   <dtml-if expr="id().startswith(prefixo_arquivo)">
-                                     <option value="<dtml-var id>"><dtml-var title></option>
-                                   </dtml-if>
-                                  </dtml-in>
-                                </dtml-with>
-                              </select>
-                               <a class="botao-link" href="javascript:texto_odt_gerar();">Gerar ODT</a>
-                           </dtml-unless>
-                         </dtml-let>
-                        </dtml-if>
-                         </td>
-                       </tr>
-                    </table>
-        </fieldset>
+       <dtml-else>
+          <select class="custom-select" id="lst_tip_documento" name="lst_tip_documento" <dtml-unless cod_documento>onChange="numero_buscar(document.documento_administrativo_form)"</dtml-unless> required required>
+            <option>Selecione</option>
+            <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
+               <option
+                 <dtml-if tip_documento_sel>
+                   <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_sel)">
+                      selected
+                   </dtml-if>     
+                 </dtml-if>
+                 <dtml-if expr="REQUEST.has_key('tip_documento_novo')">
+                    <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_novo)">
+                       selected
+                    </dtml-if>
+                 </dtml-if>                                                                        
+                 value="<dtml-var tip_documento>">
+                 <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+                </option>
+            </dtml-in>
+          </select>
+          <dtml-if cod_documento>
+            <input type="hidden" name="lst_tip_documento" value="<dtml-var tip_documento_sel>" />
+          </dtml-if>
+       </dtml-if>
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+       <label for="txt_num_documento" class="required">Número</label>
+       <input type="hidden" name="hdn_num_documento" value="" />
+       <input class="form-control number" type="number" id="txt_num_documento" name="txt_num_documento" value="<dtml-var num_documento missing null="">" required />
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+       <label for="txt_ano_documento" class="required">Ano</label>
+       <dtml-unless ano_documento>
+          <dtml-call expr="REQUEST.set('ano_documento', _.DateTime.year(_.DateTime()))">
+       </dtml-unless>
+       <input class="form-control year" type="number" id="txt_ano_documento" name="txt_ano_documento" value="<dtml-var ano_documento missing>" required />
+    </div>    
+  </div>
 
-        <fieldset>
-          <legend>Outras Informações</legend>
-                       <table class="table" >
-                        <tr>
-                          <td width="50%"><label for="txt_num_dias_prazo">Dias Prazo </label><br />
-                            <input class="form-control" type="text" id="txt_num_dias_prazo" name="txt_num_dias_prazo" size="3" maxlength="2" value="<dtml-var num_dias_prazo missing null="">" onChange="javascript:form.hdn_alterou.value=1" />
-                          </td>
-                          <td><label for="txt_dat_fim_prazo">Data Fim Prazo </label><br />
-                            <input class="form-control" type="text" id="txt_dat_fim_prazo" name="txt_dat_fim_prazo" size="10" maxlength="10" value="<dtml-var dat_fim_prazo missing null="">" onBlur="formata_data(form.txt_dat_fim_prazo)" onChange="javascript:form.hdn_alterou.value=1" />
-                          </td>
-                        <tr>
-                          <td colspan="3"><label for="txa_txt_observacao">Observações</label> 
-                            <textarea class="form-control"  id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4"  onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
-                          </td>
-                        </tr>
-                      </table>
-        </fieldset>
+  <div class="form-row">
+    <div class="col-6 col-lg-3 mb-3">
+       <label for="txt_dat_documento" class="required">Data do Documento</label>
+       <dtml-unless dat_documento>
+          <dtml-call expr="REQUEST.set('dat_documento', _.DateTime().strftime('%d/%m/%Y'))">
+       </dtml-unless>
+       <input class="form-control" type="text" id="txt_dat_documento" name="txt_dat_documento" value="<dtml-var dat_documento missing null="">" autocomplete="off" pattern=".{10,}" required />
+        <script>
+        $('#txt_dat_documento').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>        
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+      <label for="txt_num_protocolo">Número de Protocolo</label>
+      <div class="input-group">
+      <input class="form-control" type="number" id="txt_num_protocolo" name="txt_num_protocolo" value="<dtml-var num_protocolo missing null="">" autocomplete="off" />   
+      <dtml-if num_protocolo>
+         <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=num_protocolo, ano_protocolo=ano_ident_basica)">
+            <dtml-if cod_protocolo>
+             <div class="input-group-append">
+               <button type="button" class="btn btn-secondary d-print-none" data-toggle="modal" data-target="#iFrameModal" data-title="Etiqueta de Protocolo" data-src="<dtml-var portal_url>/relatorios/pdf_etiqueta_protocolo_preparar_pysc?rad_tip_protocolo=&txt_cod_protocolo=<dtml-var cod_protocolo>&txt_num_protocolo=<dtml-var num_protocolo>&txt_ano_protocolo=<dtml-var ano_protocolo>&dt_apres=&dt_apres2=&rad_tip_processo=&lst_tip_documento=&lst_tip_materia=&txt_assunto=&txa_txt_interessado=&hdn_cod_autor="><i class="fa fa-fw fa-barcode"></i><span class="d-none">PDF</span></button>
+               <button class="btn btn-secondary" type="button" name="btn_incluir" onclick="location.href='<dtml-var portal_url>/consultas/protocolo/protocolo_mostrar_proc?cod_protocolo=<dtml-var cod_protocolo>';"><i class="fas fa-fw fa-eye"></i><span class="d-none">Protocolo</span></button>
+              </div>
+            </dtml-if>
+         </dtml-in>
+      </dtml-if> 
+      </div>     
+    </div>  
+    <div class="col-12 col-lg-6 mb-3">
+      <label for="txa_txt_interessado" class="required">Interessado</label>
+      <input class="form-control" type="text" id="txa_txt_interessado" name="txa_txt_interessado" maxlength="200" value="<dtml-var txt_interessado missing null="">" required />
+    </div>         
+  </div>
 
- <p align="center">
-  <input class="btn btn-primary" type="button" class="botao" name="button" value="Salvar" onClick="campos_criticar()" />
+  <div class="form-row"> 
+    <div class="col-12 mb-3">
+      <label for="txa_txt_assunto" class="required">Assunto</label>
+      <textarea class="form-control auto-resize" id="txa_txt_assunto" name="txa_txt_assunto" rows="1" required><dtml-var txt_assunto missing></textarea>
+    </div>
+  </div> 
+
+  <div class="form-row">
+    <div class="col-6 col-lg-2 mb-3">
+      <label for="txt_num_dias_prazo">Dias de Prazo</label>
+      <input class="form-control" type="number" id="txt_num_dias_prazo" name="txt_num_dias_prazo" maxlength="2" value="<dtml-var num_dias_prazo missing null="">" />    
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+      <label for="txt_dat_fim_prazo">Prazo de Conclusão</label>
+      <input class="form-control date" type="text" id="txt_dat_fim_prazo" name="txt_dat_fim_prazo" value="<dtml-var dat_fim_prazo missing null="">" autocomplete="off" pattern=".{10,}" />
+        <script>
+        $('#txt_dat_fim_prazo').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>        
+    </div>
+    <div class="col-6 col-lg-2 mb-3">
+      <label class="required d-block">Em Tramitação?</label>
+      <dtml-in expr="[(0,'Não'), (1,'Sim')]">
+        <div class="form-check form-check-inline">            
+          <input class="form-check-input" type="radio" id="rad<dtml-var expr="_['sequence-key']">" name="rad_ind_tramitacao" value="<dtml-var expr="_['sequence-key']">"
+           <dtml-if expr="_.has_key('cod_documento') and ind_tramitacao==_['sequence-key']">checked</dtml-if>
+           <dtml-if expr="not _.has_key('cod_documento') and _['sequence-item']=='Sim'">checked</dtml-if> />
+           <label class="form-check-label" for="rad<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></label>
+        </div>
+      </dtml-in>    
+    </div>    
+    <div class="col-12 col-lg-5 mb-3">
+      <label for="txa_txt_observacao">Observações</label> 
+      <textarea class="form-control" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null=""></textarea>
+    </div>
+  </div>
+
   <dtml-if cod_documento>
-   <input class="btn btn-primary" type="button" class="botao" name="btn_excluir" value="Excluir" onClick="documento_administrativo_excluir()" />
+    <legend>Textos Integrais</legend>
   </dtml-if>
- </p>
+  <div class="form-row">
+    <div class="col-12 col-lg-6 mb-3">
+      <label class="d-block">PDF Texto Original</label>
+      <dtml-if expr="_.has_key('cod_documento')">
+        <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_texto_integral.pdf')">
+        <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
+          <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
+             <a class="btn btn-secondary" target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
+               <i class="fa fa-fw fa-file-pdf"></i>Visualizar
+             </a>
+             <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/documento_administrativo/texto_documento_administrativo_excluir_proc?cod_documento=<dtml-var cod_documento missing>" data-confirm="Deseja realmente excluir o arquivo PDF do Texto Original?"><i class="fas fa-trash"></i> Excluir</a>              
+             <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_documento>&tipo_doc=documento&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
+             </dtml-if>
+ 	  </dtml-let>
+	<dtml-else>
+          <dtml-let id_documento_odt="_.str(cod_documento)+'_texto_integral.odt'">
+             <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento_odt)">
+                <dtml-call expr="REQUEST.set('temODT', 1)">
+             </dtml-if>
+          </dtml-let>	
+          <div class="input-group">
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
+              <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+            </div>
+            <dtml-if expr="_.has_key('temODT')">
+             <div class="input-group-append">            
+               <input class="btn btn-secondary" type="button" value="Gerar do ODT" onclick="javascript:texto_pdf_gerar()" />
+             </div>
+            </dtml-if>
+          </div>	
+        </dtml-if>
+       <dtml-else>
+          <div class="input-group">
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
+              <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+            </div>
+          </div>       
+       </dtml-if>
+    </div>
+    <div class="col-12 col-lg-6 mb-3">
+      <dtml-if cod_documento>
+         <label class="d-block">ODT Texto Original</label>
+         <dtml-let id_documento="_.str(cod_documento)+'_texto_integral.odt'">
+            <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
+               <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
+                 <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_documento)+'_texto_integral.odt')">
+                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Visualização de Arquivo" data-src="<dtml-var portal_url>/generico/view_odt?arquivo_odt=<dtml-var documento>&<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-fw fa-file-alt"></i>Visualizar</button>                 
+                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Arquivo ODT" data-src="<dtml-var portal_url>/webeditor/editorDocumento?<dtml-var documento>" data-toggle="tooltip" data-placement="bottom" title="Editar Online"><i class="fa fa-fw fa-edit"></i>Editar</button>
+  	         <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_documento)+'_texto_integral.odt')">
+                 <button type="button" class="btn btn-secondary" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/administrativo/externalEdit_/<dtml-var nome_arquivo_odt>.zem'" data-toggle="tooltip" data-placement="bottom" title="Editar no LibreOffice"><i class="fas fa-fw fa-external-link-alt"></i>LibreOffice</button>
+                 <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/documento_administrativo/texto_documento_administrativo_excluir_odt_proc?cod_documento=<dtml-var cod_documento missing>" data-confirm="Deseja realmente excluir o arquivo ODT do Texto Original?"><i class="fas fa-trash"></i> Excluir</a>
+  	       </dtml-let>
+            <dtml-else>
+               <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_documento))">
+               <div class="input-group">
+                 <select class="custom-select" id="lst_modelo" name="lst_modelo">
+                   <option value="0">Selecione um modelo</option>
+                     <dtml-with expr="sapl_documentos.modelo.documento_administrativo">
+                        <dtml-in expr="objectValues('File')" sort="title">
+                           <dtml-if expr="id().startswith(prefixo_arquivo)">
+                              <option value="<dtml-var id>"><dtml-var title></option>
+                           </dtml-if>
+                        </dtml-in>
+                     </dtml-with>
+                 </select>
+                 <div class="input-group-append">
+                    <input type="button" class="btn btn-secondary" value="Gerar" onclick="javascript:texto_odt_gerar();" />
+                 </div>
+               </div>
+            </dtml-if>
+         </dtml-let>
+       </dtml-if>
+    </div>    
+  </div>
+  <div class="text-left">
+    <input class="btn btn-primary" type="button" value="Salvar" onClick="documento_criticar()" />
+    <dtml-if cod_documento>
+      <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_excluir_proc?cod_documento=<dtml-var cod_documento missing>&url=<dtml-var portal_url>/consultas/documento_administrativo" data-confirm="Deseja realmente excluir o documento?">Excluir</a>
+    </dtml-if>
+ </div>
+ 
 </form>
+</div>
+
+<dtml-if cod_documento>
+  <div class="tab-pane p-3 border fade" id="acessorios">
+    <dtml-with documento_acessorio>
+      <dtml-var documento_acessorio_index_html>
+    </dtml-with>
+  </div>
+  <div class="tab-pane p-3 border fade" id="vinculados">
+    <dtml-with documento_vinculado>
+      <dtml-var documento_vinculado_index_html>
+    </dtml-with>
+  </div>
+  <div class="tab-pane p-3 border fade" id="materias">
+    <dtml-with materia_vinculada>
+      <dtml-var materia_vinculada_index_html>
+    </dtml-with>
+  </div>   
+</dtml-if>
+
+</div>
+
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
 
 <dtml-var standard_html_footer>

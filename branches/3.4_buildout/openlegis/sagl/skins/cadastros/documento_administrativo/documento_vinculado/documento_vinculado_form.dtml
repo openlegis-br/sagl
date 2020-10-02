@@ -1,0 +1,135 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+function vinculado_criticar(){
+
+    var form=document.documento_vinculado_form;       
+ 
+    var regexp_digitos = /\D+/;
+
+    if (form.lst_tip_documento.selectedIndex==''){
+       alert("O tipo de documento deve ser selecionado!");
+       form.lst_tip_documento.focus();
+       return false;
+    }
+
+    if (form.txt_num_documento.value == "") {
+       alert("O número do documento deve ser preenchido!");
+       form.txt_num_documento.focus();
+       return false;
+    }
+
+    if (regexp_digitos.test(form.txt_num_documento.value)) {
+       alert("O número do documento deve ser um número natural!");
+       form.txt_num_documento.focus();
+       return false;
+    }
+
+    if (form.txt_ano_documento.value == "") {
+       alert("O ano do documento deve ser preenchido!");
+       form.txt_ano_documento.focus();
+       return false;
+    }
+
+    if (regexp_digitos.test(form.txt_ano_documento.value)) {
+       alert("O ano do documento deve ser um número natural!");
+       form.txt_ano_documento.focus();
+       return false;
+    }
+
+    if (form.hdn_cod_documento_vinculado.value == "") {
+       alert("Dados do documento obtidos com sucesso! Verifique se a ementa corresponde ao documento informado.");
+       form.lst_tip_documento.focus();
+       return false;
+    }
+
+
+ form.submit();
+}
+
+  function ementa_buscar(form){
+    if ((form.lst_tip_documento.selectedIndex != 0) &&
+       (form.txt_num_documento.value!="") && 
+       (form.txt_ano_documento.value!="")){
+       location.href="ementa_buscar_proc?cod_documento="+form.hdn_cod_documento.value+"&tip_documento="+form.lst_tip_documento[form.lst_tip_documento.selectedIndex].value+"&num_documento="+form.txt_num_documento.value+"&ano_documento="+form.txt_ano_documento.value+'&modal=1';
+    }
+  }
+
+  function documento_vinculado_excluir(cod_vinculo) {
+    var form=document.documento_vinculado_form;       
+    if (confirm("Deseja realmente excluir o vínculo com o documento?")) {
+       location.href="documento_vinculado_excluir_proc?cod_vinculo=<dtml-var cod_vinculo missing>&cod_documento=<dtml-var cod_documento missing>&modal=1";
+    }
+  } 
+
+</script>
+
+<h1 class="firstHeading">Documento Vinculado</h1>
+
+<form name="documento_vinculado_form" method="post" action="documento_vinculado_salvar_proc">  
+
+  <input type="hidden" name="hdn_cod_documento" value=<dtml-var cod_documento>></input>
+  <input type="hidden" name="hdn_cod_documento_vinculado" value=<dtml-var hdn_cod_documento_vinculado missing>></input>
+  <input type="hidden" name="modal" value="1" /> 
+
+  <div class="form-row">
+     <div class="col-12 col-sm-6 mb-3">
+           <label for="lst_tip_documento" class="required">Tipo de Documento</label>
+           <select class="custom-select" name="lst_tip_documento" id="lst_tip_documento" onChange="ementa_buscar(document.documento_vinculado_form)" required <dtml-if cod_vinculo>disabled</dtml-if>>
+            <option>
+              <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
+                 <option
+                    <dtml-if tip_documento_sel>
+                      <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_sel)">
+                         selected
+                      </dtml-if>
+                   </dtml-if>
+                    value="<dtml-var tip_documento missing>"><dtml-var des_tipo_documento>
+                   </option>
+              </dtml-in>
+           </select>     
+     </div>
+     <div class="col-6 col-sm-3 mb-3">
+         <label for="txt_num_documento" class="required">Número</label>
+         <input class="form-control number" type="number" name="txt_num_documento" id="txt_num_documento" value="<dtml-var num_documento_sel missing>" onChange="ementa_buscar(document.documento_vinculado_form)" <dtml-if cod_vinculo>disabled</dtml-if>>
+     </div>
+     <div class="col-6 col-sm-3 mb-3">
+         <label for="txt_ano_documento" class="required">Ano</label>
+         <input class="form-control year" type="number" name="txt_ano_documento" id="txt_ano_documento" value="<dtml-var ano_documento_sel missing>" onChange="ementa_buscar(document.documento_vinculado_form)" <dtml-if cod_vinculo>disabled</dtml-if>>
+     </div>
+  </div>
+
+  <div class="form-row">
+     <div class="col-12 mb-3">
+        <label for="txa_txt_assunto">Assunto</label><br/>
+        <textarea class="form-control auto-resize" name="txa_txt_assunto" id="txa_txt_assunto" rows="1" readonly><dtml-var txt_assunto missing></textarea>
+     </div>
+  </div>
+
+
+ <div class="text-left">
+    <dtml-unless cod_vinculo>
+      <input class="btn btn-primary" type="button" class="botao" name="button" value="Incluir" onClick="vinculado_criticar(document.documento_vinculado_form)"/>
+    </dtml-unless>
+    <dtml-if cod_vinculo>
+      <input class="btn btn-danger" type="button" class="botao" value="Excluir" onClick="documento_vinculado_excluir()" />
+      <input type="hidden" name="hdn_url" value="documento_vinculado_mostrar_proc?cod_vinculo=<dtml-var cod_vinculo>&modal=1" />          
+    </dtml-if>    
+ </div>
+ 
+<dtml-unless cod_vinculo>
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+ </div>  
+</dtml-unless>
+    
+</form>
+
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
+
+<dtml-var standard_html_footer>
