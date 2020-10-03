@@ -15,7 +15,7 @@
 
     <dtml-comment>
     <dtml-if expr="zsql.parlamentar_obter_zsql(ncod_parlamentar=hdn_cod_parlamentar, num_cpf=txt_num_cpf, ind_excluido=0)">
-       <dtml-let mensagem="'Já existe alguém com este CPF.'">
+       <dtml-let mensagem="'Já existe um parlamentar com o CPF informado!.'">
           <dtml-var mensagem_emitir>
         </dtml-let>
        <dtml-call expr="REQUEST.set('erro', 1)">
@@ -107,7 +107,10 @@
  
   <dtml-if expr="(metodo==zsql.parlamentar_incluir_zsql)">
     <dtml-call expr="REQUEST.set('hdn_url', hdn_url + cod_parlamentar)">
-    <dtml-call expr="zsql.mandato_incluir_zsql(cod_parlamentar=cod_parlamentar, num_legislatura=hdn_num_leg, ind_titular=1)">
+    <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=hdn_num_leg)">
+      <dtml-call expr="REQUEST.set('dat_inicio_legislatura', _.DateTime(dat_inicio_conv).strftime('%Y/%m/%d'))">    
+    </dtml-in>    
+    <dtml-call expr="zsql.mandato_incluir_zsql(cod_parlamentar=cod_parlamentar, num_legislatura=hdn_num_leg, ind_titular=1,dat_inicio_mandato=dat_inicio_legislatura)">
     <dtml-let tipo_mensagem="'success'" mensagem="'Vereador salvo com sucesso!'" mensagem_obs="'Foi incluído um mandato para esse parlamentar na '+hdn_num_leg+'ª legislatura. Complete os dados de mandato e de filiação partidária.'" cod_parlamentar=cod_parlamentar url=hdn_url>
         <dtml-var mensagem_emitir>
     </dtml-let> 
