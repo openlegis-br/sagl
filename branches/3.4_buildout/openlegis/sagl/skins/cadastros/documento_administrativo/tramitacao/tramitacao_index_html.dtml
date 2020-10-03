@@ -1,5 +1,3 @@
-<dtml-var standard_html_header>
-
 <script type="text/javascript">
 <!--
    function submeter(){
@@ -8,23 +6,14 @@
 //--!>
 </script>
 
-<h1 class="firstHeading">Documento Administrativo</h1>
-
- <dtml-var documento_menu>
- <dtml-var documento_header>
+<legend>Tramitações</legend>
 
 <form name="tramitacao_form" action="tramitacao_form">
-  <input class="form-control" type="hidden" name="cod_documento" value="<dtml-var cod_documento>" />
-   <fieldset><legend>Histórico de Tramitações</legend>
-  <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento)" size=12 start=query_start orphan=2>
+  <input type="hidden" name="cod_documento" value="<dtml-var cod_documento>" />
+  <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento)">
   <dtml-if sequence-start>
-     <dtml-if previous-sequence>
-         <span>
-             <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
-             Página Anterior (<dtml-var previous-sequence-size> resultados)</a>
-         </span>
-      </dtml-if previous-sequence>
-   <table class="table" >
+   <table class="table">
+     <thead class="table-secondary">
       <tr>  
          <th width="15%">Data Ação</th>
          <th width="30%">Origem</th>
@@ -32,58 +21,46 @@
          <th width="15%">Status</th>
          <th width="10%">PDF</th>
       </tr>
+     </thead>
     </dtml-if sequence-start>
-      <tr <dtml-if sequence-odd>class="fundo"</dtml-if>> 
-         <td><a href="tramitacao_mostrar_proc?cod_tramitacao=<dtml-var cod_tramitacao>&amp;cod_documento=<dtml-var cod_documento>">
-         <b><dtml-var dat_tramitacao></b></a></td>
+      <tr> 
          <td>
-         <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local)">
-           <dtml-if cod_orgao><dtml-var nom_orgao>
-           <dtml-elif cod_comissao><dtml-var nom_comissao>   
-           <dtml-else> <dtml-var nom_parlamentar>
-           </dtml-if>
-         </dtml-in></td>
-         <td><dtml-if cod_unid_tram_dest>
-           <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest)">
-             <dtml-if cod_orgao><dtml-var nom_orgao>
-             <dtml-elif cod_comissao><dtml-var nom_comissao>   
-             <dtml-else><dtml-var nom_parlamentar> 
-             </dtml-if>
+            <a href="tramitacao_mostrar_proc?cod_tramitacao=<dtml-var cod_tramitacao>&amp;cod_documento=<dtml-var cod_documento>">
+              <b><dtml-var dat_tramitacao></b>
+            </a>
+         </td>
+         <td>
+           <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local)">
+             <dtml-var nom_unidade_join>
            </dtml-in>
-         </dtml-if></td> 
+         </td>
+         <td>
+           <dtml-if cod_unid_tram_dest>
+             <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest)">
+               <dtml-var nom_unidade_join>
+             </dtml-in>
+           </dtml-if>
+         </td> 
          <td><dtml-var sgl_status null=""></td>
          <td>
-        <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
-        <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
-        <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
+           <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+           <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
              <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
                <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
                  <img align="top" style="margin-left: 20px;" src="<dtml-var portal_url>/imagens/archiv.gif" alt="Arquivo PDF" title="Visualizar PDF"></a>
              </dtml-let>
- 	</dtml-if>
-        <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
-             <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo.tramitacao,pdf_assinado).absolute_url">
-               <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
-                  <img height="22" style="margin-left: 20px;" src="<dtml-var portal_url>/imagens/pdf_signed.gif" alt="PDF - Tramitação assinada" title="Visualizar PDF - Tramitação assinada"></a>
-             </dtml-let>
-        </dtml-if> 
+ 	   </dtml-if>
          </td>
       </tr>
     <dtml-if sequence-end>
-     </table>
-      <dtml-if next-sequence>
-         <span>
-             <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
-             Próxima Página (<dtml-var next-sequence-size> resultados)</a>
-         </span>
-      </dtml-if next-sequence>
-     </dtml-if sequence-end>
+      </table>
+    </dtml-if sequence-end>
 <dtml-else>
-      <p class="texto">Nenhuma tramitação cadastrada para este documento.</p>
+      <p>Nenhuma tramitação cadastrada.</p>
 </dtml-in>
-      </fieldset>
-      <p align="center">
-          <input class="form-control" type="submit" class="botao" name="btn_incluir" value="Incluir Tramitação" />
-      </p>
-</form>
-<dtml-var standard_html_footer>
+
+ <div class="text-left">
+    <input class="btn btn-primary" type="submit" class="botao" name="btn_incluir" value="Incluir Tramitação" />
+ </div>
+
+<form>
