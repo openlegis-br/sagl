@@ -1,7 +1,5 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="javascript/data_validar.js"></script>
-
 <script type="text/javascript">
 
   function tramitacao_excluir(){    
@@ -58,12 +56,14 @@
       </dtml-in>
     </div>
     <div class="col-12 col-md-3 mb-3">
-      <label for="lst_cod_usuario_dest">Usuário de Destino</label>   
-      <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario_dest)">      
-         <input class="form-control" type="text" id="lst_cod_usuario_dest" value="<dtml-var nom_completo>" readonly>
-      <dtml-else> 
+      <label for="lst_cod_usuario_dest">Usuário de Destino</label>
+      <dtml-if cod_usuario_dest>
+        <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario_dest)">      
+           <input class="form-control" type="text" id="lst_cod_usuario_dest" value="<dtml-var nom_completo>" readonly>
+        </dtml-in>      
+        <dtml-else> 
          <input class="form-control" type="text" id="lst_cod_usuario_dest" value="" readonly>
-      </dtml-in>      
+      </dtml-if>
     </div>
   </div> 
 
@@ -91,7 +91,6 @@
     <div class="col-6 col-md-9 mb-3">
       <label class="d-block">Despacho em PDF</label>
       <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
-      <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
       <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)"> 
        <div class="btn-group" role="group" aria-label="tram_button">
          <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
@@ -101,18 +100,11 @@
          </dtml-let>
          <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf) and sapl_documentos.props_sagl.restpki_access_token!=''">
             <dtml-if expr="int(cod_usuario_corrente)==int(cod_usuario_local)" >
-               <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_tramitacao>&tipo_doc=tramitacao&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
+               <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_tramitacao>&tipo_doc=tramitacao_adm&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
             </dtml-if>
          </dtml-if>
         </div>
-      </dtml-if>
-      <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
-         <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo.tramitacao,pdf_assinado).absolute_url">
-            <a class="btn btn-secondary" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">">
-             <i class="fas fa-certificate"></i>Despacho Assinado
-           </a>
-         </dtml-let>
-      </dtml-if>             
+      </dtml-if>           
     </div>    
   </div>
   
