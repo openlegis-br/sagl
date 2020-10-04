@@ -98,7 +98,10 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
         for documento in context.zsql.documento_administrativo_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_documento=protocolo.ano_protocolo):
                dic['num_documento'] = protocolo.des_tipo_documento+ ' '+str(documento.num_documento)+'/'+ str(documento.ano_documento)
 
-        dic['num_processo'] = dic['num_materia'] or dic['num_documento']
+        if protocolo.ind_anulado==1:
+           dic['num_processo'] = '*ANULADO*'    
+        else:    
+           dic['num_processo'] = dic['num_materia'] or dic['num_documento']
 
         if protocolo.tip_processo==0:
            dic['ident_processo']=protocolo.des_tipo_documento
@@ -116,9 +119,7 @@ dados = []
 for dic in protocolos:
     r=[]
     # Label, Data
-    r.append('Protocolo nº '+dic['titulo']+'/'+dic['ano']+ ' - ' + dic['num_processo'] )
-    r.append( dic['tipo_autor']+': ' + dic['nom_autor'])
-    r.append( dic['tipo_enunciado']+': '+dic['txt_assunto'])
+    r.append('PROTOCOLO Nº '+dic['titulo']+'/'+dic['ano']+ ' - ' + dic['num_processo'] + ' - ' + dic['txt_assunto'] + ' ' + dic['tipo_autor']+': ' + dic['nom_autor'])
     dados.append(r)
 
 return context.pdflabels(dados)

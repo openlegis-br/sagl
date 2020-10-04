@@ -78,6 +78,8 @@ def protocolos(lst_protocolos):
         if dic['txt_assunto']!=None:
             txt_assunto = dic['txt_assunto'].replace('&','&amp;')
             tmp_data+='\t\t<para style="P2">' + txt_assunto + '</para>\n'
+        if dic['data']!=None:
+            tmp_data+='\t\t<para style="P2"><b>Data Protocolo:</b> ' + dic['data'] + '</para>\n'
         if dic['txt_interessado']!=None:
            tmp_data+='\t\t<para style="P2"><b>Interessado:</b> ' + dic['txt_interessado'] + '</para>\n'
         elif dic['nom_autor']!=None:
@@ -86,8 +88,6 @@ def protocolos(lst_protocolos):
             tmp_data+='\t\t<para style="P2"><b>Natureza Processo:</b> ' + dic['natureza'] + '</para>\n'
         if dic['processo']!=None:
             tmp_data+='\t\t<para style="P2"><b>Classificação:</b> ' + dic['processo'] + '</para>\n'
-        if dic['data']!=None:
-            tmp_data+='\t\t<para style="P2"><b>Data Protocolo:</b> ' + dic['data'] + '</para>\n'
         if dic['anulado']!="":
             tmp_data+='\t\t<para style="P2"><b>** PROTOCOLO ANULADO **</b> ' '</para>\n'
 

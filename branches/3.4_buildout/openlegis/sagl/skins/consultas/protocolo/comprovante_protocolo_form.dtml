@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Comprovante de Protocolo</title>
-
-<dtml-var standard_css_slot>
-
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/geral.js"></script>
-
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.min.js"></script>
+<dtml-var standard_html_header>
 
 <script type="text/javascript">
      //<![CDATA[
@@ -19,12 +9,8 @@
          }
      //]]>
 </script>
-</head>
-<body class="modal">
- <table class="borda-prot">
-  <tr>
-    <td colspan="2">
-<div id="topo">
+
+  <div class="row mt-4">
   <dtml-call expr="REQUEST.set('existe_logo', 0)">
   <dtml-call expr="REQUEST.set('id_logo', sapl_documentos.props_sagl.id_logo)">
   <dtml-in expr="sapl_documentos.props_sagl.objectValues('Image')">
@@ -32,35 +18,37 @@
       <dtml-call expr="REQUEST.set('existe_logo', 1)">
     </dtml-if>
   </dtml-in>
-  <h1 id="logo-prot">
-    <dtml-if "not existe_logo">
-      <img src="<dtml-var portal_url>/imagens/brasao.gif" alt="Brasão da Casa Legislativa" />
-    <dtml-else>
-      <img src="sapl_documentos/props_sagl/<dtml-var id_logo>" alt="Brasão da Casa Legislativa" />
-    </dtml-if>
-  </h1>
-  <div id="identidade-prot">
-    <h2><dtml-var "sapl_documentos.props_sagl.nom_casa" missing></h2>
-    <h3>Estado de 
-      <dtml-call expr="REQUEST.set('cod_localidade', sapl_documentos.props_sagl.cod_localidade)">
-      <dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade)">
-       <dtml-call expr="REQUEST.set('estado', sgl_uf)">
-       <dtml-in expr="zsql.localidade_obter_zsql(tip_localidade='U',sgl_uf=estado)">
-         <dtml-var nom_localidade>
-       </dtml-in>
-      </dtml-in>
-     </h3>
-  </div>
+    <div class="col-2">
+      <dtml-if "not existe_logo">
+        <img class="img-fluid" src="<dtml-var portal_url>/imagens/brasao.gif" alt="Brasão da Casa Legislativa" />
+      <dtml-else>
+        <img class="img-fluid" src="sapl_documentos/props_sagl/<dtml-var id_logo>" alt="Brasão da Casa Legislativa" />
+      </dtml-if>
+    </div>
+    <div class="col-10">
+      <p class="h2 mt-2 mb-1"><dtml-var "sapl_documentos.props_sagl.nom_casa" missing></p>
+      <p class="h4 mb-0">Estado de 
+        <dtml-call expr="REQUEST.set('cod_localidade', sapl_documentos.props_sagl.cod_localidade)">
+        <dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade)">
+         <dtml-call expr="REQUEST.set('estado', sgl_uf)">
+         <dtml-in expr="zsql.localidade_obter_zsql(tip_localidade='U',sgl_uf=estado)">
+           <dtml-var nom_localidade>
+         </dtml-in>
+        </dtml-in>
+       </p>
+     </div>
 </div>
-    </td>
-  </tr>
-  <tr>
-   <td colspan="2">
-<dtml-if expr="ind_anulado==1"> <span class="anulado">** NULO **</span></dtml-if>
-   <h3 align="center">COMPROVANTE DE PROTOCOLO</h3>
-<dtml-if expr="ind_anulado==1"> <span class="anulado"> ** NULO **</span></dtml-if>
-   </td>
-  </tr>
+
+ <table class="table mt-5">
+  <thead class="table-secondary">
+    <tr>
+     <td colspan="2">
+       <dtml-if expr="ind_anulado==1"> <span class="anulado">** NULO **</span></dtml-if>
+       <p class="h4 text-center font-weight-bold mb-0">Comprovante de Protocolo</p>
+       <dtml-if expr="ind_anulado==1"> <span class="anulado"> ** NULO **</span></dtml-if>
+     </td>
+    </tr>
+  </thead>
   <tr>
    <td width="30%">
      <div>
@@ -223,8 +211,7 @@
     </p>
  </dtml-if>
 <p align="center">
-  <input type="button" class="botao" id="hideprint" name="print_button" value="Imprimir" onClick="printFrame();return false;" />
-  <input class="botaoExtra" type="button" id="hideclose" value="Fechar" onClick="parent.jQuery.fancybox.close();" />
+  <input class="btn btn-primary d-print-none" type="button" value="Imprimir" onClick="printFrame();return false;" />
 </p>
-</body>
-</html>
+
+<dtml-var standard_html_footer>

@@ -92,8 +92,13 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
            dic['natureza']='Administrativo'
         if protocolo.tip_processo==1:
            dic['natureza']='Legislativo'
+
+        des_tipo_materia = ''
+        if protocolo.tip_natureza_materia == 1:
+           for materia in context.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
+               des_tipo_materia = materia.des_tipo_materia
   
-        dic['processo']=protocolo.des_tipo_materia or protocolo.des_tipo_documento
+        dic['processo']=des_tipo_materia or protocolo.des_tipo_documento
 
         dic['anulado']=''
         if protocolo.ind_anulado==1:
