@@ -768,7 +768,7 @@ CREATE TABLE IF NOT EXISTS `gabinete_eleitor` (
 CREATE TABLE IF NOT EXISTS `instituicao` (
   `cod_instituicao` int NOT NULL AUTO_INCREMENT,
   `tip_instituicao` int NOT NULL,
-  `cod_categoria` int NOT NULL,
+  `cod_categoria` int DEFAULT NULL,
   `nom_instituicao` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `end_instituicao` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `nom_bairro` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
