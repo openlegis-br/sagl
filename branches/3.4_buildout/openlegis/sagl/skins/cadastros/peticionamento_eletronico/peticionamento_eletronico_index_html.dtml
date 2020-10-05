@@ -1,34 +1,54 @@
 <dtml-var standard_html_header>
 
-   <script type="text/javascript">
-     $(document).ready(function() {
-	$(".popup").fancybox({
-		maxWidth	: 900,
-		maxHeight	: 800,
-		fitToView	: true,
-		width		: '75%',
-		height		: '85%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : false,
-                preload         : true,
-		openEffect	: 'fade',
-                afterClose      : function() {
-                window.location.href = "<dtml-var portal_url>/cadastros/peticionamento_eletronico";
-                },
-		closeEffect	: 'fade'
-	});
-     });
-   </script>
+<script type="text/javascript">
 
+$(document).ready(function() {
 
-   <h1 class="firstHeading">Peticionamento Eletrônico</h1> 
+    $('#historico').DataTable( {
+        "responsive": true,
+        "bStateSave": true,        
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('petDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('petDataTable'));
+        },
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
 
-   <dtml-call "REQUEST.set('username', AUTHENTICATED_USER)">
-   <p>
-      <a href="peticionamento_eletronico_form" class="botao-link popup" data-fancybox-type="iframe"/>Peticionar</a>
-   </p>
-   <br />
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Peticionamento Eletrônico</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#iFrameModal" data-title="Peticionamento Eletrônico" data-src="peticionamento_eletronico_form?modal=1" ><i class="fa fa-fw fa-paper-plane"></i> Peticionar</a>         
+         </div>
+      </div>
+ </div>
+ <dtml-call "REQUEST.set('username', AUTHENTICATED_USER)">
+
    <dtml-in expr="zsql.usuario_obter_zsql(col_username=username)">
        <dtml-call "REQUEST.set('nom_completo', nom_completo)">
        <dtml-call "REQUEST.set('nom_cargo', nom_cargo)">
@@ -36,21 +56,23 @@
        <dtml-call "REQUEST.set('nom_completo', username)">
    </dtml-in>
 
-   <fieldset>
-          <legend>Registro de Petições do Usuário</legend>
 	  <dtml-in expr="zsql.protocolo_pesquisa_publica_zsql(txt_interessado=nom_completo)">
 	     <dtml-if sequence-start>
-		 <table class="table">
+	       <div class="table-responsive">
+                <table class="table" id="historico">
+                  <thead class="table-secondary">  
 		   <tr>
- 	              <th width="15%"><b>Data de Envio</b></th>
-                      <th width="10%"><b>Protocolo</b></th>
-	              <th width="20%"><b>Processo Administrativo</b></th>
-                      <th><b>Assunto</b></th>
+                      <th>Nº de Protocolo</th>
+ 	              <th>Data de Envio</th>
+                      <th>Resumo da Solicitação</th>
+	              <th>Proc. Administrativo</th>
 		   </tr>
+		  </thead>
 	     </dtml-if>
 	           <tr>
-                      <td><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> - <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td>
    	              <td><dtml-var num_protocolo>/<dtml-var ano_protocolo></td>
+                      <td><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td>
+	              <td><dtml-var txt_assunto_ementa></td>
                       <td>
                        <dtml-if cod_documento>
 			 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
@@ -64,15 +86,14 @@
                         <i>Aguardando autuação</i>
                        </dtml-if>
                       </td>
-	              <td><dtml-var txt_assunto_ementa></td>
 	           </tr>
              <dtml-if sequence-end>
                  </table>
+                </div>
              </dtml-if>
 	  <dtml-else>
-             <p>Nenhuma ocorrência encontrada.</p>
+             <p>Nenhuma registro encontrado.</p>
           </dtml-in>
-   </fieldset>
 
 <dtml-var standard_html_footer>
 
