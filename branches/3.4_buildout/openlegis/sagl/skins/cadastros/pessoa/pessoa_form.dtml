@@ -1,64 +1,8 @@
 <dtml-var standard_html_header>
 
-<style>
-.dhxcombo_dhx_skyblue {
-    margin-left: 0px !important;
-}
-</style>
-
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.maskedinput.min.js"></script>
-
-<script>
-  jQuery(function($){
-   $("#txt_num_telefone").mask("(99) 9999-9999");
-   $("#txt_num_celular").mask("(99) 99999-9999");
-   $("#txt_num_cep").mask("99999-999");
-  });
-</script>
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/email_validar.js"></script>
 
 <script type="text/javascript">
-$(document).ready(function() {
-$(".popup").fancybox({
-	maxWidth	: 500,
-	maxHeight	: 400,
-	fitToView	: true,
-	width		: '75%',
-	height		: '85%',
-	autoSize	: false,
-	closeClick	: false,
-        scrolling       : false,
-        preload         : true,
-	openEffect	: 'fade',
-        afterClose      : function() {
-        		window.location.href = "<dtml-var portal_url>/cadastros/pessoa/pessoa_mostrar_proc?cod_pessoa=<dtml-var cod_pessoa missing>";
-        		},
-	closeEffect	: 'fade'
-	});
-});
-</script>
-
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/email_validar.js" "></script>
-
-<script type="text/javascript">
-
-   function submeter(endereco){
-
-      var form = document.pessoa_form;
-
-      endereco += '?cod_pessoa=' + form.hdn_cod_pessoa.value;
-
-      if (form.hdn_alterou.value=="1"){
-         if (confirm("Deseja salvar os dados?")){
-            form.hdn_url.value = endereco;
-            campos_criticar(form);
-         }
-      }
-
-      if (form.hdn_cod_pessoa.value!=""){
-          location.href = endereco;
-      }
-      return;
-   }
 
   function campos_criticar(){
 
@@ -66,7 +10,7 @@ $(".popup").fancybox({
       var regexp_digitos = /\D+/;
 
       if (form.txt_nom_pessoa.value == "") {
-         alert("O nome da pessoa deve ser preenchido!");
+         alert("O nome do visitante deve ser preenchido!");
          form.txt_nom_pessoa.focus();
          return false;
       }
@@ -79,7 +23,7 @@ $(".popup").fancybox({
 
       if (!(form.rad_sex_pessoa[0].checked ||
             form.rad_sex_pessoa[1].checked)){
-         alert("O sexo da pessoa deve ser informado!");
+         alert("O sexo do visitante deve ser informado!");
          form.rad_sex_pessoa[0].focus();
          return false;
       }
@@ -139,12 +83,68 @@ $(".popup").fancybox({
        return;
   }
 
+window.onload = function(){  
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
+    //Change hash for page-reload
+    $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').on('shown', function (e) {
+        window.location.hash = e.target.hash;
+    }); 
+} 
+
+$(document).ready(() => {
+  let url = location.href.replace(/\/$/, "");
+   if (location.hash) {
+    const hash = url.split("#");
+    $('#nav_norma a[href="#'+hash[1]+'"]').tab("show");
+    url = location.href.replace(/\/#/, "#");
+    history.replaceState(null, null, url);
+  } 
+
+  $('a[data-toggle="tab"]').on("click", function() {
+    let newUrl;
+    const hash = $(this).attr("href");
+    if(hash == "#home") {
+      newUrl = url.split("#")[0];
+    } else {
+      newUrl = url.split("#")[0] + hash;
+    }
+    newUrl += "";
+    history.replaceState(null, null, newUrl);
+  });
+});
+
+
 </script>
 
-<h1 class="firstHeading">Cadastro de Pessoa</h1> 
+ <div class="row mb-2">
+      <div class="col-12 col-lg-6 align-self-center">
+        <h1 class="firstHeading">Cadastro de Visitante</h1>
+      </div>
+      <div class="col-12 col-lg-6 text-left text-lg-right">
+       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Recepção'])">
+         <div class="btn-group d-print-none">     
+           <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/cadastros/pessoa" ><i class="fa fa-fw fa-search"></i> Nova Pesquisa</a>
+           <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/cadastros/pessoa/pessoa_form" ><i class="fa fa-fw fa-plus"></i> Incluir Visitante</a>           
+         </div>
+       </dtml-if>
+      </div>
+ </div>
 
-<fieldset>
- <legend>Informações Básicas</legend>
+<ul class="nav nav-tabs border-0" id="nav_norma" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="index-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dados do Visitante</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_pessoa>disabled</dtml-unless>" id="visitas-tab" data-toggle="tab" href="#visitas" role="tab" aria-controls="visitas" aria-selected="false">Histórico de Visitas</a>
+  </li>
+</ul>
+
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active" id="home">
 
 <form action="pessoa_salvar_proc" name="pessoa_form" method="post" enctype="multipart/form-data">
   <input type="hidden" name="hdn_cod_pessoa" value="<dtml-var cod_pessoa missing>" />
@@ -157,105 +157,105 @@ $(".popup").fancybox({
   <input type="hidden" name="txt_des_profissao" value="<dtml-var des_profissao missing>" />
   <input type="hidden" name="txt_des_local_trabalho" value="<dtml-var des_local_trabalho missing>" />
   <input type="hidden" name="hdn_url" value="pessoa_mostrar_proc?cod_pessoa=<dtml-var cod_pessoa missing>" />
- <input type="hidden" name="hdn_alterou" value="<dtml-if expr="REQUEST.has_key('mudou')">1<dtml-else>0</dtml-if>" />                
-                <table class="table">
-                        <tr>
-                          <td width="45%"><label for="txt_nom_pessoa">Nome da Pessoa</label> <span class="campoObrigatorio"></span><br />
-                            <input class="form-control" type="text" id="txt_nom_pessoa" name="txt_nom_pessoa" size="50" maxlength="200" onChange="javascript:form.hdn_alterou.value=1" value="<dtml-var nom_pessoa missing>" />
-                          </td>
-                          <td colspan="2"><label for="txt_doc_identidade">Doc. Identidade</label> <span class="campoObrigatorio"></span><br />
-                            <input class="form-control" type="text" id="txt_doc_identidade" name="txt_doc_identidade" size="30" maxlength="50"  onChange="javascript:form.hdn_alterou.value=1" value="<dtml-var doc_identidade missing>" />
-                          </td>
-                          <td><label for="rad_sex_pessoa">Sexo</label> <span class="campoObrigatorio"></span><br />
-                            <dtml-in expr="['M','F']">
-                              <input class="form-check-input" type="radio" id="rad_sex_pessoa" name="rad_sex_pessoa" value="<dtml-var expr="_['sequence-item']">"
-                              <dtml-if expr="_.has_key('cod_pessoa') and sex_pessoa==_['sequence-item']">
-                                checked=1
-                              </dtml-if> />
-                              <dtml-var expr="_['sequence-item']">
-                            </dtml-in>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                           <dtml-if cod_pessoa>
-                             <label for="txt_end_residencial">Endereço </label> <span class="campoObrigatorio"></span><br />
-                              <input class="form-control" type="text" id="txt_end_residencial" name="txt_end_residencial" size="50" maxlength="80" value="<dtml-var end_residencial missing>" />
-                           <dtml-else>
-                             <div class="pf-element pf-full-width">
-                                <label for="txt_autor"><span class="pf-label">Endereço</span> <span class="campoObrigatorio"></span></label>
-                                <div class="pf-group">
- 	                          <div id="combo_zone" style="width:339px;"></div>
-                                </div>
-                             </div>
-		             <script type="text/javascript">
-			       myCombo = new dhtmlXCombo("combo_zone", "txt_end_residencial", 339);
-			       myCombo.load("<dtml-var portal_url>/cadastros/pessoa/enderecos_pesquisar_pysc", function(){
-				// callback
-		               });
-		               myCombo.enableFilteringMode(true);
-		             </script>
-                           </dtml-if>
-                          </td>
-                          <td><label for="txt_num_imovel">Número </label> <span class="campoObrigatorio"></span><br />
-                            <input class="form-control" type="text" id="txt_num_imovel" name="txt_num_imovel" size="5" maxlength="10" value="<dtml-var num_imovel missing>" />
-                          </td>
-                          <td><label for="txa_txt_complemento">Complemento</label><br />
-                            <input class="form-control" type="text" id="txa_txt_complemento" name="txa_txt_complemento" size="10" maxlength="50" value="<dtml-var txt_complemento missing null>" />
-                          </td>
-                          <td><label for="txt_num_cep">CEP </label> <span class="campoObrigatorio"></span><br />
-                            <input class="form-control" type="text" id="txt_num_cep" name="txt_num_cep" size="15" maxlength="15" value="<dtml-var num_cep missing>" />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><label for="txt_nom_bairro">Bairro </label> <span class="campoObrigatorio"></span><br />
-                            <input class="form-control" type="text" id="txt_nom_bairro" name="txt_nom_bairro" size="50" maxlength="80" value="<dtml-var nom_bairro missing>" />
-                          </td>
-                          <td colspan="2"><label for="txt_nom_cidade">Cidade</label> <span class="campoObrigatorio"></span><br />
-                            <input class="form-control" type="text" id="txt_nom_cidade" name="txt_nom_cidade" size="30" maxlength="80" value="<dtml-var nom_cidade missing>" />
-                          </td>
-                          <td><label for="txt_sgl_uf">Estado</label> <span class="campoObrigatorio"></span><br />
-                            <input class="form-control" type="text" id="txt_sgl_uf" name="txt_sgl_uf" size="10" maxlength="2" value="<dtml-var sgl_uf missing null=SP>" />
-                          </td>
-                        </tr>
-                          <td><label for="txt_end_email">E-mail</label><br />
-                            <input class="form-control" type="text" id="txt_end_email" name="txt_end_email" size="50" maxlength="100" value="<dtml-var end_email missing null="">" />
-                          </td>
-                          <td colspan="2"><label for="txt_num_telefone">Telefone Fixo</label><br />
-                            <input class="form-control" type="text" id="txt_num_telefone" name="txt_num_telefone" size="20" maxlength="50" value="<dtml-var num_telefone missing>" />
-                          </td>
-                          <td><label for="txt_num_fax">Telefone Celular</label><br />
-                            <input class="form-control" type="text" id="txt_num_celular" name="txt_num_celular" size="20" maxlength="50" value="<dtml-var num_celular missing>" />
-                          </td>
-                        </tr>
-                        </tr>
-                          <td colspan="4"><label for="txa_txt_observacao">Observações</label> 
-                            <textarea class="form-control"  id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
-                          </td>
-                        </tr>
-                      <dtml-if cod_pessoa>
-                        <tr>
-                          <th colspan="4">Fotografia
-                          </th>
-                        </tr>
-                        <tr>
-                          <td colspan="2">
-	                     <div id="results" align="center">
-                                 <dtml-call expr="REQUEST.set('id_foto', _.str(cod_pessoa)+'_foto_pessoa.jpg')">
-                                 <dtml-if expr="_.hasattr(sapl_documentos.pessoa,id_foto)">
-                                   <img height="200" src="<dtml-var portal_url>/sapl_documentos/pessoa/<dtml-var id_foto>?<dtml-var expr="ZopeTime().timeTime()">">
-                                 <dtml-else>
-                                   <img height="200" alt="<dtml-var nom_pessoa>" src="<dtml-var portal_url>/imagens/avatar.png">
-                                 </dtml-if>
-                             </div>
-	                  </td>
-                             <script type="text/javascript" src="webcam.js"></script>
-	                  <td colspan="2">
-	                     <div id="my_camera"></div>
-                             <input class="form-control" type=button value="Capturar Imagem" onClick="take_snapshot()">
 
+  <div class="form-row">
+    <div class="col-12 col-lg-6 mb-3">
+       <label for="txt_nom_pessoa" class="required">Nome do Visitante</label>
+       <input class="form-control" type="text" id="txt_nom_pessoa" name="txt_nom_pessoa" maxlength="200" value="<dtml-var nom_pessoa missing>" required/>
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+       <label for="txt_doc_identidade" class="required">Documento de Identidade</label>
+       <input class="form-control" type="text" id="txt_doc_identidade" name="txt_doc_identidade" maxlength="50" value="<dtml-var doc_identidade missing>" required/>
+    </div>    
+    <div class="col-6 col-lg-3 mb-3">
+       <label for="rad_sex_pessoa" class="d-block required">Sexo</label>
+       <dtml-in expr="[('Masculino', 'M'), ('Feminino', 'F')]">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="rad_sex_pessoa" id="rad<dtml-var expr="_['sequence-item']">" value="<dtml-var expr="_['sequence-item']">" 
+            <dtml-if expr="_.has_key('cod_pessoa') and sex_pessoa==_['sequence-item']">
+               checked=1
+            </dtml-if> />            
+            <label class="form-check-label" for="rad<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"></label>
+          </div>
+       </dtml-in>
+    </div>
+  </div>
 
-	<!-- Configure a few settings and attach camera -->
+  <div class="form-row">
+    <div class="col-12 col-lg-6 mb-3">
+       <label for="txt_end_residencial" class="required">Endereço Residencial</label>
+       <input class="form-control" type="text" id="txt_end_residencial" name="txt_end_residencial" maxlength="80" value="<dtml-var end_residencial missing>" />
+    </div>
+    <div class="col-6 col-lg-2 mb-3">
+       <label for="txt_num_imovel" class="required">Número</label>
+       <input class="form-control number" type="number" id="txt_num_imovel" name="txt_num_imovel" value="<dtml-var num_imovel missing>" />
+    </div>    
+    <div class="col-6 col-lg-4 mb-3">
+       <label for="txa_txt_complemento">Complemento</label>
+       <input class="form-control" type="text" id="txa_txt_complemento" name="txa_txt_complemento" maxlength="50" value="<dtml-var txt_complemento missing null>" />
+    </div>
+  </div>
+       
+   <div class="form-row">
+    <div class="col-6 col-lg-4 mb-3">
+       <label for="txt_nom_bairro" class="required">Bairro</label>
+       <input class="form-control" type="text" id="txt_nom_bairro" name="txt_nom_bairro" maxlength="80" value="<dtml-var nom_bairro missing>" />
+    </div>
+    <div class="col-6 col-lg-2 mb-3">
+        <label for="txt_num_cep" class="required">CEP</label>
+        <input class="form-control" type="text" id="txt_num_cep" name="txt_num_cep" maxlength="15" value="<dtml-var num_cep missing>" />    
+    </div>    
+    <div class="col-6 col-lg-4 mb-3">
+        <label for="txt_nom_cidade" class="required">Cidade</label>
+        <input class="form-control" type="text" id="txt_nom_cidade" name="txt_nom_cidade" maxlength="80" value="<dtml-var nom_cidade missing>" />
+    </div>
+      <div class="col-6 col-lg-2 mb-3">
+        <label for="txt_sgl_uf" class="required">Estado</label>
+        <input class="form-control" type="text" id="txt_sgl_uf" name="txt_sgl_uf" maxlength="2" value="<dtml-var sgl_uf missing null=SP>" />    
+    </div>  
+  </div>
+ 
+  <div class="form-row">
+    <div class="col-6 col-lg-3 mb-3">
+        <label for="txt_num_celular">Telefone Celular</label>
+        <input class="form-control" type="text" id="txt_num_celular" name="txt_num_celular" maxlength="50" value="<dtml-var num_celular missing null>" />    
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+        <label for="txt_num_telefone">Telefone Fixo</label>
+        <input class="form-control" type="text" id="txt_num_telefone" name="txt_num_telefone" maxlength="50" value="<dtml-var num_telefone missing null>" />
+    </div>    
+    <div class="col-12 col-lg-6 mb-3">
+        <label for="txt_end_email">E-mail</label>
+        <input class="form-control" type="text" id="txt_end_email" name="txt_end_email" maxlength="100" value="<dtml-var end_email missing null="">" />
+    </div>       
+  </div>    
+
+  <div class="form-row">
+    <div class="col-12 mb-3">
+        <label for="txa_txt_observacao">Observações</label> 
+        <textarea class="form-control"  id="txa_txt_observacao" name="txa_txt_observacao" rows="1" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
+    </div>
+  </div>
+
+<dtml-if cod_pessoa>   
+  <legend>Fotografia</legend>            
+  <div class="form-row">
+    <div class="col-12 col-lg-6 mb-3">
+        <label class="d-block">Fotografia Existente</label>     
+	<div id="results">
+          <dtml-call expr="REQUEST.set('id_foto', _.str(cod_pessoa)+'_foto_pessoa.jpg')">
+          <dtml-if expr="_.hasattr(sapl_documentos.pessoa,id_foto)">
+            <img height="200" src="<dtml-var portal_url>/sapl_documentos/pessoa/<dtml-var id_foto>?<dtml-var expr="ZopeTime().timeTime()">">
+          <dtml-else>
+             <img height="200" alt="<dtml-var nom_pessoa>" src="<dtml-var portal_url>/imagens/avatar.png">
+          </dtml-if>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6 mb-3">
+        <label class="d-block">Nova Fotografia</label>         
+        <script type="text/javascript" src="webcam.js"></script>
+	<div id="my_camera" class="mr-3 float-left"></div>
+        <input class="btn btn-secondary" type=button value="Capturar" onClick="take_snapshot()">
 	<script language="javascript">
 		Webcam.set({
 			// live preview size
@@ -277,17 +277,11 @@ $(".popup").fancybox({
 		
 		Webcam.attach( '#my_camera' );
 	</script>
-	
-	<!-- Code to handle taking the snapshot and displaying it locally -->
 	<script language="javascript">
 		function take_snapshot() {
-			// take snapshot and get image data
 			Webcam.snap( function(data_uri) {
                              Webcam.upload( data_uri, 'foto_salvar_proc?cod_pessoa=<dtml-var cod_pessoa>', function(code, text) {
-                             // Upload complete!
-                             // 'code' will be the HTTP response code from the server, e.g. 200
-                             // 'text' will be the raw response content
-                              alert( "Mensagem de retorno: " + code + ": " + text );
+                              alert('Fotografia capturada com sucesso!');
                              } );
 		             // display results in page
 			     document.getElementById('results').innerHTML =
@@ -295,50 +289,50 @@ $(".popup").fancybox({
 			 } );
 		}
 	</script>
+    </div>    
+  </div>
 
-                          </td>
-                        </tr>
-                    </dtml-if>
-                      <dtml-if cod_pessoa>
-                        <tr>
-                          <th colspan="4">
-                            <b>Registro atualizado em:</b> <input class="form-control" type="text" id="txt_dat_atualizacao" name="txt_dat_atualizacao" size="16" value="<dtml-var dat_atualizacao missing>" disabled=disabled />  
-                          </th>
-                        </tr>
-                      </dtml-if>
-          </table>
- <p align="center">
-  <input class="btn btn-primary" type="button" name="button" value="Salvar" onClick="campos_criticar()" />
+  <p class="text-left"><b>Última alteração:</b> <dtml-var dat_atualizacao missing></p> 
+  
+</dtml-if>
+
+ <div class="text-left">
+  <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar()" />
   <dtml-if cod_pessoa>
    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador'])">
-     <input class="btn btn-primary" type="button" name="btn_excluir" value="Excluir" onClick="pessoa_excluir()" />
+     <input class="btn btn-danger" type="button" value="Excluir" onClick="pessoa_excluir()" />
    </dtml-if>
-   <a href="<dtml-var portal_url>/cadastros/pessoa/visita_form?cod_pessoa=<dtml-var cod_pessoa>" class="botao-link popup" data-fancybox-type="iframe"/>Registrar Visita</a>
   </dtml-if>
-  <input class="btn btn-primary" type="button" name="retornar" value="Nova Pesquisa" onClick="location.href='<dtml-var portal_url>/cadastros/pessoa/pessoa_index_html'">
-  <input class="btn btn-primary" type="button" name="retornar" value="Voltar" onClick="javascript:history.go(-1)">
-</p>
-</form>
-</fieldset>
+</div>
 
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+</div>
+
+</form>
+
+</div>
+
+<div class="tab-pane p-3 border fade" id="visitas">
 <dtml-if cod_pessoa>
-  <fieldset>
      <legend>Histórico de Visitas</legend>
      <dtml-in expr="zsql.visita_obter_zsql(cod_pessoa==cod_pessoa)">
        <dtml-if sequence-start>
          <table class="table">
-           <tr>
+           <thead class="table-secondary">
+            <tr>
               <th class="label">Entrada</th>
               <th class="label">Funcionário</th>
               <th class="label">Crachá</th>
               <th class="label">Saída</th>
-           </tr>
+            </tr>
+           </thead>
        </dtml-if>
            <tr>
               <td>
-                 <a href="visita_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="popup" data-fancybox-type="iframe">
-                   <dtml-var dat_entrada>
-                 </a>
+                 <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Visita" data-src="<dtml-var portal_url>/cadastros/pessoa/visita_mostrar_proc?cod_visita=<dtml-var cod_visita>&modal=1"><dtml-var dat_entrada></a>              
                </td>
               <td><dtml-var nom_funcionario></td>
               <td><dtml-var num_cracha missing></td>
@@ -350,7 +344,9 @@ $(".popup").fancybox({
      <dtml-else>
        <p>Nenhum registro encontrado.</p>
      </dtml-in>
-  </fieldset>
+     <a class="btn btn-primary" href="" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Visita" data-src="<dtml-var portal_url>/cadastros/pessoa/visita_form?cod_pessoa=<dtml-var cod_pessoa>&modal=1">Incluir Visita</a>     
 </dtml-if>
+</div>
+</div>
 
 <dtml-var standard_html_footer>

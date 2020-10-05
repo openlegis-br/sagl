@@ -1,12 +1,5 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript">
-$(function() {
-	$('#txt_dat_visita').datepick();
-	$('#txt_dat_visita2').datepick();
-});
-</script>
-
 <script type="text/javascript" src="javascript/data_validar.js" "></script>
 
 <script type="text/javascript">
@@ -80,95 +73,118 @@ function clear_form_elements(ele) {
 }
 </script>
 
-<a id="ajuda" href="<dtml-var portal_url>/ajuda/relatorios#visita">Ajuda</a>
-
-<h1 class="firstHeading">Visitas por Período</h1>
+<h1 class="firstHeading">Relatório de Visitas por Período</h1>
 
 <dtml-if expr="not _.has_key('impressao') or (_.has_key('impressao') and not _.has_key('txt_dat_visita') and not _.has_key('txt_dat_visita2'))">
-<form class="pf-form" id="hideprint" method="post" name="visita_form" action="visitasPeriodo_index_html">
- <fieldset>
+
+<form class="d-print-none mb-3" id="relvisita" method="post" name="visita_form" action="visitasPeriodo_index_html">
+
   <dtml-if impressao>
     <input type="hidden" name="impressao" value="<dtml-var impressao>">
   </dtml-if>
 
-    <div class="pf-element pf-full-width">
-      <label><span class="pf-label">Período de visita:</span></label>
-       <div class="pf-group">
-        <label for="txt_dat_visita">
-          <input class="pf-field" type="text" id="txt_dat_visita" name="txt_dat_visita" maxlength=10 style="min-width: 100px; max-width: 100px; width: 20%;" 
-            value="<dtml-var txt_dat_visita missing>" onblur="formata_data(form.txt_dat_visita)" />
-        </label>
-        <label for="txt_dat_visita2">a
-          <input class="pf-field" type="text" id="txt_dat_visita2" name="txt_dat_visita2" maxlength="10" style="min-width: 100px; max-width: 100px; width: 20%;" 
-           value="<dtml-var txt_dat_visita2 missing>" onblur="formata_data(form.txt_dat_visita2)" />
-        </label>
-        </div>
-      </div>
+  <div class="form-row">
+    <div class="col-6 mb-3">
+      <label for="txt_dat_visita" class="required">Data Inicial</label>
+      <input class="form-control date" type="text" id="txt_dat_visita" name="txt_dat_visita" value="<dtml-var txt_dat_visita missing>" onblur="formata_data(form.txt_dat_visita)" />
+    </div>
+    <div class="col-6 mb-3">
+      <label for="txt_dat_visita2" class="required">Data Final</label>
+      <input class="form-control date" type="text" id="txt_dat_visita2" name="txt_dat_visita2" value="<dtml-var txt_dat_visita2 missing>" onblur="formata_data(form.txt_dat_visita2)" />
+    </div>
+  </div>
 
-    <div class="pf-element pf-full-width">
-      <label for="txt_autor"><span class="pf-label">Funcionário</span></label>
-       <div class="pf-group">
-             <select class="pf-field" id="lst_funcionario" name="lst_funcionario" <dtml-if dat_saida>disabled</dtml-if> >
-                <option value=""></option>
-                <dtml-in expr="zsql.funcionario_obter_zsql(ind_excluido=0)">
-                  <option
-                          <dtml-if expr="_.has_key('lst_funcionario') and lst_funcionario!='' and _.int(cod_funcionario)==_.int(lst_funcionario)">
-                          selected</dtml-if>
-                    value="<dtml-var cod_funcionario>" >
-                    <dtml-var nom_funcionario>
-                  </option>
-                </dtml-in>
-             </select>
+    <script>
+        $('#txt_dat_visita').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#txt_dat_visita2').val();
+            }
+        });
+        $('#txt_dat_visita2').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#txt_dat_visita').val();
+            }
+        });
+    </script> 
+
+  <div class="form-row">
+    <div class="col-12 mb-3">  
+      <label for="lst_funcionario">Funcionário</label>
+      <select class="custom-select" id="lst_funcionario" name="lst_funcionario" <dtml-if dat_saida>disabled</dtml-if> >
+        <option value=""></option>
+        <dtml-in expr="zsql.funcionario_obter_zsql(ind_excluido=0)">
+          <option
+            <dtml-if expr="_.has_key('lst_funcionario') and lst_funcionario!='' and _.int(cod_funcionario)==_.int(lst_funcionario)">
+               selected
+            </dtml-if>
+            value="<dtml-var cod_funcionario>" >
+            <dtml-var nom_funcionario>
+          </option>
+        </dtml-in>
+      </select>
      </div>
     </div>
 
-    <div class="pf-element pf-full-width">
-      <label><span class="pf-label">Modo de Exibição:</span></label>
-       <div class="pf-group">
-             <dtml-in expr="['Visitas', 'Visitantes']">
-              <input type="radio" id="mod_exibicao" name="rad_mod_exibicao" value="<dtml-var expr="_['sequence-item']">"
-                <dtml-if expr="_.has_key('rad_mod_exibicao') and rad_mod_exibicao==_['sequence-item']">
-                   checked=1
-                <dtml-elif expr="_['sequence-item']=='Visitas'">checked=1</dtml-if>>
-              <label style="vertical-align: top;" for="rad_mod_exibicao"><dtml-var expr="_['sequence-item']"></label>
-             </dtml-in>
-       </div>
+    <div class="form-row">
+     <div class="col-12 mb-3">
+      <label class="d-block">Modo de Exibição</label>
+      <dtml-in expr="['Visitas', 'Visitantes']">
+         <div class="form-check form-check-inline">             
+          <input class="form-check-input" type="radio" id="<dtml-var expr="_['sequence-item']">" name="rad_mod_exibicao" value="<dtml-var expr="_['sequence-item']">"
+            <dtml-if expr="_.has_key('rad_mod_exibicao') and rad_mod_exibicao==_['sequence-item']">
+               checked=1
+            <dtml-elif expr="_['sequence-item']=='Visitas'">checked=1</dtml-if>>
+           <label class="form-check-label" for="<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-item']"></label>
+          </div>
+      </dtml-in>
+     </div>
     </div>
 
-      <div class="pf-element pf-buttons">
-        <input class="pf-button btn botao" type="button" name="button" value="Gerar relatório" onClick="campos_criticar()" />
-        <input class="pf-button btn botao" type="button" name="btn_materia_limpar" value="Limpar campos" onclick="clear_form_elements('#hideprint')" >
-      </div>
- </fieldset>
+    <div class="text-left">
+        <input class="btn btn-primary" type="button" name="button" value="Gerar relatório" onClick="campos_criticar()" />
+        <input class="btn btn-secondary" type="button" name="btn_materia_limpar" value="Limpar" onclick="clear_form_elements('#relvisita')" >
+    </div>
 </form>
 </dtml-if>
 
 <dtml-if expr="_.has_key('txt_dat_visita') and _.has_key('txt_dat_visita2') and rad_mod_exibicao == 'Visitas'">
  <dtml-in expr="zsql.visita_obter_zsql(dat_visita=txt_dat_visita,dat_visita2=txt_dat_visita2,cod_funcionario=lst_funcionario)">
   <dtml-if sequence-start>
- <h3>Visitas no período de <dtml-var txt_dat_visita> a <dtml-var txt_dat_visita2>: <dtml-var sequence-length> ocorrências</h3>
+ <h5>Visitas no período de <dtml-var txt_dat_visita> a <dtml-var txt_dat_visita2>: <dtml-var sequence-length> ocorrências</h5>
  <br />
     <table class="table">
-     <tr>
-      <th>Data de Entrada</th>
-      <th>Visitante</th>
-      <th>Data de Saída</th>
-      <th>Crachá</th>
-      <th>Funcionário</th>
-     </tr>
+     <thead class="table-secondary">
+      <tr>
+       <th>Data de Entrada</th>
+       <th>Visitante</th>
+       <th>Data de Saída</th>
+       <th>Crachá</th>
+       <th>Funcionário</th>
+      </tr>
+     </thead>
   </dtml-if sequence-start>
      <tr>
-      <td><dtml-var dat_entrada></th>
-      <td><dtml-var nom_pessoa></th>
-      <td><dtml-var dat_saida missing null=""></th>
-      <td><dtml-var num_cracha></th>
-      <td><dtml-var nom_funcionario></th>
+      <td><dtml-var dat_entrada></td>
+      <td><dtml-var nom_pessoa></td>
+      <td><dtml-var dat_saida missing null=""></td>
+      <td><dtml-var num_cracha></td>
+      <td><dtml-var nom_funcionario></td>
      </tr>
   <dtml-if sequence-end>
     </table>
   </dtml-if sequence-end>
  <dtml-else>
-  <p>Nenhum registro encontrado.
+  <p>Nenhum registro encontrado.</p>
  </dtml-in>
 </dtml-if>
 
@@ -176,13 +192,15 @@ function clear_form_elements(ele) {
 <dtml-if expr="(_.has_key('txt_dat_visita') and _.has_key('txt_dat_visita2')) and rad_mod_exibicao == 'Visitantes'">
  <dtml-in expr="listaFuncionarios(dat_visita=txt_dat_visita,dat_visita2=txt_dat_visita2)">
    <dtml-if sequence-start>
-     <h3>Visitantes no período de <dtml-var txt_dat_visita> a <dtml-var txt_dat_visita2></h3>
+     <h5>Visitantes no período de <dtml-var txt_dat_visita> a <dtml-var txt_dat_visita2></h5>
  <br />
     <table class="table">
-     <tr>
-      <th>Funcionário</th>
-      <th>Visitantes</th>
-     </tr>
+     <thead class="table-secondary">
+      <tr>
+       <th>Funcionário</th>
+       <th>Visitantes</th>
+      </tr>
+     </thead>
   </dtml-if sequence-start>
      <tr>
       <td><dtml-var nom_funcionario></td>
@@ -204,7 +222,7 @@ function clear_form_elements(ele) {
     </table>
   </dtml-if sequence-end>
  <dtml-else>
-  <p>Nenhum registro encontrado.
+  <p>Nenhum registro encontrado.</p>
  </dtml-in>
 </dtml-if>
 
