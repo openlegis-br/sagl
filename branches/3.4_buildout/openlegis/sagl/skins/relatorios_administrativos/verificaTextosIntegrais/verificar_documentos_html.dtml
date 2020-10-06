@@ -1,7 +1,5 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="javascript/data_validar.js" "></script>
-
 <script type="text/javascript">
 <!--
 
@@ -37,11 +35,12 @@
 
   <h1 class="firstHeading">Verificação de Textos Integrais</h1>
   <legend>Documentos Administrativos</legend>
-  <form class="pf-form" method="post" name="documentos_form" action="verificar_documentos_html">
+  <form class="d-print-none" method="post" name="documentos_form" action="verificar_documentos_html">
     <input type="hidden" name="documento" value="1">
-    <div class="pf-element pf-full-width">
-      <label for="lst_tip_documento"><span class="pf-label">Tipo de Documento</span></label>
-        <select class="pf-field" id="lst_tip_documento" name="lst_tip_documento" style="max-width: 240px; width: 100%;">
+    <div class="form-row">
+     <div class="col-8 col-md-6 mb-3">
+      <label for="lst_tip_documento" class="required">Tipo de Documento</label>
+        <select class="custom-select" id="lst_tip_documento" name="lst_tip_documento">
           <option value="0">Selecione</option>
           <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
             <option 
@@ -53,22 +52,21 @@
           </dtml-in>
         </select>
     </div>
-    <div class="pf-element pf-full-width">
-      <label><span class="pf-label">Ano:</span></label>
-        <label for="txt_ano_documento">
-          <input class="pf-field" type="text" id="txt_ano_documento" name="txt_ano_documento" maxlength="4" style="min-width: 94px; max-width: 94px; width: 20%;" value="<dtml-var txt_ano_documento missing>" />
-        </label>
+    <div class="col-4 col-md-2 mb-3">
+      <label for="txt_ano_documento" class="required">Ano</label>
+          <input class="form-control year" type="text" id="txt_ano_documento" name="txt_ano_documento" value="<dtml-var txt_ano_documento missing>" />
     </div>
-    <div class="pf-element pf-buttons">
-        <input class="pf-button btn botao" type="button" name="button" value="Gerar relatório" onClick="campos_criticar()" />
+    </div>
+   <div class="text-left">
+        <input class="btn btn-primary" type="button"value="Gerar Relatório" onClick="campos_criticar()" />
         <dtml-if expr="_.has_key('documento')">
-          <a href="<dtml-var portal_url>/relatorios_administrativos/verificaTextosIntegrais/verificar_documentos_html" class="botao">Nova Pesquisa</a>
+          <a class="btn btn-secondary" href="<dtml-var portal_url>/relatorios_administrativos/verificaTextosIntegrais/verificar_documentos_html">Nova Pesquisa</a>
         </dtml-if>
     </div>
   </form>
 
 <dtml-if expr="_.has_key('documento')">
- <br /><h3>Documentos Administrativos desprovidos de Texto Integral</h3><br />
+ <legend class="mt-3">Documentos desprovidos de texto integral</legend>
               <dtml-in expr="zsql.documento_administrativo_pesquisar_zsql(tip_documento=lst_tip_documento,ano_documento=txt_ano_documento,ind_excluido=0)">
                <dtml-let id_documento_pdf="_.str(cod_documento)+'_texto_integral.pdf'">
                 <dtml-if "not _.hasattr(sapl_documentos.administrativo,id_documento_pdf)">

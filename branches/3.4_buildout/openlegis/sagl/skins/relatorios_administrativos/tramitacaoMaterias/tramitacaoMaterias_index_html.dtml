@@ -1,40 +1,25 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript">
-$(function() {
-	$('#dat_przlim').datepick();
-});
-</script>
-
 <h1 class="firstHeading">Tramitação de Matérias</h1> 
 
-<fieldset>
- <legend>Matérias por Localização, Status e Prazo de Tramitação</legend>
-  <form method="post" name="tramitacao_materia_form" action="tramitacaoMateriaProc">
-       <table class="table">
-         <tr>
-           <td><label>Tipo Matéria </label><br />
-             <select id="lst_tip_materia" name="lst_tip_materia">
+
+<form method="post" name="tramitacao_materia_form" action="tramitacaoMateriaProc">
+   <div class="form-row">
+    <div class="col-12 col-sm-6 mb-3">  
+            <label for="lst_tip_materia">Tipo de Matéria</label>
+             <select class="custom-select" id="lst_tip_materia" name="lst_tip_materia">
 	             <option value="">Todos</option>
 	               <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
 	                 <option value="<dtml-var tip_materia>">
-	                  <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+	                  <dtml-var des_tipo_materia>
 	                 </option>
 	               </dtml-in>
 	     </select>
-           </td>
-           <td><label>Ano </label> <br />
-            <select name="selAno">
-                <dtml-in listaAnosMaterias>
-                   <option value="<dtml-var ano_mat>"><dtml-var ano_mat></option>
-                </dtml-in>
-            </select>
-           </td>
-           </tr>
-          <tr> 
-           <td><label>Localização Atual</label> <br /> 
-             <select name="Dst_cod_unid_tram_local">
-               <option value="">Todos</option>
+   </div>
+   <div class="col-12 col-sm-6 mb-3">  
+             <label for="Dst_cod_unid_tram_local">Localização Atual</label>
+             <select class="custom-select" id="Dst_cod_unid_tram_local" name="Dst_cod_unid_tram_local">
+               <option value="">Todas</option>
                  <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
                    <option 
                   <dtml-if expr="_.has_key('cod_tramitacao') and cod_unid_tram_local==cod_unid_tramitacao"> selected
@@ -44,9 +29,34 @@ $(function() {
              </dtml-if></option>
              </dtml-in>
              </select>
-           </td>
-           <td><label>Status Tramitação</label><br />
-            <select name="lst_status">
+   </div>    
+  </div>
+
+  <div class="form-row">
+   <div class="col-6 col-sm-3 mb-3">  
+           <label for="selAno">Ano de Matéria</label>
+            <select class="custom-select" id="selAno" name="selAno">
+                <dtml-in listaAnosMaterias>
+                   <option value="<dtml-var ano_mat>"><dtml-var ano_mat></option>
+                </dtml-in>
+            </select>
+   </div> 
+   <div class="col-6 col-sm-3 mb-3">  
+             <label for="dat_przlim">Prazo de Tramitação</label>
+             <input class="form-control date" type="text" id="dat_przlim" name="dat_przlim"  value="<dtml-var dat_przlim missing null=" ">" />
+    <script>
+        $('#dat_przlim').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+    </script>             
+   </div> 
+   <div class="col-12 col-sm-6 mb-3">  
+            <label for="lst_status">Status de Tramitação</label>
+            <select class="custom-select" id="lst_status" name="lst_status">
               <option value="">Todos</option>
               <dtml-in expr="zsql.status_tramitacao_obter_zsql()">
                 <option <dtml-if expr="_.has_key('cod_status')">
@@ -55,19 +65,15 @@ $(function() {
                          <dtml-var sgl_status> - <dtml-var des_status>
                 </option>
               </dtml-in>
-            </select>      
-           </td>
-         </tr>
-         <tr> 
-           <td colspan="2"><label>Prazo Tramitação:</label><br/> 
-             <input type="text" id="dat_przlim" name="dat_przlim" size="10" maxlength="10"  value="<dtml-var dat_przlim missing null=" ">" onblur="formata_data(form.dat_przlim)">
-           </td>
-         </tr> 
-       </table>
-    <p align="center">
-      <input type="submit" name="btn_materia_pesquisar" value="Pesquisar">
-      <input type="reset" name="btn_materia_limpar" value="Limpar">
-    </p>
- </form>
+            </select>
+   </div>  
+  </div>
+     
+  <div class="text-left">
+    <input class="btn btn-primary" type="submit" value="Pesquisar">
+    <input class="btn btn-secondary" type="reset" value="Limpar">
+  </div>
+
+</form>
 
 <dtml-var standard_html_footer>

@@ -5,21 +5,28 @@ max_rows : 1000
 max_cache : 100
 </dtml-comment>
 SELECT
-     m.num_ident_basica, t.des_tipo_materia, m.ano_ident_basica, m.txt_ementa, m.cod_materia 
-    <dtml-if expr="dat_prazofim">
-     ,DATE_FORMAT(tra.dat_fim_prazo,'%d/%m/%Y') as dat_fim_prazo
-    </dtml-if>
-    from autoria au,
-    materia_legislativa m left join tipo_materia_legislativa t on m.tip_id_basica = t.tip_materia
-    <dtml-if expr="status or tramLocal or dat_prazofim">
-     ,tramitacao tra
-    </dtml-if>
-    <dtml-if status>
-     ,status_tramitacao st
-    </dtml-if>
-    <dtml-if tramLocal>
-     ,unidade_tramitacao ut
-    </dtml-if>
+     m.num_ident_basica, 
+     t.des_tipo_materia, 
+     m.ano_ident_basica, 
+     m.txt_ementa, m.cod_materia,
+     st.des_status,
+     if (ut.cod_orgao is not null,orgao.nom_orgao,
+       if (ut.cod_parlamentar > 0,parlamentar.nom_parlamentar,comissao.nom_comissao)) as nom_unidade_join,  
+     DATE_FORMAT(tra.dat_fim_prazo,'%d/%m/%Y') as dat_fim_prazo
+
+FROM 
+     materia_legislativa m 
+     LEFT JOIN tipo_materia_legislativa t ON m.tip_id_basica = t.tip_materia
+     LEFT JOIN autoria au ON au.cod_materia = m.cod_materia
+     LEFT JOIN autor ON autor.cod_autor = au.cod_autor
+     LEFT JOIN tipo_autor ON autor.tip_autor = tipo_autor.tip_autor   
+     LEFT JOIN tramitacao tra ON tra.cod_materia = m.cod_materia
+     LEFT JOIN status_tramitacao st ON tra.cod_status = st.cod_status
+     LEFT JOIN unidade_tramitacao ut ON tra.cod_unid_tram_dest = ut.cod_unid_tramitacao
+     LEFT JOIN comissao ON autor.cod_comissao = comissao.cod_comissao
+     LEFT JOIN bancada ON autor.cod_bancada = bancada.cod_bancada
+     LEFT JOIN parlamentar ON autor.cod_parlamentar = parlamentar.cod_parlamentar  
+     LEFT JOIN orgao ON ut.cod_orgao = orgao.cod_orgao
 
 WHERE
      au.cod_autor = <dtml-sqlvar autor type="int"> and
@@ -28,6 +35,7 @@ WHERE
      m.ind_excluido = 0 and
      m.ano_ident_basica = <dtml-sqlvar ano type="int"> 
     <dtml-if expr="status or tramLocal or dat_prazofim">
+     and tra.cod_unid_tram_dest = <dtml-sqlvar tramLocal type="int" optional> 
      and tra.ind_ult_tramitacao = 1
      and tra.ind_excluido = 0
      and m.cod_materia = tra.cod_materia
@@ -39,10 +47,6 @@ WHERE
      and tra.cod_status = st.cod_status 
      and tra.cod_status = <dtml-sqlvar status type="int">  
     </dtml-if>
-    <dtml-if tramLocal>
-     and tra.cod_unid_tram_dest = ut.cod_unid_tramitacao
-     and tra.cod_unid_tram_dest = <dtml-sqlvar tramLocal type="int">
-    </dtml-if> 
     <dtml-if dat_prazofim>
      and tra.dat_fim_prazo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_prazofim)" type="nb">
     </dtml-if> 

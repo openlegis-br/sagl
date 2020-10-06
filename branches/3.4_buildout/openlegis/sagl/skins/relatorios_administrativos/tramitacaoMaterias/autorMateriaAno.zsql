@@ -6,15 +6,9 @@ max_cache : 100
 </dtml-comment>
 SELECT DISTINCT 
      DISTINCT autor.cod_autor,
-     autor.cod_comissao,
-     autor.cod_bancada,
-     autor.cod_parlamentar, 
-     comissao.nom_comissao,
-     bancada.nom_bancada, 
-     parlamentar.nom_completo
-   <dtml-if tramLocal>
-     , if (ut.cod_orgao is not null,orgao.nom_orgao, comissao.nom_comissao) as nom_unidade
-   </dtml-if>
+     if(tipo_autor.des_tipo_autor='Parlamentar',parlamentar.nom_parlamentar, 
+     if(tipo_autor.des_tipo_autor='Bancada',bancada.nom_bancada,
+     if(tipo_autor.des_tipo_autor='Comissao', comissao.nom_comissao, autor.nom_autor))) as nom_autor_join
    <dtml-if status>
     , st.des_status as nom_status
    </dtml-if>
@@ -26,6 +20,7 @@ FROM
     LEFT JOIN materia_legislativa ON tra.cod_materia = materia_legislativa.cod_materia
     LEFT JOIN autoria ON autoria.cod_materia = materia_legislativa.cod_materia
     LEFT JOIN autor ON autor.cod_autor = autoria.cod_autor
+    LEFT JOIN tipo_autor ON autor.tip_autor = tipo_autor.tip_autor   
     LEFT JOIN comissao ON autor.cod_comissao = comissao.cod_comissao
     LEFT JOIN bancada ON autor.cod_bancada = bancada.cod_bancada
     LEFT JOIN parlamentar ON autor.cod_parlamentar = parlamentar.cod_parlamentar
@@ -49,11 +44,11 @@ WHERE
      and tra.cod_status = <dtml-sqlvar status type="int">
    </dtml-if> 
    <dtml-if tramLocal>
-     and tra.cod_unid_tram_dest = <dtml-sqlvar tramLocal type="int">
+     and tra.cod_unid_tram_dest = <dtml-sqlvar tramLocal type="int" optional>
    </dtml-if>
    <dtml-if dat_prazofim>
      and tra.dat_fim_prazo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_prazofim)" type="nb">
    </dtml-if>
 
 
-ORDER BY tip_autor, nom_completo, nom_comissao, nom_bancada, nom_autor
+ORDER BY nom_completo, nom_comissao, nom_bancada, nom_autor
