@@ -27,38 +27,44 @@
 //-->
 </script>
 
-<script type="text/javascript">
-$(function() {
-	$('#txt_dat_inicio_periodo').datepick(),
-	$('#txt_dat_fim_periodo').datepick();
-});
-</script>
-
-<a id="ajuda" href="<dtml-var portal_url>/ajuda/relatorios#rel_materia">Ajuda</a>
-
 <h1 class="firstHeading">Histórico de Tramitações</h1> 
-<fieldset>
-    <legend>Tramitação - Parâmetros</legend>
 
 <form method="post" name="form" action="historicoTramitacoes_mostrar_proc">
-       <table class="table">
-          <tr>
-            <td> <label>Início </label><span class="campoObrigatorio"></span> <br />
-            <input type="text"
-                   name="txt_dat_inicio_periodo"
-                   id="txt_dat_inicio_periodo"
-                   value="<dtml-var expr="tramitacaoDataObter()[0].dat_inicio" missing null="">" size="10" onBlur="formata_data(form.txt_dat_inicio_periodo)" onChange="javascript:form.hdn_alterou.value=1" />
-             </td>
-           <td><label>Término </label><span class="campoObrigatorio"></span> <br />
-           <input type="text"
-                  name="txt_dat_fim_periodo"
-                  id="txt_dat_fim_periodo"
-                  value="<dtml-var expr="tramitacaoDataObter()[0].dat_fim" missing null="">" size="10" onBlur="formata_data(form.txt_dat_fim_periodo)" onChange="javascript:form.hdn_alterou.value=1" />
-           </td>
-        </tr>
-        <tr>
-           <td colspan="2"><label>Localização</label> <br />
-             <select name="lst_cod_unid_tram_dest">
+   
+   <div class="form-row">
+     <div class="col-6 col-md-3 mb-3">
+            <label for="txt_dat_inicio_periodo" class="required">Data Inicial</label>
+            <input class="form-control date" type="text" name="txt_dat_inicio_periodo" id="txt_dat_inicio_periodo" required />
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+           <label for="txt_dat_fim_periodo" class="required">Data Final</label>
+           <input class="form-control date" type="text" name="txt_dat_fim_periodo" id="txt_dat_fim_periodo" required />
+     </div>
+    <script>
+        $('#txt_dat_inicio_periodo').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#txt_dat_fim_periodo').val();
+            }
+        });
+        $('#txt_dat_fim_periodo').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#txt_dat_inicio_periodo').val();
+            }
+        });
+    </script>
+     <div class="col-12 col-md-6 mb-3">
+             <label for="lst_cod_unid_tram_dest">Unidade de Tramitação</label>
+             <select class="custom-select" id="lst_cod_unid_tram_dest" name="lst_cod_unid_tram_dest">
                <option selected value="0">Todos</option>
                  <dtml-in listaLocaisTramitacao>
                    <option value="<dtml-var cod_unid_tramitacao>">
@@ -68,35 +74,36 @@ $(function() {
                      </dtml-if>
                    </option>
                  </dtml-in>
-             </select>
-           </td>
-         </tr>
+             </select>     
+     </div>         
+   </div>
 
-         <tr>
-           <td colspan="2"> <label>Tipo Matéria </label><br />
-             <select name="lst_tip_materia">
+   <div class="form-row">
+     <div class="col-12 col-md-6 mb-3">
+             <label for="lst_tip_materia">Tipo de Matéria</label>
+             <select class="custom-select" id="lst_tip_materia" name="lst_tip_materia">
                 <option selected value="0">Todos</option>
                     <dtml-in listaTiposMaterias>
-                        <option value="<dtml-var tip_materia>"><dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia></option>
+                        <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia></option>
                     </dtml-in>
              </select>
-           </td>
-        </tr>
-         <tr> 
-          <td colspan="2"><label>Status Tramitação</label><br />
-           <select name="lst_status">
+     </div>
+     <div class="col-12 col-md-6 mb-3">
+           <label for="lst_status">Status de Tramitação</label><br />
+           <select class="custom-select" id="lst_status" name="lst_status">
              <option selected value="0">Todos</option>
              <dtml-in listaStatusTramitacao>
-               <option value="<dtml-var cod_status>"><dtml-var sgl_status> - <dtml-var des_status></option>
+               <option value="<dtml-var cod_status>"><dtml-var des_status></option>
              </dtml-in>
-           </select>      
-          </td>
-         </tr>
-       </table>
-    <p align="center">
-    <input type="submit" name="btn_materia_pesquisar" value="Pesquisar" onClick="campos_criticar(form)" />
-    <input type="reset" name="btn_materia_limpar"  value="Limpar">
-    </p>
+           </select>
+     </div>     
+   </div>   
+
+   <div class="text-left">
+    <input class="btn btn-primary" type="submit" value="Pesquisar" onClick="campos_criticar(form)" />
+    <input class="btn btn-secondary" type="reset" value="Limpar">
+   </div>
+
 </form>
 
 <dtml-var standard_html_footer>

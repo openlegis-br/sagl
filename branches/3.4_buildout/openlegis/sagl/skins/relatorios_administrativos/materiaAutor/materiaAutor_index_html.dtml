@@ -1,18 +1,10 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript">
-$(function() {
-	$('#dt_apres').datepick();
-	$('#dt_apres2').datepick();
-});
-</script>
-
-<script type="text/javascript" src="javascript/data_validar.js" "></script>
+<script type="text/javascript" src="javascript/data_validar.js"></script>
 
 <script type="text/javascript">
-<!--
 
-  function campos_criticar(){
+  function campos_criticar(form){
 
       var form = document.materia_autor_form;
 
@@ -55,7 +47,6 @@ $(function() {
       form.submit();
     }
 
-//-->
 </script>
 
 <script type="text/javascript">
@@ -91,32 +82,32 @@ function clear_form_elements(ele) {
 }
 </script>
 
-<a id="ajuda" href="<dtml-var portal_url>/ajuda/relatorios#rel_autor">Ajuda</a>
-
 <h1 class="firstHeading">Matérias por Autor</h1>
 
 <dtml-if expr="not _.has_key('impressao') or (_.has_key('impressao') and not _.has_key('dt_apres') and not _.has_key('dt_apres2'))">
-<form class="pf-form" id="hideprint" method="post" name="materia_autor_form" action="materiaAutor_index_html">
 
- <fieldset>
+<form class="d-print-none" method="post" id="materia_autor_form" name="materia_autor_form" action="materiaAutor_index_html">
+
   <dtml-if impressao>
     <input type="hidden" name="impressao" value="<dtml-var impressao>">
   </dtml-if>
-    <div class="pf-element pf-full-width">
-      <label for="txt_autor"><span class="pf-label">Autor</span></label>
-       <div class="pf-group">
- 	<div id="combo_zone" style="width:235px;"></div>
+  
+  <div class="form-row">
+    <div class="col-12 col-sm-6 mb-3">
+      <label for="txt_autor">Autor</label>
+        <select id="hdn_cod_autor" name="hdn_cod_autor" class="form-control selectpicker show-tick" data-size="6" data-live-search="true" data-header="Pesquisar Autor">
+              <option value="">Selecione</option>
+              <dtml-in expr="zsql.autor_obter_zsql(ind_excluido=0)">
+                <option value="<dtml-var cod_autor>"
+                 <dtml-if expr="_.has_key('hdn_cod_autor') and _.int(cod_autor)==_.int(hdn_cod_autor)">
+                  selected</dtml-if>
+                ><dtml-var nom_autor_join></option>
+              </dtml-in>
+       </select>
      </div>
-    </div>
-		<script type="text/javascript">
-			myCombo = new dhtmlXCombo("combo_zone", "hdn_cod_autor", 240);
-                        myCombo.load("<dtml-var portal_url>/pysc/autores_pesquisar_pysc");
-			myCombo.enableFilteringMode(true);
-		</script>  
-
-    <div class="pf-element pf-full-width">
-      <label for="lst_tip_materia"><span class="pf-label">Tipo de matéria</span></label>
-        <select class="pf-field" id="lst_tip_materia" name="lst_tip_materia" style="max-width: 240px; width: 100%;">
+    <div class="col-12 col-sm-6 mb-3">
+      <label for="lst_tip_materia">Tipo de Matéria</label>
+        <select class="custom-select" id="lst_tip_materia" name="lst_tip_materia">
           <option value="0">Todos</option>
           <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
             <option 
@@ -127,46 +118,67 @@ function clear_form_elements(ele) {
             </option>
           </dtml-in>
         </select>
-    </div>
-    <div class="pf-element pf-full-width">
-      <label><span class="pf-label">Período de apresentação:</span></label>
-       <div class="pf-group">
-        <label for="dt_apres">
-          <input class="pf-field" type="text" id="dt_apres" name="dt_apres" maxlength=10 style="min-width: 94px; max-width: 94px; width: 20%;" 
-            value="<dtml-var dt_apres missing>" onblur="formata_data(form.dt_apres)" />
-        </label>
-        <label for="dt_apres2">a
-          <input class="pf-field" type="text" id="dt_apres2" name="dt_apres2" maxlength="10" style="min-width: 94px; max-width: 94px; width: 20%;" 
-           value="<dtml-var dt_apres2 missing>" onblur="formata_data(form.dt_apres2)" />
-        </label>
-        </div>
-      </div>
-    <div class="pf-element pf-full-width">
-      <label><span class="pf-label">Modo de Exibição:</span></label>
-       <div class="pf-group">
-             <dtml-in expr="['Resumido', 'Detalhado']">
-              <input type="radio" id="mod_exibicao" name="rad_mod_exibicao" value="<dtml-var expr="_['sequence-item'][0]">"
+    </div>     
+   </div>
+
+   <div class="form-row">
+     <div class="col-6 col-md-3 mb-3">
+            <label for="dt_apres" class="required">Data Inicial</label>
+            <input class="form-control date" type="text" name="dt_apres" id="dt_apres" value="<dtml-var dt_apres missing>" required />
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+           <label for="dt_apres2" class="required">Data Final</label>
+           <input class="form-control date" type="text" name="dt_apres2" id="dt_apres2" value="<dtml-var dt_apres2 missing>" required />
+     </div>
+    <script>
+        $('#dt_apres').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#dt_apres2').val();
+            }
+        });
+        $('#dt_apres2').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#dt_apres').val();
+            }
+        });
+    </script>
+    <div class="col-6 col-md-3 mb-3">
+      <label class="d-block">Modo de Exibição</label>
+          <dtml-in expr="['Resumido', 'Detalhado']">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="rad<dtml-var expr="_['sequence-item']">" name="rad_mod_exibicao" value="<dtml-var expr="_['sequence-item'][0]">"
                 <dtml-if expr="_.has_key('rad_mod_exibicao') and rad_mod_exibicao==_['sequence-item'][0]">
                    checked=1
                 <dtml-elif expr="_['sequence-item']=='Resumido'">checked=1</dtml-if>>
-              <label style="vertical-align: top;" for="rad_mod_exibicao"><dtml-var expr="_['sequence-item']"></label>
+              <label class="form-check-label" for="rad<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-item']"></label>
+             </div>
              </dtml-in>
        </div>
-    </div>
-      <div class="pf-element pf-buttons">
-        <input class="pf-button btn botao" type="button" name="button" value="Gerar relatório" onClick="campos_criticar()" />
-        <input class="pf-button btn botao" type="button" name="btn_materia_limpar" value="Limpar campos" onclick="clear_form_elements('#hideprint')" >
+  </div>
+
+
+      <div class="text-left">
+        <input class="btn btn-primary" type="button" name="button" value="Gerar relatório" onClick="return campos_criticar(form)" />
       </div>
- </fieldset>
+
 </form>
 </dtml-if>
 
 <dtml-if expr="_.has_key('dt_apres') or _.has_key('dt_apres2')">
- <h3 align="center">Matérias apresentadas entre <dtml-var dt_apres> e <dtml-var dt_apres2></h3>
- <br />
 
 <dtml-in expr="autorMateriaAno(cod_autor=hdn_cod_autor,tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
- <table class="table">
+ <table class="table table-sm mt-4">
+ <thead class="table-secondary"> 
   <tr>
    <th colspan="3">
      <h3 align="center">
@@ -182,12 +194,17 @@ function clear_form_elements(ele) {
      </h3>
    </th>
   </tr>
+ </thead>
+  <tr>
+     <td width="90%"><b>Tipo de Matéria</b></td>
+     <td><b>Quantidade</b></td>
+  </tr> 
  <dtml-in expr="tipoQtdeAutor(autor=cod_autor,tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
   <tr>
-   <td width="80%">
-     <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+   <td width="90%">
+     <dtml-var des_tipo_materia>
    </td>
-   <td width="20%" align="center">
+   <td align="center">
      <dtml-var qtde>
    </td>
   </tr>
@@ -207,31 +224,25 @@ function clear_form_elements(ele) {
 <dtml-if expr="_.has_key('rad_mod_exibicao') and rad_mod_exibicao=='D'">
  <dtml-in expr="materiaAutorAno(autor=cod_autor,tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
  <dtml-if sequence-start>
-  <table class="table">
-  <tr>
-   <th>
-    Matéria
-   </th>
-   <th>
-    Ementa
-   </th>
-   <th>
-    Situação
-   </th>
+   <table class="table table-sm">
+     <thead class="table-secondary">
+     <tr>
+      <th>Identificação da Matéria</th>
+      <th>Situação</th>
+     </thead>
   </dtml-if>
   </tr>
   <tr>
-   <td width="15%">
-     <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
-     <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a></b>
+   <td>
+     <dtml-var sequence-number>)
+     <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" target="_blank">
+      <b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a></b>
+     - <dtml-var txt_ementa> 
      <dtml-if expr="sgl_tipo_materia=='IND' and dat_fim_prazo and dat_fim_prazo!=''">
-       <br /><b>Vencimento:</b> <dtml-var dat_fim_prazo>
+       - <b>Vencimento:</b> <dtml-var dat_fim_prazo>
      </dtml-if>
    </td>
-   <td width="65%">
-     <dtml-var txt_ementa>
-   </td>
-   <td width="20%">
+   <td>
      <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
          <dtml-var des_status missing>
      </dtml-in>
@@ -248,20 +259,25 @@ function clear_form_elements(ele) {
   <tr>
 <dtml-if sequence-end>
  </table>
- <br />
 </dtml-if>
 </dtml-if>
 </dtml-in>
 
-<table class="table">
  <dtml-in expr="tipoQtdeGeral(tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
   <dtml-if sequence-start>
-   <tr>
-     <th colspan="2" class="label"><h3 align="center">QUADRO GERAL</h3></th>
-   </tr>
+  <table class="table table-sm">
+     <thead class="table-secondary">
+       <tr>
+        <th colspan="2" class="label"><h3 align="center">QUADRO GERAL</h3></th>
+      </tr>
+     </thead>
+     <tr>
+       <td width="90%"><b>Tipo de Matéria</b></td>
+       <td><b>Quantidade</b></td>
+    </tr>    
   </dtml-if>
   <tr>
-   <td width="80%">
+   <td>
      <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
    </td>
    <td width="20%" align="center">
@@ -272,13 +288,15 @@ function clear_form_elements(ele) {
  <dtml-in expr="qtdeGeral(tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
   <tr>
    <td>
-     <b>TOTAL</b>
+     <b>TOTAL GERAL</b>
    </td>
    <td align="center">
      <b><dtml-var qtde></b>
    </td>
   </tr>
-</table>
+  <dtml-if sequence-end>  
+    </table>
+  </dtml-if>
 </dtml-in>
 </dtml-if>
 

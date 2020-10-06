@@ -1,85 +1,96 @@
 <dtml-var standard_html_header>
 
-<link rel="stylesheet" href="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
-
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
-
 <script type="text/javascript">
-window.onload = setupRefresh;
-
-function setupRefresh() {
-  setTimeout("refreshPage();", 600000);
-}
-function refreshPage() {
-   window.location = location.href;
-}
-</script>
-
-<script type="text/javascript">
-<!--
-   $(document).ready(function() { 
-    $("#vencidas")
-    .tablesorter(
-      {theme:'blue',
-       widgets:['filter'], 
-       sortList: [[3,0]], 
-       headers: 
+/* Formatting function for row details - modify as you need */
+$(document).ready(function() {
+    var table = $('#jdTable').DataTable( {
+        "responsive": true,
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
             {
-                3: {sorter: "shortDate", dateFormat: "ddmmyyyy"}
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
             }
-     })
-    .tablesorterPager({container: $("#pager")});  
-    }); 
--->
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
+});
 </script>
 
-<a id="ajuda" href="<dtml-var portal_url>/ajuda/materia_legislativa">Ajuda</a>
-
-<h1 class="firstHeading">Matérias com prazos de tramitação vencidos</h1>
+<h1 class="firstHeading">Tramitações vencidas</h1>
 
     <dtml-in expr="zsql.tramitacao_prazo_vencido_obter_zsql()">
-          <dtml-if sequence-even>
-             <dtml-call "REQUEST.set ('class', 'odd')">
-          <dtml-else>
-             <dtml-call "REQUEST.set ('class', 'even')">
-          </dtml-if>
         <dtml-if sequence-start>
-        <fieldset>
-
-        <table class="table"  id="vencidas" class="tablesorter">
-         <thead>
+        <div class="table-responsive">
+        <table class="table table-bordered" id="jdTable">
+         <thead class="table-secondary">
             <tr>
-                <th width="50%">Matéria</th>
+                <th>Matéria</th>
                 <th>Localização</th>
                 <th>Situação</th>
-                <th>Fim de Prazo</th>
+                <th>Vencimento</th>
             </tr>
          </thead>
-         <tfoot>
-         </tfoot>
-         <tbody>
-        <dtml-if previous-sequence>
-          <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
-        </dtml-if previous-sequence>
         </dtml-if sequence-start>
-          <tr class="<dtml-var class>">
+          <tr>
             <td>
               <b><a href="<dtml-var portal_url>/cadastros/materia/tramitacao/tramitacao_index_html?cod_materia=<dtml-var cod_materia>" target="_blank">
-                 <dtml-var des_tipo_materia missing> Nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a><br />
-                 <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
-                   <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
-                     <b>Autores:</b>
-                   <dtml-else>
-                     <b>Autor:</b>
-                   </dtml-if>
-                 </dtml-if> 
+                 <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a> - 
                  <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
                    <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
-                  <dtml-if sequence-end><br /></dtml-if>
                  </dtml-in>
-              <dtml-var txt_ementa>
+                 - <dtml-var txt_ementa>
             </td>
             <td>
               <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest)">
@@ -100,28 +111,11 @@ function refreshPage() {
             </td>
         </tr>
     <dtml-if sequence-end>
-         <tbody>
      </table>
-      <div id="pager" class="pager">
-        <form>
-                <img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
-                <img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
-                <input class="form-control" type="text" class="pagedisplay"/>
-                <img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
-                <img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
-                <select class="custom-select"  class="pagesize">
-                        <option selected="selected"  value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="30">30</option>
-                        <option value="40">40</option>
-                </select>
-        </form>
-      </div>
-</fieldset>
-  </dtml-if sequence-end>
+     </div>
+    </dtml-if sequence-end>
   <dtml-else>
-      <fieldset>
-        <p>Não há ocorrências.</p>
-      </fieldset>
+     <p>Nenhuma tramitação vencidas.</p>
 </dtml-in>
+
 <dtml-var standard_html_footer>
