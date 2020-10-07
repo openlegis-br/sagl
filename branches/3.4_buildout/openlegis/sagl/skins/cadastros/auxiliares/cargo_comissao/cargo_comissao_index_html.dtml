@@ -1,7 +1,7 @@
 <dtml-var standard_html_header>
 
 <script type="text/javascript">
-<!--
+
     function submeter(cod_cargo, campo , campo1, form) {
 
     if (campo.value == "") {
@@ -16,19 +16,19 @@
 
     form.submit();
 
-
   }
 
   function excluir(cod_cargo) {
-    location.href = "<dtml-var absolute_url>/cargo_comissao_excluir_proc?cod_cargo=" + cod_cargo;
+    if (confirm("Deseja realmente excluir?")) {    
+      location.href = "<dtml-var absolute_url>/cargo_comissao_excluir_proc?cod_cargo=" + cod_cargo;
+    }
   }
 
-//-->
 </script>
-<form name="cargo_comissao_form" method="post" action="cargo_comissao_salvar_proc"> 
 
-<div class="helpsagl"> <a id="ajuda" href="<dtml-var portal_url>/ajuda/cargo_comissao">Ajuda</a> </div>
-<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+<h1 class="firstHeading">Cargos de Comissão</h1>
+
+<form name="cargo_comissao_form" method="post" action="cargo_comissao_salvar_proc"> 
 
 <input type="hidden" name="hdn_cod_cargo" value=0 /> 
 <input type="hidden" name="hdn_des_cargo" />
@@ -36,44 +36,63 @@
 
 <dtml-in expr="zsql.cargo_comissao_obter_zsql(ind_excluido=0)">
     <dtml-if sequence-start>
-
-<fieldset><legend>Cargos de Comissão</legend>
        <table class="table">
+        <thead class="table-secondary">              
          <tr> 
            <th width="10%">Código</th>
-           <th width="55%">Cargo na Comissão</th>
-           <th width="15%">Cargo Único</th>
-           <th width="20%">Ação</th>
+           <th width="55%">Nome do Cargo</th>
+           <th width="15%">Tipo</th>
+           <th width="20%">Ações</th>
          </tr>
+        </thead>         
       </dtml-if sequence-start>
          <tr> 
            <td><dtml-var cod_cargo></td>
-           <td><input class="form-control" type="text" name="txt_des_cargo_<dtml-var cod_cargo>" value="<dtml-var des_cargo missing>" size="40" /></td>                 
-      <td><input class="form-check-input position-static" type="checkbox" name="chk_ind_unico_<dtml-var cod_cargo>" 
-             <dtml-if expr="ind_unico==1">checked</dtml-if> /></td>
            <td>
-           <a href="javascript:submeter(<dtml-var cod_cargo>,document.cargo_comissao_form.txt_des_cargo_<dtml-var cod_cargo>,document.cargo_comissao_form.chk_ind_unico_<dtml-var cod_cargo>,document.cargo_comissao_form)">
-            Atualizar</a>/ <a href="javascript:excluir(<dtml-var cod_cargo>)">Excluir</a></td>
+              <input class="form-control" type="text" name="txt_des_cargo_<dtml-var cod_cargo>" value="<dtml-var des_cargo missing>" size="40" />
+           </td>                 
+           <td>
+             <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="chk_ind_unico_<dtml-var cod_cargo>" name="chk_ind_unico_<dtml-var cod_cargo>" 
+                <dtml-if expr="ind_unico==1">checked</dtml-if> />
+               <label class="form-check-label" for="chk_ind_unico_<dtml-var cod_cargo>">
+                 Cargo Único
+               </label>
+             </div>
+           <td>
+           <a class="btn btn-primary mb-1" href="javascript:submeter(<dtml-var cod_cargo>,document.cargo_comissao_form.txt_des_cargo_<dtml-var cod_cargo>,document.cargo_comissao_form.chk_ind_unico_<dtml-var cod_cargo>,document.cargo_comissao_form)">Atualizar</a> 
+           <a class="btn btn-danger mb-1" href="javascript:excluir(<dtml-var cod_cargo>)">Excluir</a></td>
          </tr>
     <dtml-if sequence-end>
       </table>        
     </dtml-if sequence-end>
 <dtml-else>
-       <table class="table">
-         <tr><td>Nenhum Cargo cadastrado.</td></tr>
-       </table>
+   <p>Nenhum cargo cadastrado.</p>
 </dtml-in>
 
-  <table class="table">
-  <tr>
-     <td><input class="form-control" type="text" name="txt_des_cargo" value="<dtml-var des_cargo missing>" size="40" />
-         <input class="form-check-input position-static" type="checkbox" name="chk_ind_unico" />Cargo Único
-     <br /> <input class="btn btn-primary" type="button" name="btn_cargo_comissao_incluir" value="Incluir Cargo" 
-                onClick="submeter(0,document.cargo_comissao_form.txt_des_cargo,document.cargo_comissao_form.chk_ind_unico,document.cargo_comissao_form)" />
-     </td>
-   </tr>
-  </table>
+ <legend>Formulário de Inclusão</legend>
+ <div class="form-row">
+   <div class="col-12 mb-3">
+      <label for="txt_des_cargo" class="required">Nome do Cargo</label>
+      <div class="input-group">                   
+         <input class="form-control" type="text" id="txt_des_cargo" name="txt_des_cargo" maxlength="50" />       
+         <div class="input-group-append">
+           <div class="input-group-text">  
+              <input type="checkbox" id="chk_ind_unico" name="chk_ind_unico" />
+               <label class="form-check-label ml-1" for="chk_ind_unico">
+                 Cargo Único
+               </label>
+           </div>
+          <input class="btn btn-primary" type="button" value="Incluir" onClick="submeter(0, document.cargo_comissao_form.txt_des_cargo , document.cargo_comissao_form.chk_ind_unico, document.cargo_comissao_form)" />         
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-md-12">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+      </div>
+   </div> 
 
-</fieldset>
 </form>
+
 <dtml-var standard_html_footer>
