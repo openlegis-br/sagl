@@ -1,38 +1,90 @@
 <dtml-var standard_html_header>
-<link rel="stylesheet" href="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
 
 <script type="text/javascript">
-<!--
-   $(document).ready(function() { 
-       $("#autores")
-    .tablesorter({theme: 'blue', widgets: ['filter'], sortList: [[2,1],[0,0]]})
-    .tablesorterPager({container: $("#pager")}); 
-    }); 
--->
+
+$(document).ready(function() {
+
+    $('#autores').DataTable( {
+        "responsive": true,
+        "bStateSave": true,        
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('auDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('auDataTable'));
+        },
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
+
 </script>
 
-<a id="ajuda" href="<dtml-var portal_url>/ajuda/autor">Ajuda</a>
-<h1 class="firstHeading">Tabelas Auxiliares </h1> 
-
-<table class="table">
-  <tr> 
-    <td align="left">| <a href="autor_form">Incluir Autor</a> |</td>
-   </tr>
-</table>
-
-<fieldset><legend>Autores</legend>
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Autores</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+          <a class="btn btn-sm btn-primary d-print-none mb-3" href="autor_form"><i class="fa fa-fw fa-plus"></i> Incluir Autor</a>
+         </div>
+      </div>
+ </div>
     
  <dtml-in expr="zsql.autor_obter_zsql(ind_excluido=0)"> 
   <dtml-if sequence-start>
-       <table class="table"  id="autores" class="tablesorter">
-        <thead>
+       <table class="table" id="autores">
+        <thead class="table-secondary">
           <tr> 
             <th width="62%">Nome</th>
             <th width="20%">Tipo</th>
-            <th width="15%">Login?</th>
+            <th width="15%">Login</th>
          </tr>
         </thead>        
   </dtml-if sequence-start>
@@ -61,33 +113,15 @@
             <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
                <dtml-var des_tipo_autor>
             </dtml-in></td>
-            <td align="center">
-                <dtml-if col_username>Sim<dtml-else> - </dtml-if>                
+            <td>
+                <dtml-if col_username><dtml-var col_username><dtml-else> </dtml-if>                
             </td>
          </tr>
     <dtml-if sequence-end>
-      </table>
-<div id="pager" class="pager">
-	<form>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
-		<input class="form-control" type="text" class="pagedisplay"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
-		<select class="custom-select"  class="pagesize">
-			<option selected="selected"  value="10">10</option>
-			<option value="20">20</option>
-			<option value="30">30</option>
-			<option  value="40">40</option>
-		</select>
-	</form>
-</div>    
+      </table>  
     </dtml-if sequence-end>
 <dtml-else>
-       <table class="table">
-         <tr><td><br />Nenhum Autor cadastrado.</td></tr>
-       </table>
+  <p><br />Nenhum Autor cadastrado.</p>
 </dtml-in>
 
-</fieldset>
 <dtml-var standard_html_footer>
