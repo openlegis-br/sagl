@@ -30,50 +30,43 @@ function funcionario_excluir() {
 //-->
 </script>
 
-<a id="ajuda" href="<dtml-var portal_url>/ajuda/funcionario">Ajuda</a>
-
-<h1 class="firstHeading">Tabelas Auxiliares</h1> 
-
-<table class="table">
-  <tr> 
-    <td>| <a href="index_html">Início</a> |</td>
-   </tr>
-</table>
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Cadastro de Funcionário</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="index_html"><i class="fa fa-fw fa-undo"></i> Voltar</a>         
+         </div>
+      </div>
+ </div>
 
 <form name="funcionario_form" method="post" action="funcionario_salvar_proc">
-<fieldset><legend>Funcionário</legend>
+
   <input type="hidden" name="hdn_cod_funcionario" value="<dtml-var cod_funcionario missing>" />
-       <table class="table">
-        <tr> 
-           <td>Nome do Funcionário <span class="campoObrigatorio"></span><br />
-            <input class="form-control" type="text" name="txt_nom_funcionario" value="<dtml-var nom_funcionario missing>" size="40" maxlength="255" /></td>
-           <td>Cargo / Função <span class="campoObrigatorio"></span><br />
-            <input class="form-control" type="text" name="txt_des_cargo" value="<dtml-var des_cargo missing>" size="40" maxlength="255" /></td>
-        </tr>
-        <tr>
-           <td>Ativo ? <span class="campoObrigatorio"></span><br />
-             <dtml-in expr="[(1,'Sim'),(0,'Não')]">
-                <input class="form-check-input" type="radio" id="rad_ind_ativo" name="rad_ind_ativo" value="<dtml-var expr="_ ['sequence-key']">"
-                 <dtml-if expr="REQUEST.has_key('cod_funcionario')">
-                   <dtml-if expr="ind_ativo==_['sequence-key']">
-                     checked=1
-                   </dtml-if>
-                 <dtml-elif expr="_['sequence-item']=='Sim'">checked=1
-                 </dtml-if>
-                 onChange="javascript:form.hdn_alterou.value=1" />
-                 <dtml-var expr="_['sequence-item']">
-             </dtml-in>
-           </td>
-           <td>Data de Cadastro <span class="campoObrigatorio"></span><br />
-              <dtml-unless dat_cadastro>
-                  <dtml-call expr="REQUEST.set('dat_cadastro', _.DateTime().strftime('%d/%m/%Y'))">
-              </dtml-unless>
-              <input class="form-control" type="text" name="txt_dat_cadastro" value="<dtml-var dat_cadastro missing>" size="15" maxlength="15" readonly />
-           </td>
-        </tr>
-        <tr>
-           <td colspan="2">Usuário Vinculado<br />
-             <select class="custom-select"  id="lst_cod_usuario" name="lst_cod_usuario">
+
+  <div class="form-row">
+    <div class="col-12 col-sm-6 mb-3">
+       <label for="txt_nom_funcionario" class="required">Nome do Funcionário</label>             
+       <input class="form-control" type="text" id="txt_nom_funcionario" name="txt_nom_funcionario" value="<dtml-var nom_funcionario missing>" maxlength="255" />
+    </div>
+    <div class="col-12 col-sm-6 mb-3">
+       <label for="txt_des_cargo" class="required">Cargo ou Função</label>                 
+       <input class="form-control" type="text" id="txt_des_cargo" name="txt_des_cargo" value="<dtml-var des_cargo missing>" maxlength="255" />
+    </div>    
+  </div>
+  
+  <div class="form-row">
+    <div class="col-6 col-sm-4 mb-3">
+       <dtml-unless dat_cadastro>
+          <dtml-call expr="REQUEST.set('dat_cadastro', _.DateTime().strftime('%d/%m/%Y'))">
+       </dtml-unless>
+       <label for="txt_dat_cadastro" class="required">Data de Cadastro</label>                        
+       <input class="form-control" type="text" id="txt_dat_cadastro" name="txt_dat_cadastro" value="<dtml-var dat_cadastro missing>" maxlength="15" readonly />
+    </div>
+    <div class="col-6 col-sm-6 mb-3">
+       <label for="lst_cod_usuario">Login Vinculado</label>                            
+             <select class="custom-select" id="lst_cod_usuario" name="lst_cod_usuario">
                 <option value=""></option>
                 <dtml-in expr="zsql.usuario_obter_zsql(ind_excluido=0)">
                   <option
@@ -86,16 +79,36 @@ function funcionario_excluir() {
                     <dtml-var nom_completo> (<dtml-var col_username missing>)
                   </option>
                 </dtml-in>
-             </select>
-           </td>
-        </tr>
-      </table>
-  <p align="center">
-  <input class="btn btn-primary" type="button" name="btn_funcionario_salvar" value="Salvar" onClick="campos_criticar(document.funcionario_form)" />
+             </select>    
+    </div>
+    <div class="col-6 col-sm-2 mb-3">
+       <label class="d-block required">Ativo ?</label>                                
+             <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+               <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="rad<dtml-var expr="_ ['sequence-key']">" name="rad_ind_ativo" value="<dtml-var expr="_ ['sequence-key']">"
+                 <dtml-if expr="REQUEST.has_key('cod_funcionario')">
+                   <dtml-if expr="ind_ativo==_['sequence-key']">
+                     checked=1
+                   </dtml-if>
+                 <dtml-elif expr="_['sequence-item']=='Sim'">checked=1
+                 </dtml-if>/>
+                <label class="form-check-label" for="rad<dtml-var expr="_ ['sequence-key']">"><dtml-var expr="_['sequence-item']"></label>
+                </div>
+             </dtml-in>
+    </div>         
+  </div>
+
+
+  <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar(document.funcionario_form)" />
   <dtml-if cod_funcionario>
-    <input class="btn btn-primary" type="button" name="btn_funcionario_excluir" value="Excluir" onClick="funcionario_excluir(document.funcionario_form)" />
+    <input class="btn btn-danger" type="button" value="Excluir" onClick="funcionario_excluir(document.funcionario_form)" />
   </dtml-if>
-  </p>
-</fieldset>
+
+   <div class="row">
+      <div class="col-md-12 mt-2">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+      </div>
+   </div> 
+
 </form>
 <dtml-var standard_html_footer>
