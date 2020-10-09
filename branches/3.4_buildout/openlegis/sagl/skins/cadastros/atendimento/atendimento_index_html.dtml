@@ -1,60 +1,22 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript">
-$(document).ready(function() {
-$(".popup").fancybox({
-	maxWidth	: 550,
-	maxHeight	: 450,
-	fitToView	: true,
-	width		: '75%',
-	height		: '85%',
-	autoSize	: false,
-	closeClick	: false,
-        scrolling       : false,
-        preload         : true,
-	openEffect	: 'fade',
-        afterClose      : function() {
-        		window.location.href = "<dtml-var portal_url>/cadastros/atendimento";
-        		},
-	closeEffect	: 'fade'
-	});
-});
-$(document).ready(function() {
-$(".popup-visitante").fancybox({
-	maxWidth	: 900,
-	maxHeight	: 600,
-	fitToView	: true,
-	width		: '75%',
-	height		: '85%',
-	autoSize	: false,
-	closeClick	: false,
-        scrolling       : false,
-        preload         : true,
-	openEffect	: 'fade',
-        afterClose      : function() {
-        		window.location.href = "<dtml-var portal_url>/cadastros/atendimento";
-        		},
-	closeEffect	: 'fade'
-	});
-});
-</script>
-
 <h1 class="firstHeading">Visitantes Ativos</h1> 
 
-  <fieldset>
      <dtml-in expr="zsql.visita_obter_zsql(cod_funcionario=cod_funcionario_corrente,ind_aberta=1)">
        <dtml-if sequence-start>
          <table class="table">
+          <thead class="table-secondary">         
            <tr>
               <th width="50%" class="label">Visitante</th>
-              <th width="20%" class="label">Data de Entrada</th>
+              <th width="20%" class="label">Entrada</th>
               <th width="10%" class="label">Crachá</th>
               <th width="20%" class="label">Atendimento</th>
            </tr>
+          </thead>
        </dtml-if>
            <tr>
               <td>
-                  <a href="<dtml-var portal_url>/cadastros/atendimento/visitante_mostrar_proc?hdn_cod_pessoa=<dtml-var cod_pessoa missing>" class="popup-visitante" data-fancybox-type="iframe"/><dtml-var nom_pessoa></a>
+                  <a href="#" data-src="<dtml-var portal_url>/cadastros/atendimento/visitante_mostrar_proc?hdn_cod_pessoa=<dtml-var cod_pessoa missing>&modal=1" data-toggle="modal" data-target="#iFrameModal" /><dtml-var nom_pessoa></a>              
                </td>
               <td>
                  <dtml-var dat_entrada>
@@ -62,23 +24,22 @@ $(".popup-visitante").fancybox({
               <td><dtml-var num_cracha missing></td>
               <td>
                <dtml-if des_situacao>
-                 <dtml-if expr="des_situacao == 'P'">
-                   <a href="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="popup" data-fancybox-type="iframe"/>Pendente</a>
+                 <dtml-if expr="des_situacao == 'P'">                                
+                   <a class="btn btn-sm btn-link" data-src="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>&modal=1" data-toggle="modal" data-target="#iFrameModal" />Pendente</a>
                  <dtml-elif expr="des_situacao == 'R'">
-                   <a href="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="popup" data-fancybox-type="iframe"/>Resolvido</a>
+                   <a class="btn btn-sm btn-link" data-src="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>&modal=1" data-toggle="modal" data-target="#iFrameModal" />Resolvido</a>                 
                  </dtml-if>
                <dtml-else>
-               <a href="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="popup" data-fancybox-type="iframe"/>Registrar</a>
-               </dtml-if> | 
-               <a href="<dtml-var portal_url>/cadastros/atendimento/historico_pessoa?cod_funcionario=<dtml-var cod_funcionario_corrente>&cod_pessoa=<dtml-var cod_pessoa>" class="botao-link popup-visitante" data-fancybox-type="iframe"/>Histórico</a>
+                  <a class="btn btn-sm btn-link" data-src="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>&modal=1" data-toggle="modal" data-target="#iFrameModal" />Registrar</a>                
+               </dtml-if>
+                  <a class="btn btn-sm btn-secondary" data-src="<dtml-var portal_url>/cadastros/atendimento/historico_pessoa?cod_funcionario=<dtml-var cod_funcionario_corrente>&cod_pessoa=<dtml-var cod_pessoa>&modal=1" data-toggle="modal" data-target="#iFrameModal" />Histórico</a>                 
               </td>
            </tr>
        <dtml-if sequence-end>
           </table>
        </dtml-if>
      <dtml-else>
-       <p>Nenhum registro encontrado.</p>
+       <p>Nenhum visitante ativo.</p>
      </dtml-in>
-  </fieldset>
 
 <dtml-var standard_html_footer>

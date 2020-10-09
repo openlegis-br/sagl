@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<dtml-var standard_css_slot>
+<dtml-var standard_html_header>
 
-<script type='text/javascript' src='<dtml-var portal_url>/javascript/geral.js'></script>
-<script type="text/javascript" src="javascript/data_validar.js" "></script>
+<script type="text/javascript" src="javascript/data_validar.js"></script>
 
 <script type="text/javascript">
-<!--
+
   function campos_criticar(form){
 
       var form = document.atendimento_form;
@@ -25,14 +21,14 @@
       }
 
       if (form.lst_des_situacao.value=="R" && form.txt_dat_solucao.value==""){
-         alert("Informe a data de solução do atendimento!");
+         alert("Informe a data de resolução do atendimento!");
          form.txt_dat_solucao.focus();
          form.txt_dat_solucao.select();
          return false;
       }
 
       if (form.txt_dat_solucao.value!="" && !IsValidDate(form.txt_dat_solucao.value)){
-         alert("Informe uma data de solução válida!");
+         alert("Informe uma data de resolução válida!");
          form.txt_dat_solucao.focus();
          form.txt_dat_solucao.select();
          return false;
@@ -41,13 +37,9 @@
       form.submit();
   }
 
-  function reloadParentAndClose(){
-       parent.jQuery.fancybox.close();
-  }
 </script>
-</head>
 
-<body class="">
+  <h1 class="firstHeading">Registro de Atendimento</h1>
 
   <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
        <dtml-if cod_usuario>
@@ -59,59 +51,61 @@
 
 <dtml-if expr="cod_funcionario == cod_funcionario_corrente">
 
-  <h1 class="firstHeading">Registro de Atendimento</h1>
-
   <form name="atendimento_form" method="post" action="atendimento_salvar_proc">
-      <input type="hidden" name="hdn_cod_visita" value="<dtml-var cod_visita missing>" />
-      <table class="table">
-         </tr>
-           <td>
-            <label for="txa_nom_pessoa">Visitante</label><br />
-            <input class="form-control" type="text" id="txt_nom_pessoa" name="txt_nom_pessoa" size="40" value="<dtml-var nom_pessoa>" disabled />
-           </td>
-           <td>
-            <label for="txt_num_cracha">Crachá</label><br />
-            <input class="form-control" type="text" id="txt_num_cracha" name="txt_num_cracha" size="18" maxlength="3" value="<dtml-var num_cracha>" disabled />
-           </td>
-         </tr>
-         <tr>
-           <td>
-             <label for="dat_entrada">Data de Entrada</label><br />
-             <input class="form-control" type="text" name="dat_entrada" size="18" value="<dtml-var dat_entrada>" readonly />
-           </td>
-           <td>
-             <label for="dat_saida">Data de Saída</label><br />
-             <dtml-if dat_saida>
-               <input class="form-control" type="text" name="dat_saida" size="18" value="<dtml-var dat_saida missing null>" readonly />
-             <dtml-else>
-               <input class="form-control" type="text" name="dat_saida" size="18" value="(visita ativa)" readonly />
-             </dtml-if>
-           </td>
-         </tr>
-         <tr>
-           <td colspan="2">
-             <label for="lst_funcionario">Responsável pelo Atendimento</label><br />
-            <input class="form-control" type="text" id="txt_nom_funcionario" name="txt_nom_funcionario" size="40"  value="<dtml-var nom_funcionario>" disabled />
-           </td>
-         </tr>
-        <dtml-if txt_observacao>
-         <tr>
-           <td colspan="2">
-            <label for="txa_txt_observacao">Observações</label><br />
-            <textarea class="form-control"  name="txa_txt_observacao" cols="60" rows="4" <dtml-if dat_saida>readonly</dtml-if>><dtml-var txt_observacao missing null=""></textarea>
-           </td>
-         </tr>
-        </dtml-if>
-         <tr>
-           <td colspan="2">
-            <label for="txa_txt_atendimento">Descrição do Atendimento</label> <span class="campoObrigatorio"></span><br />
-            <textarea class="form-control"  name="txa_txt_atendimento" cols="60" rows="4"><dtml-var txt_atendimento missing null=""></textarea>
-           </td>
-         </tr>
-         <tr>
-           <td>
-            <label for="lst_des_situacao">Situação</label> <span class="campoObrigatorio"></span><br />
-            <select class="custom-select"  id="lst_des_situacao" name="lst_des_situacao">
+  
+     <input type="hidden" name="hdn_cod_visita" value="<dtml-var cod_visita missing>" />
+     <input type="hidden" name="modal" value="1" />
+
+     <div class="form-row">
+       <div class="col-9 mb-3">
+         <label for="txa_nom_pessoa" class="required">Nome do Visitante</label>
+         <input class="form-control" type="text" id="txt_nom_pessoa" name="txt_nom_pessoa" value="<dtml-var nom_pessoa>" disabled />
+       </div>
+       <div class="col-3 mb-3">
+         <label for="txt_num_cracha" class="required">Crachá</label>
+         <input class="form-control" type="text" id="txt_num_cracha" name="txt_num_cracha" maxlength="3" value="<dtml-var num_cracha>" disabled />
+       </div>       
+     </div>
+
+     <div class="form-row">
+       <div class="col-6 col-sm-3 mb-3">
+         <label for="dat_entrada" class="required">Entrada</label>
+         <input class="form-control" type="text" name="dat_entrada" value="<dtml-var dat_entrada>" readonly />
+       </div>
+       <div class="col-6 col-sm-3 mb-3">
+         <label for="dat_saida" class="required">Saída</label>
+         <dtml-if dat_saida>
+            <input class="form-control" type="text" name="dat_saida" value="<dtml-var dat_saida missing null>" readonly />
+         <dtml-else>
+            <input class="form-control" type="text" name="dat_saida" value="(visita ativa)" readonly />
+         </dtml-if>
+       </div>
+       <div class="col-12 col-sm-6 mb-3">
+         <label for="lst_funcionario" class="required">Responsável pelo Atendimento</label>
+         <input class="form-control" type="text" id="txt_nom_funcionario" name="txt_nom_funcionario"  value="<dtml-var nom_funcionario>" disabled />
+       </div>              
+     </div>
+
+   <dtml-if txt_observacao>
+     <div class="form-row">
+       <div class="col-12 mb-3">
+         <label for="txa_txt_observacao">Observações</label>
+         <textarea class="form-control" id="txa_txt_observacao" name="txa_txt_observacao" rows="2" <dtml-if dat_saida>readonly</dtml-if>><dtml-var txt_observacao missing null=""></textarea>
+       </div>
+     </div>
+   </dtml-if>     
+
+     <div class="form-row">
+       <div class="col-12 mb-3">
+         <label for="txa_txt_atendimento" class="required">Resumo do Atendimento</label>
+         <textarea class="form-control" id="txa_txt_atendimento" name="txa_txt_atendimento" rows="2"><dtml-var txt_atendimento missing null=""></textarea>
+       </div>
+     </div>
+
+     <div class="form-row">
+       <div class="col-4 col-sm-6 mb-3">
+            <label for="lst_des_situacao" class="required">Situação</label>
+            <select class="custom-select" id="lst_des_situacao" name="lst_des_situacao">
               <option value=""></option>
               <dtml-in expr="['Pendente','Resolvido']">
                 <option value="<dtml-var expr="_['sequence-item'][0]">"
@@ -120,24 +114,35 @@
                    </dtml-if> /> 
                 <dtml-var expr="_['sequence-item']"></option>
               </dtml-in>
-          
             </select>
-           </td>
-           <td>
-            <label for="txt_dat_solucao">Data de Solução</label><br />
-            <input class="form-control" type="text" id="txt_dat_solucao" size="13" name="txt_dat_solucao" value="<dtml-var dat_solucao missing null>" onblur="formata_data(form.txt_dat_solucao)" />
-           </td>
-         </tr>
-      </table>
-      <p align="center">
-          <input class="btn btn-primary" type="button" name="btn_salvar" value="Salvar" onClick="campos_criticar(document.atendimento_form)" />
-        <input class="btn btn-primary" type="button" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
-      </p>
+       </div>
+       <div class="col-4 col-sm-6 mb-3">
+          <label for="txt_dat_solucao">Data de Resolução</label>
+          <input class="form-control date" type="text" id="txt_dat_solucao" name="txt_dat_solucao" value="<dtml-var dat_solucao missing null>" />
+        <script>
+        $('#txt_dat_solucao').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>             
+       </div>
+     </div>
+
+   <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar(document.atendimento_form)" />
+
+   <div class="row">
+      <div class="col-md-12 mt-2">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+      </div>
+   </div> 
+
   </form>
 
 <dtml-else>
   <h1 class="firstHeading">Permissão negada !</h1>
 </dtml-if>
 
- </body>
-</html>
+<dtml-var standard_html_footer>

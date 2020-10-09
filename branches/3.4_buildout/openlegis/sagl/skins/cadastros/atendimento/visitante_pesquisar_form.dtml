@@ -15,33 +15,46 @@
   });
 }(jQuery));
 
-$(function() {
-        $('#txt_dat_visita').datepick();
-        $('#txt_dat_visita2').datepick();
-});
 </script>
 
 <h1 class="firstHeading">Pesquisa de Visitantes</h1> 
 
 <form class="pf-form" name="pesq_avancada_form" id="pesq_avancada_form" action="visitante_pesquisar_proc">
-  <fieldset>
-  <div id="inputs">
-    <div class="pf-element pf-full-width">
-      <label><span class="pf-label">Período de Visita</span></label>
-       <div class="pf-group">
-        <label for="txt_dat_visita">
-          <input class="form-control" class="pf-field" type="text" id="txt_dat_visita" name="txt_dat_visita" maxlength=10 style="min-width: 100px; max-width: 100px; width: 20%;" 
-            value="<dtml-var txt_dat_visita missing>" onblur="formata_data(form.txt_dat_visita)" />
-        </label>
-        <label for="txt_dat_visita2">a
-          <input class="form-control" class="pf-field" type="text" id="txt_dat_visita2" name="txt_dat_visita2" maxlength="10" style="min-width: 100px; max-width: 100px; width: 20%;" 
-           value="<dtml-var txt_dat_visita2 missing>" onblur="formata_data(form.txt_dat_visita2)" />
-        </label>
-        </div>
-      </div>
-     <div class="pf-element pf-full-width">
-        <label for="lst_mes_aniversario"><span class="pf-label">Mês de Aniversário</span></label>
-          <select class="custom-select"  class="pf-field" id="lst_mes_aniversario" name="lst_mes_aniversario" style="max-width: 240px; width: 100%;">
+
+  <div class="form-row">
+    <div class="col-6 col-lg-3 mb-3">
+      <label for="txt_dat_visita">Data Inicial de Visita</label>
+        <input type="text" class="form-control date" id="txt_dat_visita" name="txt_dat_visita" autocomplete="off">
+    </div>
+   <div class="col-6 col-lg-3 mb-3">
+      <label for="txt_dat_visita2">Data Final de Visita</label>
+      <input type="text" class="form-control date" id="txt_dat_visita2" name="txt_dat_visita2" autocomplete="off">
+    </div>
+    <script>
+        $('#txt_dat_visita').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#txt_dat_visita2').val();
+            }
+        });
+        $('#txt_dat_visita2').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#txt_dat_visita').val();
+            }
+        });
+    </script> 
+    <div class="col-6 col-lg-3 mb-3">
+        <label for="lst_mes_aniversario">Mês de Aniversário</label>
+          <select class="custom-select" id="lst_mes_aniversario" name="lst_mes_aniversario">
             <option value=""></option>
             <dtml-in expr="[('Janeiro', '1'), ('Fevereiro', '2'), ('Março', '3'), ('Abril', '4'), ('Maio', '5'), ('Junho', '6'),  ('Julho', '7'), ('Agosto', '8'), ('Setembro', '9'), ('Outubro', '10'), ('Novembro', '11'), ('Dezembro', '12')]">     
               <option value="<dtml-var expr="_['sequence-item']">">
@@ -49,65 +62,76 @@ $(function() {
               </option>
             </dtml-in>
           </select>
-     </div>
-     <div class="pf-element pf-full-width">
-        <label><span class="pf-label">Sexo</span></label>
-        <div class="pf-group">
-             <input class="form-control" name="rad_sex_pessoa" value="M" id="rad_sex_pessoaM" type="radio" >
-             <label for="rad_sex_pessoaM">Masculino</label>
-             <input class="form-control" name="rad_sex_pessoa" value="F" id="rad_sex_pessoaF" type="radio" >
-             <label for="rad_sex_pessoaF">Feminino</label>
-             <input class="form-control" name="rad_sex_pessoa" value="" id="rad_sex_pessoaA" checked="1" type="radio" >
-             <label for="rad_sex_pessoaA">Ambos</label>
+    </div>    
+    <div class="col-6 col-lg-3 mb-3">
+        <label class="d-block">Sexo</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" name="rad_sex_pessoa" value="M" id="rad_sex_pessoaM" type="radio" />
+          <label class="form-check-label" for="rad_sex_pessoaM">M</label>
         </div>
-     </div>
-     <div class="pf-element pf-full-width">
-        <label for="txt_des_estado_civil"><span class="pf-label">Estado Civil</span></label></th>
-          <input class="form-control" class="pf-field" id="txt_des_estado_civil" type="text" name="txt_des_estado_civil" null="" style="max-width: 230px; width: 100%;" />
-     </div>
-     <div class="pf-element pf-full-width">
-        <label><span class="pf-label">Tem Filhos?</span></label>
-        <div class="pf-group">
-             <input class="form-control" name="rad_filhos" value="1" id="rad_filhos1" type="radio" >
-             <label for="rad_filhos1">Sim</label>
-             <input class="form-control" name="rad_filhos" value="0" id="rad_filhos0" type="radio" >
-             <label for="rad_filhos0">Não</label>
-             <input class="form-control" name="rad_filhos" value="" id="rad_filhosA" checked="1" type="radio" >
-             <label for="rad_filhosA">Tanto faz</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" name="rad_sex_pessoa" value="F" id="rad_sex_pessoaF" type="radio" />
+          <label class="form-check-label" for="rad_sex_pessoaF">F</label>
         </div>
-     </div>
-     <div class="pf-element pf-full-width">
-        <label for="txt_des_profissao"><span class="pf-label">Profissão</span></label></th>
-          <input class="form-control" class="pf-field" id="txt_des_profissao" type="text" name="txt_des_profissao" null="" style="max-width: 230px; width: 100%;" maxlength="80"/>
-     </div>
-     <div class="pf-element pf-full-width">
-        <label for="txt_des_local_trabalho"><span class="pf-label">Local de Trabalho</span></label></th>
-          <input class="form-control" class="pf-field" id="txt_des_local_trabalho" type="text" name="txt_des_local_trabalho" null="" style="max-width: 230px; width: 100%;" maxlength="80"/>
-     </div>
-     <div class="pf-element pf-full-width">
-        <label for="txt_nom_bairro"><span class="pf-label">Bairro de Domicílio</span></label>
-        <div class="pf-group">
-          <input class="form-control" class="pf-field" id="txt_nom_bairro" type="text" name="txt_nom_bairro" null="" missing="" style="min-width: 94px; max-width: 94px; width: 20%;" maxlength="80" />
-          <label for="txt_num_cep">CEP
-            <input class="form-control" class="pf-field" id="txt_num_cep" type="text" name="txt_num_cep" null="" style="min-width: 86px; max-width: 86px; width: 20%;" maxlength="15" />
-          </label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" name="rad_sex_pessoa" value="" id="rad_sex_pessoaA" checked type="radio" />
+          <label class="form-check-label" for="rad_sex_pessoaA">Indiferente</label>
         </div>
-     </div>
-     <div class="pf-element pf-full-width">
-        <label for="txt_end_residencial"><span class="pf-label">Logradouro</span></label></th>
-          <input class="form-control" class="pf-field" id="txt_end_residencial" type="text" name="txt_end_residencial" null="" style="max-width: 230px; width: 100%;" maxlength="80"/>
-     </div>
-     <div class="pf-element pf-full-width">
-        <label for="txt_nom_cidade"><span class="pf-label">Localidade</span></label></th>
-          <input class="form-control" class="pf-field" id="txt_nom_cidade" type="text" name="txt_nom_cidade" null="" style="max-width: 230px; width: 100%;" maxlength="80"/>
-     </div>
+    </div>     
+  </div>
 
-     <div class="pf-element pf-buttons">
-          <input class="form-control" class="pf-button btn botao" type="submit" name="btn_visitante_pesquisar" value="Pesquisar" />
-          <input class="form-control" class="pf-button btn botao" type="reset" name="btn_visitante_limpar" value="Limpar" />
-     </div>
+  <div class="form-row">
+    <div class="col-6 col-lg-3 mb-3">
+        <label for="txt_des_estado_civil">Estado Civil</label>
+        <input class="form-control" id="txt_des_estado_civil" type="text" name="txt_des_estado_civil" />
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+        <label class="d-block">Possui Filhos?</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" name="rad_filhos" value="1" id="rad_filhos1" type="radio" />
+          <label class="form-check-label" for="rad_filhos1">Sim</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" name="rad_filhos" value="0" id="rad_filhos0" type="radio" />
+          <label class="form-check-label" for="rad_filhos0">Não</label>
+        </div> 
+        <div class="form-check form-check-inline">
+          <input class="form-check-input"name="rad_filhos" value="" id="rad_filhosA" checked type="radio" />
+          <label class="form-check-label" for="rad_filhosA">Indiferente</label>
+        </div>               
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+        <label for="txt_des_profissao">Profissão</label></th>
+        <input class="form-control" id="txt_des_profissao" type="text" name="txt_des_profissao" maxlength="80"/>
+    </div> 
+    <div class="col-6 col-lg-3 mb-3">
+        <label for="txt_des_local_trabalho">Local de Trabalho</label>
+        <input class="form-control" id="txt_des_local_trabalho" type="text" name="txt_des_local_trabalho" maxlength="80"/>
+    </div>        
+  </div>  
 
-   </div>
-  </fieldset>
+  <div class="form-row">
+    <div class="col-6 col-lg-3 mb-3">
+        <label for="txt_end_residencial">Logradouro de Domicílio</label>
+        <input class="form-control" id="txt_end_residencial" type="text" name="txt_end_residencial" maxlength="80"/>    
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+        <label for="txt_nom_bairro">Bairro</label>
+        <input class="form-control" id="txt_nom_bairro" type="text" name="txt_nom_bairro" maxlength="80" />
+    </div>   
+    <div class="col-6 col-lg-3 mb-3">
+        <label for="txt_nom_cidade">Cidade</label>
+        <input class="form-control" id="txt_nom_cidade" type="text" name="txt_nom_cidade" maxlength="80"/>
+    </div>   
+    <div class="col-6 col-lg-3 mb-3">
+        <label for="txt_num_cep">CEP</label>
+        <input class="form-control" id="txt_num_cep" type="text" name="txt_num_cep" maxlength="15" />  
+    </div>       
+  </div>
+
+  <button type="submit" id="search-btn" class="btn btn-primary"><i class="fa fa-fw fa-search"></i> Pesquisar</button>
+  <input class="btn btn-secondary"type="reset" value="Limpar" />
+
 </form>
+
 <dtml-var standard_html_footer>

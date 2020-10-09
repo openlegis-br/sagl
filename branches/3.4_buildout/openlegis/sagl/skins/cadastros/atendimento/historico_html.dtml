@@ -1,57 +1,71 @@
 <dtml-var standard_html_header>
-<link rel="stylesheet" href="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
+
 <script type="text/javascript">
-<!--
-   $(document).ready(function() { 
-       $("#visitas")
-    .tablesorter({theme: 'blue', widgets: ['filter']})
-    .tablesorterPager({container: $("#pager")}); 
-    }); 
--->
-</script>
-<script type="text/javascript">
+
 $(document).ready(function() {
-$(".popup").fancybox({
-	maxWidth	: 550,
-	maxHeight	: 450,
-	fitToView	: true,
-	width		: '75%',
-	height		: '85%',
-	autoSize	: false,
-	closeClick	: false,
-        scrolling       : false,
-        preload         : true,
-	openEffect	: 'fade',
-        afterClose      : function() {
-        		window.location.href = "<dtml-var portal_url>/cadastros/atendimento/historico_html";
-        		},
-	closeEffect	: 'fade'
-	});
+
+    $('#visitas').DataTable( {
+        "responsive": true,
+        "bStateSave": true,        
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('viDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('viDataTable'));
+        },
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
 });
-$(document).ready(function() {
-$(".popup-visitante").fancybox({
-	maxWidth	: 900,
-	maxHeight	: 600,
-	fitToView	: true,
-	width		: '75%',
-	height		: '85%',
-	autoSize	: false,
-	closeClick	: false,
-        scrolling       : false,
-        preload         : true,
-	openEffect	: 'fade',
-        afterClose      : function() {
-        		window.location.href = "<dtml-var portal_url>/cadastros/atendimento/historico_html";
-        		},
-	closeEffect	: 'fade'
-	});
-});
+
 </script>
 
- <a id="ajuda" href="<dtml-var portal_url>/ajuda/cadastros#visitas">Ajuda</a>
  <h1 class="firstHeading">Histórico de Visitas</h1>
 
   <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
@@ -64,52 +78,40 @@ $(".popup-visitante").fancybox({
 
  <dtml-in expr="zsql.visita_obter_zsql(cod_funcionario=cod_funcionario_corrente)">
   <dtml-if sequence-start>
-    <table class="table"  id="visitas" class="tablesorter">
-    <thead>
-     <tr>
-      <th>Data de Entrada</th>
-      <th>Visitante</th>
-      <th>Crachá</th>
-      <th>Atendimento</th>
-     </tr>
-    </thead>
+    <table class="table" id="visitas">
+     <thead class="table-secondary">
+       <tr>
+        <th>Entrada</th>
+        <th>Nome do Visitante</th>
+        <th>Crachá</th>
+        <th>Atendimento</th>
+       </tr>
+     </thead>
   </dtml-if sequence-start>
         <tr>
            <td><dtml-var dat_entrada></td>
-           <td><a href="<dtml-var portal_url>/cadastros/atendimento/visitante_mostrar_proc?hdn_cod_pessoa=<dtml-var cod_pessoa missing>" class="popup-visitante" data-fancybox-type="iframe"/><dtml-var nom_pessoa></a></td>
+           <td>                  
+               <a href="#" data-src="<dtml-var portal_url>/cadastros/atendimento/visitante_mostrar_proc?hdn_cod_pessoa=<dtml-var cod_pessoa missing>&modal=1" data-toggle="modal" data-target="#iFrameModal" /><dtml-var nom_pessoa></a> 
+            </td
            <td><dtml-var num_cracha></td>
-              <td>
+           <td>
                <dtml-if des_situacao>
                  <dtml-if expr="des_situacao == 'P'">
-                   <a href="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="popup" data-fancybox-type="iframe"/>Pendente</a>
+                   <a class="btn btn-sm btn-link" data-src="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>&modal=1" data-toggle="modal" data-target="#iFrameModal" />Pendente</a>
+               
                  <dtml-elif expr="des_situacao == 'R'">
-                   <a href="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="popup" data-fancybox-type="iframe"/>Resolvido</a>
+                   <a class="btn btn-sm btn-link" data-src="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>&modal=1" data-toggle="modal" data-target="#iFrameModal" />Resolvido</a> 
                  </dtml-if>
                <dtml-else>
-               <a href="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" class="botao-link popup" data-fancybox-type="iframe"/>Registrar</a>
+                  <a class="btn btn-sm btn-link" data-src="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>&modal=1" data-toggle="modal" data-target="#iFrameModal" />Registrar</a> 
                </dtml-if>
-              </td>
+           </td>
         </tr>
   <dtml-if sequence-end>
    </table>
-     <div id="pager" class="pager">
-	<form>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
-		<input class="form-control" type="text" class="pagedisplay"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
-		<select class="custom-select"  class="pagesize">
-			<option selected="selected"  value="10">10</option>
-			<option value="20">20</option>
-			<option value="30">30</option>
-			<option  value="40">40</option>
-		</select>
-	</form>
-     </div>
   </dtml-if sequence-end>
  <dtml-else>
-   <p>Não há nenhum registro de visita.</td>
+   <p>Nenhuma visita registrada.</td>
  </dtml-in>
 
 <dtml-var standard_html_footer>

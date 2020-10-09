@@ -1,21 +1,16 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
- <dtml-var standard_css_slot>
-</head>
+<dtml-var standard_html_header>
 
-<body class="">
-
-  <fieldset>
-     <legend>Histórico de Visitas</legend>
+     <h1 class="firstHeading">Histórico de Visitas</h1>
      <dtml-in expr="zsql.visita_obter_zsql(cod_funcionario=cod_funcionario, cod_pessoa=cod_pessoa)">
        <dtml-if sequence-start>
          <table class="table">
+          <thead class="table-secondary">         
            <tr>
               <th width="20% class="label">Entrada</th>
-              <th class="label">Atendimento</th>
+              <th>Atendimento</th>
               <th width="20% class="label">Situação</th>
            </tr>
+          </thead>
        </dtml-if>
            <tr>
               <td><dtml-var dat_entrada></td>
@@ -27,13 +22,15 @@
                 </dtml-if>
               </td>
               <td>
-                 <dtml-if expr="des_situacao == 'P'">
-                   <a href="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" />Pendente</a>
+               <dtml-if des_situacao>
+                 <dtml-if expr="des_situacao == 'P'">                                
+                   <a class="btn btn-sm btn-link" data-src="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>&modal=1" data-toggle="modal" data-target="#iFrameModal" />Pendente</a>
                  <dtml-elif expr="des_situacao == 'R'">
-                   <a href="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>" />Resolvido</a>
-                 <dtml-else> | 
-                   <a href="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>"  />Registrar</a>
+                   <a class="btn btn-sm btn-link" data-src="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>&modal=1" data-toggle="modal" data-target="#iFrameModal" />Resolvido</a>                 
                  </dtml-if>
+               <dtml-else>
+                  <a class="btn btn-sm btn-link" data-src="<dtml-var portal_url>/cadastros/atendimento/atendimento_mostrar_proc?cod_visita=<dtml-var cod_visita>&modal=1" data-toggle="modal" data-target="#iFrameModal" />Registrar</a>                
+               </dtml-if>
               </td>
            </tr>
        <dtml-if sequence-end>
@@ -42,7 +39,5 @@
      <dtml-else>
        <p>Nenhum registro encontrado.</p>
      </dtml-in>
-  </fieldset>
 
- </body>
-</html>
+<dtml-var standard_html_footer>
