@@ -44,66 +44,78 @@ function modelo_criticar(form){
   form.submit();
 }
 
+$(document).ready(function () {
+  bsCustomFileInput.init()
+})
+
 //-->
 </script>
 
 
-<a id="ajuda" href="<dtml-var portal_url>/ajuda/tipo_norma_juridica">Ajuda</a>
-<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Tipo de Norma Jurídica</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="index_html"><i class="fa fa-fw fa-undo"></i> Voltar</a>         
+         </div>
+      </div>
+ </div>
 
-<table class="table">
-  <tr> 
-    <td>| <a href="index_html">Início</a> |</td>
-   </tr>
-</table>  
+<form class="mb-3" name="tipo_norma_juridica_form" method="post" action="tipo_norma_juridica_salvar_proc">
 
-<form name="tipo_norma_juridica_form" method="post" action="tipo_norma_juridica_salvar_proc">
+  <input type="hidden" name="hdn_tip_norma" value="<dtml-var tip_norma missing>" />
 
-  <input type="hidden" name="hdn_tip_norma" value="<dtml-var tip_norma missing>" /><fieldset><legend>Tipo Norma Jurídica</legend>
-
-  <table class="table">
-   <tr>
-           <td width="55%">Descrição <span class="campoObrigatorio"></span><br />
-           <input class="form-control" type="text" name="txt_des_tipo_norma" value="<dtml-var des_tipo_norma missing>" size="50" maxlength="50" /></td>
-           <td width="15%">Sigla <span class="campoObrigatorio"></span><br />
-           <input class="form-control" type="text" name="txt_sgl_tipo_norma" value="<dtml-var sgl_tipo_norma missing>" size="3" maxlength="3"
-            onBlur="form.txt_sgl_tipo_norma.value = form.txt_sgl_tipo_norma.value.toUpperCase()" /></td>
-           <td width="30%">Equivalente LexML <span class="campoObrigatorio"></span><br />
-		   <select class="custom-select"  name="lst_voc_lexml">
-		   <dtml-in expr="[('',''),('constituicao','constituicao'),('ementa.constitucional','ementa.constitucional'),
-		                   ('lei.complementar','lei.complementar'),('lei.delegada','lei.delegada'),('lei','lei'),
-						   ('decreto.lei','decreto.lei'),('medida.provisoria','medida.provisoria'),
-						   ('decreto','decreto'),('lei.organica','lei.organica'),('emenda.lei.organica','emenda.lei.organica'),
-						   ('decreto.legislativo','decreto.legislativo'), ('resolucao','resolucao')]">
-              <option
+  <div class="form-row">
+     <div class="col-12 col-sm-6 mb-3">
+       <label for="txt_des_tipo_norma" class="required">Descrição</label>              
+       <input class="form-control" type="text" id="txt_des_tipo_norma" name="txt_des_tipo_norma" value="<dtml-var des_tipo_norma missing>"maxlength="50" />
+     </div>
+     <div class="col-6 col-sm-3 mb-3">
+       <label for="txt_sgl_tipo_norma" class="required">Sigla</label>                   
+       <input class="form-control" type="text" id="txt_sgl_tipo_norma" name="txt_sgl_tipo_norma" value="<dtml-var sgl_tipo_norma missing>" size="3" maxlength="3" onBlur="form.txt_sgl_tipo_norma.value = form.txt_sgl_tipo_norma.value.toUpperCase()" />
+     </div>
+     <div class="col-6 col-sm-3 mb-3">
+       <label for="lst_voc_lexml" >Equivalente LexML</label>                        
+       <select class="custom-select" id="lst_voc_lexml" name="lst_voc_lexml">
+	 <dtml-in expr="[('',''),('constituicao','constituicao'),('ementa.constitucional','ementa.constitucional'),('lei.complementar','lei.complementar'),('lei.delegada','lei.delegada'),('lei','lei'), ('decreto.lei','decreto.lei'),('medida.provisoria','medida.provisoria'), ('decreto','decreto'),('lei.organica','lei.organica'),('emenda.lei.organica','emenda.lei.organica'), ('decreto.legislativo','decreto.legislativo'), ('resolucao','resolucao')]">
+           <option
               <dtml-if expr="_.has_key('tip_norma') and voc_lexml==_['sequence-key']">
                 selected
               </dtml-if>
                 value="<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']">
-              </option>
-              </dtml-in>
-           </select>
-           </td>
-         </tr>
-       </table>
-</form>
-  <p align="center">
-  <input class="btn btn-primary" type="button" name="btn_tipo_norma_juridica_salvar" value="Salvar" onClick="campos_criticar(document.tipo_norma_juridica_form)" />
+           </option>
+         </dtml-in>
+       </select>
+     </div>
+  </div>          
+
+  <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar(document.tipo_norma_juridica_form)" />
   <dtml-if tip_norma>
-    <input class="btn btn-primary" type="button" name="btn_tipo_norma_juridica_excluir" value="Excluir" onClick="tipo_norma_juridica_excluir(document.tipo_norma_juridica_form)" />
+    <input class="btn btn-danger" type="button" value="Excluir" onClick="tipo_norma_juridica_excluir(document.tipo_norma_juridica_form)" />
   </dtml-if>
-  </p>
-</fieldset>
+
+   <div class="row">
+      <div class="col-md-12 mt-2">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+      </div>
+   </div> 
+
+</form>
 
 <dtml-if tip_norma>
-  <fieldset><legend>Modelos ODT</legend>
+    <legend>Modelos ODT</legend>
     <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_norma)+'-')">
     <table class="table">
+       <thead class="table-secondary">     
           <tr>
-             <th>Título do Modelo</th>
+             <th>Nome do Modelo</th>
              <th width="30%">Última Alteração</th>
              <th width="25%">Ações</th>
           </tr>
+       </thead>
+       
       <dtml-with expr="sapl_documentos.modelo.norma">
        <dtml-in expr="objectValues('File')" sort="title">
         <dtml-if expr="id().startswith(prefixo_arquivo)">
@@ -111,34 +123,35 @@ function modelo_criticar(form){
             <td><a href="&dtml-absolute_url;"><dtml-var title></a></td>
             <td><dtml-var bobobase_modification_time fmt="%d/%m/%Y - %H:%M"></td>
             <td>
-              <div align="center">
               <a class="btn btn-sm btn-secondary" target="_blank" href="<dtml-var portal_url>/sapl_documentos/modelo/norma/externalEdit_/<dtml-var id>.zem">Editor Externo</a>
-              <a class="btn btn-sm btn-secondary" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=tipo_norma_juridica_mostrar_proc?tip_norma=<dtml-var tip_norma>">Excluir</a>
-              </div>
+              <a class="btn btn-sm btn-danger" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=tipo_norma_juridica_mostrar_proc?tip_norma=<dtml-var tip_norma>" data-confirm="Deseja realmente excluir o modelo?"> Excluir</a>
             </td>
           </tr>
          </dtml-if>
         </dtml-in>
       </dtml-with>
   </table>
-</fieldset>
 
 <form name="modelo_form" method="post" action="modelo_incluir_proc" enctype="multipart/form-data">
-<table class="table">
-  <tr>
-   <td>
-     <input class="form-control" type="text" name="txt_title" placeholder="Descrição do modelo" size="35" maxlength="35"/>
-   </td>
-   <td>
-     <input class="form-control" type="file" name="file_nom_arquivo" accept="application/vnd.oasis.opendocument.text" size="15" maxlength="50" />
-   </td>
-   <td>
-     <input type="hidden" name="id_documento" value="<dtml-var sgl_tipo_norma>-<dtml-var expr="ZopeTime().timeTime()">.odt">
-     <input type="hidden" name="hdn_url" value="tipo_norma_juridica_mostrar_proc?tip_norma=<dtml-var tip_norma>">
-     <input class="btn btn-primary" type="button" class="btn btn-sm btn-secondary" name="btn_documento_acessorio_salvar" value="Incluir Modelo" onClick="modelo_criticar(document.modelo_form)" />
-   </td>
-  </tr>
-</table>
+ <div class="form-row">
+   <div class="col-6 mb-3"> 
+     <label for="txt_title" class="required">Nome do Modelo</label>   
+     <input class="form-control" type="text" id="txt_title" name="txt_title" maxlength="35"/>
+   </div>
+   <div class="col-6 mb-3">
+      <label for="file_nom_arquivo">Arquivo ODT</label> 
+      <div class="input-group">                   
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/vnd.oasis.opendocument.text">
+          <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+        </div>
+        <div class="input-group-append">
+          <input class="btn btn-primary" type="button" class="btn btn-sm btn-secondary" value="Incluir" onClick="modelo_criticar(document.modelo_form)" />
+          <input type="hidden" name="id_documento" value="<dtml-var sgl_tipo_norma>-<dtml-var expr="ZopeTime().timeTime()">.odt">              
+        </div>
+      </div>
+   </div>
+ </div>
 </form>
 </dtml-if>
 
