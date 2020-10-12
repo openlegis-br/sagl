@@ -1,127 +1,132 @@
 <dtml-var standard_html_header>
 
-<link rel="stylesheet" href="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+<script>
 
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
+$(document).ready(function() {
 
-<script type="text/javascript">
-<!--
-  function submeter(campo,form) {
-
-    form.submit();
-  }
-
-
-//-->
-</script>
-
-<script type="text/javascript">
-<!--
-   $(document).ready(function() { 
-    $("#enviadas")
-    .tablesorter(
-      {theme:'blue',
-       widgets:['filter'],
-       sortInitialOrder: 'desc',
-       sortRestart: true,
-       sortList: [[4,2]], 
-       headers: 
+    $('#enviadas').DataTable( {
+        "responsive": true,
+        "bStateSave": true,        
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('raDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('raDataTable'));
+        },
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
             {
-                2: {sorter: "shortDate", dateFormat: "ddmmyyyy"},
-                4: {sorter: "shortDate", dateFormat: "ddmmyyyy"}
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
             }
-     })
-    .tablesorterPager({container: $("#pager")});  
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
     });
+});
+  
 
--->
+$(document).ready(function () {
+  $(".modal-dialog").css("width", "90%");
+  $(".modal-dialog").css("max-width", "900px");
+  $(".modal-content").css("min-height", "600px");
+});
+
 </script>
-
-<style scoped>
-tr.clickable:hover td {
-       cursor: pointer;
-       background: #F3F5F7 !important;
-}
-</style>
 
 <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
   <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
 </dtml-in>
 
-<h1 class="firstHeading">Itens Enviados - Tramitação de Documentos</h1>
-           <table class="table"  id="enviadas" class="tablesorter">
-             <thead>
+<h1 class="firstHeading">Tramitações Enviadas - Processos Administrativos</h1>
+    <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_usuario_local=cod_usuario_corrente, ind_ult_tramitacao=1, ind_encaminha=1, ind_rascunho=0, ind_tramitacao=1)">
+      <dtml-if sequence-start>
+        <div class="table-responsive">
+           <table class="table" id="enviadas">
+             <thead class="table-secondary">
 		 <tr>  
-		     <th width="20%">Destino</th>
-		     <th width="42%">Identificação do Documento</th>
-		     <th width="14%">Encaminhamento</th>
-		     <th width="14%">Recebimento</th>
-		     <th width="10%">Prazo</th>
+		     <th width="20%">Data da Tramitação</th>
+		     <th>Identificação do Processo</th>
+		     <th width="15%">Destino</th>
+		     <th width="15%">Status</th>
 		 </tr>
              </thead>
-             <tbody>
-              <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_usuario_local=cod_usuario_corrente,ind_recebido=1,ind_pendente=0,ind_tramitacao=1)">
-                   <dtml-call expr="REQUEST.set('prazo_a_vencer', _.DateTime()+3)">
-                   <dtml-call expr="REQUEST.set('prazo_tramitacao', dat_fim_prazo)">
-                   <tr onclick="javascript:submeter(<dtml-var cod_tramitacao>,document.outbox_form_<dtml-var cod_tramitacao>)" class="clickable">
-                   <form name="outbox_form_<dtml-var cod_tramitacao>" method="post" action="tramitacao_enviada_mostrar_proc">
-                   <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao>" />
-                   <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento>" />
+       </dtml-if>
+                   <tr>
                      <td>
-                        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest,ind_adm=1)">
-                           <dtml-if cod_orgao><dtml-var nom_orgao>
-                           <dtml-elif cod_comissao><dtml-var nom_comissao> 
-                           <dtml-else><dtml-var nom_parlamentar> 
-                           </dtml-if>
-                        </dtml-in>
-                     </td>
+                       <dtml-if dat_tramitacao>
+                         <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Formulário de Tramitação" data-src="tramitacao_mostrar_proc?cod_documento=<dtml-var cod_documento>&hdn_cod_tramitacao=<dtml-var cod_tramitacao>&modal=1" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i><span class="d-none">Link</span></a>
+                         <dtml-var dat_tramitacao missing null>
+                       </dtml-if>
+                     </td> 
                      <td>
                         <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento)">
-                           <b><dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></b>
-                           - <dtml-var txt_assunto>
-                        <br /><b>Autor / Interessado</b>: <dtml-var txt_interessado>
+                           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">        
+                              <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                           <dtml-else>
+                              <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                          </dtml-if>
+                          <b><dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></b></a> - 
+                          <b><dtml-var txt_interessado></b>
+                          - <dtml-var txt_assunto>
                         </dtml-in>
-                        <br /><b>Status:</b> <dtml-var des_status>
-                     </td>
-                     <td><div align="center"><dtml-var dat_encaminha missing null></div></td>
+                     </td>                                                                       
                      <td>
-                       <dtml-if dat_recebimento>
-                         <div align="center"><dtml-var dat_recebimento missing null></div>
-                       <dtml-else>
-                         <div align="center" style="color:#DE1E1E;font-weight:bold">Pendente</div>
-                       </dtml-if>
+                        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest, ind_adm=1)">
+                           <dtml-var nom_unidade_join>
+                        </dtml-in>
                      </td>
-                     <td
-                       <dtml-if prazo_tramitacao>
-                        <dtml-if expr="(_.DateTime(prazo_a_vencer).strftime('%d/%m/%Y') >= _.DateTime(prazo_tramitacao).strftime('%d/%m/%Y')) and (_.DateTime().strftime('%d/%m/%Y')<=_.DateTime(prazo_tramitacao).strftime('%d/%m/%Y'))">
-                          style="background-color: #F9F475"
-                        <dtml-elif expr="_.DateTime().strftime('%d/%m/%Y') > _.DateTime(prazo_tramitacao).strftime('%d/%m/%Y')">
-                          style="background-color: #FFCDCD"
-                        <dtml-else>
-                          style="background-color: #DBF3DB"
-                        </dtml-if>
-                       </dtml-if>
-                     ><dtml-var prazo_tramitacao missing null></td>
-                 </form>
+                     <td>
+                       <dtml-var des_status>
+                     </td>
                    </tr>
-              </dtml-in>
-             </tbody>
+      <dtml-if sequence-end>
            </table>
-           <div id="pager" class="pager">
-	    <form>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
-		<input class="form-control" type="text" class="pagedisplay"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
-		<select class="custom-select"  class="pagesize">
-			<option selected="selected"  value="10">10</option>
-			<option value="20">20</option>
-			<option value="30">30</option>
-			<option value="40">40</option>
-		</select>
-	    </form>
-          </div>
+         </div> 
+      </dtml-if>  
+   <dtml-else>
+     <p>Nenhuma tramitação enviada.</p>
+   </dtml-in>
+
+
+
 <dtml-var standard_html_footer>
