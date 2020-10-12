@@ -1,15 +1,5 @@
 <dtml-var standard_html_header>
 
-<dtml-if cod_tramitacao> 
-  <dtml-call expr="REQUEST.set('dat_ultima', dat_tramitacao[6:10] + dat_tramitacao[3:5] + dat_tramitacao[0:2])">
-<dtml-else>
-  <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento = cod_documento, ind_ult_tramitacao=1)">
-     <dtml-call expr="REQUEST.set('dat_ultima', dat_tramitacao[6:10] + dat_tramitacao[3:5] + dat_tramitacao[0:2])">
-  <dtml-else>
-     <dtml-call expr="REQUEST.set('dat_ultima', '10000101')">    
-  </dtml-in>
-</dtml-if>
-
 <script src="javascript/data_validar.js"></script>
 
 <script>
@@ -25,18 +15,11 @@
       if (!IsValidDate(form.txt_dat_tramitacao.value)){
          alert("Digite uma data de tramitação válida!");
          form.txt_dat_tramitacao.focus();
-         form.txt_dat_tramitacao.select();
          return false;
       }
 
       var dat_tramitacao = form.txt_dat_tramitacao.value.substring(6,10) + form.txt_dat_tramitacao.value.substring(3,5) + form.txt_dat_tramitacao.value.substring(0,2);
 
-      if (dat_tramitacao < <dtml-var dat_ultima>) {
-           alert("Data de tramitação deve ser maior ou igual à data da última tramitação!");
-           form.txt_dat_tramitacao.focus();
-           form.txt_dat_tramitacao.select();
-           return false;
-          }
 
       if (form.lst_cod_unid_tram_local.selectedIndex == 0){
           alert("A unidade de origem deve ser selecionada!");
@@ -104,8 +87,19 @@
       }
 
       form.hdn_dat_tramitacao.value = form.txt_dat_tramitacao.value;
+      if (form.file_nom_arquivo.value != "") {
+         form.hdn_file.value = 1;
+         }      
       form.submit();
   }
+
+   function ativa_desativa_file_field(form) {
+      form.file_nom_arquivo.disabled = !(form.radTI[1].checked);
+   }
+    
+   $(document).ready(function () {
+     bsCustomFileInput.init()
+   })
     
   function tramitacao_excluir(){
        
@@ -147,19 +141,19 @@ $(document).ready(function(){
 
 <dtml-if cod_usuario_corrente>
 
-<form name="tramitacao_form" method="post" action="tramitacao_salvar_proc">
+<form name="tramitacao_form" method="post" action="tramitacao_salvar_proc" enctype="multipart/form-data">
   <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao missing>" />
   <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento>" />
   <dtml-if cod_tramitacao>
      <input type="hidden" name="hdn_url" value="tramitacao_mostrar_proc?hdn_cod_tramitacao=<dtml-var cod_tramitacao>&cod_documento=<dtml-var cod_documento>&modal=1" />
   </dtml-if>
+  <input type="hidden" name="hdn_file" value="0"/>  
   <input type="hidden" name="modal" value="1" />
   <input type="hidden" name="hdn_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" />
 
   <div class="form-row">
     <div class="col-12 col-md-3 mb-3">
        <label for="txt_dat_tramitacao" class="required">Data da Tramitação</label>
-       <input type="hidden" name="lst_cod_ult_tram_dest" value="" />
        <dtml-unless dat_tramitacao>
           <dtml-call expr="REQUEST.set('dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
        </dtml-unless>
@@ -283,6 +277,84 @@ $(document).ready(function(){
       <input class="form-control" type="text" id="txa_dat_recebimento" value="<dtml-var dat_recebimento missing null>" readonly>
     </div>   
   </div>   
+
+  <div class="form-row">
+   <dtml-if hdn_cod_tramitacao>
+    <dtml-call expr="REQUEST.set('pdf', _.str(hdn_cod_tramitacao)+'_tram.pdf')">
+    <dtml-call expr="REQUEST.set('pdf_assinado', _.str(hdn_cod_tramitacao)+'_tram_signed.pdf')">
+    <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)"> 
+      <div class="col-12 col-sm-4 col-lg-3 mb-3">
+        <label class="d-block">Despacho em PDF</label>
+       
+        <div class="btn-group" role="group" aria-label="tram_button">
+          <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
+             <a class="btn btn-secondary" target="_blank" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">">
+                <i class="far fa-file-pdf"></i> Visualizar
+             </a>
+          </dtml-let>
+          <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf) and sapl_documentos.props_sagl.restpki_access_token!=''">
+             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var hdn_cod_tramitacao>&tipo_doc=tramitacao_adm&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
+          </dtml-if>
+        </div>
+      </div>
+      <div class="col-12 col-sm-8 col-lg-6 form-group">
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio2" name="radTI" value="G" onClick="ativa_desativa_file_field(document.tramitacao_form)" <dtml-unless hdn_cod_tramitacao>checked</dtml-unless> />        
+          <label class="form-check-label" for="inlineRadio2">Gerar</label>
+       </div>    
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio3" name="radTI" value="S" onClick="ativa_desativa_file_field(document.tramitacao_form)"/>        
+          <label class="form-check-label" for="inlineRadio3">Anexar</label>
+       </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio1" name="radTI" value="M" <dtml-if hdn_cod_tramitacao>checked</dtml-if> onClick="ativa_desativa_file_field(document.tramitacao_form)"/>        
+          <label class="form-check-label" for="inlineRadio1">Manter</label>
+       </div> 
+       <div class="custom-file">
+         <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" disabled="1">
+         <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+       </div>       
+      </div>
+      </div>
+     </div>      
+    <dtml-else>
+      <div class="col-12 form-group">
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio2" name="radTI" value="G" onClick="ativa_desativa_file_field(document.tramitacao_form)" checked />        
+          <label class="form-check-label" for="inlineRadio2">Gerar</label>
+       </div>    
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio3" name="radTI" value="S" onClick="ativa_desativa_file_field(document.tramitacao_form)"/>        
+          <label class="form-check-label" for="inlineRadio3">Anexar</label>
+       </div>
+       <div class="custom-file">
+         <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" disabled="1">
+         <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+       </div>       
+      </div>
+      </div>
+     </div>
+    </dtml-if>
+   <dtml-else>
+      <div class="col-12 form-group">
+       <label class="d-block">Despacho em PDF</label>      
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio2" name="radTI" value="G" onClick="ativa_desativa_file_field(document.tramitacao_form)" checked />        
+          <label class="form-check-label" for="inlineRadio2">Gerar</label>
+       </div>    
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio3" name="radTI" value="S" onClick="ativa_desativa_file_field(document.tramitacao_form)"/>        
+          <label class="form-check-label" for="inlineRadio3">Anexar</label>
+       </div>
+       <div class="custom-file">
+         <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" disabled="1">
+         <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+       </div>       
+      </div>
+      </div>
+     </div>   
+   </dtml-if>
+  </div>
   
   <div class="form-row">
     <div class="col-12 mb-3">
