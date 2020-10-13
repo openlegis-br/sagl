@@ -117,7 +117,7 @@ $(document).ready(function(){
    <dtml-if cod_usuario>
       <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
       <dtml-in expr="zsql.funcionario_obter_zsql(cod_usuario=cod_usuario)">
-         <dtml-call expr="REQUEST.set('cod_funcionario_corrente', int(cod_funcionario))">
+         <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_funcionario))">
       </dtml-in>
    </dtml-if>
 </dtml-in>
@@ -140,13 +140,13 @@ $(document).ready(function(){
   </dtml-in>
 <dtml-else>
   <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
-      <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_local',cod_unid_tramitacao)">
+     <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_local',cod_unid_tramitacao)">
   </dtml-in>
 </dtml-if>
 
 <form name="tramitacao_form" method="post" action="tramitacao_salvar_proc" enctype="multipart/form-data">
 
-  <input type="hidden" name="hdn_cod_usuario_local" value="<dtml-var cod_usuario_corrente missing>" />
+  <input type="hidden" name="cod_usuario_corrente" value="<dtml-var cod_usuario_corrente missing>" />
   <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var hdn_cod_tramitacao missing>" />
   <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento missing>" />
   <input type="hidden" name="hdn_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" />
@@ -194,7 +194,8 @@ $(document).ready(function(){
     <div class="col-12 col-md-3 mb-3">
       <label for="txt_usuario">Usuário</label>
       <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">      
-         <input class="form-control" id="txt_usuario" type="text" value="<dtml-var nom_completo>" disabled>           
+         <input class="form-control" id="txt_usuario" type="text" value="<dtml-var nom_completo>" disabled>  
+         <input type="hidden" name="hdn_cod_usuario_local" id="hdn_cod_usuario_local" value="<dtml-var cod_usuario_corrente>">                     
      </dtml-in>
     </div>     
   </div> 
@@ -210,19 +211,18 @@ $(document).ready(function(){
       </dtml-in>    
       <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
           <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest">
-             <option></option>          
+            <option>Selecione</option>          
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
               <dtml-if expr="not dat_extincao and _.str(cod_unid_tramitacao) in _.string.split(_.str(unid_dest_permitidas),',')">
                 <option 
                   <dtml-if expr="_.has_key('hdn_cod_unid_tram_dest') and hdn_cod_unid_tram_dest==int(cod_unid_tramitacao)"> selected
                   </dtml-if>
                   value="<dtml-var cod_unid_tramitacao>">
-                 <dtml-var nom_unidade_join>
+                  <dtml-var nom_unidade_join>
                  </option>
                </dtml-if>
             </dtml-in>
           </select>
-
       <div class="invalid-feedback">
         Este campo é obrigatório!
       </div>          

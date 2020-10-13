@@ -134,6 +134,12 @@ $(document).ready(function() {
    });      
 });
 
+$(document).ready(function () {
+  $(".modal-dialog").css("width", "90%");
+  $(".modal-dialog").css("max-width", "900px");
+  $(".modal-content").css("min-height", "600px");
+});
+
 </script>
 
 <script>
@@ -159,7 +165,7 @@ $(document).ready(function(){
 });
 </script>
 
-<h1 class="firstHeading">Tramitação de Matérias</h1>
+<h1 class="firstHeading">Tramitação de Matérias Legislativas</h1>
 
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
    <a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_materia/primeira_tramitacao_lote_form">Primeira Tramitação</a>
@@ -202,7 +208,7 @@ $(document).ready(function(){
       </div>        
     </div>
     <div class="col-12 col-md-6 mb-3">
-      <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>
+      <label for="lst_cod_unid_tram_local" class="required">Unidade Local</label>
           <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
              <option>Selecione</option>
               <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
@@ -316,15 +322,16 @@ $(document).ready(function(){
 
   <input type="hidden" name="txt_tamanho" value="<dtml-var sequence-length>">
   <input type="hidden" name="txt_check" value="">
-  
-  <p class="h5">Matérias as Matérias [<dtml-var sequence-length>]</p>
+
+  <label class="d-block required">Matérias a Tramitar</label>  
 
   <table class="table display" width="100%" id="tramitacao">
     <thead>
       <tr>
           <th width="5%"></th>
-          <th>Matéria</th>
-          <th width="20%">Situação</th>
+          <th>Identificação da Matéria</th>
+          <th width="20%">Origem</th>                    
+          <th width="20%">Status</th>
      </tr>
     </thead>
     <tbody>
@@ -332,12 +339,12 @@ $(document).ready(function(){
 
  <dtml-in expr="zsql.tramitacao_obter_zsql(cod_tramitacao=_['sequence-item'], ind_excluido=0)">
   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
-       <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao missing>">
        <tr>
           <td>
             <dtml-var cod_materia>
           </td>
           <td>
+            <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Tramitação Individual" data-src="tramitacao_form?hdn_cod_materia=<dtml-var cod_materia>&modal=1" class="btn btn-primary btn-sm"><i class="fas fa-external-link-alt"></i><span class="d-none">Link</span></a>          
             <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
               <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
             <dtml-else>
@@ -350,6 +357,11 @@ $(document).ready(function(){
             - <dtml-var txt_ementa>  
           </td>
           <td>
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local, ind_leg=1)">
+              <dtml-var nom_unidade_join>
+          </dtml-in>          
+          </td>          
+          <td>
             <dtml-var des_status>
           </td>
        </tr>
@@ -359,7 +371,7 @@ $(document).ready(function(){
    </tbody> 
  </table>
    <div class="text-left mt-2">
-      <input class="btn btn-primary" type="submit" value="Tramitar" />
+      <input class="btn btn-primary" type="submit" value="Tramitar Matérias" />
    </div>
    <div class="row">
       <div class="col-md-12 mt-2">

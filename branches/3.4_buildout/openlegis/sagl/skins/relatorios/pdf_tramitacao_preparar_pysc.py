@@ -69,6 +69,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
   tramitacao_dic['ind_urgencia'] = tramitacao.ind_urgencia
 
   # dados da materia
+  autoria = ""
   for materia in context.zsql.materia_obter_zsql(cod_materia=tramitacao.cod_materia):
    autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
    fields = autores.data_dictionary().keys()
