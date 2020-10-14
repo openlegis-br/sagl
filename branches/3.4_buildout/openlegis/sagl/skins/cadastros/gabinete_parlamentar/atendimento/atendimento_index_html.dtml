@@ -1,40 +1,50 @@
 <dtml-var standard_html_header>
-<link rel="stylesheet" href="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
 
-<script type="text/javascript">
-<!--
-   $(document).ready(function() { 
-       $("#atendimentos")
-    .tablesorter({theme: 'blue', widgets: ['filter']})
-    .tablesorterPager({container: $("#pager")}); 
-    }); 
--->
-</script>
-
-<script type="text/javascript">
+<script>
 $(document).ready(function() {
-$(".popup").fancybox({
-	openEffect	: 'fade',
-        beforeShow      : function(){
-            $("body").css({'overflow-y':'hidden'});
+    $('table.display').DataTable( {
+        "responsive": true,
+        "columnDefs": [
+           {
+              'targets': 0,
+              'checkboxes': {
+                 'selectRow': true
+              }
+           }
+        ],
+        "select": {
+           'style': 'multi'
         },
-        afterClose      : function() {
-            $("body").css({'overflow-y':'visible'});
-        		},
-	closeEffect	: 'fade'
-	});
-});
-</script>
+        "order": [[1, 'asc']],
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+    
+ </script>
 
-<h1 class="firstHeading">Histórico de Atendimentos</h1> 
+<h1 class="firstHeading">Atendimentos no Gabinete</h1> 
     
  <dtml-in expr="zsql.gabinete_atendimento_obter_zsql(cod_parlamentar=cod_parlamentar_corrente)"> 
   <dtml-if sequence-start>
-       <table class="table"  id="atendimentos" class="tablesorter">
-        <thead>
+       <table class="table display" id="atendimentos">
+        <thead class="table-secondary">
           <tr> 
             <th width="10%">Data</th>
             <th width="30%">Eleitor</th>
@@ -44,13 +54,13 @@ $(".popup").fancybox({
         </thead>        
   </dtml-if sequence-start>
          <tr>
-              <td>
-                 <a href="atendimento_mostrar_proc?cod_atendimento=<dtml-var cod_atendimento>" class="popup" data-fancybox-type="iframe">
+              <td>            
+                 <a data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Atendimento" data-src="atendimento_mostrar_proc?cod_atendimento=<dtml-var cod_atendimento>&modal=1" href="#">
                    <dtml-var dat_atendimento>
                  </a>
                </td>
               <td>
-                 <a href="../eleitor/eleitor_mostrar_proc?hdn_cod_eleitor=<dtml-var cod_eleitor>">
+                 <a data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Eleitor" data-src="../eleitor/eleitor_mostrar_proc?hdn_cod_eleitor=<dtml-var cod_eleitor>&modal=1" href="#">              
                    <dtml-var nom_eleitor>
                  </a>
               </td>
@@ -58,28 +68,10 @@ $(".popup").fancybox({
               <td><dtml-var txt_status></td>
          </tr>
     <dtml-if sequence-end>
-      </table>
-<div id="pager" class="pager">
-	<form>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
-		<input class="form-control" type="text" class="pagedisplay"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
-		<select class="custom-select"  class="pagesize">
-			<option selected="selected"  value="10">10</option>
-			<option value="20">20</option>
-			<option value="30">30</option>
-			<option  value="40">40</option>
-		</select>
-	</form>
-</div>    
+      </table>  
     </dtml-if sequence-end>
 <dtml-else>
-       <table class="table">
-         <tr><td>Não há nenhum atendimento registrado.</td></tr>
-       </table>
+   <p>Nenhum atendimento registrado.</p>
 </dtml-in>
 
-</fieldset>
 <dtml-var standard_html_footer>

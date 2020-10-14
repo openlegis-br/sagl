@@ -1,66 +1,126 @@
 <dtml-var standard_html_header>
 
-<link rel="stylesheet" href="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
 
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
+<script>
 
-<script type="text/javascript">
-   $(document).ready(function() { 
-    $("#elaboracao")
-    .tablesorter(
-      {theme:'blue',
-       widgets:['filter'], 
-       sortList: [[1,1]], 
-       headers: 
+$(document).ready(function() {
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+
+    $('table.display').DataTable( {
+        "responsive": true,
+        "order": [[0, "desc"]],
+        "bStateSave": true,        
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('displayDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('displayDataTable'));
+        },
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
             {
-                0: {sorter: "shortDate", dateFormat: "ddmmyyyy"}
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
             }
-     })
-    .tablesorterPager({container: $("#pager")});  
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
+
+window.onload = function(){  
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
+    //Change hash for page-reload
+    $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').on('shown', function (e) {
+        window.location.hash = e.target.hash;
     }); 
-   $(document).ready(function() { 
-    $("#enviadas")
-    .tablesorter(
-      {theme:'blue',
-       widgets:['filter'], 
-       sortList: [[0,1]], 
-       headers: 
-            {
-                0: {sorter: "shortDate", dateFormat: "ddmmyyyy"}
-            }
-     })
-    .tablesorterPager({container: $("#pager")});  
-    }); 
+} 
+
+$(document).ready(() => {
+  let url = location.href.replace(/\/$/, "");
+   if (location.hash) {
+    const hash = url.split("#");
+    $('#nav_proposicao a[href="#'+hash[1]+'"]').tab("show");
+    url = location.href.replace(/\/#/, "#");
+    history.replaceState(null, null, url);
+  } 
+
+  $('a[data-toggle="tab"]').on("click", function() {
+    let newUrl;
+    const hash = $(this).attr("href");
+    if(hash == "#home") {
+      newUrl = url.split("#")[0];
+    } else {
+      newUrl = url.split("#")[0] + hash;
+    }
+    newUrl += "";
+    history.replaceState(null, null, newUrl);
+  });
+});
 </script>
-
-<a id="ajuda" href="<dtml-var portal_url>/ajuda/proposicao_legislativa">Ajuda</a>
 
 <h1 class="firstHeading">Proposições Eletrônicas</h1>
 
-<div id="barra-conteudo">
-<ul>
-    <li>
-        <a href="proposicao_index_html">
-          <dtml-if expr="not _.has_key('ind_enviado') or ind_enviado=='0'">
-            <b>Em elaboração</b>
-          <dtml-else>
-            Em elaboração
-          </dtml-if>
-        </a>
-    </li>
-    <li>
-        <a href="proposicao_index_html?ind_enviado=1">
-          <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='1'">
-            <b>Enviadas</b>
-          <dtml-else>
-            Enviadas
-          </dtml-if>
-        </a>
-    </li>
-</ul>
-</div>
+<a
+ <dtml-if expr="not _.has_key('ind_enviado') or ind_enviado=='0'">
+    class="btn btn-sm btn-primary mb-3 disabled" 
+  <dtml-else>
+    class="btn btn-sm btn-primary mb-3"   
+  </dtml-if>
+href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_enviado=0">Em elaboração</a>
+<a
+  <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='1'">
+     class="btn btn-sm btn-primary mb-3 disabled"
+  <dtml-else> 
+     class="btn btn-sm btn-primary mb-3"      
+  </dtml-if>
+  href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_enviado=1">Enviadas
+</a>
 
 <dtml-unless ind_enviado>
   <dtml-call expr="REQUEST.set('ind_enviado', '0')">
@@ -79,50 +139,27 @@
 <dtml-if expr="ind_enviado=='0'">
 <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, col_username=col_username)">
     <dtml-if sequence-start>    
-        <fieldset>
-            <table class="table"  id="enviadas" class="tablesorter">    
-             <thead>
+            <table class="table display" id="enviadas">    
+             <thead class="table-secondary">
                 <tr>  
-                    <th width="15%">Tipo</th>
-                    <th width="55%">Descrição</th>
+                    <th width="20%">Tipo de Proposição</th>
+                    <th>Ementa</th>
                 </tr>
              </thead>
-             <tbody>
     </dtml-if sequence-start>
-      <dtml-if sequence-even>
                <tr>
-       <dtml-else>
-                <tr class="even">
-       </dtml-if> 
-                    <td width="35%">
+                    <td>
                         <a href="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">
                             <dtml-var des_tipo_proposicao>
                         </a>
                     </td>
-                    <td width="65%"><dtml-var txt_descricao></td>
+                    <td><dtml-var txt_descricao></td>
                 </tr>
     <dtml-if sequence-end>
-              </tbody>
             </table>
-      <div id="pager" class="pager">
-	<form>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
-		<input class="form-control" type="text" class="pagedisplay"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
-		<select class="custom-select"  class="pagesize">
-			<option selected="selected"  value="10">10</option>
-			<option value="20">20</option>
-			<option value="30">30</option>
-			<option  value="40">40</option>
-		</select>
-	</form>
-      </div>
     </dtml-if sequence-end>
 <dtml-else>
-    <p>Não há nenhuma proposição em elaboração.</p>
-    </fieldset>
+    <p>Nenhuma proposição em elaboração.</p>
 </dtml-in>
 </dtml-if>
 
@@ -130,56 +167,37 @@
 <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, col_username=col_username)">
     <dtml-if sequence-start>    
         <fieldset>
-            <table class="table"  id="enviadas" class="tablesorter">    
-             <thead>
+            <table class="table display" id="enviadas">    
+             <thead class="table-secondary">
                 <tr>  
-                    <th width="18%">Enviada em</th>
-                    <th width="15%">Tipo</th>
-                    <th width="55%">Descrição</th>
-                    <th width="12%">Incorporada?</th>
+                    <th width="20%">Tipo de Proposição</th>
+                    <th>Ementa</th>
+                    <th width="18%">Envio</th>
+                    <th>Incorporada?</th>
                 </tr>
              </thead>
-             <tbody>
     </dtml-if sequence-start>
-      <dtml-if sequence-even>
                <tr>
-       <dtml-else>
-                <tr class="even">
-       </dtml-if> 
-                    <td width="18%">
+                    <td>
                         <a href="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">
-                            <dtml-if expr="dat_envio==None">Em elaboração... <dtml-else><dtml-var dat_envio></dtml-if>
-                        </a>
+                            <dtml-var des_tipo_proposicao>
+                        </a>                    
+                     </td>
+                    <td><dtml-var txt_descricao></td>
+                    <td>
+                        <dtml-if expr="dat_envio==None">Em elaboração<dtml-else><dtml-var dat_envio></dtml-if>
                     </td>
-                    <td width="15%"><dtml-var des_tipo_proposicao></td>
-                    <td width="55%"><dtml-var txt_descricao></td>
-                    <td width="12%">
+                    <td>
 	                <dtml-if expr="dat_devolucao!=None"><p style="color:#DE1E1E;font-weight:bold">Devolvida</p>
                           <dtml-else><dtml-if expr="dat_recebimento and not dat_devolucao">Sim<dtml-else>Não</dtml-if>
 	                </dtml-if>
                     </td>
                 </tr>
     <dtml-if sequence-end>
-              </tbody>
             </table>
-      <div id="pager" class="pager">
-	<form>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
-		<input class="form-control" type="text" class="pagedisplay"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
-		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
-		<select class="custom-select"  class="pagesize">
-			<option selected="selected"  value="10">10</option>
-			<option value="20">20</option>
-			<option value="30">30</option>
-			<option  value="40">40</option>
-		</select>
-	</form>
-      </div>
     </dtml-if sequence-end>
 <dtml-else>
-    <p>Nenhuma proposição foi enviada ainda.</p>
+    <p>Nenhuma proposição foi enviada.</p>
     </fieldset>
 </dtml-in>
 </dtml-if>

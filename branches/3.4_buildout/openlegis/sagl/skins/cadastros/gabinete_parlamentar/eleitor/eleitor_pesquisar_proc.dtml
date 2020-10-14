@@ -1,30 +1,25 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript">
-$(document).ready(function() {
-$(".popup-eleitor").fancybox({
-	maxWidth	: 900,
-	maxHeight	: 600,
-	fitToView	: true,
-	width		: '75%',
-	height		: '85%',
-	autoSize	: false,
-	closeClick	: false,
-        scrolling       : false,
-        preload         : true,
-	openEffect	: 'fade',
-	closeEffect	: 'fade'
-	});
-});
-</script>
+ <div class="row mb-2">
+  <div class="col-12 col-lg-8 align-self-center">
+    <h1 class="firstHeading">Pesquisa de Eleitores</h1>
+  </div>
+  <div class="col-12 col-lg-4 text-left text-lg-right mb-2">
+    <div class="btn-group" role="group">
+     <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/cadastros/gabinete_parlamentar/eleitor/eleitor_index_html" ><i class="fa fa-fw fa-search"></i> Nova Pesquisa</a>
+
+           <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <i class="fas fa-file-export"></i> Exportar
+           </button>
+           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+               <a class="dropdown-item" href="<dtml-var portal_url>/cadastros/gabinete_parlamentar/eleitor/pdf_gerar_etiquetas_eleitores_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">&cod_parlamentar_corrente=<dtml-var cod_parlamentar_corrente>" target="_blank"><i class="far fa-file-pdf"></i> Etiquetas</a>
+               <a class="dropdown-item" href="<dtml-var portal_url>/cadastros/gabinete_parlamentar/eleitor/exportar_eleitores_ods_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">&cod_parlamentar_corrente=<dtml-var cod_parlamentar_corrente>" target="_blank"><i class="far fa-file-excel"></i> Planilha ODS</a>
+           </div>
+    </div>
+  </div>
+ </div>
 
 <form class="pf-form" name="pesq_avancada_form" id="pesq_avancada_form" action="eleitor_pesquisar_proc">
-
-<a id="ajuda" href="<dtml-var portal_url>/cadastros/gabinete_parlamentar/eleitor/pdf_gerar_etiquetas_eleitores_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">&cod_parlamentar_corrente=<dtml-var cod_parlamentar_corrente>" target="_blank">Mala Direta</a>
-
-<a id="ajuda" href="<dtml-var portal_url>/cadastros/gabinete_parlamentar/eleitor/exportar_eleitores_ods_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">&cod_parlamentar_corrente=<dtml-var cod_parlamentar_corrente>" target="_blank">Exportar Contatos</a>
-
-<h1 class="firstHeading">Pesquisa de Eleitores</h1>
 
 <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
 <dtml-call "REQUEST.set('existe_seq_posterior', 0)">
@@ -52,18 +47,19 @@ num_cep=txt_num_cep,nom_localidade=txt_nom_localidade,cod_parlamentar=cod_parlam
  size="step" start="start" orphan=0>
   <dtml-if sequence-start>
    <table class="table">
-    <tr>
-         <th colspan="2">Resultado da Pesquisa: <dtml-var sequence-length> ocorrência<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> encontrada<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>.
-         <dtml-if expr="_['sequence-length'] == 20000"><br />LIMITE DE RESULTADOS ATINGIDO! Melhore os argumentos da pesquisa.</dtml-if>
-         </th>
-    </tr>
+    <thead>   
+      <tr>
+       <th>
+          Resultado: <dtml-var sequence-length> eleitor<dtml-if expr="_['sequence-length'] > 1">es</dtml-if>
+        </th>
+      </tr>
      <dtml-if previous-sequence>
        <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
      </dtml-if>
   </dtml-if sequence-start>
-         <tr <dtml-if sequence-odd>class="even"</dtml-if>>            
+         <tr>            
            <td>
-            <a href="<dtml-var portal_url>/cadastros/gabinete_parlamentar/eleitor/eleitor_mostrar_proc?hdn_cod_eleitor=<dtml-var cod_eleitor missing>" /><b><dtml-var nom_eleitor></b></a>
+              <a href="#" data-src="<dtml-var portal_url>/cadastros/gabinete_parlamentar/eleitor/eleitor_mostrar_proc?hdn_cod_eleitor=<dtml-var cod_eleitor missing>&modal=1" data-toggle="modal" data-target="#iFrameModal" /><dtml-var nom_eleitor></a>            
             <dtml-if dat_nascimento><br /><b>Data de Nascimento:</b> <dtml-var dat_nascimento></dtml-if>
             <dtml-if doc_identidade><br /><b>Documento:</b> <dtml-var doc_identidade missing null=""></dtml-if>
             <dtml-if end_residencial>
@@ -73,8 +69,9 @@ num_cep=txt_num_cep,nom_localidade=txt_nom_localidade,cod_parlamentar=cod_parlam
               <dtml-if nom_localidade><dtml-if num_cep><b>CEP:</b> <dtml-var num_cep missing null=""></dtml-if> <b>Localidade:</b> <dtml-var nom_localidade> - <dtml-var sgl_uf><br /></dtml-if>
             </dtml-if>
             <dtml-if expr="num_telefone or num_celular">
-               <dtml-if num_telefone><b>Telefone:</b> <dtml-var num_telefone missing null></dtml-if> <dtml-if num_celular><b>Celular:</b> <dtml-var num_celular missing null></dtml-if>
+               <dtml-if num_telefone><b>Telefone Fixo:</b> <dtml-var num_telefone missing null></dtml-if> <dtml-if num_celular><b>Celular:</b> <dtml-var num_celular missing null></dtml-if>
             </dtml-if>
+           </td>
           </tr>
   <dtml-if sequence-end>
    </table>
@@ -82,7 +79,8 @@ num_cep=txt_num_cep,nom_localidade=txt_nom_localidade,cod_parlamentar=cod_parlam
     <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
   </dtml-if>
   <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
-      <p align="center"><b>          
+      <nav aria-label="Paginação">
+        <ul class="pagination justify-content-center">
           <dtml-var "pysc.PageListOutput_pysc('eleitor_pesquisar_proc', page, step, _['sequence-length'],
                      txt_dat_atendimento=txt_dat_atendimento, txt_dat_atendimento2=txt_dat_atendimento2,
                      txt_dia_aniversario=txt_dia_aniversario, txt_dia_aniversario2=txt_dia_aniversario2,
@@ -91,22 +89,12 @@ num_cep=txt_num_cep,nom_localidade=txt_nom_localidade,cod_parlamentar=cod_parlam
                      txt_des_profissao=txt_des_profissao, txt_des_local_trabalho=txt_des_local_trabalho, 
                      txt_nom_bairro=txt_nom_bairro, txt_end_residencial=txt_end_residencial, 
                      txt_num_cep=txt_num_cep, txt_nom_localidade=txt_nom_localidade, txt_nom_eleitor=txt_nom_eleitor)">
-      </b></p>
+       </ul>
+      </nav>
     </dtml-if>
   </dtml-if sequence-end>
-
 <dtml-else>
-  <table class="table">
-    <tr>
-      <th>Resultado da Pesquisa</th>
-    </tr>
-    <tr>
-      <td>Nenhuma ocorrência encontrada.</td>
-    </tr>
-  </table>
+   <p>Nenhum eleitor encontrado.</p>
 </dtml-in>
-</fieldset>
- <p align="center">
-  <input class="form-control" type="button" value="Voltar" onClick="history.back()">
- </p>
+
 <dtml-var standard_html_footer>
