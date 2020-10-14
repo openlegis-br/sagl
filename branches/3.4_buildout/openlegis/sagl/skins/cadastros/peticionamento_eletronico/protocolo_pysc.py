@@ -13,6 +13,8 @@ RESPONSE = REQUEST.RESPONSE
 session = REQUEST.SESSION
 
 lst_assunto = REQUEST.form['lst_assunto']
+lst_unidade = REQUEST.form['lst_cod_unid_tram_dest']
+
 txa_txt_assunto = REQUEST.form['txa_txt_assunto']
 if context.sapl_documentos.props_sagl.numero_protocolo_anual == 1:
     for numero in context.zsql.protocolo_numero_obter_zsql(ano_protocolo = DateTime().strftime('%Y')):
@@ -22,7 +24,7 @@ else:
         hdn_num_protocolo =  int(numero.novo_codigo)
 tip_protocolo = 0
 for tipo_doc in context.zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0):
-    if 'Requerimento' == tipo_doc.des_tipo_documento:
+    if 'Requerimento Diverso' == tipo_doc.des_tipo_documento:
         tip_documento = tipo_doc.tip_documento
 tip_processo = 0
 txt_assunto_ementa = lst_assunto + ' - ' + txa_txt_assunto
@@ -70,12 +72,13 @@ def tramitar_documento(cod_documento):
     for unidade in context.zsql.unidade_tramitacao_obter_zsql(ind_excluido=0):
         if 'Protocolo' in unidade.nom_unidade_join:
             cod_unid_tram_local =  int(unidade.cod_unid_tramitacao)
-        if REQUEST.form['lst_assunto'] == 'Adiantamento de 13º salário' or REQUEST.form['lst_assunto'] == 'Licença-prêmio' or REQUEST.form['lst_assunto'] == 'Férias':
-           if 'Recursos Humanos' == unidade.nom_unidade_join:
-              cod_unid_tram_dest = int(unidade.cod_unid_tramitacao)
-        else:
-           if 'Diretor Geral' == unidade.nom_unidade_join:
-              cod_unid_tram_dest = int(unidade.cod_unid_tramitacao)
+#        if REQUEST.form['lst_assunto'] == 'Adiantamento de 13º salário' or REQUEST.form['lst_assunto'] == 'Licença-prêmio' or REQUEST.form['lst_assunto'] == 'Férias':
+#           if 'Recursos Humanos' == unidade.nom_unidade_join:
+#              cod_unid_tram_dest = int(unidade.cod_unid_tramitacao)
+#        else:
+#           if 'Diretor Geral' == unidade.nom_unidade_join:
+#              cod_unid_tram_dest = int(unidade.cod_unid_tramitacao)
+    cod_unid_tram_dest = int(lst_unidade)            
     for status in context.zsql.status_tramitacao_administrativo_obter_zsql(sgl_status='PRT'):
         cod_status = status.cod_status
     for usuario in context.zsql.usuario_obter_zsql(col_username=REQUEST['AUTHENTICATED_USER'].getUserName()):

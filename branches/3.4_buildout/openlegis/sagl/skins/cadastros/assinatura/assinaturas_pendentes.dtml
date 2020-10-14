@@ -2,7 +2,6 @@
 
   <h1 class="firstHeading">Assinar com Certificado Digital</h1> 
 
-  <fieldset>
   <dtml-in expr="zsql.assinatura_documento_obter_zsql(cod_usuario=cod_usuario_corrente, ind_assinado=0)">
     <dtml-if cod_assinatura_doc>
        <dtml-call expr="REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
@@ -10,51 +9,29 @@
     </dtml-if>
     <dtml-if sequence-start>
       <table class="table">
+        <thead class="table-secondary">
          <tr>
-           <th width="5%"></th>
            <th>Código do Documento</th>
            <th>Tipo</th>
            <th>Data da Solicitação</th>
            <th>Ações</th>
          </tr>
+        </thead>
     </dtml-if>
          <tr>
-           <td></td>
            <td><dtml-var formatted_code></td>
            <td><dtml-var tipo_doc></td>
            <td><dtml-var dat_solicitacao></td>
            <td>
-              <div align="center">
-              <a href="<dtml-var portal_url>/<dtml-var expr="gerar_link_pysc(tipo_doc,codigo)">" target="_blank">Visualizar</a>
-            | <a id="solicitar-assinatura-<dtml-var formatted_code>" href="#">Assinar</a></div>
-
-			         <script type="text/javascript">
-			           $('#solicitar-assinatura-<dtml-var formatted_code>').click(function () {
-    			           $.fancybox({
-        			   type: 'iframe',
-        			   href: '<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var codigo>&tipo_doc=<dtml-var tipo_doc>',
-				   width	   : '70%',
-				   height	   : '50%',
-                                   minHeight	   : 320,
-        			   preload         : true,
-                                   afterClose      : function() {
-                                     window.location.href = "assinaturas_pendentes";},
-		                   closeEffect	: 'fade'
-    			           });
-			           });
-			         </script>
+              <a class="btn btn-sm btn-secondary" href="<dtml-var portal_url>/<dtml-var expr="gerar_link_pysc(tipo_doc,codigo)">" target="_blank"><i class="far fa-file-pdf"></i> Visualizar</a>
+              <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var codigo>&tipo_doc=<dtml-var tipo_doc>&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
            </td>
          </tr>
     <dtml-if sequence-end>
       </table>
     </dtml-if>
   <dtml-else>
-       <div class="ui-state-highlight ui-corner-all" style="padding: 0.5em; margin-bottom: 10px">
-         <p>
-           <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-           <strong>Não há nenhum documento para assinatura.</strong>
-         </p>
-       </div>
+     <p>Nenhum documento pendente de assinatura digital.</p>
   </dtml-in>
-  </fieldset>
+  
 <dtml-var standard_html_footer>
