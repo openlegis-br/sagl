@@ -18,6 +18,41 @@
 </dtml-if>
 
 <dtml-if expr="(str(REQUEST['AUTHENTICATED_USER']).strip()=='Anonymous User')">
+
+<div class="row mt-3">
+ <div class="col-12">
+   <div class="card mb-4">
+     <p class="h6 card-header"><i class="fas fa-calendar-alt"></i> Próximas Sessões</p>
+      <ul class="list-group list-group-flush">     
+        <dtml-in expr="zsql.sessao_plenaria_proximas_zsql()">
+           <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
+              <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">           
+                  <li class="list-group-item"><span class="badge badge-secondary"><dtml-var dat_inicio_sessao> <dtml-var expr="pysc.hora_formatar_pysc(hora=hr_inicio_sessao)"> </span> <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> (<dtml-var num_sessao_leg>ª Sessão Legislativa)</li>
+                  <dtml-if expr="zsql.materia_apresentada_sessao_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0) or zsql.expediente_materia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+                     <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/relatorios/pdf_expediente_preparar_pysc?data=<dtml-var dat_inicio_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Expediente</span></a>
+                  </dtml-if>
+                 <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">                  
+                 <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
+                    <dtml-let pauta="_.getattr(sapl_documentos.pauta_sessao,id_pauta).absolute_url">
+                      <a class="btn btn-sm btn-link" href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Ordem do Dia</span></a>
+                   </dtml-let>
+                 </dtml-if>
+                 </dtml-let>                        
+              </dtml-in>
+           </dtml-in>
+           <dtml-if sequence-end>
+             </ul>           
+            <div class="card-footer text-right">
+             <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/consultas/sessao_plenaria"><i class="fas fa-calendar-alt"></i> Calendário das Sessões</a>
+            </div>
+           </dtml-if>
+        <dtml-else>
+           <div class="card-body">Não há nenhuma sessão agendada.</div>
+        </dtml-in>
+   </div>
+</div>
+</div>
+
 <div class="row mt-3">
  <div class="col-12 col-lg-6">
    <div class="card mb-4">
@@ -31,11 +66,15 @@
                </dtml-in>
               - <dtml-var txt_ementa></li>
            </dtml-in>
+           <dtml-if sequence-end>
+             </ul>           
+            <div class="card-footer text-right">
+             <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/consultas/materia"><i class="fas fa-search"></i> Pesquisa de Matérias</a>
+            </div>
+           </dtml-if>
         <dtml-else>
-           <li class="list-group-item">Não há registros.</li>
+           <div class="card-body">Nenhum registro.</div>
         </dtml-in>
-        <li class="list-group-item text-right"><a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/consultas/materia"><i class="fa fa-search"></i> Pesquisa de Matérias</a></li>        
-      </ul>
    </div>
  </div>
  <div class="col-12 col-lg-6">
@@ -47,11 +86,15 @@
              <li class="list-group-item"><span class="badge badge-secondary"><dtml-var dat_norma> </span> <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma missing>"><dtml-var des_tipo_norma> nº <dtml-var num_norma>/<dtml-var ano_norma></a>
               - <dtml-var txt_ementa></li>
            </dtml-in>
+           <dtml-if sequence-end>
+             </ul>           
+            <div class="card-footer text-right">
+             <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/consultas/norma_juridica"><i class="fas fa-search"></i> Pesquisa de Legislação</a>
+            </div>
+           </dtml-if>
         <dtml-else>
-           <li class="list-group-item">Não há registros.</li>
+           <div class="card-body">Nenhum registro.</div>
         </dtml-in>
-        <li class="list-group-item text-right"><a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/consultas/norma_juridica"><i class="fa fa-search"></i> Pesquisa de Legislação</a></li>        
-      </ul>
    </div>     
  </div>
 </div>
