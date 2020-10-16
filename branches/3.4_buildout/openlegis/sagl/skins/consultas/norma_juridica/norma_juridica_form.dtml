@@ -9,7 +9,7 @@
    <dtml-let isAnon="portal_membership.isAnonymousUser()">
      <dtml-if expr="not isAnon">   
       <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-        <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/relatorios/pdf_detalhe_norma_preparar_pysc?cod_norma=<dtml-var cod_norma>" target="_blank" ><i class="fas fa-fw fa-file-pdf"></i> PDF</a> 
+        <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/relatorios/pdf_detalhe_norma_preparar_pysc?cod_norma=<dtml-var cod_norma>" target="_blank" ><i class="fas fa-fw fa-file-pdf"></i> PDF Textual</a> 
       </div>
      </dtml-if>
    </dtml-let>
@@ -44,7 +44,7 @@
        </dtml-in>                
        </p>
       </div>
-      <div class="col-12 col-lg-4 text-right">
+      <div class="col-12 col-lg-4 text-left text-lg-right">
          <dtml-call expr="REQUEST.set('texto_original', _.str(cod_norma)+'_texto_integral.pdf')">
          <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_original)">
             <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1">
@@ -52,10 +52,12 @@
             </a>
          </dtml-if>  
          <dtml-call expr="REQUEST.set('texto_consolidado', _.str(cod_norma)+'_texto_consolidado.pdf')">
-         <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
-            <a class="btn btn-sm btn-secondary" target="_blank" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_consolidado=1">
-              <i class="fa fa-fw fa-file-pdf"></i> Texto Compilado
-            </a>
+         <dtml-call expr="REQUEST.set('texto_odt', _.str(cod_norma)+'_texto_integral.odt')">                  
+         <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_odt) and _.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
+           <dtml-let documento_odt="_.getattr(sapl_documentos.norma_juridica,texto_odt).absolute_url">         
+              <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var portal_url>/generico/view_odt?arquivo_odt=<dtml-var documento_odt>&cod_norma=<dtml-var cod_norma>&<dtml-var expr="ZopeTime().timeTime()">"> <i class="fa fa-fw fa-file-code"></i> Texto Compilado
+              </a>
+           </dtml-let>
          </dtml-if> 
        
       </div>
@@ -105,30 +107,6 @@
     <p class="col-12"><b>Observações</b>: <dtml-var txt_observacao missing>
   </div>
  </dtml-if>
-
-<dtml-call expr="REQUEST.set('texto_consolidado', _.str(cod_norma)+'_texto_consolidado.pdf')">
-<dtml-call expr="REQUEST.set('texto_odt', _.str(cod_norma)+'_texto_integral.odt')">
-<dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_odt) and _.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
-  <div id="accordion" class="odt">
-    <div class="card mb-4">
-      <div class="card-header" id="headingOne">
-        <p class="h5 mb-0">
-          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseOdt" aria-expanded="false" aria-controls="collapseOdt"> 
-            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
-             <span class="h6 font-weight-bold">Texto Compilado</span>
-          </a>
-        </p>
-      </div>
-      <div id="collapseOdt" class="collapse" aria-labelledby="headingOne" data-parent=".odt">
-        <div class="card-body">     
-         <dtml-let documento_odt="_.getattr(sapl_documentos.norma_juridica,texto_odt).absolute_url">
-          <iframe style="float:left;" src ="<dtml-var portal_url>/generico/view_odt?zoom=page-width&arquivo_odt=<dtml-var documento_odt>&<dtml-var expr="ZopeTime().timeTime()">" width='100%' height='500px' allowfullscreen webkitallowfullscreen frameBorder="0"></iframe>
-          </dtml-let>
-        </div>               
-      </div>
-    </div>
-  </div>          
-</dtml-if>
 
 <dtml-in expr="zsql.anexo_norma_obter_zsql(cod_norma=cod_norma)">
    <dtml-call expr="REQUEST.set('temAnexo', 1)">
@@ -250,6 +228,62 @@
    </div>
  </div>   
 </dtml-if>
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="not isAnon">   
+
+ <dtml-if cod_norma>
+    <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)">
+       <dtml-call expr="REQUEST.set('temArquivo', 1)">
+    </dtml-in>
+
+    <dtml-if temArquivo> 
+      <div id="accordion" class="arquivo">
+        <div class="card mb-4">
+          <div class="card-header" id="headingOne">
+            <p class="h5 mb-0">
+              <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseArquivo" aria-expanded="false" aria-controls="collapseArquivo"> 
+                <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+                 <span class="h6 font-weight-bold">Arquivo Permanente</span>
+              </a>
+            </p>
+          </div>
+          <div id="collapseArquivo" class="collapse" aria-labelledby="headingOne" data-parent=".arquivo">
+            <div class="card-body"> 
+            <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)" mapping>
+               <dtml-if sequence-start>
+                 <table class="table">
+                  <thead>
+                   <tr>
+                    <th width="20%">Recipiente</th>
+                    <th width="20%">Data de Arquivamento</th>
+                    <th>Observações</th>
+                   </tr>
+                  </thead>
+                </dtml-if>
+                <tr>
+                  <td> 
+                    <b><dtml-var num_recipiente></b>
+                 </td>
+                 <td> 
+                   <dtml-var dat_arquivamento>
+                 </td>
+                 <td> 
+                   <dtml-var txt_observacao_arquivo missing null="">
+                 </td>
+                </tr>
+              <dtml-if sequence-end>
+                </table>
+              </dtml-if>
+            </dtml-in>
+           </div>
+          </div>
+         </div>
+        </div>
+      </dtml-if>
+ </dtml-if>
+</dtml-if>
+ </dtml-let>
 
 <a class="btn btn-primary d-print-none" href="<dtml-var portal_url>/consultas/norma_juridica" ><i class="fa fa-fw fa-search"></i> Nova Pesquisa</a>
 

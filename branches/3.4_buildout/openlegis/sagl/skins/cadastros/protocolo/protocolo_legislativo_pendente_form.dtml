@@ -12,19 +12,21 @@
  <dtml-if step>
    <dtml-call "REQUEST.set('step', _.int(step))">
  <dtml-else>
-   <dtml-call "REQUEST.set('step', 20)">
+   <dtml-call "REQUEST.set('step', 10)">
  </dtml-if>
  <dtml-call "REQUEST.set('start',(page-1) * step + 1)">
 
  <dtml-in expr="zsql.protocolo_legislativo_pendente_zsql()" size="step" start="start" orphan=0>
     <dtml-if sequence-start>
-       <b>Resultado da Pesquisa: <dtml-var sequence-length> protocolo<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> encontrado<dtml-if expr="_['sequence-length'] > 1">s</dtml-if></b>
-     <table class="table">
+       <b>Resultado: <dtml-var sequence-length> protocolo<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> encontrado<dtml-if expr="_['sequence-length'] > 1">s</dtml-if></b>
+    <table class="table">
+      <thead class="table-responsive">
        <tr>
          <th width="10%"><b>Protocolo</b></th>
          <th width="17%"><b>Data | Horário</b></th>
          <th><b>Identificação da Matéria</b></th>
        </tr>
+      </thead>
        <dtml-if previous-sequence>
          <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
        </dtml-if previous-sequence>
@@ -40,21 +42,10 @@
             <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_materia)">
                 <b><dtml-var des_tipo_materia></b> - 
             </dtml-in>
-            <dtml-var txt_assunto_ementa><br />
-            <b>Autoria: </b>
             <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
-	       <dtml-if cod_parlamentar>
-		 <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
-		   <dtml-var nom_parlamentar><br /> 
-		 </dtml-in>
-	       <dtml-elif cod_comissao>
-		 <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
-		   <dtml-var nom_comissao><br />
-		 </dtml-in>
-	      <dtml-else>
-		   <dtml-var nom_autor missing null=""><br />
-  	      </dtml-if>
-	    </dtml-in>
+	       <dtml-var nom_autor_join> 
+	    </dtml-in> -
+            <dtml-var txt_assunto_ementa> 
          </td>
        </tr>
     <dtml-if sequence-end>
@@ -63,17 +54,17 @@
         <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
      </dtml-if next-sequence>
      <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
-       <p align="center"><b>          
+      <nav aria-label="Paginação">
+        <ul class="pagination justify-content-center">
           <dtml-var "pysc.PageListOutput_pysc('protocolo_legislativo_pendente_form', page, step, _['sequence-length'])">
-       </p>
+       </ul>
+      </nav>
      </dtml-if>
     </dtml-if>
  <dtml-else>
     <p>Não há nenhuma matéria pendente de incorporação no Protocolo.</p>
  </dtml-in>
 
- <p align="center">
-   <input class="form-control" type="button" value="Voltar" onClick="history.back()">
- </p>
+ <input class="btn btn-secondary" type="button" value="Voltar" onClick="history.back()">
 
 <dtml-var standard_html_footer>
