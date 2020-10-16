@@ -89,19 +89,14 @@ def inf_basicas(dic_inf_basicas):
         tmp+='\t\t<para style="texto_projeto">' + texto_projeto.replace('&','&amp;') + '</para>\n'
 
     #iní­cio das informações básicas
-    tmp+='\t\t<para style="P1">Identificação Básica</para>\n'
+    tmp+='\t\t<para style="P1">Dados Básicos da Matéria</para>\n'
     if str(dic_inf_basicas['apresentada']) != "" and str(dic_inf_basicas['apresentada']) != None:
-        tmp+='\t\t<para style="P2"><b>Apresentação: </b> ' + str(dic_inf_basicas['apresentada']) + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Data de Apresentação: </b> ' + str(dic_inf_basicas['apresentada']) + '</para>\n'
 
     if str(dic_inf_basicas['formato']) == 'E':
-        tmp+='\t\t<para style="P2"><b>Formato: </b> Escrito</para>\n'
+        tmp+='\t\t<para style="P2"><b>Forma de Apresentação: </b> Escrito</para>\n'
     else:
-        tmp+='\t\t<para style="P2"><b>Formato: </b> Oral</para>\n'
-
-    if dic_inf_basicas['publicada']==0:
-        tmp+='\t\t<para style="P2"><b>Publicado:</b> Não</para>\n'
-    else: 
-        tmp+='\t\t<para style="P2"><b>Publicado:</b> Sim</para>\n'
+        tmp+='\t\t<para style="P2"><b>Forma de Apresentação: </b> Oral</para>\n'
 
     if str(dic_inf_basicas['objeto']) != "" and str(dic_inf_basicas['objeto']) != None:
         tmp+='\t\t<para style="P2"><b>Objeto: </b> ' + str(dic_inf_basicas['objeto']) + '</para>\n'
@@ -164,9 +159,8 @@ def mat_anexadas(lst_mat_anexadas):
     for dic_mat in  lst_mat_anexadas:
         if dic_mat['nom_mat']!=" " and dic_mat['nom_mat']!= None:
             tmp+='\t\t<para style="P1">Matérias Anexadas</para>\n'
-            tmp+='\t\t<para style="P2"><b>Nome da matéria:</b> ' + dic_mat['nom_mat'] + '</para>\n'
-            tmp+='\t\t<para style="P2"><b>Data:</b> ' + dic_mat['data'] + '</para>\n'
-            tmp+='\t\t<para style="P2"><b>Data final:</b> ' + str(dic_mat['data_fim']) + '</para>\n'
+            tmp+='\t\t<para style="P2"><b>Matéria:</b> ' + dic_mat['nom_mat'] + '</para>\n'
+            tmp+='\t\t<para style="P2"><b>Anexação:</b> ' + dic_mat['data'] + '</para>\n'
     return tmp
 
 def autoria(lst_autoria):
@@ -175,7 +169,7 @@ def autoria(lst_autoria):
     tmp+='\t\t<para style="P1">Autoria</para>\n'
     for dic_autor in lst_autoria:
         if dic_autor['nom_autor'] != " " and dic_autor['nom_autor'] != None:
-            tmp+='\t\t<para style="P2"><b>Nome:</b> ' + dic_autor['nom_autor'] + '</para>\n'
+            tmp+='\t\t<para style="P2">' + dic_autor['nom_autor'] + '</para>\n'
 
     return tmp
 
@@ -185,22 +179,20 @@ def despachos_iniciais(lst_des_iniciais):
     for dic_dados in lst_des_iniciais:
         if dic_dados['nom_comissao']==None:
             dic_dados['nom_comissao']=" "
-        tmp+='\t\t<para style="P2"><b>Nome da comissão:</b> ' + dic_dados['nom_comissao'] + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Comissão:</b> ' + dic_dados['nom_comissao'] + '</para>\n'
     return tmp
 
 def tramitacoes(lst_tramitacoes):
     tmp=''
     tmp+='\t\t<para style="P1">Histórico de Tramitações</para>\n'
     for dic_tramitacoes in lst_tramitacoes:
-        tmp+='\t\t<para style="P2"><b>Data Ação:</b> ' + str(dic_tramitacoes['data']) + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Data da Tramitação:</b> ' + str(dic_tramitacoes['data']) + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Origem:</b> ' + dic_tramitacoes['unidade'] + '</para>\n'
         data_enc = dic_tramitacoes['data_enc']
         if data_enc != "" and data_enc != None:
             tmp+='\t\t<para style="P2"><b>Encaminhada em:</b> ' + str(dic_tramitacoes['data_enc']) + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Destino:</b> ' + dic_tramitacoes['destino'] + '</para>\n'
         turno = dic_tramitacoes['turno']
-        if turno != "" and turno != None:
-            tmp+='\t\t<para style="P2"><b>Turno:</b> ' + dic_tramitacoes['turno'] + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Status:</b> ' + dic_tramitacoes['status'] + '</para>\n'
         if dic_tramitacoes['urgente']==0:
             tmp+='\t\t<para style="P2"><b>Urgente:</b> Não</para>\n'
@@ -220,9 +212,9 @@ def relatorias(lst_relatorias):
     tmp+='\t\t<para style="P1">Relatoria</para>\n'
     for dic_comissao in lst_relatorias:
         tmp+='\t\t<para style="P2"><b>Comissão:</b> ' + dic_comissao['nom_comissao'] + '</para>\n'
-        tmp+='\t\t<para style="P2"><b>Data Designação:</b> ' + str(dic_comissao['data_desig']) + '</para>\n'
-        tmp+='\t\t<para style="P2"><b>Parlamentar:</b> ' + dic_comissao['parlamentar'] + '</para>\n'
-        tmp+='\t\t<para style="P2"><b>Data Parecer:</b> ' + str(dic_comissao['data_dest']) + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Relator:</b> ' + dic_comissao['parlamentar'] + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Data de Designação:</b> ' + str(dic_comissao['data_desig']) + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Data do Parecer:</b> ' + str(dic_comissao['data_dest']) + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Resultado na Comissão:</b> ' + dic_comissao['motivo'] + '</para>\n'
         tmp+='\t\t<para style="P2"></para>\n'
         tmp+='\t\t<para style="P2"></para>\n'
@@ -232,7 +224,7 @@ def numeracoes(lst_numeracoes):
     tmp=''
     tmp+='\t\t<para style="P1">Outras Numerações</para>\n'
     for dic_dados in lst_numeracoes:
-        tmp+='\t\t<para style="P2"><b>Nome:</b> ' + dic_dados['nome'] + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Número:</b> ' + dic_dados['nome'] + '</para>\n'
         tmp+='\t\t<para style="P2"><b>Ano:</b> ' + str(dic_dados['ano']) + '</para>\n'
     return tmp
 

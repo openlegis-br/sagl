@@ -59,16 +59,19 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  inf_basicas_dic['objeto']= materia.des_objeto
  inf_basicas_dic['tramitacao']= materia.ind_tramitacao
  inf_basicas_dic['cod_projeto']= materia.des_tipo_materia.decode('utf-8').upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)
+
+ inf_basicas_dic['reg_tramitacao'] = ""
  
  for tramitacao in context.zsql.regime_tramitacao_obter_zsql(cod_regime_tramitacao=materia.cod_regime_tramitacao):
   inf_basicas_dic['reg_tramitacao']= tramitacao.des_regime_tramitacao
-  inf_basicas_dic['prazo']= materia.num_dias_prazo
-  inf_basicas_dic['fim_prazo']= materia.dat_fim_prazo
-  inf_basicas_dic['mat_complementar']= materia.ind_complementar
-  inf_basicas_dic['polemica']= materia.ind_polemica
-  inf_basicas_dic['apelido']= materia.nom_apelido
-  inf_basicas_dic['indexacao']= materia.txt_indexacao
-  inf_basicas_dic['observacao']= materia.txt_observacao
+
+ inf_basicas_dic['prazo']= materia.num_dias_prazo
+ inf_basicas_dic['fim_prazo']= materia.dat_fim_prazo
+ inf_basicas_dic['mat_complementar']= materia.ind_complementar
+ inf_basicas_dic['polemica']= materia.ind_polemica
+ inf_basicas_dic['apelido']= materia.nom_apelido
+ inf_basicas_dic['indexacao']= materia.txt_indexacao
+ inf_basicas_dic['observacao']= materia.txt_observacao
 
  
 #o bloco abaixo gera o dicionario da origem externa
