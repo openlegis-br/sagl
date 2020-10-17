@@ -19,10 +19,10 @@
 
 <dtml-if expr="(str(REQUEST['AUTHENTICATED_USER']).strip()=='Anonymous User')">
 
-<div class="row mt-3">
+<div class="form-row mt-2">
  <div class="col-12">
-   <div class="card mb-4">
-     <p class="h6 card-header"><i class="fas fa-calendar-alt"></i> Próximas Sessões</p>
+   <div class="card mb-3">
+     <h5 class="card-header"><i class="fas fa-calendar-alt"></i> Próximas Sessões</h5>   
       <ul class="list-group list-group-flush">     
         <dtml-in expr="zsql.sessao_plenaria_proximas_zsql()">
            <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
@@ -43,21 +43,21 @@
            </dtml-in>
            <dtml-if sequence-end>
              </ul>           
-            <div class="card-footer text-right">
-             <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/consultas/sessao_plenaria"><i class="fas fa-calendar-alt"></i> Calendário das Sessões</a>
-            </div>
            </dtml-if>
         <dtml-else>
            <div class="card-body">Não há nenhuma sessão agendada.</div>
         </dtml-in>
+            <div class="card-footer text-right">
+             <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/consultas/sessao_plenaria"><i class="fa fa-link"></i> Calendário das Sessões</a>
+            </div>        
    </div>
 </div>
 </div>
 
 <div class="row mt-2">
  <div class="col-12 col-lg-6">
-   <div class="card mb-4">
-     <p class="h6 card-header"><i class="fas fa-comments"></i> Matérias Recentes</p>
+   <div class="card mb-3">
+     <h5 class="card-header"><i class="fas fa-comments"></i> Matérias Recentes</h5>      
       <ul class="list-group list-group-flush">     
         <dtml-in expr="zsql.materias_recentes_zsql()">
            <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
@@ -69,18 +69,18 @@
            </dtml-in>
            <dtml-if sequence-end>
              </ul>           
-            <div class="card-footer text-right">
-             <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/consultas/materia"><i class="fas fa-search"></i> Pesquisa de Matérias</a>
-            </div>
            </dtml-if>
         <dtml-else>
            <div class="card-body">Nenhum registro encontrado.</div>
         </dtml-in>
+            <div class="card-footer text-right">
+             <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/consultas/materia"><i class="fa fa-link"></i> Pesquisa de Matérias</a>
+            </div>        
    </div>
  </div>
  <div class="col-12 col-lg-6">
-   <div class="card mb-4">
-     <p class="h6 card-header"><i class="fas fa-balance-scale"></i> Normas Recentes</p>
+   <div class="card mb-3">
+     <h5 class="card-header"><i class="fas fa-balance-scale"></i> Normas Recentes</h5>         
       <ul class="list-group list-group-flush">     
         <dtml-in expr="zsql.normas_recentes_zsql()">
            <dtml-in expr="zsql.norma_juridica_obter_zsql(cod_norma=cod_norma)">
@@ -89,13 +89,13 @@
            </dtml-in>
            <dtml-if sequence-end>
              </ul>           
-            <div class="card-footer text-right">
-             <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/consultas/norma_juridica"><i class="fas fa-search"></i> Pesquisa de Legislação</a>
-            </div>
            </dtml-if>
         <dtml-else>
            <div class="card-body">Nenhum registro encontrado.</div>
         </dtml-in>
+            <div class="card-footer text-right">
+             <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/consultas/norma_juridica"><i class="fa fa-link"></i> Pesquisa de Legislação</a>
+            </div>        
    </div>     
  </div>
 </div>
@@ -103,7 +103,6 @@
 <dtml-else>
 
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador','Operador Materia'])">
- <hr>
  <div class="form-row">
  <dtml-with expr="_.namespace(materias=zsql.materia_prazo_deliberacao_vencido_zsql())">
   <dtml-if expr="_.len(materias) > 0">
@@ -152,17 +151,42 @@ liberacao" class="alert-link"> <dtml-var expr="_.len(materias)"> matéria<dtml-i
 </dtml-if>
 </div>
 
+<dtml-if cod_usuario_corrente>
+<dtml-if expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
+<div class="row">
+  <div class="col-12 mb-3">
+    <div class="card">
+      <h5 class="card-header"><i class="fas fa-inbox"></i> Tramitação Eletrônica</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <button type="button" class="btn btn-lg btn-primary mb-2 mb-md-0" onclick="location.href='<dtml-var portal_url>/cadastros/tramitacao_materia/tramitacao_lote_form'">
+                Matérias Legislativas 
+                <span class="badge badge-light"><dtml-var expr="pysc.caixa_entrada_contar_pysc(cod_usuario=cod_usuario_corrente)"></span>
+            </button>
+            <button type="button" class="btn btn-lg btn-primary" onclick="location.href='<dtml-var portal_url>/cadastros/tramitacao_documento/tramitacao_lote_form'">
+                Processos Administrativos 
+                <span class="badge badge-light"><dtml-var expr="pysc.caixa_entrada_administrativo_contar_pysc(cod_usuario=cod_usuario_corrente)"></span>
+            </button>
+          
+          </li>
+        </ul>
+    </div>
+  </div>
+</div>
+</dtml-if>
+</dtml-if>
+
 <div class="form-row">
- <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador','Operador Materia','Operador Modulo Administrativo', 'Leitor Relatorios'])">
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador','Operador Materia','Operador Modulo Administrativo', 'Leitor Relatorios'])">
   <div class="col-12">
    <div class="card">
-     <h6 class="card-header">Relatórios de Vencimentos Futuros</h6>
+   <h5 class="card-header"><i class="far fa-calendar-times"></i> Vencimentos Futuros</h5>   
      <ul class="list-group list-group-flush">
       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador','Operador Materia','Leitor Relatorios'])">     
-        <li class="list-group-item"><a href="<dtml-var portal_url>/relatorios_administrativos/materiaVencimento/materiaVencimento"><b>MATÉRIAS</b> - Prazos de deliberação a vencer</a></li>       
+        <li class="list-group-item"><i class="fas fa-caret-right"></i> <a href="<dtml-var portal_url>/relatorios_administrativos/materiaVencimento/materiaVencimento">Prazos de deliberação de matérias</a></li>       
       </dtml-if>
       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador','Operador Modulo Administrativo','Leitor Relatorios'])">      
-        <li class="list-group-item"><a href="<dtml-var portal_url>/relatorios_administrativos/documentoVencimento/documentoVencimento_index_html"><b>DOCUMENTOS</b> - Prazos de conclusão a vencer</a></li>                 
+        <li class="list-group-item"><i class="fas fa-caret-right"></i> <a href="<dtml-var portal_url>/relatorios_administrativos/documentoVencimento/documentoVencimento_index_html">Prazos de conclusão de processos administrativos</a></li>                 
       </dtml-if>
      </ul>
    </div>
