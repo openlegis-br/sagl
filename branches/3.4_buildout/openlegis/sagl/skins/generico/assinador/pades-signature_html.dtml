@@ -1,6 +1,7 @@
-<dtml-var base_html>
-<script type='text/javascript' src="<dtml-var portal_url>/javascript/geral.js"></script>
-<body>
+<dtml-var standard_html_header>
+
+<script src="static/js/lacuna-web-pki-2.12.0.js"></script>
+<script src="static/js/jquery.blockUI.js"></script>
 
 <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
    <dtml-call expr="REQUEST.set('cod_usuario', int(cod_usuario))">
@@ -10,33 +11,24 @@
 <dtml-call "REQUEST.set('token', campos[0])">
 <dtml-call "REQUEST.set('pdf_path', campos[1])">
 
-<div class="container">
+<form id="signForm" action="pades-signature-action_html" method="post">
+  <input type="hidden" id="token" name="token" value="<dtml-var token>" />
+  <input type="hidden" id="codigo" name="codigo" value="<dtml-var codigo>">
+  <input type="hidden" id="cod_usuario" name="cod_usuario" value="<dtml-var cod_usuario>">  
+  <input type="hidden" id="tipo_doc" name="tipo_doc" value="<dtml-var tipo_doc>">
+  <input type="hidden" id="modal" name="modal" value="1" />
+  <div class="form-row">
+     <div class="col-12 mb-3">
+       <label for="certificateSelect">Selecione um Certificado Digital</label>
+       <select class="custom-select"  id="certificateSelect" class="form-control"></select>
+     </div>
+  </div>
+  <button id="signButton" type="button" class="btn btn-primary"><i class="fas fa-file-signature"></i> Assinar PDF</button>
+  <button id="refreshButton" type="button" class="btn btn-secondary"><i class="fas fa-sync"></i> Recarregar Certificados</button>
+</form>
 
-	<h2>Assinatura Digital</h2>
-
-	<form id="signForm" action="pades-signature-action_html" method="post">
-		<!-- render the $token in a hidden input field -->
-		<input type="hidden" id="token" name="token" value="<dtml-var token missing>" />
-		<input type="hidden" id="codigo" name="codigo" value="<dtml-var codigo missing>">
-		<input type="hidden" id="tipo_doc" name="tipo_doc" value="<dtml-var tipo_doc missing>">
-                <input type="hidden" id="cod_usuario" name="cod_usuario" value="<dtml-var cod_usuario missing>" />
-		<!-- Render a select (combo box) to list the user's certificates. For now it will be empty, we'll populate it
-		later on (see javascript below).
-		 -->		
-		<div class="form-group">
-			<label for="certificateSelect">Selecione um certificado</label>
-			<select class="custom-select"  id="certificateSelect" class="form-control"></select>
-		</div>
-		<!-- Action buttons. Notice that the "Sign File" button is NOT a submit button. When the user clicks the button,
-		we must first use the Web PKI component to perform the client-side computation necessary and only when
-		that computation is finished we'll submit the form programmatically (see javascript below).
-		 -->
-		<button id="signButton" type="button" class="btn btn-primary">Assinar PDF</button>
-		<button id="refreshButton" type="button" class="btn btn-default">Recarregar Certificados</button>
-                <button id="closeButton" type="button" class="btn btn-default" OnClick="javascript:parent.jQuery.fancybox.close();">Fechar</button>
-	</form>
-
-</div>
 <script src="static/js/lacuna-web-pki-client.js"></script>
-</body>
-</html>
+
+<dtml-var REQUEST>
+
+<dtml-var standard_html_footer>
