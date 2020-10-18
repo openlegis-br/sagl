@@ -1746,11 +1746,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            pdf_tosign = nom_arquivo
 
         # Read the PDF path
-            arq = getattr(self.sapl_documentos.proposicao, anexo)
-            arquivo = cStringIO.StringIO(str(arq.data))   
-            texto_anexo = PdfReader(arquivo, decompress=False).pages
-
-        
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
         url = self.url() + '/' + pdf_location + pdf_tosign
