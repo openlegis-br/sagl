@@ -984,8 +984,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def oficio_gerar_pdf(self, cod_documento):
         nom_arquivo_odt = "%s"%cod_documento+'_texto_integral.odt'
         nom_arquivo_pdf1 = "%s"%cod_documento+'_texto_integral.pdf'
-        url = self.sapl_documentos.administrativo.absolute_url() + "/%s"%nom_arquivo_odt
-        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        arquivo = getattr(self.sapl_documentos.administrativo, nom_arquivo_odt)
+        odtFile = cStringIO.StringIO(str(arquivo.data))     
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
         renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
@@ -1186,8 +1186,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         merger = PdfWriter()
         nom_arquivo_odt = "%s"%cod_proposicao+'.odt'
         nom_arquivo_pdf1 = "%s"%cod_proposicao+'.pdf'
-        url = self.sapl_documentos.proposicao.absolute_url() + "/%s"%nom_arquivo_odt
-        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        arquivo = getattr(self.sapl_documentos.proposicao, nom_arquivo_odt)
+        odtFile = cStringIO.StringIO(str(arquivo.data))   
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
         renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
@@ -1197,12 +1197,10 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         lst_anexos = []
         for anexo in self.pysc.anexo_proposicao_pysc(cod_proposicao,listar=True):
-            pdf_anexo = self.sapl_documentos.proposicao.absolute_url()+ "/" + str(anexo)
-            opener = urllib.urlopen(pdf_anexo)
-            f = open('/tmp/' + str(anexo), 'wb').write(opener.read())
-            texto_anexo = PdfReader('/tmp/'+ str(anexo), decompress=False).pages
+            arq = getattr(self.sapl_documentos.proposicao, anexo)
+            arquivo = cStringIO.StringIO(str(arq.data))   
+            texto_anexo = PdfReader(arquivo, decompress=False).pages
             merger.addpages(texto_anexo)
-            os.unlink('/tmp/' + str(anexo))
 
         final_output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
         merger.write(final_output_file_pdf)
@@ -1748,6 +1746,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            pdf_tosign = nom_arquivo
 
         # Read the PDF path
+            arq = getattr(self.sapl_documentos.proposicao, anexo)
+            arquivo = cStringIO.StringIO(str(arq.data))   
+            texto_anexo = PdfReader(arquivo, decompress=False).pages
+
+        
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
         url = self.url() + '/' + pdf_location + pdf_tosign
