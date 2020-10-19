@@ -131,6 +131,7 @@ CREATE TABLE IF NOT EXISTS `arquivo_recipiente` (
   `cod_armario` int DEFAULT NULL,
   `cod_prateleira` int DEFAULT NULL,
   `txt_observacao` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `num_folha_recipiente` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL, 
   `ind_excluido` tinyint NOT NULL,
   PRIMARY KEY (`cod_recipiente`),
   UNIQUE KEY `num_tipo_recipiente` (`num_recipiente`,`tip_recipiente`,`ano_recipiente`,`ind_excluido`),
@@ -219,6 +220,14 @@ CREATE TABLE IF NOT EXISTS `assinatura_storage` (
   PRIMARY KEY (`tip_documento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `assunto_materia` (
+  `cod_assunto` int NOT NULL AUTO_INCREMENT,
+  `des_assunto` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `des_estendida` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ind_excluido` tinyint NOT NULL,
+  PRIMARY KEY (`cod_assunto`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci PACK_KEYS=0;
+
 CREATE TABLE IF NOT EXISTS `assunto_norma` (
   `cod_assunto` int NOT NULL AUTO_INCREMENT,
   `des_assunto` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -234,7 +243,7 @@ CREATE TABLE IF NOT EXISTS `autor` (
   `cod_bancada` int DEFAULT NULL,
   `cod_parlamentar` int DEFAULT NULL,
   `tip_autor` tinyint NOT NULL,
-  `nom_autor` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nom_autor` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `des_cargo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `col_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `end_email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -971,6 +980,7 @@ CREATE TABLE IF NOT EXISTS `materia_legislativa` (
   `txt_observacao` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `tip_quorum` int DEFAULT NULL,
   `cod_situacao` int DEFAULT NULL,
+  `cod_assunto` int DEFAULT NULL,
   `cod_materia_principal` int DEFAULT NULL,
   `ind_excluido` tinyint NOT NULL,
   PRIMARY KEY (`cod_materia`),
@@ -981,6 +991,7 @@ CREATE TABLE IF NOT EXISTS `materia_legislativa` (
   KEY `idx_dat_apresentacao` (`dat_apresentacao`,`tip_id_basica`,`ind_excluido`),
   KEY `idx_matleg_dat_publicacao` (`dat_publicacao`,`tip_id_basica`,`ind_excluido`),
   KEY `cod_situacao` (`cod_situacao`),
+  KEY `idx_assunto` (`cod_assunto`),
   KEY `idx_mat_principal` (`cod_materia_principal`),
   KEY `tip_quorum` (`tip_quorum`),
   KEY `idx_matleg_ident` (`ind_excluido`,`tip_id_basica`,`ano_ident_basica`,`num_ident_basica`) USING BTREE,

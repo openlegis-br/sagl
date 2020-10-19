@@ -98,6 +98,7 @@ CREATE TABLE `arquivo_recipiente` (
   `cod_armario` int DEFAULT NULL,
   `cod_prateleira` int DEFAULT NULL,
   `txt_observacao` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `num_folha_recipiente` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ind_excluido` tinyint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -209,6 +210,13 @@ INSERT INTO `assinatura_storage` (`tip_documento`, `pdf_location`, `storage_path
 ('tramitacao', 'sapl_documentos/materia/tramitacao/', 'sapl_documentos.materia.tramitacao', '_tram.pdf', '_tram_signed.pdf'),
 ('tramitacao_adm', 'sapl_documentos/administrativo/tramitacao/', 'sapl_documentos.administrativo.tramitacao', '_tram.pdf', '_tram_signed.pdf');
 
+CREATE TABLE `assunto_materia` (
+  `cod_assunto` int NOT NULL,
+  `des_assunto` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `des_estendida` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ind_excluido` tinyint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci PACK_KEYS=0;
+
 CREATE TABLE `assunto_norma` (
   `cod_assunto` int NOT NULL,
   `des_assunto` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -248,7 +256,7 @@ CREATE TABLE `autor` (
   `cod_bancada` int DEFAULT NULL,
   `cod_parlamentar` int DEFAULT NULL,
   `tip_autor` tinyint NOT NULL,
-  `nom_autor` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nom_autor` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `des_cargo` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `col_username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `end_email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -502,7 +510,7 @@ CREATE TABLE `documento_acessorio_administrativo` (
   `nom_documento` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `nom_arquivo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `dat_documento` date DEFAULT NULL,
-  `nom_autor_documento` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nom_autor_documento` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `txt_assunto` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `txt_indexacao` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `ind_excluido` tinyint NOT NULL DEFAULT '0'
@@ -6434,6 +6442,7 @@ CREATE TABLE `materia_legislativa` (
   `txt_observacao` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `tip_quorum` int DEFAULT NULL,
   `cod_situacao` int DEFAULT NULL,
+  `cod_assunto` int DEFAULT NULL,
   `cod_materia_principal` int DEFAULT NULL,
   `ind_excluido` tinyint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci PACK_KEYS=0;
@@ -7590,6 +7599,9 @@ ALTER TABLE `assinatura_documento`
 ALTER TABLE `assinatura_storage`
   ADD PRIMARY KEY (`tip_documento`);
 
+ALTER TABLE `assunto_materia`
+  ADD PRIMARY KEY (`cod_assunto`);
+
 ALTER TABLE `assunto_norma`
   ADD PRIMARY KEY (`cod_assunto`);
 
@@ -7897,6 +7909,7 @@ ALTER TABLE `materia_legislativa`
   ADD KEY `idx_dat_apresentacao` (`dat_apresentacao`,`tip_id_basica`,`ind_excluido`),
   ADD KEY `idx_matleg_dat_publicacao` (`dat_publicacao`,`tip_id_basica`,`ind_excluido`),
   ADD KEY `cod_situacao` (`cod_situacao`),
+  ADD KEY `idx_assunto` (`cod_assunto`), 
   ADD KEY `idx_mat_principal` (`cod_materia_principal`),
   ADD KEY `tip_quorum` (`tip_quorum`),
   ADD KEY `idx_matleg_ident` (`ind_excluido`,`tip_id_basica`,`ano_ident_basica`,`num_ident_basica`) USING BTREE,
@@ -8308,6 +8321,9 @@ ALTER TABLE `arquivo_unidade`
 
 ALTER TABLE `assessor_parlamentar`
   MODIFY `cod_assessor` int NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `assunto_materia`
+  MODIFY `cod_assunto` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT;
 
 ALTER TABLE `assunto_norma`
   MODIFY `cod_assunto` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
