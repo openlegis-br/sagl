@@ -3,7 +3,7 @@
 <h1 class="firstHeading">Tramitação de Matérias</h1>
 
 <dtml-if selAno>
-  <dtml-in "qtdeTipoAno(ano=selAno, tipo=lst_tip_materia, tramLocal=Dst_cod_unid_tram_local,  status=lst_status, dat_prazofim=dat_przlim)">
+  <dtml-in "qtdeTipoAno(ano=selAno, autor=hdn_cod_autor, tipo=lst_tip_materia, tramLocal=Dst_cod_unid_tram_local,  status=lst_status, dat_prazofim=dat_przlim, texto=txt_texto_acao)">
     <p> 
      <b>Tipo de Matéria: </b><dtml-var des_tipo_materia>
      | <b>Ano: </b><dtml-var selAno>
@@ -11,7 +11,7 @@
        | <b>Localização Atual: </b><dtml-var nom_unidade missing>
      </dtml-if>
     <dtml-if lst_status>
-      | <b>Status:</b> <dtml-var nom_status missing>
+      | <b>Situação:</b> <dtml-var nom_status missing>
     </dtml-if>
     <dtml-if dat_przlim>
       | <b>Prazo até: </b><dtml-var dat_przlim>
@@ -23,23 +23,31 @@
 
     <hr />
   
- <dtml-in "autorMateriaAno(ano=selAno,tipo=lst_tip_materia,tramLocal=Dst_cod_unid_tram_local,status=lst_status,dat_prazofim=dat_przlim)">
-  <p class="h5"><b>Autoria:</b> <dtml-var nom_autor_join></p>
+ <dtml-in "autorMateriaAno(ano=selAno, autor=hdn_cod_autor, tipo=lst_tip_materia, tramLocal=Dst_cod_unid_tram_local, status=lst_status, dat_prazofim=dat_przlim, texto=txt_texto_acao)">
+  
+    <p class="h5"><b>Autoria:</b> <dtml-var nom_autor_join></p>
 
-
-
-  <dtml-in "materiaAutorAno(autor=cod_autor,ano=selAno,tipo=lst_tip_materia,tramLocal=Dst_cod_unid_tram_local,  status=lst_status, dat_prazofim=dat_przlim)">
-    <p><dtml-var sequence-number>) <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">"><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a></b><br />
-    <dtml-var txt_ementa>
-    <br /><b>Status:</b> <dtml-var des_status missing>
-    <dtml-if dat_przlim>
-    <br /><b>Prazo:</b> <dtml-var dat_fim_prazo>
-  </dtml-if>
-   </p>
+  <dtml-in "materiaAutorAno(autor=autor,ano=selAno,tipo=lst_tip_materia,tramLocal=Dst_cod_unid_tram_local,  status=lst_status, dat_prazofim=dat_przlim, texto=txt_texto_acao)">
+    <p><dtml-var sequence-number>)
+    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+       <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
+    <dtml-else>
+       <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" target="_blank" >
+    </dtml-if>
+       <b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></a>
+       - <dtml-var txt_ementa>
+      <br /><b>Localização Atual:</b> <dtml-var nom_unidade_join missing null>      
+      <br /><b>Situação:</b> <dtml-var des_status missing>
+       <dtml-if txt_tramitacao>      
+        <br /><b>Texto da Ação:</b> <dtml-var txt_tramitacao>
+      </dtml-if>
+      <dtml-if dat_fim_prazo>
+        <br /><b>Prazo:</b> <dtml-var dat_fim_prazo>
+      </dtml-if>
+    </p>
   </dtml-in>
-
-<br />
-  </dtml-in>
+     <hr>
+</dtml-in>
 
 </dtml-if>
 
