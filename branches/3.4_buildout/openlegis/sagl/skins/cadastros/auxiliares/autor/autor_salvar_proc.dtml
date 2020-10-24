@@ -37,6 +37,15 @@
     </dtml-unless>
     <dtml-unless erro>
       <dtml-call expr="REQUEST.set('login_criado',1)">
+      <dtml-if expr="tip_autor == '1'">
+         <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+            <dtml-call expr="REQUEST.set('nom_completo', nom_completo)">
+            <dtml-call expr="REQUEST.set('num_cpf', num_cpf)">
+            <dtml-call expr="REQUEST.set('end_email', end_email)">
+            <dtml-call expr="REQUEST.set('nom_cargo', 'Vereador')">                     
+         </dtml-in>      
+         <dtml-call expr="zsql.usuario_incluir_zsql(col_username=txt_login, nom_completo=nom_completo, num_cpf=num_cpf, end_email=end_email, nom_cargo=nom_cargo)">
+      </dtml-if>
     </dtml-unless>
   </dtml-if>
 </dtml-unless>
@@ -96,9 +105,15 @@
           <dtml-var mensagem_emitir>
         </dtml-let>
       <dtml-else>
-        <dtml-let mensagem="'Autor salvo com sucesso!'">
-          <dtml-var mensagem_emitir>
-        </dtml-let>
+         <dtml-if hdn_url>
+            <dtml-let mensagem="'Autor salvo com sucesso!'" url=hdn_url>
+              <dtml-var mensagem_emitir>
+            </dtml-let>
+          <dtml-else>
+            <dtml-let mensagem="'Autor salvo com sucesso!'" >
+              <dtml-var mensagem_emitir>
+            </dtml-let>          
+          </dtml-if>
       </dtml-if>
     </dtml-if>
   </dtml-try>
