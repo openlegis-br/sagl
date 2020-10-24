@@ -254,76 +254,106 @@
 <dtml-else>
 
 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador','Operador Materia'])">
- <div class="form-row">
  <dtml-with expr="_.namespace(materias=zsql.materia_prazo_deliberacao_vencido_zsql())">
   <dtml-if expr="_.len(materias) > 0">
+   <div class="row">
    <div class="col-12">
      <div class="bs-component">
        <div class="alert alert-dismissible alert-danger">
-         <h5 class="alert-heading">Prazo de Deliberação</h5>
+         <h5 class="alert-heading"><i class="fas fa-exclamation-circle"></i> Aviso de Vencimento </h5>
          <p class="mb-0">Há <a href="<dtml-var portal_url>/generico/materia_listar_prazo_de
-liberacao" class="alert-link"> <dtml-var expr="_.len(materias)"> matéria<dtml-if expr="_.len(materias) > 1">s</dtml-if></a> com prazo vencido</p>
+liberacao" class="alert-link"> <dtml-var expr="_.len(materias)"> matéria<dtml-if expr="_.len(materias) > 1">s</dtml-if></a> com prazo de deliberação vencido</p>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
        </div>
      </div>
     </div>
+    </div>
   </dtml-if>
  </dtml-with>
 
  <dtml-with expr="_.namespace(materias=zsql.tramitacao_prazo_vencido_obter_zsql())">
   <dtml-if expr="_.len(materias) > 0">
+   <div class="row">  
    <div class="col-12">
      <div class="bs-component">
        <div class="alert alert-dismissible alert-danger">
          <button type="button" class="close" data-dismiss="alert">×</button>
-         <h5 class="alert-heading">Tramitação de Matérias</h5>
-         <p class="mb-0">Há <a href="<dtml-var portal_url>/generico/materia_listar_prazo_vencido" class="alert-link"> <dtml-var expr="_.len(materias)"> <dtml-if expr="_.len(materias) > 1">tramitações<dtml-else>tramitação</dtml-if></a> com prazo vencido</p>
+         <h5 class="alert-heading"><i class="fas fa-exclamation-circle"></i> Aviso de Vencimento</h5>
+         <p class="mb-0">Há <a href="<dtml-var portal_url>/generico/materia_listar_prazo_vencido" class="alert-link"> <dtml-var expr="_.len(materias)"> matéria<dtml-if expr="_.len(materias) > 1">s</dtml-if></a> com prazo de tramitação vencido</p>
        </div>
      </div>
+    </div>
     </div>
   </dtml-if>
  </dtml-with>
 
  <dtml-with expr="_.namespace(materias=zsql.tramitacao_prazo_vincendo_obter_zsql())">
   <dtml-if expr="_.len(materias) > 0">
+   <div class="row">    
    <div class="col-12">
      <div class="bs-component">
-       <div class="alert alert-dismissible alert-success">
+       <div class="alert alert-dismissible alert-primary">
          <button type="button" class="close" data-dismiss="alert">×</button>
-         <h5 class="alert-heading">Tramitação de Matérias</h5>
+         <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Tramitação de Matérias</h5>
          <p class="mb-0">Há <a href="<dtml-var portal_url>/generico/materia_listar_prazo" class="alert-link"> <dtml-var expr="_.len(materias)"> <dtml-if expr="_.len(materias) > 1">tramitações<dtml-else>tramitação</dtml-if></a> vencendo hoje
        </div>
      </div>
     </div>
+    </div>
   </dtml-if>
  </dtml-with>
 </dtml-if>
-</div>
 
 <dtml-if cod_usuario_corrente>
-<dtml-if expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
-<div class="row">
-  <div class="col-12 mb-3">
-    <div class="card">
-      <h5 class="card-header"><i class="fas fa-inbox"></i> Tramitação Eletrônica</h5>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">
-            <button type="button" class="btn btn-lg btn-primary mb-2 mb-md-0" onclick="location.href='<dtml-var portal_url>/cadastros/tramitacao_materia/tramitacao_lote_form'">
-                Matérias Legislativas 
-                <span class="badge badge-light"><dtml-var expr="pysc.caixa_entrada_contar_pysc(cod_usuario=cod_usuario_corrente)"></span>
-            </button>
-            <button type="button" class="btn btn-lg btn-primary" onclick="location.href='<dtml-var portal_url>/cadastros/tramitacao_documento/tramitacao_lote_form'">
-                Processos Administrativos 
-                <span class="badge badge-light"><dtml-var expr="pysc.caixa_entrada_administrativo_contar_pysc(cod_usuario=cod_usuario_corrente)"></span>
-            </button>
-          
-          </li>
-        </ul>
+
+  <dtml-with expr="_.namespace(assinaturas=zsql.assinatura_documento_obter_zsql(cod_usuario=cod_usuario_corrente, ind_assinado=0))">
+    <dtml-if expr="_.len(assinaturas) > 0">
+   <div class="row">    
+   <div class="col-12">
+     <div class="bs-component">
+       <div class="alert alert-dismissible alert-primary">
+         <button type="button" class="close" data-dismiss="alert">×</button>
+         <h5 class="alert-heading"><i class="fas fa-file-signature"></i> Assinatura Digital</h5>
+         <p class="mb-0">Há <a href="<dtml-var portal_url>/cadastros/assinatura/assinaturas_pendentes" class="alert-link"><dtml-var expr="_.len(assinaturas)"> <dtml-if expr="_.len(assinaturas) > 1">solicitações<dtml-else>solicitação</dtml-if></a> de assinatura pendente<dtml-if expr="_.len(assinaturas) > 1">s</dtml-if>
+       </div>
+     </div>
     </div>
-  </div>
-</div>
+    </div>    
+    </dtml-if>
+  </dtml-with>
+
+  <dtml-if expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
+
+    <dtml-if expr="pysc.caixa_entrada_contar_pysc(cod_usuario=cod_usuario_corrente)>0">
+       <div class="row">      
+       <div class="col-12">
+         <div class="bs-component">
+           <div class="alert alert-dismissible alert-primary">
+             <button type="button" class="close" data-dismiss="alert">×</button>
+             <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Tramitação de Matérias Legislativas</h5>
+             <p class="mb-0">Há <a href="<dtml-var portal_url>/cadastros/tramitacao_materia/tramitacao_lote_form" class="alert-link"> <dtml-var expr="pysc.caixa_entrada_contar_pysc(cod_usuario=cod_usuario_corrente)"> matéria<dtml-if expr="pysc.caixa_entrada_contar_pysc(cod_usuario=cod_usuario_corrente)>0">s</dtml-if></a> pendente<dtml-if expr="pysc.caixa_entrada_contar_pysc(cod_usuario=cod_usuario_corrente)>0">s</dtml-if> de tramitação em sua caixa de entrada
+           </div>
+         </div>
+        </div>
+        </div>
+    </dtml-if>
+
+    <dtml-if expr="pysc.caixa_entrada_administrativo_contar_pysc(cod_usuario=cod_usuario_corrente)>0">
+       <div class="row">      
+       <div class="col-12">
+         <div class="bs-component">
+           <div class="alert alert-dismissible alert-primary">
+             <button type="button" class="close" data-dismiss="alert">×</button>
+             <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Tramitação de Processos Administrativos</h5>
+             <p class="mb-0">Há <a href="<dtml-var portal_url>/cadastros/tramitacao_documento/tramitacao_lote_form" class="alert-link"> <dtml-var expr="pysc.caixa_entrada_administrativo_contar_pysc(cod_usuario=cod_usuario_corrente)"> documento<dtml-if expr="pysc.caixa_entrada_administrativo_contar_pysc(cod_usuario=cod_usuario_corrente)>0">s</dtml-if></a> pendente<dtml-if expr="pysc.caixa_entrada_administrativo_contar_pysc(cod_usuario=cod_usuario_corrente)>0">s</dtml-if> de tramitação em sua caixa de entrada
+           </div>
+         </div>
+        </div>
+        </div>
+    </dtml-if>
+
 </dtml-if>
 </dtml-if>
 
