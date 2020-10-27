@@ -2,7 +2,7 @@
 -- Create the database for OpenLegis in the MySQL
 --
 
-CREATE SCHEMA IF NOT EXISTS `interlegis` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE SCHEMA IF NOT EXISTS `openlegis` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE USER 'sagl'@'localhost' IDENTIFIED BY 'sagl';
 
