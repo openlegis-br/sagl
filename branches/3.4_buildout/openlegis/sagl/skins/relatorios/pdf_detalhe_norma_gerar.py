@@ -173,7 +173,7 @@ def principal(imagem, dic_rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativo
     tmp+=paraStyle()
     tmp+='\t<story>\n'
     tmp+=inf_basicas(inf_basicas_dic)
-    tmp+=assuntos(lst_assuntos)
+    #tmp+=assuntos(lst_assuntos)
     tmp+=vinculos_ativos(lst_vinculos_ativos)
     tmp+=vinculos_passivos(lst_vinculos_passivos)
     tmp+='\t</story>\n'

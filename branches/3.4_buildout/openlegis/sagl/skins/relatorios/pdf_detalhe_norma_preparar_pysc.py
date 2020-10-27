@@ -62,18 +62,18 @@ for norma in context.zsql.norma_juridica_obter_zsql(cod_norma=REQUEST['cod_norma
                    nome_autor = autor['nom_autor_join']
            lista_autor.append(nome_autor)
            nom_autor = ', '.join(['%s' % (value) for (value) in lista_autor]) 
-           inf_basicas_dic['materia_vinculada'] = materia_vinculada.des_tipo_materia+"  n°  "+str(materia_vinculada.num_ident_basica)+"/"+str(materia_vinculada.ano_ident_basica)+" - Autor: "+ str(nom_autor)
+           inf_basicas_dic['materia_vinculada'] = materia_vinculada.des_tipo_materia+"  n°  "+str(materia_vinculada.num_ident_basica)+"/"+str(materia_vinculada.ano_ident_basica)+" - Autoria: "+ str(nom_autor)
 
     # assuntos
     lst_assuntos = []
-    if norma.cod_assunto_sel != '1':
-       assuntos = norma.cod_assunto_sel.split(",")
-       for assunto in assuntos:
-           assuntos_dic = {}
-           if assunto != 1:
-              aux = context.zsql.assunto_norma_juridica_obter_zsql(cod_assunto = assunto)
-              assuntos_dic['assunto']= aux[0].des_assunto
-           lst_assuntos.append(assuntos_dic)
+    #if norma.cod_assunto_sel != '1':
+    #   assuntos = norma.cod_assunto_sel.split(",")
+    #   for assunto in assuntos:
+    #       assuntos_dic = {}
+    #       if assunto != 1:
+    #          aux = context.zsql.assunto_norma_juridica_obter_zsql(cod_assunto = assunto)
+    #          assuntos_dic['assunto']= aux[0].des_assunto
+    #       lst_assuntos.append(assuntos_dic)
 
     #o bloco abaixo gera o dicionario de vinculos ativos
     lst_vinculos_ativos = []
