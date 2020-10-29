@@ -68,6 +68,7 @@ def initialize(context):
     allow_module('uuid')
     allow_module('binascii')
     allow_module('re')
+    allow_module('collections')
 
     tools = (SAGLTool.SAGLTool,)
     ToolInit('SAGL Tool',
