@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : tip_materia_sel dat_apresentacao dat_apresentacao2
+arguments : tip_materia_sel="" dat_apresentacao dat_apresentacao2
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
@@ -16,8 +16,14 @@ WHERE
      tm.tip_natureza = 'P' and      
      m.dat_apresentacao >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apresentacao)"  type="nb"> and
      m.dat_apresentacao <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apresentacao2)" type="nb">
-   <dtml-if expr="tip_materia_sel!='0'">
-     and m.tip_id_basica = <dtml-sqlvar tip_materia_sel type="int">
+   <dtml-if expr="tip_materia_sel and tip_materia_sel!=''">
+    AND (
+        <dtml-if expr="pysc.verifica_lista_pysc(tip_materia_sel)">
+           m.tip_id_basica in (<dtml-var "tip_materia_sel" sql_quote>)
+         <dtml-else>
+           m.tip_id_basica in (<dtml-var expr="tip_materia_sel[1:-1]">)
+        </dtml-if>
+      )
    </dtml-if>
    <dtml-let isAnon="portal_membership.isAnonymousUser()">
      <dtml-if expr="isAnon">

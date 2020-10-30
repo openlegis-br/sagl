@@ -50,17 +50,6 @@
 </script>
 
 <script type="text/javascript">
-<!--
-  function tipo_autor_trocar(form) {
-    form.txt_autor.value = "";
-    form.hdn_txt_autor.value = "";
-    form.hdn_cod_autor.value = "";
-    return;
-  }
-//-->
-</script>
-
-<script type="text/javascript">
 function clear_form_elements(ele) {
 
     $(ele).find(':input').each(function() {
@@ -107,12 +96,18 @@ function clear_form_elements(ele) {
      </div>
     <div class="col-12 col-sm-6 mb-3">
       <label for="lst_tip_materia">Tipo de Matéria</label>
-        <select class="custom-select" id="lst_tip_materia" name="lst_tip_materia">
-          <option value="0">Todos</option>
+        <select  id="lst_tip_materia" name="lst_tip_materia" class="form-control selectpicker" data-dropup-auto="false" data-size="6" multiple="multiple" data-actions-box="true" title="Todos" data-header="Tipo de Matéria" data-selected-text-format="count > 3">
           <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)">
-            <option 
-             <dtml-if expr="_.has_key('lst_tip_materia') and _.int(tip_materia)==_.int(lst_tip_materia)">
-              selected</dtml-if>
+            <option
+             <dtml-if expr="_.has_key('lst_tip_materia') and pysc.verifica_lista_pysc(lst_tip_materia)">            
+                <dtml-if expr="_.has_key('lst_tip_materia') and str(tip_materia)==str(lst_tip_materia)">
+                  selected
+                </dtml-if> 
+             <dtml-else>
+                <dtml-if expr="_.has_key('lst_tip_materia') and (_.str(tip_materia) in lst_tip_materia)">             
+                  selected
+                </dtml-if>        
+             </dtml-if>
                value="<dtml-var tip_materia missing>">
                 <dtml-var des_tipo_materia>
             </option>
@@ -175,6 +170,12 @@ function clear_form_elements(ele) {
 </dtml-if>
 
 <dtml-if expr="_.has_key('dt_apres') or _.has_key('dt_apres2')">
+
+<dtml-if lst_tip_materia>
+    <dtml-call expr="REQUEST.set('lst_tip_materia', str(lst_tip_materia))">
+<dtml-else>
+    <dtml-call expr="REQUEST.set('lst_tip_materia', '')">
+</dtml-if>
 
 <dtml-in expr="autorMateriaAno(cod_autor=hdn_cod_autor,tip_materia_sel=lst_tip_materia,dat_apresentacao=dt_apres,dat_apresentacao2=dt_apres2)">
  <table class="table table-sm mt-4">
