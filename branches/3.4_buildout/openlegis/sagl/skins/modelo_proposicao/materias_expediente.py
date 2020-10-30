@@ -99,7 +99,7 @@ relatorio_dic["total_moc"] = str(len(total_mocao))
 relatorio_dic["total_geral"] = str(len(total_geral))
 
 total_assuntos = []
-for materia in lst_requerimento:
+for materia in lst_geral:
     id_assunto = materia.get('des_assunto',materia)
     if id_assunto != None:
        total_assuntos.append(id_assunto)
