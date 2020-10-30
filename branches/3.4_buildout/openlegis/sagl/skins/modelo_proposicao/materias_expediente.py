@@ -39,7 +39,7 @@ for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=cod_sessa
               num_ident_basica = materia.num_ident_basica
               total_indicacao.append(num_ident_basica)
               dic_indicacao = {}
-              dic_indicacao['num_materia'] = materia.sgl_tipo_materia + ' ' + str(materia.num_ident_basica)
+              dic_indicacao['num_materia'] = str(materia.num_ident_basica)
               dic_indicacao['des_assunto'] = None
               if materia.cod_assunto_sel != None:
                  for assunto in context.zsql.assunto_materia_obter_zsql(cod_assunto=materia.cod_assunto_sel):
@@ -52,7 +52,7 @@ for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=cod_sessa
               num_ident_basica = materia.num_ident_basica
               total_requerimento.append(num_ident_basica)
               dic_requerimento = {}
-              dic_requerimento['num_materia'] = materia.sgl_tipo_materia + ' ' + str(materia.num_ident_basica)
+              dic_requerimento['num_materia'] = str(materia.num_ident_basica)
               dic_requerimento['des_assunto'] = None
               if materia.cod_assunto_sel != None:
                  for assunto in context.zsql.assunto_materia_obter_zsql(cod_assunto=materia.cod_assunto_sel):
@@ -83,7 +83,7 @@ for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=cod_sessa
            num_ident_basica = materia.num_ident_basica
            total_geral.append(num_ident_basica)
            dic_geral = {}
-           dic_geral['num_materia'] = materia.sgl_tipo_materia + ' ' + str(materia.num_ident_basica)
+           dic_geral['num_materia'] = materia.sgl_tipo_materia[0] + '-' + str(materia.num_ident_basica)
            dic_geral['des_assunto'] = None
            if materia.cod_assunto_sel != None:
               for assunto in context.zsql.assunto_materia_obter_zsql(cod_assunto=materia.cod_assunto_sel):
@@ -129,8 +129,53 @@ for parlamentar in context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_ses
            else:
               materias = materia.get('num_materia',materia)
            lista_materias.append(materias)
-    dic_parlamentar["materias"] = ' / '.join(['%s' % (value) for (value) in lista_materias])
+#    dic_parlamentar["materias"] = ' / '.join(['%s' % (value) for (value) in lista_materias])
     dic_parlamentar["qtde_materias"] = str(len(lista_materias))
+
+    lista_ind = []
+    for materia in lst_indicacao:
+        if int(parlamentar.cod_autor) == int(materia.get('cod_autor',materia)):
+           if materia.get('des_assunto',materia) != None:         
+              materias = materia.get('num_materia',materia) + ' (' + str(materia.get('des_assunto',materia)) + ')'
+           else:
+              materias = materia.get('num_materia',materia)
+           lista_ind.append(materias)
+    if len(lista_ind) > 0:
+       lista_ind = 'IND: ' + ' / '.join(['%s' % (value) for (value) in lista_ind])
+    else:
+       lista_ind = ''
+#    dic_parlamentar["lista_ind"] = lista_ind
+
+    lista_req = []
+    for materia in lst_requerimento:
+        if int(parlamentar.cod_autor) == int(materia.get('cod_autor',materia)):
+           if materia.get('des_assunto',materia) != None:         
+              materias = materia.get('num_materia',materia) + ' (' + str(materia.get('des_assunto',materia)) + ')'
+           else:
+              materias = materia.get('num_materia',materia)
+           lista_req.append(materias)
+    if len(lista_req) > 0:
+       lista_req = 'REQ: ' + ' / '.join(['%s' % (value) for (value) in lista_req])
+    else:
+       lista_req = ''
+#    dic_parlamentar["lista_req"] = lista_req
+
+    lista_moc = []
+    for materia in lst_mocao:
+        if int(parlamentar.cod_autor) == int(materia.get('cod_autor',materia)):
+           if materia.get('des_assunto',materia) != None:         
+              materias = materia.get('num_materia',materia) + ' (' + str(materia.get('des_assunto',materia)) + ')'
+           else:
+              materias = materia.get('num_materia',materia)
+           lista_moc.append(materias)
+    if len(lista_moc) > 0:
+       lista_moc = 'MOC: ' + ' / '.join(['%s' % (value) for (value) in lista_moc])
+    else:
+       lista_moc = ''
+#    dic_parlamentar["lista_moc"] = lista_moc
+
+    dic_parlamentar["materias"] = lista_ind + '   ' + lista_req + '   ' + lista_moc
+
 
     parlamentares.append(dic_parlamentar)
 
