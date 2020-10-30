@@ -15,8 +15,8 @@ SELECT
      99999 - m.num_ident_basica
 
 FROM
-     autoria au,
-     materia_legislativa m 
+     autoria au
+     LEFT JOIN materia_legislativa m ON au.cod_materia = m.cod_materia 
      LEFT JOIN tipo_materia_legislativa t on m.tip_id_basica = t.tip_materia
 
 WHERE
@@ -29,5 +29,10 @@ WHERE
    <dtml-if expr="tip_materia_sel!='0'">
      and m.tip_id_basica = <dtml-sqlvar tip_materia_sel type="int">
    </dtml-if>
+   <dtml-let isAnon="portal_membership.isAnonymousUser()">
+     <dtml-if expr="isAnon">
+        AND t.ind_publico = 1
+     </dtml-if>
+   </dtml-let>    
 
 ORDER BY m.ano_ident_basica, t.des_tipo_materia, 6 DESC

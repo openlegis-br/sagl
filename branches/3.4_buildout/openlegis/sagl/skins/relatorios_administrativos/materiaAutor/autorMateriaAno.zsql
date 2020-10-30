@@ -4,24 +4,25 @@ arguments : cod_autor tip_materia_sel dat_apresentacao dat_apresentacao2
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
-SELECT DISTINCT 
-     a.*, 
-     c.nom_comissao, 
-     b.nom_bancada, 
-     p.nom_completo,
-     p.nom_parlamentar
+SELECT 
+     DISTINCT a.cod_autor,
+     if(tp.des_tipo_autor='Parlamentar',p.nom_parlamentar, 
+     if(tp.des_tipo_autor='Bancada',CONCAT(b.nom_bancada," (", DATE_FORMAT(legislatura.dat_inicio, "%Y"),"-",DATE_FORMAT(legislatura.dat_fim, "%Y"),")"),
+     if(tp.des_tipo_autor='Comissao', c.nom_comissao, a.nom_autor))) as nom_autor_join
 
 FROM
-     autoria au, 
+     autoria au 
+     LEFT JOIN autor a ON a.cod_autor = au.cod_autor
+     LEFT JOIN tipo_autor tp ON a.tip_autor = tp.tip_autor     
+     LEFT JOIN parlamentar p on a.cod_parlamentar=p.cod_parlamentar and p.ind_excluido=0  
+     LEFT JOIN comissao c on a.cod_comissao=c.cod_comissao and c.ind_excluido=0 
+     LEFT JOIN bancada b on a.cod_bancada=b.cod_bancada and b.ind_excluido=0 
+     LEFT JOIN legislatura on b.num_legislatura = legislatura.num_legislatura,
      materia_legislativa m
-     LEFT JOIN tipo_materia_legislativa tm ON m.tip_id_basica = tm.tip_materia,
-     autor a 
-     left join comissao c on a.cod_comissao = c.cod_comissao
-     left join bancada b on a.cod_bancada = b.cod_bancada
-     left join parlamentar p on a.cod_parlamentar = p.cod_parlamentar
+     LEFT JOIN tipo_materia_legislativa tm ON m.tip_id_basica = tm.tip_materia
+
 
 WHERE
-     a.cod_autor = au.cod_autor and
      au.cod_materia = m.cod_materia and
      a.ind_excluido = 0 and
      au.ind_excluido = 0 and
@@ -35,7 +36,12 @@ WHERE
    <dtml-if expr="cod_autor!='0'">
      and a.cod_autor = <dtml-sqlvar cod_autor type="int" optional>
    </dtml-if>
+   <dtml-let isAnon="portal_membership.isAnonymousUser()">
+     <dtml-if expr="isAnon">
+        AND tm.ind_publico = 1
+     </dtml-if>
+   </dtml-let> 
 
 ORDER BY
-     tip_autor, nom_completo, nom_comissao, nom_bancada, nom_autor
+     nom_autor_join
 

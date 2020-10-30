@@ -6,10 +6,16 @@ max_cache : 100
 </dtml-comment>
 select count(*) as "qtde"
 
-from
-materia_legislativa m
+FROM
+   materia_legislativa m
+   LEFT JOIN tipo_materia_legislativa tm ON m.tip_id_basica = tm.tip_materia   
 
 where
 m.ind_excluido = 0 and
 m.ano_ident_basica = <dtml-sqlvar ano type="int">
 
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="isAnon">
+   AND tm.ind_publico = 1
+ </dtml-if>
+</dtml-let>

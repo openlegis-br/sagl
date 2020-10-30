@@ -9,19 +9,23 @@ SELECT
 
 FROM
      materia_legislativa m
-     LEFT JOIN tipo_materia_legislativa tm ON m.tip_id_basica = tm.tip_materia,
-     autoria au
+     LEFT JOIN tipo_materia_legislativa tm ON m.tip_id_basica = tm.tip_materia
+     LEFT JOIN autoria au ON au.cod_materia = m.cod_materia
 
 WHERE
      m.ind_excluido = 0 and
      au.ind_excluido = 0 and
      au.cod_autor = <dtml-sqlvar autor type="int"> and
-     au.cod_materia = m.cod_materia and
      tm.tip_natureza = 'P' and
      m.dat_apresentacao >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apresentacao)"  type="nb"> and
      m.dat_apresentacao <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_apresentacao2)" type="nb">
    <dtml-if expr="tip_materia_sel!='0'">
      and m.tip_id_basica = <dtml-sqlvar tip_materia_sel type="int">
    </dtml-if>
+   <dtml-let isAnon="portal_membership.isAnonymousUser()">
+     <dtml-if expr="isAnon">
+        AND tm.ind_publico = 1
+     </dtml-if>
+   </dtml-let>    
 
 

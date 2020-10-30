@@ -9,17 +9,22 @@ SELECT
      count(*) as "qtde"
 
 FROM
-     tipo_materia_legislativa t,
-     materia_legislativa m,
-     autoria au
+     tipo_materia_legislativa t
+     LEFT JOIN materia_legislativa m ON m.tip_id_basica = t.tip_materia
+     LEFT JOIN autoria au ON au.cod_materia = m.cod_materia
 
 WHERE
      m.ind_excluido = 0 and
      au.ind_excluido = 0 and
      au.cod_autor = <dtml-sqlvar autor type="int"> and
      au.cod_materia = m.cod_materia and
-     m.tip_id_basica = t.tip_materia and
      m.ano_ident_basica = <dtml-sqlvar ano type="int">
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="isAnon">
+   AND t.ind_publico = 1
+ </dtml-if>
+</dtml-let>
+
 
 GROUP BY
      m.tip_id_basica

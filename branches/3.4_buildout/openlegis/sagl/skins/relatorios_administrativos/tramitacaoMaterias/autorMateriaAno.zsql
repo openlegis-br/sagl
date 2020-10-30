@@ -24,7 +24,8 @@ FROM
     LEFT JOIN comissao ON autor.cod_comissao = comissao.cod_comissao
     LEFT JOIN bancada ON autor.cod_bancada = bancada.cod_bancada
     LEFT JOIN parlamentar ON autor.cod_parlamentar = parlamentar.cod_parlamentar
-    LEFT JOIN materia_legislativa m ON autoria.cod_materia = m.cod_materia 
+    LEFT JOIN materia_legislativa m ON autoria.cod_materia = m.cod_materia
+    LEFT JOIN tipo_materia_legislativa tm ON m.tip_id_basica = tm.tip_materia     
     LEFT JOIN orgao ON ut.cod_orgao = orgao.cod_orgao
 
 
@@ -59,6 +60,10 @@ WHERE
    <dtml-if dat_prazofim>
      and tra.dat_fim_prazo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_prazofim)" type="nb">
    </dtml-if>
-
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="isAnon">
+   AND tm.ind_publico = 1
+ </dtml-if>
+</dtml-let>
 
 ORDER BY nom_completo, nom_comissao, nom_bancada, nom_autor
