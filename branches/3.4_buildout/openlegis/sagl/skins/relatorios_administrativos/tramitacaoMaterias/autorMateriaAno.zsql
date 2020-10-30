@@ -48,8 +48,14 @@ WHERE
         OR <dtml-sqltest texto column="tra.txt_tramitacao" type="string" op="like">)
       </dtml-let>
    </dtml-if>    
-   <dtml-if tipo>
-     and materia_legislativa.tip_id_basica = <dtml-sqlvar tipo type="int">
+   <dtml-if expr="tipo and tipo!=''">
+    AND (
+        <dtml-if expr="pysc.verifica_lista_pysc(tipo)">
+           m.tip_id_basica in (<dtml-var "tipo" sql_quote>)
+         <dtml-else>
+           m.tip_id_basica in (<dtml-var expr="tipo[1:-1]">)
+        </dtml-if>
+      )
    </dtml-if>
    <dtml-if status>
      and tra.cod_status = <dtml-sqlvar status type="int">

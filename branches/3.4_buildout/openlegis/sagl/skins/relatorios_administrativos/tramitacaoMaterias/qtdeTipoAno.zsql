@@ -18,8 +18,9 @@ SELECT
    </dtml-if> 
 
 FROM
-     tipo_materia_legislativa t,  
-     materia_legislativa m LEFT JOIN autoria au on m.cod_materia=au.cod_materia
+     tipo_materia_legislativa t 
+     LEFT JOIN materia_legislativa m on m.tip_id_basica = t.tip_materia
+     LEFT JOIN autoria au on m.cod_materia=au.cod_materia
     <dtml-if expr="status or tramLocal or dat_prazofim or texto">
      ,tramitacao tra
     </dtml-if>
@@ -40,8 +41,6 @@ WHERE
    </dtml-if>
     m.ind_excluido = 0 and
     au.ind_excluido = 0 and 
-    m.tip_id_basica = t.tip_materia and
-    au.cod_materia = m.cod_materia and
     m.ano_ident_basica = <dtml-sqlvar ano type="int">
    <dtml-if expr="status or tramLocal or dat_prazofim or texto">    
      and m.cod_materia = tra.cod_materia
@@ -55,9 +54,6 @@ WHERE
         OR <dtml-sqltest texto column="tra.txt_tramitacao" type="string" op="like">)
       </dtml-let>
    </dtml-if>         
-    <dtml-if tipo>
-     and m.tip_id_basica = <dtml-sqlvar tipo type="int"> 
-    </dtml-if>
     <dtml-if status>
      and tra.cod_status = st.cod_status 
      and tra.cod_status = <dtml-sqlvar status type="int">  
@@ -70,10 +66,20 @@ WHERE
      and tra.dat_fim_prazo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_prazofim)" type="nb">
     </dtml-if> 
 
-<dtml-let isAnon="portal_membership.isAnonymousUser()">
- <dtml-if expr="isAnon">
-   AND t.ind_publico = 1
- </dtml-if>
-</dtml-let>  
+   <dtml-if expr="tipo and tipo!=''">
+    AND (
+        <dtml-if expr="pysc.verifica_lista_pysc(tipo)">
+           m.tip_id_basica in (<dtml-var "tipo" sql_quote>)
+         <dtml-else>
+           m.tip_id_basica in (<dtml-var expr="tipo[1:-1]">)
+        </dtml-if>
+      )
+   </dtml-if>
+
+   <dtml-let isAnon="portal_membership.isAnonymousUser()">
+     <dtml-if expr="isAnon">
+       AND t.ind_publico = 1
+     </dtml-if>
+   </dtml-let>  
     
 GROUP BY m.tip_id_basica
