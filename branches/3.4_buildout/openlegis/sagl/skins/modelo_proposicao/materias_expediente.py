@@ -14,7 +14,7 @@ session = REQUEST.SESSION
 for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
     relatorio_dic = {}
     tipo_sessao = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao,ind_excluido=0)[0]
-    relatorio_dic["id_sessao"] = str(sessao.num_sessao_plen)+'ª Sessão ' + tipo_sessao.nom_sessao + ' em ' + sessao.dat_inicio_sessao
+    relatorio_dic["id_sessao"] = str(sessao.num_sessao_plen)+'ª Sessão ' + tipo_sessao.nom_sessao + ', em ' + sessao.dat_inicio_sessao
     nom_arquivo = str(sessao.cod_sessao_plen)+ '_materias_expediente.odt'
     data_sessao = sessao.dat_inicio_sessao
 
@@ -70,7 +70,7 @@ for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=cod_sessa
               num_ident_basica = materia.num_ident_basica
               total_mocao.append(num_ident_basica)
               dic_mocao = {}
-              dic_mocao['num_materia'] = materia.sgl_tipo_materia + ' ' + str(materia.num_ident_basica)
+              dic_mocao['num_materia'] = str(materia.num_ident_basica)
               dic_mocao['des_assunto'] = None
               if materia.cod_assunto_sel != None:
                  for assunto in context.zsql.assunto_materia_obter_zsql(cod_assunto=materia.cod_assunto_sel):
@@ -141,10 +141,10 @@ for parlamentar in context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_ses
               materias = materia.get('num_materia',materia)
            lista_ind.append(materias)
     if len(lista_ind) > 0:
-       lista_ind = 'IND: ' + ' / '.join(['%s' % (value) for (value) in lista_ind])
+       lista_ind = ', '.join(['%s' % (value) for (value) in lista_ind])
     else:
        lista_ind = ''
-#    dic_parlamentar["lista_ind"] = lista_ind
+    dic_parlamentar["lista_ind"] = lista_ind
 
     lista_req = []
     for materia in lst_requerimento:
@@ -155,10 +155,10 @@ for parlamentar in context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_ses
               materias = materia.get('num_materia',materia)
            lista_req.append(materias)
     if len(lista_req) > 0:
-       lista_req = 'REQ: ' + ' / '.join(['%s' % (value) for (value) in lista_req])
+       lista_req = ', '.join(['%s' % (value) for (value) in lista_req])
     else:
        lista_req = ''
-#    dic_parlamentar["lista_req"] = lista_req
+    dic_parlamentar["lista_req"] = lista_req
 
     lista_moc = []
     for materia in lst_mocao:
@@ -169,13 +169,12 @@ for parlamentar in context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_ses
               materias = materia.get('num_materia',materia)
            lista_moc.append(materias)
     if len(lista_moc) > 0:
-       lista_moc = 'MOC: ' + ' / '.join(['%s' % (value) for (value) in lista_moc])
+       lista_moc = ', '.join(['%s' % (value) for (value) in lista_moc])
     else:
        lista_moc = ''
-#    dic_parlamentar["lista_moc"] = lista_moc
+    dic_parlamentar["lista_moc"] = lista_moc
 
-    dic_parlamentar["materias"] = lista_ind + '   ' + lista_req + '   ' + lista_moc
-
+#    dic_parlamentar["materias"] = lista_ind + '   ' + lista_req + '   ' + lista_moc
 
     parlamentares.append(dic_parlamentar)
 
