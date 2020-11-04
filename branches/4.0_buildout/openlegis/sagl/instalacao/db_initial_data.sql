@@ -40,7 +40,7 @@ INSERT INTO `assinatura_storage` (`tip_documento`, `pdf_location`, `storage_path
 ('norma', 'sapl_documentos/norma_juridica/', 'sapl_documentos.norma_juridica', '_texto_integral.pdf', '_texto_integral_signed.pdf'),
 ('parecer_comissao', 'sapl_documentos/parecer_comissao/', 'sapl_documentos.parecer_comissao', '_parecer.pdf', '_parecer_signed.pdf'),
 ('pauta', 'sapl_documentos/pauta_sessao/', 'sapl_documentos.pauta_sessao', '_pauta_sessao.pdf', '_pauta_sessao_signed.pdf'),
-('peticao', 'sapl_documento\r\ns/administrativo/', 'sapl_documentos.administrativo', '.pdf', '_signed.pdf'),
+('peticao', 'sapl_documentos/administrativo/', 'sapl_documentos.administrativo', '.pdf', '_signed.pdf'),
 ('proposicao', 'sapl_documentos/proposicao/', 'sapl_documentos.proposicao', '.pdf', '_signed.pdf'),
 ('protocolo', 'sapl_documentos/protocolo/', 'sapl_documentos.protocolo', '_protocolo.pdf', '_protocolo_signed.pdf'),
 ('redacao_final', 'sapl_documentos/materia/', 'sapl_documentos.materia', '_redacao_final.pdf', '_redacao_final_signed.pdf'),
@@ -5906,29 +5906,29 @@ INSERT INTO `tipo_instituicao` (`tip_instituicao`, `nom_tipo_instituicao`, `ind_
 (4, 'ENTIDADES DE CLASSE', 0),
 (5, 'SECRETÁRIOS MUNICIPAIS', 0);
 
-INSERT INTO `tipo_materia_legislativa` (`tip_materia`, `sgl_tipo_materia`, `des_tipo_materia`, `tip_natureza`, `ind_num_automatica`, `quorum_minimo_votacao`, `ind_excluido`) VALUES
-(1, 'PL', 'Projeto de Lei', 'P', 0, 1, 0),
-(2, 'PR', 'Projeto de Resolução', 'P', 0, 1, 0),
-(3, 'REQ', 'Requerimento', 'P', 0, 1, 0),
-(4, 'REC', 'Recurso', 'P', 0, 1, 0),
-(5, 'PLC', 'Projeto de Lei Complementar', 'P', 0, 1, 0),
-(6, 'PDL', 'Projeto de Decreto Legislativo', 'P', 0, 1, 0),
-(7, 'MOC', 'Moção', 'P', 0, 1, 0),
-(8, 'IND', 'Indicação', 'P', 0, 1, 0),
-(9, 'PEL', 'Proposta de Emenda à Lei Orgânica', 'P', 0, 1, 0),
-(10, 'VET', 'Veto', 'P', 0, 1, 0),
-(11, 'EME', 'Emenda', 'A', 0, 1, 0),
-(12, 'SUB', 'Substitutivo', 'A', 0, 1, 0);
+INSERT INTO `tipo_materia_legislativa` (`tip_materia`, `sgl_tipo_materia`, `des_tipo_materia`, `tip_natureza`, `ind_num_automatica`, `quorum_minimo_votacao`, `ind_publico`, `ind_excluido`) VALUES
+(1, 'PL', 'Projeto de Lei', 'P', 0, 1, 1, 0),
+(2, 'PR', 'Projeto de Resolução', 'P', 0, 1, 1, 0),
+(3, 'REQ', 'Requerimento', 'P', 0, 1, 1, 0),
+(4, 'REC', 'Recurso', 'P', 0, 1, 1, 0),
+(5, 'PLC', 'Projeto de Lei Complementar', 'P', 0, 1, 1, 0),
+(6, 'PDL', 'Projeto de Decreto Legislativo', 'P', 0, 1, 1, 0),
+(7, 'MOC', 'Moção', 'P', 0, 1, 1, 0),
+(8, 'IND', 'Indicação', 'P', 0, 1, 1, 0),
+(9, 'PEL', 'Proposta de Emenda à Lei Orgânica', 'P', 0, 1, 1, 0),
+(10, 'VET', 'Veto', 'P', 0, 1, 1, 0),
+(11, 'EME', 'Emenda', 'A', 0, 1, 1, 0),
+(12, 'SUB', 'Substitutivo', 'A', 0, 1, 1, 0);
 
-INSERT INTO `tipo_norma_juridica` (`tip_norma`, `voc_lexml`, `sgl_tipo_norma`, `des_tipo_norma`, `ind_excluido`) VALUES
-(1, 'lei', 'LEI', 'Lei', 0),
-(2, 'lei.complementar', 'LC', 'Lei Complementar', 0),
-(3, 'decreto.legislativo', 'DL', 'Decreto Legislativo', 0),
-(4, 'resolucao', 'RE', 'Resolução', 0),
-(5, 'emenda.lei.organica', 'EML', 'Emenda à Lei Orgânica', 0),
-(6, '', 'AM', 'Ato da Mesa', 0),
-(7, '', 'POR', 'Portaria', 0),
-(8, 'decreto', 'DE', 'Decreto do Executivo', 0);
+INSERT INTO `tipo_norma_juridica` (`tip_norma`, `voc_lexml`, `sgl_tipo_norma`, `des_tipo_norma`, `ind_num_automatica`, `ind_excluido`) VALUES
+(1, 'lei', 'LEI', 'Lei', NULL, 0),
+(2, 'lei.complementar', 'LC', 'Lei Complementar', NULL, 0),
+(3, 'decreto.legislativo', 'DL', 'Decreto Legislativo', NULL, 0),
+(4, 'resolucao', 'RE', 'Resolução', NULL, 0),
+(5, 'emenda.lei.organica', 'EML', 'Emenda à Lei Orgânica', NULL, 0),
+(6, '', 'AM', 'Ato da Mesa', NULL, 0),
+(7, '', 'POR', 'Portaria', NULL, 0),
+(8, 'decreto', 'DE', 'Decreto do Executivo', NULL, 0);
 
 INSERT INTO `tipo_proposicao` (`tip_proposicao`, `des_tipo_proposicao`, `ind_mat_ou_doc`, `tip_mat_ou_doc`, `nom_modelo`, `ind_excluido`) VALUES
 (1, 'Requerimento', 'M', 3, '', 0),
@@ -6071,13 +6071,13 @@ INSERT INTO `tipo_situacao_norma` (`tip_situacao_norma`, `des_tipo_situacao`, `i
 (20, 'Em vigor, com alterações posteriores', 0);
 
 INSERT INTO `tipo_vinculo_norma` (`cod_tip_vinculo`, `tipo_vinculo`, `des_vinculo`, `des_vinculo_passivo`, `tip_situacao`, `ind_excluido`) VALUES
-(1, 'A', 'Altera a', 'Alterada pela', 22, 0),
-(2, 'C', 'Norma correlata', 'Norma correlata', NULL, 0),
-(3, 'G', 'Regulamenta a', 'Regulamentada pela', NULL, 0),
-(4, 'I', 'Suspende a execução', 'Suspensão de execução', NULL, 0),
+(1, 'A', 'Altera a', 'Alterada pela', 20, 0),
+(2, 'C', 'Norma correlata', 'Norma correlata', 1, 0),
+(3, 'G', 'Regulamenta a', 'Regulamentada pela', 1, 0),
+(4, 'I', 'Suspende a execução', 'Suspensão de execução', 5, 0),
 (5, 'P', 'Revoga parcialmente a', 'Revogada parcialmente pela', 3, 0),
 (6, 'R', 'Revoga a', 'Revogada pela', 2, 0),
-(7, 'T', 'Revoga por consolidação', 'Revogação por consolidação', NULL, 0);
+(7, 'T', 'Revoga por consolidação', 'Revogação por consolidação', 4, 0);
 
 INSERT INTO `tipo_votacao` (`tip_votacao`, `des_tipo_votacao`, `ind_excluido`) VALUES
 (1, 'Simbólica', 0),
