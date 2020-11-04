@@ -1,0 +1,39 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+max_rows : 1000
+max_cache : 100
+arguments : ano ind_excluido=0
+</dtml-comment>
+
+SELECT
+cod_afastamento,
+a.cod_parlamentar,
+p.nom_completo,
+cod_mandato,
+num_legislatura,
+tip_afastamento as tip_afastamento_sel,
+DATE_FORMAT(dat_inicio_afastamento, '%d/%m/%Y') as dat_inicio_afastamento,
+DATE_FORMAT(dat_fim_afastamento, '%d/%m/%Y') as dat_fim_afastamento,
+dat_inicio_afastamento as dat_inicio,
+dat_fim_afastamento as dat_fim,
+dat_inicio_afastamento as adat_inicio,
+dat_fim_afastamento as adat_fim,
+cod_parlamentar_suplente
+
+FROM
+    afastamento a
+    LEFT JOIN parlamentar p on a.cod_parlamentar = p.cod_parlamentar
+
+<dtml-sqlgroup where>
+
+   <dtml-sqltest ind_excluido column="a.ind_excluido" type="int">
+
+   <dtml-if ano>
+     and <dtml-sqlvar ano type="int"> BETWEEN YEAR(a.dat_inicio_afastamento) and YEAR(a.dat_fim_afastamento)
+     or  (<dtml-sqlvar ano type="int"> >= YEAR(a.dat_inicio_afastamento) and YEAR(dat_fim_afastamento) is null)
+   </dtml-if>
+
+</dtml-sqlgroup>
+
+ORDER BY 
+    p.nom_completo, dat_inicio_afastamento DESC

@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_usuario,ind_responsavel,cod_unid_tramitacao=''
+##parameters=cod_usuario,ind_responsavel,cod_unid_tramitacao=""
 ##title=
 ##
 
@@ -15,10 +15,10 @@ unidades=[]
 for unidade in lista_unidades:
   unidades.append(str(unidade.cod_unid_tramitacao))
 
-if cod_unid_tramitacao == '':
+if cod_unid_tramitacao == ['0']:
   context.zsql.usuario_unid_tram_excluir_zsql(cod_usuario=cod_usuario)
 
-else:
+elif cod_unid_tramitacao != ['0']:
   for i in cod_unid_tramitacao:
     if str(i) not in unidades:
       context.zsql.usuario_unid_tram_incluir_zsql(cod_usuario=cod_usuario,cod_unid_tramitacao=i,ind_responsavel=ind_responsavel)

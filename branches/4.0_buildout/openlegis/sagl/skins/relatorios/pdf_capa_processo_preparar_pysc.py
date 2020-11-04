@@ -8,7 +8,7 @@ data=DateTime().strftime('%d/%m/%Y')
 
 #Abaixo é gerada a string para o rodapé da página
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
  casa[item[0]]=item[1]
 localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])
@@ -47,8 +47,8 @@ cabecalho["nom_casa"]=casa["nom_casa"]
 cabecalho["nom_estado"]="Estado de "+nom_estado
 
 # tenta buscar o logotipo da casa LOGO_CASA
-if hasattr(context.documentos.propriedades,'logo_casa.gif'):
-  imagem = context.documentos.propriedades['logo_casa.gif'].absolute_url()
+if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+  imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
   imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
 
@@ -101,36 +101,62 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
         elif protocolo.tip_processo==1:
            dic['tipo_autor']='Autor'
 
-
         if protocolo.tip_processo==0:
            dic['tipo_enunciado']='Assunto'
         elif protocolo.tip_processo==1:
            dic['tipo_enunciado']='Ementa'
 
-
         if protocolo.tip_processo==0:
            dic['natureza']='Administrativo'
         elif protocolo.tip_processo==1:
            dic['natureza']='Legislativo'
-  
 
-        if protocolo.tip_processo==0:
-           dic['ident_processo']=protocolo.des_tipo_documento.upper()
-        elif protocolo.tip_processo==1:
-           dic['ident_processo']=protocolo.des_tipo_materia.upper()
-
-
-        dic['sgl_processo']=protocolo.sgl_tipo_materia or protocolo.sgl_tipo_documento
+        dic['sgl_processo']=''
 
         dic['num_materia']=''
-        for materia in context.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
-               dic['num_materia']=str(materia.num_ident_basica)+'/'+ str(materia.ano_ident_basica)
+        des_tipo_materia = ''
+        if protocolo.tip_natureza_materia == 1:
+           for materia in context.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
+               des_tipo_materia = materia.des_tipo_materia
+               dic['num_materia']=materia.des_tipo_materia+' nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+        elif protocolo.tip_natureza_materia == 2:
+             for materia in context.zsql.materia_obter_zsql(cod_materia=protocolo.cod_materia_principal):
+               materia_principal = ' - ' + materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+             for tipo in context.zsql.tipo_materia_legislativa_obter_zsql(tip_materia=protocolo.tip_materia,tip_natureza='A'):
+                 if tipo.des_tipo_materia == 'Emenda':
+                    for emenda in context.zsql.emenda_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
+                        des_tipo_materia = emenda.des_tipo_emenda
+                        dic['num_materia']= 'Emenda ' + emenda.des_tipo_emenda+' nº '+str(emenda.num_emenda) + str(materia_principal)
+                 elif tipo.des_tipo_materia == 'Substitutivo':
+                    for substitutivo in context.zsql.substitutivo_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
+                        des_tipo_materia = 'Substitutivo'
+                        dic['num_materia']= 'Substitutivo nº ' +str(substitutivo.num_substitutivo) + str(materia_principal)
+        elif protocolo.tip_natureza_materia == 3:
+             for materia in context.zsql.materia_obter_zsql(cod_materia=protocolo.cod_materia_principal):
+               materia_principal = ' - ' + materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+             for documento in context.zsql.documento_acessorio_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
+               des_tipo_materia = documento.des_tipo_documento
+               dic['num_materia'] =  documento.des_tipo_documento + str(materia_principal)
+        elif protocolo.tip_natureza_materia == 4:
+             for materia in context.zsql.materia_obter_zsql(cod_materia=protocolo.cod_materia_principal):
+               materia_principal = ' - ' + materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+             for autor in context.zsql.autor_obter_zsql(cod_autor=protocolo.cod_autor):
+                 for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
+                     sgl_comissao = comissao.sgl_comissao
+             for parecer in context.zsql.relatoria_obter_zsql(num_protocolo=protocolo.num_protocolo, cod_materia=protocolo.cod_materia_principal):
+               des_tipo_materia = 'Parecer ' + sgl_comissao
+               dic['num_materia'] = des_tipo_materia + ' ' + str(parecer.num_parecer)+'/'+str(parecer.ano_parecer) + str(materia_principal)
 
         dic['num_documento']=''
         for documento in context.zsql.documento_administrativo_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_documento=protocolo.ano_protocolo):
                dic['num_documento']=str(documento.num_documento)+'/'+ str(documento.ano_documento)
 
         dic['num_processo']=dic['num_materia'] or dic['num_documento']
+
+        if protocolo.tip_processo==0:
+           dic['ident_processo']=protocolo.des_tipo_documento + ' nº ' 
+        elif protocolo.tip_processo==1:
+           dic['ident_processo']=''
 
         dic['numeracao']=''
         for materia_num in context.zsql.materia_obter_zsql(num_protocolo=protocolo.cod_protocolo,ano_ident_basica=protocolo.ano_protocolo):

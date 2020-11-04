@@ -6,7 +6,7 @@
         <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
         <dtml-else>
         <dtml-call expr="REQUEST.set('save_ok', '0')">
-        <dtml-let mensagem="'A matéria legislativa a qual esta proposição será vinculada não existe no cadastro!'" url="'proposicao_form?tip_proposicao_sel='+hdn_tip_proposicao+'&txt_descricao='+txt_descricao+'&tip_id_basica_sel='+lst_tip_id_basica+'&num_ident_basica_sel='+txt_num_ident_basica+'&ano_ident_basica_sel='+txt_ano_ident_basica">
+        <dtml-let mensagem="'A matéria legislativa à qual esta proposição será vinculada não existe no cadastro!'" url="'proposicao_form?tip_proposicao_sel='+hdn_tip_proposicao+'&txt_descricao='+txt_descricao+'&tip_id_basica_sel='+lst_tip_id_basica+'&num_ident_basica_sel='+txt_num_ident_basica+'&ano_ident_basica_sel='+txt_ano_ident_basica">
             <dtml-var mensagem_emitir>
         </dtml-let>
     </dtml-in>
@@ -34,7 +34,7 @@
       <dtml-comment>
         <dtml-if expr="dat_envio!=None">
             <dtml-call expr="REQUEST.set('save_ok', '0')">
-            <dtml-let mensagem="'Você não pode modificar proposição já enviada!'">
+            <dtml-let mensagem="'Você não pode modificar uma proposição já enviada!'">
                 <dtml-var mensagem_emitir>
             </dtml-let>
         </dtml-if>
@@ -42,15 +42,23 @@
 
         <dtml-if expr="dat_recebimento!=None">
             <dtml-call expr="REQUEST.set('save_ok', '0')">
-            <dtml-let mensagem="'Você não pode modificar proposição já incorporada!'">
+            <dtml-let mensagem="'Você não pode modificar uma proposição já incorporada!'">
                 <dtml-var mensagem_emitir>
             </dtml-let>
         </dtml-if>
 
     <dtml-else>
-        <dtml-in expr="zsql.autor_obter_zsql(ind_excluido=0, col_username=AUTHENTICATED_USER.getUserName())">
+        <dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+          <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+            <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar,ind_excluido=0)">
+               <dtml-call expr="REQUEST.set('cod_autor', cod_autor)">
+            </dtml-in>
+          </dtml-in>
+        <dtml-else>
+          <dtml-in expr="zsql.autor_obter_zsql(ind_excluido=0, col_username=AUTHENTICATED_USER.getUserName())">
             <dtml-call expr="REQUEST.set('cod_autor', cod_autor)">
-        </dtml-in>
+          </dtml-in>
+        </dtml-if>
         <dtml-call expr="REQUEST.set('metodo', zsql.proposicao_incluir_zsql)">
     </dtml-if>
 </dtml-if>
@@ -91,7 +99,7 @@
     <dtml-if file_nom_arquivo>
       <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.pdf')">
         <dtml-try>
-            <dtml-call expr="documentos.proposicao.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+            <dtml-call expr="sapl_documentos.proposicao.manage_addFile(id=id_documento,file=file_nom_arquivo)">
         <dtml-except> 
         </dtml-try>
     </dtml-if>
@@ -99,10 +107,10 @@
     <dtml-if file_nom_anexo>
        <dtml-try>
         <dtml-in file_nom_anexo prefix="file">
-          <dtml-call expr="documentos.proposicao.manage_addFile(id=pysc.anexo_proposicao_pysc(cod_proposicao,nomear=True), file=file_item)">
+          <dtml-call expr="sapl_documentos.proposicao.manage_addFile(id=pysc.anexo_proposicao_pysc(cod_proposicao,nomear=True), file=file_item)">
         </dtml-in>
        <dtml-except>
-         <dtml-call expr="documentos.proposicao.manage_addFile(id=pysc.anexo_proposicao_pysc(cod_proposicao,nomear=True), file=file_nom_anexo)">
+         <dtml-call expr="sapl_documentos.proposicao.manage_addFile(id=pysc.anexo_proposicao_pysc(cod_proposicao,nomear=True), file=file_nom_anexo)">
        </dtml-try>
     </dtml-if>
 
@@ -110,7 +118,7 @@
 
 <dtml-if expr="save_ok=='1'">
     <dtml-if cod_proposicao>
-        <dtml-let mensagem="'Proposição salva com sucesso!'" sucesso="1" url="hdn_url">
+        <dtml-let mensagem="'Proposição salva com sucesso!'" url="hdn_url">
             <dtml-var mensagem_emitir>
         </dtml-let>
     </dtml-if>

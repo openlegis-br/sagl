@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright (c) 2017 by OpenLegis
+# Copyright (c) 2005 by Interlegis
 #
 # GNU General Public Licence (GPL)
 #

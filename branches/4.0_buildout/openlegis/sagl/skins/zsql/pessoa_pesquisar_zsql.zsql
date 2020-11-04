@@ -1,0 +1,95 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_pessoa cod_funcionario nom_pessoa doc_identidade dat_nascimento="" sex_pessoa des_estado_civil nom_conjuge rad_filhos="" end_residencial des_tempo_residencia nom_bairro num_cep nom_cidade des_profissao dat_visita dat_visita2 mes_aniversario="" ind_excluido=0
+max_rows : 20000
+max_cache : 100
+</dtml-comment>
+SELECT DISTINCT
+       p.cod_pessoa,
+       nom_pessoa,
+       doc_identidade,
+       DATE_FORMAT(dat_nascimento, '%d/%m/%Y') as dat_nascimento,
+       sex_pessoa,
+       des_estado_civil,
+       nom_conjuge,
+       num_dependentes,
+       num_tit_eleitor,
+       cod_logradouro,
+       end_residencial,
+       num_imovel,
+       txt_complemento,
+       nom_bairro,
+       num_cep,
+       nom_cidade,
+       sgl_uf,
+       des_tempo_residencia,
+       num_telefone,
+       num_celular,
+       end_email,
+       des_profissao,
+       des_local_trabalho,
+       p.txt_observacao,
+       DATE_FORMAT(dat_atualizacao, '%d/%m/%Y %T') as dat_atualizacao,
+       p.ind_excluido
+
+FROM   
+       pessoa p
+       LEFT JOIN visita v on p.cod_pessoa = v.cod_pessoa
+       
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_pessoa         op="="  type="int"  optional> <dtml-and>
+    <dtml-sqltest cod_funcionario    op="="  type="int"> <dtml-and>
+    <dtml-sqltest sex_pessoa         op="="  type="nb"   optional> <dtml-and>
+    <dtml-sqltest des_estado_civil   op="="  type="nb"   optional> <dtml-and>
+    <dtml-sqltest cod_localidade     op="="  type="int"  optional> <dtml-and>
+    <dtml-sqltest num_cep            op="="  type="nb"   optional> <dtml-and>
+    <dtml-sqltest nom_bairro         op="="  type="nb"   optional> <dtml-and>
+    <dtml-sqltest nom_cidade         op="="  type="nb"   optional> <dtml-and>
+    <dtml-sqltest des_local_trabalho op="="  type="nb"   optional> <dtml-and>
+    <dtml-sqltest des_profissao      op="="  type="nb"   optional> <dtml-and>
+    <dtml-sqltest ind_excluido       column="p.ind_excluido" op="="  type="int">
+
+  <dtml-if dat_visita>
+    <dtml-if expr="dat_visita == dat_visita2">
+       AND DATE(v.dat_entrada) = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_visita)" type="nb">
+    <dtml-else>
+       AND DATE(v.dat_entrada) >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_visita)" type="string"> 
+       AND DATE(v.dat_entrada) <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_visita2)" type="string">
+    </dtml-if>
+  </dtml-if>
+
+  <dtml-if expr="mes_aniversario">
+    AND MONTH(dat_nascimento) = <dtml-sqlvar "mes_aniversario" type="nb">
+  </dtml-if>
+
+  <dtml-if expr="dat_nascimento">
+    AND dat_nascimento = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_nascimento)" type="nb">
+  </dtml-if>
+
+  <dtml-if expr="rad_filhos=='1'">
+    AND num_dependentes IS NOT NULL
+  </dtml-if>
+
+  <dtml-if nom_pessoa>
+    AND  ( (nom_pessoa) like (<dtml-sqlvar expr="'%'+nom_pessoa+'%'" type="string">)
+    OR   (nom_pessoa) like (<dtml-sqlvar expr="'%'+nom_pessoa+'%'" type="string">) )
+  </dtml-if>
+
+  <dtml-if doc_identidade>
+    AND (match(doc_identidade) against (<dtml-sqlvar doc_identidade type="string">))
+  </dtml-if>
+
+  <dtml-if nom_conjuge>
+    AND (match(nom_conjuge) against (<dtml-sqlvar nom_conjuge type="string">))
+  </dtml-if>
+
+  <dtml-if end_residencial>
+    AND (match(end_residencial) against (<dtml-sqlvar end_residencial type="string">))
+  </dtml-if>
+
+  </dtml-sqlgroup>
+
+ORDER BY 
+    nom_pessoa
+
+

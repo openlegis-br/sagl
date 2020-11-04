@@ -12,7 +12,7 @@ REQUEST=context.REQUEST
 for materia in context.zsql.materia_pesquisar_impresso_zsql(npc_inicial=REQUEST.txt_npc_inicial,npc_final=REQUEST.txt_npc_final):
         dic={}
         dic['processo']=materia.num_materia
-	dic['tipo_materia']=materia.sgl_tipo_materia
+    dic['tipo_materia']=materia.sgl_tipo_materia
         dic['materia']=str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
         dic['num_externa']=materia.num_origem_externa
         dic['dat_apresentacao']=materia.dat_apresentacao

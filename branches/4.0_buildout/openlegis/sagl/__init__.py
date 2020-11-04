@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright (c) 2017 by OpenLegis
+# Copyright (c) 2005 by Interlegis
 #
 # GNU General Public Licence (GPL)
 #
@@ -41,7 +41,7 @@ def initialize(context):
     allow_module('urllib2')
     allow_module('sys')
     allow_module('os')
-    allow_module('lacunarestpki')
+    allow_module('restpki_client')
     allow_module('Acquisition')
     allow_module('ExtensionClass')
     allow_module('App.FindHomes')
@@ -52,7 +52,6 @@ def initialize(context):
     allow_module('csv')
     allow_module('pdb')
     allow_module('simplejson')
-    allow_module('ujson')
     allow_module('tempfile.NamedTemporaryFile')
     allow_module('collections')
     allow_module('base64')
@@ -63,8 +62,13 @@ def initialize(context):
     allow_module('datetime')
     allow_module('datetime.datetime.timetuple')
     allow_module('PyPDF2')
+    allow_module('pdfrw')
     allow_module('StringIO')
     allow_module('PIL')
+    allow_module('uuid')
+    allow_module('binascii')
+    allow_module('re')
+    allow_module('collections')
 
     tools = (SAGLTool.SAGLTool,)
     ToolInit('SAGL Tool',

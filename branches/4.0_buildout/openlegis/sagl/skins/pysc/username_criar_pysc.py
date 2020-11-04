@@ -7,7 +7,7 @@
 ##parameters=username
 ##title=
 ##
-passwd = context.documentos.propriedades.txt_senha_inicial
+passwd = context.sapl_documentos.props_sagl.txt_senha_inicial
 
 ok = 1
 

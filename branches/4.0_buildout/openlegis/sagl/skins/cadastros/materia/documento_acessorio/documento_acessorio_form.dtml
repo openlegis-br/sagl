@@ -1,9 +1,9 @@
 <dtml-var standard_html_header>
 
-<script type ="text/javascript" src="javascript/data_validar_jvsc"></script>
+<script type ="text/javascript" src="javascript/data_validar.js"></script>
 
 <script type="text/javascript">
-<!--
+
   function submeter(endereco){
      
       var form = document.documento_acessorio_form;
@@ -20,20 +20,23 @@
   }
 
 
-  function campos_criticar(form){
+  function documento_criticar(form){
        
       if (form.lst_tip_documento.selectedIndex==0){
+          $('#lst_tip_documento').addClass('is-invalid');
           alert("O tipo do documento deve ser selecionado!");
           form.lst_tip_documento.focus();
           return false;
       }
       if (form.txt_nom_documento.value==""){
+          $('#txt_nom_documento').addClass('is-invalid');
           alert("A descrição do documento deve ser preenchida!");
           form.txt_nom_documento.focus();
           return false;
       }
       if (form.txt_nom_autor_documento.value==""){
-         alert("A nome do autor do documento deve ser preenchido!");
+         $('#txt_nom_autor_documento').addClass('is-invalid');
+         alert("A nome do autor do documento deve ser informado!");
          form.txt_nom_autor_documento.focus();
          return false;
       }  
@@ -43,17 +46,15 @@
          form.txt_dat_documento.select();
          return false;
       }
-
-      form.hdn_tip_documento.value = form.lst_tip_documento.value;
-      
+     
       form.submit();
   } 
 
 
   function texto_integral_excluir(){
 
-       if (confirm("Deseja realmente excluir o texto integral?")) {
-          location.href="texto_documento_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>";
+       if (confirm("Deseja realmente excluir o PDF do texto original?")) {
+          location.href="texto_documento_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>&modal=1";
        }
        return;
   }
@@ -67,7 +68,7 @@
       }
 
       if ((lst_modelo.selectedIndex != 0) && confirm("Confirma a geração do arquivo ODT?")) {
-         location.href="&dtml-portal_url;/modelo_proposicao/doc_acessorio?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>&modelo_proposicao="+lst_modelo.options[lst_modelo.selectedIndex].value;
+         location.href="<dtml-var portal_url>/modelo_proposicao/doc_acessorio?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>&modelo_proposicao="+lst_modelo.options[lst_modelo.selectedIndex].value;
          setTimeout(function(){window.location.reload(true)},2500);
          return true;
        }
@@ -86,7 +87,7 @@
 
   function texto_pdf_gerar(){
       if (confirm("Confirma a geração do arquivo PDF?")) {
-         location.href="&dtml-portal_url;/modelo_proposicao/doc_acessorio_gerar_pdf?cod_documento=<dtml-var cod_documento missing>";
+         location.href="<dtml-var portal_url>/modelo_proposicao/doc_acessorio_gerar_pdf?cod_documento=<dtml-var cod_documento missing>";
          setTimeout(function(){window.location.reload(true)},2500);
          return true;
        }
@@ -96,73 +97,30 @@
   function texto_odt_documento_excluir(){
 
        if (confirm("Deseja realmente excluir o arquivo ODT?")) {
-          location.href="texto_odt_documento_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>";
+          location.href="texto_odt_documento_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>&modal=1";
        }
        return;
   }
   
   function documento_acessorio_excluir(){
        
-       if (confirm("Deseja realmente excluir?")) {          
-          location.href="documento_acessorio_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>&nom_documento=<dtml-var nom_documento missing>";
+       if (confirm("Deseja realmente excluir o documento acessório?")) {          
+          location.href="documento_acessorio_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>&nom_documento=<dtml-var nom_documento missing>&modal=1";
        }
   } 
 
-  function texto_documento_excluir(){
-       
-       if (confirm("Deseja realmente excluir o texto?")) {          
-          location.href="texto_documento_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>";
-       }
-  } 
+$(document).ready(function () {
+  $(".modal-dialog").css("width", "90%");
+  $(".modal-dialog").css("max-width", "900px");
+});
 
-//-->
+$(document).ready(function () {
+  bsCustomFileInput.init()
+})
+
 </script>
 
-<script type="text/javascript">
-$(function() {
-        $('#txt_dat_documento').datepick();
-});
-</script>
-
-<script type="text/javascript">
-$(document).ready(function() {
-$(".popup").fancybox({
-maxWidth : 500,
-maxHeight : 320,
-fitToView : false,
-width : '70%',
-height : '72%',
-autoSize : false,
-closeClick : false,
-scrolling : 'auto',
-preload : true,
-openEffect : 'fade',
-closeEffect : 'fade'
-});
-});
-</script>
-
-<script type="text/javascript">
-$(document).ready(function() {
-	$(".popup1").fancybox({
-		maxWidth	: 1024,
-		maxHeight	: 800,
-		fitToView	: false,
-		width		: '95%',
-		height		: '93%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-		closeEffect	: 'fade'
-	});
-});
-</script>
-
-<a id="ajuda" href="&dtml-portal_url;/ajuda/doc_acessorio">Ajuda</a>
-
-<h1 class="firstHeading">Matéria Legislativa</h1>
+<h1 class="firstHeading">Documento Acessório</h1>
 
 <dtml-call expr="REQUEST.set('temProposicao',REQUEST.has_key('hdnCodProposicao'))">
 <dtml-if temProposicao>
@@ -173,162 +131,221 @@ $(document).ready(function() {
   </dtml-in>
 </dtml-if>
 
- <dtml-var materia_menu>
- <dtml-var materia_header>
+<form id="documento_acessorio_form" name="documento_acessorio_form" method="post" action="documento_acessorio_salvar_proc" enctype="multipart/form-data">
 
-<form name="documento_acessorio_form" method="post" action="documento_acessorio_salvar_proc" enctype="multipart/form-data">
-<fieldset><legend>Documento Acessório</legend>
-  <table>
-     <input type="hidden" name="hdn_tip_texto" value="" />   
-     <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var hdnCodProposicao missing>" />    
-     <input type="hidden" name="hdn_tip_documento" value="" />
-     <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento missing>" onChange="javascript:form.hdn_alterou.value=1" />
-         <tr>
-            <td width="45%">
-            <label for="lst_tip_documento">Tipo </label> <span class="campoObrigatorio">&nbsp;</span>
+  <div class="form-row">
+     <div class="col-12 col-sm-6 mb-3">
+            <label for="lst_tip_documento" class="required">Tipo de Documento</label>
             <dtml-if temProposicao>
               <input type="hidden" name="lst_tip_documento" value="<dtml-var propTipoDoc>" />
-                <br /><dtml-in expr="zsql.tipo_documento_obter_zsql(tip_documento=propTipoDoc)">
-                   <input type="text" value="<dtml-var des_tipo_documento>" size="35" readonly />
-                </dtml-in>
-<dtml-else>           
-                <br />
-                <select id="lst_tip_documento" name="lst_tip_documento" onChange="javascript:form.hdn_alterou.value=1">
+               <dtml-in expr="zsql.tipo_documento_obter_zsql(tip_documento=propTipoDoc)">
+                  <input class="form-control" type="text" id="lst_tip_documento" value="<dtml-var des_tipo_documento>" size="35" readonly />
+               </dtml-in>
+            <dtml-else>           
+                <select class="custom-select" id="lst_tip_documento" name="lst_tip_documento" required>
                   <option value="0">Selecione</option> 
                   <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0)">           
-                     <option <dtml-if expr="_.has_key('cod_documento')">
-                        <dtml-if expr="(cod_documento!=None) and _.int(tip_documento) == _.int(documento_acessorio_form.tip_documento)"> 
-                           selected 
-                        </dtml-if></dtml-if>
+                     <option 
+                        <dtml-if expr="_.has_key('cod_documento')">
+                          <dtml-if expr="(cod_documento!=None) and _.int(tip_documento) == _.int(documento_acessorio_form.tip_documento)"> 
+                             selected 
+                          </dtml-if>
+                        <dtml-elif expr="_.has_key('tip_documento_sel')">
+                           <dtml-if expr="_.int(tip_documento_sel) == _.int(documento_acessorio_form.tip_documento)">
+                             selected 
+                           </dtml-if>
+                        </dtml-if>
                         value="<dtml-var tip_documento>">
                         <dtml-var des_tipo_documento>
                     </option>
                   </dtml-in>                   
                </select>
-</dtml-if>
-            </td>
-            <td>
-             <label for="txt_nom_documento">Descrição </label> <span class="campoObrigatorio">&nbsp;</span><br/>
-             <input type="text" name="txt_nom_documento" value="<dtml-var nom_documento missing null="">" size="45" maxlength="50" onChange="javascript:form.hdn_alterou.value=1" /></td>
-<dtml-unless dat_documento>
-  <dtml-call expr="REQUEST.set('dat_documento', pysc.data_atual_port_pysc())">
-</dtml-unless>
-          </tr>
-          <tr> 
-            <td>
-             <label for="txt_dat_documento">Data </label> <span class="campoObrigatorio">&nbsp;</span><br/>
-             <input type="text" name="txt_dat_documento" id ="txt_dat_documento" value="<dtml-var dat_documento missing null="">" size="10" maxlength="10" onBlur="formata_data(form.txt_dat_documento)" />
-            </td>
-            <td>
-              <label for="txt_nom_autor_documento">Autor </label> <span class="campoObrigatorio">&nbsp;</span><br />
-              <input type="text" id="txt_nom_autor_documento" name="txt_nom_autor_documento" value="<dtml-var nom_autor_documento missing null="">" size="45" maxlength="50"onChange="javascript:form.hdn_alterou.value=1" />
-              <a href="autor_doc_pesquisar_form?hdn_tipo_pesquisa=pesq_basica" class="botao-link popup" data-fancybox-type="iframe">Pesquisar</a>
-            </td>
-          </tr>
+            </dtml-if>
+           <div class="invalid-feedback">
+             Este campo é obrigatório!
+           </div> 
+     </div>
+     <div class="col-12 col-sm-6 mb-3">
+          <label for="txt_nom_documento" class="required">Descrição</label>
+          <input class="form-control" type="text" id="txt_nom_documento" name="txt_nom_documento" value="<dtml-var nom_documento missing null="">" maxlength="50" required />
+          <div class="invalid-feedback">
+             Este campo é obrigatório!
+          </div> 
+     </div>
+  </div>
+  <div class="form-row">
+     <div class="col-6 col-sm-3 mb-3">
+          <label for="txt_dat_documento" class="required">Data</label>
+          <dtml-unless dat_documento>
+             <dtml-call expr="REQUEST.set('dat_documento', pysc.data_atual_port_pysc())">
+          </dtml-unless>
+          <input class="form-control date" type="text" name="txt_dat_documento" id ="txt_dat_documento" value="<dtml-var dat_documento missing null="">" maxlength="10" required /> 
+          <div class="invalid-feedback">
+             Este campo é obrigatório!
+          </div>           
+     </div>
+     <div class="col-6 col-sm-3 mb-3">
+          <label for="txt_num_protocolo">Número de Protocolo</label>
+          <input class="form-control number" type="text" name="txt_num_protocolo" id ="txt_num_protocolo" value="<dtml-var num_protocolo missing null="">" maxlength="10" />  
+          <div class="invalid-feedback">
+             Este campo é obrigatório!
+          </div>              
+     </div>
+     <div class="col-12 col-sm-6 mb-3">
+          <label for="txt_nom_autor_documento" class="required">Autoria</label>
+          <input class="form-control" type="text" id="txt_nom_autor_documento" name="txt_nom_autor_documento" value="<dtml-var nom_autor_documento missing null="">" maxlength="150" required />
+          <div class="invalid-feedback">
+             Este campo é obrigatório!
+          </div>           
+     </div>
+  </div> 
 
 <dtml-if cod_documento>
-<dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
-<dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
-<dtml-if "_.hasattr(documentos.proposicao,id_proposicao)">
-         <tr>
-            <td class="form-label">
-             <p>Proposição Eletrônica</p>
-            </td>    
-            <td>
-               <dtml-let proposicao="_.getattr(documentos.proposicao,id_proposicao).absolute_url">
-                 <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'_signed.pdf')">
-                 <dtml-call expr="REQUEST.set('cod_doc',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
-                    <a target="blank" href="<dtml-var proposicao>">
-                      <img align="top" height="40" style="float: left; margin-top: 2px; margin-right: 8px;" src="&dtml-portal_url;/imagens/pdf_signed.gif" alt="Proposição Eletrônica" title="Proposição Eletrônica"></a>
-                    <p style="float: left; line-height: 1.3em;"><b>Código:</b><br /><dtml-var cod_doc></p>
-               </dtml-let>
-            </td>
-         </tr>
-</dtml-if>
-</dtml-let>
-</dtml-in>
+  <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
+    <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+      <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+        <div class="row">
+          <div class="col-12">
+            <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+               <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'_signed.pdf')">
+               <dtml-call expr="REQUEST.set('cod_doc',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+               <legend>Proposição Eletrônica <dtml-var cod_doc></legend>
+               <a class="btn btn-secondary" target="blank" href="<dtml-var proposicao>">   
+                  <i class="fas fa-certificate" style="font-size:21px; margin-right: 3px;"></i>Documento Assinado 
+               </a>
+            </dtml-let>     
+          </div>
+        </div>  
+      </dtml-if>
+    </dtml-let>
+  </dtml-in>
 </dtml-if>
 
-          <tr> 
-            <td>
-             <label>Texto digitalizado (PDF) </label><br />
+ <div class="form-row">
+   <div class="col-12 col-sm-6 mb-3">
+             <label class="d-block">PDF Texto Original</label>
               <dtml-if expr="_.has_key('cod_documento')"> 
                <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
-               <dtml-if "_.hasattr(documentos.materia,id_documento)">
-                 <dtml-let documento="_.getattr(documentos.materia,id_documento).absolute_url">
-                   <a target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">"><img align="top" src="&dtml-portal_url;/imagens/archiv.gif" style="float: left; margin-top: 2px; margin-right: 2px;" alt="Arquivo PDF" title="Visualizar PDF" /></a>
-                   <a class="botao-link" href="javascript:texto_integral_excluir()">Excluir</a>
+               <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
+                 <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
+                    <a class="btn btn-secondary" target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
+                      <i class="fa fa-fw fa-file-pdf"></i> Visualizar                
+                    </a>
+                  <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_documento>&tipo_doc=doc_acessorio&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+                  </dtml-if>
+                   <a class="btn btn-danger" href="javascript:texto_integral_excluir()">Excluir</a>
                  </dtml-let>
                 <dtml-else>
-                  <input type="file" name="file_nom_arquivo" accept="application/pdf" size="15" maxlength="100" />
-                     <dtml-let id_documento_odt="_.str(cod_documento)+'.odt'">
-                       <dtml-if "_.hasattr(documentos.materia_odt,id_documento_odt)">
-                         <dtml-call expr="REQUEST.set('temODT', 1)">
-                       </dtml-if>
-                     </dtml-let>
-                  <dtml-if expr="_.has_key('temODT')">
-                  <a class="botao-link" href="javascript:texto_pdf_gerar()">
-                     Gerar PDF
-                  </a>
-                </dtml-if>
+                 <div class="input-group">                
+                   <div class="custom-file">
+                     <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
+                     <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+                   </div>
+                   <dtml-let id_documento_odt="_.str(cod_documento)+'.odt'">
+                     <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_documento_odt)">
+                       <dtml-call expr="REQUEST.set('temODT', 1)">
+                     </dtml-if>
+                   </dtml-let>
+                   <dtml-if expr="_.has_key('temODT')">
+                      <div class="input-group-append">                  
+                         <a class="btn btn-secondary" href="javascript:texto_pdf_gerar()">
+                           Gerar do ODT
+                        </a>
+                      </div>
+                  </dtml-if>
+                 </div>
                </dtml-if>
               <dtml-else>
-                <input type="file" name="file_nom_arquivo" accept="application/pdf" size="15" maxlength="100" />
+                   <div class="custom-file">
+                     <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
+                     <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+                   </div>
               </dtml-if>
-            </td>
-            <td valign="top">
+   </div>
+   <div class="col-12 col-sm-6 mb-3">
              <dtml-if expr="_.has_key('cod_documento')">
-              <label for="radTipTxtIntegral">Texto editável (ODT)</label><br />
+              <label for="lst_modelo" class="d-block">ODT Texto Original</label>
                 <dtml-let id_documento_odt="_.str(cod_documento)+'.odt'">
-                   <dtml-if "_.hasattr(documentos.materia_odt,id_documento_odt)">
-                      <dtml-let documento_odt="_.getattr(documentos.materia_odt,id_documento_odt).absolute_url">
+                   <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_documento_odt)">
+                      <dtml-let documento_odt="_.getattr(sapl_documentos.materia_odt,id_documento_odt).absolute_url">
                          <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_documento)+'.odt')">
-                            <a class="popup1" href="&dtml-portal_url;/generico/viewerJS/#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">
-                            <img align="top" style="float: left; margin-top: 2px; margin-right: 2px;" src="&dtml-portal_url;/imagens/icon-odt.png" alt="Arquivo ODT" title="Visualizar ODT"></a>
-                            <a class="botao-link" target="_blank" href="&dtml-URL1;/documentos/materia_odt/externalEdit_/<dtml-var nome_arquivo_odt>.zem">Editar</a>
-                            <a class="botao-link" href="javascript:texto_odt_documento_excluir()">Excluir</a>
+                         <a class="btn btn-secondary" href="<dtml-var portal_url>/generico/view_odt?arquivo_odt=<dtml-var documento_odt>&<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-fw fa-file-alt"></i> Visualizar</a>
+                         <button type="button" class="btn btn-secondary" onclick="javascript:location.href='<dtml-var portal_url>/sapl_documentos/materia_odt/externalEdit_/<dtml-var nome_arquivo_odt>.zem'" data-toggle="tooltip" data-placement="bottom" title="Editar no LibreOffice"><i class="fas fa-fw fa-external-link-alt"></i>Editar</button>                                          
+                         <a class="btn btn-danger" href="javascript:texto_odt_documento_excluir()"><i class="fas fa-trash"></i> Excluir</a>
                       </dtml-let>
                    <dtml-else>
-                      <select id="lst_modelo" name="lst_modelo">
+                    <div class="input-group">
+                      <select class="custom-select" id="lst_modelo" name="lst_modelo">
                          <option value="0">Selecione um modelo</option>
-                         <dtml-with expr="documentos.modelo.materia.documento_acessorio">
+                         <dtml-with expr="sapl_documentos.modelo.materia.documento_acessorio">
                             <dtml-in expr="objectValues('File')" sort="id">
                                <option value="<dtml-var id>"><dtml-var title></option>
                             </dtml-in>
                          </dtml-with>
                       </select>
-                      <a class="botao-link" href="javascript:texto_odt_gerar();">Gerar ODT</a>
-                      <dtml-if expr="_.int(tip_documento)==4">
-                        <a class="botao-link" href="javascript:texto_integral_materia_obter()">Obter da Matéria</a>
+                     <div class="input-group-append">
+                        <a class="btn btn-secondary" href="javascript:texto_odt_gerar();">Gerar</a>
+                        <dtml-if expr="des_tipo_documento=='Autógrafo'">
+                           <a class="btn btn-secondary" href="javascript:texto_integral_materia_obter()">Copiar da Matéria</a>
                       </dtml-if>
+                     </div>
+                    </div>
                    </dtml-if>
                 </dtml-let>
              </dtml-if>
-            </td>
-          </tr>
-          <tr> 
-            <td colspan="2">
-             <label for="txa_txt_ementa">Ementa </label> <br />
-             <textarea name="txa_txt_ementa" cols="65" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_ementa missing null=""></textarea>
-            </td>
-          </tr>   
-          <tr> 
-            <td colspan="2">
-             <label for="txa_txt_observacao">Observação </label> <br />
-             <textarea name="txa_txt_observacao" cols="65" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
-            </td>
-          </tr>  
-      </table>
+   </div>
+ </div>
+
+ <div class="form-row">
+   <div class="col-12 col-sm-6 mb-3">
+      <label for="txa_txt_ementa">Ementa </label>
+      <textarea class="form-control auto-resize" id="txa_txt_ementa" name="txa_txt_ementa" rows="1"><dtml-var txt_ementa missing null=""></textarea>
+   </div>
+   <div class="col-12 col-sm-6 mb-3">
+      <label for="txa_txt_observacao">Observações</label>
+      <textarea class="form-control auto-resize" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null=""></textarea>
+   </div>
+ </div>
+
+   <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento missing>" />   
+   <input type="hidden" name="hdn_tip_texto" value="" />   
+   <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var hdnCodProposicao missing>" />    
+   <dtml-if modal>
+     <input type="hidden" name="modal" value="1" />
+   </dtml-if>
    <input type="hidden" name="txa_txt_indexacao" value="<dtml-var txt_indexacao missing null="">" />
-   <input type="hidden" name="hdn_alterou" value="0" />
-</fieldset>
-   <p align="center">
-    <input type="button" class="botao" name="btn_documento_acessorio_salvar" value="Salvar" onClick="campos_criticar(document.documento_acessorio_form)" />
+   <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia missing>" />
    <dtml-if cod_documento>
-    <input type="button" class="botao" name="btn_documento_acessorio_excluir" value="Excluir" onClick="documento_acessorio_excluir()" />
+      <dtml-if modal>   
+        <input type="hidden" name="hdn_url" value="documento_acessorio_mostrar_proc?cod_documento=<dtml-var cod_documento missing>&modal=1" />
+      <dtml-else>
+        <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia missing>#acessorio" />      
+      </dtml-if>
+   <dtml-else>
+      <dtml-if modal>   
+      <dtml-else>
+        <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia missing>#acessorio" />      
+      </dtml-if>   
+   </dtml-if>
+
+  <div class="text-left">
+    <input type="button" class="btn btn-primary" name="btn_documento_acessorio_salvar" value="Salvar" onClick="documento_criticar(document.documento_acessorio_form)" />
+   <dtml-if cod_documento>
+      <input type="button" class="btn btn-danger" name="btn_documento_acessorio_excluir" value="Excluir" onClick="documento_acessorio_excluir()" />
   </dtml-if>
-  </p>
-  <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia missing>" />
-  <input type="hidden" name="hdn_url" value="index_html?cod_materia=<dtml-var cod_materia>" /></fieldset>
+  </div>
+
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+</div>  
+
 </form>
+
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
+
 <dtml-var standard_html_footer>

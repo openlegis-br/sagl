@@ -71,7 +71,7 @@ def materias(lst_materias):
         #condicao para a quebra de pagina
         tmp_data+='\t\t<condPageBreak height="2.5cm"/>\n'
 
-        #materias	
+        #materias   
         tmp_data+='\t\t<para style="P1"> <b>'+ dic['titulo'] +'</b> - ' + dic['nom_autor'] + ' </para>\n'
         if dic['txt_ementa']!=None:
             txt_ementa = dic['txt_ementa'].replace('&','&amp;')

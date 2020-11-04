@@ -8,7 +8,7 @@ data=DateTime().strftime('%d/%m/%Y')
 
 #Abaixo é gerada a string para o remetente
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
  casa[item[0]]=item[1]
 localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])

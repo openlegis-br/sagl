@@ -13,7 +13,7 @@ session= request.SESSION
 nome="bkpbancosagl"
 
 # Faz o backup do banco de dados como 'bkpbancosagl.sql' no diretório var do Zope
-dump_banco = context.banco_backup(banco='openlegis',usuario='root',nome=nome)
+dump_banco = context.banco_backup(banco='interlegis',usuario='root',nome=nome)
 
 if dump_banco[0]==1: #Se ocorrer erro, retorna-o.
    retorno=dump_banco[1]

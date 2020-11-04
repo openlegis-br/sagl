@@ -15,10 +15,10 @@ if context.REQUEST['cod_sessao_plen']!='':
     for sp in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
         dicsp = {}
         ts = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sp.tip_sessao)[0]
-        dicsp["sessao"] = str(sp.num_sessao_plen)+"ª SESSÃO "+ts.nom_sessao.upper()+" DA "+str(sp.num_legislatura)+"ª LEGISLATURA"
+        dicsp["sessao"] = str(sp.num_sessao_plen)+"ª SESSÃO "+ts.nom_sessao.decode('utf-8').upper()+" DA "+str(sp.num_legislatura)+"ª LEGISLATURA"
         dia = context.pysc.data_converter_por_extenso_pysc(data=sp.dat_inicio_sessao)
         hora = context.pysc.hora_formatar_pysc(hora=sp.hr_inicio_sessao)
-        dicsp["datasessao"] = str(dia).upper()
+        dicsp["datasessao"] = str(dia).decode('utf-8').upper()
         splen.append(dicsp) 
         # seleciona as matérias que compõem a pauta na data escolhida
     for ordem in context.zsql.ordem_dia_obter_zsql(dat_ordem=data, cod_sessao_plen=cod_sessao_plen, ind_excluido=0):
@@ -27,8 +27,8 @@ if context.REQUEST['cod_sessao_plen']!='':
         dic = {} 
         dic["num_ordem"] = ordem.num_ordem
         dic["cod_materia"] = ordem.cod_materia
-        dic["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+ordem.cod_materia+'">'+materia.des_tipo_materia.upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
-        dic["id_materia"] = materia.des_tipo_materia.upper()+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica) 
+        dic["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+ordem.cod_materia+'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+        dic["id_materia"] = materia.des_tipo_materia.decode('utf-8').upper()+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica) 
         dic["txt_ementa"] = ordem.txt_observacao
         dic["des_numeracao"]=""
         numeracao = context.zsql.numeracao_obter_zsql(cod_materia=ordem.cod_materia)
@@ -50,9 +50,9 @@ if context.REQUEST['cod_sessao_plen']!='':
         fields = autores.data_dictionary().keys()
         lista_autor = []
         for autor in autores:
-	  for field in fields:
-                  nome_autor = autor['nom_autor_join']
-  	  lista_autor.append(nome_autor)
+            for field in fields:
+                nome_autor = autor['nom_autor_join']
+            lista_autor.append(nome_autor)
         dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
 
         lst_relator = [] # lista contendo os relatores da matéria
@@ -64,6 +64,50 @@ if context.REQUEST['cod_sessao_plen']!='':
             lst_relator = ['']            
         dic["lst_relator"] = lst_relator
 
+        dic["substitutivo"] = ''
+        lst_qtde_substitutivos=[]
+        lst_substitutivos=[]
+        for substitutivo in context.zsql.substitutivo_obter_zsql(cod_materia=ordem.cod_materia,ind_excluido=0):
+            autores = context.zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=substitutivo.cod_substitutivo, ind_excluido=0)
+            dic_substitutivo = {}
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+                for field in fields:
+                    nome_autor = autor['nom_autor_join']
+                lista_autor.append(nome_autor)
+            autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
+            dic_substitutivo["id_substitutivo"] = '<link href="' + context.sapl_documentos.absolute_url() + '/substitutivo/' + str(substitutivo.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'SUBSTITUTIVO Nº ' + str(substitutivo.num_substitutivo) + '</link>'
+            dic_substitutivo["txt_ementa"] = substitutivo.txt_ementa
+            dic_substitutivo["autoria"] = autoria
+            lst_substitutivos.append(dic_substitutivo)
+            cod_substitutivo = substitutivo.cod_substitutivo
+            lst_qtde_substitutivos.append(cod_substitutivo)
+        dic["substitutivos"] = lst_substitutivos
+        dic["substitutivo"] = len(lst_qtde_substitutivos)
+
+        dic["emenda"] = ''
+        lst_qtde_emendas=[]
+        lst_emendas=[]
+        for emenda in context.zsql.emenda_obter_zsql(cod_materia=ordem.cod_materia,ind_excluido=0,exc_pauta=0):
+            autores = context.zsql.autoria_emenda_obter_zsql(cod_emenda=emenda.cod_emenda,ind_excluido=0)
+            dic_emenda = {}
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+                for field in fields:
+                    nome_autor = autor['nom_autor_join']
+                lista_autor.append(nome_autor)
+            autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
+            dic_emenda["id_emenda"] = '<link href="' + context.sapl_documentos.absolute_url() + '/emenda/' + str(emenda.cod_emenda) + '_emenda.pdf' + '">' + 'EMENDA Nº ' + str(emenda.num_emenda) + ' (' + emenda.des_tipo_emenda.decode('utf-8').upper() + ')</link>'
+            dic_emenda["txt_ementa"] = emenda.txt_ementa
+            dic_emenda["autoria"] = autoria
+            lst_emendas.append(dic_emenda)
+            cod_emenda = emenda.cod_emenda
+            lst_qtde_emendas.append(cod_emenda)
+        dic["emendas"] = lst_emendas
+        dic["emenda"] = len(lst_qtde_emendas)
+
         # adiciona o dicionário na pauta
         pauta.append(dic) 
 
@@ -72,11 +116,11 @@ if context.REQUEST['cod_sessao_plen']!='':
     for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sp.num_legislatura,data=data):
       for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
         for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-          lst_presidente = presidencia.nom_completo.encode('utf-8')
+          lst_presidente = presidencia.nom_parlamentar
 
     # obtém as propriedades da casa legislativa para montar o cabeçalho e o rodapé da página
     casa = {} 
-    aux=context.documentos.propriedades.propertyItems()
+    aux=context.sapl_documentos.props_sagl.propertyItems()
     for item in aux:
         casa[item[0]] = item[1]
 
@@ -95,8 +139,8 @@ if context.REQUEST['cod_sessao_plen']!='':
     cabecalho["nom_estado"] = nom_estado
 
     # tenta buscar o logotipo da casa LOGO_CASA
-    if hasattr(context.documentos.propriedades,'logo_casa.gif'):
-        imagem = context.documentos.propriedades['logo_casa.gif'].absolute_url()
+    if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+        imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
     else:
         imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
         

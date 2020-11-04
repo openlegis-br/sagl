@@ -11,7 +11,7 @@ from Products.CMFCore.utils import getToolByName
 
 fotografia = '%s' % (cod_parlamentar) + "_foto_parlamentar"
 
-if hasattr(context.documentos.parlamentar.fotos,fotografia):
+if hasattr(context.sapl_documentos.parlamentar.fotos,fotografia):
   st = getToolByName(context, 'portal_sagl')
   return st.resize_and_crop(cod_parlamentar)
 

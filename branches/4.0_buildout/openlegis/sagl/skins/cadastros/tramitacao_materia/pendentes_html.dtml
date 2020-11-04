@@ -1,10 +1,10 @@
 <dtml-var standard_html_header>
 
-<link rel="stylesheet" href="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+<link rel="stylesheet" href="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
 
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
 
 <script type="text/javascript">
 <!--
@@ -58,56 +58,60 @@ tr.clickable:hover td {
 </dtml-in>
 
 <h1 class="firstHeading">Pendentes - Tramitação de Matérias</h1>
-           <table id="pendentes" class="tablesorter">
+           <table class="table"  id="pendentes" class="tablesorter">
              <thead>
 		 <tr>  
-		     <th width="20%" class="form-label">Origem</th>
-		     <th width="42%" class="form-label">Identificação da Matéria</th>
-		     <th width="14%" class="form-label">Encaminhamento</th>
-		     <th width="14%" class="form-label">Recebimento</th>
-		     <th width="10%" class="form-label">Prazo</th>
+		     <th width="20%">Origem</th>
+		     <th width="42%">Identificação da Matéria</th>
+		     <th width="14%">Encaminhamento</th>
+		     <th width="14%">Recebimento</th>
+		     <th width="10%">Prazo</th>
 		 </tr>
              </thead>
              <tbody>
               <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_dest=cod_usuario_corrente,ind_ult_tramitacao=1,ind_encaminha=1,ind_recebido=1,ind_retorno_tramitacao=1,ind_tramitacao=1)">
                    <dtml-call expr="REQUEST.set('prazo_a_vencer', _.DateTime()+3)">
+                   <dtml-call expr="REQUEST.set('prazo_tramitacao', dat_fim_prazo)">
                    <tr onclick="javascript:submeter(<dtml-var cod_tramitacao>,document.inbox_form_<dtml-var cod_tramitacao>)" class="clickable">
                    <form name="inbox_form_<dtml-var cod_tramitacao>" method="post" action="tramitacao_mostrar_proc"> 
                    <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao>" />
-                     <td class="form-text">
-                        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local,ind_pendente=1)">
+                     <td>
+                        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local,ind_leg=1)">
                            <dtml-if cod_orgao><dtml-var nom_orgao>
                            <dtml-elif cod_comissao><dtml-var nom_comissao> 
                            <dtml-else><dtml-var nom_parlamentar> 
                            </dtml-if>
                         </dtml-in>
                      </td>
-                     <td class="form-text">
+                     <td>
                         <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
                            <b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b>
                            - <dtml-var txt_ementa>
+                           <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                              <br /><b>Autoria:</b> <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                           </dtml-in>
                         </dtml-in>
-                        <br />Status: <dtml-var des_status>
+                        <br /><b>Status:</b> <dtml-var des_status>
                      </td>
-                     <td class="form-text"><div align="center"><dtml-var dat_encaminha missing null></div></td>
-                     <td class="form-text">
+                     <td><div align="center"><dtml-var dat_encaminha missing null></div></td>
+                     <td>
                        <dtml-if dat_recebimento>
                          <div align="center"><dtml-var dat_recebimento missing null></div>
                        <dtml-else>
                          <div align="center" style="color:#DE1E1E;font-weight:bold">Pendente</div>
                        </dtml-if>
                      </td>
-                     <td class="form-text"
-                       <dtml-if dat_fim_prazo>
-                        <dtml-if expr="(_.DateTime(prazo_a_vencer).strftime('%d/%m/%Y') >= _.DateTime(dat_fim_prazo).strftime('%d/%m/%Y')) and (_.DateTime().strftime('%d/%m/%Y')<=_.DateTime(dat_fim_prazo).strftime('%d/%m/%Y'))">
+                     <td
+                       <dtml-if prazo_tramitacao>
+                        <dtml-if expr="(_.DateTime(prazo_a_vencer).strftime('%d/%m/%Y') >= _.DateTime(prazo_tramitacao).strftime('%d/%m/%Y')) and (_.DateTime().strftime('%d/%m/%Y')<=_.DateTime(prazo_tramitacao).strftime('%d/%m/%Y'))">
                           style="background-color: #F9F475"
-                        <dtml-elif expr="_.DateTime().strftime('%d/%m/%Y') > _.DateTime(dat_fim_prazo).strftime('%d/%m/%Y')">
+                        <dtml-elif expr="_.DateTime().strftime('%d/%m/%Y') > _.DateTime(prazo_tramitacao).strftime('%d/%m/%Y')">
                           style="background-color: #FFCDCD"
                         <dtml-else>
                           style="background-color: #DBF3DB"
                         </dtml-if>
                        </dtml-if>
-                     ><dtml-var dat_fim_prazo missing null></td>
+                     ><dtml-var prazo_tramitacao missing null></td>
                    </form>
                    </tr>
                 </dtml-in>
@@ -115,12 +119,12 @@ tr.clickable:hover td {
            </table>
            <div id="pager" class="pager">
 	    <form>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
-		<input type="text" class="pagedisplay"/>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
-		<select class="pagesize">
+		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
+		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
+		<input class="form-control" type="text" class="pagedisplay"/>
+		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
+		<img src="<dtml-var portal_url>/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
+		<select class="custom-select"  class="pagesize">
 			<option selected="selected"  value="10">10</option>
 			<option value="20">20</option>
 			<option value="30">30</option>

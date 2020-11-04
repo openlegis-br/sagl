@@ -1,13 +1,15 @@
 --
--- Create the database and the user for OpenLegis in the MySQL
+-- Create the database for OpenLegis in the MySQL
 --
 
-CREATE SCHEMA IF NOT EXISTS `openlegis` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
+CREATE SCHEMA IF NOT EXISTS `openlegis` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-GRANT ALL PRIVILEGES ON openlegis.* TO 'sagl'@'localhost' IDENTIFIED BY 'sagl';
+CREATE USER 'sagl'@'localhost' IDENTIFIED BY 'sagl';
+
+GRANT ALL ON interlegis.* TO 'sagl'@'localhost' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
 
 --
--- To complete the creation of the database structure run after the db_schema.sql script
+-- To complete the creation of the database structure run after the db_schema.sql and the db_initial_data.sql scripts
 --

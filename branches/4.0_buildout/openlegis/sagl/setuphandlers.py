@@ -1,24 +1,25 @@
 """
-SAGL-OpenLegis setup handlers.
+SAGL - OpenLegis setup handlers.
 """
 
 def setupMountPoint(portal):
-    # Metodo para adicionar o mount point de documentos
-    if not hasattr(portal, 'documentos'):
+    # Metodo para adicionar o mount point do sapl_documentos
+    if not hasattr(portal, 'sapl_documentos'):
         path_sagl = portal.getId()
         try:
-            portal.manage_addProduct['ZODBMountPoint'].manage_addMounts(paths=["/%s/documentos" % path_sagl],create_mount_points=1)
+            portal.manage_addProduct['ZODBMountPoint'].manage_addMounts(paths=["/%s/sapl_documentos" % path_sagl],create_mount_points=1)
         except:
-            portal.manage_addProduct['OFSP'].manage_addFolder(id='documentos')
+            portal.manage_addProduct['OFSP'].manage_addFolder(id='sapl_documentos')
 
 def setupConteudo(portal):
     # Metodo para a importacao do SAGL-OpenLegis
     # estrutura do diretorio para armazenamento de documentos
-    if hasattr(portal, 'documentos'):
+    if hasattr(portal, 'sapl_documentos'):
         for o in [
             'administrativo.zexp',
-            'anexo_sessao.zexp',
             'ata_sessao.zexp',
+            'documento_comissao.zexp',
+            'documentos_assinados.zexp',
             'emenda.zexp',
             'materia.zexp',
             'materia_odt.zexp',
@@ -26,36 +27,39 @@ def setupConteudo(portal):
             'norma_juridica.zexp',
             'oradores.zexp',
             'oradores_expediente.zexp',
-            'painel.zexp',
             'parecer_comissao.zexp',
             'parlamentar.zexp',
             'pauta_sessao.zexp',
+            'partido.zexp',
+            'pessoa.zexp',
             'proposicao.zexp',
-            'propriedades.zexp',
+            'props_sagl.zexp',
             'protocolo.zexp',
             'reuniao_comissao.zexp',
             'substitutivo.zexp',
         ]:
-            if o[:len(o)-5] not in portal.documentos.objectIds():
-                portal.documentos.manage_importObject(o)
+            if o[:len(o)-5] not in portal.sapl_documentos.objectIds():
+                portal.sapl_documentos.manage_importObject(o)
 
-    # importar conteudos na raiz do SAGL-OpenLegis
-    for o in ['modelo_proposicao.zexp', 'webeditor.zexp', 'pdflabels.zexp', 'gerar_etiquetas_pdf.zexp', 'upload_form.zexp', 'trigger_upload.zexp']:
+    # importar conteudos na raiz do SAGL - OpenLegis
+    for o in ['extensions.zexp', 'webeditor.zexp', 'pdflabels.zexp', 'gerar_etiquetas_pdf.zexp', 'upload_form.zexp', 'trigger_upload.zexp']:
         if o[:len(o)-5] not in portal.objectIds():
             portal.manage_importObject(o)
 
+
 def setupAdicionarUsuarios(portal):
     # Metodo para criar usuario padrao
-    portal.acl_users._addUser(name='operador',password='openlegis',confirm='openlegis',roles=['Operador'],domains=[])
-    portal.acl_users._addUser(name='lexml',password='openlegis',confirm='openlegis',roles=['Operador Lexml'],domains=[])
-    portal.acl_users._addUser(name='administrador',password='openlegis',confirm='openlegis',roles=['Administrador'],domains=[])
+    portal.acl_users._addUser(name='openlegis', password='openlegis', confirm='openlegis', roles=['Operador','Administrador'], domains=[])
+    portal.acl_users._addUser(name='lexml',password='lexml',confirm='lexml',roles=['Operador Lexml'],domains=[])
+    
 
 def setupAdicionaAcomp(portal):
-    props = portal.documentos.propriedades
+    props = portal.sapl_documentos.props_sagl
     try:
         props.manage_addProperty('acompanhamento_materia', '1', 'int')
     except:
         pass
+
 
 def importar_estrutura(context):
     if context.readDataFile('sagl-final.txt') is None:

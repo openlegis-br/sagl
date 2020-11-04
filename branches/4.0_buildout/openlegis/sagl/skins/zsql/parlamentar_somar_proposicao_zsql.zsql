@@ -1,5 +1,5 @@
 <dtml-comment>
-connection_id : dbcon_openlegis
+connection_id : dbcon_interlegis
 arguments : cod_parlamentar=""
 max_rows : 10000
 max_cache : 100
@@ -9,6 +9,7 @@ SELECT
 
 FROM
     materia_legislativa m
+    LEFT JOIN tipo_materia_legislativa t ON m.tip_id_basica = t.tip_materia    
     LEFT JOIN autoria au ON m.cod_materia = au.cod_materia
     LEFT JOIN autor a ON a.cod_autor = au.cod_autor
 
@@ -17,4 +18,10 @@ WHERE
     au.ind_excluido = 0 AND
     a.cod_parlamentar = <dtml-sqlvar cod_parlamentar type="int"> AND
     au.cod_materia = m.cod_materia
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="isAnon">
+   AND t.ind_publico = 1
+ </dtml-if>
+</dtml-let>    
 

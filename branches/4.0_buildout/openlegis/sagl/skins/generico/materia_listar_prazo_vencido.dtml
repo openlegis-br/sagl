@@ -1,100 +1,121 @@
 <dtml-var standard_html_header>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/materia_legislativa">Ajuda</a>
+<script type="text/javascript">
+/* Formatting function for row details - modify as you need */
+$(document).ready(function() {
+    var table = $('#jdTable').DataTable( {
+        "responsive": true,
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
 
-<h1 class="firstHeading">Matérias Legislativas</h1>
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
+});
+</script>
 
-<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
-<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
-<dtml-if page>
-  <dtml-call "REQUEST.set('page', _.int(page))">
-<dtml-else>
-  <dtml-call "REQUEST.set('page', 1)">
-</dtml-if>
-<dtml-if step>
-  <dtml-call "REQUEST.set('step', _.int(step))">
-<dtml-else>
-  <dtml-call "REQUEST.set('step', 20)">
-</dtml-if>
-<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+<h1 class="firstHeading">Tramitações Vencidas</h1>
 
-    <dtml-in expr="zsql.tramitacao_prazo_vencido_obter_zsql()" size="step" start="start" orphan=0>
-          <dtml-if sequence-even>
-             <dtml-call "REQUEST.set ('class', 'odd')">
-          <dtml-else>
-             <dtml-call "REQUEST.set ('class', 'even')">
-          </dtml-if>
+    <dtml-in expr="zsql.tramitacao_prazo_vencido_obter_zsql()">
         <dtml-if sequence-start>
-        <fieldset>
-        <legend>Prazos de tramitação vencidos</legend>
-        <table>
-         <thead>
+        <div class="table-responsive">
+        <table class="table" id="jdTable">
+         <thead class="table-secondary">
             <tr>
-                <th width="50%" class="form-label">Matéria</th>
-                <th class="form-label">Localização</th>
-                <th class="form-label">Situação</th>
-                <th class="form-label">Prazo</th>
+                <th>Matéria</th>
+                <th>Localização</th>
+                <th>Situação</th>
+                <th>Vencimento</th>
             </tr>
          </thead>
-         <tfoot>
-         </tfoot>
-         <tbody>
-        <dtml-if previous-sequence>
-          <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
-        </dtml-if previous-sequence>
         </dtml-if sequence-start>
-          <tr class="<dtml-var class>">
-            <td class="texto" valign="top">
-              <b><a href="&dtml-portal_url;/cadastros/materia/tramitacao/tramitacao_index_html?cod_materia=<dtml-var cod_materia>" target="_blank">
-                 <dtml-var des_tipo_materia missing upper> Nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a><br />
-                 <dtml-if expr="pysc.conta_autores_pysc(cod_materia)">
-                   <dtml-if expr="pysc.conta_autores_pysc(cod_materia)>1">
-                     <b>Autores:</b>
-                   <dtml-else>
-                     <b>Autor:</b>
-                   </dtml-if>
-                 </dtml-if> 
+          <tr>
+            <td>
+              <b><a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>#tramitacao" target="_blank">
+                 <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a> - 
                  <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
                    <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
-                  <dtml-if sequence-end><br /></dtml-if>
                  </dtml-in>
-              <dtml-var txt_ementa>
+                 - <dtml-var txt_ementa>
             </td>
-            <td class="texto" valign="top">
-              <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest)">
-                    <dtml-if cod_orgao>
-                      <dtml-var nom_orgao><br>
-                    <dtml-elif cod_comissao>
-                      <dtml-var nom_comissao><br>
-                    <dtml-else> 
-                      <dtml-var nom_parlamentar><br> 
-                    </dtml-if>
-              </dtml-in>
+            <td>
+              <dtml-if cod_unid_tram_dest>
+                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest)">
+                   <dtml-var nom_unidade_join>
+                </dtml-in>
+              <dtml-else>
+                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local)">
+                   <dtml-var nom_unidade_join>
+                </dtml-in>
+              </dtml-if>
             </td>
-            <td class="texto" valign="top">
+            <td>
                <dtml-var des_status>
             </td>
-            <td class="texto" valign="top">
+            <td>
                <dtml-var dat_fim_prazo>
             </td>
         </tr>
     <dtml-if sequence-end>
-         <tbody>
      </table>
-</fieldset>
-     <dtml-if next-sequence>
-      <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
-    </dtml-if next-sequence>
-    <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
-     <p align="center" class="texto">
-        <b><dtml-var "pysc.PageListOutput_pysc('materia_listar_prazo_vencido', page, step, _['sequence-length'])">
-      </b></p>
-    </dtml-if>
-  </dtml-if sequence-end>
+     </div>
+    </dtml-if sequence-end>
   <dtml-else>
-      <fieldset>
-       <legend>Matérias com prazos de tramitação vencidos</legend>
-        <p class="texto">Nenhuma matéria encontrada.</p>
-      </fieldset>
+     <p>Nenhuma tramitação vencidas.</p>
 </dtml-in>
+
 <dtml-var standard_html_footer>

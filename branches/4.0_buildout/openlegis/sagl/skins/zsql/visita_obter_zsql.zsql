@@ -1,0 +1,58 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_visita cod_pessoa dat_entrada dat_visita dat_visita2 cod_funcionario num_cracha dat_saida txt_atendimento des_situacao="" dat_solucao txt_observacao ind_aberta="" ind_excluido=0
+max_rows : 20000
+max_cache : 100
+</dtml-comment>
+SELECT
+     v.cod_visita,
+     v.cod_pessoa,
+     p.nom_pessoa,
+     DATE_FORMAT(dat_entrada, '%d/%m/%Y %T') as dat_entrada,
+     v.cod_funcionario,
+     f.nom_funcionario,
+     v.num_cracha,
+     DATE_FORMAT(dat_saida, '%d/%m/%Y %T') as dat_saida,
+     v.txt_atendimento,
+     v.des_situacao,
+     DATE_FORMAT(dat_solucao, '%d/%m/%Y') as dat_solucao,
+     v.txt_observacao,
+     v.ind_excluido
+
+FROM   
+     visita v
+     LEFT JOIN pessoa p ON v.cod_pessoa = p.cod_pessoa
+     LEFT JOIN funcionario f ON v.cod_funcionario = f.cod_funcionario 
+       
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_visita                                  op="="  type="int"  optional> <dtml-and>
+    <dtml-sqltest ncod_visita                                 op="!=" type="int"  optional> <dtml-and>
+    <dtml-sqltest cod_pessoa       column="v.cod_pessoa"      op="="  type="int"  optional> <dtml-and>
+    <dtml-sqltest cod_funcionario  column="v.cod_funcionario" op="="  type="int"  optional> <dtml-and>
+    <dtml-sqltest des_situacao                                op="="  type="nb"   optional> <dtml-and>
+    <dtml-sqltest ind_excluido     column="v.ind_excluido"    op="="  type="int"  optional>
+    AND f.cod_funcionario IS NOT NULL
+
+  <dtml-if expr="ind_aberta">
+       AND dat_saida IS NULL
+  </dtml-if>
+
+  <dtml-if dat_visita>
+    <dtml-if expr="dat_visita == dat_visita2">
+       AND DATE(dat_entrada) = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_visita)" type="nb">
+    <dtml-else>
+       AND DATE(dat_entrada) >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_visita)" type="string"> 
+       AND DATE(dat_entrada) <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_visita2)" type="string">
+    </dtml-if>
+  </dtml-if>
+
+  </dtml-sqlgroup>
+
+ORDER BY 
+<dtml-if expr="ind_aberta">
+    v.dat_entrada ASC
+<dtml-else>
+    v.dat_entrada DESC
+</dtml-if>
+
+

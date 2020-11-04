@@ -1,4 +1,4 @@
-##parameters=imagem,dic_rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,sessao=''
+##parameters=imagem,dic_rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url,sessao=''
 
 """pdf_tramitacao_gerar.py
    Script python para gerar o PDF da tramitação
@@ -46,10 +46,10 @@ def rodape(dic_rodape):
     if dic_rodape['data_emissao']!="" and dic_rodape['data_emissao']!=None:
         data_emissao = dic_rodape['data_emissao']
 
-    tmp+='\t\t\t\t<lines>3.3cm 2.2cm 19.5cm 2.2cm</lines>\n'
-    tmp+='\t\t\t\t<setFont name="Helvetica" size="8"/>\n'
-    tmp+='\t\t\t\t<drawString x="3.3cm" y="2.4cm">' + data_emissao + '</drawString>\n'
-    tmp+='\t\t\t\t<drawString x="18.4cm" y="2.4cm">Página <pageNumber/></drawString>\n'
+#    tmp+='\t\t\t\t<lines>3.3cm 2.2cm 19.5cm 2.2cm</lines>\n'
+#    tmp+='\t\t\t\t<setFont name="Helvetica" size="8"/>\n'
+#    tmp+='\t\t\t\t<drawString x="3.3cm" y="2.4cm">' + data_emissao + '</drawString>\n'
+#    tmp+='\t\t\t\t<drawString x="18.4cm" y="1cm">Página <pageNumber/></drawString>\n'
 
     return tmp
 
@@ -99,7 +99,7 @@ def tramitacao(tramitacao_dic):
     tmp+='\t\t\t<font color="white">-</font>\n'
     tmp+='\t\t</para>\n'
     tmp+='<blockTable style="tramitacao" repeatRows="1" colWidths="460">\n'
-    tmp+='<tr><td>MATÉRIA</td></tr>\n'
+    tmp+='<tr><td>PROCESSO LEGISLATIVO</td></tr>\n'
     tmp+='\t\t</blockTable>\n'
     tmp+='\t\t<para style="P2">\n'
     tmp+='\t\t\t<font color="white">-</font>\n'
@@ -122,14 +122,12 @@ def tramitacao(tramitacao_dic):
 
     tmp+='<blockTable style="Standard_Outline" repeatRows="1" colWidths="110,350">\n'
     tmp+='<tr><td>Data da Ação</td><td>' +str(tramitacao_dic['dat_tramitacao'])+ '</td></tr>\n'
-    tmp+='<tr><td>Unidade Local</td><td>' +str(tramitacao_dic['unidade_origem'])+ '</td></tr>\n'
+    tmp+='<tr><td>Unidade de Origem</td><td>' +str(tramitacao_dic['unidade_origem'])+ '</td></tr>\n'
     tmp+='<tr><td>Unidade de Destino</td><td>' +str(tramitacao_dic['unidade_destino'])+ '</td></tr>\n'
     tmp+='<tr><td>Status</td><td>' +str(tramitacao_dic['des_status'])+ '</td></tr>\n'
     dat_fim_prazo = str(tramitacao_dic['dat_fim_prazo'])
-    if dat_fim_prazo != None and dat_fim_prazo != "None":
+    if dat_fim_prazo != None and dat_fim_prazo != "":
       tmp+='<tr><td>Prazo</td><td>' +str(tramitacao_dic['dat_fim_prazo'])+ '</td></tr>\n'
-    else:
-      tmp+='<tr><td>Prazo</td><td> - </td></tr>\n'
     tmp+='\t\t</blockTable>\n'
     tmp+='\t\t<para style="P2">\n'
     tmp+='\t\t\t<font color="white">-</font>\n'
@@ -162,7 +160,7 @@ def tramitacao(tramitacao_dic):
 
     return tmp
 
-def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
+def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url,sessao=''):
     """
     Função principal responsável por chamar as funções que irão gerar o código rml apropriado
     """
@@ -174,7 +172,7 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
     tmp+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp+='<document filename="tramitacao.pdf">\n'
-    tmp+='\t<template pageSize="(21cm, 29.7cm)" title="Tramitação de Matéria" author="OpenLegis" allowSplitting="20">\n'
+    tmp+='\t<template pageSize="(21cm, 29.7cm)" title="Despacho em Matéria" author="OpenLegis" allowSplitting="20">\n'
     tmp+='\t\t<pageTemplate id="first">\n'
     tmp+='\t\t\t<pageGraphics>\n'
     tmp+=cabecalho(inf_basicas_dic,imagem)
@@ -190,14 +188,15 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,sessao=''):
     tmp+='</document>\n'
     tmp_pdf=parseString(tmp)
 
-    if hasattr(context.documentos.materia.tramitacao,arquivoPdf):
-        context.documentos.materia.tramitacao.manage_delObjects(ids=arquivoPdf)
-    if hasattr(context.documentos.materia.tramitacao,arquivoAssinado):
-        context.documentos.materia.tramitacao.manage_delObjects(ids=arquivoAssinado)
-    context.documentos.materia.tramitacao.manage_addFile(arquivoPdf)
-    arq=context.documentos.materia.tramitacao[arquivoPdf]
-    arq.manage_edit(title='PDF Tramitação',filedata=tmp_pdf,content_type='application/pdf')
+    if hasattr(context.sapl_documentos.materia.tramitacao,arquivoPdf):
+        context.sapl_documentos.materia.tramitacao.manage_delObjects(ids=arquivoPdf)
+    if hasattr(context.sapl_documentos.materia.tramitacao,arquivoAssinado):
+        context.sapl_documentos.materia.tramitacao.manage_delObjects(ids=arquivoAssinado)
+    context.sapl_documentos.materia.tramitacao.manage_addFile(arquivoPdf)
+    arq=context.sapl_documentos.materia.tramitacao[arquivoPdf]
+    arq.manage_edit(title='PDF Tramitação Matéria',filedata=tmp_pdf,content_type='application/pdf')
 
-    return "tramitacao_mostrar_proc?hdn_cod_tramitacao="+str(cod_tramitacao)
+    return hdn_url
+    #return "tramitacao_mostrar_proc?hdn_cod_tramitacao="+str(cod_tramitacao)
 
-return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,sessao)
+return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url,sessao)

@@ -1,6 +1,6 @@
 <dtml-comment>
-connection_id : dbcon_openlegis
-arguments : cod_ordem="" ind_excluido=0 cod_materia="" num_ordem="" dat_ordem="" cod_sessao_plen="" tip_turno tip_quorum tip_votacao
+connection_id : dbcon_interlegis
+arguments : cod_ordem="" ind_excluido=0 cod_materia="" num_ordem="" dat_ordem="" cod_sessao_plen="" tip_turno tip_quorum tip_votacao ind_agrupamento=""
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
@@ -21,7 +21,9 @@ SELECT
        sessao_plenaria.cod_sessao_plen as cod_sessao
       
 FROM   
-   ordem_dia, sessao_plenaria
+   ordem_dia
+   LEFT JOIN sessao_plenaria
+   ON sessao_plenaria.cod_sessao_plen = ordem_dia.cod_sessao_plen
   
   <dtml-sqlgroup where>
     <dtml-sqltest cod_materia     column="ordem_dia.cod_materia"     op="=" type="int" optional><dtml-and> 
@@ -32,8 +34,11 @@ FROM
     <dtml-sqltest dat_ordem                                          op="=" type="nb"  optional><dtml-and>
     <dtml-sqltest tip_turno                                          op="=" type="int" optional><dtml-and>
     <dtml-sqltest tip_quorum                                         op="=" type="int" optional><dtml-and>
-    <dtml-sqltest tip_votacao                                        op="=" type="int" optional><dtml-and>
-    sessao_plenaria.cod_sessao_plen = ordem_dia.cod_sessao_plen
+    <dtml-sqltest tip_votacao                                        op="=" type="int" optional>
   </dtml-sqlgroup>
+
+<dtml-if ind_agrupamento>
+  GROUP BY ordem_dia.num_ordem
+</dtml-if>
 
 ORDER BY dat_ordem, num_ordem

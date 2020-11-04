@@ -12,13 +12,13 @@ session= request.SESSION
 
 mailhost = context.MailHost
 
-if hasattr(context.documentos.propriedades,'logo_casa.gif'):
-  imagem = context.documentos.propriedades['logo_casa.gif'].absolute_url()
+if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+  imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
   imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
 
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
   casa[item[0]] = item[1]
 email_casa = casa['end_email_casa']

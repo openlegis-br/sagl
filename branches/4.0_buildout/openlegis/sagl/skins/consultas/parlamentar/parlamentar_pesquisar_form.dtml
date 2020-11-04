@@ -1,58 +1,43 @@
-<!DOCTYPE html>
-<dtml-call "RESPONSE.setHeader('Content-Type','text/html; charset=utf-8')">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Pesquisar Parlamentares</title>
-  <dtml-var standard_css_slot>
-  <script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
-
-<script type="text/javascript" >
- <!--  
-    function campos_criticar(form) {
-
-      if (form.txt_parlamentar.value == ""){
-         alert("O nome do parlamentar deve ser preenchido!");
-         form.txt_parlamentar.focus();
-         return false;        
-     }    
-     return true;
-    }  
-
- //-->
+<dtml-var standard_html_header>
+  <script type="text/javascript" >
+      function campos_criticar(form) {
+        if (form.lst_parlamentar.value == ""){
+           $.showAlert({title: "Mensagem do Sistema", body: "Selecione um Vereador!"});        
+           form.txt_parlamentar.focus();
+           return false;        
+        }    
+        return true;
+      }  
 </script>
-</head>
 
-<body class="modal">
+<form name="parlamentar_pesquisar_form">
 
-<h1 class="firstHeading">Pesquisar por Parlamentares</h1> 
-
-<form class="pf-form" name="parlamentar_pesquisar_form" action="parlamentar_pesquisar_form" onsubmit="return false;">
- <fieldset>
-    <div class="pf-element">
-     <label for="txt_autor">
-      <span class="pf-label">Nome do parlamentar</span>
-      <span class="pf-note" style="width: 190px!important">Informe o nome ou apelido do parlamentar</span>
-     </label>
-       <div class="pf-group">
-         <input class="pf-field" type="text" name="txt_parlamentar" value="<dtml-var txt_parlamentar missing="">" style="max-width: 224px; width: 60%;">
-         <a href="javascript:if (campos_criticar(document.parlamentar_pesquisar_form)) {document.parlamentar_pesquisar_form.submit()}" class="botao-link">Buscar</a>
-       </div>
-    </div>
-   <dtml-if expr="REQUEST.has_key('txt_parlamentar')">
-    <div class="pf-element">
-     <label for="lst_autor"><span class="pf-label" style="width: 250px!important">Selecione o parlamentar desejado</span>
-       <select class="pf-field" name="lst_parlamentar" size="10" style="width: 450px !important; max-width:450px!important; width: 100%;">
-       <dtml-in expr="zsql.parlamentar_obter_zsql(nom_parlamentar_match=txt_parlamentar)">
-         <option value="parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>"><dtml-var nom_completo> </option>
-       </dtml-in>
+ <div class="form-row">
+   <div class="col-12 mb-3">
+     <label for="lst_parlamentar">Nome do Vereador</label>
+        <select id="lst_parlamentar" name="lst_parlamentar" class="form-control selectpicker show-tick" title="Selecione" data-live-search="true">
+         <option></option>
+          <dtml-in expr="zsql.parlamentar_obter_zsql(ind_excluido=0)">
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Parlamentar'])">
+             <option value="<dtml-var portal_url>/cadastros/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>">
+                 <dtml-var nom_completo> <dtml-if expr="nom_completo != nom_parlamentar">(<dtml-var nom_parlamentar>)</dtml-if>
+             </option>
+           <dtml-else>
+             <option value="<dtml-var portal_url>/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>">
+                 <dtml-var nom_completo> <dtml-if expr="nom_completo != nom_parlamentar">(<dtml-var nom_parlamentar>)</dtml-if> 
+             </option>
+           </dtml-if>
+          </dtml-in>
        </select>
-      </label>
-    </div>
-    <div class="pf-element pf-buttons pf-centered">
-       <input class="botao" type="button" name="btn_OK" value=" OK " onClick="parent.location.href = this.form.lst_parlamentar.options[this.form.lst_parlamentar.selectedIndex].value; return false;">
-       <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="javascript:parent.jQuery.fancybox.close();" />
-    </div>
-   </dtml-if>
+       <small id="autorHelp" class="form-text text-muted">Selecione um Vereador e clique no botão OK para visualizar os dados cadastrais.</small>       
+   </div>
+ </div>
+
+<input type="hidden" name="modal" value="1">
+
+<input class="btn btn-primary" type="button" value="OK" onClick="javascript:
+if (campos_criticar(document.parlamentar_pesquisar_form)) {parent.location.href = this.form.lst_parlamentar.options[this.form.lst_parlamentar.selectedIndex].value; return false;}">
+
 </form>
-</body>
-</html>
+
+<dtml-var standard_html_footer>

@@ -1,7 +1,7 @@
 request=context.REQUEST
 
 if request.ACTUAL_URL == context.portal_url() or request.ACTUAL_URL == context.portal_url()+'/' or request.ACTUAL_URL == context.portal_url()+'/index_html':
-    redirect_url=context.portal_url()+'/home_html'
+    redirect_url=context.portal_url()+'/default_index_html'
 else:
     redirect_url=request['URL1']+'/'+context.id+'_index_html'
 

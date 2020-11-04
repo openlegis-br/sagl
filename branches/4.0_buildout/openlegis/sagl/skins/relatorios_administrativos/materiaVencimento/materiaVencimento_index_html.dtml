@@ -1,0 +1,40 @@
+<dtml-var standard_html_header>
+
+<h1 class="firstHeading">Matérias - Prazos de Deliberação a Vencer</h1>
+
+<dtml-in expr="listarDatas_zsql()">
+  <dtml-if sequence-start>
+    <table class="table">
+      <thead class="table-secondary">
+      <tr>
+         <th>Vencimento</th>
+         <th>Matéria</th>
+      </tr>
+      </thead>
+  </dtml-if>
+      <tr>
+         <td><dtml-var data_fim_prazo></td>
+         <td>
+            <dtml-in expr="listarMaterias_zsql(data=dat_fim_prazo)">
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                  <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                <dtml-else>
+                  <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" >
+                </dtml-if>
+                  <b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b>
+                </a> - 
+                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                   <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                 </dtml-in>
+                - <dtml-var txt_ementa>
+            </dtml-in>
+         </td>
+      </tr>
+  <dtml-if sequence-end>
+    </table>
+  </dtml-if>
+<dtml-else>
+  <p>Nenhuma ocorrência.</p>
+</dtml-in>
+
+<dtml-var standard_html_footer>

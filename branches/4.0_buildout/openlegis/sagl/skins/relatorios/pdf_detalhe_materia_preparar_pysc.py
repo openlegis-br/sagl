@@ -7,14 +7,14 @@ session= request.SESSION
 cabecalho={}
 
 # tenta buscar o logotipo da casa LOGO_CASA
-if hasattr(context.documentos.propriedades,'logo_casa.gif'):
-  imagem = context.documentos.propriedades['logo_casa.gif'].absolute_url()
+if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+  imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
   imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
 
 #Abaixo é gerado o dic do rodapé da página
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
   casa[item[0]]=item[1]
 localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])
@@ -58,17 +58,20 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  inf_basicas_dic['publicada']= materia.dat_publicacao
  inf_basicas_dic['objeto']= materia.des_objeto
  inf_basicas_dic['tramitacao']= materia.ind_tramitacao
- inf_basicas_dic['cod_projeto']= materia.des_tipo_materia.upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)
+ inf_basicas_dic['cod_projeto']= materia.des_tipo_materia.decode('utf-8').upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)
+
+ inf_basicas_dic['reg_tramitacao'] = ""
  
  for tramitacao in context.zsql.regime_tramitacao_obter_zsql(cod_regime_tramitacao=materia.cod_regime_tramitacao):
   inf_basicas_dic['reg_tramitacao']= tramitacao.des_regime_tramitacao
-  inf_basicas_dic['prazo']= materia.num_dias_prazo
-  inf_basicas_dic['fim_prazo']= materia.dat_fim_prazo
-  inf_basicas_dic['mat_complementar']= materia.ind_complementar
-  inf_basicas_dic['polemica']= materia.ind_polemica
-  inf_basicas_dic['apelido']= materia.nom_apelido
-  inf_basicas_dic['indexacao']= materia.txt_indexacao
-  inf_basicas_dic['observacao']= materia.txt_observacao
+
+ inf_basicas_dic['prazo']= materia.num_dias_prazo
+ inf_basicas_dic['fim_prazo']= materia.dat_fim_prazo
+ inf_basicas_dic['mat_complementar']= materia.ind_complementar
+ inf_basicas_dic['polemica']= materia.ind_polemica
+ inf_basicas_dic['apelido']= materia.nom_apelido
+ inf_basicas_dic['indexacao']= materia.txt_indexacao
+ inf_basicas_dic['observacao']= materia.txt_observacao
 
  
 #o bloco abaixo gera o dicionario da origem externa
@@ -106,7 +109,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
    dic_autor['cargo']= " "
    if autor.des_tipo_autor=='Parlamentar':
     for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar):
-     dic_autor['nom_autor']=parlamentar.nom_completo
+     dic_autor['nom_autor']=parlamentar.nom_parlamentar
    elif autor.des_tipo_autor=='Comissao':
     for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
      dic_autor['nom_autor']=comissao.nom_comissao
@@ -181,7 +184,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
     dic_comissao={}
     dic_comissao['nom_comissao']= comissao.nom_comissao
   for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar = relatoria.cod_parlamentar):
-    dic_comissao['parlamentar']= parlamentar.nom_completo
+    dic_comissao['parlamentar']= parlamentar.nom_parlamentar
   dic_comissao['data_desig']= relatoria.dat_desig_relator
   dic_comissao['data_dest']= relatoria.dat_destit_relator
   if relatoria.tip_fim_relatoria==None or relatoria.tip_fim_relatoria=='0': 

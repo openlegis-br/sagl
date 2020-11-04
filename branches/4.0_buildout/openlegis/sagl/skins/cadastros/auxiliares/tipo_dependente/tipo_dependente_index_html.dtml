@@ -4,7 +4,7 @@
 <!--
   function submeter(tip_dependente, campo, form) {
     if (campo.value == "") {
-      alert("O campo não pode ficar vazio!");
+      alert("Este campo é obrigatório!");
       campo.focus();
       return;
     }
@@ -16,55 +16,65 @@
   }
 
   function excluir(tip_dependente) {
-    location.href = "<dtml-var absolute_url>/tipo_dependente_excluir_proc?tip_dependente=" + tip_dependente;
+    if (confirm("Deseja realmente excluir?")) {    
+       location.href = "<dtml-var absolute_url>/tipo_dependente_excluir_proc?tip_dependente=" + tip_dependente;
+    } 
   }
   
 //-->
 </script>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/tipo_dependente">ajuda</a> 
-
-<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+<h1 class="firstHeading">Tipos de Dependente</h1>
 
 <form name="tipo_dependente_form" method="post" action="tipo_dependente_salvar_proc">  
 
-<input type="hidden" name="hdn_tip_dependente" value=0></input>  
-<input type="hidden" name="hdn_des_tipo_dependente"></input>  
+  <input type="hidden" name="hdn_tip_dependente" value=0></input>  
+  <input type="hidden" name="hdn_des_tipo_dependente"></input>  
 
-<fieldset><legend>Tipos de Dependente</legend>
   <dtml-in expr="zsql.tipo_dependente_obter_zsql()">
     <dtml-if sequence-start>
-   <table>
-       <tr> 
-           <th width="10%" class="form-label">Código</th>
-           <th width="65%" class="form-label">Tipo de Dependente</th>
-           <th width="25%" class="form-label">Ação</th>
-       </tr>
+     <table class="table">
+       <thead class="table-secondary">
+        <tr> 
+           <th width="10%">Código</th>
+           <th>Tipo de Dependente</th>
+           <th width="25%">Ações</th>
+        </tr>
+       </thead>
       </dtml-if sequence-start>
          <tr> 
-           <td width="10%" class="form-text"><dtml-var tip_dependente></td>
-           <td width="65%"><input type="text" name="txt_des_tipo_dependente_<dtml-var tip_dependente>" 
-              value="<dtml-var des_tipo_dependente>" size="40" maxlength="50"></input></td>
-           <td width="25%" class="form-element">
-                <a href="javascript:submeter(<dtml-var tip_dependente>,document.tipo_dependente_form.txt_des_tipo_dependente_<dtml-var tip_dependente>,document.tipo_dependente_form)">Atualizar</a> / <a href="javascript:excluir(<dtml-var tip_dependente>)">Excluir</a>
+           <td><dtml-var tip_dependente></td>
+           <td>
+             <label for="txt_des_tipo_dependente_<dtml-var tip_dependente>" class="d-none">Tipo de Dependente</label>                            
+             <input class="form-control" type="text" id="txt_des_tipo_dependente_<dtml-var tip_dependente>" name="txt_des_tipo_dependente_<dtml-var tip_dependente>" value="<dtml-var des_tipo_dependente>" maxlength="50" /></td>
+           <td>
+             <a class="btn btn-primary mb-1" href="javascript:submeter(<dtml-var tip_dependente>,document.tipo_dependente_form.txt_des_tipo_dependente_<dtml-var tip_dependente>,document.tipo_dependente_form)">Atualizar</a> 
+             <a class="btn btn-danger mb-1" href="javascript:excluir(<dtml-var tip_dependente>)">Excluir</a>
+           </td>
         </tr>
     <dtml-if sequence-end>
       </table>
     </dtml-if sequence-end>
-   <dtml-else>
-       <table>
-          <tr><td class="form-text">Nenhum tipo de dependente cadastrado.</td></tr>
-       </table>
-   </dtml-in>
- <table>
-  <tr>
-     <td>
-      <input type="text" name="txt_des_tipo_dependente" size="40" maxlength="50"></input> 
-<br />  <input type="button" class="botao" name="btn_tipo_dependente_incluir" value="Incluir Tipo de Dependente" onClick="submeter(0, document.tipo_dependente_form.txt_des_tipo_dependente, document.tipo_dependente_form)">
-            </input>
-     </td>
-     </tr>
- </table>
-</fieldset>
+ <dtml-else>
+     <p>Nenhum tipo de dependente cadastrado.</p>
+ </dtml-in>
+   
+ <legend>Formulário de Inclusão</legend>
+ <div class="form-row">
+   <div class="col-12 mb-3">
+      <label for="txt_des_tipo_dependente" class="required">Tipo de Dependente</label>
+      <div class="input-group">                   
+         <input class="form-control" type="text" id="txt_des_tipo_dependente" name="txt_des_tipo_dependente" maxlength="50" />
+         <div class="input-group-append">
+           <input class="btn btn-primary" type="button" name="btn_tipo_dependente_incluir" value="Incluir" onClick="submeter(0, document.tipo_dependente_form.txt_des_tipo_dependente, document.tipo_dependente_form)" />         
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-md-12">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+      </div>
+   </div> 
+
 </form>
 <dtml-var standard_html_footer>

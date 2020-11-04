@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<dtml-var standard_css_slot>
+<dtml-var standard_html_header>
 
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.min.js"></script>
-
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.datepick.js"></script>
-
-<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
-
-<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+<script type="text/javascript" src="javascript/data_validar.js"></script>
 
 <script type="text/javascript">
 
@@ -19,7 +10,7 @@
          (form.txt_num_ident_basica.value=="") || 
          (form.txt_ano_ident_basica.value=="")){
          alert("Os campos de identificação da norma devem ser preenchidos!");
-         form.txt_num_ident_basica.focus();
+         form.lst_tip_id_basica.focus();
          return false;
      }
 
@@ -55,37 +46,20 @@
    if ((form.lst_tip_id_basica.selectedIndex != 0) &&
       (form.txt_num_ident_basica.value!="") && 
       (form.txt_ano_ident_basica.value!="")){
-      location.href="ementa_norma_buscar_proc?tip_ident_basica="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+"&num_ident_basica="+form.txt_num_ident_basica.value+"&ano_ident_basica="+form.txt_ano_ident_basica.value+"&cod_recipiente="+form.hdn_cod_recipiente.value;
+      location.href="ementa_norma_buscar_proc?tip_ident_basica="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+"&num_ident_basica="+form.txt_num_ident_basica.value+"&ano_ident_basica="+form.txt_ano_ident_basica.value+"&cod_recipiente="+form.hdn_cod_recipiente.value+"&modal=1";
     }
   }
-
-  function reloadParentAndClose(){
-   parent.jQuery.fancybox.close();
-  }
- 
 </script>
 
-<script type="text/javascript">
-  $(function() {
-      $('#txt_dat_arquivamento').datepick();
-  });
-</script>
+<h1 class="firstHeading">Dados da Norma</h1>
 
-</head>
-
-<body>
-
-<h1 class="firstHeading">Arquivo Permanente</h1>
-
-<h3><dtml-var arquivo_recipiente_header></h3>
 
 <form name="arquivo_item_norma_form" method="post" action="arquivo_item_salvar_proc">
-<fieldset>
-  <legend>Inclusão de Norma no Recipiente</legend>
-    <table>
+    <table class="table table-borderless">
       <tr> 
-        <td width="50%"><label for="lst_tip_id_basica">Norma Jurídica</label><span class="campoObrigatorio">&nbsp;</span><br>
-           <select name="lst_tip_id_basica" id="lst_tip_id_basica" onChange="ementa_buscar(document.arquivo_item_norma_form)">
+        <td width="40%">
+           <label for="lst_tip_id_basica" class="required">Tipo de Norma</label>
+           <select class="custom-select" name="lst_tip_id_basica" id="lst_tip_id_basica" onChange="ementa_buscar(document.arquivo_item_norma_form)">
             <option>
               <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
                  <option
@@ -94,33 +68,35 @@
                          selected
                       </dtml-if>
                    </dtml-if>
-                    value="<dtml-var tip_norma missing>"> <dtml-var sgl_tipo_norma> - <dtml-var des_tipo_norma>
+                    value="<dtml-var tip_norma missing>"> <dtml-var des_tipo_norma>
                    </option>
               </dtml-in>
            </select></td>
         <td>
-           <label for="txt_num_ident_basica">Número</label><span class="campoObrigatorio">&nbsp;</span><br>
-            <input type="text" name="txt_num_ident_basica" id="txt_num_ident_basica" size="5" value="<dtml-var num_ident_basica_sel missing>" maxlength="5" onChange="ementa_buscar(document.arquivo_item_norma_form)">
+           <label for="txt_num_ident_basica" class="required">Número</label>
+            <input class="form-control number" type="number" name="txt_num_ident_basica" id="txt_num_ident_basica" size="5" value="<dtml-var num_ident_basica_sel missing>" maxlength="5" onChange="ementa_buscar(document.arquivo_item_norma_form)">
         </td>
         <td>
-           <label for="txt_ano_ident_basica">Ano</label><span class="campoObrigatorio">&nbsp;</span><br>
-            <input type="text" name="txt_ano_ident_basica" id="txt_ano_ident_basica" size="4" value="<dtml-var ano_ident_basica_sel missing>" maxlength="4" onChange="ementa_buscar(document.arquivo_item_norma_form)">
+           <label for="txt_ano_ident_basica" class="required">Ano</label>
+            <input class="form-control year" type="number" name="txt_ano_ident_basica" id="txt_ano_ident_basica" size="4" value="<dtml-var ano_ident_basica_sel missing>" maxlength="4" onChange="ementa_buscar(document.arquivo_item_norma_form)">
         </td>
       </tr>
       <tr>
-        <td colspan="3"><label for="txa_txt_ementa">Ementa</label> <span class="campoObrigatorio">&nbsp;</span><br/>
-          <textarea name="txa_txt_ementa" id="txa_txt_ementa" cols="65" rows="4" readonly><dtml-var txt_ementa missing></textarea>
+        <td colspan="3">
+          <label for="txa_txt_ementa" class="required">Ementa</label>
+          <textarea class="form-control auto-resize" name="txa_txt_ementa" id="txa_txt_ementa" rows="1" readonly><dtml-var txt_ementa missing></textarea>
         </td>
       </tr>
       <tr>
-        <td><label for="txt_dat_arquivamento">Data Arquivamento<span class="campoObrigatorio">&nbsp;</span></label><br />
+        <td><label for="txt_dat_arquivamento" class="required">Data de Arquivamento</label>
             <dtml-unless dat_arquivamento>
                <dtml-call expr="REQUEST.set('dat_arquivamento', _.DateTime().strftime('%d/%m/%Y'))">
             </dtml-unless>
-            <input type="text" id="txt_dat_arquivamento" name="txt_dat_arquivamento" size="10" maxlength="10" value="<dtml-var dat_arquivamento missing null="">" onBlur="formata_data(form.txt_dat_arquivamento)" onChange="javascript:form.hdn_alterou.value=1" />
+            <input class="form-control date" type="text" id="txt_dat_arquivamento" name="txt_dat_arquivamento" size="10" maxlength="10" value="<dtml-var dat_arquivamento missing null="">" />
         </td>
-        <td colspan="2"><label for="lst_tip_suporte">Tipo Suporte <span class="campoObrigatorio">&nbsp;</span></label><br />
-           <select id="lst_tip_suporte" name="lst_tip_suporte">
+        <td colspan="2">
+           <label for="lst_tip_suporte" class="required">Suporte Físico</label>
+           <select class="custom-select"  id="lst_tip_suporte" name="lst_tip_suporte">
              <option value="0">Selecione</option>
              <dtml-in expr="zsql.arquivo_tipo_suporte_obter_zsql(ind_excluido=0)">
              <option 
@@ -140,24 +116,22 @@
            </select>
         </td>
       <tr>
-        <td colspan="3"><label for="txa_txt_observacao">Observação</label> 
-           <textarea id="txa_txt_observacao" name="txa_txt_observacao" cols="67" rows="4" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
+        <td colspan="3"><label for="txa_txt_observacao">Observações</label> 
+           <textarea class="form-control" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null=""></textarea>
         </td>
       </tr>
     </table>
-</fieldset>
 
 <p align="center">
-  <input type="button" class="botao" name="button" value="Salvar" onClick="campos_criticar(document.arquivo_item_norma_form)" />
-  <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+  <input class="btn btn-primary" type="button" value="Incluir" onClick="campos_criticar(document.arquivo_item_norma_form)" />
 </p>
   <input type="hidden" name="hdn_cod_recipiente" value="<dtml-var cod_recipiente>"/>
   <input type="hidden" name="hdn_cod_norma" value="<dtml-var cod_norma_sel missing>"/>
+  <input type="hidden" name="modal" value="1"/>    
 </form>
 
-</body>
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
 
-</html>
-
-
-
+<dtml-var standard_html_footer>

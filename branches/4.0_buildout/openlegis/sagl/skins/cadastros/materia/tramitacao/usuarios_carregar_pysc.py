@@ -4,27 +4,33 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters= 
+##parameters= svalue
 ##title=
 ##
 import simplejson as json
 
 context.REQUEST.RESPONSE.setHeader("Access-Control-Allow-Origin", "*")
 
-usuarios = context.zsql.usuario_unid_tram_obter_zsql(cod_unid_tramitacao = context.REQUEST.get('svalue'))
+usuarios = context.zsql.usuario_unid_tram_obter_zsql(cod_unid_tramitacao = svalue)
  
 fields = usuarios.data_dictionary().keys()
 
-listaDic={} 	
+listaDic={}     
 usuarioArray = []
+
+dic = {}
+dic['name'] = 'Selecione'
+dic['id'] = ''
+usuarioArray.append(dic)
+
 for usuario in usuarios:
-	usuarioDict = {}
-	for field in fields:
-                usuarioDict['text'] = usuario['nom_completo']
-                usuarioDict['value'] = usuario['cod_usuario']
-	usuarioArray.append(usuarioDict)
+    usuarioDict = {}
+    for field in fields:
+                usuarioDict['name'] = usuario['nom_completo']
+                usuarioDict['id'] = usuario['cod_usuario']
+    usuarioArray.append(usuarioDict)
 
 listaDic.update({'options': usuarioArray})
- 	
-return json.dumps(listaDic)
+    
+return json.dumps(usuarioArray)
 

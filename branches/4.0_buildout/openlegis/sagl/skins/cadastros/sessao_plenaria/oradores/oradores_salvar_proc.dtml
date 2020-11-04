@@ -4,18 +4,6 @@
     <dtml-call expr="REQUEST.set('atualizar',1)">
 </dtml-if>
 
-<dtml-in expr="zsql.oradores_obter_zsql(ind_excluido=0,
-                                        num_ordem = txt_num_ordem,
-                                        cod_sessao_plen = hdn_cod_sessao_plen)">
-    <dtml-if expr="num_ordem != ''">
-        <dtml-call expr="REQUEST.set('ainda_ok', 0)">
-        <dtml-let mensagem="'Essa ordem não pode ser atribuída a mais de um parlamentar!'">
-            <dtml-var mensagem_emitir>
-        </dtml-let>
-    </dtml-if>
-</dtml-in>
-
-
 <dtml-if expr="ainda_ok == 1">
     <dtml-in expr="zsql.oradores_obter_zsql(cod_parlamentar=lst_cod_parlamentar,
                                             cod_sessao_plen = hdn_cod_sessao_plen,
@@ -36,14 +24,15 @@
         <dtml-call expr="metodo(cod_parlamentar=lst_cod_parlamentar,
                                 cod_sessao_plen = hdn_cod_sessao_plen,
                                 num_ordem = txt_num_ordem,
+                                url_discurso = txt_url_discurso,
                                 ind_excluido = 0)">
 
     <dtml-except>
-        <dtml-let mensagem="'Não foi possível incluir o parlamentar na lista de oradores. Tente novamente!'">
+        <dtml-let mensagem="'Não foi possível salvar o Vereador na lista de oradores. Tente novamente!'" tipo_mensagem="'danger'">
             <dtml-var mensagem_emitir>
         </dtml-let>
     <dtml-else>
-        <dtml-let mensagem="'Parlamentar incluído com sucesso na lista de oradores!'" sucesso="1" url="'index_html?&cod_sessao_leg=' + hdn_cod_sessao_leg + '&cod_sessao_plen=' + hdn_cod_sessao_plen + '&cod_num_legislatura=' + hdn_num_legislatura + '&dat_sessao=' + hdn_dat_sessao + '&tip_sessao=' + hdn_tip_sessao">
+        <dtml-let mensagem="'Vereador salvo na lista de oradores do Expediente!'" url="'index_html?&cod_sessao_leg=' + hdn_cod_sessao_leg + '&cod_sessao_plen=' + hdn_cod_sessao_plen + '&num_legislatura=' + hdn_num_legislatura + '&dat_sessao=' + hdn_dat_sessao + '&tip_sessao=' + hdn_tip_sessao">
             <dtml-var mensagem_emitir>
     </dtml-let>
     </dtml-try>

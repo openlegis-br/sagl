@@ -1,17 +1,22 @@
 <dtml-comment>
-connection_id : dbcon_openlegis
-arguments : cod_unid_tramitacao="" cod_comissao="" cod_parlamentar="" nom_orgao="" ind_excluido=0
-max_rows : 1000
+connection_id : dbcon_interlegis
+arguments : cod_unid_tramitacao="" cod_comissao="" cod_parlamentar="" cod_orgao="" nom_orgao="" cod_unid_local="" ind_leg="" ind_adm="" ind_excluido=0
+max_rows : 100
 max_cache : 100
 </dtml-comment>
-<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+
 SELECT
     if (unidade_tramitacao.cod_orgao is not null,orgao.nom_orgao,
       if (unidade_tramitacao.cod_parlamentar > 0,parlamentar.nom_parlamentar,comissao.nom_comissao)) as nom_unidade_join,
+    if (unidade_tramitacao.cod_orgao is not null,orgao.end_email,
+      if (unidade_tramitacao.cod_parlamentar > 0,parlamentar.end_email,comissao.end_email)) as end_email_join,
        REPLACE(unidade_tramitacao.cod_unid_tramitacao, 'L', '') as cod_unid_tramitacao,
+       REPLACE(unidade_tramitacao.cod_unid_tramitacao, 'L', '') as cod_unid_tramitacao_sel,
        REPLACE(unidade_tramitacao.cod_orgao,           'L', '') as cod_orgao,
        REPLACE(unidade_tramitacao.cod_comissao,        'L', '') as cod_comissao, 
        REPLACE(unidade_tramitacao.cod_parlamentar,     'L', '') as cod_parlamentar, 
+       ind_leg,
+       ind_adm,
        orgao.nom_orgao as nom_orgao,
        orgao.sgl_orgao as sgl_orgao,
        orgao.ind_unid_deliberativa as ind_unid_deliberativa_orgao,
@@ -25,6 +30,11 @@ SELECT
        DATE_FORMAT(comissao.dat_extincao, '%d/%m/%Y') as dat_extincao,
        parlamentar.ind_unid_deliberativa as ind_unid_deliberativa_parlamentar,
        parlamentar.nom_parlamentar
+      <dtml-if cod_unid_tramitacao>
+       ,unidade_tramitacao.unid_dest_permitidas as unid_dest_permitidas_sel
+       ,unidade_tramitacao.status_permitidos as status_permitidos_sel
+       ,unidade_tramitacao.status_adm_permitidos as status_adm_permitidos_sel
+      </dtml-if>
  FROM
      unidade_tramitacao
        LEFT JOIN orgao ON 
@@ -33,59 +43,18 @@ SELECT
        unidade_tramitacao.cod_comissao = comissao.cod_comissao
        LEFT JOIN parlamentar ON
        unidade_tramitacao.cod_parlamentar = parlamentar.cod_parlamentar 
+
 <dtml-sqlgroup where>
  <dtml-sqltest cod_unid_tramitacao column="unidade_tramitacao.cod_unid_tramitacao" op="=" type="int" optional> <dtml-and>
+ <dtml-sqltest cod_unid_local column="unidade_tramitacao.cod_unid_tramitacao" op="!=" type="int" optional> <dtml-and>
  <dtml-sqltest cod_comissao column="unidade_tramitacao.cod_comissao" op="=" type="int" optional><dtml-and>
  <dtml-sqltest cod_parlamentar column="unidade_tramitacao.cod_parlamentar" op="=" type="int" optional><dtml-and>
+ <dtml-sqltest cod_orgao column="unidade_tramitacao.cod_orgao" op="=" type="nb" optional><dtml-and>
  <dtml-sqltest nom_orgao column="orgao.nom_orgao" op="=" type="nb" optional><dtml-and>
+ <dtml-sqltest ind_leg column="unidade_tramitacao.ind_leg" op="=" type="int" optional><dtml-and>
+ <dtml-sqltest ind_adm column="unidade_tramitacao.ind_adm" op="=" type="int" optional><dtml-and>
  <dtml-sqltest ind_excluido column="unidade_tramitacao.ind_excluido" op="=" type="int" optional>
 </dtml-sqlgroup>
 
-ORDER BY 1
+ORDER BY nom_unidade_join
 
-<dtml-else>
-
-SELECT
-    CASE WHEN unidade_tramitacao.cod_orgao is not null 
-     THEN orgao.nom_orgao
-     WHEN unidade_tramitacao.cod_comissao is not null 
-     THEN comissao.nom_comissao
-     WHEN unidade_tramitacao.cod_parlamentar is not null 
-     THEN parlamentar.nom_parlamentar 
-    END as nom_unidade_join,
-    unidade_tramitacao.cod_unid_tramitacao as cod_unid_tramitacao,
-    unidade_tramitacao.cod_orgao as cod_orgao,
-    unidade_tramitacao.cod_comissao as cod_comissao,
-    unidade_tramitacao.cod_parlamentar as cod_parlamentar,
-    orgao.nom_orgao as nom_orgao,
-    orgao.sgl_orgao as sgl_orgao,
-    orgao.ind_unid_deliberativa as ind_unid_deliberativa_orgao,
-    orgao.end_orgao as end_orgao,
-    orgao.num_tel_orgao as num_tel_orgao,
-    comissao.nom_comissao as nom_comissao,
-    comissao.sgl_comissao as sgl_comissao,
-    comissao.ind_unid_deliberativa as ind_unid_deliberativa_comissao,
-    comissao.end_secretaria as end_comissao,
-    comissao.num_tel_secretaria as um_tel_comissao,
-    TO_CHAR(comissao.dat_extincao, 'DD/MM/YYYY') as dat_extincao,
-    parlamentar.nom_parlamentar as nom_parlamentar,
-    parlamentar.ind_unid_deliberativa as ind_unid_deliberativa_parlamentar
- FROM
-     unidade_tramitacao
-     LEFT JOIN orgao ON 
-     unidade_tramitacao.cod_orgao = orgao.cod_orgao
-     LEFT JOIN comissao ON 
-     unidade_tramitacao.cod_comissao = comissao.cod_comissao
-     LEFT JOIN parlamentar ON
-     unidade_tramitacao.cod_parlamentar = parlamentar.cod_parlamentar 
-<dtml-sqlgroup where>
-<dtml-sqltest cod_unid_tramitacao column="unidade_tramitacao.cod_unid_tramitacao" op="=" type="int" optional> <dtml-and>
-<dtml-sqltest cod_comissao column="unidade_tramitacao.cod_comissao" op="=" type="int" optional>
-<dtml-and>
-<dtml-sqltest cod_parlamentar column="unidade_tramitacao.cod_parlamentar" op="=" type="int" optional>
-<dtml-and>
-<dtml-sqltest ind_excluido column="unidade_tramitacao.ind_excluido"  op="=" type="int" optional>
-</dtml-sqlgroup>
-
-ORDER BY 1
-</dtml-if>

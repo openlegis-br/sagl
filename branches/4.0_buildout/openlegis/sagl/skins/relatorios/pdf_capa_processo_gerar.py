@@ -44,7 +44,7 @@ def protocolos(lst_protocolos):
 
         #protocolos
         tmp_data+='\t\t<para style="P1"><b>'+dic['numeracao']+'</b></para>\n'
-        tmp_data+='\t\t<para style="P4"><b>'+dic['ident_processo']+ ' Nº '+dic['num_processo']+ '</b></para>\n'
+        tmp_data+='\t\t<para style="P4"><b>'+dic['ident_processo']+ dic['num_processo']+ '</b></para>\n'
         tmp_data+='\t\t<para style="P1"><b>'+dic['tipo_autor']+': </b>' +dic['nom_autor']+ '</para>\n'
 
         tmp_data+='\t\t<para style="P2"><b>'+dic['tipo_enunciado']+': </b>' +dic['txt_assunto']+ '</para>\n'
@@ -69,7 +69,7 @@ def principal(sessao,imagem,data,lst_protocolos,dic_cabecalho,lst_rodape,dic_fil
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="etiquetas.pdf">\n'
-    tmp_data+='\t<template pageSize="(10cm, 6.2cm)" title="Capas de processos" author="OpenLegis" allowSplitting="20" >\n'
+    tmp_data+='\t<template pageSize="(10cm, 6.2cm)" title="Etiqueta de Processo" author="OpenLegis" allowSplitting="20" >\n'
     tmp_data+='\t\t<pageTemplate id="main">\n'
     tmp_data+='\t\t<pageGraphics>\n'
     tmp_data+='\t\t</pageGraphics>\n'

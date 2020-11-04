@@ -1,5 +1,5 @@
 <dtml-comment>
-connection_id : dbcon_openlegis
+connection_id : dbcon_interlegis
 arguments : num_documento="" ano_documento="" tip_documento="" num_protocolo="" ind_tramitacao="" cod_status="" des_assunto="" txt_interessado="" dat_apres1="" dat_apres2="" cod_unid_tramitacao="" rd_ordem="" ind_publico=1 ind_excluido="0"
 max_rows : 5000
 max_cache : 100
@@ -79,9 +79,8 @@ FROM
     </dtml-if>
 
     <dtml-if txt_interessado>
-      <dtml-let txt_interessado="'%'+txt_interessado+'%'">
-       and documento_administrativo.txt_interessado like <dtml-sqlvar txt_interessado type="string">
-      </dtml-let>
+       and MATCH(documento_administrativo.txt_interessado)
+       against (<dtml-sqlvar txt_interessado type="string"> IN BOOLEAN MODE)
     </dtml-if>
 
     <dtml-if cod_status>

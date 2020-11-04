@@ -8,7 +8,7 @@ data=DateTime().strftime('%d/%m/%Y')
 
 #Abaixo é gerada a string para o rodapé da página
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
  casa[item[0]]=item[1]
 localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])
@@ -47,8 +47,8 @@ cabecalho["nom_casa"]=casa["nom_casa"]
 cabecalho["nom_estado"]="Estado de "+nom_estado
 
 # tenta buscar o logotipo da casa LOGO_CASA
-if hasattr(context.documentos.propriedades,'logo_casa.gif'):
-  imagem = context.documentos.propriedades['logo_casa.gif'].absolute_url()
+if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+  imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
   imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
 
@@ -77,7 +77,7 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
            for autor in context.zsql.autor_obter_zsql(cod_autor=protocolo.cod_autor):
                 if autor.des_tipo_autor=='Parlamentar':
                     for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=autor.cod_parlamentar):
-                        dic['nom_autor']=parlamentar.nom_completo
+                        dic['nom_autor']=parlamentar.nom_parlamentar
                 elif autor.des_tipo_autor=='Comissão':
                     for comissao in context.zsql.comissao_obter_zsql(cod_comissao=autor.cod_comissao):
                         dic['nom_autor']=comissao.nom_comissao
@@ -92,8 +92,13 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
            dic['natureza']='Administrativo'
         if protocolo.tip_processo==1:
            dic['natureza']='Legislativo'
+
+        des_tipo_materia = ''
+        if protocolo.tip_natureza_materia == 1:
+           for materia in context.zsql.materia_obter_zsql(num_protocolo=protocolo.num_protocolo,ano_ident_basica=protocolo.ano_protocolo):
+               des_tipo_materia = materia.des_tipo_materia
   
-        dic['processo']=protocolo.des_tipo_materia or protocolo.des_tipo_documento
+        dic['processo']=des_tipo_materia or protocolo.des_tipo_documento
 
         dic['anulado']=''
         if protocolo.ind_anulado==1:

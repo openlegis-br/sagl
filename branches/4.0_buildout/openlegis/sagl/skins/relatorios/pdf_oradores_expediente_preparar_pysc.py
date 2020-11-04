@@ -16,7 +16,7 @@ if context.REQUEST['data']!='':
         # seleciona o tipo da sessao plenaria
         tipo_sessao = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao,ind_excluido=0)[0]
         inf_basicas_dic["num_sessao_plen"] = sessao.num_sessao_plen
-        inf_basicas_dic["nom_sessao"] = tipo_sessao.nom_sessao.upper()
+        inf_basicas_dic["nom_sessao"] = tipo_sessao.nom_sessao.decode('utf-8').upper()
         inf_basicas_dic["num_legislatura"] = sessao.num_legislatura
         inf_basicas_dic["num_sessao_leg"] = sessao.num_sessao_leg
         inf_basicas_dic["dat_inicio_sessao"] = sessao.dat_inicio_sessao
@@ -43,7 +43,7 @@ if context.REQUEST['data']!='':
             for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=orador_expediente.cod_parlamentar,ind_excluido=0):
                 dic_oradores_expediente = {}
                 dic_oradores_expediente["num_ordem"] = orador_expediente.num_ordem
-                dic_oradores_expediente["nom_completo"] = parlamentar.nom_completo.encode('utf-8')
+                dic_oradores_expediente["nom_completo"] = parlamentar.nom_parlamentar
                 dic_oradores_expediente['sgl_partido'] = parlamentar.sgl_partido
                 lst_oradores_expediente.append(dic_oradores_expediente)
 
@@ -52,20 +52,20 @@ if context.REQUEST['data']!='':
     for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sessao.num_legislatura,data=data):
       for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
         for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-          lst_presidente = presidencia.nom_completo.encode('utf-8')
+          lst_presidente = presidencia.nom_parlamentar
 
     # obtém as propriedades da casa legislativa para montar o cabeçalho e o rodapé da página
     cabecalho={}
 
     # tenta buscar o logotipo da casa LOGO_CASA
-    if hasattr(context.documentos.propriedades,'logo_casa.gif'):
-        imagem = context.documentos.propriedades['logo_casa.gif'].absolute_url()
+    if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+        imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
     else:
         imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
     
     #Abaixo é gerado o dic do rodapé da página (linha 7)
     casa={}
-    aux=context.documentos.propriedades.propertyItems()
+    aux=context.sapl_documentos.props_sagl.propertyItems()
     for item in aux:
         casa[item[0]]=item[1]
     localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])

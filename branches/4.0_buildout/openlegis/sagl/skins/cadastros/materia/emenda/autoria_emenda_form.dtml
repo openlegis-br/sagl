@@ -1,0 +1,190 @@
+<dtml-var standard_html_header>
+  <script type='text/javascript' src='<dtml-var portal_url>/javascript/geral.js'></script>
+  <script type="text/javascript">
+    var form = document.autoria_emenda_form;
+
+    function autor_criticar(form){
+      var tipo_autor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;
+      if (tipo_autor=='0'){
+         alert("Um tipo de autor deve ser selecionado!");
+         form.lst_tip_autor.focus();
+         return false;
+      }
+      var cod_autor = form.lst_cod_autor[form.lst_cod_autor.selectedIndex].value;
+      if (cod_autor=='0'){
+         alert("Um autor deve ser selecionado!");
+         form.lst_cod_autor.focus();
+         return false; 
+      }
+      form.submit();
+    }
+
+   function tipo_autor_mudou(form){
+      var valor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;      
+      var separador = valor.indexOf("&");
+      var URL = 'autoria_emenda_form?tip_autor=' + valor.substring(0,separador) 
+              + '&des_tipo_autor=' + valor.substring(separador+1,valor.length)
+              + '&cod_materia=' + form.cod_materia.value 
+              + '&cod_emenda=' + form.cod_emenda.value
+              + '&modal=1';     
+      location.href= URL;
+   }
+  </script>
+  
+  <h1 class="firstHeading">Edição de Autoria</h1> 
+
+   <dtml-if expr="_.has_key('mensagem')">
+     <dtml-if expr="_.has_key('sucesso')">
+       <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <h5><dtml-var mensagem newline_to_br html_quote></h5>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+       </div>
+     <dtml-else>
+       <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5><dtml-var mensagem newline_to_br html_quote></h5>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+       </div>
+     </dtml-if>
+   </dtml-if>
+
+  <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
+    <dtml-if cod_autor>
+       <dtml-call expr="REQUEST.set('temAutoria', 1)">
+    </dtml-if>
+  </dtml-in>
+
+  <dtml-if temAutoria>
+      <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
+         <dtml-if sequence-start>
+            <table class="table">
+              <thead class="table-secondary">
+               <tr>
+                  <th>Nome do Autor</th>
+                  <th>Tipo de Autor</th>
+                  <th width="20%">Ação</th>
+               </tr>
+              <thead>
+         </dtml-if>
+               <tr>
+                  <td><dtml-var nom_autor_join></td>
+                  <td><dtml-var des_tipo_autor></td>
+                  <td>
+                     <a class="btn btn-sm btn-danger" href="autoria_emenda_excluir_proc?cod_autor=<dtml-var cod_autor>&cod_emenda=<dtml-var cod_emenda>&cod_materia=<dtml-var cod_materia>&modal=1">Excluir</a>
+                  </td>
+               </tr>
+         <dtml-if sequence-end>
+            </table>
+         </dtml-if>
+      </dtml-in>
+  </dtml-if>
+
+  <dtml-unless dat_apresentacao>
+     <dtml-call expr="REQUEST.set('dat_apresentacao', _.DateTime().strftime('%d/%m/%Y'))">
+  </dtml-unless>
+
+  <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
+    <dtml-if expr="((_.DateTime(dat_apresentacao) >= dat_inicio and _.DateTime(dat_apresentacao) <= dat_fim))">
+      <dtml-call expr="REQUEST.set('num_legislatura_sel', num_legislatura)">
+    </dtml-if>
+  </dtml-in>
+
+  <legend>Incluir Autor</legend>
+  <form id="autoria_emenda_form" name="autoria_emenda_form" method="post" action="autoria_emenda_incluir_proc">
+    <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>">
+    <input type="hidden" name="cod_emenda" value="<dtml-var cod_emenda>">
+    <input type="hidden" name="modal" value="1">    
+    <table class="table">
+     <thead class="table-secondary">
+      <tr>
+        <th>Tipo de Autor</th>
+        <th>Nome do Autor</th>
+        <th width="20%">Ação</th>
+      </tr>
+     </thead>
+      <tr> 
+        <td>
+           <select class="custom-select" name="lst_tip_autor" onChange="tipo_autor_mudou(document.autoria_emenda_form)" required>
+              <dtml-unless tip_autor>
+                 <option value="0"></option>
+              </dtml-unless>
+              <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor='')">            
+                 <option <dtml-if expr="REQUEST.has_key('tip_autor') and tip_autor==_.int(REQUEST['tip_autor'])">
+                      selected </dtml-if>
+                      value="<dtml-var tip_autor>&<dtml-var des_tipo_autor url_quote>">
+                     <dtml-var des_tipo_autor>
+                  </option>
+              </dtml-in>
+          </select>
+        </td>
+        <td>
+          <dtml-if expr="_.has_key('des_tipo_autor')"> 
+             <select class="custom-select" id="lst_cod_autor" name="lst_cod_autor" size="1">
+                <option value=0>Selecione</option>
+                  <dtml-if expr="des_tipo_autor=='Parlamentar'">
+                     <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_apresentacao)">
+                       <dtml-call expr="REQUEST.set('cod_autor_parlamentar', cod_autor)">
+                       <option <dtml-if expr="REQUEST.has_key('cod_autor_sel') and _.int(cod_autor_parlamentar)==_.int(REQUEST['cod_autor_sel'])">
+                           selected</dtml-if>
+                          <dtml-if expr="REQUEST.has_key('cod_autor_prop') and _.int(cod_autor_parlamentar)==_.int(REQUEST['cod_autor_prop'])">
+                            selected</dtml-if>
+                            value="<dtml-var cod_autor_parlamentar>">
+                          <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                             <dtml-var nom_parlamentar> - <dtml-var sgl_partido null=""> 
+                           </dtml-in>
+                       </option>
+                     </dtml-in>
+                  <dtml-elif expr="des_tipo_autor=='Comissao'">
+                     <dtml-in expr="zsql.autor_obter_zsql(comissao='1')">
+                        <dtml-call expr="REQUEST.set('cod_autor_comissao', cod_autor)">
+                        <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
+                          <dtml-if expr="dat_extincao is None">
+                             <option <dtml-if expr="REQUEST.has_key('cod_autor_sel') and _.int(cod_autor_comissao)==_.int(REQUEST['cod_autor_sel'])">
+                               selected</dtml-if>
+                              <dtml-if expr="REQUEST.has_key('cod_autor_prop') and _.int(cod_autor_comissao)==_.int(REQUEST['cod_autor_prop'])">
+                               selected</dtml-if>
+                               value="<dtml-var cod_autor_comissao>">
+                               <dtml-var nom_comissao>
+                             </option>
+                          </dtml-if> 
+                        </dtml-in>
+                     </dtml-in>
+                  <dtml-elif expr="des_tipo_autor=='Bancada'">
+                    <dtml-in expr="zsql.autor_obter_zsql(bancada='1')">
+                      <dtml-call expr="REQUEST.set('cod_autor_bancada', cod_autor)">
+                      <dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=num_legislatura_sel, cod_bancada=cod_bancada, ind_excluido=0)">
+                         <option <dtml-if expr="REQUEST.has_key('cod_autor_sel') and _.int(cod_autor_bancada)==_.int(REQUEST['cod_autor_sel'])">
+                           selected</dtml-if>
+                           <dtml-if expr="REQUEST.has_key('cod_autor_prop') and _.int(cod_autor_bancada)==_.int(REQUEST['cod_autor_prop'])">
+                              selected</dtml-if>
+                              value="<dtml-var cod_autor_bancada>">
+                              <dtml-var nom_bancada>
+                         </option>
+                      </dtml-in>
+                    </dtml-in>
+                 <dtml-else>                                    
+                   <dtml-in expr="zsql.autor_obter_zsql(des_tipo_autor=des_tipo_autor)">
+                      <dtml-call expr="REQUEST.set('cod_autor_geral', cod_autor)">
+                         <option <dtml-if expr="REQUEST.has_key('cod_autor_sel') and _.int(cod_autor_geral)==_.int(REQUEST['cod_autor_sel'])">
+                           selected</dtml-if>
+                           value="<dtml-var cod_autor_geral>">
+                           <dtml-var nom_autor> 
+                         </option>
+                    </dtml-in>
+                 </dtml-if>
+            </select>
+          <dtml-else>
+             <input class="form-control" type="text" name="txt_nom_autor" value="<dtml-var nom_autor missing>" disabled />
+          </dtml-if>
+        </td>
+        <td>
+          <input type="button" class="btn btn-sm btn-primary" name="btn_autoria_emenda" value="Incluir" onClick="autor_criticar(document.autoria_emenda_form)">
+        </td>
+      </tr>
+    </table>
+  </form>
+
+<dtml-var standard_html_footer>

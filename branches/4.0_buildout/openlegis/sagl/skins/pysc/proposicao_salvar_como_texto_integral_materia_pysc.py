@@ -9,29 +9,32 @@
 ##
 ok = 0
 id = str(cod_materia) + '_texto_integral.odt'
+odt_proposicao = str(cod_proposicao) + '.odt'
 pdf_proposicao = str(cod_proposicao) + '.pdf'
 
 try:
-    doc = context.documentos.materia_odt[id]
+    doc = context.sapl_documentos.materia_odt[id]
     if (int(ind_sobrescrever)==1):
         doc=''     
-        context.documentos.materia_odt.manage_delObjects(id)
-        tmp_copy = context.documentos.proposicao.manage_cutObjects(ids=str(cod_proposicao)+'.odt')
-        tmp_id = context.documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
-        context.documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
-        if hasattr(context.documentos.proposicao,pdf_proposicao):
-           context.documentos.proposicao.manage_delObjects(pdf_proposicao)
+        context.sapl_documentos.materia_odt.manage_delObjects(id)
+        if hasattr(context.sapl_documentos.proposicao,odt_proposicao):
+           tmp_copy = context.sapl_documentos.proposicao.manage_cutObjects(ids=str(cod_proposicao)+'.odt')
+           tmp_id = context.sapl_documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
+           context.sapl_documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
+        if hasattr(context.sapl_documentos.proposicao,pdf_proposicao):
+           context.sapl_documentos.proposicao.manage_delObjects(pdf_proposicao)
         for anexo in context.pysc.anexo_proposicao_pysc(cod_proposicao,listar=True):
-           context.documentos.proposicao.manage_delObjects(anexo)
+           context.sapl_documentos.proposicao.manage_delObjects(anexo)
         ok = 1
 except KeyError:
-    tmp_copy = context.documentos.proposicao.manage_cutObjects(ids=str(cod_proposicao)+ '.odt')
-    tmp_id = context.documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
-    context.documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
-    if hasattr(context.documentos.proposicao,pdf_proposicao):
-       context.documentos.proposicao.manage_delObjects(pdf_proposicao)
+    if hasattr(context.sapl_documentos.proposicao,odt_proposicao):
+       tmp_copy = context.sapl_documentos.proposicao.manage_cutObjects(ids=str(cod_proposicao)+ '.odt')
+       tmp_id = context.sapl_documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
+       context.sapl_documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
+    if hasattr(context.sapl_documentos.proposicao,pdf_proposicao):
+       context.sapl_documentos.proposicao.manage_delObjects(pdf_proposicao)
     for anexo in context.pysc.anexo_proposicao_pysc(cod_proposicao,listar=True):
-       context.documentos.proposicao.manage_delObjects(anexo)
+       context.sapl_documentos.proposicao.manage_delObjects(anexo)
     ok = 1
 
 return ok

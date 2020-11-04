@@ -30,13 +30,13 @@ function tipo_documento_administrativo_excluir() {
 function modelo_criticar(form){  
 
   if (form.txt_title.value == "") {
-    alert("O título do modelo deve ser preenchido.");
+    alert("O nome do modelo deve ser preenchido.");
     form.txt_title.focus();
     return false;
   }
 
   if (form.file_nom_arquivo.value == 0) {
-    alert("Selecione um arquivo de modelo para enviar.");
+    alert("Selecione o arquivo do modelo.");
     form.file_nom_arquivo.focus();
     return false;
   }
@@ -47,67 +47,78 @@ function modelo_criticar(form){
 //-->
 </script>
 
-<form name="tipo_documento_administrativo_form" method="post" action="tipo_documento_administrativo_salvar_proc">
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Tipo de Documento Administrativo</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="index_html"><i class="fa fa-fw fa-undo"></i> Voltar</a>         
+         </div>
+      </div>
+ </div>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/administrativo_tipo_documento">Ajuda</a>
+<form class="mb-3" name="tipo_documento_administrativo_form" method="post" action="tipo_documento_administrativo_salvar_proc">
 
-<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+  <input type="hidden" name="hdn_tip_documento" value="<dtml-var tip_documento missing>" />
 
-<table>
-  <tr> 
-    <td class="form-label">| <a href="index_html">Iní­cio</a> |</td>
-   </tr>
-</table>  
+  <div class="form-row">
+    <div class="col-3 mb-3">
+       <label for="txt_sgl_tipo_documento" class="required">Sigla</label>             
+       <input class="form-control" type="text" id="txt_sgl_tipo_documento" name="txt_sgl_tipo_documento" value="<dtml-var sgl_tipo_documento missing>" maxlength="5" onBlur="form.txt_sgl_tipo_documento.value = form.txt_sgl_tipo_documento.value.toUpperCase()" />
+    </div>
+    <div class="col-9 mb-3">
+       <label for="txt_des_tipo_documento" class="required">Descrição</label>             
+       <input class="form-control" type="text" id="txt_des_tipo_documento" name="txt_des_tipo_documento" value="<dtml-var des_tipo_documento missing>" maxlength="50" />
+    </div>
+    <div class="col-6 mb-3">
+       <label class="d-block required">Acesso Público ?</label>                 
+       <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+          <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="rad<dtml-var expr="_['sequence-key']">" name="rad_ind_publico" value="<dtml-var expr="_['sequence-key']">"
+            <dtml-if expr="_.has_key('tip_documento') and ind_publico==_['sequence-key']">checked=1</dtml-if>
+            <dtml-if expr="not _.has_key('tip_documento') and _['sequence-item']=='Não'">checked=0</dtml-if>
+            />
+            <label class="form-check-label" for="rad<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></label>
+          </div>
+       </dtml-in>
+    </div>
+  </div>
 
-<input type="hidden" name="hdn_tip_documento" value="<dtml-var tip_documento missing>" />
-<fieldset><legend>Tipo de Documento Administrativo</legend>
-       <table>
-         <tr>
-           <td width="20%" class="form-element">Sigla <span class="campoObrigatorio">&nbsp;</span><br />
-            <input type="text" name="txt_sgl_tipo_documento" value="<dtml-var sgl_tipo_documento missing>" size="5" maxlength="5"
-           onBlur="form.txt_sgl_tipo_documento.value = form.txt_sgl_tipo_documento.value.toUpperCase()" /></td>
-           <td width="60%" class="form-element">Descrição <span class="campoObrigatorio">&nbsp;</span><br />
-           <input type="text" name="txt_des_tipo_documento" value="<dtml-var des_tipo_documento missing>" size="50" maxlength="50" /></td>
-           <td width="20%" class="form-element">Acesso Público <span class="campoObrigatorio">&nbsp;</span><br />
-             <dtml-in expr="[(1,'Sim'),(0,'Não')]">
-               <input type="radio" id="rad_ind_publico" name="rad_ind_publico" value="<dtml-var expr="_['sequence-key']">"
-                 <dtml-if expr="_.has_key('tip_documento') and ind_publico==_['sequence-key']">checked=1</dtml-if>
-                   <dtml-if expr="not _.has_key('tip_documento') and _['sequence-item']=='Não'">checked=0</dtml-if>
-                              onChange="javascript:form.hdn_alterou.value=1" />
-                              <dtml-var expr="_['sequence-item']">
-             </dtml-in>
-           </td>
-        </tr>
-      </table>
-  <center><p>
-  <input type="button" class="botao" name="btn_tipo_documento_administrativo_salvar" value="Salvar" onClick="campos_criticar(document.tipo_documento_administrativo_form)" />
+
+  <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar(document.tipo_documento_administrativo_form)" />
   <dtml-if tip_documento>
-    <input type="button" class="botao" name="btn_tipo_documento_administrativo_excluir" value="Excluir" onClick="tipo_documento_administrativo_excluir(document.tipo_documento_administrativo_form)" />
+    <input class="btn btn-danger" type="button" value="Excluir" onClick="tipo_documento_administrativo_excluir(document.tipo_documento_administrativo_form)" />
   </dtml-if>
-  </p></center>
-</fieldset>
+  
+   <div class="row">
+      <div class="col-md-12 mt-2">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+      </div>
+   </div> 
+
 </form>
 
 <dtml-if tip_documento>
-  <fieldset><legend>Modelos ODT</legend>
+    <legend>Modelos ODT</legend>
     <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_documento)+'-')">
-    <table>
+    <table class="table">
+         <thead class="table-secondary">    
           <tr>
-             <th>Título do Modelo</th>
+             <th>Nome do Modelo</th>
              <th width="30%">Última Alteração</th>
              <th width="25%">Ações</th>
           </tr>
-      <dtml-with expr="documentos.modelo.documento_administrativo">
-       <dtml-in expr="objectValues('File')" sort="id">
+         </thead>
+      <dtml-with expr="sapl_documentos.modelo.documento_administrativo">
+       <dtml-in expr="objectValues('File')" sort="title">
         <dtml-if expr="id().startswith(prefixo_arquivo)">
           <tr>
             <td><a href="&dtml-absolute_url;"><dtml-var title></a></td>
             <td><dtml-var bobobase_modification_time fmt="%d/%m/%Y - %H:%M"></td>
             <td>
-              <div align="center">
-              <a class="botao-link" target="_blank" href="&dtml-portal_url;/documentos/modelo/documento_administrativo/externalEdit_/<dtml-var id>.zem">Editor Externo</a>
-              <a class="botao-link" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=tipo_documento_administrativo_mostrar_proc?tip_documento=<dtml-var tip_documento>">Excluir</a>
-              </div>
+              <a class="btn btn-sm btn-secondary" target="_blank" href="<dtml-var portal_url>/sapl_documentos/modelo/documento_administrativo/externalEdit_/<dtml-var id>.zem">Editor Externo</a>
+              <a class="btn btn-sm btn-danger" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=tipo_documento_administrativo_mostrar_proc?tip_documento=<dtml-var tip_documento>" data-confirm="Deseja realmente excluir o modelo?"> Excluir</a>
             </td>
           </tr>
          </dtml-if>
@@ -117,21 +128,26 @@ function modelo_criticar(form){
 </fieldset>
 
 <form name="modelo_form" method="post" action="modelo_incluir_proc" enctype="multipart/form-data">
-<table>
-  <tr>
-   <td>
-     <input type="text" name="txt_title" placeholder="Descrição do modelo" size="35" maxlength="35"/>
-   </td>
-   <td>
-     <input type="file" name="file_nom_arquivo" accept="application/vnd.oasis.opendocument.text" size="15" maxlength="50" />
-   </td>
-   <td>
-     <input type="hidden" name="id_documento" value="<dtml-var sgl_tipo_documento>-<dtml-var expr="ZopeTime().timeTime()">.odt">
-     <input type="hidden" name="hdn_url" value="tipo_documento_administrativo_mostrar_proc?tip_documento=<dtml-var tip_documento>">
-     <input type="button" class="botao-link" name="btn_documento_acessorio_salvar" value="Incluir Modelo" onClick="modelo_criticar(document.modelo_form)" />
-   </td>
-  </tr>
-</table>
+ <div class="form-row">
+   <div class="col-12 col-sm-6 mb-3"> 
+     <label for="txt_title" class="required">Nome do Modelo</label>   
+     <input class="form-control" type="text" id="txt_title" name="txt_title" maxlength="35"/>
+   </div>
+   <div class="col-12 col-sm-6 mb-3">
+      <label for="file_nom_arquivo">Arquivo ODT</label> 
+      <div class="input-group">                   
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/vnd.oasis.opendocument.text">
+          <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+        </div>
+        <div class="input-group-append">
+          <input class="btn btn-primary" type="button" class="btn btn-sm btn-secondary" value="Incluir" onClick="modelo_criticar(document.modelo_form)" />
+          <input type="hidden" name="id_documento" value="<dtml-var sgl_tipo_documento>-<dtml-var expr="ZopeTime().timeTime()">.odt"> 
+          <input type="hidden" name="hdn_url" value="tipo_documento_administrativo_mostrar_proc?tip_documento=<dtml-var tip_documento>">                      
+        </div>
+      </div>
+   </div>
+ </div>
 </form>
 </dtml-if>
 

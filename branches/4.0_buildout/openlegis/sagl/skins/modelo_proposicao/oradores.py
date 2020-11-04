@@ -1,0 +1,65 @@
+## Script (Python) "oradores"
+##bind container=container
+##bind context=context
+##bind namespace=
+##bind script=script
+##bind subpath=traverse_subpath
+##parameters=cod_sessao_plen
+##title=
+##
+REQUEST = context.REQUEST
+RESPONSE =  REQUEST.RESPONSE
+session = REQUEST.SESSION
+
+for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0):
+  inf_basicas_dic = {}
+  tipo_sessao = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao,ind_excluido=0)[0]
+  inf_basicas_dic["cod_sessao_plen"] = sessao.cod_sessao_plen
+  inf_basicas_dic["num_sessao_plen"] = sessao.num_sessao_plen
+  inf_basicas_dic["nom_sessao"] = tipo_sessao.nom_sessao
+  inf_basicas_dic["num_legislatura"] = sessao.num_legislatura
+  inf_basicas_dic["num_sessao_leg"] = sessao.num_sessao_leg
+  inf_basicas_dic["dat_inicio_sessao"] = sessao.dat_inicio_sessao
+  inf_basicas_dic["dia_sessao"] = context.pysc.data_converter_por_extenso_pysc(data=sessao.dat_inicio_sessao)
+  inf_basicas_dic["hr_inicio_sessao"] = sessao.hr_inicio_sessao
+  inf_basicas_dic["dat_fim_sessao"] = sessao.dat_fim_sessao
+  inf_basicas_dic["hr_fim_sessao"] = sessao.hr_fim_sessao
+ 
+  nom_arquivo = str(cod_sessao_plen)+'_oradores_expediente.odt'
+
+  # Lista dos oradores inscritos no Expediente (pequeno expediente)
+  lst_oradores = []
+  for orador in context.zsql.oradores_expediente_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):
+      for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=orador.cod_parlamentar,ind_excluido=0):
+          dic_oradores = {}
+          dic_oradores["num_ordem"] = orador.num_ordem
+          dic_oradores["nom_completo"] = parlamentar.nom_parlamentar.encode('utf-8')
+          dic_oradores['sgl_partido'] = parlamentar.sgl_partido
+          lst_oradores.append(dic_oradores)
+
+  # Presidente
+  for dat_sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
+    data = context.pysc.data_converter_pysc(dat_sessao.dat_inicio_sessao)
+  lst_presidente = []
+  for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sessao.num_legislatura,data=data):
+    for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
+      for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
+        lst_presidente = presidencia.nom_completo.encode('utf-8')
+
+  casa={}
+  aux=context.sapl_documentos.props_sagl.propertyItems()
+  for item in aux:
+      casa[item[0]]=item[1]
+  localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])
+  estado = context.zsql.localidade_obter_zsql(tip_localidade="U")
+  for uf in estado:
+      if localidade[0].sgl_uf == uf.sgl_uf:
+          nom_estado = uf.nom_localidade.encode('utf-8')
+          break
+  inf_basicas_dic['nom_camara']= casa['nom_casa']
+  inf_basicas_dic["nom_estado"] = nom_estado
+  for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_localidade']):
+      inf_basicas_dic['nom_localidade']= local.nom_localidade.encode('utf-8')
+      inf_basicas_dic['sgl_uf']= local.sgl_uf
+
+return context.oradores_gerar_odt(inf_basicas_dic, lst_oradores, lst_presidente, nom_arquivo)

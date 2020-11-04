@@ -1,0 +1,83 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+
+  function campos_criticar(){
+
+     var form = document.normas_form;
+
+     var regexp_digitos = /\D+/;
+
+     if (form.lst_tip_norma.selectedIndex==0){
+       alert("O tipo de norma deve ser selecionado!");
+       form.lst_tip_norma.focus();
+       return false;
+    }
+
+    if (form.txt_ano_norma.value == "") {
+       alert("O ano deve ser preenchido!");
+       form.txt_ano_norma.focus();
+       return false;
+    }
+
+    if (regexp_digitos.test(form.txt_ano_norma.value)) {
+       alert("O ano deve ser um número natural!");
+       form.txt_ano_norma.focus();
+       return false;
+    }
+
+      form.submit();
+    }
+
+//-->
+</script>
+
+  <h1 class="firstHeading">Verificação de Textos Integrais</h1>
+  <legend>Normas Jurídicas</legend>
+  <form class="d-print-none" method="post" name="normas_form" action="verificar_normas_html">
+    <input type="hidden" name="norma" value="1">
+    <div class="form-row">
+     <div class="col-8 col-md-6 mb-3">
+      <label for="lst_tip_norma" class="required">Tipo de Norma</label>
+        <select class="custom-select" id="lst_tip_norma" name="lst_tip_norma">
+          <option value="0">Selecione</option>
+          <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
+            <option 
+             <dtml-if expr="_.has_key('lst_tip_norma') and _.int(tip_norma)==_.int(lst_tip_norma)">
+              selected</dtml-if>
+               value="<dtml-var tip_norma missing>">
+               <dtml-var des_tipo_norma>
+            </option>
+          </dtml-in>
+        </select>
+    </div>
+    <div class="col-4 col-md-2 mb-3">
+          <label for="txt_ano_norma" class="required">Ano</label>
+          <input class="form-control year" type="text" id="txt_ano_norma" name="txt_ano_norma" maxlength="4" value="<dtml-var txt_ano_norma missing>" />
+        </label>
+    </div>
+   </div>
+   <div class="text-left">
+        <input class="btn btn-primary" type="button"value="Gerar Relatório" onClick="campos_criticar()" />
+        <dtml-if expr="_.has_key('norma')">
+          <a class="btn btn-secondary" href="<dtml-var portal_url>/relatorios_administrativos/verificaTextosIntegrais/verificar_normas_html">Nova Pesquisa</a>
+        </dtml-if>
+    </div>
+  </form>
+
+<dtml-if expr="_.has_key('norma')">
+ <hr />
+ <legend class="mt-3">Normas desprovidas de texto integral</legend>
+         <dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=lst_tip_norma,ano_norma=txt_ano_norma,ind_excluido=0)">
+               <dtml-let id_documento_pdf="_.str(cod_norma)+'_texto_integral.pdf'">
+                <dtml-if "not _.hasattr(sapl_documentos.norma_juridica,id_documento_pdf)">
+                   <p><a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>" target="_blank"><b><dtml-var des_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma></b></a> - <dtml-var txt_ementa></p>
+                </dtml-if>
+               </dtml-let>
+         <dtml-else>
+           <p>Nenhuma ocorrência encontrada</p>
+         </dtml-in>
+</dtml-if>
+
+<dtml-var standard_html_footer>

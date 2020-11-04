@@ -18,7 +18,7 @@ if not file_upload_name.endswith('.csv'):
 file_content = context.processCSVFile(file_upload, as_dict=1)
 count = 0
 fail_list = []
-#return context.dbcon_openlegis.columns('norma_juridica')
+#return context.dbcon_interlegis.columns('norma_juridica')
 
 for row in file_content:
   try:
@@ -51,7 +51,7 @@ for row in file_content:
     #nome_antigo = 'lei.'+(4-len(str(num_norma)))*'0'+str(num_norma)+'.doc'
     #max_cod_norma = context.zsql.max_cod_norma_zsql()[0].max_cod_norma
     #nome_novo = str(max_cod_norma)+'_texto_integral'
-    #context.documentos.norma_juridica.manage_renameObjects([nome_antigo],[nome_novo])
+    #context.sapl_documentos.norma_juridica.manage_renameObjects([nome_antigo],[nome_novo])
   except:
     fail_list.append(row)
   fail_list.append(row)

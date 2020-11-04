@@ -1,118 +1,144 @@
 <dtml-var standard_html_header>
 
-<link rel="stylesheet" href="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/style.css" type="text/css" media="print, projection, screen" />
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" src="&dtml-portal_url;/javascript/jquery.tablesorter/jquery.tablesorter.widgets.js"></script>
-
 <script type="text/javascript">
-<!--
-   $(document).ready(function() { 
-       $("#recipientes")
-    .tablesorter({theme: 'blue', widgets: ['filter']})
-    .tablesorterPager({container: $("#pager")}); 
-    }); 
--->
-</script>
-
-<script type="text/javascript">
+/* Formatting function for row details - modify as you need */
 $(document).ready(function() {
-	$(".popup").fancybox({
-		maxWidth	: 700,
-		maxHeight	: 600,
-		fitToView	: false,
-		width		: '70%',
-		height		: '77%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-                afterClose      : function() {
-                window.location.href = "&dtml-portal_url;/cadastros/arquivo/arquivo_index_html">";
-                },
-		closeEffect	: 'fade'
-	});
+    var table = $('#recipientes').DataTable( {
+        "responsive": true,
+        "bStateSave": true,        
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('arqDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('arqDataTable'));
+        },        
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
 });
 </script>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/arquivo">Ajuda</a>
+ <div class="row mb-2">
+      <div class="col-12 col-md-6 align-self-center">
+        <h1 class="firstHeading">Arquivo Permanente</h1>
+      </div>
+      <div class="col-12 col-md-6 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Arquivo'])">      
+               <a class="btn btn-primary btn-sm d-print-none" href="arquivo_recipiente_form"><i class="fa fa-fw fa-plus"></i> Incluir Recipiente</a>
+           </dtml-if>         
+         </div>
+      </div>
+ </div>
 
-<h1 class="firstHeading">Arquivo Permanente</h1>
-
-<div id="barra-conteudo">
-<ul>
-    <li>
-        <a href="arquivo_recipiente_form">Incluir Recipiente</a>
-    </li>
-</ul>
-</div>
-
-<fieldset>
-
-<legend>Recipientes de Arquivamento</legend>
 
 <form name="recipiente_form" method="post">
 
-<dtml-in expr="zsql.arquivo_recipiente_obter_zsql()">
+<dtml-in expr="zsql.arquivo_recipiente_obter_zsql(ind_excluido=0)">
   <dtml-if sequence-start>
-        <table id="recipientes" class="tablesorter">
-          <thead>
+        <table class="table" id="recipientes">
+          <thead class="table-secondary">
             <tr>
-                <th width="15%" class="form-label">Identificador</th>
-                <th width="10%" class="form-label">Ano</th>
-                <th width="20%" class="form-label">Tipo</th>
-                <th width="25%" class="form-label">Título Documental</th>
-                <th width="15%" class="form-label">Itens Contidos</th>
+                <th width="15%">Identificador</th>
+                <th width="10%">Ano</th>
+                <th width="20%">Suporte</th>
+                <th width="25%">Conjunto Documental</th>
+                <th width="15%">Itens Contidos</th>
+                <th>Folhas</th>                
             </tr>
           </thead>
   </dtml-if sequence-start>
             <tr>
-                <td class="texto" valign="top">
+                <td>
                    <a href="arquivo_recipiente_mostrar_proc?cod_recipiente=<dtml-var cod_recipiente>"><b><dtml-var num_recipiente></b></a>
                 </td>
-                <td class="texto" valign="top">
+                <td>
                    <dtml-var ano_recipiente>
                 </td>
-               <td class="texto" valign="top">
+               <td>
                    <dtml-var des_tipo_recipiente_sel>
                </td>
-               <td class="texto" valign="top">
+               <td>
                    <dtml-var des_tipo_tit_documental_sel>
                </td>
-               <td class="texto" valign="top">
+               <td>
                  <p align="center">
                    <dtml-in expr="zsql.arquivo_recipiente_contar_itens_zsql(cod_recipiente=cod_recipiente)">
-                      <a href="arquivo_recipiente_listar_conteudo_form?cod_recipiente=<dtml-var cod_recipiente>" class="botao-link"><b><dtml-var total></b></a>
+                      <a href="arquivo_recipiente_listar_conteudo_form?cod_recipiente=<dtml-var cod_recipiente>" class="btn btn-sm btn-secondary"><b><dtml-var total></b></a>
                    </dtml-in>
                  </p>
                </td>
+             <td>
+                 <dtml-var num_folha_recipiente missing="" null="">
+             </td>               
   <dtml-comment>
-            <td class="texto">
+            <td>
              <a href="javascript:excluir(<dtml-var cod_destinatario>,<dtml-var cod_documento>)">Excluir</a>
             </td>
   </dtml-comment>
         </tr>
   <dtml-if sequence-end>
         </table>
-<div id="pager" class="pager">
-	<form>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/first.png" class="first"/>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/prev.png" class="prev"/>
-		<input type="text" class="pagedisplay"/>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/next.png" class="next"/>
-		<img src="&dtml-portal_url;/javascript/jquery.tablesorter/themes/blue/last.png" class="last"/>
-		<select class="pagesize">
-			<option selected="selected"  value="10">10</option>
-			<option value="20">20</option>
-			<option value="30">30</option>
-			<option  value="40">40</option>
-		</select>
-	</form>
-</div>
   </dtml-if sequence-end>
 <dtml-else>
-      <p class="texto">Nenhum recipiente cadastrado</p>
+   <p>Nenhum recipiente cadastrado.</p>
 </dtml-in>
 </form>
 

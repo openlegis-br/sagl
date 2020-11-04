@@ -9,4 +9,4 @@
 ##
 '''Esse script tem como finalidade formatar a data que ira aparecer nas
 datas possiveis para Legislatura Inicial e Final'''
-return str(num_legislatura) + "&ordf; Legislatura (" + `dat_inicio.year()` + " - " + `dat_fim.year()`+")"
+return str(num_legislatura) + "&ordf; (" + `dat_inicio.year()` + " - " + `dat_fim.year()`+")"

@@ -1,0 +1,43 @@
+<dtml-call expr="REQUEST.set('sgl_status', 'DES')">
+<dtml-in expr="zsql.status_tramitacao_administrativo_obter_zsql(sgl_status=sgl_status)">
+   <dtml-call expr="REQUEST.set('cod_status', cod_status)">
+</dtml-in>
+<dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tram_dest)">
+<dtml-call expr="REQUEST.set('cod_unid_tram_local', cod_unid_tram_dest)">
+<dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
+
+<dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=hdn_cod_documento, ind_ult_tramitacao=1)">
+   <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
+</dtml-in>
+
+<dtml-try>
+  <dtml-call expr="zsql.trans_begin_zsql()">
+  <dtml-call expr="zsql.tramitacao_administrativo_incluir_zsql(   
+        cod_tramitacao  = hdn_cod_tramitacao,     
+        cod_documento = hdn_cod_documento,
+        dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
+        cod_unid_tram_local = cod_unid_tram_local,
+        cod_usuario_local = cod_usuario_corrente,
+        cod_unid_tram_dest = cod_unid_tram_dest,
+        cod_status = cod_status,
+        ind_ult_tramitacao = 1)">
+  <dtml-if cod_ult_tramitacao>
+    <dtml-call expr="zsql.tramitacao_administrativo_ind_ultima_atualizar_zsql(cod_tramitacao  = cod_ult_tramitacao,
+                                                               cod_documento = hdn_cod_documento,  
+                                                               ind_ult_tramitacao = 0)">
+  </dtml-if>
+  <dtml-call expr="pysc.atualiza_indicador_tramitacao_documento_pysc(cod_documento=hdn_cod_documento, cod_status=cod_status)">
+  <dtml-call expr="zsql.trans_commit_zsql()">
+<dtml-except>
+ 
+<dtml-else>
+  <dtml-let mensagem="'Documento desarquivado com sucesso!'" url="'caixa_entrada_html'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+  <dtml-in expr="zsql.tramitacao_administrativo_incluida_codigo_obter_zsql()">
+      <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
+  </dtml-in>
+  <dtml-call expr="REQUEST.set('hdn_url', 'tramitacao_mostrar_proc?hdn_cod_tramitacao=' + str(hdn_cod_tramitacao) + '&cod_documento=' + str(hdn_cod_documento))">
+  <dtml-call expr="relatorios.pdf_tramitacao_administrativo_preparar_pysc(hdn_cod_tramitacao = hdn_cod_tramitacao, hdn_url = hdn_url)">
+</dtml-try>
+

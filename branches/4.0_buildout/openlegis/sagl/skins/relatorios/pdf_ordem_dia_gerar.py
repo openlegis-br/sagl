@@ -46,10 +46,10 @@ def paraStyle():
     tmp+='\t\t<initialize>\n'
     tmp+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp+='\t\t</initialize>\n'
-    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="12" alignment="CENTER"/>\n'
-    tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
-    tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="9" alignment="LEFT"/>\n'
-    tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="9.0" leading="11" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="13" alignment="CENTER"/>\n'
+    tmp+='\t\t<paraStyle name="P1" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
+    tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="10" alignment="LEFT"/>\n'
+    tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="10" leading="12" alignment="JUSTIFY"/>\n'
     tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
     tmp+='\t</stylesheet>\n'
     return tmp
@@ -90,13 +90,13 @@ def pauta(lst_splen, lst_pauta):
 
         #pauta
         if dic['num_ordem']!=None:
-            tmp+='\t\t<para style="P4"><font color="#222">Item nº ' + str(dic['num_ordem']) + '</font></para>\n'
+            tmp+='\t\t<para style="P4"><font color="#222"><b>Item nº ' + str(dic['num_ordem']) + '</b></font></para>\n'
             tmp+='\t\t<para style="P2" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
         if dic['id_materia']!=None:
-            tmp+='\t\t<para style="P1"><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</para>\n'
-            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+            tmp+='\t\t<para style="P4"><b><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</b></para>\n'
+            tmp+='\t\t<para style="P3" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
         if dic['txt_ementa']!=None:
@@ -104,10 +104,25 @@ def pauta(lst_splen, lst_pauta):
             tmp+='\t\t<para style="P2" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
-            tmp+='\t\t<para style="P3"><b>Turno</b>: '+ dic['des_turno'] +' | <b>Quorum</b>: '+ dic['des_quorum']+' | <b>Tipo de Votação</b>: '+ dic['tip_votacao'] + '' + '</para>\n'
-            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
-            tmp+='\t\t\t<font color="white"> </font>\n'
-            tmp+='\t\t</para>\n'
+
+        if dic['substitutivo']!= 0:
+            for substitutivo in dic['substitutivos']:
+                tmp+='\t\t<para style="P3"><b><font color="#126e90">' + substitutivo["id_substitutivo"] + '</font> - ' + substitutivo["autoria"] + '</b> - ' + substitutivo["txt_ementa"] + '</para>\n'
+                tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+                tmp+='\t\t\t<font color="white"> </font>\n'
+                tmp+='\t\t</para>\n'
+
+        if dic['emenda']!= 0:
+            for emenda in dic['emendas']:
+                tmp+='\t\t<para style="P3"><b><font color="#126e90">' + emenda["id_emenda"] + '</font> - ' + emenda["autoria"] + '</b> - ' + emenda["txt_ementa"] + '</para>\n'
+                tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+                tmp+='\t\t\t<font color="white"> </font>\n'
+                tmp+='\t\t</para>\n'
+
+        tmp+='\t\t<para style="P3"><b>Turno</b>: '+ dic['des_turno'] +' | <b>Quorum</b>: '+ dic['des_quorum']+' | <b>Tipo de Votação</b>: '+ dic['tip_votacao'] + '' + '</para>\n'
+        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
+        tmp+='\t\t\t<font color="white"> </font>\n'
+        tmp+='\t\t</para>\n'
 
     return tmp
 
@@ -163,12 +178,12 @@ def principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_roda
     tmp+='</document>\n'
     tmp_pdf=parseString(tmp)   
 
-    if hasattr(context.documentos.pauta_sessao,arquivoPdf):
-        context.documentos.pauta_sessao.manage_delObjects(ids=arquivoPdf)
-    context.documentos.pauta_sessao.manage_addFile(arquivoPdf)
-    arq=context.documentos.pauta_sessao[arquivoPdf]
+    if hasattr(context.sapl_documentos.pauta_sessao,arquivoPdf):
+        context.sapl_documentos.pauta_sessao.manage_delObjects(ids=arquivoPdf)
+    context.sapl_documentos.pauta_sessao.manage_addFile(arquivoPdf)
+    arq=context.sapl_documentos.pauta_sessao[arquivoPdf]
     arq.manage_edit(title='Ordem do Dia',filedata=tmp_pdf,content_type='application/pdf')
    
-    return "documentos/pauta_sessao/"+arquivoPdf
+    return "sapl_documentos/pauta_sessao/"+arquivoPdf
 
 return principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente)

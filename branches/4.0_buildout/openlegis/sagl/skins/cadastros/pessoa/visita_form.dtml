@@ -1,0 +1,101 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+  function campos_criticar(form){
+
+     if (form.lst_funcionario.selectedIndex==''){
+         alert("O Funcionário deve ser selecionado!");
+         form.lst_funcionario.focus();
+         return false;
+      }
+
+     if (form.txt_num_cracha.value==""){
+         alert("Informe o número do crachá.");
+         form.txt_num_cracha.focus();
+         return false;
+      }
+
+      form.submit();
+  }
+
+  function visita_excluir(){
+       if (confirm("Deseja realmente excluir a visita?")) {
+          location.href="visita_excluir_proc?cod_visita=<dtml-var cod_visita missing>&modal=1";
+       }
+  }
+</script>
+
+  <form name="visita_form" method="post" action="visita_salvar_proc">
+    <input type="hidden" name="hdn_cod_visita" value="<dtml-var cod_visita missing>" />
+    <input type="hidden" name="modal" value="1" /> 
+      
+    <div class="form-row">
+       <div class="col-12 mb-3">
+            <label for="txa_nom_pessoa">Nome do Visitante</label>
+            <dtml-unless cod_visita>
+              <dtml-in expr="zsql.pessoa_obter_zsql(cod_pessoa=cod_pessoa)">
+                 <dtml-call expr="REQUEST.set('nom_pessoa', nom_pessoa)">
+              </dtml-in>
+            </dtml-unless>
+            <input class="form-control" type="text" id="txt_nom_pessoa" name="txt_nom_pessoa" size="50" maxlength="200" value="<dtml-var nom_pessoa>" disabled />
+            <input type="hidden" name="hdn_cod_pessoa" value="<dtml-var cod_pessoa>" />
+       </div>
+    </div>  
+
+    <div class="form-row">
+       <div class="col-8 mb-3">
+             <label for="lst_funcionario" class="required">Funcionário</label>
+             <select class="custom-select" id="lst_funcionario" name="lst_funcionario" <dtml-if dat_saida>disabled</dtml-if> required>
+                <option value=""></option>
+                <dtml-in expr="zsql.funcionario_obter_zsql(ind_excluido=0,ind_ativo=1)">
+                  <option
+                    <dtml-if expr="REQUEST.has_key('cod_visita')">
+                      <dtml-if expr="_.int(cod_funcionario) == _.int(visita_form.cod_funcionario)">
+                         selected
+                      </dtml-if>
+                    </dtml-if>
+                    value="<dtml-var cod_funcionario>" >
+                    <dtml-var nom_funcionario>
+                  </option>
+                </dtml-in>
+             </select>
+       </div>
+       <div class="col-4">
+            <label for="txt_num_cracha" class="required">Crachá</label>
+            <input class="form-control" type="text" id="txt_num_cracha" name="txt_num_cracha" size="18" maxlength="3" value="<dtml-var num_cracha missing>" <dtml-if dat_saida>readonly</dtml-if> />
+       </div>       
+    </div>
+    
+  <dtml-if cod_visita>
+    <div class="form-row">
+       <div class="col-6 mb-3">
+             <label for="dat_entrada">Entrada</label>
+             <input class="form-control" type="text" name="dat_entrada" value="<dtml-var dat_entrada>" readonly />
+       </div>
+       <div class="col-6 mb-3">
+             <label for="dat_saida">Saída</label><br />
+             <input class="form-control" type="text" name="dat_saida" value="<dtml-var dat_saida missing null>" readonly />
+       </div>
+    </div>  
+  </dtml-if>      
+
+    <div class="form-row">
+       <div class="col-12 mb-3">
+            <label for="txa_txt_observacao">Observações</label><br />
+            <textarea class="form-control"  name="txa_txt_observacao" rows="2" <dtml-if dat_saida>readonly</dtml-if>><dtml-var txt_observacao missing null=""></textarea>       
+       </div>
+    </div>
+      
+ <div class="text-left">
+   <dtml-unless dat_saida>
+      <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar(document.visita_form)" />
+      <dtml-if cod_visita>
+         <input class="btn btn-danger" type="button" value="Excluir" onClick="visita_excluir()" />
+      </dtml-if>
+   </dtml-unless>
+ </div>
+
+</form>
+
+<dtml-var standard_html_footer>

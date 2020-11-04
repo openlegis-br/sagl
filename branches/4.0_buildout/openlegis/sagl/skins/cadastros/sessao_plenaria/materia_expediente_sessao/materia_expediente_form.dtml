@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<dtml-var standard_css_slot>
+<dtml-var standard_html_header>
 
-<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/data_validar.js"></script>
 
 <script type="text/javascript">
-<!--
+
   function campos_criticar(form){
      var regexp_digitos = /\D+/;
      var selecionado = false;
@@ -43,7 +40,7 @@
           (form.txt_num_ident_basica.value=="") || 
           (form.txt_ano_ident_basica.value=="")){
           alert("Os campos de identificação da matéria devem ser preenchidos!");
-          form.txt_num_ident_basica.focus();
+          form.lst_tip_id_basica.focus();
           return false;
       }
       if (form.txa_txt_observacao.value==""){
@@ -64,7 +61,7 @@
   function materia_expediente_excluir(){
 
        if (confirm("Deseja realmente excluir?")) {
-          location.href="materia_expediente_excluir_proc?cod_ordem=<dtml-var cod_ordem missing>&cod_sessao_plen=<dtml-var cod_sessao_plen>";
+          location.href="materia_expediente_excluir_proc?cod_ordem=<dtml-var cod_ordem missing>&cod_sessao_plen=<dtml-var cod_sessao_plen>&modal=1";
        }
   }
 
@@ -75,165 +72,171 @@
 	location.href="ementa_buscar_proc?tip_ident_basica="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+
           "&num_ident_basica="+form.txt_num_ident_basica.value+"&ano_ident_basica="+
           form.txt_ano_ident_basica.value+"&cod_ordem="+form.cod_ordem.value+
-          "&dat_ordem="+form.txt_dat_ordem.value+"&num_ordem="+form.txt_num_ordem.value+"&tip_votacao="+form.rad_tip_votacao.value+"&tip_sessao_plen="+form.lst_tip_sessao[form.lst_tip_sessao.selectedIndex].value+"&cod_sessao_plen=<dtml-var cod_sessao_plen>";
+          "&dat_ordem="+form.txt_dat_ordem.value+"&num_ordem="+form.txt_num_ordem.value+"&tip_votacao="+form.rad_tip_votacao.value+"&tip_sessao_plen="+form.lst_tip_sessao[form.lst_tip_sessao.selectedIndex].value+"&cod_sessao_plen=<dtml-var cod_sessao_plen>&modal=1";
      }
   }
 
-//-->
-
-function reloadParentAndClose()
-{
-    // then close this pop-up window
-    parent.jQuery.fancybox.close();
-} 
 </script>
-</head>
 
-<body class="modal">
+<h1 class="firstHeading">Matéria Legislativa</h1> 
 
-<h1 class="firstHeading">Matéria do Expediente</h1> 
-
-<h3 align="center"><dtml-var sessao_plenaria_header></h3>
 
 <form id="materia_expediente_form" name="materia_expediente_form" method="post" action="materia_expediente_salvar_proc">
-<fieldset>
-    <legend>Cadastro de Matéria no Expediente</legend>
-      <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen,
-                                                                   ind_excluido=0)">
-        <table>
-            <tr>
-                <td>
-                    <label for="txt_dat_ordem">Data da Sessão <span class="campoObrigatorio">&nbsp;</span></label><br />
-                    <input type="text" name="txt_dat_ordem"
-                           id="txt_dat_ordem"
-                           size="10" maxlength="10" readonly="readonly"
-                           onBlur="formata_data(form.txt_dat_ordem)"
-                        <dtml-if lst_dat_ordem> value="<dtml-var lst_dat_ordem>"
-                            <dtml-else> value="<dtml-var dat_inicio_sessao>"
-	                    </dtml-if> />
-                </td>
-                <td>
-                    <label for="lst_tip_sessao">Tipo da Sessão<span class="campoObrigatorio">&nbsp;</span></label><br />
-                    <select name="lst_tip_sessao" onfocus="this.initialSelect = this.selectedIndex;" onchange="this.selectedIndex = this.initialSelect;">
-                        <option>Selecione</option>
-                        <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(ind_excluido=0)">
-                        <option
-                            <dtml-if expr="_.has_key('cod_ordem') and _.int(tip_sessao)==_.int(materia_expediente_form.tip_sessao)">
+
+   <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+      <table class="table table-borderless">
+        <tr>
+          <td>
+            <label for="txt_dat_ordem" class="required">Data da Sessão</label>
+            <input class="form-control" type="text" name="txt_dat_ordem" id="txt_dat_ordem" readonly="readonly" onBlur="formata_data(form.txt_dat_ordem)"
+               <dtml-if lst_dat_ordem> value="<dtml-var lst_dat_ordem>"
+               <dtml-else> value="<dtml-var dat_inicio_sessao>"
+	       </dtml-if> />
+          </td>
+          <td>
+            <label for="lst_tip_sessao" class="required">Tipo da Sessão</label>
+            <select class="custom-select" id="lst_tip_sessao" name="lst_tip_sessao" onfocus="this.initialSelect = this.selectedIndex;" onchange="this.selectedIndex = this.initialSelect;" required>
+              <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(ind_excluido=0)">
+                 <option
+                   <dtml-if expr="_.has_key('cod_ordem') and _.int(tip_sessao)==_.int(materia_expediente_form.tip_sessao)">
+                      selected
+                   <dtml-elif expr="_.int(tip_sessao)==_.int(materia_expediente_form.tip_sessao)">
+                      selected
+                   </dtml-if>
+                   value="<dtml-var tip_sessao>"><dtml-var nom_sessao>
+                  </option>
+               </dtml-in>
+            </select>
+          </td>
+	  <td>
+            <label for="txt_num_ordem" class="required">Nº de Ordem</label>
+            <dtml-unless cod_ordem>
+              <dtml-in expr="zsql.expediente_materia_numero_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
+                 <dtml-call expr="REQUEST.set('num_ordem', _.int(novo_item))">
+              </dtml-in>
+            </dtml-unless>
+	    <input class="form-control number" type="number" id="txt_num_ordem" name="txt_num_ordem" value="<dtml-var num_ordem missing>" maxlength="3"/ required>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3">
+          <div class="form-row">
+           <div class="col-6">          
+            <label for="lst_tip_id_basica" class="required">Tipo de Matéria</label>
+              <select class="custom-select" id="lst_tip_id_basica" name="lst_tip_id_basica" onChange="ementa_buscar(document.materia_expediente_form)" required>
+               <option>Selecione</option>
+                  <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+                    <dtml-if expr="des_tipo_materia=='Requerimento' or des_tipo_materia=='Indicação' or des_tipo_materia=='Moção'">
+                     <option
+                       <dtml-if cod_materia>
+                          <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
+                             <dtml-if expr="_.int(tip_id_basica) == _.int(tip_materia)">
                                 selected
-                            <dtml-elif expr="_.int(tip_sessao)==_.int(materia_expediente_form.tip_sessao)">
-                                selected
-                            </dtml-if>
-                            value="<dtml-var tip_sessao>"><dtml-var nom_sessao>
-                        </option>
-                        </dtml-in>
-                    </select>
-                </td>
-	            <td>
-                    <label for="txt_num_ordem">Nº Ordem <span class="campoObrigatorio">&nbsp;</span></label><br />
-                        <dtml-unless cod_ordem>
-                          <dtml-in expr="zsql.expediente_materia_numero_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
-                            <dtml-call expr="REQUEST.set('num_ordem', _.int(novo_item))">
+                              </dtml-if>
                           </dtml-in>
-                        </dtml-unless>
-	                <input type="text" name="txt_num_ordem" value="<dtml-var num_ordem missing>" size="3" maxlength="3"/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="lst_tip_id_basica">Tipo Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
-                    <select name="lst_tip_id_basica" onChange="ementa_buscar(document.materia_expediente_form)">
-                        <option>Selecione</option>
-                        <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
-                        <option
-                            <dtml-if cod_materia>
-                                <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
-                                    <dtml-if expr="_.int(tip_id_basica) == _.int(tip_materia)">
-                                        selected
-                                    </dtml-if>
-                                </dtml-in>
-                            <dtml-elif expr="REQUEST.has_key('tip_ident_basica') and _.int(tip_materia) == _.int(tip_ident_basica)">
-                                selected
-                            </dtml-if>
-                            value="<dtml-var tip_materia>">
-                            <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia missing>
-                        </option>
-                        </dtml-in>
-                    </select>
-                </td>
-                <td>
-                    <label for="txt_num_ident_basica" >Nº Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
-                    <input type="text" name="txt_num_ident_basica" size="4" maxlength="5" onChange="ementa_buscar(document.materia_expediente_form)"
-                        <dtml-if cod_materia>
-                            <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
-                                value="<dtml-var num_ident_basica missing>"
-                            </dtml-in>
-                        <dtml-else> value="<dtml-var num_ident_basica missing>"
-                        </dtml-if>/>
-                </td>
-                <td>
-                    <dtml-unless ano_ident_basica>
-                     <dtml-call expr="REQUEST.set('ano_ident_basica', _.DateTime.year(_.DateTime()))">
-                    </dtml-unless>
-                    <label for="txt_ano_ident_basica">Ano Matéria <span class="campoObrigatorio">&nbsp;</span></label><br />
-                    <input type="text" name="txt_ano_ident_basica" size="4" maxlength="4" onChange="ementa_buscar(document.materia_expediente_form)"
-                        <dtml-if cod_materia>
-                            <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
-                                value="<dtml-var ano_ident_basica missing>"
-                            </dtml-in>
-                        <dtml-else> value="<dtml-var ano_ident_basica missing>"
-                        </dtml-if>/>
-                </td>
-               </tr>
-               <tr>
-                <td>
-                    <label for="rad_tip_votacao">Tipo de Votação <span class="campoObrigatorio">&nbsp;</span></label><br />
-                     <dtml-in expr="zsql.tipo_votacao_obter_zsql(tip_votacao='')">
-                      <input class="texto" type="radio" id="rad_tip_votacao" name="rad_tip_votacao" value="<dtml-var tip_votacao_sel>"
-                        <dtml-if expr="(_.has_key('cod_ordem') and cod_ordem!='')">
-                        <dtml-if expr="_.int(materia_expediente_form.tip_votacao)==_.int(tip_votacao_sel)">
-                                    checked=1
-                        </dtml-if>
-                        </dtml-if>>
-                            <span class="texto"><dtml-var des_tipo_votacao></span>
-                      </dtml-in>
-                </td>
-                <td colspan="2">
-                    <label for="lst_tip_quorum">Quórum de Votação<span class="campoObrigatorio">&nbsp;</span></label><br />
-                      <select name="lst_tip_quorum">
-                        <option value="0"></option>
-                        <dtml-in expr="zsql.quorum_votacao_obter_zsql()">
-                          <option <dtml-if expr="_.has_key('tip_quorum') and tip_quorum==cod_quorum"> selected</dtml-if> value="<dtml-var cod_quorum>"><dtml-var des_quorum></option>
-                        </dtml-in>
-                      </select>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="3">
-                    <label for="txa_txt_observacao">Ementa <span class="campoObrigatorio">&nbsp;</span></label><br />
-                    <textarea name="txa_txt_observacao" cols="60" rows="4"><dtml-var txt_observacao missing></textarea>
-                </td>
-            </tr>
-        </table>
+                       <dtml-elif expr="REQUEST.has_key('tip_ident_basica') and _.int(tip_materia) == _.int(tip_ident_basica)">
+                          selected
+                       </dtml-if>
+                       value="<dtml-var tip_materia>">
+                        <dtml-var des_tipo_materia missing>
+                      </option>
+                     </dtml-if>
+                  </dtml-in>
+              </select>
+          </div>
+          <div class="col-3">
+              <label for="txt_num_ident_basica" class="required">Número</label>
+              <input class="form-control numero" type="number" id="txt_num_ident_basica" name="txt_num_ident_basica" onChange="ementa_buscar(document.materia_expediente_form)"
+                <dtml-if cod_materia>
+                   <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
+                     value="<dtml-var num_ident_basica missing>"
+                   </dtml-in>
+                <dtml-else>
+                   value="<dtml-var num_ident_basica missing>"
+                </dtml-if>/>
+          </div>
+          <div class="col-3">
+            <dtml-unless ano_ident_basica>
+              <dtml-call expr="REQUEST.set('ano_ident_basica', _.DateTime.year(_.DateTime()))">
+            </dtml-unless>
+            <label for="txt_ano_ident_basica" class="required">Ano</label>
+            <input class="form-control year" type="number" id="txt_ano_ident_basica" name="txt_ano_ident_basica"  onChange="ementa_buscar(document.materia_expediente_form)"
+               <dtml-if cod_materia>
+                  <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)">
+                     value="<dtml-var ano_ident_basica missing>"
+                  </dtml-in>
+               <dtml-else>
+                  value="<dtml-var ano_ident_basica missing>"
+               </dtml-if>/>
+           </div>
+          </div>
+          </td>
+       </tr>
+       <tr>
+          <td colspan="3">
+           <div class="form-row">
+              <div class="col-8">
+                <label for="lst_tip_quorum" class="required">Quórum de Votação</label>
+                <select class="custom-select" id="lst_tip_quorum" name="lst_tip_quorum" required>
+                  <option value="0"></option>
+                   <dtml-in expr="zsql.quorum_votacao_obter_zsql()">
+                     <option <dtml-if expr="_.has_key('tip_quorum') and tip_quorum==cod_quorum"> selected<dtml-elif expr="des_quorum == 'Maioria simples'">selected </dtml-if> value="<dtml-var cod_quorum>"><dtml-var des_quorum></option>
+                   </dtml-in>
+                </select>              
+              </div>
+              <div class="col-4">
+                <label for="rad_tip_votacao" class="required d-block">Tipo de Votação</label>
+                <dtml-in expr="zsql.tipo_votacao_obter_zsql(tip_votacao='')">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="<dtml-var tip_votacao_sel>" name="rad_tip_votacao" value="<dtml-var tip_votacao_sel>"
+                    <dtml-if expr="(_.has_key('cod_ordem') and cod_ordem!='')">
+                      <dtml-if expr="_.int(materia_expediente_form.tip_votacao)==_.int(tip_votacao_sel)">
+                       checked=1
+                      </dtml-if>
+                    <dtml-elif expr="des_tipo_votacao == 'Simbólica'">checked=1
+                    </dtml-if>>
+                    <label class="form-check-label" for="<dtml-var tip_votacao_sel>"><dtml-var des_tipo_votacao></label>
+                   </div>
+                </dtml-in>
+              </div>
+           </div>        
+          </td>
+        </tr>
+        <tr>
+           <td colspan="3">
+             <label for="txa_txt_observacao" class="required">Ementa</label>
+             <textarea class="form-control auto-resize" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing></textarea>
+           </td>
+        </tr>
+   </table>
 </dtml-in>
- </fieldset>
-         <p align="center">
-            <input type="button" class="botao" name="btn_salvar" value="Salvar" onClick="campos_criticar(document.materia_expediente_form)" />
-            <dtml-if cod_ordem>
-                <input type="hidden" name="flag_atualizar" value="<dtml-var cod_ordem missing>" />
-                <input type="button" class="botaoExtra" name="btn_excluir" value="Excluir" onClick="materia_expediente_excluir()" />
-            </dtml-if>
-            <input type="button" class="botao" name="btn_fechar" value="Fechar" onclick="javascript:parent.jQuery.fancybox.close();" />
-        <dtml-if cod_materia>
-          <a class="botao-link" target="_blank" href="<dtml-var sagl url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">Ver Matéria</a>
-         </dtml-if>
-        </p>
-        <input type="hidden" name="cod_ordem" value="<dtml-var cod_ordem missing>" />
-        <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen>" />
-        <dtml-unless cod_ordem>
-            <input type="hidden" name="txa_txt_resultado" value="" />
-        </dtml-unless>
+
+<div class="text-center">
+  <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar(document.materia_expediente_form)" />
+  <dtml-if cod_ordem>
+     <input type="hidden" name="flag_atualizar" value="<dtml-var cod_ordem missing>" />
+     <input class="btn btn-danger" type="button" value="Excluir" onClick="materia_expediente_excluir()" />
+  </dtml-if>
+  <dtml-if cod_materia>
+     <a class="btn btn-secondary" target="_blank" href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">Consultar Matéria</a>
+  </dtml-if>
+</div>
+ <input type="hidden" name="modal" value="1" />
+ <input type="hidden" name="cod_ordem" value="<dtml-var cod_ordem missing>" />
+ <input type="hidden" name="cod_materia" value="<dtml-var cod_materia missing>" />
+ <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen>" />
+ <dtml-unless cod_ordem>
+   <input type="hidden" name="txa_txt_resultado" value="" />
+ </dtml-unless>
+ 
+<div class="col-md-12 mt-2">
+    <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+</div>
+ 
 </form>
 
-</body>
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
 
-</html>
+<dtml-var standard_html_footer>

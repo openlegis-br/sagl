@@ -1,24 +1,15 @@
 <dtml-var standard_html_header>
-<form name="casa_legislativa_form" method="post" action="casa_legislativa_salvar_proc"  enctype="multipart/form-data">
-  <input type="hidden" name="hdn_url" value="casa_legislativa_form" />
 
-<script type= "text/javascript" src="javascript/email_validar_jvsc"></SCRIPT>
+<script type= "text/javascript" src="javascript/email_validar.js"></script>
 
 <script type= "text/javascript">
-<!--
+
   function campos_criticar(form){
        var regexp_digitos = /\D+/; 
           
-       if (form.txt_cod_casa.value=="" || regexp_digitos.test(form.txt_cod_casa.value)){
-          alert("O Código deve ser um número natural!");
-          form.txt_cod_casa.focus();
-          return false;
-       }          
-         
        if (form.txt_cod_casa.value==""){
           alert("O nome da Casa deve ser preenchido!");
           form.txt_cod_casa.focus();
-          form.txt_cod_casa.select();
           return false;
        }
 
@@ -94,145 +85,206 @@
 
      var url="municipio_listar_form?municipio=" + municipio +
               "&municipio_pesq=" + municipio_pesq + "&sgl_uf=" + sgl_uf;
-     MunicipioWin = window.open(url, "", "width=390, height=380");
+     MunicipioWin = window.open(url, "", "width=500, height=330");
   } 
    
  function ativa_desativa_file_field(form) {
     form.file_nom_logo.disabled = !(form.radTI[2].checked);
  }
 
-//-->
-</SCRIPT>
-<div class="helpsagl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/casa_legislativa">Ajuda</a> </div>
-<h1 class="firstHeading"> Tabelas Auxiliares </h1> 
+</script>
 
-<fieldset><legend>Casa Legislativa</legend>
-         <table>
-            <tr> 
-              <td><label>Código <span class="campoObrigatorio"></span></label><br />
-                 <input type="text" name="txt_cod_casa" size="8" value="<dtml-var expr="documentos.propriedades.cod_casa" missing>" maxlength="8" />
-              </td>
-              <td><label>Nome <span class="campoObrigatorio"></span></label><br />
-                 <input type="text" name="txt_nom_casa" value="<dtml-var expr="documentos.propriedades.nom_casa" missing>" size="45" maxlength="75" />
-              </td>
-              <td width="30%"><label>Sigla <span class="campoObrigatorio"></span></label><br />
-               <input type="text" name="txt_sgl_casa" value="<dtml-var expr="documentos.propriedades.sgl_casa" missing null="">" size="10" maxlength="10"
-                       onBlur="form.txt_sgl_casa.value=form.txt_sgl_casa.value.toUpperCase()" />
-              </td>
-            </tr>
-            <tr> 
-                <td colspan="2"><label>Endereço <span class="campoObrigatorio"></span></label><br />
-                    <input type="text" name="txt_end_casa" value="<dtml-var expr="documentos.propriedades.end_casa" missing null="">" size="55" maxlength="100" />
-                </td>
-                <td><label>CEP <span class="campoObrigatorio"></span></label><br />
-                    <input type="text" name="txt_num_cep" value="<dtml-var expr="documentos.propriedades.num_cep" missing>" size="9" maxlength="9" />
-                </td>
-            </tr>
-            <tr> 
-                <td colspan="2"><label>Município <span class="campoObrigatorio"></span></label><br />
-                    <input type="text" name="txt_municipio" 
-                        <dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=documentos.propriedades.cod_localidade)">
-                          value="<dtml-var nom_localidade missing null="">" 
-                          <dtml-call expr="REQUEST.set('sgl_uf_municipio', sgl_uf)">
-                        </dtml-in> size="45" maxlength="50" />
-                    <input type="button" name="btn_localidade" value=" ? " 
-                           onClick="localidade_mostrar(document.casa_legislativa_form)" /> 
-                </td>
-                <td><label>UF <span class="campoObrigatorio"></span></label><br />
-                    <select name="lst_sgl_uf" size="1" style="value:sgl_uf missing">
-                        <option value="0">
-                            -
-               	        </option>
-                        <dtml-in expr="zsql.localidade_obter_zsql(tip_localidade='U')">
-                        <option 
-                            <dtml-if expr="_.has_key('sgl_uf_municipio') and sgl_uf==sgl_uf_municipio">
-                            selected 
-                            </dtml-if>
-                            value="<dtml-var sgl_uf>"><dtml-var sgl_uf></option>
-                        </dtml-in>
-                    </select>
-                </td>
-            </tr>
-            <tr> 
-                <td colspan="2"><label>Telefone </label><br />
-                    <input type="text" name="txt_num_tel" value="<dtml-var expr="documentos.propriedades.num_tel" missing>" size="15" maxlength="50" /></td>
-                <td><label>Fax </label><br />
-                    <input type="text" name="txt_num_fax" value="<dtml-var expr="documentos.propriedades.num_fax" missing>" size="15" maxlength="50" /></td>
-            </tr>
-	    <tr> 
-                 <td colspan="2"><label>Senha </label><br />
-                    <input type="text" name="txt_txt_senha_inicial" value="<dtml-var expr="documentos.propriedades.txt_senha_inicial" missing>" size="15" maxlength="50" />
-                 </td>
-	         <td><label>Cor de fundo </label><br />
-                    <input type="text" name="txt_cor_fundo" value="<dtml-var expr="documentos.propriedades.cor_fundo" missing>" size="15" maxlength="50" /><img src="&dtml-portal_url;/imagens/cor.gif" alt="cor" onclick=" window.open('javascript/pick_color?col=linkColor1','ColorPicker','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220')" />
-                 </td>
-            </tr>
-            <tr> 
-                 <td colspan="2"><label>Cor da borda</label><br />
-                    <input type="text" name="txt_cor_borda" value="<dtml-var expr="documentos.propriedades.cor_borda" missing>" size="15" maxlength="50" /><img src="&dtml-portal_url;/imagens/cor.gif" alt="cor" onclick=" window.open('javascript/pick_color?col=linkColor2','ColorPicker','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220')" />
-                 </td>
-	         <td colspan="1"><label>Cor principal</label><br />
-                    <input type="text" name="txt_cor_principal" value="<dtml-var expr="documentos.propriedades.cor_principal" missing>" size="15" maxlength="50" /><img src="&dtml-portal_url;/imagens/cor.gif" alt="cor" onclick=" window.open('javascript/pick_color?col=linkColor3','ColorPicker','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=220,height=220')" />
-                 </td>	       
-            </tr>
-            <tr> 
-                <td colspan="3"><label>Brasão (Formato PNG com fundo transparente. Tamanho: 100 x 100px)</label><br />
-                    <input type="hidden" name="hdn_file" value="0"/>
-                    <dtml-call expr="REQUEST.set('id_logo', 'logo_casa.gif')">
-                    <dtml-if "_.hasattr(documentos.propriedades,id_logo)">
-                      <dtml-let logo="_.getattr(documentos.propriedades,'logo_casa.gif').absolute_url">
-                         <img valign="middle" src="<dtml-var logo>" alt="Brasão da Casa Legislativa"></a>
-                      </dtml-let>
-                      <input type="radio" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field(document.casa_legislativa_form)"/><span class="texto">Manter</span>
-                      <input type="radio" name="radTI" value="E" onClick="ativa_desativa_file_field(document.casa_legislativa_form)"/><span class="texto">Excluir</span>
-                      <input type="radio" name="radTI" value="S" onClick="ativa_desativa_file_field(document.casa_legislativa_form)"/><span class="texto">Substituir</span>
-                      <input type="file" id="file_nom_logo" name="file_nom_logo" size="40" maxlength="100" accept="image/png" disabled="1" />
-                    <dtml-else>
-                      <input type="file" id="file_nom_logo" name="file_nom_logo" size="40" maxlength="100" accept="image/png" />
-                      <input type="hidden" name="radTI" value="I"/>
-                    </dtml-if>
-                </td>
-            </tr>
-            <tr> 
-                <td colspan="3"><label>HomePage</label><br />
-                    <input type="text" name="txt_end_web_casa" value="<dtml-var expr="documentos.propriedades.end_web_casa" missing>" size="70" maxlength="100" /></td>
-            </tr>
-            <tr> 
-                <td colspan="3"><label>E-mail</label><br />
-                    <input type="text" name="txt_end_email_casa" value="<dtml-var expr="documentos.propriedades.end_email_casa" missing>" size="70" maxlength="100" /></td>   
-            </tr> 
-            <tr> 
-                <td colspan="3"><label>Informação Geral</label><br />
-                    <textarea name="txt_informacao_geral" cols="65" rows="5"><dtml-var expr="documentos.propriedades.txt_informacao_geral" missing></textarea></td>
-            </tr>
-            <tr> 
-                <td><label>Númeração de Protocolo</label><br />
-                  <dtml-in expr="[('1', 'Anual'), ('0', 'Consecutiva')]">
-                    <input type="radio" name="rad_protocolo" value="<dtml-var expr="_['sequence-key']">"
-                      id="rad_protocolo"
-                      <dtml-if expr="_.int(documentos.propriedades.numero_protocolo_anual)==_.int(_['sequence-key'])">checked=1</dtml-if> />
-                      <dtml-var expr="_['sequence-item']"> 
-                  </dtml-in>
-                </td>
-                <td><label>reCaptcha Key</label><br />
-                     <input type="text" name="txt_recaptcha_key" size="50" value="<dtml-var expr="documentos.propriedades.recaptcha_key" missing>" /></td>
-                <td><label>Acompanhamento de matérias?</label><br />
-                  <dtml-in expr="[('1', 'Sim'), ('0', 'Não')]">
-                    <input type="radio" name="rad_acompanhamento" value="<dtml-var expr="_['sequence-key']">"
-                      id="rad_acompanhamento"
-                      <dtml-if expr="_.int(documentos.propriedades.acompanhamento_materia)==_.int(_['sequence-key'])">checked=1</dtml-if> />
-                      <dtml-var expr="_['sequence-item']"> 
-                  </dtml-in>
-                </td>
-            </tr>
-            <tr> 
-                <td colspan="3"><label>Token para REST API de Assinatura Digital</label><br />
-                    <textarea name="txt_restpki_access_token" cols="65" rows="6"><dtml-var expr="documentos.propriedades.restpki_access_token" missing></textarea></td>
-            </tr>
-         </table>
-</fieldset>
-        <p align="center"> 
-         <input type="button" class="botao" name="btn_casa_salvar" value="Salvar" onClick="campos_criticar(document.casa_legislativa_form)" />
-        </p>
+<h1 class="firstHeading">Cadastro de Casa Legislativa</h1> 
+
+
+<form name="casa_legislativa_form" method="post" action="casa_legislativa_salvar_proc"  enctype="multipart/form-data">
+  <input type="hidden" name="hdn_url" value="casa_legislativa_form" />
+  
+  <div class="form-row">
+     <div class="col-12 col-md-7 mb-3">
+        <label for="txt_nom_casa" class="required">Nome da Casa</label>     
+        <input class="form-control" type="text" id="txt_nom_casa" name="txt_nom_casa" value="<dtml-var expr="sapl_documentos.props_sagl.nom_casa" missing>" maxlength="75" />
+     </div>
+     <div class="col-6 col-md-2 mb-3">
+       <label for="txt_cod_casa" class="required">Código</label>
+       <input class="form-control number" type="number" id="txt_cod_casa" name="txt_cod_casa" value="<dtml-var expr="sapl_documentos.props_sagl.cod_casa">" />
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+        <label for="txt_sgl_casa" class="required">Sigla</label>
+        <input class="form-control" type="text" id="txt_sgl_casa" name="txt_sgl_casa" value="<dtml-var expr="sapl_documentos.props_sagl.sgl_casa" missing null="">" maxlength="10" onBlur="form.txt_sgl_casa.value=form.txt_sgl_casa.value.toUpperCase()" />
+     </div>
+  </div>     
+
+  <div class="form-row">
+     <div class="col-8 col-md-9 mb-3">
+        <label for="txt_end_casa" class="required">Endereço</label>
+        <input class="form-control" type="text" id="txt_end_casa" name="txt_end_casa" value="<dtml-var expr="sapl_documentos.props_sagl.end_casa" missing null="">" maxlength="100" />
+     </div>
+     <div class="col-4 col-md-3 mb-3">
+        <label for="txt_num_cep" class="required">CEP</label>
+        <input class="form-control" type="text" id="txt_num_cep" name="txt_num_cep" value="<dtml-var expr="sapl_documentos.props_sagl.num_cep" missing>" maxlength="9" />
+     </div>     
+  </div>
+
+  <div class="form-row">
+     <div class="col-8 col-lg-4 mb-3">
+        <label for="txt_municipio" class="required">Município</label>
+        <div class="input-group">
+           <input class="form-control" type="text" id="txt_municipio"  name="txt_municipio" 
+             <dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=sapl_documentos.props_sagl.cod_localidade)">
+                value="<dtml-var nom_localidade missing null="">" 
+                <dtml-call expr="REQUEST.set('sgl_uf_municipio', sgl_uf)">
+             </dtml-in> size="45" maxlength="50" />
+             <div class="input-group-prepend">
+               <button class="btn btn-secondary" type="button" onClick="localidade_mostrar(document.casa_legislativa_form)"><i class="fa fa-search"></i><span class="d-none">OK</span></button>
+             </div>
+        </div>
+     </div>
+     <div class="col-4 col-lg-2 mb-3">     
+       <label for="lst_sgl_uf" class="required">Estado</label>
+       <select class="custom-select" id="lst_sgl_uf" name="lst_sgl_uf" size="1" style="value:sgl_uf missing">
+           <option value="0"></option>
+           <dtml-in expr="zsql.localidade_obter_zsql(tip_localidade='U')">
+              <option 
+                <dtml-if expr="_.has_key('sgl_uf_municipio') and sgl_uf==sgl_uf_municipio">
+                   selected 
+                </dtml-if>
+                value="<dtml-var sgl_uf>"><dtml-var sgl_uf></option>
+            </dtml-in>
+       </select>
+     </div>
+     <div class="col-6 col-lg-3 mb-3">     
+       <label for="txt_num_tel">Telefone</label>
+       <input class="form-control" type="text" id="txt_num_tel" name="txt_num_tel" value="<dtml-var expr="sapl_documentos.props_sagl.num_tel" missing>" maxlength="50" />
+     </div> 
+     <div class="col-6 col-lg-3 mb-3">     
+       <label for="txt_num_fax">Fax</label>
+       <input class="form-control" type="text" id="txt_num_fax" name="txt_num_fax" value="<dtml-var expr="sapl_documentos.props_sagl.num_fax" missing>" maxlength="50" />
+     </div>         
+  </div>
+  
+  <div class="form-row"> 
+     <div class="col-12 col-lg-4 mb-3">
+        <label for="txt_end_web_casa">Website</label>
+        <input class="form-control" type="text" id="txt_end_web_casa" name="txt_end_web_casa" value="<dtml-var expr="sapl_documentos.props_sagl.end_web_casa" missing>" maxlength="100" />
+     </div>
+     <div class="col-12 col-lg-4 mb-3">
+        <label for="txt_end_email_casa">E-mail</label>
+        <input class="form-control" type="text" id="txt_end_email_casa" name="txt_end_email_casa" value="<dtml-var expr="sapl_documentos.props_sagl.end_email_casa" missing>" maxlength="100" />
+     </div>     
+     <div class="col-12 col-lg-4 mb-3">
+        <label for="txt_txt_senha_inicial" class="required">Senha Inicial</label>
+        <input class="form-control" type="text" id="txt_txt_senha_inicial" name="txt_txt_senha_inicial" value="<dtml-var expr="sapl_documentos.props_sagl.txt_senha_inicial" missing>" maxlength="10" />
+     </div>     
+  </div>
+
+  <div class="form-row"> 
+     <div class="col-12 col-lg-6 mb-3">
+        <label for="txt_recaptcha_key">Chave reCaptcha</label>
+        <input class="form-control" type="text" id="txt_recaptcha_key" name="txt_recaptcha_key" value="<dtml-var expr="sapl_documentos.props_sagl.recaptcha_key" missing>" />     
+     </div>
+     <div class="col-6 col-lg-3 mb-3">
+        <label class="d-block required">Numeração de Protocolo</label>
+        <dtml-in expr="[('1', 'Anual'), ('0', 'Consecutiva')]">
+          <div class="form-check form-check-inline">        
+           <input class="form-check-input" type="radio" id="rad<dtml-var expr="_['sequence-key']">" name="rad_protocolo" value="<dtml-var expr="_['sequence-key']">"
+             <dtml-if expr="_.int(sapl_documentos.props_sagl.numero_protocolo_anual)==_.int(_['sequence-key'])">
+                checked=1
+             </dtml-if> />
+             <label class="form-check-label" for="rad<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></label>  
+          </div>
+        </dtml-in>
+     </div>
+     <div class="col-6 col-lg-3 mb-3">
+        <label class="d-block">Acompanhamento de Matérias</label>
+        <dtml-in expr="[('1', 'Sim'), ('0', 'Não')]">
+          <div class="form-check form-check-inline">                
+           <input class="form-check-input" type="radio" id="rad_rad<dtml-var expr="_['sequence-key']">" name="rad_acompanhamento" value="<dtml-var expr="_['sequence-key']">"
+             <dtml-if expr="_.int(sapl_documentos.props_sagl.acompanhamento_materia)==_.int(_['sequence-key'])">
+                checked=1
+             </dtml-if> />
+             <label class="form-check-label" for="rad_rad<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></label>  
+          </div>
+        </dtml-in>
+     </div>          
+  </div>
+
+  <div class="form-row"> 
+     <div class="col-12 mb-3">
+        <label for="txt_restpki_access_token">Token de Assinatura Digital</label>
+        <textarea class="form-control autoresize" id="txt_restpki_access_token" name="txt_restpki_access_token" rows="1"><dtml-var expr="sapl_documentos.props_sagl.restpki_access_token" missing></textarea>
+     </div>
+     <div class="col-12 mb-3">
+        <label for="txt_informacao_geral">Observações</label>
+        <textarea class="form-control" id="txt_informacao_geral" name="txt_informacao_geral" rows="1"><dtml-var expr="sapl_documentos.props_sagl.txt_informacao_geral" missing></textarea>
+     </div>
+  </div>
+
+  <div class="form-row"> 
+     <div class="col-12 mb-3">
+        <label class="d-block">Brasão</label>
+        <div class="row">
+          <input type="hidden" name="hdn_file" value="0"/>
+          <dtml-call expr="REQUEST.set('id_logo', 'logo_casa.gif')">
+          <dtml-if "_.hasattr(sapl_documentos.props_sagl,id_logo)">
+           <div class="col-6 mb-3">
+             <dtml-let logo="_.getattr(sapl_documentos.props_sagl,'logo_casa.gif').absolute_url">
+                <img class="image-fluid" src="<dtml-var logo>?<dtml-var expr="ZopeTime().timeTime()">" alt="Brasão da Casa Legislativa"></a>
+             </dtml-let>
+             <div class="form-check form-check-inline">                           
+               <input class="form-check-input" type="radio" id="r1" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field(document.casa_legislativa_form)"/>
+               <label class="form-check-label" for="r1">Manter</label>  
+             </div>
+             <div class="form-check form-check-inline">                                      
+               <input class="form-check-input" type="radio" id="r2" name="radTI" value="E" onClick="ativa_desativa_file_field(document.casa_legislativa_form)"/>
+               <label class="form-check-label" for="r2">Excluir</label>  
+             </div>
+             <div class="form-check form-check-inline">                                                 
+               <input class="form-check-input" type="radio" id="r3" name="radTI" value="S" onClick="ativa_desativa_file_field(document.casa_legislativa_form)"/>
+               <label class="form-check-label" for="r3">Substituir</label>  
+             </div>
+           </div>
+           <div class="col-6 mb-3">
+             <div class="custom-file">
+               <input type="file" class="custom-file-input" id="file_nom_logo" name="file_nom_logo" accept="image/png" disabled />
+               <label class="custom-file-label" for="file_nom_logo">Selecione a imagem</label>
+             </div>
+             <small id="passwordHelpBlock" class="form-text text-muted">
+                PNG com fundo transparente. Tamanho: 100x100px.
+             </small>
+           </div>
+          </div>  
+        <dtml-else>
+          <div class="col-6 mb-3">
+           <div class="custom-file">
+             <input type="file" class="custom-file-input" id="file_nom_logo" name="file_nom_logo" accept="image/png" />
+             <label class="custom-file-label" for="file_nom_logo">Selecione a imagem</label>
+           </div>
+           <small id="passwordHelpBlock" class="form-text text-muted">
+              PNG com fundo transparente. Tamanho: 100x100px.
+           </small>  
+           <input type="hidden" name="radTI" value="I"/>
+        </dtml-if>
+        </div>
+       </div>
+
+
+  <input class="btn btn-primary" type="button" name="btn_casa_salvar" value="Salvar" onClick="campos_criticar(document.casa_legislativa_form)" />
+
+ <input type="hidden" name="txt_cor_fundo" value="<dtml-var expr="sapl_documentos.props_sagl.cor_fundo" missing>">
+ <input type="hidden" name="txt_cor_borda" value="<dtml-var expr="sapl_documentos.props_sagl.cor_borda" missing>">
+ <input type="hidden" name="txt_cor_principal" value="<dtml-var expr="sapl_documentos.props_sagl.cor_principal" missing>">
+
+   <div class="row">
+      <div class="col-md-12 mt-2">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+      </div>
+   </div> 
+ 
 </form>
+
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
+
 <dtml-var standard_html_footer>

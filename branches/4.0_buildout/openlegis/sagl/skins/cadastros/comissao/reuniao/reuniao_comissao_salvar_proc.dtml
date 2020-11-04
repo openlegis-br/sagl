@@ -14,7 +14,7 @@
                           txt_observacao         = txa_txt_observacao)">
 
 <dtml-except>
-  <dtml-let mensagem="'Não foi possível salvar a Reunião da Comissão. Tente novamente!'">
+  <dtml-let mensagem="'Não foi possível salvar a Reunião da Comissão. Tente novamente!'" tipo_mensagem="'danger'">
     <dtml-var mensagem_emitir>
   </dtml-let>
 
@@ -29,8 +29,8 @@
         <dtml-if expr="(_.int(hdn_file_pauta)==1)">
             <dtml-if hdn_cod_reuniao>
                 <dtml-call expr="REQUEST.set('id_pauta', _.str(hdn_cod_reuniao)+'_pauta.pdf')">
-                <dtml-if "_.hasattr(documentos.reuniao_comissao,id_pauta)">
-                    <dtml-let documento="_.getattr(documentos.reuniao_comissao,id_pauta) ">
+                <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_pauta)">
+                    <dtml-let documento="_.getattr(sapl_documentos.reuniao_comissao,id_pauta) ">
                         <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
                         <dtml-try>
                             <dtml-call "documento.manage_upload(file=file_nom_arquivo_pauta)">
@@ -47,7 +47,7 @@
              </dtml-if>
              <dtml-if "not existe_arquivo">
           <dtml-try>            
-                  <dtml-call expr="documentos.reuniao_comissao.manage_addFile(id=id_pauta,file=file_nom_arquivo_pauta)">
+                  <dtml-call expr="sapl_documentos.reuniao_comissao.manage_addFile(id=id_pauta,file=file_nom_arquivo_pauta)">
                  <dtml-except> 
                      <dtml-call expr="REQUEST.set('erro', 1)">              
                  </dtml-try>      
@@ -56,11 +56,11 @@
      <dtml-elif expr="radTI=='E'">
          <dtml-if hdn_cod_reuniao>
              <dtml-call expr="REQUEST.set('id_pauta', _.str(hdn_cod_reuniao)+'_pauta.pdf')">
-             <dtml-call "documentos.reuniao_comissao.manage_delObjects(id_pauta)">
+             <dtml-call "sapl_documentos.reuniao_comissao.manage_delObjects(id_pauta)">
          </dtml-if>
      </dtml-if>
     <dtml-if erro>
-        <dtml-let mensagem="'Não foi possível salvar o texto integral da Pauta da Reunião. Tente atualizar este campo novamente.'">
+        <dtml-let mensagem="'Não foi possível salvar o arquivo da pauta da Reunião.'" tipo_mensagem="'danger'">
             <dtml-var mensagem_emitir>
         </dtml-let>        
     </dtml-if>
@@ -71,8 +71,8 @@
         <dtml-if expr="(_.int(hdn_file_ata)==1)">
             <dtml-if hdn_cod_reuniao>
                 <dtml-call expr="REQUEST.set('id_ata', _.str(hdn_cod_reuniao)+'_ata.pdf')">
-                <dtml-if "_.hasattr(documentos.reuniao_comissao,id_ata)">
-                    <dtml-let documento="_.getattr(documentos.reuniao_comissao,id_ata) ">
+                <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_ata)">
+                    <dtml-let documento="_.getattr(sapl_documentos.reuniao_comissao,id_ata) ">
                         <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
                         <dtml-try>
                             <dtml-call "documento.manage_upload(file=file_nom_arquivo_ata)">
@@ -89,7 +89,7 @@
              </dtml-if>
              <dtml-if "not existe_arquivo">
           <dtml-try>            
-                  <dtml-call expr="documentos.reuniao_comissao.manage_addFile(id=id_ata,file=file_nom_arquivo_ata)">
+                  <dtml-call expr="sapl_documentos.reuniao_comissao.manage_addFile(id=id_ata,file=file_nom_arquivo_ata)">
                  <dtml-except> 
                      <dtml-call expr="REQUEST.set('erro', 1)">              
                  </dtml-try>      
@@ -98,19 +98,24 @@
      <dtml-elif expr="radTI2=='E'">
          <dtml-if hdn_cod_reuniao>
              <dtml-call expr="REQUEST.set('id_ata', _.str(hdn_cod_reuniao)+'_ata.pdf')">
-             <dtml-call "documentos.reuniao_comissao.manage_delObjects(id_ata)">
+             <dtml-call "sapl_documentos.reuniao_comissao.manage_delObjects(id_ata)">
          </dtml-if>
      </dtml-if>
     <dtml-if erro>
-        <dtml-let mensagem="'Não foi possível salvar o texto integral da Ata da Reunião. Tente atualizar este campo novamente.'">
+        <dtml-let mensagem="'Não foi possível salvar o arquivo da ata da Reunião.'" tipo_mensagem="'danger'">
             <dtml-var mensagem_emitir>
         </dtml-let>        
     </dtml-if>
 
-
-    <dtml-let mensagem="'Reunião salva com sucesso!'" sucesso="1" url="hdn_url">
-      <dtml-var mensagem_emitir>
-    </dtml-let>
+    <dtml-if hdn_url>
+       <dtml-let mensagem="'Reunião salva com sucesso!'" tipo_mensagem="'success'" url="hdn_url">
+          <dtml-var mensagem_emitir>
+       </dtml-let>
+    <dtml-else>
+       <dtml-let mensagem="'Reunião salva com sucesso!'" tipo_mensagem="'success'">
+          <dtml-var mensagem_emitir>
+       </dtml-let>
+    </dtml-if>
 
 </dtml-try>
 

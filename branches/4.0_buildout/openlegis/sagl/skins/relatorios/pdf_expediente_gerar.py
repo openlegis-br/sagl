@@ -1,4 +1,4 @@
-##parameters=rodape_dic, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_presidente, sessao=''
+##parameters=rodape_dic, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_pareceres, lst_presidente, sessao=''
 """Script para geração da pauta das matérias do expediente em PDF
    Autor: Luciano De Fázio - OpenLegis
    versão: 1.0
@@ -66,11 +66,11 @@ def paraStyle():
     tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="12" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="12" alignment="JUSTIFY"/>\n'
     tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="9" alignment="LEFT"/>\n'
-    tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="9.0" leading="11" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="10.0" leading="12" alignment="JUSTIFY"/>\n'
     tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P5" fontName="Helvetica" fontSize="11.0" leading="12" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P6" fontName="Helvetica" fontSize="11.0" leading="12" alignment="CENTER"/>\n'
-    tmp+='\t\t<paraStyle name="P7" fontName="Helvetica-Bold" fontSize="12.0" textColor="#444444" leading="16" spaceAfter="2" spaceBefore="8" alignment="LEFT"/>\n'
+    tmp+='\t\t<paraStyle name="P7" fontName="Helvetica-Bold" fontSize="12.0" textColor="#333333" leading="16" spaceAfter="2" spaceBefore="8" alignment="LEFT"/>\n'
     tmp+='\t</stylesheet>\n'
     return tmp
 
@@ -101,96 +101,128 @@ def inf_basicas(inf_basicas_dic):
  
     return tmp
 
-
+lst_materia_apresentada = [(i + 1, j) for i, j in enumerate(lst_materia_apresentada)]
 def materia_apresentada(lst_materia_apresentada):
     """
     """
     tmp = ''
-    tmp+='\t\t<para style="P7" spaceBefore="10"><b><u>MATÉRIAS APRESENTADAS</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="2">\n'
-    tmp+='\t\t\t<font color="white"> </font>\n'
-    tmp+='\t\t</para>\n'
-    for materia_apresentada in lst_materia_apresentada:
-     if materia_apresentada['link_materia']!=None and materia_apresentada['link_materia']!="":
-        tmp+='\t\t<para style="P1"><font color="#126e90">' + materia_apresentada['link_materia']+'</font> - '+ materia_apresentada['nom_autor'] + '</para>\n'
+    if lst_materia_apresentada != []:
+       tmp+='\t\t<para style="P7" spaceBefore="8"><b><u>LEITURA DE MATÉRIAS E DOCUMENTOS</u></b></para>\n\n'
+       tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+       tmp+='\t\t\t<font color="white"> </font>\n'
+       tmp+='\t\t</para>\n'
+    for i, materia_apresentada in lst_materia_apresentada:
+     if materia_apresentada != []:
+        tmp+='\t\t<para style="P1">' + str(i) +') <font color="#126e90">' + materia_apresentada['link_materia']+'</font> - '+ materia_apresentada['nom_autor'] + '</para>\n'
         tmp+='\t\t<para style="P2" spaceAfter="2">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
         tmp+='\t\t<para style="P3">' + materia_apresentada['txt_ementa'].replace('&','&amp;') + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
      else:
-        tmp+='\t\t<para style="P3">Nenhuma matéria apresentada parana leitura na Sessão</para>\n'
+        tmp+='\t\t<para style="P3">Não há itens para leitura nesta Sessão.</para>\n'
 
     return tmp
 
+lst_indicacoes = [(i + 1, j) for i, j in enumerate(lst_indicacoes)]
 def indicacoes(lst_indicacoes):
     """
     """
     tmp = ''
-    tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>INDICAÇÕES</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="2">\n'
-    tmp+='\t\t\t<font color="white"> </font>\n'
-    tmp+='\t\t</para>\n'
-    for indicacao in lst_indicacoes:
-     if indicacao['link_materia']!=None or indicacao['link_materia']!="":
-        tmp+='\t\t<para style="P1"><font color="#126e90">' + indicacao['link_materia']+'</font> - '+ indicacao['nom_autor'] + '</para>\n'
+    if lst_indicacoes != []:
+       tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>LEITURA DE INDICAÇÕES</u></b></para>\n\n'
+       tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+       tmp+='\t\t\t<font color="white"> </font>\n'
+       tmp+='\t\t</para>\n'
+    for i, indicacao in lst_indicacoes:
+     if len(indicacao) > 0:
+        tmp+='\t\t<para style="P1">' + str(i) +') <font color="#126e90">' + str(indicacao['link_materia'])+'</font> - '+ indicacao['nom_autor'] + '</para>\n'
         tmp+='\t\t<para style="P2" spaceAfter="2">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
         tmp+='\t\t<para style="P3">' + indicacao['txt_ementa'].replace('&','&amp;') + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
      else:
-        tmp+='\t\t<para style="P3">Nenhuma Indicação</para>\n'
+        tmp+='\t\t<para style="P3">Não há nenhuma Indicação</para>\n'
 
     return tmp
 
+lst_pareceres = [(i + 1, j) for i, j in enumerate(lst_pareceres)]
+def pareceres(lst_pareceres):
+    """
+    """
+    tmp = ''
+    if lst_pareceres != []:
+       tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>VOTAÇÃO DE PARECERES</u></b></para>\n\n'
+       tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+       tmp+='\t\t\t<font color="white"> </font>\n'
+       tmp+='\t\t</para>\n'
+    for i, parecer in lst_pareceres:
+     if len(parecer) > 0:
+        tmp+='\t\t<para style="P1">'+ str(i) +') <font color="#126e90">' + parecer['link_materia']+'</font> - '+ parecer['nom_autor'] + '</para>\n'
+        tmp+='\t\t<para style="P2" spaceAfter="2">\n'
+        tmp+='\t\t\t<font color="white"> </font>\n'
+        tmp+='\t\t</para>\n'
+        tmp+='\t\t<para style="P3">' + parecer['txt_ementa'].replace('&','&amp;') + '</para>\n'
+        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
+        tmp+='\t\t\t<font color="white"> </font>\n'
+        tmp+='\t\t</para>\n'
+     else:
+        tmp+='\t\t<para style="P3">Não há nenhum Requerimento</para>\n'
+
+    return tmp
+
+lst_requerimentos = [(i + 1, j) for i, j in enumerate(lst_requerimentos)]
 def requerimentos(lst_requerimentos):
     """
     """
     tmp = ''
-    tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>REQUERIMENTOS</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="2">\n'
-    tmp+='\t\t\t<font color="white"> </font>\n'
-    tmp+='\t\t</para>\n'
-    for requerimento in lst_requerimentos:
-     if requerimento['link_materia']!=None or requerimento['link_materia']!="":
-        tmp+='\t\t<para style="P1"><font color="#126e90">' + requerimento['link_materia']+'</font> - '+ requerimento['nom_autor'] + '</para>\n'
+    if lst_requerimentos != []:
+       tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>VOTAÇÃO DE REQUERIMENTOS</u></b></para>\n\n'
+       tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+       tmp+='\t\t\t<font color="white"> </font>\n'
+       tmp+='\t\t</para>\n'
+    for i, requerimento in lst_requerimentos:
+     if len(requerimento) > 0:
+        tmp+='\t\t<para style="P1">'+ str(i) +') <font color="#126e90">' + requerimento['link_materia']+'</font> - '+ requerimento['nom_autor'] + '</para>\n'
         tmp+='\t\t<para style="P2" spaceAfter="2">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
         tmp+='\t\t<para style="P3">' + requerimento['txt_ementa'].replace('&','&amp;') + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
      else:
-        tmp+='\t\t<para style="P3">Nenhum Requerimento</para>\n'
+        tmp+='\t\t<para style="P3">Não há nenhum Requerimento</para>\n'
 
     return tmp
 
+lst_mocoes = [(i + 1, j) for i, j in enumerate(lst_mocoes)]
 def mocoes(lst_mocoes):
     """
     """
     tmp = ''
-    tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>MOÇÕES</u></b></para>\n\n'
-    tmp+='\t\t<para style="P2" spaceAfter="2">\n'
-    tmp+='\t\t\t<font color="white"> </font>\n'
-    tmp+='\t\t</para>\n'
-    for mocao in lst_mocoes:
-     if mocao['link_materia']!=None or mocao['link_materia']!="":
-        tmp+='\t\t<para style="P1"><font color="#126e90">' + mocao['link_materia']+'</font> - '+ mocao['nom_autor'] + '</para>\n'
+    if lst_mocoes != []:
+       tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>VOTAÇÃO DE MOÇÕES</u></b></para>\n\n'
+       tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+       tmp+='\t\t\t<font color="white"> </font>\n'
+       tmp+='\t\t</para>\n'
+    for i, mocao in lst_mocoes:
+     if lst_mocoes != []:
+        tmp+='\t\t<para style="P1">'+ str(i) +') <font color="#126e90">' + mocao['link_materia']+'</font> - '+ mocao['nom_autor'] + '</para>\n'
         tmp+='\t\t<para style="P2" spaceAfter="2">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
         tmp+='\t\t<para style="P3">' + mocao['txt_ementa'].replace('&','&amp;') + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
         tmp+='\t\t\t<font color="white"> </font>\n'
         tmp+='\t\t</para>\n'
      else:
-        tmp+='\t\t<para style="P3">Nenhuma Moção</para>\n'
+        tmp+='\t\t<para style="P3">Não há nenhuma Moção</para>\n'
 
     return tmp
 
@@ -198,7 +230,7 @@ def mocoes(lst_mocoes):
 def presidente(lst_presidente):
     """ Gera o codigo rml da assinatura"""
     tmp=''
-    tmp+='\t\t<para style="P3" spaceAfter="25">\n'
+    tmp+='\t\t<para style="P3" spaceAfter="35">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
     tmp+='\t\t</para>\n'
     tmp+='\t\t<para style="P4"><b>' + str(lst_presidente) + '</b></para>\n'
@@ -209,7 +241,8 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     """
     """
 
-    arquivoPdf=str(int(time.time()*100))+".pdf"
+    #arquivoPdf=str(int(time.time()*100))+".pdf"
+    arquivoPdf=str(inf_basicas_dic["cod_sessao_plen"])+"_pauta_expediente.pdf"
 
     tmp=''
     tmp+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
@@ -228,20 +261,30 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     tmp+='\t<story>\n'
     tmp+=inf_basicas(inf_basicas_dic)
     tmp+=materia_apresentada(lst_materia_apresentada)
-    tmp+=requerimentos(lst_requerimentos)
+    tmp+=pareceres(lst_pareceres)
     tmp+=indicacoes(lst_indicacoes)
+    tmp+=requerimentos(lst_requerimentos)
     tmp+=mocoes(lst_mocoes)
     tmp+=presidente(lst_presidente)
     tmp+='\t</story>\n'
     tmp+='</document>\n'
     tmp_pdf=parseString(tmp)
 
-    if hasattr(context.temp_folder,arquivoPdf):
-        context.temp_folder.manage_delObjects(ids=arquivoPdf)
-    context.temp_folder.manage_addFile(arquivoPdf)
-    arq=context.temp_folder[arquivoPdf]
-    arq.manage_edit(title='Arquivo PDF temporario.',filedata=tmp_pdf,content_type='application/pdf')
+#    if hasattr(context.temp_folder,arquivoPdf):
+#        context.temp_folder.manage_delObjects(ids=arquivoPdf)
+#    context.temp_folder.manage_addFile(arquivoPdf)
+#    arq=context.temp_folder[arquivoPdf]
+#    arq.manage_edit(title='Arquivo PDF temporario.',filedata=tmp_pdf,content_type='application/pdf')
 
-    return "/temp_folder/"+arquivoPdf
+#    return "/temp_folder/"+arquivoPdf
+
+
+    if hasattr(context.sapl_documentos.pauta_sessao,arquivoPdf):
+        context.sapl_documentos.pauta_sessao.manage_delObjects(ids=arquivoPdf)
+    context.sapl_documentos.pauta_sessao.manage_addFile(arquivoPdf)
+    arq=context.sapl_documentos.pauta_sessao[arquivoPdf]
+    arq.manage_edit(title='Expediente',filedata=tmp_pdf,content_type='application/pdf')
+   
+    return "sapl_documentos/pauta_sessao/"+arquivoPdf
 
 return principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic)

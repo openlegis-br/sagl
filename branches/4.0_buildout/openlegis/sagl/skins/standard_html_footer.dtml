@@ -1,59 +1,145 @@
- </div><!-- Fim .container -->
- <div class="mb60 mb50-sm"></div><!-- margin -->
+           </div>
+        </div>
+      </div>
+   </main>
 
+<dtml-if expr="(not _.has_key('iframe') and not REQUEST.get('_iframe', '') and not REQUEST.get('modal', '')) or (_.has_key('iframe') and iframe=='0')">
 
-  <div class="modal fade" id="myModal">
-    <div class="modal-lg modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-           <button type="button" class="close" data-dismiss="modal">
-              <span aria-hidden="true">×</span><span class="sr-only">Fechar</span>
-           </button>
-           <h3 class="modal-title" id="modal-login-label">Diálogo</h3>
+<footer class="footer d-print-none mt-auto py-3">
+      <div class="container">
+        <hr>
+        <div class="row">
+           <div class="col-lg-6 col-sm-6">
+              <span class="text-muted"><a href="https://www.openlegis.com.br" target="_blank"><i class="fab fa-creative-commons mr-1"></i><b>open</b>legis</a> - v4.0</span>
+           </div>
+           <div class="col-lg-6 col-sm-6 text-sm-right">
+              <span class="text-muted d-none d-md-inline small"><dtml-var expr="_.DateTime()" fmt="%d/%m/%Y - %H:%M:%S"></span>
+           </div>
          </div>
-         <div class="modal-body">
-           <div class="close-button">     
-           </div>
-           <div class="embed-responsive embed-responsive-16by9">
-	      <iframe class="embed-responsive-item" frameborder="0"></iframe>
-           </div>
-	   <div class="modal-footer">
-	      <button class="btn btn-primary" data-dismiss="modal">Fechar</button>
-	   </div>
-	 </div>
+      </div>
+    </footer>
 
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
+</dtml-if>
 
-            <footer class="footer">
-                <div class="footer-bottom">
-                    <div class="container">
-                        <div class="footer-right">
-                            <p class="copyright"><dtml-var "documentos.propriedades.nom_casa">
-                            <p class="copyright"><dtml-var "documentos.propriedades.end_casa"> | CEP <dtml-var "documentos.propriedades.num_cep"></p>
-                            <p class="copyright">Fone  <dtml-var "documentos.propriedades.num_tel"> | <a href="<dtml-var "documentos.propriedades.end_web_casa">" target="_blank">Site</a> | <a href="mailto:<dtml-var "documentos.propriedades.end_email_casa">">Email</a></p>
-                        </div><!-- End .footer-right -->
-                        
-                        <div class="social-icons">
-                            <a href="https://www.openlegis.com.br" target="_blank"><img src="&dtml-portal_url;/imagens/logo_openlegis.png" alt="OpenLegis" title="Desenvolvimento OpenLegis"/></a>
-                        </div><!-- End .social-icons -->
-                    </div><!-- End .container -->
-                </div><!-- End .footer-bottom -->
-            </footer><!-- End .footer -->
+<!-- Modal -->  
+<div class="modal fade" id="iFrameModal" tabindex="-1" role="dialog" aria-labelledby="iFrameModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="h5 modal-title" id="iFrameModalLabel">New message</p>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <iframe src="" height="500px" width="100%" frameborder="0"></iframe>
+      </div>
+        <button type="button" data-dismiss="modal" hidden="hidden" id="close"><span class="d-none">Fechar</span></button>
+    </div>
+  </div>
+</div>
 
-        </div><!-- Fim #wrapper -->
+<script type="text/javascript">  
+$('#iFrameModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var title = button.data('title') // Extract title from data-* attributes
+  var src = button.data('src') // Extract src from data-* attributes
+  var modal = $(this)
+  modal.find('.modal-title').text(title)
+  modal.find('.modal-body iframe').attr("src", src)
+})
+
+ <dtml-if expr="not portal_membership.isAnonymousUser()">
+   $('#iFrameModal').on('hidden.bs.modal', function () {
+   window.location.reload(true);
+   })
+ </dtml-if>
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('a[data-confirm]').click(function(ev) {
+		var href = $(this).attr('href');
+		if (!$('#dataConfirmModal').length) {
+			$('body').append('<div class="modal fade" id="dataConfirmModal" tabindex="-1" role="dialog" aria-labelledby="dataConfirmLabel" aria-hidden="true"><div class="modal-dialog modal-md" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="exampleModalLabel">Mensagem do sistema</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body"></div><div class="modal-footer"><a class="btn btn-primary" id="dataConfirmOK">OK</a><button class="btn btn-danger" data-dismiss="modal" aria-hidden="true">Cancelar</button></div></div></div></div>');
+		} 
+		$('#dataConfirmModal').find('.modal-body').text($(this).attr('data-confirm'));
+		$('#dataConfirmOK').attr('href', href);
+		$('#dataConfirmModal').modal({show:true});
+		return false;
+	});
+});
+</script>
+
+<script type="text/javascript">
+$( document ).ready( function () {
+    $( '.dropdown-menu a.dropdown-toggle' ).on( 'click', function ( e ) {
+        var $el = $( this );
+        $el.toggleClass('active-dropdown');
+        var $parent = $( this ).offsetParent( ".dropdown-menu" );
+        if ( !$( this ).next().hasClass( 'show' ) ) {
+            $( this ).parents( '.dropdown-menu' ).first().find( '.show' ).removeClass( "show" );
+        }
+        var $subMenu = $( this ).next( ".dropdown-menu" );
+        $subMenu.toggleClass( 'show' );
         
-        <a id="scroll-top" href="#top" title="Scroll top"><i class="fa fa-angle-up"></i></a>
+        $( this ).parent( "li" ).toggleClass( 'show' );
 
-        <!-- Fim -->
-        <script src="&dtml-portal_url;/javascript/jquery.min.js"></script>
-        <script src="&dtml-portal_url;/assets/js/bootstrap-datepicker.js"></script>
-        <script src="&dtml-portal_url;/assets/js/bootstrap-datepicker.pt-BR.js"></script>
-        <script src="&dtml-portal_url;/assets/js/plugins.min.js"></script>
-        <script src="&dtml-portal_url;/assets/js/main.js"></script>
-        <script src="&dtml-portal_url;/assets/js/modal-iframe.js"></script>
-        <script src="&dtml-portal_url;/assets/js/validator.min.js"></script>
-        <script src="&dtml-portal_url;/assets/js/jquery.popconfirm.js"></script>
-    </body>
+        $( this ).parents( 'li.nav-item.dropdown.show' ).on( 'hidden.bs.dropdown', function ( e ) {
+            $( '.dropdown-menu .show' ).removeClass( "show" );
+            $el.removeClass('active-dropdown');
+        } );
+        
+         if ( !$parent.parent().hasClass( 'navbar-nav' ) ) {
+            $el.next().css( { "top": $el[0].offsetTop, "left": $parent.outerWidth() - 4 } );
+        }
+
+        return false;
+    } );
+} );
+</script>
+
+   <dtml-if expr="_.has_key('QUERY_STRING') and QUERY_STRING == 'retry=0'">
+      <script type="text/javascript">
+         $(window).on('load',function(){
+             $('#loginModal').modal('show');
+         });
+      </script>
+   </dtml-if>
+   <script type="text/javascript">
+     $(document).ready(function() {
+       document.title = $(".firstHeading").text() + ' — ' + document.title;
+     });
+   </script>
+
+<script>
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.getElementsByClassName('needs-validation');
+    // Loop over them and prevent submission
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+</script>
+
+</body>
 </html>
+

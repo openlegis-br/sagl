@@ -1,22 +1,18 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript">
-$(document).ready(function() {
-	$(".popup1").fancybox({
-		maxWidth	: 1024,
-		maxHeight	: 800,
-		fitToView	: false,
-		width		: '95%',
-		height		: '93%',
-		autoSize	: false,
-		closeClick	: false,
-                scrolling       : 'auto',
-                preload         : true,
-		openEffect	: 'fade',
-		closeEffect	: 'fade'
-	});
-});
-</script>
+  <script language="javascript" type="text/javascript">
+      function OpenPopupCenter(pageURL, title, w, h) {
+          var left = (screen.width - w) / 2;
+          var top = (screen.height - h) / 4;  // for 25% - devide by 4  |  for 33% - devide by 3
+          var targetWin = window.open(pageURL, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+          var win_timer = setInterval(function() {   
+            if(targetWin.closed) {
+              window.location.reload();
+              clearInterval(win_timer);
+            } 
+          }, 100);
+        } 
+  </script>
 
   <h1 class="firstHeading">Aposição de Assinatura Digital</h1>
 
@@ -28,9 +24,8 @@ $(document).ready(function() {
 
  <fieldset>
   <dtml-in expr="zsql.coautoria_proposicao_obter_zsql(cod_autor=cod_autor_atual, ind_excluido=0)">
-   <dtml-if expr="dat_envio=='00/00/0000 00:00:00'">
     <dtml-if sequence-start>
-     <table>
+     <table class="table">
       <tr>
        <th width="20%">Tipo de Proposição</th>
        <th>Descrição</th>
@@ -41,35 +36,18 @@ $(document).ready(function() {
       <tr>
        <td><dtml-var des_tipo_proposicao></td>
        <td><dtml-var txt_descricao></td>
-      <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor_proposicao, ind_excluido=0)">
        <td><dtml-var nom_autor_join></td>
-      </dtml-in>
        <td>
            <div id="toolbar" class="ui-widget ui-corner-all"><p></p>
               <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
-              <dtml-if "_.hasattr(documentos.proposicao,id_documento_assinado)">
-                 <dtml-let documento_assinado="_.getattr(documentos.proposicao,id_documento_assinado).absolute_url">
-                   <a class="popup1 signed_pdf" style="cursor: pointer; float:left; margin-right: 2px;" href="<dtml-var documento_assinado>?<dtml-var expr="ZopeTime().timeTime()">" data-fancybox-type="iframe">Texto</a>
+              <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento_assinado)">
+                 <dtml-let documento_assinado="_.getattr(sapl_documentos.proposicao,id_documento_assinado).absolute_url">
+                   <a class="popup1 signed_pdf" style="cursor: pointer; float:left; margin-right: 2px;" href="<dtml-var documento_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">Texto</a>
                  </dtml-let>
                <dtml-if expr="ind_aderido==0">
                  <div id="menuitem2" style="cursor: pointer; float:left;">
-                   <a class="pdf">Assinar</a>
+                   <a class="pdf"  href="#void(0) "onclick="OpenPopupCenter('<dtml-var portal_url>/generico/assinador/pades-cosignature_html?codigo=<dtml-var cod_proposicao>&tipo_doc=proposicao', 'Test!?', 800, 600);">Assinar</a>
                  </div>
-			         <script type="text/javascript">
-			           $('#menuitem2').click(function () {
-    			           $.fancybox({
-        			   type: 'iframe',
-        			   href: '&dtml-portal_url;/cadastros/proposicao/assinador/pades-cosignature_html?cod_proposicao=<dtml-var cod_proposicao>',
-				   width	   : '70%',
-				   height	   : '50%',
-                                   minHeight	   : 320,
-        			   preload         : true,
-                                   afterClose      : function() {
-                                   window.location.href = "&dtml-portal_url;/cadastros/proposicao/aposicao_assinatura_form";},
-		                   closeEffect	: 'fade'
-    			           });
-			           });
-			         </script>
              <dtml-else>
                 ** Assinado **
              </dtml-if>
@@ -80,12 +58,10 @@ $(document).ready(function() {
     <dtml-if sequence-end>
      </table>
     </dtml-if>
-  </dtml-if>
   <dtml-else>
-    <p align="left">Não há nenhuma proposição de outro autor disponivel para assinatura</p>
+    <p align="left">Não há nenhuma proposição disponivel para assinatura</p>
   </dtml-in>
  </fieldset>
-
 	<script>
   	$(function() {
  	   $( ".pdf" )

@@ -1,0 +1,60 @@
+<dtml-call expr="REQUEST.set('cod_localidade', '')">
+<dtml-if expr="txt_municipio!='' and lst_sgl_uf!=''">
+  <dtml-in expr="zsql.localidade_obter_zsql(sgl_uf = lst_sgl_uf, tip_localidade='M', nom_localidade_pesq=txt_municipio)">
+     <dtml-call expr="REQUEST.set('cod_localidade', cod_localidade)">
+  <dtml-else>
+     <dtml-let mensagem="'A localidade especificada não existe.'" tipo_mensagem="'danger'">
+          <dtml-var mensagem_emitir>
+     </dtml-let>
+     <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-in>
+</dtml-if>
+
+<dtml-if expr="lst_tip_norma!=''">
+    <dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=lst_tip_norma, num_norma=txt_num_norma, ano_norma=txt_ano_norma)">
+        <dtml-call expr="REQUEST.set('cod_norma', cod_norma)">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+        <dtml-let mensagem="'A Lei informada não existe no sistema!'" tipo_mensagem="'danger'">
+            <dtml-var mensagem_emitir>
+        </dtml-let>         
+    </dtml-in>
+<dtml-else>
+    <dtml-call expr="REQUEST.set('cod_norma', '')">
+</dtml-if>
+
+<dtml-unless erro>
+
+<dtml-if hdn_cod_logradouro>
+  <dtml-call expr="REQUEST.set('metodo', zsql.logradouro_atualizar_zsql)">
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.logradouro_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_logradouro  = hdn_cod_logradouro,
+                          nom_logradouro  = txt_nom_logradouro,
+                          nom_bairro      = txt_nom_bairro,
+                          num_cep         = txt_num_cep,
+                          cod_localidade  = cod_localidade,
+                          cod_norma       = cod_norma,
+                          )">
+
+            <dtml-unless hdn_cod_logradouro>
+              <dtml-in expr="zsql.logradouro_incluido_codigo_obter_zsql()">
+                 <dtml-call "REQUEST.set('hdn_cod_logradouro', cod_logradouro)">
+              </dtml-in>
+            </dtml-unless>
+
+<dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar o Logradouro. Tente novamente!'" tipo_mensagem="'danger'">
+        <dtml-var mensagem_emitir>
+    </dtml-let> 
+
+<dtml-else>
+    <dtml-let mensagem="'Logradouro salvo com sucesso!'" url="'logradouro_mostrar_proc?cod_logradouro='+hdn_cod_logradouro">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+</dtml-try>
+
+</dtml-unless>

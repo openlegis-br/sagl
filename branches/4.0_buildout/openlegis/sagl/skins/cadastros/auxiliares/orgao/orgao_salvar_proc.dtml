@@ -1,15 +1,3 @@
-<dtml-comment> 
-********************************************************************
-*    Função: Salva os dados do órgão vindos do                     *
-*         formulário, seja uma inclusão/atualização.               *
-*    Argumentos: hdn_cod_orgao: int - argumento que deter-         *
-*         mina se esse método vai ser uma inclusão/atualização.    * 
-*                                                                  *
-*    Retorno: Mensagem de sucesso ou erro.                         *
-*    Rommel Carvalho e Danilo Custódio em 30/03/2001               *
-********************************************************************
-</dtml-comment>   
-
 <dtml-if hdn_cod_orgao>
   <dtml-call expr="REQUEST.set('metodo', zsql.orgao_atualizar_zsql)">
 <dtml-else> 
@@ -22,32 +10,32 @@
                           nom_orgao = txt_nom_orgao,
                           ind_unid_deliberativa = rad_ind_unidade_deliberativa,
                           end_orgao = txt_end_orgao,
-                          num_tel_orgao = txt_num_tel_orgao
+                          num_tel_orgao = txt_num_tel_orgao,
+                          end_email = txt_end_email
                           )">
 
 <dtml-except>
-  <dtml-let mensagem="'Não foi possível salvar os dados do órgão. Tente novamente!'">
+
+  <dtml-let mensagem="'Não foi possível salvar os dados do órgão. Tente novamente!'" tipo_mensagem="'danger'">
      <dtml-var mensagem_emitir>
   </dtml-let>
+
 <dtml-else>
 
-    <dtml-in expr="zsql.orgao_incluido_codigo_obter_zsql()">
-      <dtml-call expr="REQUEST.set('cod_orgao', _.str(_.int(cod_orgao)))">
-    </dtml-in> 
-
+  <dtml-in expr="zsql.orgao_incluido_codigo_obter_zsql()">
+     <dtml-call expr="REQUEST.set('cod_orgao', _.str(_.int(cod_orgao)))">
+  </dtml-in> 
 
   <dtml-if expr="metodo==zsql.orgao_incluir_zsql">
-    <dtml-let mensagem="'Órgão salvo com sucesso.<br />
-Se deseja cadastrar esse órgão como uma unidade de tramitação, clique abaixo em <br /><b>Incluir como unidade de tramitação</b>.<br />
-Para continuar sem cadastrar esse órgão como unidade de tramitação, clique em <br /><b>Continuar</b>.<br /><br />
-<a href=unidade_tramitacao_salvar_proc?cod_orgao='+cod_orgao+'&amp;ind_unidade_deliberativa='+rad_ind_unidade_deliberativa+'>Incluir como unidade de tramitação</a>'" sucesso="1">
+    <dtml-call expr="zsql.unidade_tramitacao_incluir_zsql(cod_orgao=cod_orgao,ind_leg=0,ind_adm=0)">  
+    <dtml-let mensagem="'Órgão incluído e cadastrado como unidade de tramitação.'">
       <dtml-var mensagem_emitir>
     </dtml-let>
 
-  <dtml-else>
-   
-    <dtml-let mensagem="'Órgão salvo com sucesso!'" sucesso="1">
+  <dtml-else>  
+    <dtml-let mensagem="'Órgão salvo com sucesso!'">
         <dtml-var mensagem_emitir>
     </dtml-let>
   </dtml-if>
+
 </dtml-try>

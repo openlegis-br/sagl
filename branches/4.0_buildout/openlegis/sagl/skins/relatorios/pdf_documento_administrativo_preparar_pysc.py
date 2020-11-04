@@ -8,7 +8,7 @@ data=DateTime().strftime('%d/%m/%Y')
 
 #Abaixo é gerada a string para o rodapé da página
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
  casa[item[0]]=item[1]
 localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])
@@ -47,8 +47,8 @@ cabecalho["nom_casa"]=casa["nom_casa"]
 cabecalho["nom_estado"]="Estado de "+nom_estado
 
 # tenta buscar o logotipo da casa LOGO_CASA
-if hasattr(context.documentos.propriedades,'logo_casa.gif'):
-  imagem = context.documentos.propriedades['logo_casa.gif'].absolute_url()
+if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+  imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
   imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
 
@@ -68,7 +68,7 @@ for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_docume
                                                     dat_apres2=REQUEST['dt_apres2'], rd_ordem=REQUEST['rd_ordenacao']):
         dic={}
 
-        dic['titulo']=documento.des_tipo_documento.upper()+" N° "+str(documento.num_documento)+"/"+str(documento.ano_documento)
+        dic['titulo']=documento.des_tipo_documento.decode('utf-8').upper()+" N° "+str(documento.num_documento)+"/"+str(documento.ano_documento)
         dic['txt_assunto']=documento.txt_assunto
         dic['txt_interessado']=documento.txt_interessado      
            
@@ -97,7 +97,7 @@ for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_docume
         dic['protocolo']= " "
         if documento.num_protocolo !=None:
           for protocolo in context.zsql.protocolo_obter_zsql(num_protocolo=documento.num_protocolo,ano_protocolo=documento.ano_documento):
-            dic['protocolo']= "Protocolo Geral: " + str(protocolo.num_protocolo) + "/" + str(documento.ano_documento) + " - Data de Entrada: " + context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)
+            dic['protocolo']= "Protocolo: " + str(protocolo.num_protocolo) + "/" + str(documento.ano_documento) + " - Data de Entrada: " + context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)
         else:
           dic['protocolo']= " "
 

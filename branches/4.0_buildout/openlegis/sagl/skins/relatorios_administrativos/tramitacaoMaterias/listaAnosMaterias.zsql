@@ -1,5 +1,5 @@
 <dtml-comment>
-connection_id : dbcon_openlegis
+connection_id : dbcon_interlegis
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
@@ -7,13 +7,20 @@ SELECT DISTINCT
      m.ano_ident_basica as ano_mat
 
 FROM
-     materia_legislativa m,
+     materia_legislativa m
+     LEFT JOIN tipo_materia_legislativa tm ON m.tip_id_basica = tm.tip_materia,   
      autoria a
 
 WHERE
      a.cod_materia = m.cod_materia
      and a.ind_excluido = 0
      and m.ind_excluido = 0
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="isAnon">
+   AND tm.ind_publico = 1
+ </dtml-if>
+</dtml-let>
 
 ORDER BY 1 DESC
 

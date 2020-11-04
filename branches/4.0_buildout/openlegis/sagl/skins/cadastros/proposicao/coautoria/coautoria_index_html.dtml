@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <dtml-var standard_css_slot>
-  <script type="text/javascript" src="&dtml-portal_url;/javascript/geral.js"></script>
+  <script type="text/javascript" src="<dtml-var portal_url>/javascript/geral.js"></script>
   <script type="text/javascript">
     function checkAll(field) 
     {
@@ -17,12 +17,23 @@
     }
 </script>
 </head>
-<body class="modal">
+<body class="">
 
-<h1 class="firstHeading">Disponibilizar para Aposição de Assinaturas</h1>
+<h1 class="firstHeading">Disponibilizar para Assinaturas Adicionais</h1>
+
+<dtml-if expr="_.has_key('cod_proposicao') and AUTHENTICATED_USER.has_role(['Autor'])">
+    <dtml-call expr="REQUEST.set('col_username', col_username)">
+
+<dtml-elif expr="_.has_key('cod_proposicao') and AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+         <dtml-call expr="REQUEST.set('col_username', col_username)">
+      </dtml-in>
+    </dtml-in>
+</dtml-if>
 
 <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, ind_excluido=0)">
-  <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
+  <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==col_username))">
   <dtml-call expr="REQUEST.set('cod_autor_sel', cod_autor)">
   <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor_sel, ind_excluido=0)">
     <dtml-call expr="REQUEST.set('des_tipo_autor', des_tipo_autor)">
@@ -39,22 +50,22 @@
 
 <dtml-if expr="usr_eh_autor"> 
 <fieldset>
-<legend>Assinale os autores habilitados para assinatura desta proposição eletrônica. </legend>
+<legend>Selecione outros autores para aposição de assinatura digital. </legend>
   <form name="coautoria_form" method="post" action="coautoria_salvar_proc">
     <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var hdn_cod_proposicao>" />
     <input type="hidden" name="hdn_url" value="../proposicao_mostrar_proc?cod_proposicao=<dtml-var hdn_cod_proposicao>">
-    <table>
+    <table class="table">
         <tr>
-           <th width="25%" class="form-label">
+           <th width="25%">
             <div align="center">
-              <input type="button" class="botao" name="CheckAll" value="Todos" onClick="checkAll(document.coautoria_form.chk_autor)">
-              <input type="button" class="botaoExtra" name="UnCheckAll" value="Nenhum" onClick="uncheckAll(document.coautoria_form.chk_autor)">
+              <input class="btn btn-primary" type="button" name="CheckAll" value="Todos" onClick="checkAll(document.coautoria_form.chk_autor)">
+              <input class="btn btn-primary" type="button" name="UnCheckAll" value="Nenhum" onClick="uncheckAll(document.coautoria_form.chk_autor)">
             </div>
            </th>
-           <th class="form-label">
+           <th>
               Nome do Autor
            </th>
-           <th class="form-label">
+           <th>
               Já assinou?
            </th>
         </tr>
@@ -64,14 +75,14 @@
         <tr>
            <td>
             <div align="center">
-              <input type="checkbox" id="chk_autor" name="chk_autor:list" value="<dtml-var cod_autor>" 
+              <input class="form-check-input position-static" type="checkbox" id="chk_autor" name="chk_autor:list" value="<dtml-var cod_autor>" 
                 <dtml-if expr="zsql.coautoria_proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, cod_autor=cod_autor, ind_excluido=0)">
                     checked=1
                 </dtml-if> />
             </div>
            </td>
            <td>
-             <dtml-var nom_completo>
+             <dtml-var nom_parlamentar>
            </td>
            <td>
              <dtml-if expr="zsql.coautoria_proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, cod_autor=cod_autor, ind_aderido=1, ind_excluido=0)">
@@ -89,7 +100,7 @@
         <dtml-if expr="dat_extincao is None and _.int(cod_autor_sel) != _.int(cod_autor)">
          <tr>
            <td>
-              <input type="checkbox" id="chk_autor" name="chk_autor" value="<dtml-var cod_autor>" 
+              <input class="form-check-input position-static" type="checkbox" id="chk_autor" name="chk_autor:list" value="<dtml-var cod_autor>" 
                 <dtml-if expr="zsql.coautoria_proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, cod_autor=cod_autor, ind_excluido=0)">
                     checked=1
                 </dtml-if> />
@@ -97,6 +108,14 @@
            <td>
              <dtml-var nom_comissao>
            </td>
+           <td>
+             <dtml-if expr="zsql.coautoria_proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, cod_autor=cod_autor, ind_aderido=1, ind_excluido=0)">
+                Sim
+             <dtml-else>
+                Não
+             </dtml-if>
+           </td>
+        </tr>
          </tr>
         </dtml-if>
        </dtml-in>
@@ -107,7 +126,7 @@
        <dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=num_legislatura_sel,cod_bancada=cod_bancada,ind_excluido=0)">
         <tr>
            <td>
-              <input type="checkbox" id="chk_autor" name="chk_autor" value="<dtml-var cod_autor>" 
+              <input class="form-check-input position-static" type="checkbox" id="chk_autor" name="chk_autor:list" value="<dtml-var cod_autor>" 
                 <dtml-if expr="zsql.coautoria_proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, cod_autor=cod_autor, ind_excluido=0)">
                     checked=1
                 </dtml-if> />
@@ -115,6 +134,14 @@
            <td>
              <dtml-var nom_bancada>
            </td>
+           <td>
+             <dtml-if expr="zsql.coautoria_proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, cod_autor=cod_autor, ind_aderido=1, ind_excluido=0)">
+                Sim
+             <dtml-else>
+                Não
+             </dtml-if>
+           </td>
+        </tr>
         </tr>
        </dtml-in>
       </dtml-if>
@@ -124,7 +151,7 @@
       <dtml-if expr="_.int(cod_autor_sel) != _.int(cod_autor)">
         <tr>
            <td>
-              <input type="checkbox" id="chk_autor" name="chk_autor" value="<dtml-var cod_autor>" 
+              <input class="form-check-input position-static" type="checkbox" id="chk_autor" name="chk_autor:list" value="<dtml-var cod_autor>" 
                 <dtml-if expr="zsql.coautoria_proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, cod_autor=cod_autor, ind_excluido=0)">
                     checked=1
                 </dtml-if> />
@@ -132,19 +159,27 @@
            <td>
              <dtml-var nom_autor_join>
            </td>
+           <td>
+             <dtml-if expr="zsql.coautoria_proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, cod_autor=cod_autor, ind_aderido=1, ind_excluido=0)">
+                Sim
+             <dtml-else>
+                Não
+             </dtml-if>
+           </td>
+        </tr>
         </tr>
       </dtml-if>
       </dtml-in>
     </dtml-if>
     </table>
   <p align="center">
-     <input class="botao" type="submit" name="button" value="Salvar" />
+     <input class="form-control" type="submit" name="button" value="Salvar" />
   </p>
   </form>
 </fieldset>
 <dtml-else>
   <dtml-let mensagem="'Você não tem permissão para solicitar assinaturas nesta proposição!'">
-     <dtml-var mensagem_popup_emitir>
+     <dtml-var mensagem_emitir>
   </dtml-let>
 </dtml-if>
 </body>

@@ -99,7 +99,7 @@ def inf_basicas(inf_basicas_dic):
         tmp+='\t\t<para style="P2"><b>Indexação: </b> ' + indexacao.replace('&','&amp;') + '</para>\n'
 
     if observacao != "" and observacao != None:
-        tmp+='\t\t<para style="P2"><b>Observação: </b> ' + observacao.replace('&','&amp;') + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Observações: </b> ' + observacao.replace('&','&amp;') + '</para>\n'
 
     materia = inf_basicas_dic['materia_vinculada']
     if materia!=" " and materia!= None:
@@ -173,7 +173,7 @@ def principal(imagem, dic_rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativo
     tmp+=paraStyle()
     tmp+='\t<story>\n'
     tmp+=inf_basicas(inf_basicas_dic)
-    tmp+=assuntos(lst_assuntos)
+    #tmp+=assuntos(lst_assuntos)
     tmp+=vinculos_ativos(lst_vinculos_ativos)
     tmp+=vinculos_passivos(lst_vinculos_passivos)
     tmp+='\t</story>\n'

@@ -15,7 +15,7 @@ mailhost = context.MailHost
 data_registro=DateTime().strftime('%d/%m/%Y às %H:%M')
 
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
   casa[item[0]] = item[1]
 email_casa = casa['end_email_casa']
@@ -45,7 +45,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
 
 remetente = email_casa
 
-linkMat = "" + context.consultas.absolute_url()+"/materia/materia_mostrar_proc?cod_materia=" + cod_materia
+linkMat = "" + context.consultas.absolute_url()+"/materia/materia_mostrar_proc?cod_materia=" + str(cod_materia)
 
 destinatarios=[]
 for destinatario in context.zsql.acomp_materia_obter_inscritos_zsql(cod_materia=cod_materia):

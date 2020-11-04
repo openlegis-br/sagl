@@ -1,0 +1,96 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+(function ($) {
+  $(function () {
+    //$('input[type=submit]').hide();     //uncomment this if You want to hide the submit form buttons
+    document.onkeypress = function (event) {
+      var form = pesq_basica_form;
+      form.action = "pessoa_pesquisar_proc";
+      if (event.keyCode === 13) {
+        form.submit();
+      }
+    };
+  });
+}(jQuery));
+
+  function encerrar_todas(){
+       if (confirm("Confirma o encerramento de todas as visitas? As datas de saída serão iguais às datas de entrada.")) {
+          location.href="visita_encerrar_todas_proc";
+       }
+  }
+
+</script>
+
+<h1 class="firstHeading">Cadastro de Visitantes</h1> 
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs border-0 mt-2" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="pessoa" data-toggle="tab" href="#pessoa" role="tab" aria-controls="pessoa" aria-selected="true">Pesquisa de Visitantes</a>
+  </li>
+</ul>
+
+<div class="tab-content bg-white mb-3">
+  <div class="tab-pane p-3 border fade show active" id="pessoa">
+
+<form class="mb-3" name="pesq_basica_form" action="pessoa_pesquisar_proc">
+    <input type="hidden" name="existe_ocorrencia" value="0" />
+    <input type="hidden" name="hdn_url" value="pessoa_mostrar_proc?cod_pessoa=<dtml-var cod_pessoa missing>" />
+      <div class="form-row">
+       <div class="col-6 mb-3">
+         <label for="txt_nom_pessoa">Nome do Visitante</label>
+         <input class="form-control" id="txt_nom_pessoa" type="text" name="txt_nom_pessoa" maxlength="80" />
+       </div>
+       <div class="col-6 mb-3">
+         <label for="txt_doc_identidade">Documento de Identidade</label>
+         <input class="form-control" id="txt_doc_identidade" type="text" name="txt_doc_identidade" null="" />
+       </div>
+      </div>
+       <div class="text-left">
+          <button class="btn btn-primary" type="submit" href="<dtml-var portal_url>/consultas/protocolo"><i class="fa  fa-search"></i> Pesquisar</button>          
+          <input class="btn btn-secondary" type="reset" value="Limpar" />
+      </div>
+</form>
+
+</div>
+</div>
+
+     <legend>Visitas Abertas</legend>
+     <dtml-in expr="zsql.visita_obter_zsql(ind_aberta=1)">
+       <dtml-if sequence-start>
+         <table class="table">
+          <thead class="table-secondary">
+           <tr>
+              <th class="label">Visitante</th>
+              <th class="label">Entrada</th>
+              <th class="label">Funcionário</th>
+              <th class="label">Crachá</th>
+              <th class="label">Ações</th>
+           </tr>
+          </thead>
+       </dtml-if>
+           <tr>
+              <td>
+                 <dtml-var nom_pessoa>
+               </td>
+              <td>
+                 <dtml-var dat_entrada>
+               </td>
+              <td><dtml-var nom_funcionario></td>
+              <td><dtml-var num_cracha missing></td>
+              <td>
+               <a href="visita_encerrar_proc?hdn_cod_visita=<dtml-var cod_visita>">Encerrar</a>
+              </td>
+           </tr>
+       <dtml-if sequence-end>
+          </table>
+          <div class="text-left">
+            <input class="btn btn-primary" type="button" value="Encerrar Visitas" onClick="encerrar_todas()" />
+          </div>
+       </dtml-if>
+     <dtml-else>
+       <p>Não há visitas em andamento.</p>
+     </dtml-in>
+
+<dtml-var standard_html_footer>

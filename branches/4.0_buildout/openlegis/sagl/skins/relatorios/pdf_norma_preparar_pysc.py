@@ -8,7 +8,7 @@ data=DateTime().strftime('%d/%m/%Y')
 
 #Abaixo é gerada a string para o rodapé da página
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
  casa[item[0]]=item[1]
 localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])
@@ -47,8 +47,8 @@ cabecalho["nom_casa"]=casa["nom_casa"]
 cabecalho["nom_estado"]="Estado de "+nom_estado
 
 # tenta buscar o logotipo da casa LOGO_CASA
-if hasattr(context.documentos.propriedades,'logo_casa.gif'):
-  imagem = context.documentos.propriedades['logo_casa.gif'].absolute_url()
+if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+  imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
   imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
 
@@ -69,7 +69,7 @@ for norma in context.zsql.norma_juridica_obter_zsql(tip_norma=tipo_norma, num_no
 
         dic={}
 
-        dic['titulo']= norma.des_tipo_norma.upper()+" N° "+str(norma.num_norma)+", DE "+str(norma.dat_norma)
+        dic['titulo']= norma.des_tipo_norma.decode('utf-8').upper()+" N° "+str(norma.num_norma)+", DE "+str(norma.dat_norma)
         dic['txt_ementa']=norma.txt_ementa 
 
         dic['materia_vinculada']=" "

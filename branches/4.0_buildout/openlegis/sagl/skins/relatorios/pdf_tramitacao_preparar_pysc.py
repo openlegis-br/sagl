@@ -1,10 +1,10 @@
-## Script (Python) "pdf_tramitaao_preparar_pysc"
+## Script (Python) "pdf_tramitacao_preparar_pysc"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=hdn_cod_tramitacao
+##parameters=hdn_cod_tramitacao,hdn_url
 ##title=
 ##
 import os
@@ -16,14 +16,14 @@ session=request.SESSION
 cabecalho={}
 
 #tenta buscar o logotipo da casa LOGO_CASA
-if hasattr(context.documentos.propriedades,'logo_casa.gif'):
-  imagem = context.documentos.propriedades['logo_casa.gif'].absolute_url()
+if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
+  imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
   imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
 
 #abaixo é gerado o dic do rodapé da página
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
   casa[item[0]]=item[1]
 localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidade"])
@@ -53,7 +53,10 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
   tramitacao_dic['dat_extenso'] = context.pysc.data_converter_por_extenso_pysc(data=tramitacao.dat_tramitacao)
   tramitacao_dic['dat_encaminha'] = tramitacao.dat_encaminha
   tramitacao_dic['des_status'] = tramitacao.des_status
-  tramitacao_dic['txt_tramitacao'] = context.modelo_proposicao.xhtml2rml(tramitacao.txt_tramitacao,'P2')
+  if tramitacao.txt_tramitacao != None and tramitacao.txt_tramitacao!='':
+    tramitacao_dic['txt_tramitacao'] = context.extensions.xhtml2rml(tramitacao.txt_tramitacao,'P2')
+  else:
+    tramitacao_dic['txt_tramitacao'] = ''
   if tramitacao.dat_fim_prazo != None:
     tramitacao_dic['dat_fim_prazo'] = tramitacao.dat_fim_prazo
   else:
@@ -66,6 +69,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
   tramitacao_dic['ind_urgencia'] = tramitacao.ind_urgencia
 
   # dados da materia
+  autoria = ""
   for materia in context.zsql.materia_obter_zsql(cod_materia=tramitacao.cod_materia):
    autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
    fields = autores.data_dictionary().keys()
@@ -75,7 +79,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
        nome_autor = autor['nom_autor_join']
      lista_autor.append(nome_autor)
      autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
-   tramitacao_dic['id_materia'] = materia.des_tipo_materia.upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)+" - "+ str(autoria)+" - "+materia.txt_ementa
+   tramitacao_dic['id_materia'] = materia.des_tipo_materia.decode('utf-8').upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)+" - "+ str(autoria)+" - "+materia.txt_ementa
 
   # unidade de origem
   for unid_origem in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tramitacao.cod_unid_tram_local):
@@ -100,7 +104,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
      tramitacao_dic['nom_usuario_destino'] = usu_destino.nom_completo
      tramitacao_dic['nom_cargo_usuario_destino'] = usu_destino.nom_cargo
 
-caminho=context.pdf_tramitacao_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,sessao=session.id)
+caminho=context.pdf_tramitacao_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url,sessao=session.id)
 if caminho=='aviso':
  return response.redirect('mensagem_emitir_proc')
 else:

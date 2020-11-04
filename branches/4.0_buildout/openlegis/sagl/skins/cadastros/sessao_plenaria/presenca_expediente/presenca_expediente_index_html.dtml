@@ -1,91 +1,85 @@
 <dtml-var standard_html_header>
+
 <script type="text/javascript">
-function submeter(endereco){
-
-        var form = document.presenca_expediente_form;
-        endereco += '?cod_sessao_plen=' + form.hdn_cod_sessao_plen.value;
-        endereco += '&cod_sessao_leg='+ form.hdn_cod_sessao_leg.value;
-        endereco += '&cod_num_legislatura=' + form.hdn_num_legislatura.value;
-        endereco += '&dat_sessao=' + form.hdn_dat_sessao.value;
-        endereco += '&tip_sessao=' + form.hdn_tip_sessao.value;
-
-        if (form.hdn_cod_sessao_plen.value!=""){
-            location.href = endereco;
-        }
-        return;
+$(document).ready(function() {
+  $("#checkedAll").change(function(){
+    if(this.checked){
+      $(".checkSingle").each(function(){
+        this.checked=true;
+      })              
+    }else{
+      $(".checkSingle").each(function(){
+        this.checked=false;
+      })              
     }
+  });
 
-function checkAll(field)
-{
-for (i = 0; i < field.length; i++)
-        field[i].checked = true ;
-}
-
-function uncheckAll(field)
-{
-for (i = 0; i < field.length; i++)
-        field[i].checked = false ;
-}
+  $(".checkSingle").click(function () {
+    if ($(this).is(":checked")){
+      var isAllChecked = 0;
+      $(".checkSingle").each(function(){
+        if(!this.checked)
+           isAllChecked = 1;
+      })              
+      if(isAllChecked == 0){ $("#checkedAll").prop("checked", true); }     
+    }else {
+      $("#checkedAll").prop("checked", false);
+    }
+  });
+});
 </script>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/sessao_plenaria_lista_presenca_expediente">Ajuda</a>
+<dtml-var sessao_plenaria_menu>
 
-<h1 class="firstHeading">Presença no Grande Expediente</h1>
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
 
-<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+<legend>Presença no Grande Expediente</legend>
 
 <form name="presenca_expediente_form" method="post" action="presenca_expediente_salvar_proc">
-   <dtml-var sessao_plenaria_menu>
-   <dtml-if cod_sessao_plen>
-      <input type="hidden" name="dat_inicio_sessao" value="<dtml-var dat_sessao>" />
-      <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura = cod_num_legislatura, ind_excluido=0)">
-        <dtml-if sequence-start>
-        <fieldset>
-        <legend>Parlamentares presentes</legend>
-        <table>
+   <input type="hidden" name="hdn_url" value="index_html?cod_sessao_plen=<dtml-var cod_sessao_plen missing>&num_legislatura=<dtml-var num_legislatura missing>&cod_sessao_leg=<dtml-var cod_sessao_leg missing>&dat_sessao=<dtml-var dat_sessao missing>&tip_sessao=<dtml-var tip_sessao missing>" />
+   <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>">
+   <input type="hidden" name="dat_inicio_sessao" value="<dtml-var dat_sessao missing>"/>
+
+        <table class="table">
+          <thead class="table-secondary">
             <tr>
-                <th width="25%" class="form-label">
-               <input type="button" class="botao" name="CheckAll" value="Todos" onClick="checkAll(document.presenca_expediente_form.chk_presen_parlamentar)">
-                <input type="button" class="botaoExtra" name="UnCheckAll" value="Nenhum" onClick="uncheckAll(document.presenca_expediente_form.chk_presen_parlamentar)">
-                </th>
-                <th class="form-label">Parlamentar</th>
+              <th width="6%">
+                <div class="form-check">    
+                  <input class="form-check-input position-static" type="checkbox" name="checkedAll" id="checkedAll">
+                  <label class="form-check-label" for="checkedAll"><b>Todos</b></label> 
+                </div>
+              </th>
+              <th>Parlamentar</th>
             </tr>
-        </dtml-if sequence-start>
-       <dtml-if  expr="pysc.autoria_parlamentar_validar_pysc(txt_dat_apresentacao=dat_sessao, cod_parlamentar=cod_parlamentar)">
-         <dtml-if sequence-even>
+          </thead>
+       <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
           <tr>
-         <dtml-else>
-          <tr class="even">
-         </dtml-if>
             <td>
-                <input type="checkbox" id="chk_presen_parlamentar" name="chk_presen_parlamentar" value="<dtml-var cod_parlamentar>" 
+              <div class="form-check">
+                 <input class="checkSingle form-check-input position-static" type="checkbox" name="chk_presen_parlamentar:list" value="<dtml-var cod_parlamentar>" 
                     <dtml-if expr="zsql.presenca_expediente_obter_zsql(cod_sessao_plen=cod_sessao_plen, dat_ordem = pysc.data_converter_pysc(data=dat_sessao),cod_parlamentar=cod_parlamentar, ind_excluido=0)">
                         checked=1
-                    </dtml-if> />
+                    </dtml-if> 
+                 />
+               </div>            
             </td>
             <td>
                 <label for="chk_presen_parlamentar">
-                    <dtml-var nom_completo> / <dtml-var sgl_partido missing null="">
+                    <dtml-var nom_parlamentar>
                 </label>
             </td>
         </tr>
-       </dtml-if>
-    <dtml-if sequence-end>
+       <dtml-else>
+         <tr>
+           <td>Nenhum parlamentar com mandato cadastrado na Legislatura.</td>
+         </tr>
+       </dtml-in>
     </table>
-        <p align="center">
-                <input class="botao" type="submit" name="button" value="Salvar" />
-        </p>
-    </dtml-if sequence-end>
-  <dtml-else>
-      <fieldset>
-       <legend>Presença no Grande Expediente</legend>
-        <table>
-            <tr>
-                <td class="form-text">Não há nenhum parlamentar com mandato cadastrado na Legislatura.</td>
-            </tr>
-       </table>
-      </fieldset>
-  </dtml-in>
-</dtml-if>
+  <div clas="text-left">
+     <input class="btn btn-primary" type="submit" name="button" value="Salvar" />
+  </div>
 </form>
+</div>
+</div>
 <dtml-var standard_html_footer>

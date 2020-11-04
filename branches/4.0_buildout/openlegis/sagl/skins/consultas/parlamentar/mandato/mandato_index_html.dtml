@@ -1,42 +1,38 @@
- <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+<legend>Histórico de Mandatos</legend>
+
+<dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
   <dtml-call expr="REQUEST.set('nom_parlamentar', nom_parlamentar)">
 </dtml-in>
-<table>
- <dtml-in expr="zsql.mandato_obter_zsql(nom_parlamentar=nom_parlamentar, cod_parlamentar=cod_parlamentar, ind_excluido=0)" size=24 start=query_start orphan=2>  
+
+<dtml-in expr="zsql.mandato_obter_zsql(nom_parlamentar=nom_parlamentar, cod_parlamentar=cod_parlamentar, ind_excluido=0)">  
   <dtml-if sequence-start>
+   <div class="table-responsive">
+   <table class="table">
+     <thead class="table-secondary">
        <tr> 
-         <th class="form-label">Legislatura</th>
-           <th class="form-label">Nº Votos</th>
-           <th class="form-label">Titular?</th>
-           <th class="form-label">Início Mandato</th>
-           <th class="form-label">Fim Mandato</th>
+           <th width="30%">Legislatura</th>
+           <th>Titular?</th>
+           <th>Votos</th>
+           <th>Início</th>
+           <th>Fim</th>
        </tr>
-    <dtml-if previous-sequence>
-       <tr><td class="texto">
-         <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
-         Página Anterior (<dtml-var previous-sequence-size> resultados)</a></td>
-       </tr>
-    </dtml-if previous-sequence>
+     </thead>
+     <tbody>
  </dtml-if sequence-start>
     <tr> 
-       <td class="texto">
+       <td>
          <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura, dat_inicio, dat_fim)">
        </td>
-         <td class="texto"><dtml-var num_votos_recebidos missing null=""></td>
-         <td class="texto"><dtml-if expr="ind_titular==1">Sim<dtml-else>Não</dtml-if></td>
-         <td class="texto"><dtml-var dat_inicio_mandato missing null=""></td>
-         <td class="texto"><dtml-var dat_fim_mandato missing null=""></td>
+         <td><dtml-if expr="ind_titular==1">Sim<dtml-else>Não</dtml-if></td>
+         <td><dtml-var num_votos_recebidos missing null=""></td>
+         <td><dtml-var dat_inicio_mandato missing null=""></td>
+         <td><dtml-var dat_fim_mandato missing null=""></td>
     </tr>
  <dtml-if sequence-end>
-     <dtml-if next-sequence>
-        <tr>
-          <td class="texto"><a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
-           Próxima Página (<dtml-var next-sequence-size> resultados)</a></td>
-        <tr>
-     </dtml-if next-sequence>
+    </tbody>
+  </table>
+  </div>
  </dtml-if sequence-end>
 <dtml-else>
-        <p class="texto">Não há nenhum mandato cadastrado para este parlamentar.</p>
+ <p>Não há nenhum mandato cadastrado.</p>
 </dtml-in>
-</table>
-

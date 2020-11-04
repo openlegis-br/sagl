@@ -19,7 +19,7 @@ class DadosPMView(grok.View):
     def render(self):
         portal_url = self.context.portal_url.portal_url()
         portal = self.context.portal_url.getPortalObject()
-        imagens = portal.documentos.parlamentar.fotos.objectIds()
+        imagens = portal.sapl_documentos.parlamentar.fotos.objectIds()
         dados = {}
         legislatures = []
         parliamentarians = []
@@ -86,7 +86,7 @@ class DadosPMView(grok.View):
             par['id'] = str(parlamentar.cod_parlamentar)
             imagem_parlamentar = '%s_foto_parlamentar' % parlamentar.cod_parlamentar
             if '%s_foto_parlamentar' % parlamentar.cod_parlamentar in imagens:
-                par['image'] = '%s/documentos/parlamentar/fotos/%s' % (portal_url, imagem_parlamentar)
+                par['image'] = '%s/sapl_documentos/parlamentar/fotos/%s' % (portal_url, imagem_parlamentar)
             else:
                 par['image'] = ""
             filiacao = self.context.zsql.filiacao_obter_zsql(ind_excluido=0, cod_parlamentar=parlamentar.cod_parlamentar)

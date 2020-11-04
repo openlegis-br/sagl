@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<dtml-var standard_css_slot>
-
-<script type='text/javascript' src='&dtml-portal_url;/javascript/geral.js'></script>
+<dtml-var standard_html_header>
 
 <script type="text/javascript">
    function campos_criticar(form){
@@ -15,31 +10,25 @@
 
       form.submit();
   }
-
-function reloadParentAndClose()
-{
-    // then close this pop-up window
-    parent.jQuery.fancybox.close();
-}
 </script>
-</head>
-<body>
 
 <h1 class="firstHeading">Matérias Apresentadas</h1>
 
-<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+<form name="pauta_apresentada_form" method="post" action="pauta_apresentada_gerar_proc">
 
-<fieldset><legend>Gerar Lista de Matérias Apresentadas</legend>
-   <table>
-     <form name="pauta_apresentada_form" method="post" action="pauta_apresentada_gerar_proc">
-	  <tr>
-	     <th colspan="2">
-		<label for="lst_status">Selecione a Situação Atual das Matérias</label><span class="campoObrigatorio"></span>
-	     </th>
-	  </tr>
-	  <tr>
-       <td>
-          <select id="lst_status" name="lst_status">
+  <input type="hidden" name="modal" value="1" />
+  <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+  <input type="hidden" name="cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>" />
+  <input type="hidden" name="num_legislatura" value="<dtml-var num_legislatura missing>" />
+  <input type="hidden" name="tip_sessao" value="<dtml-var tip_sessao missing>" />
+  <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+     <input type="hidden" name="dat_ordem" value="<dtml-var dat_inicio_sessao>" />
+  </dtml-in>
+
+   <div class="form-row">
+      <div class="col-12 mb-3">
+          <label for="lst_status" class="required">Selecione o Status Atual</label>
+          <select class="custom-select" id="lst_status" name="lst_status">
             <option value=""></option>
             <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
               <option value="<dtml-var cod_status missing>">
@@ -47,23 +36,21 @@ function reloadParentAndClose()
               </option>
             </dtml-in>
           </select>
-        </td>
-          </tr>
-   </table>
-           <p align="center">
-            <input type="button" name="btn_pauta_apresentada_form" class="botao" value="Continuar" 
-                   onClick="campos_criticar(document.pauta_apresentada_form)">
-            <input type="button" class="botao" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
-            <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
-            <input type="hidden" name="cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>" />
-            <input type="hidden" name="cod_num_legislatura" value="<dtml-var cod_num_legislatura missing>" />
-            <input type="hidden" name="tip_sessao" value="<dtml-var tip_sessao missing>" />
-            <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
-            <input type="hidden" name="dat_ordem" value="<dtml-var dat_inicio_sessao>" />
-            </dtml-in>
-           </p>
-     </form>
+      </div>
+   </div>
 
-</fieldset>
-</body>
-</html>
+   <div class="form-row">
+     <div class="col-12 mb-3 text-left">
+      <input class="btn btn-primary" type="button" name="btn_pauta_apresentada_form" value="Filtrar" onClick="campos_criticar(document.pauta_apresentada_form)">
+     <div>
+   </div>
+  
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+    </div>
+ </div>  
+  
+</form>
+
+<dtml-var standard_html_footer>

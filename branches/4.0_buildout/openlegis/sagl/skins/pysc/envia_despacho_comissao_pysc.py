@@ -15,7 +15,7 @@ mailhost = context.MailHost
 data_registro=DateTime().strftime('%d/%m/%Y às %H:%M')
 
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
   casa[item[0]] = item[1]
 email_casa = casa['end_email_casa']
@@ -61,7 +61,7 @@ for composicao_comissao in context.zsql.composicao_comissao_obter_zsql(cod_comis
     destinatarios.append(dic)
 
 for dic in destinatarios:
-  mMsg = "Senhor(a) Parlamentar,\n\n"
+  mMsg = "Senhor(a) Vereador(a),\n\n"
   mMsg = mMsg + "Informamos que a matéria abaixo foi despachada para parecer da " + nom_comissao +  " em " + data_registro + ".\n\n"
   mMsg = mMsg + "" + projeto + "\n"
   mMsg = mMsg + "" + str(ementa) + "\n"

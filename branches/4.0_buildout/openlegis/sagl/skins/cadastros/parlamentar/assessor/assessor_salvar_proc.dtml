@@ -3,7 +3,33 @@
 <dtml-else> 
   <dtml-call expr="REQUEST.set('metodo', zsql.assessor_parlamentar_incluir_zsql)">
 </dtml-if>
+  <dtml-call expr="REQUEST.set('old_username', None)">
+  <dtml-call expr="REQUEST.set('login_criado',0)">
+  <dtml-call expr="REQUEST.set('login_excluido',0)">
+  <dtml-if hdn_cod_assessor>
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(cod_assessor=hdn_cod_assessor)">
+      <dtml-call expr="REQUEST.set('old_username', col_username)">
+    </dtml-in>   
+  </dtml-if>
+  <dtml-if expr="(old_username!=None) and (txt_login=='')">
+    <dtml-in expr="zsql.usuario_obter_zsql(col_username=old_username)">
+       <dtml-call expr="zsql.usuario_excluir_zsql(cod_usuario=cod_usuario)"> 
+    </dtml-in>
+    <dtml-call expr="pysc.username_excluir_pysc(old_username)">
+    <dtml-call expr="REQUEST.set('login_excluido',1)">
+  <dtml-elif expr="(txt_login!='') and (old_username==None)">    
+    <dtml-unless expr="pysc.username_assessor_criar_pysc(txt_login)">
+      <dtml-let mensagem="'O login informado já está existe. Escolha outro e tente novamente!'" tipo_mensagem="'warning'" modal="1">        
+        <dtml-var mensagem_emitir>
+      </dtml-let>
+      <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-unless>
+    <dtml-unless erro>
+      <dtml-call expr="REQUEST.set('login_criado',1)">
+    </dtml-unless>
+  </dtml-if>
 
+<dtml-unless erro>
 <dtml-try>
   <dtml-call expr="metodo(cod_assessor    = hdn_cod_assessor,
                           cod_parlamentar = hdn_cod_parlamentar,                                   
@@ -21,15 +47,44 @@
                           dat_nomeacao    = pysc.data_converter_pysc(txt_dat_nomeacao),
                           dat_exoneracao  = pysc.data_converter_pysc(txt_dat_exoneracao),
                           txt_observacao  = txa_txt_observacao,
-                          col_username    = hdn_col_username)">
+                          col_username    = txt_login)">
 
 <dtml-except>
-  <dtml-let mensagem="'Não foi possível salvar os dados do assessor parlamentar. Tente novamente!'"> 
+  <dtml-let mensagem="'Não foi possível salvar os dados do assessor. Tente novamente!'" tipo_mensagem="'danger'" modal="1"> 
     <dtml-var mensagem_emitir>
   </dtml-let> 
   
 <dtml-else>
-  <dtml-let mensagem="'Assessor parlamentar salvo com sucesso!'" sucesso="1" url=hdn_url>
-    <dtml-var mensagem_emitir>
-  </dtml-let>
+      <dtml-if login_criado>
+        <dtml-if hdn_url>
+          <dtml-let mensagem="'Assessor salvo com sucesso!'" mensagem_obs="'Criada conta de acesso com as seguintes credenciais: Login: ' + txt_login + ' / Senha: ' + sapl_documentos.props_sagl.txt_senha_inicial" tipo_mensagem="'success'" modal="1" url=hdn_url>
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        <dtml-else>
+          <dtml-let mensagem="'Assessor salvo com sucesso!'" mensagem_obs="'Criada conta de acesso com as seguintes credenciais: Login: ' + txt_login + ' / Senha: ' + sapl_documentos.props_sagl.txt_senha_inicial" tipo_mensagem="'success'" modal="1">
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        </dtml-if>
+      <dtml-elif login_excluido>
+        <dtml-if hdn_url>
+          <dtml-let mensagem="'Dados do assessor salvos com sucesso!'" mensagem_obs="'Excluída a conta de acesso ao sistema.'" tipo_mensagem="'success'" modal="1" url=hdn_url>
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        <dtml-else>
+          <dtml-let mensagem="'Dados do assessor salvos com sucesso!'" mensagem_obs="'Excluída a conta de acesso ao sistema.'" tipo_mensagem="'success'" modal="1">
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        </dtml-if>
+      <dtml-else>
+        <dtml-if hdn_url>
+          <dtml-let mensagem="'Assessor salvo com sucesso!'" tipo_mensagem="'success'" modal="1" url=hdn_url>
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        <dtml-else>
+          <dtml-let mensagem="'Assessor salvo com sucesso!'" tipo_mensagem="'success'" modal="1">
+            <dtml-var mensagem_emitir>
+          </dtml-let>
+        </dtml-if>
+      </dtml-if>
 </dtml-try>
+</dtml-unless>

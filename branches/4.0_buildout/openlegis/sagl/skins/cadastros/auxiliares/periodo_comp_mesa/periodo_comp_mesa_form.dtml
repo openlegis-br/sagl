@@ -1,11 +1,13 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+<script type="text/javascript" src="javascript/data_validar.js"></script>
 
 <script type="text/javascript">
 <!--
 
-function campos_criticar(form){  
+function campos_criticar(){  
+
+  var form = document.periodo_comp_mesa_form;
 
   if (form.txt_dat_inicio_periodo.value == "") {
     alert("A data iní­cio deve ser preenchida.");
@@ -48,73 +50,64 @@ function campos_criticar(form){
     <dtml-call expr="REQUEST.set('num_legislatura', hdn_num_legislatura)">
     <dtml-except>
   </dtml-try>
-  <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=num_legislatura)">
-
-  if ((dat_inicio_periodo >= '<dtml-var dat_fim>')||('<dtml-var dat_inicio>' <= dat_inicio_periodo)) {
-     alert("A data de iní­cio deve estar compreendida no perí­odo da\nlegislatura (<dtml-var dat_inicio_conv> - <dtml-var dat_fim_conv>)!");
-     form.txt_dat_inicio_periodo.focus();
-     form.txt_dat_inicio_periodo.select();
-     return false;
-  }
-
-  if ((dat_fim_periodo <= '<dtml-var dat_inicio>')||('<dtml-var dat_fim>' <= dat_fim_periodo)){
-     alert("A data de fim deve estar entre compreendida no perí­odo da\nlegislatura (<dtml-var dat_inicio_conv> - <dtml-var dat_fim_conv>)!");
-     form.txt_dat_fim_periodo.focus(); 
-     form.txt_dat_fim_periodo.select();
-     return false;
-  }
-
-  </dtml-in>
 
   form.submit();
 }
 
-function periodo_comp_mesa_excluir(form) {
-       
+function periodo_comp_mesa_excluir(form) {    
   if (confirm("Deseja realmente excluir?")) {  
     location.href = "periodo_comp_mesa_excluir_proc?cod_periodo_comp=" + form.hdn_cod_periodo_comp.value;
-  }
-  
+  } 
 }
 
-//-->
 </script>
 
-<div class="helpsagl"> <a id="ajuda" href="&dtml-portal_url;/ajuda/periodo_composicao_mesa">Ajuda</a> </div>
-
-<h1 class="firstHeading">Tabelas Auxiliares</h1> 
-
-<table>
-  <tr> 
-    <td class="form-label">| <a href="index_html">Iní­cio</a> |</td>
-   </tr>
-</table>  
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Período Composição da Mesa</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="index_html"><i class="fa fa-fw fa-undo"></i> Voltar</a>         
+         </div>
+      </div>
+ </div>
 
 <form name="periodo_comp_mesa_form" method="post" action="periodo_comp_mesa_salvar_proc">
 
-<input type="hidden" name="hdn_cod_periodo_comp" value="<dtml-var cod_periodo_comp missing>" />
+  <input type="hidden" name="hdn_cod_periodo_comp" value="<dtml-var cod_periodo_comp missing>" />
+  <dtml-try>
+     <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura>" />    
+  <dtml-except>
+     <input type="hidden" name="hdn_num_legislatura" value="<dtml-var hdn_num_legislatura>" />
+  </dtml-try>
 
-<dtml-try>
-   <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura>" />    
-<dtml-except>
-   <input type="hidden" name="hdn_num_legislatura" value="<dtml-var hdn_num_legislatura>" />
-</dtml-try>
+  <div class="form-row">
+    <div class="col-6 col-sm-3 mb-3">
+        <label for="txt_dat_inicio_periodo" class="required">Data de Início</label>    
+        <input class="form-control date" type="text" name="txt_dat_inicio_periodo" id="txt_dat_inicio_periodo" value="<dtml-var dat_inicio_periodo missing>" />
+    </div>
+    <div class="col-6 col-sm-3 mb-3">
+        <label for="txt_dat_fim_periodo" class="required">Data de Fim</label>    
+        <input class="form-control date" type="text" name="txt_dat_fim_periodo" id="txt_dat_fim_periodo" value="<dtml-var dat_fim_periodo missing>" />
+    </div>  
+    <div class="col-12 col-sm-6 mb-3">
+        <label for="txa_txt_observacao">Observações</label>    
+        <textarea class="form-control" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null></textarea>
+    </div>      
+  </div>
 
-<fieldset><legend>Perí­odo Composição da Mesa Diretora</legend>
-       <table>
-         <tr> 
-            <td class="form-element">Data Iní­cio <span class="campoObrigatorio">&nbsp;</span><br />
-             <input type="text" name="txt_dat_inicio_periodo" id="txt_dat_inicio_periodo" value="<dtml-var dat_inicio_periodo missing>" size="10" maxlength="10" onBlur="formata_data(form.txt_dat_inicio_periodo)" /></td>
-            <td class="form-text"><b>Data Fim <span class="campoObrigatorio">&nbsp;</span></b><br />
-              <input type="text" name="txt_dat_fim_periodo" id="txt_dat_fim_periodo" value="<dtml-var dat_fim_periodo missing>" size="10" maxlength="10" onBlur="formata_data(form.txt_dat_fim_periodo)" /></td>
-         </tr>
-       </table>
-  <center><p>
-  <input type="button" class="botao" name="btn_periodo_comp_mesa_salvar" value="Salvar" onClick="campos_criticar(document.periodo_comp_mesa_form)" />
+  <input class="btn btn-primary" type="button" value="Salvar" onClick="return campos_criticar()" />
   <dtml-if cod_periodo_comp>
-    <input type="button" class="botao" name="btn_periodo_comp_mesa_excluir" value="Excluir" onClick="periodo_comp_mesa_excluir(document.periodo_comp_mesa_form)" />
+    <input class="btn btn-danger" type="button" value="Excluir" onClick="periodo_comp_mesa_excluir()" />
   </dtml-if>
-  </p></center>
-</fieldset>
+
+   <div class="row">
+      <div class="col-md-12 mt-2">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+      </div>
+   </div> 
+
 </form>
+
 <dtml-var standard_html_footer>

@@ -1,49 +1,32 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="javascript/data_validar_jvsc"></script>
+<script type="text/javascript" src="javascript/data_validar.js"></script>
 
 <script type="text/javascript">
-<!--
-   function submeter(endereco){
 
-      var form = document.filiacao_form;
+  function filiacao_criticar(form){
 
-      endereco += '?cod_parlamentar=' + form.hdn_cod_parlamentar.value;
-
-      if (form.hdn_alterou.value=="1"){
-         if (confirm("Deseja salvar os dados?")){
-            form.hdn_url.value = endereco;
-            campos_criticar(form);
-         }else {location.href = endereco}
-      }else
-         location.href = endereco;
-   }
-
-  function campos_criticar(form){
+    var form = document.filiacao_form;
 
     if (form.lst_cod_partido.value ==""){
-        alert("Partido deve ser preenchido!");
-        form.lst_cod_partido.focus();
+        $('#lst_cod_partido').addClass('is-invalid');
         return false;
      }
-
      if (form.txt_dat_filiacao.value =="") {
-       alert("Data de filiação deve ser preenchida!");
-       form.txt_dat_filiacao.focus();
-       return false;
+        $('#txt_dat_filiacao').addClass('is-invalid');
+        form.txt_dat_filiacao.focus();
+        return false;
      }
-
      if (!IsValidDate(form.txt_dat_filiacao.value)) {
-         alert("Digite uma data válida!");
+         $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data de filiação válida!"});
          form.txt_dat_filiacao.focus();
-         form.txt_dat_filiacao.select();
          return false;
      }
      if (form.txt_dat_desfiliacao.value != "") {
         if (!IsValidDate(form.txt_dat_desfiliacao.value)) {
-            alert("Digite uma data válida!");
+            $('#txt_dat_desfiliacao').addClass('is-invalid');
+            $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data de desfiliação válida!"});
             form.txt_dat_desfiliacao.focus();
-            form.txt_dat_desfiliacao.select();
             return false;
          }
      }
@@ -52,7 +35,7 @@
         var dat_filiacao = form.txt_dat_filiacao.value.substring(6,10) + form.txt_dat_filiacao.value.substring(3,5) + form.txt_dat_filiacao.value.substring(0,2);
         var dat_desfiliacao = form.txt_dat_desfiliacao.value.substring(6,10) + form.txt_dat_desfiliacao.value.substring(3,5) + form.txt_dat_desfiliacao.value.substring(0,2);
         if (dat_filiacao > dat_desfiliacao) {
-           alert("Data de desfiliação deve ser maior ou igual a data de filiação!");
+           $.showAlert({title: "Mensagem do Sistema", body: "A data de desfiliação deve ser maior ou igual à data de filiação!"});
            form.txt_dat_desfiliacao.focus();
            form.txt_dat_desfiliacao.select();
            return false;
@@ -63,111 +46,91 @@
         if (form.hdn_boolean_dat_desfiliacao_ant.value == "1") {
            if (form.hdn_dat_desfiliacao_ant.value != "None") {
               var dat_desfiliacao_ant = form.hdn_dat_desfiliacao_ant.value.substring(6,10) + form.hdn_dat_desfiliacao_ant.value.substring(3,5) + form.hdn_dat_desfiliacao_ant.value.substring(0,2);
-              var dat_filiacao        = form.txt_dat_filiacao.value.substring(6,10) + form.txt_dat_filiacao.value.substring(3,5) + form.txt_dat_filiacao.value.substring(0,2);
+              var dat_filiacao = form.txt_dat_filiacao.value.substring(6,10) + form.txt_dat_filiacao.value.substring(3,5) + form.txt_dat_filiacao.value.substring(0,2);
               if (dat_filiacao < dat_desfiliacao_ant) {
-                 alert("Data de filiação deve ser maior ou igual a data da última desfiliação!");
+                 $.showAlert({title: "Mensagem do Sistema", body: "A data de filiação deve ser maior ou igual à data de desfiliação anterior!"});
                  form.txt_dat_filiacao.focus();
                  form.txt_dat_filiacao.select();
                  return false;
               }
            }
            else {
-                alert("Data de desfiliação da última filiação deve ser preenchida!");
-                history.go(-1);
+                $.showAlert({title: "Mensagem do Sistema", body: "Antes de incluir uma nova filiação partidária, é preciso cadastrar a data de desfiliação da filiação partidária anterior!"});
                 return false;
            }
         }
      }
      form.submit();
   }
-
-  function filiacao_excluir(){
-
-       if (confirm("Deseja realmente excluir?")) {
-          location.href="filiacao_excluir_proc?hdn_cod_parlamentar=<dtml-var cod_parlamentar>&hdn_cod_partido=<dtml-var cod_partido missing>&hdn_dat_filiacao=<dtml-var dat_filiacao missing>&nom_parlamentar=<dtml-var nom_parlamentar missing>";
-}       }
-
-  //-->
 </script>
-
-<script type="text/javascript">
-$(function() {
-        $('#txt_dat_filiacao').datepick();
-        $('#txt_dat_desfiliacao').datepick();
-});
-</script>
-
-<a id="ajuda" href="&dtml-portal_url;/ajuda/modulo_parlamentares">Ajuda</a>
 
 <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
   <dtml-call expr="REQUEST.set('nom_parlamentar', nom_parlamentar)">
   <input type="hidden" name="nom_parlamentar" value="<dtml-var nom_parlamentar>"/>
 </dtml-in>
 
-<h1 class="firstHeading"><dtml-var nom_parlamentar></h1> 
+<div class="container-fluid">
+
+<legend>Dados da Filiação</legend>
 
 <form method="post" name="filiacao_form" action="filiacao_salvar_proc" >
-
-<dtml-in expr="zsql.data_desfiliacao_obter_zsql(ind_excluido=0, cod_parlamentar=cod_parlamentar)">
- <dtml-if sequence-start>
-    <input type="hidden" name="hdn_dat_desfiliacao_ant" value="<dtml-var dat_desfiliacao_ant>"/>
-    <input type="hidden" name="hdn_boolean_dat_desfiliacao_ant" value="1"/>
- </dtml-if>
+ <dtml-in expr="zsql.data_desfiliacao_obter_zsql(ind_excluido=0, cod_parlamentar=cod_parlamentar)">
+    <dtml-if sequence-start>
+      <input type="hidden" name="hdn_dat_desfiliacao_ant" value="<dtml-var dat_desfiliacao_ant>"/>
+      <input type="hidden" name="hdn_boolean_dat_desfiliacao_ant" value="1"/>
+    </dtml-if>
  <dtml-else>
     <input type="hidden" name="hdn_boolean_dat_desfiliacao_ant" value="0"/>
  </dtml-in>
 
-<dtml-var parlamentar_menu>
+   <div class="form-row">
+     <div class="col-12 mb-3">
+        <label for="lst_cod_partido" class="form-label required">Partido Político</label>
+        <select class="custom-select" name="lst_cod_partido" id="lst_cod_partido" required>
+              <option value="">Selecione</option>
+              <dtml-in expr="zsql.partido_obter_zsql(ind_excluido=0)">
+                 <option 
+                      <dtml-if cod_partido_sel> 
+                        <dtml-if expr="cod_partido == cod_partido_sel">
+                          selected
+                        </dtml-if>
+                    </dtml-if>
+                    value="<dtml-var cod_partido>"><dtml-var sgl_partido> - <dtml-var nom_partido>
+                 </option>
+              </dtml-in>
+        </select>
+        <div class="invalid-feedback">
+          Este campo é obrigatório !
+        </div>
+    </div>
+    </div>
 
-<fieldset>
-        <legend>Filiação Partidária</legend>
-             <table>
-               <tr>
-                 <td class="form-element">Partido <span class="campoObrigatorio">&nbsp;</span> <br />
-                 <select name="lst_cod_partido" style="value:<dtml-var cod_partido missing>" onChange="javascript:form.hdn_alterou.value=1">
-                  <option>
-		  Selecione
-                  <dtml-in expr="zsql.partido_obter_zsql(ind_excluido=0)">
-                  <option
-                    <dtml-unless btn_incluir_filiacao>
-                      <dtml-if expr="((not _.has_key('cod_partido_sel') and cod_partido==filiacao_form.cod_partido)
-                                       or (_.has_key('cod_partido_sel') and cod_partido == cod_partido_sel))">
-                        selected
-                      </dtml-if>
-                    </dtml-unless>
-                    value="<dtml-var cod_partido>">
-                 <dtml-var sgl_partido>                   
-                 </dtml-in>
-                 </select></td>
-                 <td class="form-element">Data Filiação <span class="campoObrigatorio">&nbsp;</span> <br />
-                  <input type="text"
-                         name="txt_dat_filiacao"
-                         id="txt_dat_filiacao"
-                         value="<dtml-var dat_filiacao missing>"
-                         size="10" maxlength="10"
-                         onBlur="formata_data(form.txt_dat_filiacao)"
-                         onChange="javascript:form.hdn_alterou.value=1"/>
-                    </td>
-                 <td class="form-element">Data Desfiliação <br/>
-        <input type="text"
-               name="txt_dat_desfiliacao"
-               id="txt_dat_desfiliacao"
-               value="<dtml-var dat_desfiliacao missing null="">"
-               size="10" maxlength="10"
-               onBlur="formata_data(form.txt_dat_desfiliacao)"
-               onChange="javascript:form.hdn_alterou.value=1"/>
-           </td>
-            </tr>
-           </table>
+   <div class="form-row">
+     <div class="col-6 mb-3">
+      <div class="form-group">
+        <label for="txt_dat_filiacao" class="required">Data de Filiação</label>
+        <input type="text" class="form-control date" name="txt_dat_filiacao" id="txt_dat_filiacao" value="<dtml-var dat_filiacao missing>" autocomplete="off" required>
+        <div class="invalid-feedback">
+          Este campo é obrigatório !
+        </div>
+      </div>
+     </div> 
+     <div class="col-6 mb-3">
+      <div class="form-group">
+        <label for="txt_dat_desfiliacao">Data de Desfiliação</label>
+        <input type="text" class="form-control date" name="txt_dat_desfiliacao" id="txt_dat_desfiliacao" value="<dtml-var dat_desfiliacao missing null>" autocomplete="off">
+      </div>
+     </div>
+   </div>
+    
+  <div class="text-left"> 
+    <button class="btn btn-primary" onClick="return filiacao_criticar()">Salvar</button>
+    <dtml-unless incluir_filiacao>
+       <a class="btn btn-danger" href="filiacao_excluir_proc?hdn_cod_parlamentar=<dtml-var cod_parlamentar>&hdn_cod_partido=<dtml-var cod_partido missing>&hdn_dat_filiacao=<dtml-var dat_filiacao missing>&nom_parlamentar=<dtml-var nom_parlamentar missing>&modal=1"" data-confirm="Deseja realmente excluir a filiação partidária?">Excluir</a>
+    </dtml-unless>    
+  </div>
 
-  <p align="center"> 
-   <input type="button" name="btn_filiacao_salvar" value="Salvar" class="botao" onClick="campos_criticar(document.filiacao_form)"/>
-  <dtml-unless btn_incluir_filiacao>
-     <input type="button" name="btn_filiacao_excluir" class="botao" value="Excluir" onClick="filiacao_excluir()"/>
-  </dtml-unless>    
-  </p>
-
-   <dtml-if btn_incluir_filiacao>
+   <dtml-if incluir_filiacao>
      <input type="hidden" name="hdn_boolean_incluir_filiacao" value="1"/>
    <dtml-else>
      <input type="hidden" name="hdn_boolean_incluir_filiacao" value="0"/>
@@ -177,9 +140,16 @@ $(function() {
    <input type="hidden" name="hdn_dat_filiacao" value="<dtml-var dat_filiacao missing>"/>
    <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
    <input type="hidden" name="nom_parlamentar" value="<dtml-var nom_parlamentar missing>"/>
-   <input type="hidden" name="hdn_url" value="index_html?cod_parlamentar=<dtml-var cod_parlamentar>"/>
-   <input type="hidden" name="hdn_alterou" value="0"/>
-    </fieldset>
-</form>
+   <dtml-if dat_filiacao>
+     <input type="hidden" name="hdn_url" value="filiacao_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>&cod_partido=<dtml-var cod_partido missing>&dat_filiacao=<dtml-var expr="pysc.data_converter_pysc(dat_filiacao)">&modal=1"/>
+   </dtml-if>
+   <input type="hidden" name="modal" value="1"/>
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+ </div>
+</form>  
+</div>
 
 <dtml-var standard_html_footer>

@@ -22,7 +22,7 @@ def paraStyle():
     tmp_data+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp_data+='\t\t</initialize>\n'
     tmp_data+='\t\t<paraStyle name="P1" fontName="Helvetica" fontSize="10" leading="12" alignment="left"/>\n'
-    tmp_data+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9" leading="11" alignment="center"/>\n'
+    tmp_data+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9" leading="32" alignment="center"/>\n'
     tmp_data+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="20" leading="24" alignment="center"/>\n'
     tmp_data+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="14" leading="15" alignment="right"/>\n'
     tmp_data+='\t\t<paraStyle name="P5" fontName="Helvetica" fontSize="9" leading="11" alignment="left"/>\n'
@@ -51,14 +51,13 @@ def destinatarios(lst_destinatarios):
         tmp_data+='\t\t<para style="P3">\n'
         tmp_data+='\t\t\t<font color="white"> </font>\n'
         tmp_data+='\t\t</para>\n'
+
         if dic['forma_tratamento']!="" and dic['forma_tratamento']!=None:
             tmp_data+='\t\t<para style="P5">'+ dic['forma_tratamento']+ '</para>\n'  
         if dic['nome_responsavel']!="" and dic['nome_responsavel']!=None:
             tmp_data+='\t\t<para style="P1">'+ dic['nome_responsavel']+ '</para>\n'
         if dic['cargo']!="" and dic['cargo']!=None:
             tmp_data+='\t\t<para style="P1">'+ dic['cargo']+ '</para>\n'
-        if dic['nome_instituicao']!="" and dic['nome_instituicao']!=None:
-            tmp_data+='\t\t<para style="P1">'+ dic['nome_instituicao']+ '</para>\n'
         if dic['endereco']!="" and dic['endereco']!=None and dic['bairro']!='' and dic['bairro']!=None:
             tmp_data+='\t\t<para style="P1">'+ dic['endereco']+' '+dic['bairro']+ '</para>\n'
         else:
@@ -93,7 +92,7 @@ def principal(sessao,linha1,linha2,lst_destinatarios):
     tmp_data+='\t\t<pageTemplate id="main">\n'
     tmp_data+='\t\t<pageGraphics>\n'
     tmp_data+='\t\t</pageGraphics>\n'
-    tmp_data+='\t\t\t<frame id="first" x1="3cm" y1="5cm" width="15cm" height="14cm"/>\n'
+    tmp_data+='\t\t\t<frame id="main" x1="3cm" y1="5cm" width="15cm" height="13cm"/>\n'
     tmp_data+='\t\t</pageTemplate>\n'
     tmp_data+='\t</template>\n'
     tmp_data+=paraStyle()

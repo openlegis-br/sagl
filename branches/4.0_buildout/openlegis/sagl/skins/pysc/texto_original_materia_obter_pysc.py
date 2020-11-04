@@ -10,16 +10,16 @@
 ok = 0
 id = str(cod_materia) + '_redacao_final.odt'
 try:
-    doc = context.documentos.materia_odt[id]
+    doc = context.sapl_documentos.materia_odt[id]
     if (int(ind_sobrescrever)==1):
         doc=''     
-        context.documentos.materia_odt.manage_delObjects(id)
-        tmp_copy = context.documentos.materia_odt.manage_copyObjects(ids=str(cod_materia)+'_texto_integral.odt')
-        tmp_id = context.documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
-        context.documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
+        context.sapl_documentos.materia_odt.manage_delObjects(id)
+        tmp_copy = context.sapl_documentos.materia_odt.manage_copyObjects(ids=str(cod_materia)+'_texto_integral.odt')
+        tmp_id = context.sapl_documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
+        context.sapl_documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
         ok = 1
 except KeyError:
-    tmp_copy = context.documentos.materia_odt.manage_copyObjects(ids=str(cod_materia)+ '_texto_integral.odt')
-    tmp_id = context.documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
-    context.documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
+    tmp_copy = context.sapl_documentos.materia_odt.manage_copyObjects(ids=str(cod_materia)+ '_texto_integral.odt')
+    tmp_id = context.sapl_documentos.materia_odt.manage_pasteObjects(tmp_copy)[0]['new_id']
+    context.sapl_documentos.materia_odt.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id]))
     ok = 1

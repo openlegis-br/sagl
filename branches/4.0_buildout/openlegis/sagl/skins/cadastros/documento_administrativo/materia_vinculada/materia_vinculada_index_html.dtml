@@ -1,153 +1,130 @@
-<dtml-var standard_html_header>
+<style>
+.error {background:#f67280};
+</style>
 
 <script type="text/javascript">
-<!--
 
-function campos_criticar(){
+$(document).ready(function () {
+    $(document).on('click', '#master_table .add', function () {
 
-    var form=document.materia_vinculada_form;       
- 
-    var regexp_digitos = /\D+/;
+        var row = $(this).closest('tr');
+        var clone = row.clone();
+        var tr = clone.closest('tr');
+        tr.find('input[type=text]').val('');
+        $(this).closest('tr').after(clone);
+        var $span = $("#master_table tr");
+    });
 
-    if (form.lst_tip_id_basica.selectedIndex==''){
-       alert("O tipo de matéria deve ser selecionado!");
-       form.lst_tip_id_basica.focus();
-       return false;
-    }
+    $(document).on('click', '#master_table .removeRow', function () {
+        if ($('#master_table .add').length > 1) {
+            $(this).closest('tr').remove();
+        }
 
-    if (form.txt_num_ident_basica.value == "") {
-       alert("O número da matéria deve ser preenchido!");
-       form.txt_num_ident_basica.focus();
-       return false;
-    }
+    });
 
-    if (regexp_digitos.test(form.txt_num_ident_basica.value)) {
-       alert("O número da matéria deve ser um número natural!");
-       form.txt_num_ident_basica.focus();
-       return false;
-    }
+});
 
-    if (form.txt_ano_ident_basica.value == "") {
-       alert("O ano da matéria deve ser preenchido!");
-       form.txt_ano_ident_basica.focus();
-       return false;
-    }
-
-    if (regexp_digitos.test(form.txt_ano_ident_basica.value)) {
-       alert("O ano da matéria deve ser um número natural!");
-       form.txt_ano_ident_basica.focus();
-       return false;
-    }
-
-    if (form.hdn_cod_materia.value == "") {
-       alert("Dados da matéria obtidos com sucesso! Confirme se a ementa corresponde à matéria informada.");
-       form.lst_tip_id_basica.focus();
-       return false;
-    }
-
-
- form.submit();
+function myFunction() {
+    var form=$("#master_table").closest('form')
+    $(form.prop('elements')).each(function(){
+        var missing= $(this).val()===""
+        $(this).parent().toggleClass('error',missing)
+    })
+    return form.find(".error").length==0
 }
 
-  function ementa_buscar(form){
-    if ((form.lst_tip_id_basica.selectedIndex != 0) &&
-       (form.txt_num_ident_basica.value!="") && 
-       (form.txt_ano_ident_basica.value!="")){
-       location.href="ementa_buscar_proc?cod_documento="+form.hdn_cod_documento.value+"&tip_ident_basica="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+"&num_ident_basica="+form.txt_num_ident_basica.value+"&ano_ident_basica="+form.txt_ano_ident_basica.value;
-    }
-  }
 
-  function excluir(cod_vinculo) {
+ function excluir(cod_vinculo) {
     var form=document.materia_vinculada_form;       
     if (confirm("Deseja realmente excluir o vínculo com a matéria?")) {
-       location.href="<dtml-var absolute_url>/materia_vinculada_excluir_proc?cod_vinculo=" + cod_vinculo + "&cod_documento="+form.hdn_cod_documento.value;
+       location.href="<dtml-var absolute_url>/materia_vinculada_excluir_proc?cod_vinculo=" + cod_vinculo + "&cod_documento="+form.hdn_cod_documento.value+"&hdn_url=<dtml-var ACTUAL_URL>?cod_documento=<dtml-var cod_documento>#materias";
     }
   } 
-
 </script>
 
-<a id="ajuda" href="&dtml-portal_url;/ajuda/documento_administrativo">Ajuda</a>
 
-<h1 class="firstHeading">Documento Administrativo</h1>
+<legend>Matérias Vinculadas</legend>
 
-<dtml-var documento_menu>
-
-<h3 align="center"><dtml-var documento_header></h3>
-
-<form name="materia_vinculada_form" method="post" action="materia_vinculada_salvar_proc">  
-
-<input type="hidden" name="hdn_cod_documento" value=<dtml-var cod_documento>></input>
-<input type="hidden" name="hdn_cod_materia" value=<dtml-var hdn_cod_materia missing>></input>   
-
-<fieldset><legend>Matérias Vinculadas</legend>
   <dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_documento=cod_documento)">
     <dtml-if sequence-start>
-   <table>
+   <table class="table">
+      <thead class="table-secondary">
        <tr> 
-           <th width="15%" class="form-label">Matéria</th>
-           <th width="70%" class="form-label">Ementa</th>
-           <th width="15%" class="form-label">Ação</th>
+           <th>Identificação da Matéria</th>
+           <th width="15%">Ação</th>
        </tr>
+      </thead>
       </dtml-if sequence-start>
         <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
          <tr> 
-           <td width="15%" class="texto">
+           <td>
               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
-                 <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-                   <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                 <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                   <b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b>
                  </a>
               <dtml-else>
-                 <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-                   <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                 <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                   <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
               </dtml-if>
+              <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                - <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
+              </dtml-in>
+              - <dtml-var txt_ementa>
            </td>
-           <td width="70%" class="texto"><dtml-var txt_ementa></td>
-           <td width="15%" class="texto"><p align="center">
-                <a class="botao" href="javascript:excluir(<dtml-var cod_vinculo>)">Excluir</a></p>
+           <td width="15%">
+                <a class="btn btn-danger" href="javascript:excluir(<dtml-var cod_vinculo>)">Excluir</a>
         </tr>
        </dtml-in>
     <dtml-if sequence-end>
       </table>
     </dtml-if sequence-end>
    <dtml-else>
-      <p class="texto">Nenhuma matéria vinculada.</p>
+      <p>Nenhuma matéria vinculada.</p>
    </dtml-in>
-</fieldset>
 
- <table>
-      <tr> 
-        <td colspan="2" width="50%"><label for="lst_tip_id_basica">Matéria Legislativa</label><span class="campoObrigatorio"></span><br>
-           <select name="lst_tip_id_basica" id="lst_tip_id_basica" onChange="ementa_buscar(document.materia_vinculada_form)">
-            <option>
-              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
-                 <option
-                    <dtml-if tip_id_basica_sel>
-                      <dtml-if expr="_.int(tip_materia) == _.int(tip_ident_basica)">
-                         selected
-                      </dtml-if>
-                   </dtml-if>
-                    value="<dtml-var tip_materia missing>"> <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
-                   </option>
-              </dtml-in>
-           </select></td>
-        <td>
-           <label for="txt_num_ident_basica">Número</label><span class="campoObrigatorio"></span><br>
-            <input type="text" name="txt_num_ident_basica" id="txt_num_ident_basica" size="5" value="<dtml-var num_ident_basica_sel missing>" maxlength="5" onChange="ementa_buscar(document.materia_vinculada_form)">
-        </td>
-        <td>
-           <label for="txt_ano_ident_basica">Ano</label><span class="campoObrigatorio"></span><br>
-            <input type="text" name="txt_ano_ident_basica" id="txt_ano_ident_basica" size="4" value="<dtml-var ano_ident_basica_sel missing>" maxlength="4" onChange="ementa_buscar(document.materia_vinculada_form)">
-        </td>
-      </tr>
-       <tr>
-        <td colspan="4"><label for="txa_txt_ementa">Ementa</label><br/>
-          <textarea name="txa_txt_ementa" id="txa_txt_ementa" cols="65" readonly rows="4"><dtml-var txt_ementa missing></textarea>
-        </td>
-       </tr>
- </table>
-  <input type="hidden" name="hdn_url" value="index_html?cod_documento=<dtml-var cod_documento>" />
- <p align="center">
-    <input type="button" class="botao" name="button" value="Incluir Vínculo" onClick="campos_criticar(document.materia_vinculada_form)"/>
- </p>
+<form name="materia_vinculada_form" method="post" action="materia_vinculada/materia_vinculada_salvar_proc">  
+   <div class="table-resposive">
+    <table class="table" id="master_table">
+       <thead>
+        <tr>
+            <th><label for="lst_tip_id_basica" class="required">Tipo de Matéria</label></th>
+            <th><label for="txt_num_ident_basica" class="required">Número</label></th>
+            <th><label for="txt_ano_ident_basica" class="required">Ano</label></th>
+            <th><span class="d-none">Ações</span></th>
+        </tr>
+       </thead>
+        <tr>
+            <td>
+                <select class="custom-select" name="lst_tip_id_basica" id="lst_tip_id_basica"><option value=""></option><dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)"><option value="<dtml-var tip_materia missing>"><dtml-var des_tipo_materia></option></dtml-in></select>
+                <div class="invalid-feedback">
+                  Este campo é obrigatório!
+                </div>
+            </td>
+            <td>
+                <input class="form-control number" type="number" name="txt_num_ident_basica" id="txt_num_ident_basica" size="5" value="<dtml-var num_ident_basica_sel missing>">
+                <div class="invalid-feedback">
+                  Este campo é obrigatório!
+                </div>                
+            </td>
+            <td>
+                <input class="form-control year" type="number" name="txt_ano_ident_basica" id="txt_ano_ident_basica" size="4" value="<dtml-var ano_ident_basica_sel missing>">
+                <div class="invalid-feedback">
+                  Este campo é obrigatório!
+                </div>
+            </td>
+            <td>
+                <input type="button" name="addRow" class="add btn btn-primary" value='Adicionar' />
+                <input type="button" name="removeRow" class="removeRow btn btn-danger" value='Excluir' />
+            </td>
+        </tr>
+    </table>
+   </div>
+
+   <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento missing>" />
+   <input type="hidden" name="hdn_url" value="<dtml-var ACTUAL_URL>?cod_documento=<dtml-var cod_documento>#materias" />
+
+   <div class="text-left">
+     <input class="btn btn-primary" type="submit" name="button" value="Incluir Vínculo" onclick="return myFunction()" />
+   </div>
+
 </form>
-<dtml-var standard_html_footer>

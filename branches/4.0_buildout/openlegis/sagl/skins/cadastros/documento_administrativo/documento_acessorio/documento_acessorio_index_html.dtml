@@ -1,67 +1,53 @@
-<dtml-var standard_html_header>
-
-<h1 class="firstHeading">Documento Administrativo</h1>
- <dtml-var documento_menu>
- <dtml-if cod_documento>
-   <dtml-var documento_header>
- </dtml-if>
-<form name="index_form" action="documento_acessorio_form">
-<input type="hidden" name="cod_documento" value="<dtml-var cod_documento>" />
- <fieldset><legend>Documentos Acessórios</legend>
-    <table>
-<dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)" size=20 start=query_start orphan=2>
+<legend>Documentos Acessórios</legend>
+<dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
   <dtml-if sequence-start>   
+    <div class="table-responsive">
+    <table class="table">
+     <thead class="table-secondary">    
        <tr> 
-          <th width="10%" class="form-label">Doc.</th>
-          <th class="form-label">Nome</th>
-          <th class="form-label">Tipo</th>
-          <th width="15%" class="form-label">Data</th>
-          <th class="form-label">Autor</th>
-       </tr>
-     <dtml-if previous-sequence>
-       <tr><td class="form-element">
-           <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
-           Página Anterior (<dtml-var previous-sequence-size> resultados)</a>
-       </td></tr>
-     </dtml-if previous-sequence>  
+          <th width="15%">Data</th>
+          <th width="15%">Tipo</th>
+          <th>Descrição</th>
+          <th>Autoria</th>
+          <th width="15%">Arquivo</th>
+       </tr>     
+     </thead>
    </dtml-if sequence-start>
-       <tr> 
+       <tr>
+          <td>
+            <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Documento Acessório" data-src="documento_acessorio/documento_acessorio_mostrar_proc?cod_documento_acessorio=<dtml-var cod_documento_acessorio missing>&modal=1">          
+               <b><dtml-var dat_documento missing null=""></b>
+             </a>
+          </td>
+          <td>
+            <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(tip_documento=tip_documento,ind_excluido=0)">
+               <dtml-var des_tipo_documento missing null="">
+            </dtml-in>
+          </td>
+          <td>
+            <dtml-var nom_documento missing null="">
+          </td>
+          <td><dtml-var nom_autor_documento missing null=""></td>                 
           <td>
              <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento_acessorio)+'.pdf')">
-             <dtml-if expr="_.hasattr(documentos.administrativo,id_documento)">
-               <dtml-let documento="_.getattr(documentos.administrativo,id_documento).absolute_url">
+             <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
+               <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
                  <a href="<dtml-var documento>" target="_blank">
-                 <img src="&dtml-portal_url;/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                  <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 3px;"></i><span class="d-none">PDF</span>
                </dtml-let>
              <dtml-else>
-                 <img class="img-disabled" src="&dtml-portal_url;/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                 <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;color: #e9e9e9"></i>
              </dtml-if>
           </td>
-           <td class="texto"><a href="documento_acessorio_mostrar_proc?cod_documento_acessorio=<dtml-var cod_documento_acessorio missing>">
-             <b><dtml-var nom_documento missing null=""></b></a></td>
-           <td class="texto">
-              <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(tip_documento=tip_documento,ind_excluido=0)">
-                 <dtml-var des_tipo_documento missing null="">
-              </dtml-in></td>
-           <td class="texto"><dtml-var dat_documento missing null=""></td>
-           <td class="texto"><dtml-var nom_autor_documento missing null=""></td>
        </tr>
    <dtml-if sequence-end>
-     <dtml-if next-sequence>
-       <tr><td class="label">
-           <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
-           Próxima Página (<dtml-var next-sequence-size> resultados)</a>
-       </td></tr>
-     </dtml-if next-sequence>
        </table>
+      </div>
   </dtml-if sequence-end>
 <dtml-else>
-       <p class="texto">Nenhum documento acessório cadastrado.</p>
-     </table>
+       <p>Nenhum documento acessório cadastrado.</p>
 </dtml-in>
-    </fieldset>
-     <p align="center">
-          <input type="submit" class="botao" name="btn_incluir" value="Incluir Documento Acessório" />
-     </p>
+
+<button type="button" class="btn m btn-primary d-print-none" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Documento Acessório" data-src="documento_acessorio/documento_acessorio_form?cod_documento=<dtml-var cod_documento>&modal=1">Incluir Documento Acessório</button>
+
 </form>
-<dtml-var standard_html_footer>

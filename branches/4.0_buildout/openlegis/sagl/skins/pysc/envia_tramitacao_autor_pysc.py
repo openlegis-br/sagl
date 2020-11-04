@@ -15,7 +15,7 @@ mailhost = context.MailHost
 data_registro=DateTime().strftime('%d/%m/%Y às %H:%M')
 
 casa={}
-aux=context.documentos.propriedades.propertyItems()
+aux=context.sapl_documentos.props_sagl.propertyItems()
 for item in aux:
   casa[item[0]] = item[1]
 email_casa = casa['end_email_casa']
@@ -38,6 +38,9 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
    lista_autor.append(nome_autor)
  nom_autor = ', '.join(['%s' % (value) for (value) in lista_autor])
 
+ data = ''
+ status = ''
+ texto_acao = ''
  for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1):
    data = tramitacao.dat_tramitacao
    status = tramitacao.des_status

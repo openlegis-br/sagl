@@ -1,7 +1,7 @@
 <dtml-comment>
-connection_id : dbcon_openlegis
+connection_id : dbcon_interlegis
 arguments : cod_parlamentar=""
-max_rows : 10000
+max_rows : 20000
 max_cache : 100
 </dtml-comment>
 SELECT 
@@ -20,6 +20,12 @@ WHERE
        a.cod_parlamentar = <dtml-sqlvar cod_parlamentar type="int"> and
        au.cod_materia = m.cod_materia and
        m.tip_id_basica = t.tip_materia
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="isAnon">
+   AND t.ind_publico = 1
+ </dtml-if>
+</dtml-let> 
 
 GROUP BY
        m.ano_ident_basica,

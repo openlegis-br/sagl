@@ -61,43 +61,22 @@
             </dtml-unless>
 
         <dtml-else>      
-            <dtml-call expr="REQUEST.set('erro', 0)">              
-            <dtml-if expr="radTI=='I' or radTI=='S'">                
-                <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
-                <dtml-if expr="(_.int(hdn_file)==1)">
-                    <dtml-if hdn_cod_norma>
-                        <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_norma)+'_'+documentos.norma_juridica.nom_documento)">
-                        <dtml-if "_.hasattr(documentos.norma_juridica,id_documento)">
-                            <dtml-let documento="_.getattr(documentos.norma_juridica,id_documento) ">
-                                <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
-                                <dtml-try>
-                                    <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
-                                <dtml-except>
-                                    <dtml-call expr="REQUEST.set('erro', 1)">              
-                                </dtml-try>
-                            </dtml-let>
-                        </dtml-if>
-                    </dtml-if>
-                    <dtml-if "not existe_arquivo">
-                        <dtml-try>            
-                            <dtml-call expr="documentos.norma_juridica.manage_addFile(id=id_documento,file=file_nom_arquivo)">
-                        <dtml-except> 
-                            <dtml-call expr="REQUEST.set('erro', 1)">              
-                        </dtml-try>      
-                    </dtml-if>
+            <dtml-call expr="REQUEST.set('erro', 0)">                  
+            <dtml-if file_nom_arquivo>>
+               <dtml-if hdn_cod_norma>
+                  <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_norma)+'_texto_integral.pdf')">
                 </dtml-if>
-            <dtml-elif expr="radTI=='E'">
-                <dtml-if hdn_cod_norma>
-                    <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_norma)+'_'+documentos.norma_juridica.nom_documento)">
-                    <dtml-call expr="documentos.norma_juridica.manage_delObjects(id_documento)">
-                    <dtml-call expr="documentos.norma_juridica.Catalog.removerCatalogo(hdn_cod_norma)">
-                </dtml-if>
+                <dtml-try>            
+                   <dtml-call expr="sapl_documentos.norma_juridica.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+                <dtml-except> 
+                   <dtml-call expr="REQUEST.set('erro', 1)">              
+                </dtml-try>      
             </dtml-if>
 
-            <dtml-call expr="documentos.norma_juridica.Catalog.atualizarCatalogo(cod_norma=hdn_cod_norma)">
+            <dtml-call expr="sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(cod_norma=hdn_cod_norma)">
 
-           <dtml-let mensagem="'Norma Jurídica salva com sucesso!'" sucesso="1" cod_norma="hdn_cod_norma" url="'norma_juridica_mostrar_proc?cod_norma='+hdn_cod_norma">
-               <dtml-var norma_juridica_mostrar_proc>
+           <dtml-let mensagem="'Norma jurídica salva com sucesso!'" cod_norma="hdn_cod_norma" url="'norma_juridica_mostrar_proc?cod_norma='+hdn_cod_norma">
+               <dtml-var mensagem_emitir>
            </dtml-let>
         </dtml-try>
     </dtml-if> 

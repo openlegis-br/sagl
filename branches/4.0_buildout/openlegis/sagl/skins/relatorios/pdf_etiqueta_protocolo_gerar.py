@@ -12,6 +12,7 @@ import time
 
 def cabecalho(inf_basicas_dic,imagem):
     """Gera o codigo rml do cabecalho"""
+
     tmp_data=''
     tmp_data+='\t\t\t\t<image x="2.1cm" y="25.7cm" width="59" height="62" file="' + imagem + '"/>\n'
     tmp_data+='\t\t\t\t<lines>2cm 25.4cm 19cm 25.4cm</lines>\n'
@@ -20,7 +21,7 @@ def cabecalho(inf_basicas_dic,imagem):
     tmp_data+='\t\t\t\t<setFont name="Helvetica" size="12"/>\n'
     tmp_data+='\t\t\t\t<drawString x="5cm" y="26.6cm">Sistema Aberto de Gestão Legislativa</drawString>\n'
     tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="13"/>\n'
-    tmp_data+='\t\t\t\t<drawString x="2.2cm" y="24.6cm">Relatório de Controle do Protocolo</drawString>\n'
+    tmp_data+='\t\t\t\t<drawString x="2.2cm" y="24.6cm">Etiqueta de Protocolo</drawString>\n'
 
     return tmp_data
 
@@ -79,11 +80,11 @@ def protocolos(lst_protocolos):
             tmp_data+='\t\t<para style="P1">\n'
             tmp_data+='\t\t\t<font color="white">-</font>\n'
             tmp_data+='\t\t</para>\n'
-	    tmp_data+='\t\t<barCode code="Code128" x="0.5cm" y="0.5cm" barHeight="0.35in" barWidth="0.0193in">' +dic['codigo']+ '</barCode>\n'
+            tmp_data+='\t\t<barCode code="Code128" x="0.5cm" y="0.5cm" barHeight="0.35in" barWidth="0.0193in">' +dic['codigo']+ '</barCode>\n'
             tmp_data+='\t\t<para style="P2"><b>Protocolo Geral nº '+dic['titulo']+'/'+dic['ano']+'</b></para>\n'
         if dic['data']!=None:
             tmp_data+='\t\t<para style="P2"><b>'+dic['data']+'</b></para>\n'
-        tmp_data+='\t\t<para style="P2"><b>'+dic['natureza']+' - '+dic['ident_processo']+'</b></para>\n'
+            tmp_data+='\t\t<para style="P2"><b>'+dic['natureza']+' - '+dic['ident_processo']+'</b></para>\n'
 
     tmp_data+='\t</story>\n'
     return tmp_data
@@ -97,7 +98,7 @@ def principal(sessao,imagem,data,lst_protocolos,dic_cabecalho,lst_rodape,dic_fil
     tmp_data+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp_data+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp_data+='<document filename="etiquetas.pdf">\n'
-    tmp_data+='\t<template pageSize="(62mm, 29mm)" title="Etiquetas de Protocolo" author="OpenLegis" allowSplitting="20">\n'
+    tmp_data+='\t<template pageSize="(62mm, 29mm)" title="Etiqueta de Protocolo" author="OpenLegis" allowSplitting="20">\n'
     tmp_data+='\t\t<pageTemplate id="first">\n'
     tmp_data+='\t\t\t<pageGraphics>\n'
     tmp_data+='\t\t\t<frame id="first" x1="0.02cm" y1="0.02cm" width="61mm" height="29mm"/>\n'

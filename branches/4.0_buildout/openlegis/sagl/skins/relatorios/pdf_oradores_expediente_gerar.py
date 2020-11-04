@@ -111,7 +111,7 @@ def inf_basicas(inf_basicas_dic):
 
     tmp=""
     tmp+='\t<story>\n'
-    tmp+='\t\t<para style="P0"><u>ORADORES INSCRITOS PARA FAZEREM USO DA PALAVRA NO EXPEDIENTE DA ' + str(inf_basicas_dic['num_sessao_plen']) + 'ª SESSÃO ' + str(inf_basicas_dic['nom_sessao']) + ', A SER REALIZADA NO DIA ' + str(inf_basicas_dic["dia_sessao"]).upper() + '</u></para>\n'
+    tmp+='\t\t<para style="P0"><u>ORADORES INSCRITOS PARA FAZEREM USO DA PALAVRA NO EXPEDIENTE DA ' + str(inf_basicas_dic['num_sessao_plen']) + 'ª SESSÃO ' + str(inf_basicas_dic['nom_sessao']) + ', A SER REALIZADA NO DIA ' + str(inf_basicas_dic["dia_sessao"]).decode('utf-8').upper() + '</u></para>\n'
     tmp+='\t\t<condPageBreak height="3cm"/>\n'   
     tmp+='\t\t<para style="P2">\n'
     tmp+='\t\t\t<font color="white"> </font>\n'
