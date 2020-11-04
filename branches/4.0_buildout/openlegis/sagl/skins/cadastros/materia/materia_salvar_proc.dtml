@@ -83,7 +83,7 @@
      </dtml-in>
 
      <dtml-if hdn_cod_autor>
-        <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor = _.int(hdn_cod_autor), cod_materia = codigo, ind_primeiro_autor = 1)">
+        <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor = _.int(hdn_cod_autor), cod_materia = codigo, ind_primeiro_autor = 0)">
      </dtml-if>
 
      <dtml-if chk_cod_autor>
@@ -102,14 +102,13 @@
           <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y às %H:%M'))">
           <dtml-call expr="REQUEST.set('txt_tramitacao', 'Proposição Eletrônica ' + cod_documento + ' incorporada como matéria principal em ' + hdn_hor_tramitacao)">
           <dtml-comment>
-            <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = codigo, ind_primeiro_autor = 1)">
+            <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = codigo, ind_primeiro_autor = 0)">
           </dtml-comment>
         </dtml-in>
         <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao = hdn_cod_proposicao,
                                                                  dat_recebimento = pysc.data_atual_iso_pysc(),
                                                                  cod_mat_ou_doc = _.int(hdn_cod_materia))">
         <dtml-call expr="pysc.proposicao_salvar_como_texto_integral_materia_pysc(hdn_cod_proposicao,hdn_cod_materia,0)">
-        <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">
         <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
         <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
         <dtml-call expr="REQUEST.set('nom_unidade_origem', 'Protocolo Eletrônico')">
@@ -143,7 +142,7 @@
      </dtml-if temProposicao>
 
   <dtml-if protAutor>
-      <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor = protAutor, cod_materia = codigo, ind_primeiro_autor = 1)">
+      <dtml-call expr="zsql.autoria_incluir_zsql(cod_autor = protAutor, cod_materia = codigo, ind_primeiro_autor = 0)">
   </dtml-if>
 
   <dtml-if expr="txt_num_protocolo!=''">
@@ -283,6 +282,9 @@
       <dtml-let mensagem="'Matéria salva com sucesso!'" tipo_mensagem="'success'" cod_mat="hdn_cod_materia" url="hdn_url" >
         <dtml-var mensagem_emitir>
       </dtml-let>
+      <dtml-if temProposicao>
+        <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">      
+      </dtml-if>
    </dtml-if>
  </dtml-if>
 
