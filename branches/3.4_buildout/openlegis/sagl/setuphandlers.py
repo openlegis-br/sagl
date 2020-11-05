@@ -50,7 +50,6 @@ def setupConteudo(portal):
 def setupAdicionarUsuarios(portal):
     # Metodo para criar usuario padrao
     portal.acl_users._addUser(name='openlegis', password='openlegis', confirm='openlegis', roles=['Operador','Administrador'], domains=[])
-    portal.acl_users._addUser(name='lexml',password='lexml',confirm='lexml',roles=['Operador Lexml'],domains=[])
     
 
 def setupAdicionaAcomp(portal):
