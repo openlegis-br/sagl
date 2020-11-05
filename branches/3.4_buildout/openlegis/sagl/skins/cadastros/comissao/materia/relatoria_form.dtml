@@ -154,7 +154,8 @@ $(document).ready(function () {
         <div class="invalid-feedback">
            Este campo é obrigatório!
         </div>         
-    </div>  
+    </div> 
+    
     <div class="col-12 col-md-9 mb-3">
         <label for="lst_relator" class="d-block required">Relator</label>
         <dtml-if expr="_.has_key('cod_periodo_comp_sel')">
@@ -164,12 +165,14 @@ $(document).ready(function () {
                     <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', _.int(cod_periodo_comp))">
                  </dtml-in>
                  <dtml-in expr="zsql.composicao_comissao_obter_zsql(cod_comissao=cod_comissao, cod_periodo_comp=cod_periodo_comp_sel)">
+                  <dtml-if expr="dat_desligamento <= dat_desig_relator">
 	           <option
 	              <dtml-if expr="REQUEST.has_key('cod_parlamentar') and (cod_parlamentar==REQUEST['cod_parlamentar'])">
                         selected
                       </dtml-if>
 			value="<dtml-var cod_parlamentar>"> <dtml-var nom_parlamentar> 
                    </option>
+                  </dtml-if> 
 	        </dtml-in> 
             </select>
         <dtml-else>
@@ -191,6 +194,15 @@ $(document).ready(function () {
        </dtml-unless>
        <input class="form-control date" type="text" name="txt_dat_destit_relator" id="txt_dat_destit_relator" value="<dtml-var dat_destit_relator missing null="">" />    
     </div>
+        <script>
+        $('#txt_dat_destit_relator').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>  
     <div class="col-6 col-md-3 mb-3">
        <dtml-unless cod_relatoria>
           <dtml-call expr="REQUEST.set('ano_parecer', _.DateTime.year(_.DateTime()))">
