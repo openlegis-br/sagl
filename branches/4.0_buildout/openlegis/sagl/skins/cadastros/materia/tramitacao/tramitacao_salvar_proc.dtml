@@ -25,7 +25,11 @@
  </dtml-in>
 </dtml-if>
 
-<dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
+<dtml-if expr="txt_dat_encaminha==None or txt_dat_encaminha==''">
+  <dtml-call expr="REQUEST.set('txt_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('txt_dat_encaminha', pysc.data_converter_pysc(data=txt_dat_encaminha))">
+</dtml-if>
 
 <dtml-try>
   <dtml-call expr="zsql.trans_begin_zsql()">
@@ -35,7 +39,7 @@
         dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
         cod_unid_tram_local = lst_cod_unid_tram_local,
         cod_usuario_local = hdn_cod_usuario_corrente,
-        dat_encaminha = hdn_dat_encaminha,
+        dat_encaminha = txt_dat_encaminha,
         cod_unid_tram_dest = lst_cod_unid_tram_dest,
         cod_usuario_dest = lst_cod_usuario_dest,
         cod_status = lst_cod_status,
@@ -93,8 +97,7 @@
                   <dtml-call expr="REQUEST.set('erro', 1)">              
               </dtml-try>      
           </dtml-if>
-      </dtml-if>
-      
+      </dtml-if>     
   </dtml-if>
   
       <dtml-let mensagem="'Tramitação salva com sucesso.'" cod_materia=hdn_cod_materia cod_tramitacao=hdn_cod_tramitacao>
