@@ -6,14 +6,20 @@ max_cache : 100
 </dtml-comment>
 SELECT
   composicao_mesa.cod_parlamentar,
-  YEAR(periodo_comp_mesa.dat_inicio_periodo)  as ano_inicio,
-  YEAR(periodo_comp_mesa.dat_fim_periodo)  as ano_fim
+  periodo_comp_mesa.cod_periodo_comp,
+  DATE_FORMAT(periodo_comp_mesa.dat_inicio_periodo, '%d/%m/%Y') as dat_inicio,
+  DATE_FORMAT(periodo_comp_mesa.dat_fim_periodo, '%d/%m/%Y') as dat_fim,
+  YEAR(periodo_comp_mesa.dat_inicio_periodo) as ano_inicio,
+  YEAR(periodo_comp_mesa.dat_fim_periodo) as ano_fim
+  
 FROM composicao_mesa 
-     LEFT JOIN cargo_mesa on cargo_mesa.cod_cargo = composicao_mesa.cod_cargo
-     LEFT JOIN periodo_comp_mesa on periodo_comp_mesa.cod_periodo_comp = composicao_mesa.cod_periodo_comp
+     LEFT JOIN cargo_mesa ON cargo_mesa.cod_cargo = composicao_mesa.cod_cargo
+     LEFT JOIN periodo_comp_mesa ON periodo_comp_mesa.cod_periodo_comp = composicao_mesa.cod_periodo_comp
+     
 WHERE
   cargo_mesa.des_cargo ='Presidente'
   AND composicao_mesa.cod_parlamentar = <dtml-sqlvar cod_parlamentar type="int">
+  AND periodo_comp_mesa.ind_excluido = 0
   AND composicao_mesa.ind_excluido = 0
   AND cargo_mesa.ind_excluido = 0
 ORDER BY 
