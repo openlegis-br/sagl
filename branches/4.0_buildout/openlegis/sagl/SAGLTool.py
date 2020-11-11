@@ -350,6 +350,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         crop_type='top'
         size = (350, 380)
         img = Image.open('/tmp/' + image_file)
+        img = img.convert('RGB')
         img_ratio = img.size[0] / float(img.size[1])
         ratio = size[0] / float(size[1])
         if ratio > img_ratio:
