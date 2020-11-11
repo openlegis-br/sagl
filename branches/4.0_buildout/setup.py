@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '3.4'
+version = '4.0'
 
 setup(name='openlegis.sagl',
       version=version,
