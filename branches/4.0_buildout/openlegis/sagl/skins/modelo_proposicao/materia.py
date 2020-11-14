@@ -20,54 +20,55 @@ localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidad
 estado = context.zsql.localidade_obter_zsql(tip_localidade="U")
 for uf in estado:
     if localidade[0].sgl_uf == uf.sgl_uf:
-        nom_estado = uf.nom_localidade
-        break
+       nom_estado = uf.nom_localidade.encode('utf-8')
+       break
 inf_basicas_dic['nom_camara']= casa['nom_casa']
 inf_basicas_dic["nom_estado"] = nom_estado
 for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_localidade']):
-    inf_basicas_dic['nom_localidade']= local.nom_localidade
+    inf_basicas_dic['nom_localidade']= local.nom_localidade.encode('utf-8')
     inf_basicas_dic['sgl_uf']= local.sgl_uf
 
-inf_basicas_dic['url_validacao'] = "" + context.generico.absolute_url()+"/proposicao_validar"
+inf_basicas_dic['url_validacao'] = "" + context.generico.absolute_url()+"/conferir_assinatura"
 
 for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
- num_proposicao = " "
- nom_arquivo = str(materia.cod_materia)+'_texto_integral.odt'
- des_tipo_materia = materia.des_tipo_materia.upper()
- num_ident_basica = materia.num_ident_basica
- ano_ident_basica = materia.ano_ident_basica
- txt_ementa = materia.txt_ementa
- dat_apresentacao = context.pysc.data_converter_por_extenso_pysc(data=materia.dat_apresentacao)
- materia_vinculada = " "
-
- apelido_autor = " "
- nom_autor = ""
- autorias = context.zsql.autoria_obter_zsql(cod_materia=cod_materia)
- fields = autorias.data_dictionary().keys()
- nom_autor = []
- for autoria in autorias:
-    autores = context.zsql.autor_obter_zsql(cod_autor = autoria.cod_autor)
-    for autor in autores:
-	autor_dic = {}
-	for field in fields:
-                nom_parlamentar = " "
-                partido_autor = " "
+    num_proposicao = " "
+    nom_arquivo = str(materia.cod_materia)+'_texto_integral.odt'
+    des_tipo_materia = materia.des_tipo_materia.upper()
+    num_ident_basica = materia.num_ident_basica
+    ano_ident_basica = materia.ano_ident_basica
+    txt_ementa = materia.txt_ementa.encode('utf-8')
+    dat_apresentacao = context.pysc.data_converter_por_extenso_pysc(data=materia.dat_apresentacao)
+    materia_vinculada = " "
+    apelido_autor = ''
+    nom_autor = []
+    autorias = context.zsql.autoria_obter_zsql(cod_materia=cod_materia)
+    fields = autorias.data_dictionary().keys()
+    for autoria in autorias:
+        autores = context.zsql.autor_obter_zsql(cod_autor = autoria.cod_autor)
+        for autor in autores:
+            autor_dic = {}
+            for field in fields:
+                nom_parlamentar = ''
+                partido_autor = ''
+                nom_cargo = ''
                 if autor.cod_parlamentar != None:
                    parlamentares = context.zsql.parlamentar_obter_zsql(cod_parlamentar = autor.cod_parlamentar)
                    for parlamentar in parlamentares:
                        nom_parlamentar = " - " + parlamentar.nom_parlamentar
+                       if parlamentar.sex_parlamentar == 'M':
+                          nom_cargo = 'Vereador'
+                       elif parlamentar.sex_parlamentar == 'F':
+                          nom_cargo = 'Vereadora'
                        if parlamentar.sgl_partido !=None:
-                          partido_autor = "Vereador - " + parlamentar.sgl_partido
+                          partido_autor = nom_cargo + ' - ' + parlamentar.sgl_partido
                        else:
-                          partido_autor = "Vereador"
+                          partido_autor = nom_cargo
                    autor_dic['nome_autor'] = autor.nom_autor_join.upper() + '\n' + partido_autor
                    autor_dic['apelido_autor'] = partido_autor
                 else:
                    autor_dic['nome_autor'] = autor.nom_autor_join.upper()
-                   autor_dic['apelido_autor'] = " "
+                   autor_dic['apelido_autor'] = ''
                 autor_dic['cod_autor'] = autor['cod_autor']
-	nom_autor.append(autor_dic)
-
+        nom_autor.append(autor_dic)
 
 return context.materia_gerar_odt(inf_basicas_dic,num_proposicao,nom_arquivo,des_tipo_materia,num_ident_basica,ano_ident_basica,txt_ementa,materia_vinculada,dat_apresentacao,nom_autor,apelido_autor,modelo_proposicao)
-#return autor_dic
