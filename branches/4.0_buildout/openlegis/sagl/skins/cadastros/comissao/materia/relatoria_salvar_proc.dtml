@@ -1,5 +1,5 @@
-<dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia,cod_comissao=hdn_cod_comissao,ind_excluido=0)">
-   <dtml-in expr="relatoria_obter_zsql(cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao, num_ordem=hdn_num_ordem, ind_excluido=0)">
+<dtml-if expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia,cod_comissao=hdn_cod_comissao,ind_excluido=0)">
+   <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao, num_ordem=hdn_num_ordem, ind_excluido=0)">
      <dtml-if cod_relatoria>
        <dtml-if expr="cod_relatoria==hdn_cod_relatoria and num_ordem==hdn_num_ordem">
           <dtml-call expr="REQUEST.set('hdn_num_ordem', num_ordem)">
@@ -8,10 +8,13 @@
        </dtml-if>
      </dtml-if>
    </dtml-in>
-<dtml-else>
-   <dtml-call expr="REQUEST.set('hdn_num_ordem', '1')">
+<dtml-elif expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia,ind_excluido=0)">
+   <dtml-call expr="REQUEST.set('hdn_num_ordem', int(num_ordem)+1)">
    <dtml-call expr="zsql.despacho_inicial_incluir_zsql(num_ordem=hdn_num_ordem, cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao)">
-</dtml-in>
+<dtml-else>
+   <dtml-call expr="REQUEST.set('hdn_num_ordem', 1)">
+   <dtml-call expr="zsql.despacho_inicial_incluir_zsql(num_ordem=hdn_num_ordem, cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao)">
+</dtml-if>
 
 <dtml-if hdn_cod_relatoria>
   <dtml-call expr="REQUEST.set('metodo', zsql.relatoria_atualizar_zsql)">
