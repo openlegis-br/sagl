@@ -156,6 +156,40 @@ $(document).ready(function(){
             }
         });
     });
+    $("#lst_cod_unid_tram_local").change(function(){
+        var unid_origem = $(this).val();
+        $.ajax({
+            url: 'unidades_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_unid_tram_dest").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+        var unid_origem = $(this).val();
+        $.ajax({
+            url: 'status_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_status").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_status").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });        
+    });    
 });
 </script>
 
@@ -178,8 +212,8 @@ $(document).ready(function(){
 
 <dtml-in expr="caixa_entrada_pysc(cod_usuario=cod_usuario_corrente)">
 <dtml-if sequence-start>
+ <label class="d-block font-weight-bold">Preencha os dados da tramitação em lote</label>  
  <form name="tramitacao_form" id="tramitacao_form" method="post" action="tramitacao_lote_salvar_proc">
- 
    <div class="form-row">
     <div class="col-12 col-md-3 mb-3">
        <label for="txt_dat_tramitacao" class="required">Data da Tramitação</label>
@@ -236,21 +270,9 @@ $(document).ready(function(){
  
   <div class="form-row">
     <div class="col-12 col-md-6 mb-3">
-      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=hdn_cod_unid_tram_local)">
-         <dtml-call expr="REQUEST.set('unid_dest_permitidas',unid_dest_permitidas_sel)">
-         <dtml-call expr="REQUEST.set('status_permitidos',status_adm_permitidos_sel)">
-      </dtml-in>    
       <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
           <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
-            <option>Selecione</option>
-            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
-              <dtml-if expr="not dat_extincao and _.str(cod_unid_tramitacao) in _.string.split(_.str(unid_dest_permitidas),',')">
-                <option 
-                  value="<dtml-var cod_unid_tramitacao>">
-                   <dtml-var nom_unidade_join>
-                </option>
-               </dtml-if>
-            </dtml-in>
+            <option></option>
           </select>
       <div class="invalid-feedback">
         Este campo é obrigatório!
@@ -281,18 +303,7 @@ $(document).ready(function(){
     <div class="col-12 col-md-9 mb-3"> 
       <label for="lst_cod_status" class="required">Status</label>
       <select class="custom-select" title="Selecione" data-live-search="true" id="lst_cod_status" name="lst_cod_status" data-size="6" required>
-         <option>Selecione</option>
-         <dtml-in expr="zsql.status_tramitacao_administrativo_obter_zsql(ind_excluido=0)">
-           <dtml-if expr="_.str(cod_status) in _.string.split(_.str(status_permitidos),',')">       
-             <option 
-               <dtml-if expr="_.has_key('cod_tramitacao') and cod_status==tramitacao_form.cod_status">
-                  selected
-               </dtml-if>
-               value="<dtml-var cod_status>">
-              <dtml-var sgl_status> - <dtml-var des_status>
-             </option>
-           </dtml-if>
-         </dtml-in>
+         <option></option>
       </select>     
     </div>    
   </div> 
@@ -307,7 +318,7 @@ $(document).ready(function(){
   <input type="hidden" name="txt_tamanho" value="<dtml-var sequence-length>">
   <input type="hidden" name="txt_check" value="">
 
-  <label class="d-block required">Processos a Tramitar</label>
+  <label class="d-block font-weight-bold required">Selecione os processos a tramitar</label>
 
   <div class="table-responsive">
   <table class="table display" width="100%" id="tramitacao">

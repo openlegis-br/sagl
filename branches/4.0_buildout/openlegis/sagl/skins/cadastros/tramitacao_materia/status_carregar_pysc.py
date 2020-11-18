@@ -1,4 +1,4 @@
-## Script (Python) "destinos_carregar"
+## Script (Python) "status_carregar"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
@@ -28,9 +28,9 @@ for item in status:
 
 for item in string.split(str(status_permitidos),','):
     statusDict = {}
-    for unidade in context.zsql.status_tramitacao_obter_zsql(cod_status = item):
-        statusDict['name'] = unidade['des_status']
-        statusDict['id'] = unidade['cod_status']
+    for status in context.zsql.status_tramitacao_obter_zsql(cod_status = item):
+        statusDict['name'] = status['des_status']
+        statusDict['id'] = status['cod_status']
     statusArray.append(statusDict)
 
 listaDic.update({'options': statusArray})
