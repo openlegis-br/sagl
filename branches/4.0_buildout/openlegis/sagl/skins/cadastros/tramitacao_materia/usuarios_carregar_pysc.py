@@ -1,4 +1,4 @@
-## Script (Python) "busca_palavra_pysc"
+## Script (Python) "usuarios_carregar"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
