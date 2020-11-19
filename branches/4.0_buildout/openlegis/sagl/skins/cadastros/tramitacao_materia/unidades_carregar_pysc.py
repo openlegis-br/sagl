@@ -29,9 +29,10 @@ for unidade in unidades:
 for item in string.split(str(unidades_destino),','):
     unidadeDict = {}
     for unidade in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = item):
-        unidadeDict['name'] = unidade['nom_unidade_join']
-        unidadeDict['id'] = unidade['cod_unid_tramitacao']
-    unidadeArray.append(unidadeDict)
+        if unidade.ind_leg == 1:
+           unidadeDict['name'] = unidade['nom_unidade_join']
+           unidadeDict['id'] = unidade['cod_unid_tramitacao']
+           unidadeArray.append(unidadeDict)
 
 listaDic.update({'options': unidadeArray})
     
