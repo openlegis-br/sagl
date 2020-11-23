@@ -144,7 +144,7 @@ if __name__ == '__main__':
     parser.add_option("-U", "--mysql-user", dest="mysql_user", default="root")
     parser.add_option("-P", "--mysql-pass", dest="mysql_pass", default="root")
     parser.add_option("-H", "--mysql-host", dest="mysql_host", default="localhost")
-    parser.add_option("-D", "--mysql-db", dest="mysql_db", default="interlegis_teste")
+    parser.add_option("-D", "--mysql-db", dest="mysql_db", default="openlegis_teste")
     parser.add_option("-M", "--add-mountpoint", dest="add_mountpoint", default="/sagl/sapl_documentos")
 
     parser.add_option("--log-level", dest="log_level", default='20')
