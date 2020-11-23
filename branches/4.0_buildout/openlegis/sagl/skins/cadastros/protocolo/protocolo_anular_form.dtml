@@ -66,7 +66,11 @@
 
 <form action="protocolo_anular_proc" name="protocolo_anular_form" method="post" enctype="multipart/form-data">
  <input type="hidden" name="hdn_txt_user_anulacao" value="<dtml-var "AUTHENTICATED_USER.getUserName()">" />
- <input type="hidden" name="hdn_txt_ip_anulacao" value="<dtml-var REMOTE_ADDR>" />
+ <dtml-if HTTP_X_FORWARDED_FOR>
+    <input type="hidden" name="hdn_txt_ip_anulacao" value="<dtml-var HTTP_X_FORWARDED_FOR>" />
+ <dtml-else>
+    <input type="hidden" name="hdn_txt_ip_anulacao" value="<dtml-var REMOTE_ADDR>" />
+ </dtml-if>
  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
    <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/consultas/protocolo/protocolo_pesquisar_form" />
  <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
