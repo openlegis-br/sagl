@@ -230,21 +230,6 @@
             <dtml-if sequence-start>            
                <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Acessório<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>:</b>
             </dtml-if>
-            <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
-             <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
-               <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
-                 <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
-                    <a target="blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
-                      <dtml-if expr="nom_documento != None">
-                        <dtml-var nom_documento>
-                      <dtml-else>
-                        <dtml-var des_tipo_documento>
-                      </dtml-if>
-                    </a>
-                 </dtml-let>
-               </dtml-if>
-             </dtml-let>
-            <dtml-else>
              <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
              <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
                <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
@@ -256,14 +241,28 @@
                       </dtml-if>
                  </a>
                </dtml-let>
+             <dtml-elif expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">         
+               <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
+                <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+                    <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                       <a target="blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
+                         <dtml-if expr="nom_documento != None">
+                           <dtml-var nom_documento>
+                         <dtml-else>
+                           <dtml-var des_tipo_documento>
+                         </dtml-if>
+                       </a>
+                    </dtml-let>
+                  </dtml-if>
+                </dtml-let>
              <dtml-else>
-                      <dtml-if expr="nom_documento != None">
-                        <dtml-var nom_documento>
-                      <dtml-else>
-                        <dtml-var des_tipo_documento>
-                      </dtml-if>
+                <dtml-if expr="nom_documento != None">
+                  <dtml-var nom_documento>
+                <dtml-else>
+                  <dtml-var des_tipo_documento>
+                </dtml-if>
              </dtml-if>
-            </dtml-in>
             <dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
           </dtml-in>
       <div>
@@ -281,13 +280,7 @@
      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram)">
         <div class="row">
           <div class="col-12">
-            <dtml-if cod_orgao>
-               <b>Localização Atual: </b><dtml-var nom_orgao>
-            <dtml-elif cod_comissao>
-               <b>Localização Atual: </b><dtml-var nom_comissao>
-            <dtml-else> 
-             <b>Localização Atual: </b><dtml-var nom_parlamentar>
-           </dtml-if>
+            <dtml-var nom_unidade_join>
           <div>
         </div>
      </dtml-in>
