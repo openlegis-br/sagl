@@ -29,30 +29,27 @@
              </dtml-in>
           </td>
           <td>
-             <dtml-call expr="REQUEST.set('des_tipo_proposicao', 'Substitutivo')">
-             <dtml-in expr="zsql.proposicao_obter_zsql(cod_materia=cod_materia,cod_substitutivo=cod_substitutivo)">
-                <dtml-if cod_proposicao>
-                   <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
-                      <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
-                         <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
-                           <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
-                           <a target="blank" href="<dtml-var proposicao>" title="Proposição Eletrônica"><i class="fas fa-certificate" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>
-                         </dtml-let>
-                      </dtml-if>
-                    </dtml-let>
-                </dtml-if>
-             <dtml-else>
-                <dtml-let id_substitutivo="_.str(cod_substitutivo)+'_substitutivo.pdf'">
-                   <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_substitutivo)">
-                      <dtml-let substitutivo="_.getattr(sapl_documentos.substitutivo,id_substitutivo).absolute_url">
-                         <a target="_blank" href="<dtml-var substitutivo>" title="Texto Original"><i class="fa fa-file-pdf" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>
-                      </dtml-let>
-                   <dtml-else>
-                      <i class="fa fa-file-pdf" style="font-size: 21px; color: #e9e9e9"></i>                   
-                   </dtml-if>
+             <dtml-call expr="REQUEST.set('id_sub', _.str(cod_substitutivo)+'_substitutivo.pdf')">
+             <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_sub)">
+                <dtml-let substitutivo="_.getattr(sapl_documentos.substitutivo,id_sub).absolute_url"> 
+                   <a target="_blank" href="<dtml-var substitutivo>" title="Texto Original"><i class="fa fa-file-pdf" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>                           
                 </dtml-let>
-             </dtml-in>
-
+             <dtml-elif expr="zsql.proposicao_obter_zsql(cod_materia=cod_materia,cod_substitutivo=cod_substitutivo)">
+                <dtml-in expr="zsql.proposicao_obter_zsql(cod_materia=cod_materia,cod_substitutivo=cod_substitutivo)">
+                   <dtml-if cod_proposicao>
+                      <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+                         <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+                            <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                              <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                              <a target="blank" href="<dtml-var proposicao>" title="Proposição Eletrônica"><i class="fas fa-certificate" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>
+                            </dtml-let>
+                         </dtml-if>
+                      </dtml-let>
+                   </dtml-if>             
+                </dtml-in>
+             <dtml-else>
+                <i class="fa fa-file-pdf" style="font-size: 21px; color: #e9e9e9"></i>                  
+             </dtml-if>
           </td>
             <td>
              <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_materia=cod_materia,cod_substitutivo=cod_substitutivo, ind_excluido=0)">
