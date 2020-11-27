@@ -1618,7 +1618,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
               for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=proposicao.cod_mat_ou_doc):
                 for materia in self.zsql.materia_obter_zsql(cod_materia=documento.cod_materia):
                     materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-                texto = str(documento.des_tipo_documento.decode('utf-8').upper())+'- '+ str(documento.nom_documento) + ' - ' + str(materia)
+                texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' - ' + str(materia)
                 storage_path = self.sapl_documentos.materia
                 nom_pdf_saida = str(documento.cod_documento) + ".pdf"
             elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao=='Emenda' or tipo_proposicao.des_tipo_proposicao=='Mensagem Aditiva'):
@@ -1637,7 +1637,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 nom_pdf_saida = str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros
-        mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
+        mensagem2 = 'Para conferir o original, utilize o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
