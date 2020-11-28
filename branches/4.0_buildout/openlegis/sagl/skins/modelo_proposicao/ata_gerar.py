@@ -21,6 +21,8 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
   tipo_sessao = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao,ind_excluido=0)[0]
   ata_dic["cod_sessao_plen"] = sessao.cod_sessao_plen
   ata_dic["num_sessao_plen"] = sessao.num_sessao_plen
+  # CM Jaboticabal
+  #ata_dic["num_tip_sessao"] = sessao.num_tip_sessao
   ata_dic["nom_sessao"] = tipo_sessao.nom_sessao
   ata_dic["num_legislatura"] = sessao.num_legislatura
   ata_dic["num_sessao_leg"] = sessao.num_sessao_leg
@@ -170,8 +172,8 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
                     else:
                        nom_resultado = "(Matéria não votada)"
                        votacao_observacao = ""
-                materia = str(materia.des_tipo_materia).decode('utf-8').upper() + ' Nº ' +str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica))) + " - " + autoria + " - " + materia.txt_ementa + nom_resultado
                 num_ident_basica = materia.num_ident_basica
+                materia = str(materia.des_tipo_materia).decode('utf-8').upper() + ' Nº ' +str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica))) + " - " + autoria + " - " + materia.txt_ementa + nom_resultado
                 lst_indicacao.append(materia)
                 lst_num_ind.append(num_ident_basica)                
              # Requerimentos
@@ -195,8 +197,8 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
                     else:
                        nom_resultado = "(Matéria não votada)"
                        votacao_observacao = ""
-                materia = str(materia.des_tipo_materia).decode('utf-8').upper() + ' Nº ' +str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica))) + " - " + autoria + " - " + materia.txt_ementa  + nom_resultado
                 num_ident_basica = materia.num_ident_basica                
+                materia = str(materia.des_tipo_materia).decode('utf-8').upper() + ' Nº ' +str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica))) + " - " + autoria + " - " + materia.txt_ementa  + nom_resultado
                 lst_requerimento.append(materia)
                 lst_num_req.append(num_ident_basica)                                
              # Moções
