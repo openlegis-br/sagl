@@ -21,7 +21,10 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
   tipo_sessao = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao,ind_excluido=0)[0]
   ata_dic["cod_sessao_plen"] = sessao.cod_sessao_plen
   ata_dic["num_sessao_plen"] = sessao.num_sessao_plen
-  ata_dic["num_tip_sessao"] = sessao.num_tip_sessao
+  if sessao.num_tip_sessao:
+     ata_dic["num_tip_sessao"] = sessao.num_tip_sessao
+  else:
+     ata_dic["num_tip_sessao"] = ""  
   ata_dic["nom_sessao"] = tipo_sessao.nom_sessao
   ata_dic["num_legislatura"] = sessao.num_legislatura
   ata_dic["num_sessao_leg"] = sessao.num_sessao_leg
@@ -460,8 +463,6 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       materia = str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa + " Autoria: "+ autoria
       lst_discussao_unica.append(materia)
   ata_dic["discussao_unica"] = '; '.join(['%s' % (value) for (value) in lst_discussao_unica])
-
-
 
   # Lista de oradores nas Explicacoes Pessoais
   lst_explicacoes_pessoais = []
