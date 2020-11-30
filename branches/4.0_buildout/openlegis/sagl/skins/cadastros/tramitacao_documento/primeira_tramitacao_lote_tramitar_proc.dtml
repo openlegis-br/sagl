@@ -4,10 +4,16 @@
 <script type="text/javascript" src="<dtml-var portal_url>/js/dataTables.checkboxes.min.js"></script>
 <script type="text/javascript" src="javascript/data_validar.js"></script>
 
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
 <script>
 $(document).ready(function() {
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
     $('table.display').DataTable( {
+        "bFilter": true,    
         "responsive": true,
+        "order": [[2, "asc"]],        
         "columnDefs": [
            {
               'targets': 0,
@@ -19,7 +25,6 @@ $(document).ready(function() {
         "select": {
            'style': 'multi'
         },
-        "order": [[1, 'asc']],
         "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
         "lengthChange": true,
         "language": {
@@ -40,7 +45,7 @@ $(document).ready(function() {
           },
         }
     });
-    
+  
    $('#primeira_tramitacao_lote_tramitar_proc').on('submit', function(e){
       var form = this;
       var table = $('#primeira_tramitacao').DataTable();
@@ -114,9 +119,43 @@ $(document).ready(function() {
 
 </script>
 
-
 <script>
 $(document).ready(function(){
+    $("#lst_cod_unid_tram_local").change(function(){  
+        var unid_origem = $(this).val();
+        $.ajax({
+            url: 'unidades_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_unid_tram_dest").empty();
+                $("#lst_cod_usuario_dest").empty();                
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+        var unid_origem = $(this).val();
+        $.ajax({
+            url: 'status_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_status").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_status").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });        
+    });
     $("#lst_cod_unid_tram_dest").change(function(){
         var unid_dest = $(this).val();
         $.ajax({
@@ -134,11 +173,11 @@ $(document).ready(function(){
                 }
             }
         });
-    });
+    });    
 });
 </script>
 
-<h1 class="firstHeading">Primeira Tramitação - Matérias</h1>
+<h1 class="firstHeading">Primeira Tramitação - Processos Administrativos</h1>
 
    <a class="btn btn-sm btn-primary mb-3 disabled" href="<dtml-var portal_url>/cadastros/tramitacao_documento/primeira_tramitacao_lote_form">Primeira Tramitação</a>
    <a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/cadastros/tramitacao_materia/tramitacao_lote_form">Tramitação em Lote</a>
@@ -166,8 +205,8 @@ $(document).ready(function(){
       <dtml-call expr="REQUEST.set('check_ocorrencia', '1')">
       <dtml-call expr="REQUEST.set('primeira_vez', '')">
      
+      <label class="d-block font-weight-bold">1. Preencha os dados da primeira tramitação</label>  
       <form id="primeira_tramitacao_lote_tramitar_proc" name="primeira_tramitacao_lote_tramitar_proc" method="post" action="tramitacao_lote_salvar_proc">
-
   <div class="form-row">
     <div class="col-12 col-md-3 mb-3">
        <label for="txt_dat_tramitacao" class="required">Data da Tramitação</label>
@@ -192,13 +231,11 @@ $(document).ready(function(){
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>
           <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
-             <option>Selecione</option>
+             <option value="0">Selecione</option>
               <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tramitacao, ind_adm=1)">
                   <dtml-if expr="not dat_extincao">
-                    <option value="<dtml-var cod_unid_tramitacao>">
-                       <dtml-var nom_unidade_join>
-                    </option>
+                    <option value="<dtml-var cod_unid_tramitacao>"><dtml-var nom_unidade_join></option>
                   </dtml-if>
                 </dtml-in>
                </dtml-in>
@@ -218,21 +255,9 @@ $(document).ready(function(){
  
   <div class="form-row">
     <div class="col-12 col-md-6 mb-3">
-      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=hdn_cod_unid_tram_local)">
-         <dtml-call expr="REQUEST.set('unid_dest_permitidas',unid_dest_permitidas_sel)">
-         <dtml-call expr="REQUEST.set('status_permitidos',status_adm_permitidos_sel)">
-      </dtml-in>    
       <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
           <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
-            <option>Selecione</option>
-            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
-              <dtml-if expr="not dat_extincao and _.str(cod_unid_tramitacao) in _.string.split(_.str(unid_dest_permitidas),',')">
-                <option 
-                  value="<dtml-var cod_unid_tramitacao>">
-                   <dtml-var nom_unidade_join>
-                </option>
-               </dtml-if>
-            </dtml-in>
+            <option value="0">Selecione</option>
           </select>
       <div class="invalid-feedback">
         Este campo é obrigatório!
@@ -263,18 +288,7 @@ $(document).ready(function(){
     <div class="col-12 col-md-9 mb-3"> 
       <label for="lst_cod_status" class="required">Status</label>
       <select class="custom-select" title="Selecione" data-live-search="true" id="lst_cod_status" name="lst_cod_status" data-size="6" required>
-         <option>Selecione</option>
-         <dtml-in expr="zsql.status_tramitacao_administrativo_obter_zsql(ind_excluido=0)">
-           <dtml-if expr="_.str(cod_status) in _.string.split(_.str(status_permitidos),',')">       
-             <option 
-               <dtml-if expr="_.has_key('cod_tramitacao') and cod_status==tramitacao_form.cod_status">
-                  selected
-               </dtml-if>
-               value="<dtml-var cod_status>">
-              <dtml-var sgl_status> - <dtml-var des_status>
-             </option>
-           </dtml-if>
-         </dtml-in>
+         <option value="0">Selecione</option>
       </select>     
     </div>  
     <div class="col-12 col-md-3 mb-3">  
@@ -288,8 +302,7 @@ $(document).ready(function(){
     </div>
   </div>
 
-<p class="h5">Documentos apresentadas entre <dtml-var txt_data_inicial> e <dtml-var txt_data_final></p>
- 
+  <label class="d-block font-weight-bold required">2. Selecione os processos a tramitar (apresentados entre <dtml-var txt_data_inicial> e <dtml-var txt_data_final>)</label>
   <table class="table table-striped display" width="100%" id="primeira_tramitacao">
     <thead>
       <tr>
@@ -301,7 +314,7 @@ $(document).ready(function(){
 
    </dtml-if primeira_vez>
       <tr>
-        <td width="5%">
+        <td>
           <dtml-var cod_documento>
         </td>
         <td>

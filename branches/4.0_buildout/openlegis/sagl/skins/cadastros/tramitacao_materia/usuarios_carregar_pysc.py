@@ -1,4 +1,4 @@
-## Script (Python) "usuarios_carregar"
+## Script (Python) "busca_palavra_pysc"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
@@ -19,7 +19,7 @@ listaDic={}
 usuarioArray = []
 
 dic = {}
-dic['name'] = 'Selecione'
+dic['name'] = ''
 dic['id'] = ''
 usuarioArray.append(dic)
 

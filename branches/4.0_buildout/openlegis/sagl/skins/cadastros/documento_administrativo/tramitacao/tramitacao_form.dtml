@@ -48,7 +48,7 @@
             return false;
          }
 
-      if (form.lst_cod_unid_tram_dest.value=="-1"){
+      if (form.lst_cod_unid_tram_dest.value==0){
           alert("A unidade de destino deve ser selecionada!");
           form.lst_cod_unid_tram_dest.focus();
           return false;
@@ -130,6 +130,41 @@ $(document).ready(function(){
             }
         });
     });
+    $("#lst_cod_unid_tram_local").change(function(){
+        var unid_origem = $(this).val();
+        $.ajax({
+            url: 'unidades_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_unid_tram_dest").empty();
+                $("#lst_cod_usuario_dest").empty();                                
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+        var unid_origem = $(this).val();
+        $.ajax({
+            url: 'status_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_status").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_status").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });        
+    });    
 });
 </script>
 
@@ -158,15 +193,24 @@ $(document).ready(function(){
           <dtml-call expr="REQUEST.set('dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
        </dtml-unless>
        <input class="form-control date" type="text" name="txt_dat_tramitacao" id="txt_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" required />
+        <script>
+        $('#txt_dat_tramitacao').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>        
       <div class="invalid-feedback">
         Este campo é obrigatório!
       </div>        
     </div>
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>
-       <dtml-if expr="zsql.tramitacao_administrativo_pesquisar_zsql(cod_documento=cod_documento)">
+       <dtml-if expr="not _.has_key('cod_tramitacao') and zsql.tramitacao_administrativo_pesquisar_zsql(cod_documento=cod_documento)">
           <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
-             <option value="0"></option>
+             <option value="0">Selecione</option>
              <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento, ind_ult_tramitacao=1)">
                 <dtml-if cod_unid_tram_dest>
                    <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
@@ -174,8 +218,8 @@ $(document).ready(function(){
                 <dtml-else>
                    <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_local)">
                 </dtml-if>
-                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_adm=1)">
-                    <option value="<dtml-var cod_unid_tramitacao>" selected>
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>" >
                       <dtml-var nom_unidade_join>
                     </option>
                  </dtml-in>
@@ -183,16 +227,16 @@ $(document).ready(function(){
           </select> 
        <dtml-else>
           <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
-             <option value="">Selecione</option>
-                <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
-                  <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = cod_unid_tramitacao, ind_adm=1)">
+             <option value="0">Selecione</option>
+                  <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
                      <dtml-if expr="not dat_extincao">
-                       <option value="<dtml-var cod_unid_tramitacao>">
+                       <option value="<dtml-var cod_unid_tramitacao>"
+                        <dtml-if expr="cod_unid_tram_local and cod_unid_tram_local == cod_unid_tramitacao"> selected</dtml-if>
+                       >
                          <dtml-var nom_unidade_join>
                        </option>
                      </dtml-if>
                   </dtml-in>
-                </dtml-in>
           </select>
        </dtml-if>
        <div class="invalid-feedback">
@@ -218,17 +262,32 @@ $(document).ready(function(){
       <div class="invalid-feedback">
         Este campo é obrigatório!
       </div>        
+        <script>
+        $('#txt_dat_encaminha').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>       
     </div>
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
       <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
-         <option value="-1"></option>
+           <option value="0"></option>
+           <dtml-if expr="_.has_key('cod_tramitacao')">
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
+              <dtml-if expr="not dat_extincao">
                 <option 
-                  value="<dtml-var cod_unid_tramitacao>">
+                  value="<dtml-var cod_unid_tramitacao>"
+                   <dtml-if expr="_.has_key('cod_tramitacao') and cod_unid_tram_dest == cod_unid_tramitacao"> selected</dtml-if>
+                  >
                    <dtml-var nom_unidade_join>
                 </option>
+               </dtml-if>
             </dtml-in>
+           </dtml-if>
       </select>
       <div class="invalid-feedback">
         Este campo é obrigatório!
@@ -246,15 +305,18 @@ $(document).ready(function(){
     <div class="col-12 col-md-6 mb-3"> 
       <label for="lst_cod_status" class="required">Status</label>
       <select class="custom-select" id="lst_cod_status" name="lst_cod_status" required>
-            <option></option>
-         <dtml-in expr="zsql.status_tramitacao_administrativo_obter_zsql(ind_excluido=0)">
-            <option 
-              <dtml-if expr="_.has_key('cod_tramitacao') and cod_status==tramitacao_form.cod_status">
-                 selected
-              </dtml-if>
-              value="<dtml-var cod_status>">
-              <dtml-var sgl_status> - <dtml-var des_status></option>
-         </dtml-in>
+         <option value="0"></option>
+          <dtml-if expr="_.has_key('cod_tramitacao')">         
+           <dtml-in expr="zsql.status_tramitacao_administrativo_obter_zsql(ind_excluido=0)">
+             <option 
+               value="<dtml-var cod_status>"
+               <dtml-if expr="_.has_key('cod_tramitacao') and int(tramitacao_form.cod_status)==int(cod_status)">
+                  selected
+               </dtml-if>
+               >
+               <dtml-var sgl_status> - <dtml-var des_status></option>
+           </dtml-in>
+          </dtml-if>
       </select>     
     </div>
     <div class="col-6 col-md-3 mb-3">

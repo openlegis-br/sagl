@@ -19,7 +19,7 @@ listaDic={}
 usuarioArray = []
 
 dic = {}
-dic['name'] = 'Selecione'
+dic['name'] = ''
 dic['id'] = ''
 usuarioArray.append(dic)
 

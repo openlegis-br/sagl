@@ -4,10 +4,16 @@
 <script type="text/javascript" src="<dtml-var portal_url>/js/dataTables.checkboxes.min.js"></script>
 <script type="text/javascript" src="javascript/data_validar.js"></script>
 
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
 <script>
 $(document).ready(function() {
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
     $('table.display').DataTable( {
+        "bFilter": true,
         "responsive": true,
+        "order": [[4, "asc"]],
         "columnDefs": [
            {
               'targets': 0,
@@ -19,7 +25,6 @@ $(document).ready(function() {
         "select": {
            'style': 'multi'
         },
-        "order": [[1, 'asc']],
         "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
         "lengthChange": true,
         "language": {
@@ -40,6 +45,13 @@ $(document).ready(function() {
           },
         }
     });
+
+    var table = $('#tramitacao').DataTable();
+ 
+    $('#lst_cod_unid_tram_local').on('change', function(){
+        var text = $("#lst_cod_unid_tram_local option:selected").text();       
+        table.column([3]).search(text).draw();  
+    });
     
    $('#tramitacao_form').on('submit', function(e){
       var form = this;
@@ -57,6 +69,7 @@ $(document).ready(function() {
          );
       });
 
+
       if (form.txt_dat_tramitacao.value == "") {
          $('#txt_dat_tramitacao').addClass('is-invalid');         
          alert("A data de tramitação deve ser preenchida!");
@@ -65,21 +78,21 @@ $(document).ready(function() {
       }
 
 
-      if (form.lst_cod_unid_tram_local.selectedIndex == '' ){
+      if (form.lst_cod_unid_tram_local.selectedIndex == 0 ){
           $('#lst_cod_unid_tram_local').addClass('is-invalid');               
           alert("A unidade de origem deve ser selecionada!");
           form.lst_cod_unid_tram_local.focus();
           return false;
       }
       
-      if (form.lst_cod_unid_tram_dest.selectedIndex == ''){
+      if (form.lst_cod_unid_tram_dest.selectedIndex == 0){
           $('#lst_cod_unid_tram_dest').addClass('is-invalid');                     
           alert("A unidade de destino deve ser selecionada!");
           form.lst_cod_unid_tram_dest.focus();
           return false;
       }
 
-      if (form.lst_cod_status.selectedIndex == ""){
+      if (form.lst_cod_status.selectedIndex == 0){
           $('#lst_cod_status').addClass('is-invalid');                           
           alert("O status da tramitação deve ser selecionado!");
           form.lst_cod_status.focus();
@@ -144,25 +157,7 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function(){
-    $("#lst_cod_unid_tram_dest").change(function(){
-        var unid_dest = $(this).val();
-        $.ajax({
-            url: 'usuarios_carregar_pysc',
-            type: 'post',
-            data: {svalue:unid_dest},
-            dataType: 'json',
-            success:function(response){
-                var len = response.length;
-                $("#lst_cod_usuario_dest").empty();
-                for( var i = 0; i<len; i++){
-                    var id = response[i]['id'];
-                    var name = response[i]['name'];
-                    $("#lst_cod_usuario_dest").append("<option value='"+id+"'>"+name+"</option>");
-                }
-            }
-        });
-    });
-    $("#lst_cod_unid_tram_local").change(function(){
+    $("#lst_cod_unid_tram_local").change(function(){  
         var unid_origem = $(this).val();
         $.ajax({
             url: 'unidades_carregar_pysc',
@@ -197,6 +192,24 @@ $(document).ready(function(){
             }
         });        
     });
+    $("#lst_cod_unid_tram_dest").change(function(){
+        var unid_dest = $(this).val();
+        $.ajax({
+            url: 'usuarios_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_dest},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_usuario_dest").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_usuario_dest").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+    });    
 });
 </script>
 
@@ -211,7 +224,7 @@ $(document).ready(function(){
 
 <dtml-in expr="caixa_entrada_pysc(cod_usuario=cod_usuario_corrente)">
 <dtml-if sequence-start>
- <label class="d-block font-weight-bold">Preencha os dados da tramitação em lote</label>  
+ <label class="d-block font-weight-bold">1. Preencha os dados da nova tramitação</label>  
  <form name="tramitacao_form" id="tramitacao_form" method="POST" action="tramitacao_lote_salvar_proc">
   <div class="form-row">
     <div class="col-12 col-md-3 mb-3">
@@ -237,9 +250,9 @@ $(document).ready(function(){
       </div>        
     </div>
     <div class="col-12 col-md-6 mb-3">
-      <label for="lst_cod_unid_tram_local" class="required">Unidade Local</label>
+      <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>
           <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
-             <option value="-1">Selecione</option>
+             <option value="0">Selecione</option>
               <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tramitacao, ind_leg=1)">
                   <dtml-if expr="not dat_extincao">
@@ -248,10 +261,7 @@ $(document).ready(function(){
                         <dtml-if expr="_.int(cod_unid_tramitacao) == _.int(hdn_cod_unid_tram_local)">
                           selected
                         </dtml-if>
-                     </dtml-if>                    
-                    value="<dtml-var cod_unid_tramitacao>">
-                       <dtml-var nom_unidade_join>
-                    </option>
+                     </dtml-if> value="<dtml-var cod_unid_tramitacao>"><dtml-var nom_unidade_join></option>
                   </dtml-if>
                 </dtml-in>
                </dtml-in>
@@ -273,7 +283,7 @@ $(document).ready(function(){
     <div class="col-12 col-md-6 mb-3">  
       <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
           <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
-            <option></option>
+            <option value="0"></option>
           </select>
       <div class="invalid-feedback">
         Este campo é obrigatório!
@@ -304,7 +314,7 @@ $(document).ready(function(){
     <div class="col-12 col-md-9 mb-3"> 
       <label for="lst_cod_status" class="required">Status</label>
       <select class="custom-select" title="Selecione" data-live-search="true" id="lst_cod_status" name="lst_cod_status" data-size="6" required>
-         <option></option>
+         <option value="0"></option>
       </select>     
     </div>  
     <div class="col-12 col-md-3 mb-3">
@@ -329,14 +339,15 @@ $(document).ready(function(){
   <input type="hidden" name="txt_tamanho" value="<dtml-var sequence-length>">
   <input type="hidden" name="txt_check" value="">
 
-  <label class="d-block font-weight-bold required">Selecione as matérias a tramitar</label>  
+  <label class="d-block font-weight-bold required">2. Selecione as matérias a tramitar</label>  
 
   <table class="table display" width="100%" id="tramitacao">
     <thead class="table-secondary">
       <tr>
           <th width="5%"></th>
           <th>Identificação da Matéria</th>
-          <th width="20%">Origem</th>                    
+          <th width="15%">Origem</th>
+          <th width="15%">Destino</th>                                                  
           <th width="20%">Status</th>
      </tr>
     </thead>
@@ -365,10 +376,23 @@ $(document).ready(function(){
           <td>
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local, ind_leg=1)">
               <dtml-var nom_unidade_join>
-          </dtml-in>          
-          </td>          
+            </dtml-in>          
+          </td>
           <td>
-            <dtml-var des_status>
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest, ind_leg=1)">
+              <dtml-var nom_unidade_join>
+          </dtml-in>          
+          </td>                 
+          <td>
+           <i class="fa fa-calendar-alt"></i> <dtml-var dat_tramitacao missing><br />
+            <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+            <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+              <dtml-let arquivo_pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+                 <a href="<dtml-var arquivo_pdf>" target="_blank"><dtml-var expr="des_status"></a>
+              </dtml-let>
+            <dtml-else>
+               <dtml-var expr="des_status">
+            </dtml-if>
           </td>
        </tr>
   </dtml-in>

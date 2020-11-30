@@ -1,6 +1,6 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="javascript/data_validar.js"></script>
+<script src="javascript/data_validar.js"></script>
 
 <script>
 
@@ -48,7 +48,7 @@
             return false;
          }
 
-      if (form.lst_cod_unid_tram_dest.value=="-1"){
+      if (form.lst_cod_unid_tram_dest.value==0){
           alert("A unidade de destino deve ser selecionada!");
           form.lst_cod_unid_tram_dest.focus();
           return false;
@@ -62,7 +62,7 @@
       }
  </dtml-comment>
 
-      if (form.lst_cod_status.selectedIndex == ''){
+      if (form.lst_cod_status.selectedIndex == 0){
           alert("O status da tramitação deve ser selecionado!");
           form.lst_cod_status.focus();
           return false;
@@ -86,7 +86,7 @@
          var dat_fim_prazo = form.txt_dat_fim_prazo.value.substring(6,10) + form.txt_dat_fim_prazo.value.substring(3,5) + form.txt_dat_fim_prazo.value.substring(0,2);
 
          if (dat_fim_prazo < dat_tramitacao) {
-           alert("A data de fim de prazo tem que ser maior ou igual à data de tramitação!");
+           alert("A data de fim de prazo precisa ser maior ou igual à data de tramitação!");
            form.txt_dat_fim_prazo.focus();
            form.txt_dat_fim_prazo.select();
            return false;
@@ -137,6 +137,41 @@ $(document).ready(function(){
             }
         });
     });
+    $("#lst_cod_unid_tram_local").change(function(){
+        var unid_origem = $(this).val();
+        $.ajax({
+            url: 'unidades_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_unid_tram_dest").empty();
+                $("#lst_cod_usuario_dest").empty();                                
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+        var unid_origem = $(this).val();
+        $.ajax({
+            url: 'status_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_status").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_status").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });        
+    });    
 });
 </script>
 
@@ -180,10 +215,10 @@ $(document).ready(function(){
         </script>          
     </div>
     <div class="col-12 col-md-6 mb-3">
-      <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>
+      <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>  
        <dtml-if expr="not _.has_key('cod_tramitacao') and zsql.tramitacao_pesquisar_zsql(cod_materia=cod_materia)">
           <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
-             <option value="0"></option>
+             <option value="0">Selecione</option>
              <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
                 <dtml-if cod_unid_tram_dest>
                    <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
@@ -192,7 +227,7 @@ $(document).ready(function(){
                    <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_local)">
                 </dtml-if>
                  <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
-                    <option value="<dtml-var cod_unid_tramitacao>" selected>
+                    <option value="<dtml-var cod_unid_tramitacao>" >
                       <dtml-var nom_unidade_join>
                     </option>
                  </dtml-in>
@@ -200,8 +235,7 @@ $(document).ready(function(){
           </select> 
        <dtml-else>
           <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
-             <option value="">Selecione</option>
-
+             <option value="0">Selecione</option>
                   <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_leg=1)">
                      <dtml-if expr="not dat_extincao">
                        <option value="<dtml-var cod_unid_tramitacao>"
@@ -211,7 +245,6 @@ $(document).ready(function(){
                        </option>
                      </dtml-if>
                   </dtml-in>
-
           </select>
        </dtml-if>
        <div class="invalid-feedback">
@@ -250,7 +283,8 @@ $(document).ready(function(){
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
       <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
-         <option value="-1"></option>
+           <option value="0"></option>
+           <dtml-if expr="_.has_key('cod_tramitacao')">
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_leg=1)">
               <dtml-if expr="not dat_extincao">
                 <option 
@@ -261,6 +295,7 @@ $(document).ready(function(){
                 </option>
                </dtml-if>
             </dtml-in>
+           </dtml-if>
       </select>
       <div class="invalid-feedback">
         Este campo é obrigatório!
@@ -278,21 +313,23 @@ $(document).ready(function(){
     <div class="col-12 col-md-6 mb-3"> 
       <label for="lst_cod_status" class="required">Status</label>
       <select class="custom-select" id="lst_cod_status" name="lst_cod_status" required>
-         <option></option>
-         <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
-            <option 
-              value="<dtml-var cod_status>"
-              <dtml-if expr="_.has_key('cod_tramitacao') and int(tramitacao_form.cod_status)==int(cod_status)">
-                 selected
-              </dtml-if>
-              >
-              <dtml-var sgl_status> - <dtml-var des_status></option>
-         </dtml-in>
+         <option value="0"></option>
+          <dtml-if expr="_.has_key('cod_tramitacao')">         
+           <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
+             <option 
+               value="<dtml-var cod_status>"
+               <dtml-if expr="_.has_key('cod_tramitacao') and int(tramitacao_form.cod_status)==int(cod_status)">
+                  selected
+               </dtml-if>
+               >
+               <dtml-var sgl_status> - <dtml-var des_status></option>
+           </dtml-in>
+          </dtml-if>
       </select> 
     </div>
     <div class="col-6 col-md-3 mb-3">
       <label for="txt_dat_fim_prazo">Data Fim de Prazo</label><br />
-      <input class="form-control date" type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo"value="<dtml-var dat_fim_prazo missing null="">" autocomplete="off" />    
+      <input class="form-control date" type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" value="<dtml-var dat_fim_prazo missing null="">" autocomplete="off" />    
     </div>
         <script>
         $('#txt_dat_fim_prazo').datepicker({

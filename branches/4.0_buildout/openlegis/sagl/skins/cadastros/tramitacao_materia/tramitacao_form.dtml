@@ -10,13 +10,13 @@
 
       var dat_tramitacao = form.txt_dat_tramitacao.value.substring(6,10) + form.txt_dat_tramitacao.value.substring(3,5) + form.txt_dat_tramitacao.value.substring(0,2);
 
-      if (form.lst_cod_unid_tram_local.selectedIndex==""){
+      if (form.lst_cod_unid_tram_local.selectedIndex==0){
           alert("A unidade de origem deve ser selecionada!");
           form.lst_cod_unid_tram_local.focus();
           return false;
       }
 
-      if (form.lst_cod_unid_tram_dest.selectedIndex==""){
+      if (form.lst_cod_unid_tram_dest.selectedIndex==0){
           alert("A unidade de destino deve ser selecionada!");
           form.lst_cod_unid_tram_dest.focus();
           return false;
@@ -55,7 +55,7 @@
          var dat_fim_prazo = form.txt_dat_fim_prazo.value.substring(6,10) + form.txt_dat_fim_prazo.value.substring(3,5) + form.txt_dat_fim_prazo.value.substring(0,2);
 
          if (dat_fim_prazo < dat_tramitacao) {
-           alert("A data de fim de prazo tem que ser maior ou igual à data de tramitação!");
+           alert("A data de fim de prazo precisa ser maior ou igual à data de tramitação!");
            form.txt_dat_fim_prazo.focus();
            form.txt_dat_fim_prazo.select();
            return false;
@@ -217,7 +217,33 @@ $(document).ready(function(){
       </div>        
     </div>
     <div class="col-12 col-md-6 mb-3">
-      <label for="lst_cod_unid_tram_local" class="required">Unidade Local</label>
+      <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>  
+       <dtml-if expr="not _.has_key('hdn_cod_tramitacao') and zsql.tramitacao_pesquisar_zsql(cod_materia=cod_materia)">
+          <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
+             <option value="0">Selecione</option>
+             <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+                 <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>" >
+                      <dtml-var nom_unidade_join>
+                    </option>
+                 </dtml-in>
+             </dtml-in>
+          </select>
+       <dtml-elif expr="_.has_key('hdn_cod_tramitacao') and zsql.tramitacao_pesquisar_zsql(cod_materia=cod_materia)">
+          <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
+             <option value="0">Selecione</option>
+             <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+                 <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_local)">
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>"
+                    <dtml-if expr="cod_unid_tram and cod_unid_tram_local == cod_unid_tramitacao"> selected</dtml-if> >
+                      <dtml-var nom_unidade_join>
+                    </option>
+                 </dtml-in>
+             </dtml-in>
+          </select>          
+       <dtml-else>
           <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
              <option>Selecione</option>
               <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
@@ -227,6 +253,7 @@ $(document).ready(function(){
                     </option>
                </dtml-in>
           </select> 
+       </dtml-if>
        <div class="invalid-feedback">
           Este campo é obrigatório!
        </div>
@@ -247,9 +274,34 @@ $(document).ready(function(){
     </div>  
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
+       <dtml-if expr="not _.has_key('hdn_cod_tramitacao')">
           <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
-            <option></option>
+             <option value="0"></option>
           </select>
+       <dtml-elif expr="_.has_key('hdn_cod_tramitacao') and zsql.tramitacao_pesquisar_zsql(cod_materia=cod_materia)">
+          <select class="custom-select" id="lst_cod_unid_tram_dest" name="lst_cod_unid_tram_dest" required>
+             <option value="0">Selecione</option>
+             <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+                 <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>"
+                    <dtml-if expr="cod_unid_tram and cod_unid_tram_dest == cod_unid_tramitacao"> selected</dtml-if> >
+                      <dtml-var nom_unidade_join>
+                    </option>
+                 </dtml-in>
+             </dtml-in>
+          </select>          
+       <dtml-else>
+          <select class="custom-select" id="lst_cod_unid_tram_dest" name="lst_cod_unid_tram_dest" required>
+             <option>Selecione</option>
+              <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
+                    <option 
+                    value="<dtml-var cod_unid_tramitacao>">
+                       <dtml-var nom_unidade_join>
+                    </option>
+               </dtml-in>
+          </select> 
+       </dtml-if>
       <div class="invalid-feedback">
         Este campo é obrigatório!
       </div>          
@@ -270,13 +322,35 @@ $(document).ready(function(){
   <div class="form-row">
     <div class="col-12 col-md-6 mb-3"> 
       <label for="lst_cod_status" class="required">Status</label>
-      <select class="custom-select" title="Selecione" data-live-search="true" id="lst_cod_status" name="lst_cod_status" data-size="6" required>
-         <option></option>
-      </select>     
+      <dtml-if expr="not _.has_key('hdn_cod_tramitacao')">      
+         <select class="custom-select" id="lst_cod_status" name="lst_cod_status" required>
+            <option value="0"></option>
+         </select>
+      <dtml-else>
+         <select class="custom-select" id="lst_cod_status" name="lst_cod_status" required>      
+         <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+             <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_local)">
+             <dtml-call expr="REQUEST.set('hdn_cod_status', cod_status)">             
+             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
+                <dtml-call expr="REQUEST.set('status_permitidos',status_permitidos_sel)">
+             </dtml-in>
+         </dtml-in>
+             <option value="0">Selecione</option>
+             <dtml-in expr="zsql.status_tramitacao_obter_zsql()">
+              <dtml-if expr="_.str(cod_status) in _.string.split(_.str(status_permitidos),',')">
+                <option 
+                   <dtml-if expr="_.has_key('hdn_cod_status') and int(hdn_cod_status)==int(cod_status)"> selected
+                   </dtml-if>
+                  value="<dtml-var cod_status>">
+                <dtml-var sgl_status> - <dtml-var des_status></option>
+              </dtml-if>
+             </dtml-in>
+         </select>         
+      </dtml-if>
     </div>   
     <div class="col-12 col-md-3 mb-3">
       <label for="txt_dat_fim_prazo">Data de Fim de Prazo</label>
-      <input class="form-control date" type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" value="" autocomplete="off" />
+      <input class="form-control date" type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" value="<dtml-var dat_fim_prazo missing>" autocomplete="off" />
         <script>
         $('#txt_dat_fim_prazo').datepicker({
             locale: 'pt-br',

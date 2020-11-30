@@ -1,12 +1,15 @@
 <dtml-var standard_html_header>
 
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
 <script>
-
 $(document).ready(function() {
-
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
     $('#rascunhos').DataTable( {
         "responsive": true,
-        "bStateSave": true,        
+        "bStateSave": true,
+        "order": [[0, "desc"]],                       
         "fnStateSave": function (oSettings, oData) {
             localStorage.setItem('rmDataTable', JSON.stringify(oData));
         },
@@ -85,6 +88,7 @@ $(document).ready(function () {
 		 <tr>  
 		     <th width="20%">Data da Tramitação</th>
 		     <th>Identificação da Matéria</th>
+		     <th width="15%">Origem</th>		     
 		     <th width="15%">Destino</th>
 		     <th width="15%">Status</th>
 		 </tr>
@@ -93,8 +97,7 @@ $(document).ready(function () {
                    <tr>
                      <td>
                        <dtml-if dat_tramitacao>
-                         <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Formulário de Tramitação" data-src="tramitacao_form?hdn_cod_materia=<dtml-var cod_materia>&hdn_cod_tramitacao=<dtml-var cod_tramitacao>&modal=1" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i><span class="d-none">Link</span></a>
-                         <dtml-var dat_tramitacao missing null>
+                         <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Formulário de Tramitação" data-src="tramitacao_form?hdn_cod_materia=<dtml-var cod_materia>&hdn_cod_tramitacao=<dtml-var cod_tramitacao>&modal=1" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i><span class="d-none">Link</span> <dtml-var dat_tramitacao></a>
                        </dtml-if>
                      </td> 
                      <td>
@@ -113,14 +116,25 @@ $(document).ready(function () {
                         </dtml-in>
                      </td>
                      <td>
+                       <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local, ind_leg=1)">
+                          <dtml-var nom_unidade_join>
+                       </dtml-in>          
+                    </td>                     
+                     <td>
                         <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest,ind_leg=1)">
-                           <dtml-if cod_orgao><dtml-var nom_orgao>
-                           <dtml-elif cod_comissao><dtml-var nom_comissao> 
-                           <dtml-else><dtml-var nom_parlamentar> 
-                           </dtml-if>
+                          <dtml-var nom_unidade_join>
                         </dtml-in>
                      </td>
-                     <td><dtml-var des_status></td>
+                     <td>
+                       <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+                       <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+                         <dtml-let arquivo_pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+                           <a href="<dtml-var arquivo_pdf>" target="_blank"><dtml-var expr="des_status"></a>
+                         </dtml-let>
+                       <dtml-else>
+                         <dtml-var expr="des_status">
+                       </dtml-if> 
+                     </td>
                    </tr>
       <dtml-if sequence-end>
            </table>                   
