@@ -79,6 +79,40 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function(){
+
+        var unid_origem = $("#lst_cod_unid_tram_local").val();
+        $.ajax({
+            url: 'unidades_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_unid_tram_dest").empty();
+                $("#lst_cod_usuario_dest").empty();                                
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+        $.ajax({
+            url: 'status_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_status").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_status").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        }); 
+
     $("#lst_cod_unid_tram_dest").change(function(){
         var unid_dest = $(this).val();
         $.ajax({
@@ -220,11 +254,10 @@ $(document).ready(function(){
       <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>  
        <dtml-if expr="not _.has_key('hdn_cod_tramitacao') and zsql.tramitacao_pesquisar_zsql(cod_materia=cod_materia)">
           <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
-             <option value="0">Selecione</option>
              <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
                  <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
                  <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
-                    <option value="<dtml-var cod_unid_tramitacao>" >
+                    <option value="<dtml-var cod_unid_tramitacao>" <dtml-if expr="cod_unid_tramitacao == cod_unid_tram">selected</dtml-if>>
                       <dtml-var nom_unidade_join>
                     </option>
                  </dtml-in>
