@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_materia, cod_comissao
+##parameters=cod_relatoria, cod_materia, cod_comissao
 ##title=
 ##
 REQUEST = context.REQUEST
@@ -28,7 +28,7 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
     inf_basicas_dic['nom_localidade']= local.nom_localidade.encode('utf-8')
     inf_basicas_dic['sgl_uf']= local.sgl_uf
 
-for relatoria in context.zsql.relatoria_obter_zsql(cod_materia=cod_materia,cod_comissao=cod_comissao,ind_excluido=0):
+for relatoria in context.zsql.relatoria_obter_zsql(cod_relatoria=cod_relatoria, cod_materia=cod_materia, cod_comissao=cod_comissao, ind_excluido=0):
  tip_apresentacao = ""
  if relatoria.tip_apresentacao == 'O':
   tip_apresentacao = 'Verbal'
