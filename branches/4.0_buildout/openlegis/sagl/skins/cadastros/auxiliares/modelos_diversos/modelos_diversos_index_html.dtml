@@ -1,5 +1,40 @@
 <dtml-var standard_html_header>
- 
+
+<script type="text/javascript">
+
+function modelo_criticar(form){  
+
+      if (!(form.rad_tip_modelo[0].checked ||
+            form.rad_tip_modelo[1].checked ||
+            form.rad_tip_modelo[2].checked ||
+            form.rad_tip_modelo[3].checked)){            
+         alert("O tipo do modelo deve ser selecionado!");
+         form.rad_tip_modelo[0].focus();
+         return false;
+      }
+
+  if (form.txt_title.value == "") {
+    alert("O nome do modelo deve ser informado!");
+    form.txt_title.focus();
+    return false;
+  }
+
+  if (form.file_nom_arquivo.value == 0) {
+    alert("Selecione um arquivo ODT para incluir como modelo!");
+    form.file_nom_arquivo.focus();
+    return false;
+  }
+
+  form.submit();
+}
+
+$(document).ready(function () {
+  bsCustomFileInput.init()
+})
+
+</script>
+
+
 <h1 class="firstHeading">Modelos Diversos</h1> 
 
   <legend>Documento Acessórios</legend>
@@ -17,9 +52,8 @@
             <td><a href="&dtml-absolute_url;"><dtml-var title_or_id></a></td>
             <td><dtml-var bobobase_modification_time fmt="%d/%m/%Y - %H:%M"></td>
             <td>
-              <div align="center">
               <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var portal_url>/sapl_documentos/modelo/materia/documento_acessorio/externalEdit_/<dtml-var id>.zem">Editor Externo</a>
-              </div>
+              <a class="btn btn-sm btn-danger" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=modelos_diversos_index_html&tip_modelo=doc_acessorio" data-confirm="Deseja realmente excluir o modelo?"> Excluir</a>              
             </td>
           </tr>
         </dtml-in>
@@ -41,9 +75,8 @@
             <td><a href="&dtml-absolute_url;"><dtml-var title_or_id></a></td>
             <td><dtml-var bobobase_modification_time fmt="%d/%m/%Y - %H:%M"></td>
             <td>
-              <div align="center">
               <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var portal_url>/sapl_documentos/modelo/materia/emenda/externalEdit_/<dtml-var id>.zem">Editor Externo</a>
-              </div>
+              <a class="btn btn-sm btn-danger" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=modelos_diversos_index_html&tip_modelo=emenda" data-confirm="Deseja realmente excluir o modelo?"> Excluir</a> 
             </td>
           </tr>
         </dtml-in>
@@ -65,9 +98,8 @@
             <td><a href="&dtml-absolute_url;"><dtml-var title_or_id></a></td>
             <td><dtml-var bobobase_modification_time fmt="%d/%m/%Y - %H:%M"></td>
             <td>
-              <div align="center">
               <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var portal_url>/sapl_documentos/modelo/materia/parecer/externalEdit_/<dtml-var id>.zem">Editor Externo</a>
-              </div>
+              <a class="btn btn-sm btn-danger" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=modelos_diversos_index_html&tip_modelo=parecer" data-confirm="Deseja realmente excluir o modelo?"> Excluir</a> 
             </td>
           </tr>
         </dtml-in>
@@ -89,13 +121,55 @@
             <td><a href="&dtml-absolute_url;"><dtml-var title_or_id></a></td>
             <td><dtml-var bobobase_modification_time fmt="%d/%m/%Y - %H:%M"></td>
             <td>
-              <div align="center">
               <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var portal_url>/sapl_documentos/modelo/materia/substitutivo/externalEdit_/<dtml-var id>.zem">Editor Externo</a>
-              </div>
+              <a class="btn btn-sm btn-danger" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=modelos_diversos_index_html&tip_modelo=substitutivo" data-confirm="Deseja realmente excluir o modelo?"> Excluir</a> 
             </td>
           </tr>
         </dtml-in>
       </dtml-with>
   </table>
+
+ <legend>Inclusão de Modelos</legend>
+ <form name="modelo_form" method="post" action="modelo_incluir_proc" enctype="multipart/form-data">
+ <div class="form-row">
+    <div class="col-12 mb-3">
+      <label class="required d-block">Tipo de Modelo</label>
+      <dtml-in expr="[('doc_acessorio','Documento Acessório'), ('emenda','Emenda'), ('parecer','Parecer'), ('substitutivo','Substitutiivo')]">
+        <div class="form-check form-check-inline">            
+          <input class="form-check-input" type="radio" id="rad<dtml-var expr="_['sequence-key']">" name="rad_tip_modelo" value="<dtml-var expr="_['sequence-key']">" />
+           <label class="form-check-label" for="rad<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></label>
+        </div>
+      </dtml-in>    
+    </div> 
+ </div>
+ <div class="form-row">
+   <div class="col-6 mb-3"> 
+     <label for="txt_title" class="required">Nome do Modelo</label>   
+     <input class="form-control" type="text" id="txt_title" name="txt_title" maxlength="35"/>
+   </div>
+   <div class="col-6 mb-3">
+      <label for="file_nom_arquivo">Arquivo ODT</label> 
+      <div class="input-group">                   
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/vnd.oasis.opendocument.text">
+          <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+        </div>
+        <div class="input-group-append">
+          <input class="btn btn-primary" type="button" class="btn btn-sm btn-secondary" value="Incluir" onClick="modelo_criticar(document.modelo_form)" />
+          <input type="hidden" name="hdn_url" value="modelos_diversos_index_html">
+
+         <dtml-let s="_.string.letters + _.string.digits">
+           <dtml-call "REQUEST.set('id_documento',_.whrandom.choice(s))"> 
+           <dtml-in "_.range(_.whrandom.choice([14,19]))">
+             <dtml-call "REQUEST.set('id_documento',id_documento + _.whrandom.choice(s))">
+           </dtml-in>
+          </dtml-let>
+            
+          <input type="hidden" name="id_documento" value="<dtml-var id_documento>.odt">                      
+        </div>
+      </div>
+   </div>
+ </div>
+ </form>
 
 <dtml-var standard_html_footer>

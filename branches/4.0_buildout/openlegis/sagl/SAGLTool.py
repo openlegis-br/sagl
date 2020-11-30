@@ -843,7 +843,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         return data
 
     def emenda_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
-        url = self.sapl_documentos.modelo.materia.absolute_url() + "/%s" % modelo_proposicao
+        url = self.sapl_documentos.modelo.materia.emenda.absolute_url() + "/%s" % modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
         # atribui o brasao no locals
@@ -1226,7 +1226,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             self.sapl_documentos.proposicao.manage_addFile(id=nom_arquivo_pdf1, file=contents)
 
     def substitutivo_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
-        url = self.sapl_documentos.modelo.materia.absolute_url() + "/%s"%modelo_proposicao
+        url = self.sapl_documentos.modelo.materia.substitutivo.absolute_url() + "/%s"%modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
         # atribui o brasao no locals
