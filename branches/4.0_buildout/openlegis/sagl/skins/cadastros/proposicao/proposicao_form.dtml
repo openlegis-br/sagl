@@ -5,7 +5,7 @@
 
   function campos_criticar(form){
 
-      if (form.lst_tip_proposicao[form.lst_tip_proposicao.selectedIndex].value == "-1") {
+      if (form.lst_tip_proposicao[form.lst_tip_proposicao.selectedIndex].value == "0") {
           alert("Selecione um tipo de Proposição!");
           form.lst_tip_proposicao.focus();
           return false;
@@ -16,14 +16,6 @@
           form.txt_descricao.focus();
           return false;
       }
-
-   <dtml-comment>
-      if (lst_modelo.options[lst_modelo.selectedIndex].value==0) {
-         alert("É necessário selecionar um modelo!");
-         form.lst_modelo.focus();
-         return false;
-      }
-  </dtml-comment>
 
       var tipo_proposicao = form.lst_tip_proposicao[form.lst_tip_proposicao.selectedIndex].value;
       var separador = tipo_proposicao.indexOf("&");
@@ -42,8 +34,11 @@
   }
 
   function texto_odt_gerar(){
-      lst_modelo = document.getElementById("lst_modelo");
-      lst_modelo.options[lst_modelo.selectedIndex].value;     
+      var lst_modelo = document.getElementById("lst_modelo");
+      var value = lst_modelo.options[lst_modelo.selectedIndex].value;
+      var selected = lst_modelo.options[lst_modelo.selectedIndex];
+      var path = selected.getAttribute('data-path');
+  
 
       if (lst_modelo.selectedIndex == 0) {
          alert("É necessário selecionar um modelo!");
@@ -51,7 +46,7 @@
       }
 
       if ((lst_modelo.selectedIndex != 0) && confirm("Confirma a geração do arquivo ODT?")) {
-         location.href="<dtml-var portal_url>/modelo_proposicao/proposicao?cod_proposicao=<dtml-var cod_proposicao missing>&modelo_proposicao="+lst_modelo.options[lst_modelo.selectedIndex].value;
+         location.href="<dtml-var portal_url>/modelo_proposicao/proposicao?cod_proposicao=<dtml-var cod_proposicao missing>&modelo_proposicao="+value+ "&modelo_path="+path;
          setTimeout(function(){window.location.reload(true)},3000);
        }
          return;
@@ -104,7 +99,7 @@
   }
  </dtml-let>
 </dtml-if>
-
+<dtml-if expr="not _.has_key('cod_proposicao') or  (_.has_key('cod_proposicao') and ind_mat_ou_doc=='D')"> 
   function tipo_proposicao_mudou(){
     var form = document.proposicao_form;
     form.hdn_alterou.value=1;
@@ -125,7 +120,7 @@
     }
     return;
   }
-
+</dtml-if>
     function addFileField() {
         var f = document.createElement("input");
         f.type = "file";
@@ -145,6 +140,51 @@ $(document).ready(function () {
   $(".modal-content").css("min-height", "600px");
 });
 
+</script>
+
+<script>
+$(document).ready(function(){
+
+    var tipo_prop = $("#lst_tip_proposicao").val();
+    tipo_propo = tipo_prop.split("&")[0]
+    $.ajax({
+        url: 'modelos_carregar_pysc',
+        type: 'post',
+        data: {svalue:tipo_propo},
+        dataType: 'json',
+        success:function(response){
+            var len = response.length;
+            $("#lst_modelo").empty();
+            for( var i = 0; i<len; i++){
+                var id = response[i]['id_arquivo'];
+                var name = response[i]['titulo_arquivo'];
+                var path = response[i]['path_arquivo'];                
+                $("#lst_modelo").append("<option data-path='"+path+"' value='"+id+"'>"+name+"</option>");
+            }
+        }
+    });
+
+    $("#lst_tip_proposicao").change(function(){
+        var tipo_prop = $(this).val();
+        tipo_propo = tipo_prop.split("&")[0]        
+        $.ajax({
+            url: 'modelos_carregar_pysc',
+            type: 'post',
+            data: {svalue:tipo_propo},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_modelo").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id_arquivo'];
+                    var name = response[i]['titulo_arquivo'];
+                    var path = response[i]['path_arquivo'];                                    
+                    $("#lst_modelo").append("<option data-path='"+path+"' value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+    });  
+});
 </script>
 
 <dtml-unless dat_envio>
@@ -234,13 +274,13 @@ $(document).ready(function () {
     <div class="form-row">
        <div class="col-12 col-md-6 mb-3">
          <label for="lst_tip_proposicao" class="required">Tipo de Proposição</label>
-         <select class="custom-select" id="lst_tip_proposicao" name="lst_tip_proposicao" onChange="javascript:tipo_proposicao_mudou()"
+         <select class="custom-select" id="lst_tip_proposicao" name="lst_tip_proposicao" <dtml-unless cod_proposicao> onChange="javascript:tipo_proposicao_mudou()</dtml-unless>"
             <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar']) and prop_enviada)">
                disabled
             <dtml-elif expr="(AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia']) and prop_recebida)">
                disabled
             </dtml-if>>                                 
-            <option value="-1"></option>
+            <option value="0"></option>
               <dtml-in expr="zsql.tipo_proposicao_obter_zsql()">
                 <dtml-if expr="usr_eh_autor">
                    <dtml-if expr="_.str(tip_proposicao) in _.string.split(_.str(tip_proposicao_perm),',')">

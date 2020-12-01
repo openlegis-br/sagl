@@ -1182,9 +1182,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.parecer_comissao.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
-    def proposicao_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao):
-        url = self.sapl_documentos.modelo.materia.absolute_url() + "/%s"%modelo_proposicao
-        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+    def proposicao_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao, modelo_path):
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()    
+        modelo = portal.unrestrictedTraverse(modelo_path)    
+        template_file = cStringIO.StringIO(str(modelo.data))        
         brasao_file = self.get_brasao()
         # atribui o brasao no locals
         exec 'brasao = brasao_file'
