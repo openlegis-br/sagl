@@ -63,13 +63,13 @@
          </dtml-let>
          <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc = 'D', cod_mat_ou_doc = cod_documento, ind_excluido=0)">
             <dtml-if cod_proposicao>
-               <dtml-call expr="zsql.proposicao_desincorporar_documento_zsql(cod_mat_ou_doc = cod_documento)">
+               <dtml-call expr="zsql.proposicao_desincorporar_documento_zsql(cod_mat_ou_doc = cod_mat_ou_doc)">
             </dtml-if>
          </dtml-in>
       </dtml-in>
       <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc = 'M', cod_mat_ou_doc = cod_materia, ind_excluido=0)">
          <dtml-if cod_proposicao>
-            <dtml-call expr="zsql.proposicao_desincorporar_zsql(cod_mat_ou_doc = cod_materia)">
+            <dtml-call expr="zsql.proposicao_desincorporar_zsql(cod_mat_ou_doc = cod_mat_ou_doc)">
          </dtml-if>
       </dtml-in>
       <dtml-call expr="sapl_documentos.materia.Catalog.removerCatalogo(cod_materia)">
@@ -93,9 +93,10 @@
          </dtml-in>
       </dtml-if>
       <dtml-call expr="REQUEST.set('id_odt', _.str(cod_materia)+'_texto_integral.odt')">
-      <dtml-if "_.hasattr(sapl_documentos.materia,id_odt)">
-         <dtml-call expr="sapl_documentos.materia.manage_delObjects(id_odt)">
+      <dtml-if "_.hasattr(sapl_documentos.materia_odt,id_odt)">
+         <dtml-call expr="sapl_documentos.materia_odt.manage_delObjects(id_odt)">
       </dtml-if>
+      <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_materia)+'_texto_integral.pdf')">   
       <dtml-call expr="REQUEST.set('id_redacao', _.str(cod_materia)+'_redacao_final.pdf')">
       <dtml-if "_.hasattr(sapl_documentos.materia,id_redacao)">
          <dtml-call expr="sapl_documentos.materia.manage_delObjects(id_redacao)">
@@ -116,7 +117,7 @@
       </dtml-if>
 
    <dtml-except>
-      <dtml-let mensagem="'Houve um erro! Matéria não excluída!'">
+      <dtml-let mensagem="'Houve um erro! A matéria não pôde ser excluída!'" url="'materia_mostrar_proc?cod_materia='+cod_materia" tipo_mensagem="'danger'">
          <dtml-var mensagem_emitir>
       </dtml-let>
    <dtml-else>
