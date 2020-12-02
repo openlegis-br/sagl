@@ -15,15 +15,18 @@ lst_oradores = []
 oradores = context.zsql.oradores_expediente_obter_zsql(cod_sessao_plen=cod_sessao_anterior)
 
 for orador in oradores:
+    ultimo = len(oradores)
+
+for orador in oradores:
     dic = {}
     dic['cod_parlamentar'] = orador.cod_parlamentar
-    if orador.num_ordem != 1:
+    if orador.num_ordem == ultimo:
        lst_oradores.append(dic)
 
 for orador in oradores:
     dic = {}
     dic['cod_parlamentar'] = orador.cod_parlamentar
-    if orador.num_ordem == 1:
+    if orador.num_ordem != ultimo:
        lst_oradores.append(dic)
 
 lista = [(i + 1, j) for i, j in enumerate(lst_oradores)]
