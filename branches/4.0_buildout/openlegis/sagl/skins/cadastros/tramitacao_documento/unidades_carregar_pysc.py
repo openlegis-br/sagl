@@ -38,7 +38,7 @@ if unidades_destino != None:
    for item in string.split(str(unidades_destino),','):
        unidadeDict = {}
        for unidade in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = item):
-           if unidade.ind_leg == 1:
+           if unidade.ind_adm == 1:
               unidadeDict['name'] = unidade['nom_unidade_join']
               unidadeDict['id'] = unidade['cod_unid_tramitacao']
               unidadeArray.append(unidadeDict)
