@@ -61,7 +61,17 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
 	for field in fields:
                 nome_autor = autor['nom_autor_join']
 	lista_autor.append(nome_autor)
-      dic_pdiscussao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+      dic_pdiscussao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
+      dic_pdiscussao["des_turno"]=""
+      for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=pdiscussao.tip_turno):
+         dic_pdiscussao["des_turno"] = turno.des_turno
+      dic_pdiscussao["des_quorum"]=""
+      for quorum in context.zsql.quorum_votacao_obter_zsql(cod_quorum=pdiscussao.tip_quorum):
+         dic_pdiscussao["des_quorum"] = quorum.des_quorum
+      dic_pdiscussao["tip_votacao"]=""
+      for tip_votacao in context.zsql.tipo_votacao_obter_zsql(tip_votacao=pdiscussao.tip_votacao):
+         dic_pdiscussao["tip_votacao"] = tip_votacao.des_tipo_votacao
+      
       lst_pdiscussao.append(dic_pdiscussao)
 
   # Lista das materias em 2a discussao
@@ -89,6 +99,16 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
                 nome_autor = autor['nom_autor_join']
 	lista_autor.append(nome_autor)
       dic_sdiscussao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+      dic_sdiscussao["des_turno"]=""
+      for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=sdiscussao.tip_turno):
+         dic_sdiscussao["des_turno"] = turno.des_turno
+      dic_sdiscussao["des_quorum"]=""
+      for quorum in context.zsql.quorum_votacao_obter_zsql(cod_quorum=sdiscussao.tip_quorum):
+         dic_sdiscussao["des_quorum"] = quorum.des_quorum
+      dic_sdiscussao["tip_votacao"]=""
+      for tip_votacao in context.zsql.tipo_votacao_obter_zsql(tip_votacao=sdiscussao.tip_votacao):
+         dic_sdiscussao["tip_votacao"] = tip_votacao.des_tipo_votacao      
+      
       lst_sdiscussao.append(dic_sdiscussao)
 
   # Lista das materias em discussao unica
@@ -115,7 +135,17 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
 	for field in fields:
                 nome_autor = autor['nom_autor_join']
 	lista_autor.append(nome_autor)
-      dic_discussao_unica["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+      dic_discussao_unica["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]
+      dic_discussao_unica["des_turno"]=""
+      for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=discussao_unica.tip_turno):
+         dic_discussao_unica["des_turno"] = turno.des_turno
+      dic_discussao_unica["des_quorum"]=""
+      for quorum in context.zsql.quorum_votacao_obter_zsql(cod_quorum=discussao_unica.tip_quorum):
+         dic_discussao_unica["des_quorum"] = quorum.des_quorum
+      dic_discussao_unica["tip_votacao"]=""
+      for tip_votacao in context.zsql.tipo_votacao_obter_zsql(tip_votacao=discussao_unica.tip_votacao):
+         dic_discussao_unica["tip_votacao"] = tip_votacao.des_tipo_votacao
+      
       lst_discussao_unica.append(dic_discussao_unica)
 
   casa={}
