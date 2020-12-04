@@ -2073,10 +2073,10 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                   num_documento = metodo.num_documento
               texto = str(metodo.des_tipo_documento.decode('utf-8').upper())+' Nº '+ str(metodo.num_documento)+ '/' +str(metodo.ano_documento)
            elif tipo_doc == 'doc_acessorio_adm':
-              for metodo in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=codigo):
+              for metodo in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento_acessorio=codigo):
                   for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=metodo.cod_documento):
                       documento = str(documento.sgl_tipo_documento) +' '+ str(documento.num_documento)+'/'+str(documento.ano_documento)
-              texto = str(metodo.nom_documento) + ' - ' + str(materia)
+              texto = 'Acessório' + ' - ' + str(documento)
         elif tipo_doc == 'tramitacao_adm':
            storage_path = self.sapl_documentos.administrativo.tramitacao
            for metodo in self.zsql.tramitacao_administrativo_obter_zsql(cod_tramitacao=codigo):
