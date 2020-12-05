@@ -7,6 +7,10 @@
 ##parameters=cod_norma, modelo_norma
 ##title=
 ##
+
+from Products.CMFCore.utils import getToolByName
+st = getToolByName(context, 'portal_sagl')
+
 REQUEST = context.REQUEST
 RESPONSE =  REQUEST.RESPONSE
 session = REQUEST.SESSION
@@ -30,11 +34,12 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
 
 for norma in context.zsql.norma_juridica_obter_zsql(cod_norma=cod_norma):
  nom_arquivo = str(norma.cod_norma)+'_texto_integral.odt'
- des_tipo_norma = norma.des_tipo_norma.upper()
+ des_tipo_norma = norma.des_tipo_norma.decode('utf-8').upper()
  num_norma = norma.num_norma
  ano_norma = norma.ano_norma
  dat_norma = norma.dat_norma
- data_norma = context.pysc.data_converter_por_extenso_pysc(data=norma.dat_norma).upper()
+ data_norma = context.pysc.data_converter_por_extenso_pysc(data=norma.dat_norma).decode('utf-8').upper()
+ data_norma2 = context.pysc.data_converter_por_extenso_pysc(data=norma.dat_norma).decode('utf-8')
  txt_ementa = norma.txt_ementa
 
-return context.norma_gerar_odt(inf_basicas_dic,nom_arquivo,des_tipo_norma,num_norma,ano_norma,dat_norma,data_norma,txt_ementa,modelo_norma)
+return st.norma_gerar_odt(inf_basicas_dic, nom_arquivo, des_tipo_norma, num_norma, ano_norma, dat_norma, data_norma, txt_ementa, modelo_norma)

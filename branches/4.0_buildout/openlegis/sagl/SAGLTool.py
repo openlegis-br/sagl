@@ -408,7 +408,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/ata.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -434,6 +433,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def iom_gerar_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, lst_psecretario, lst_ssecretario):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/iom.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        brasao_file = self.get_brasao()
+        exec 'brasao = brasao_file'        
         output_file_odt = "publicacao_iom.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
@@ -448,7 +449,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/materia_apreciada.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "materia_apreciada.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -463,6 +463,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def materia_apresentada_gerar_odt(self, inf_basicas_dic, lst_materia_apresentada):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/materia_apresentada.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        brasao_file = self.get_brasao()
+        exec 'brasao = brasao_file'        
         output_file_odt = "materia_apresentada.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()                                                                              
@@ -477,7 +479,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/ordem_dia.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -755,7 +756,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/resumo.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "resumo_sessao.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -771,7 +771,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.materia.absolute_url() + "/resumo-tramitacao.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -787,7 +786,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.materia.documento_acessorio.absolute_url() + "/%s" % modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -814,7 +812,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/oficio_indicacao.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "oficio_indicacao.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -830,7 +827,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/oficio_requerimento.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "oficio_requerimento.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -846,7 +842,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.materia.emenda.absolute_url() + "/%s" % modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -873,7 +868,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.materia.absolute_url() + "/capa_processo.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -889,7 +883,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.documento_administrativo.absolute_url() + "/capa_processo_adm.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -905,7 +898,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.materia.absolute_url() + "/%s" % modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -928,10 +920,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.materia.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
-
     def materias_expediente_gerar_ods(self, relatorio_dic, total_assuntos, parlamentares, nom_arquivo):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/relatorio-expediente.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        brasao_file = self.get_brasao()
+        exec 'brasao = brasao_file'        
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()                                                                              
@@ -959,7 +952,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.norma.absolute_url() + "/%s" % modelo_norma
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -986,7 +978,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.documento_administrativo.absolute_url() + "/%s" % modelo_documento
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -1159,7 +1150,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/parecer.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -1188,7 +1178,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         modelo = portal.unrestrictedTraverse(modelo_path)    
         template_file = cStringIO.StringIO(str(modelo.data))        
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -1231,7 +1220,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.materia.substitutivo.absolute_url() + "/%s"%modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        # atribui o brasao no locals
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
@@ -1244,6 +1232,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def pessoas_exportar(self, pessoas):
         url = self.sapl_documentos.modelo.absolute_url() + "/planilha-visitantes.ods"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        brasao_file = self.get_brasao()
+        exec 'brasao = brasao_file'        
         output_file_ods = "contatos.ods"
         renderer = Renderer(template_file, locals(), output_file_ods, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()                                                                              

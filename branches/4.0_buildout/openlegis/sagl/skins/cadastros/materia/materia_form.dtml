@@ -1,8 +1,8 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="javascript/data_validar.js"></script>
+<script src="javascript/data_validar.js"></script>
 
-<script type="text/javascript">
+<script>
 
   function materia_criticar(){
 
@@ -438,14 +438,16 @@ $(document).ready(() => {
     </div>
     <div class="col-6 col-lg-3 mb-3">
       <label for="rad_ind_tramitacao" class="required d-block">Em Tramitação?</label>
-        <select class="custom-select" id="rad_ind_tramitacao" name="rad_ind_tramitacao" required>
-         <dtml-in expr="[('Sim', 1), ('Não', 0)]">      
-            <option value="<dtml-var expr="_['sequence-item']">"
-              <dtml-if expr="int(_['sequence-item'])==int(ind_tramitacao)">selected</dtml-if>
-             >
-             <dtml-var expr="_['sequence-key']"></option>
-         </dtml-in>
-        </select>     
+
+      <dtml-in expr="[(0,'Não'), (1,'Sim')]">
+        <div class="form-check form-check-inline">            
+          <input class="form-check-input" type="radio" id="rad<dtml-var expr="_['sequence-key']">" name="rad_ind_tramitacao" value="<dtml-var expr="_['sequence-key']">"
+           <dtml-if expr="_.has_key('cod_materia') and ind_tramitacao==_['sequence-key']">checked</dtml-if>
+           <dtml-if expr="not _.has_key('cod_materia') and _['sequence-item']=='Sim'">checked</dtml-if> />
+           <label class="form-check-label" for="rad<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></label>
+        </div>
+      </dtml-in> 
+    
     </div>
   </div>
   
@@ -853,7 +855,7 @@ $(document).ready(() => {
          <tr>
            <td >
               <a href="materia_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>">
-                <b><dtml-var tip_materia_principal> <dtml-var num_materia_principal>/<dtml-var ano_materia_principal></b>
+                <dtml-var tip_materia_principal> <dtml-var num_materia_principal>/<dtml-var ano_materia_principal>
               </a>
            </td>        
            <td><dtml-var dat_anexacao missing></td>
@@ -871,9 +873,9 @@ $(document).ready(() => {
           <div class="card mb-3">
             <div class="card-body">          
              <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
-                <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> nº <dtml-var num_norma>/<dtml-var ano_norma></b></a><br />
+                <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><dtml-var des_norma> nº <dtml-var num_norma>/<dtml-var ano_norma></a><br />
              <dtml-else>
-                <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><b><dtml-var des_norma> nº <dtml-var num_norma>/<dtml-var ano_norma></b></a><br />
+                <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><dtml-var des_norma> nº <dtml-var num_norma>/<dtml-var ano_norma></a><br />
              </dtml-if>
             </div>
           </div>
@@ -911,7 +913,7 @@ $(document).ready(() => {
                 </dtml-if>
                 <tr>
                   <td> 
-                    <b><dtml-var num_recipiente></b>
+                    <dtml-var num_recipiente>
                  </td>
                  <td> 
                    <dtml-var dat_arquivamento>

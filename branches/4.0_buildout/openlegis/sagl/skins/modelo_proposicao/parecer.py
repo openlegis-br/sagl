@@ -7,6 +7,10 @@
 ##parameters=cod_relatoria, cod_materia, cod_comissao
 ##title=
 ##
+
+from Products.CMFCore.utils import getToolByName
+st = getToolByName(context, 'portal_sagl')
+
 REQUEST = context.REQUEST
 RESPONSE =  REQUEST.RESPONSE
 session = REQUEST.SESSION
@@ -20,12 +24,12 @@ localidade=context.zsql.localidade_obter_zsql(cod_localidade=casa["cod_localidad
 estado = context.zsql.localidade_obter_zsql(tip_localidade="U")
 for uf in estado:
     if localidade[0].sgl_uf == uf.sgl_uf:
-        nom_estado = uf.nom_localidade.encode('utf-8')
+        nom_estado = uf.nom_localidade
         break
 inf_basicas_dic['nom_camara']= casa['nom_casa']
 inf_basicas_dic["nom_estado"] = nom_estado
 for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_localidade']):
-    inf_basicas_dic['nom_localidade']= local.nom_localidade.encode('utf-8')
+    inf_basicas_dic['nom_localidade']= local.nom_localidade
     inf_basicas_dic['sgl_uf']= local.sgl_uf
 
 for relatoria in context.zsql.relatoria_obter_zsql(cod_relatoria=cod_relatoria, cod_materia=cod_materia, cod_comissao=cod_comissao, ind_excluido=0):
@@ -44,7 +48,7 @@ for relatoria in context.zsql.relatoria_obter_zsql(cod_relatoria=cod_relatoria, 
  tip_resultado = ""
  if relatoria.tip_fim_relatoria != None:
    for resultado in context.zsql.tipo_fim_relatoria_obter_zsql(tip_fim_relatoria = relatoria.tip_fim_relatoria):
-    tip_resultado = resultado.des_fim_relatoria.encode('utf-8')
+    tip_resultado = resultado.des_fim_relatoria
  else:
    tip_resultado = ""
  nom_comissao = ""
@@ -64,11 +68,10 @@ for relatoria in context.zsql.relatoria_obter_zsql(cod_relatoria=cod_relatoria, 
    dic_composicao["nom_completo"] = composicao_comissao.nom_completo
    lst_composicao.append(dic_composicao)
 
-
  nom_arquivo = str(relatoria.cod_relatoria)+ '_parecer.odt'
 
  for materia_vinculada in context.zsql.materia_obter_zsql(cod_materia = relatoria.cod_materia):
-  materia = materia_vinculada.des_tipo_materia.upper().encode('utf-8') + ' nº ' + str(materia_vinculada.num_ident_basica) + '/' + str(materia_vinculada.ano_ident_basica)
+  materia = materia_vinculada.des_tipo_materia.decode('utf-8').upper() + ' Nº ' + str(materia_vinculada.num_ident_basica) + '/' + str(materia_vinculada.ano_ident_basica)
   txt_ementa = materia_vinculada.txt_ementa
 
   nom_autor = ""
@@ -81,4 +84,4 @@ for relatoria in context.zsql.relatoria_obter_zsql(cod_relatoria=cod_relatoria, 
   lista_autor.append(nom_autor)
   nom_autor  = ', '.join(['%s' % (value) for (value) in lista_autor]) 
 
-return context.parecer_gerar_odt(inf_basicas_dic,nom_arquivo,nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao)
+return st.parecer_gerar_odt(inf_basicas_dic,nom_arquivo,nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao)

@@ -7,6 +7,10 @@
 ##parameters=cod_sessao_plen
 ##title=
 ##
+
+from Products.CMFCore.utils import getToolByName
+st = getToolByName(context, 'portal_sagl')
+
 REQUEST = context.REQUEST
 RESPONSE =  REQUEST.RESPONSE
 session = REQUEST.SESSION
@@ -178,4 +182,4 @@ for parlamentar in context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_ses
 
     parlamentares.append(dic_parlamentar)
 
-return context.materias_expediente_gerar_ods(relatorio_dic, total_assuntos, parlamentares, nom_arquivo)
+return st.materias_expediente_gerar_ods(relatorio_dic, total_assuntos, parlamentares, nom_arquivo)

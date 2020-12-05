@@ -7,6 +7,10 @@
 ##parameters=cod_sessao_plen
 ##title=
 ##
+
+from Products.CMFCore.utils import getToolByName
+st = getToolByName(context, 'portal_sagl')
+
 REQUEST = context.REQUEST
 RESPONSE =  REQUEST.RESPONSE
 session = REQUEST.SESSION
@@ -15,6 +19,8 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
   inf_basicas_dic = {}
   tipo_sessao = context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao,ind_excluido=0)[0]
   inf_basicas_dic["cod_sessao_plen"] = sessao.cod_sessao_plen
+  # CM Jaboticabal
+  #inf_basicas_dic["num_tip_sessao"] = sessao.num_tip_sessao  
   inf_basicas_dic["num_sessao_plen"] = sessao.num_sessao_plen
   inf_basicas_dic["nom_sessao"] = tipo_sessao.nom_sessao
   inf_basicas_dic["num_legislatura"] = sessao.num_legislatura
@@ -43,7 +49,7 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       materia = context.zsql.materia_obter_zsql(cod_materia=pdiscussao.cod_materia)[0]
       dic_pdiscussao = {}
       dic_pdiscussao["num_ordem"] = pdiscussao.num_ordem
-      dic_pdiscussao["tip_materia"] = materia.des_tipo_materia.upper()
+      dic_pdiscussao["tip_materia"] = materia.des_tipo_materia.decode('utf-8').upper()
       dic_pdiscussao["num_ident_basica"] = materia.num_ident_basica
       dic_pdiscussao["ano_ident_basica"] = context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica))
       dic_pdiscussao["link_materia"] = context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+pdiscussao.cod_materia
@@ -80,7 +86,7 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       materia = context.zsql.materia_obter_zsql(cod_materia=sdiscussao.cod_materia)[0]
       dic_sdiscussao = {}
       dic_sdiscussao["num_ordem"] = sdiscussao.num_ordem
-      dic_sdiscussao["tip_materia"] = materia.des_tipo_materia.upper()
+      dic_sdiscussao["tip_materia"] = materia.des_tipo_materia.decode('utf-8').upper()
       dic_sdiscussao["num_ident_basica"] = materia.num_ident_basica
       dic_sdiscussao["ano_ident_basica"] = context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica))
       dic_sdiscussao["link_materia"] = context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+sdiscussao.cod_materia
@@ -117,7 +123,7 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       materia = context.zsql.materia_obter_zsql(cod_materia=discussao_unica.cod_materia)[0]
       dic_discussao_unica = {}
       dic_discussao_unica["num_ordem"] = discussao_unica.num_ordem
-      dic_discussao_unica["tip_materia"] = materia.des_tipo_materia.upper()
+      dic_discussao_unica["tip_materia"] = materia.des_tipo_materia.decode('utf-8').upper()
       dic_discussao_unica["num_ident_basica"] = materia.num_ident_basica
       dic_discussao_unica["ano_ident_basica"] = context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica))
       dic_discussao_unica["link_materia"] = context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+discussao_unica.cod_materia
@@ -135,7 +141,7 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
 	for field in fields:
                 nome_autor = autor['nom_autor_join']
 	lista_autor.append(nome_autor)
-      dic_discussao_unica["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]
+      dic_discussao_unica["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
       dic_discussao_unica["des_turno"]=""
       for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=discussao_unica.tip_turno):
          dic_discussao_unica["des_turno"] = turno.des_turno
@@ -164,4 +170,4 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       inf_basicas_dic['nom_localidade']= local.nom_localidade
       inf_basicas_dic['sgl_uf']= local.sgl_uf
 
-return context.ordem_dia_gerar_odt(inf_basicas_dic, lst_pdiscussao, lst_sdiscussao, lst_discussao_unica, lst_presidente, nom_arquivo)
+return st.ordem_dia_gerar_odt(inf_basicas_dic, lst_pdiscussao, lst_sdiscussao, lst_discussao_unica, lst_presidente, nom_arquivo)

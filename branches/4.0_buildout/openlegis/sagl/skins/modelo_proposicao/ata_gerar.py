@@ -46,6 +46,8 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
   ata_dic["lst_mesa"] = lst_mesa
 
   # Presenca na Sessao
+  ata_dic["qtde_presenca_sessao"] = ""
+  ata_dic["lst_presenca_sessao"] = ""  
   lst_presenca_sessao = []
   for presenca in context.zsql.presenca_sessao_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, tip_frequencia='P', ind_excluido=0):
       for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=presenca.cod_parlamentar,ind_excluido=0):
@@ -478,19 +480,19 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
   for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=sessao.num_legislatura,data=data):
     for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
       for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-        ata_dic['presidente'] = presidencia.nom_completo.encode('utf-8')
+        ata_dic['presidente'] = presidencia.nom_completo
   # 1o. Secretario
   ata_dic['1secretario'] = ''
   for dat_sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
     for cod_psecretario in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=3):
       for psecretaria in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_psecretario.cod_parlamentar):
-        ata_dic['1secretario'] = psecretaria.nom_completo.encode('utf-8')
+        ata_dic['1secretario'] = psecretaria.nom_completo
   # 2o. Secretario
   ata_dic['2secretario'] = ''
   for dat_sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
     for cod_ssecretario in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=4):
       for ssecretaria in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_ssecretario.cod_parlamentar):
-        ata_dic['2secretario'] = ssecretaria.nom_completo.encode('utf-8')
+        ata_dic['2secretario'] = ssecretaria.nom_completo
 
   casa={}
   aux=context.sapl_documentos.props_sagl.propertyItems()
