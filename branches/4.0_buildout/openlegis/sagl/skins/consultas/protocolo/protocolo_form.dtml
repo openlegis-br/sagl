@@ -209,7 +209,7 @@
             <dtml-if expr="des_tipo_mat_acessoria=='Emenda' or tip_materia == 98">
                <dtml-in expr="zsql.emenda_obter_zsql(num_protocolo=num_protocolo,cod_materia=cod_materia_principal)">
                  <dtml-if sequence-start>
-                     <a href="<dtml-var portal_url>/cadastros/materia/emenda/emenda_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>&cod_emenda=<dtml-var cod_emenda>">
+                     <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Emenda" data-src="<dtml-var portal_url>/cadastros/materia/emenda/emenda_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>&cod_emenda=<dtml-var cod_emenda>&modal=1">
                         <b>Emenda <dtml-var des_tipo_emenda> nº <dtml-var num_emenda></b>
                      </a>
                  </dtml-if>
@@ -235,7 +235,7 @@
             <dtml-elif expr="des_tipo_mat_acessoria=='Substitutivo' or tip_materia == 99">
                <dtml-in expr="zsql.substitutivo_obter_zsql(num_protocolo=num_protocolo,cod_materia=cod_materia_principal)">
                  <dtml-if sequence-start>
-                     <a href="<dtml-var portal_url>/cadastros/materia/substitutivo/substitutivo_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>&cod_substitutivo=<dtml-var cod_substitutivo>">
+                     <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Substitutivo" data-src="<dtml-var portal_url>/cadastros/materia/substitutivo/substitutivo_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>&cod_substitutivo=<dtml-var cod_substitutivo>&modal=1">                 
                         <b>Substitutivo nº <dtml-var num_substitutivo></b>
                      </a>
                  </dtml-if>
@@ -266,25 +266,17 @@
             </dtml-in>
             <dtml-in expr="zsql.documento_acessorio_obter_zsql(num_protocolo=num_protocolo,cod_materia=cod_materia_principal)">
                  <dtml-if sequence-start>
-                     <a href="<dtml-var portal_url>/cadastros/materia/documento_acessorio/documento_acessorio_mostrar_proc?cod_documento=<dtml-var cod_documento>">
-                        <b><dtml-var des_tipo_mat_acessoria></b>
+                     <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Parecer" data-src="<dtml-var portal_url>/cadastros/materia/documento_acessorio/documento_acessorio_mostrar_proc?cod_documento=<dtml-var cod_documento>&modal=1">
+                        <b><dtml-var des_tipo_mat_acessoria> - <dtml-var nom_documento></b>
                      </a>
                  </dtml-if>
             <dtml-else>
                  <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
-                   <form class="d-inline-block" method="post" action="<dtml-var portal_url>/cadastros/materia/documento_acessorio/documento_acessorio_form?cod_materia=<dtml-var cod_materia_principal>">
-                     <input type="hidden" name="tip_documento_sel"  value="<dtml-var tip_materia>" />
-                     <input type="hidden" name="nom_documento"  value="<dtml-var txt_assunto_ementa>" />
-                     <input type="hidden" name="dat_documento"  value="<dtml-var "pysc.iso_to_port_pysc(dat_protocolo)">" />
-                     <input type="hidden" name="num_protocolo"  value="<dtml-var num_protocolo>" />
-                     <input type="hidden" name="txt_ementa"     value="<dtml-var txt_assunto_ementa>" />
-                     <input type="hidden" name="txt_observacao" value="<dtml-var txt_observacao missing null="">" />
-                     <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
-                        <input type="hidden" name="nom_autor_documento"      value="<dtml-var nom_autor_join>" />
-                     </dtml-in>
-                     <input class="btn btn-sm btn-secondary" type="submit" name="cmdCriarDoc" value="Criar <dtml-var des_tipo_mat_acessoria>" />
-                   </form>
-                  </dtml-if>
+                   <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+                      <dtml-call expr="REQUEST.set('nom_autor_documento', nom_autor_join)">
+                   </dtml-in>                 
+                   <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Documento Acessório" data-src="<dtml-var portal_url>/cadastros/materia/documento_acessorio/documento_acessorio_form?cod_materia=<dtml-var cod_materia_principal>&tip_documento_sel=<dtml-var tip_materia>&num_protocolo=<dtml-var num_protocolo>&nom_autor_documento=<dtml-var nom_autor_documento>&nom_documento=<dtml-var txt_assunto_ementa>&txt_ementa=<dtml-var txt_assunto_ementa>&modal=1">Cadastrar <dtml-var des_tipo_mat_acessoria></button>                     
+                 </dtml-if>
             </dtml-in>
           <dtml-elif expr="tip_natureza_materia==4">
              <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
