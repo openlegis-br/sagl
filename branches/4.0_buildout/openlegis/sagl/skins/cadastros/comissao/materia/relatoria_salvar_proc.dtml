@@ -1,3 +1,4 @@
+<dtml-if expr="hdn_num_ordem!=''">
 <dtml-if expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia,cod_comissao=hdn_cod_comissao,ind_excluido=0)">
    <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao, num_ordem=hdn_num_ordem, ind_excluido=0)">
      <dtml-if cod_relatoria>
@@ -11,9 +12,17 @@
 <dtml-elif expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia,ind_excluido=0)">
    <dtml-call expr="REQUEST.set('hdn_num_ordem', int(num_ordem)+1)">
    <dtml-call expr="zsql.despacho_inicial_incluir_zsql(num_ordem=hdn_num_ordem, cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao)">
+</dtml-if>
 <dtml-else>
-   <dtml-call expr="REQUEST.set('hdn_num_ordem', 1)">
-   <dtml-call expr="zsql.despacho_inicial_incluir_zsql(num_ordem=hdn_num_ordem, cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao)">
+   <dtml-if expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia,ind_excluido=0)">
+      <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia, ind_excluido=0)">   
+         <dtml-call expr="REQUEST.set('hdn_num_ordem', int(num_ordem)+1)">
+      </dtml-in>
+      <dtml-call expr="zsql.despacho_inicial_incluir_zsql(num_ordem=hdn_num_ordem, cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao)">
+   <dtml-else>
+      <dtml-call expr="REQUEST.set('hdn_num_ordem', '1')">
+      <dtml-call expr="zsql.despacho_inicial_incluir_zsql(num_ordem=hdn_num_ordem, cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao)">
+   </dtml-if>
 </dtml-if>
 
 <dtml-if hdn_cod_relatoria>
@@ -120,7 +129,7 @@
           <dtml-in expr="zsql.tramitacao_incluida_codigo_obter_zsql()">
              <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
           </dtml-in>
-          <dtml-call expr="REQUEST.set('hdn_url', 'relatoria_mostrar_proc?cod_relatoria=' + str(ult_relatoria_incluida) + '&cod_materia=' + str(hdn_cod_materia) + '&cod_comissao=' + str(hdn_cod_comissao) + '&num_ordem=' + str(hdn_num_ordem))">   
+          <dtml-call expr="REQUEST.set('hdn_url', 'relatoria_mostrar_proc?cod_relatoria=' + str(ult_relatoria_incluida) + '&cod_materia=' + str(hdn_cod_materia) + '&cod_comissao=' + str(hdn_cod_comissao) + '&num_ordem=' + str(hdn_num_ordem)+'&modal=1')">   
           <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=hdn_cod_tramitacao,hdn_url=hdn_url)">
         </dtml-if>
      </dtml-if>
