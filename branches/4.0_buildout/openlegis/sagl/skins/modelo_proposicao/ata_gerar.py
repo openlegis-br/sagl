@@ -258,7 +258,7 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
 
   # Juntar Requerimentos
   ata_dic["requerimento"] = '; '.join(['%s' % (value) for (value) in lst_requerimento])
-  if lst_req_ind != []:
+  if lst_num_req != []:
      ata_dic["min_req"] = min(lst_num_req)
      ata_dic["max_req"] = max(lst_num_req)   
 
