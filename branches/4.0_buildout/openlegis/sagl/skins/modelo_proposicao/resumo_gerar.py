@@ -75,7 +75,6 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       elif materia_apresentada.cod_emenda != None:
            for emenda in context.zsql.emenda_obter_zsql(cod_emenda=materia_apresentada.cod_emenda):
                materia = context.zsql.materia_obter_zsql(cod_materia=emenda.cod_materia)[0]
-               dic_materia_apresentada["nom_autor"] = ""
                autores = context.zsql.autoria_emenda_obter_zsql(cod_emenda=emenda.cod_emenda)
                fields = autores.data_dictionary().keys()
                lista_autor = []
@@ -102,7 +101,6 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       elif materia_apresentada.cod_parecer != None:
            for parecer in context.zsql.relatoria_obter_zsql(cod_relatoria=materia_apresentada.cod_parecer):
                materia = context.zsql.materia_obter_zsql(cod_materia=parecer.cod_materia)[0]
-               dic_materia_apresentada["txt_ementa"] = materia_apresentada.txt_observacao
                for comissao in context.zsql.comissao_obter_zsql(cod_comissao=parecer.cod_comissao):
                    sgl_comissao = comissao.sgl_comissao
                    nom_comissao = comissao.nom_comissao
