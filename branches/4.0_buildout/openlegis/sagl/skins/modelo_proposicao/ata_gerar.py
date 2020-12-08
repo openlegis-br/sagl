@@ -252,13 +252,15 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
 
   # Juntar Indicações
   ata_dic["indicacao"] = '; '.join(['%s' % (value) for (value) in lst_indicacao])
-  ata_dic["min_ind"] = min(lst_num_ind)
-  ata_dic["max_ind"] = max(lst_num_ind)  
+  if lst_num_ind != []:
+     ata_dic["min_ind"] = min(lst_num_ind)
+     ata_dic["max_ind"] = max(lst_num_ind)  
 
   # Juntar Requerimentos
   ata_dic["requerimento"] = '; '.join(['%s' % (value) for (value) in lst_requerimento])
-  ata_dic["min_req"] = min(lst_num_req)
-  ata_dic["max_req"] = max(lst_num_req)   
+  if lst_req_ind != []:
+     ata_dic["min_req"] = min(lst_num_req)
+     ata_dic["max_req"] = max(lst_num_req)   
 
   # Juntar Mocoes
   ata_dic["mocao"] = '; '.join(['%s' % (value) for (value) in lst_mocao])
