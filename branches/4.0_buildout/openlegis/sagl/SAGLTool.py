@@ -2146,7 +2146,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             output.addPage(pdf_page)
         outputStream = cStringIO.StringIO()
         output.write(outputStream)
-        output.close()        
 
         if hasattr(storage_path,nom_pdf_documento):
            documento = getattr(storage_path,nom_pdf_documento)
