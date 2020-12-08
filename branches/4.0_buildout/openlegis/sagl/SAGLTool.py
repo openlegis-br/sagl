@@ -752,12 +752,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.pauta_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
 
-    def resumo_gerar_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, lst_psecretario, lst_ssecretario):
+    def resumo_gerar_odt(self, resumo_dic, nom_arquivo):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/resumo.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
         exec 'brasao = brasao_file'
-        output_file_odt = "resumo_sessao.odt"
+        output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
