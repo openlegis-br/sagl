@@ -2016,7 +2016,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
               for metodo in self.zsql.documento_acessorio_obter_zsql(cod_documento=codigo):
                   for materia in self.zsql.materia_obter_zsql(cod_materia=metodo.cod_materia):
                       materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-              texto = str(metodo.des_tipo_documento.decode('utf-8').upper())+'- '+ str(metodo.nom_documento) + ' - ' + str(materia)
+              texto = str(metodo.nom_documento) + ' - ' + str(materia)
         elif tipo_doc == 'emenda':
            storage_path = self.sapl_documentos.emenda
            for metodo in self.zsql.emenda_obter_zsql(cod_emenda=codigp):
@@ -2092,7 +2092,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         #arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_assinado)
         arq = open('/tmp/' + nom_pdf_assinado, "rb")
         #arquivo = cStringIO.StringIO(arq)
-        existing_pdf = PdfFileReader(arq)
+        existing_pdf = PdfFileReader(arq, strict=False)
         numPages = existing_pdf.getNumPages()
         # cria novo PDF
         packet = StringIO.StringIO()
@@ -2146,6 +2146,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             output.addPage(pdf_page)
         outputStream = cStringIO.StringIO()
         output.write(outputStream)
+        output.close()        
 
         if hasattr(storage_path,nom_pdf_documento):
            documento = getattr(storage_path,nom_pdf_documento)
