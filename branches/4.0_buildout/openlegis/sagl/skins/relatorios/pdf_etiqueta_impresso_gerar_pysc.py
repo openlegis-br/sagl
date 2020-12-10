@@ -49,6 +49,8 @@ def destinatarios(lst_destinatarios):
             tmp_data+='\t\t<para style="P1">'+ dic['nome_responsavel']+ '</para>\n'
         if dic['cargo']!="" and dic['cargo']!=None:
             tmp_data+='\t\t<para style="P1">'+ dic['cargo']+ '</para>\n'
+        if dic['nome_instituicao']!="" and dic['nome_instituicao']!=None:
+            tmp_data+='\t\t<para style="P1">'+ dic['nome_instituicao']+ '</para>\n'            
         if dic['endereco']!="" and dic['endereco']!=None and dic['bairro']!='' and dic['bairro']!=None:
             tmp_data+='\t\t<para style="P1">'+ dic['endereco']+' '+dic['bairro']+ '</para>\n'
         else:
