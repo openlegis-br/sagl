@@ -1,6 +1,18 @@
 <dtml-var standard_html_header>
 
-<h1 class="firstHeading">Pesquisa de Normas Jurídicas</h1>
+ <div class="row mb-2">
+  <div class="col-12 col-sm-8 align-self-center">
+    <h1 class="firstHeading">Pesquisa de Legislação</h1>
+  </div>
+  <div class="col-12 col-sm-4 text-left text-sm-right mb-2">
+    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+     <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/consultas/norma_juridica" ><i class="fa fa-fw fa-search"></i> Nova Pesquisa</a>
+     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">          
+        <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_form" ><i class="fa fa-fw fa-plus"></i> Incluir Norma</a>
+     </dtml-if>   
+    </div>
+  </div>
+ </div>
 
 <dtml-call "REQUEST.set('existe_seq_anterior', 0)">
 <dtml-call "REQUEST.set('existe_seq_posterior', 0)">
@@ -22,77 +34,155 @@
     <dtml-if next-sequence>
        <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
     </dtml-if>
-     <table class="table">
-      <tr>
-         <th colspan="2">Resultado da Pesquisa: <dtml-var sequence-length> norma<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> encontrada<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>.
-         <dtml-if expr="_['sequence-length'] == 5000"><br />LIMITE DE RESULTADOS ATINGIDO! Melhore os argumentos da pesquisa.</dtml-if>
-         </th>
-      </tr>
-      <dtml-if previous-sequence>
-         <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
-      </dtml-if>
-  </dtml-if sequence-start>
-        <tr <dtml-if sequence-odd>class="even"</dtml-if>> 
-          <td><b>
-             <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
-              <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
+    <dtml-if previous-sequence>
+       <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+    </dtml-if>
+    <div class="card mb-2">
+      <div class="card-header">
+       <div class="row">
+      <div class="col-8 col-sm-9 align-self-center">
+         <i class="far fa-list-alt"></i> Resultado: <dtml-var sequence-length> norma<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>
+      </div>
+      <div class="col-4 col-sm-3 text-right align-self-center">
+      </div>
+       </div>
+      </div>
+      <ul class="list-group list-group-flush">
+ </dtml-if sequence-start>
+
+<li class="list-group-item">
+
+ <div class="row">
+   <div class="col-12">
+     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+        <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
+     <dtml-else>
+        <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma missing>">
+     </dtml-if>
+    <span class="h6 font-weight-bold text-uppercase"><i class="fas fa-caret-right"></i>  <dtml-var des_tipo_norma> nº <dtml-var num_norma>, de <dtml-var dat_norma></span></a>
+   </div>
+ </div>
+ <div class="row">
+    <div class="col-12">
+       <dtml-var txt_ementa missing>
+    </div>
+ </div>
+
+<dtml-if cod_materia>
+ <div class="row">
+    <div class="col-12">
+      <dtml-if expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+        <b>Matéria:</b>
+        <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+               <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
             <dtml-else>
-              <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma missing>">
+               <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
             </dtml-if>
-               <dtml-var des_tipo_norma> nº <dtml-var num_norma>, de <dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_norma)"></span></a></b><br>
-               <dtml-var txt_ementa missing>
-     <dtml-if expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma) or zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)"> 
+            <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a>
+            - 
+            <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+               <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+            </dtml-in>
+        </dtml-in>
+      </dtml-if>
+    </div>
+ </div>
+</dtml-if>
+
+<dtml-if cod_situacao>
+ <div class="row">
+    <div class="col-12">
+         <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(tip_situacao_norma=cod_situacao)">
+             <dtml-if expr="des_tipo_situacao!=0">
+                 <b>Situação:</b> <dtml-var des_tipo_situacao missing null="0">
+             </dtml-if>
+         </dtml-in> 
+   </div>
+ </div>
+</dtml-if>
+
+<dtml-if expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma) or zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)">
+ <div class="row">
+ <div class="col-12">
+  <div id="accordion" class="ac<dtml-var cod_norma>">
+    <div class="card border-0">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed mb-1" data-toggle="collapse" data-target="#collapseTram<dtml-var cod_norma>" aria-expanded="false" aria-controls="collapseTram<dtml-var cod_norma>"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Normas Relacionadas</span>
+          </a>
+        </p>
+      <div id="collapseTram<dtml-var cod_norma>" class="collapse" aria-labelledby="headingOne" data-parent=".ac<dtml-var cod_norma>">
+        <div class="">
        <dtml-in expr="zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)">
          <dtml-if sequence-start>
-            <br /><b>Vinculação Ativa<dtml-if expr="_['sequence-length'] > 1"> (<dtml-var sequence-length>)</dtml-if>:</b><br />
-         </dtml-if> <dtml-var sequence-number> - <dtml-var des_vinculo>
-           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
-            <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
-           <dtml-else>
-            <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
-           </dtml-if>
-              <b><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b>
-            </a>
-           <dtml-unless sequence-end><br /></dtml-unless>
+            <ul>
+              <li><b>Vinculação Ativa<dtml-if expr="_['sequence-length'] > 0"> [<dtml-var sequence-length>]</dtml-if>:</b></li>   
+         </dtml-if> 
+              <li>
+                <dtml-var sequence-number> - <dtml-var des_vinculo>
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+                  <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
+                <dtml-else>
+                  <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
+                </dtml-if>
+                  <b><dtml-var des_tipo_norma> nº <dtml-var num_norma>, de <dtml-var dat_norma></b>
+                </a>
+              </li>
+           <dtml-if sequence-end></ul></dtml-if>
        </dtml-in>
        <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
          <dtml-if sequence-start>
-            <br /><b>Vinculação Passiva<dtml-if expr="_['sequence-length'] > 1"> (<dtml-var sequence-length>)</dtml-if>:</b><br />
-         </dtml-if> <dtml-var sequence-number> - <dtml-var des_vinculo_passivo>
-           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
-            <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
-           <dtml-else>
-            <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
-           </dtml-if>
-              <b><dtml-var des_tipo_norma> nº <dtml-var num_norma> de <dtml-var dat_norma null=""></b>
-            </a>
-           <dtml-unless sequence-end><br /></dtml-unless>
-       </dtml-in>
-     </dtml-if>
-         </td>   
-          <td width="10%">
-            <div align="center">
-                <dtml-call expr="REQUEST.set('texto_consolidado', _.str(cod_norma)+'_texto_consolidado.pdf')">
-                <dtml-call expr="REQUEST.set('texto_original', _.str(cod_norma)+'_texto_integral.pdf')">
-                <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
-                  <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,texto_consolidado).absolute_url">
-                    <a target="_blank" href="<dtml-var documento>">
-                      <img align="middle" src="<dtml-var portal_url>/imagens/archiv.gif" alt="Texto compilado" title="Texto compilado"></a>
-                  </dtml-let>
-                <dtml-elif "_.hasattr(sapl_documentos.norma_juridica,texto_original)">
-                  <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,texto_original).absolute_url">
-                    <a target="_blank" href="<dtml-var documento>">
-                      <img align="middle" src="<dtml-var portal_url>/imagens/archiv.gif" alt="Texto original" title="Texto original"></a>
-                  </dtml-let>
+            <ul>
+              <li><b>Vinculação Passiva<dtml-if expr="_['sequence-length'] > 0"> [<dtml-var sequence-length>]</dtml-if>:</b></li>
+         </dtml-if>
+              <li>
+                <dtml-var sequence-number> - <dtml-var des_vinculo_passivo>
+                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+                  <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
                 <dtml-else>
-                  <img class="img-disabled" src="<dtml-var portal_url>/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
-                </dtml-if> 
-            </div>
-          </td>
-       </tr>
+                  <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
+                </dtml-if>
+                  <b><dtml-var des_tipo_norma> nº <dtml-var num_norma>, de <dtml-var dat_norma></b>
+                </a>
+              </li>
+           <dtml-if sequence-end></ul></dtml-if>
+       </dtml-in>        
+        </div>
+      </div>
+    </div>
+</div>    
+</dtml-if>
+
+ <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)" mapping>
+    <b>Arquivo Permanente:</b> <dtml-var num_recipiente>
+ </dtml-in>
+
+ <dtml-call expr="REQUEST.set('texto_consolidado', _.str(cod_norma)+'_texto_consolidado.pdf')">
+ <dtml-call expr="REQUEST.set('texto_original', _.str(cod_norma)+'_texto_integral.pdf')">
+ <dtml-call expr="REQUEST.set('texto_odt', _.str(cod_norma)+'_texto_integral.odt')">                   
+<dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_original) or _.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
+ <div class="row d-print-none">
+    <div class="col-12 text-left mt-1"> 
+     <div class="btn-group btn-group-sm">
+      <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_original)">
+          <a class="btn btn-primary" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1" target="_blank"><i class="far fa-file-pdf"></i> Texto Original</a>
+      </dtml-if> 
+      <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_odt) and _.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
+           <dtml-let documento_odt="_.getattr(sapl_documentos.norma_juridica,texto_odt).absolute_url">         
+               <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var portal_url>/generico/viewerJS/?cod_norma=<dtml-var cod_norma>#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()"> "> <i class="fa fa-fw fa-file-code"></i> Texto Compilado</a>     
+           </dtml-let>    
+      </dtml-if>    
+     </div>
+    </div>
+ </div>
+</dtml-if>
+</li>    
  <dtml-if sequence-end>
-   </table>
-    <dtml-if next-sequence>
+   </ul>
+  </div>
+<dtml-if next-sequence>
        <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
     </dtml-if>
     <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
@@ -107,7 +197,5 @@
 <dtml-else>
    <p>Nenhuma ocorrência encontrada.</p>
 </dtml-in>
-<p>
-  <input class="btn btn-secondary" type="button" value="Voltar" onClick="history.go(-1)">
-</p>
+
 <dtml-var standard_html_footer>

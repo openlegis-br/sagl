@@ -556,7 +556,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
           output_file_pdf = cStringIO.StringIO()
           writer.write(output_file_pdf)
           output_file_pdf.seek(0)
-          existing_pdf = PdfFileReader(output_file_pdf)
+          existing_pdf = PdfFileReader(output_file_pdf, strict=False)
           numPages = existing_pdf.getNumPages()
           # cria novo PDF
           packet = cStringIO.StringIO()
@@ -656,7 +656,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
           output_file_pdf = cStringIO.StringIO()
           writer.write(output_file_pdf)
           output_file_pdf.seek(0)
-          existing_pdf = PdfFileReader(output_file_pdf)
+          existing_pdf = PdfFileReader(output_file_pdf, strict=False)
           numPages = existing_pdf.getNumPages()
           # cria novo PDF
           packet = cStringIO.StringIO()
@@ -1073,7 +1073,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         validacao = ''
         arq = getattr(self.sapl_documentos.administrativo, nom_pdf_documento)
         arquivo = cStringIO.StringIO(str(arq.data))
-        existing_pdf = PdfFileReader(arquivo, "rb")
+        existing_pdf = PdfFileReader(arquivo, strict=False)
         numPages = existing_pdf.getNumPages()
         # cria novo PDF
         packet = StringIO.StringIO()
@@ -1419,7 +1419,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output_file_pdf = cStringIO.StringIO()
         writer.write(output_file_pdf)
         output_file_pdf.seek(0)
-        existing_pdf = PdfFileReader(output_file_pdf)
+        existing_pdf = PdfFileReader(output_file_pdf, strict=False)
         numPages = existing_pdf.getNumPages()
         # cria novo PDF
         packet = cStringIO.StringIO()
@@ -1541,7 +1541,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output_file_pdf = cStringIO.StringIO()
         writer.write(output_file_pdf)
         output_file_pdf.seek(0)
-        existing_pdf = PdfFileReader(output_file_pdf)
+        existing_pdf = PdfFileReader(output_file_pdf, strict=False)
         numPages = existing_pdf.getNumPages()
         # cria novo PDF
         packet = cStringIO.StringIO()
@@ -1637,7 +1637,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.url() + '/sapl_documentos/proposicao/' + nom_pdf_proposicao
         opener = urllib.urlopen(url)
         f = open('/tmp/' + nom_pdf_proposicao, 'wb').write(opener.read())
-        existing_pdf = PdfFileReader('/tmp/'+ nom_pdf_proposicao, "rb")
+        existing_pdf = PdfFileReader('/tmp/'+ nom_pdf_proposicao, strict=False)
         numPages = existing_pdf.getNumPages()
 
         # cria novo PDF
