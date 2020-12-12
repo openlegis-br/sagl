@@ -9,7 +9,7 @@ SELECT
     cod_parlamentar,
     cod_mandato,
     num_legislatura,
-    tip_afastamento as tip_afastamento_sel,
+    afastamento.tip_afastamento as tip_afastamento_sel,
     DATE_FORMAT(dat_inicio_afastamento, '%d/%m/%Y') as dat_inicio_afastamento,
     DATE_FORMAT(dat_fim_afastamento, '%d/%m/%Y') as dat_fim_afastamento,
     dat_inicio_afastamento as dat_inicio,
@@ -17,10 +17,12 @@ SELECT
     dat_inicio_afastamento as adat_inicio,
     dat_fim_afastamento as adat_fim,
     cod_parlamentar_suplente,
-    txt_observacao
+    txt_observacao,
+    tipo_afastamento.des_afastamento
 
 FROM
     afastamento
+    LEFT JOIN tipo_afastamento ON afastamento.tip_afastamento = tipo_afastamento.tip_afastamento 
 
 <dtml-sqlgroup where>
     <dtml-sqltest cod_afastamento type="int" optional> <dtml-and>
@@ -28,7 +30,8 @@ FROM
     <dtml-sqltest cod_mandato     type="int" optional> <dtml-and>
     <dtml-sqltest num_legislatura type="int" optional> <dtml-and>
     <dtml-sqltest cod_parlamentar_suplente type="int" optional> <dtml-and>
-    <dtml-sqltest ind_excluido    type="int">
+    <dtml-sqltest ind_excluido    column="afastamento.ind_excluido" type="int"> <dtml-and>
+    <dtml-sqltest ind_excluido    column="tipo_afastamento.ind_excluido" type="int">    
    <dtml-if data>
      and <dtml-sqlvar data type="nb"> BETWEEN dat_inicio_afastamento and dat_fim_afastamento
      or  (<dtml-sqlvar data type="nb"> >= dat_inicio_afastamento and dat_fim_afastamento is null)
