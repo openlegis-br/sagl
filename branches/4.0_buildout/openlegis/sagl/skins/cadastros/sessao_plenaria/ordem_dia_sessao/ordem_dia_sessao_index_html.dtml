@@ -12,6 +12,12 @@
  });
 </script>
 
+<script>
+$(document).ready(function(){
+  $('[data-toggle="popover"]').popover();
+});
+</script>
+
 <dtml-var sessao_plenaria_menu>
 
 <div class="tab-content bg-white">
@@ -58,10 +64,10 @@
             <td>
                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
                     <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Item" data-src="ordem_dia_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_sessao_plen=<dtml-var cod_sessao_plen>&modal=1">
-                     <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
+                     <b><dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b>
                    </a>
                     <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
-                       - <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                       - <b><dtml-var nom_autor_join></b><dtml-unless sequence-end>,</dtml-unless>
                     </dtml-in>
                    <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">
                      <dtml-if num_materia>
@@ -72,10 +78,10 @@
                </dtml-in>
                - <dtml-var txt_observacao> <br />              
                <dtml-in expr="zsql.turno_discussao_obter_zsql(cod_turno=tip_turno)">
-	          Turno: <dtml-var des_turno> /
+	          <b>Turno:</b> <dtml-var des_turno> -
                </dtml-in>               
                <dtml-in expr="zsql.quorum_votacao_obter_zsql(cod_quorum=tip_quorum)">
-	          Quórum: <dtml-var des_quorum>
+	          <b>Quórum:</b> <dtml-var des_quorum>
                </dtml-in>
             </td>
             <td>
@@ -86,9 +92,9 @@
                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
                     <a href="#" class="btn btn-block btn-sm btn-primary mb-0" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Votação" data-src="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>&modal=1">
                     <i class="fas fa-arrow-circle-right"></i> 
-                    <dtml-var nom_resultado></a><br />
+                    <dtml-var nom_resultado></a>
                     <dtml-if votacao_observacao>
-                        <dtml-var votacao_observacao>
+                        <btn class="btn btn-block btn-sm btn-link" data-toggle="popover" title="Observações da Votação" data-trigger="hover" data-placement="bottom" data-content="<dtml-var votacao_observacao>"><i class="fas fa-info-circle"></i> Observações</btn>                    
                     </dtml-if>
                 </dtml-in>
                 <dtml-elif expr="cod_votacao and tip_resultado_votacao==0">
@@ -111,10 +117,10 @@
             <td><dtml-var num_ordem>.<dtml-var contador_sub></td>
             <td>
               <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Substitutivo" data-src="<dtml-var portal_url>/cadastros/materia/substitutivo/substitutivo_mostrar_proc?cod_substitutivo=<dtml-var cod_substitutivo>&cod_materia=<dtml-var cod_materia>&modal=1">
-                Substitutivo nº <dtml-var num_substitutivo>
+                <b>Substitutivo nº <dtml-var num_substitutivo></b>
               </a>
               <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
-               - <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+               - <b><dtml-var nom_autor_join></b><dtml-unless sequence-end>,</dtml-unless>
               </dtml-in>
               - <dtml-var txt_ementa>
             </td>
@@ -124,10 +130,9 @@
                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
                     <a href="#" class="btn btn-block btn-sm btn-primary mb-0" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Votação" data-src="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>&modal=1">
                     <i class="fas fa-arrow-circle-right"></i> 
-                    <dtml-var nom_resultado></a><br />
-                  </p>
+                    <dtml-var nom_resultado></a>
                     <dtml-if votacao_observacao>
-                        <dtml-var votacao_observacao>
+                      <btn class="btn btn-block btn-sm btn-link" data-toggle="popover" title="Observações da Votação" data-trigger="hover" data-placement="bottom" data-content="<dtml-var votacao_observacao>"><i class="fas fa-info-circle"></i> Observações</btn>  
                     </dtml-if>
                 </dtml-in>
                 <dtml-elif expr="(_.has_key(cod_votacao) and cod_substitutivo==cod_substitutivo) or tip_resultado_votacao==0">
@@ -152,10 +157,10 @@
             <td><dtml-var num_ordem>.<dtml-var contador></td>
             <td>
               <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Emenda" data-src="<dtml-var portal_url>/cadastros/materia/emenda/emenda_mostrar_proc?cod_emenda=<dtml-var cod_emenda>&cod_materia=<dtml-var cod_materia>&modal=1">
-                Emenda nº <dtml-var num_emenda> (<dtml-var des_tipo_emenda>)
+                <b>Emenda nº <dtml-var num_emenda> (<dtml-var des_tipo_emenda>)</b>
               </a>
               <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
-                 - <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                 - <b><dtml-var nom_autor_join></b><dtml-unless sequence-end>,</dtml-unless>
               </dtml-in>
               - <dtml-var txt_ementa>
             </td>
@@ -166,9 +171,9 @@
                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)" prefix="votacao_emenda">
                     <a href="#" class="btn btn-block btn-sm btn-primary mb-0" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Votação" data-src="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_emenda=<dtml-var cod_emenda>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>&modal=1">
                     <i class="fas fa-arrow-circle-right"></i> 
-                    <dtml-var nom_resultado></a><br />
+                    <dtml-var nom_resultado></a>
                     <dtml-if votacao_observacao>
-                        <dtml-var votacao_observacao>
+                        <btn class="btn btn-block btn-sm btn-link" data-toggle="popover" title="Observações da Votação" data-trigger="hover" data-placement="bottom" data-content="<dtml-var votacao_observacao>"><i class="fas fa-info-circle"></i> Observações</btn>  
                     </dtml-if>
                 </dtml-in>
                 <dtml-elif expr="(_.has_key(cod_votacao) and cod_emenda==cod_emenda) or tip_resultado_votacao==0">
