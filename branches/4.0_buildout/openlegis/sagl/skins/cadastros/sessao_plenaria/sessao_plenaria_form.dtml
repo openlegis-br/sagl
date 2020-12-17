@@ -120,6 +120,49 @@ function campos_criticar(){
 
 </script>
 
+<dtml-unless cod_sessao_plen>
+<script>
+$(document).ready(function(){
+        var tipo = $("#lst_tip_sessao_plen").val();
+        var sessao_leg = $("#lst_sessao_leg").val();
+        var legislatura = $("#lst_num_legislatura").val();        
+        $.ajax({
+            url: 'numero_obter_pysc',
+            type: 'post',
+            data: {tvalue:tipo,svalue:sessao_leg},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#txt_num_sessao_plen").empty();
+                for( var i = 0; i<len; i++){
+                    var numero = response[i]['num_sessao_plen'];
+                    $("#txt_num_sessao_plen").val(numero);
+                }
+            }
+        });
+    $("#lst_tip_sessao_plen").change(function(){
+        var tipo = $("#lst_tip_sessao_plen").val();
+        var sessao_leg = $("#lst_sessao_leg").val();
+        var legislatura = $("#lst_num_legislatura").val();        
+        $.ajax({
+            url: 'numero_obter_pysc',
+            type: 'post',
+            data: {tvalue:tipo,svalue:sessao_leg},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#txt_num_sessao_plen").empty();
+                for( var i = 0; i<len; i++){
+                    var numero = response[i]['num_sessao_plen'];
+                    $("#txt_num_sessao_plen").val(numero);
+                }
+            }
+        });    
+    });                   
+});
+</script>
+</dtml-unless> 
+
 <dtml-if cod_sessao_plen>
   <dtml-var sessao_plenaria_menu>
 <dtml-else>
@@ -140,12 +183,6 @@ function campos_criticar(){
   <div class="form-row">
      <div class="col-6 col-md-3 mb-3">
        <label for="txt_num_sessao_plen" class="required">Número</label>
-       <dtml-in expr="zsql.numero_sessao_plenaria_obter_zsql()">
-          <dtml-call expr="REQUEST.set('num_sessao_plen', novo_numero)">
-        </dtml-in>
-        <dtml-unless num_sessao_plen>
-           <dtml-call num_sessao_plen>
-        </dtml-unless>
         <input class="form-control number" type="number" id="txt_num_sessao_plen" name="txt_num_sessao_plen" value="<dtml-var num_sessao_plen missing null="">" required />
         <div class="invalid-feedback">
           Este campo é obrigatório!
@@ -154,11 +191,11 @@ function campos_criticar(){
      <div class="col-6 col-md-3 mb-3">
         <label for="lst_tip_sessao_plen" class="required">Tipo</label>
         <select class="custom-select" id="lst_tip_sessao_plen" name="lst_tip_sessao_plen" required>
-           <option value="0">
-              Selecione
-           </option>
            <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql()">
               <option
+                 <dtml-if expr="not _.has_key('cod_sessao_plen') and 1 ==_.int(sessao_plenaria_form.tip_sessao)">
+                    selected
+                 </dtml-if>              
                  <dtml-if expr="_.has_key('cod_sessao_plen') and _.int(tip_sessao)==_.int(sessao_plenaria_form.tip_sessao)">
                     selected
                  </dtml-if>
