@@ -92,7 +92,7 @@
         </dtml-if>
         <dtml-if expr="tip_processo==0">
            <b>Natureza do Processo: </b>Administrativo <br /> 
-           <b>Classificação:</b> <dtml-var des_tipo_documento>
+           <b>Tipo de Documento:</b> <dtml-var des_tipo_documento>
            <dtml-in expr="zsql.documento_administrativo_obter_zsql(num_protocolo=num_protocolo, ano_documento=ano_protocolo)">
               <dtml-if num_documento>
                  <br /><b>Registro Derivado:</b> 
@@ -110,12 +110,15 @@
         <dtml-if expr="tip_processo==1">
            <b>Natureza do Processo: </b>Legislativo <br /> 
            <dtml-if expr="tip_natureza_materia==1">
-              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_materia,tip_natureza='P')">
-                 <b>Tipo de Matéria:</b> <dtml-var des_tipo_materia>
-              </dtml-in>
+              <dtml-if expr="tip_materia != None and tip_materia != '' and tip_materia !=0">
+                 <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_materia,tip_natureza='P')">
+                    <b>Tipo de Matéria:</b> <dtml-var des_tipo_materia>
+                 </dtml-in>
+                 <br />
+              </dtml-if>
               <dtml-in expr="zsql.materia_obter_zsql(num_protocolo=num_protocolo,ano_ident_basica=ano_protocolo)">
                  <dtml-if sequence-start>
-                    <br /><b>Registro Derivado:</b> 
+                    <b>Registro Derivado:</b> 
                  </dtml-if>
                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
                     <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
