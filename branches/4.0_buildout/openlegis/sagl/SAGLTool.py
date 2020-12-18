@@ -961,9 +961,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.norma_juridica.manage_addFile(id=nom_arquivo,file=data)
 
-    def norma_gerar_pdf(self, cod_norma):
+    def norma_gerar_pdf(self, cod_norma, tipo_texto):
         nom_arquivo_odt = "%s"%cod_norma+'_texto_integral.odt'
-        nom_arquivo_pdf1 = "%s"%cod_norma+'_texto_consolidado.pdf'
+        if tipo_texto == 'compilado':
+           nom_arquivo_pdf1 = "%s"%cod_norma+'_texto_consolidado.pdf'
+        elif tipo_texto == 'integral':
+           nom_arquivo_pdf1 = "%s"%cod_norma+'_texto_integral.pdf'        
         url = self.sapl_documentos.norma_juridica.absolute_url() + "/%s"%nom_arquivo_odt
         odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)

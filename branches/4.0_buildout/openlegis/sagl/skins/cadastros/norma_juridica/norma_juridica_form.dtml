@@ -103,13 +103,23 @@
   }
 
   function texto_consolidado_gerar(){
-    if (confirm("Confirma a geração do texto compilado?")) {
-       location.href="<dtml-var portal_url>/modelo_proposicao/norma_gerar_pdf?cod_norma=<dtml-var cod_norma missing>";
+    if (confirm("Confirma a geração do texto compilado em PDF?")) {
+       location.href="<dtml-var portal_url>/modelo_proposicao/norma_gerar_pdf?cod_norma=<dtml-var cod_norma missing>&tipo_texto=compilado";
        setTimeout(function(){window.location.reload(true)},3000);
        return true;
      }
-  return;
+    return;
   }
+  
+  function texto_integral_gerar(){
+    if (confirm("Confirma a geração do texto integral em PDF?")) {
+       location.href="<dtml-var portal_url>/modelo_proposicao/norma_gerar_pdf?cod_norma=<dtml-var cod_norma missing>&tipo_texto=integral";
+       setTimeout(function(){window.location.reload(true)},3000);
+       return true;
+     }
+    return;
+  }
+
 
   function texto_odt_gerar(){
     lst_modelo = document.getElementById("lst_modelo");
@@ -403,6 +413,11 @@ $(document).ready(() => {
        <label class="form-label d-block">PDF Texto Original</label>
        <input type="hidden" name="hdn_file" value="0"/>
        <dtml-if cod_norma>
+    <dtml-let documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
+       <dtml-if "_.hasattr(sapl_documentos.norma_juridica,documento_odt)">
+          <dtml-call expr="REQUEST.set('temODT', 1)">
+       </dtml-if>
+    </dtml-let>       
           <dtml-call expr="REQUEST.set('id_documento', _.str(cod_norma)+'_texto_integral.pdf')">
           <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento)">
             <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento).absolute_url">
@@ -415,12 +430,15 @@ $(document).ready(() => {
                </dtml-if>
             </dtml-let>
           <dtml-else>
-             <div class="input-group">
+             <div class="btn-group">
                <div class="custom-file">
                  <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
                  <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
                </div>
-             </div>
+             </div>           
+               <dtml-if expr="_.has_key('temODT')">       
+                  <button class="btn btn-secondary" type="button" onclick="javascript:texto_integral_gerar()">Gerar do ODT</button>
+               </dtml-if> 
           </dtml-if>
        <dtml-else>
           <div class="input-group">
@@ -433,7 +451,7 @@ $(document).ready(() => {
     </div>
   <dtml-if cod_norma>    
     <div class="col-12 col-lg-6 mb-3">
-       <label for="txt_texto_odt">ODT Texto Compilado</label><br />
+       <label for="txt_texto_odt">ODT Texto da Norma</label><br />
           <dtml-let id_documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
              <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento_odt)">
                 <dtml-let documento_odt="_.getattr(sapl_documentos.norma_juridica,id_documento_odt).absolute_url">
@@ -463,11 +481,6 @@ $(document).ready(() => {
              </dtml-if>
           </dtml-let>    
     </div>   
-    <dtml-let documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
-       <dtml-if "_.hasattr(sapl_documentos.norma_juridica,documento_odt)">
-          <dtml-call expr="REQUEST.set('temODT', 1)">
-       </dtml-if>
-    </dtml-let>
     <dtml-if expr="_.has_key('temODT')">
     <div class="col-12 col-lg-6 mb-3">
       <label for="txt_texto_pdf" class="d-block">PDF Texto Compilado</label>

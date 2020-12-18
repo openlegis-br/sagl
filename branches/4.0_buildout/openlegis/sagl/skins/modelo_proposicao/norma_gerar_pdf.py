@@ -4,11 +4,11 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_norma
+##parameters=cod_norma, tipo_texto
 ##title=
 ##
 from Products.CMFCore.utils import getToolByName
 
 st = getToolByName(context, 'portal_sagl')
 
-return st.norma_gerar_pdf(cod_norma)
+return st.norma_gerar_pdf(cod_norma, tipo_texto)
