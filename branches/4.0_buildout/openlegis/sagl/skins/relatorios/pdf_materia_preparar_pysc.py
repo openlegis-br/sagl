@@ -50,7 +50,7 @@ cabecalho["nom_estado"]="Estado de "+nom_estado
 if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
   imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
-  imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
+  imagem = context.imagens.absolute_url() + "/brasao.gif"
 
 # PythonScript para pesquisar as matérias e gerar os dados
 REQUEST=context.REQUEST

@@ -50,7 +50,7 @@ cabecalho["nom_estado"]="Estado de "+nom_estado
 if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
   imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
-  imagem = context.sagl_site.sagl_skin.imagens.absolute_url() + "/brasao_transp.gif"
+  imagem = context.sagl_site.sagl_skin.imagens.absolute_url() + "/brasao.gif"
 
 #Verifica o tamanho da lista das materias selecionadas vindas do form
 REQUEST=context.REQUEST

@@ -15,7 +15,7 @@ mailhost = context.MailHost
 if hasattr(context.sapl_documentos.props_sagl,'logo_casa.gif'):
   imagem = context.sapl_documentos.props_sagl['logo_casa.gif'].absolute_url()
 else:
-  imagem = context.imagens.absolute_url() + "/brasao_transp.gif"
+  imagem = context.imagens.absolute_url() + "/brasao.gif"
 
 casa={}
 aux=context.sapl_documentos.props_sagl.propertyItems()
