@@ -7,11 +7,11 @@ import MySQLdb
 import zc.buildout
 import transaction
 
-from zope.site.hooks import setSite
+from zope.component.hooks import setSite
 
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from Testing import makerequest
+from Testing.makerequest import makerequest
 from optparse import OptionParser
 import pkg_resources
 
@@ -30,7 +30,7 @@ def create(container, sagl_id):
     if sagl_id not in oids:
         created = True
         factory = container.manage_addProduct['openlegis.sagl']
-        factory.manage_addSAGL(sagl_id, title='OpenLegis - Processo Legislativo Eletrônico', database="MySQL")
+        factory.manage_addSAGL(sagl_id, title='SAGL', database="MySQL")
         transaction.commit()
         logger.info("Added SAGL")
         sagl = getattr(container, sagl_id)
@@ -63,7 +63,7 @@ def main(app, parser):
     for handler in root_logger.handlers:
         handler.setLevel(log_level)
 
-    app = makerequest.makerequest(app)
+    app = makerequest(app)
     try:
         db = MySQLdb.connect(host=mysql_host, user=mysql_user, passwd=mysql_pass)
     except:
@@ -104,7 +104,7 @@ def main(app, parser):
         newSecurityManager(None, user)
         logger.info("Recupera usuário admin")
     else:
-        raise zc.buildout.UserError('O usuário administrador não existe')
+        raise zc.buildout.UserError('O usuário admin não existe')
 
     # create sagl if it doesn't exist
     sagl, created = create(app, sagl_id)
