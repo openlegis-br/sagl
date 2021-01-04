@@ -1,0 +1,119 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+  function campos_criticar(){
+
+      var form = document.protocolo_anular_form;
+      var regexp_digitos = /\D+/;
+
+      if (form.txt_num_protocolo.value == "") {
+         alert("O número do protocolo deve ser preenchido!");
+         form.txt_num_protocolo.focus();
+         return false;
+      }
+
+      if (form.txt_ano_protocolo.value == "") {
+         alert("O ano do protocolo deve ser preenchido!");
+         form.txt_ano_protocolo.focus();
+         return false;
+      }
+
+      if (form.txa_txt_just_anulacao.value == "") {
+         alert("O motivo da anulação deve ser informado!");
+         form.txa_txt_just_anulacao.focus();
+         return false;
+      }
+
+      if (regexp_digitos.test(form.txt_num_protocolo.value)) {
+         alert("O número do protocolo deve ser um número natural!");
+         form.txt_num_protocolo.focus();
+         return false;
+      }
+
+      form.submit();
+    }
+
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Anulação de Protocolo</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/consultas/protocolo" ><i class="fa fa-fw fa-search"></i> Pesquisa de Protocolos</a>         
+         </div>
+      </div>
+ </div>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Materia'])">
+<ul class="nav nav-tabs border-0" id="nav_protocolo" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link" id="LEG-tab" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_legislativo_form" role="tab" aria-controls="LEG" aria-selected="false">Protocolo Legislativo</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="ADM-tab" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_administrativo_form" role="tab" aria-controls="ADM" aria-selected="true">Protocolo Administrativo</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active" id="anular-tab" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_anular_form" role="tab" aria-controls="anular" aria-selected="false">Anulação de Protocolo</a>
+  </li>
+</ul>
+</dtml-if>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active" id="anular">
+
+<form action="protocolo_anular_proc" name="protocolo_anular_form" method="post" enctype="multipart/form-data">
+ <input type="hidden" name="hdn_txt_user_anulacao" value="<dtml-var "AUTHENTICATED_USER.getUserName()">" />
+ <dtml-if HTTP_X_FORWARDED_FOR>
+    <input type="hidden" name="hdn_txt_ip_anulacao" value="<dtml-var HTTP_X_FORWARDED_FOR>" />
+ <dtml-else>
+    <input type="hidden" name="hdn_txt_ip_anulacao" value="<dtml-var REMOTE_ADDR>" />
+ </dtml-if>
+ <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
+   <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/consultas/protocolo/protocolo_pesquisar_form" />
+ <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
+   <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/cadastros/protocolo/protocolo_legislativo_form" />
+ <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Modulo Administrativo'])">
+   <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/cadastros/protocolo/protocolo_administrativo_form" />
+ </dtml-if>
+
+  <legend>Anulação de Protocolo</legend>
+
+  <div class="form-row">
+    <div class="col-6 mb-3">
+       <label for="txt_num_protocolo" class="required">Número</label>
+       <input class="form-control number" id="txt_num_protocolo" type="number" name="txt_num_protocolo" required />
+    </div>
+    <div class="col-6 mb-3">
+       <label for="txt_ano_protocolo" class="required">Ano</label>
+       <input class="form-control year" id="txt_ano_protocolo" type="number" name="txt_ano_protocolo" />    
+    </div>       
+  </div>    
+
+  <div class="form-row">
+    <div class="col-12 mb-3">
+       <label for="txa_txt_just_anulacao" class="required">Motivo da Anulação</label>
+       <textarea class="form-control" id="txa_txt_just_anulacao" name="txa_txt_just_anulacao" rows="2"><dtml-var txt_observacao missing></textarea>
+    </div>
+  </div>    
+
+  <p>
+    <b>Importante:</b> Uma vez anulado, o número de protocolo será inutilizado. <br />
+     O nome de usuário <i><dtml-var "AUTHENTICATED_USER.getUserName()"></i> e o endereço IP da conexão serão registrados no banco de dados.
+  </p>
+
+
+
+  <div class="text-left">
+    <input class="btn btn-primary" type="button" name="button" value="Anular Protocolo" onClick="campos_criticar()" />
+    <input class="btn btn-secondary" type="reset" name="btn_protocolo_limpar" value="Limpar" />
+  </div>
+  
+</form>
+
+</div>
+</div>
+
+<dtml-var standard_html_footer>

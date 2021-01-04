@@ -1,0 +1,243 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+  function campos_criticar(form){
+     var form = document.unidade_tramitacao_form;  
+     
+     if ((form.lst_cod_orgao.selectedIndex=='') && (form.lst_cod_comissao.selectedIndex=='') && (form.lst_cod_parlamentar.selectedIndex=='')) { 
+        alert("Órgão, Comissão ou Vereador deve ser selecionado!");
+        form.lst_cod_orgao.focus();
+        return false;
+     } 
+     
+
+     if ((form.lst_cod_orgao.selectedIndex!='') && (form.lst_cod_parlamentar.selectedIndex!='') && (form.lst_cod_comissao.selectedIndex!='') ){
+        alert("Apenas uma opção, Orgão, Comissão ou Vereador, deve ser selecionada!");
+        form.lst_cod_orgao.focus();
+        return false;
+     } 
+     
+     if ((form.lst_cod_orgao.selectedIndex=='') && (form.lst_cod_parlamentar.selectedIndex!='') && (form.lst_cod_comissao.selectedIndex!='') ){
+        alert("Apenas uma opção, Orgão, Comissão ou Vereador, deve ser selecionada!");
+        form.lst_cod_orgao.focus();
+        return false;
+     }
+
+     if ((form.lst_cod_orgao.selectedIndex!='') && (form.lst_cod_parlamentar.selectedIndex=='') && (form.lst_cod_comissao.selectedIndex!='') ){
+        alert("Apenas uma opção, Orgão, Comissão ou Vereador, deve ser selecionada!");
+        form.lst_cod_orgao.focus();
+        return false;
+     }
+     
+     if ((form.lst_cod_orgao.selectedIndex!='') && (form.lst_cod_parlamentar.selectedIndex!='') && (form.lst_cod_comissao.selectedIndex=='') ){
+        alert("Apenas uma opção, Orgão, Comissão ou Vereador, deve ser selecionada!");
+        form.lst_cod_orgao.focus();
+        return false;
+     }
+     
+
+     form.submit();
+  }
+
+  function unidade_tramitacao_excluir() {
+       
+    if (confirm("Deseja realmente excluir?")) {  
+      location.href = "unidade_tramitacao_excluir_proc?cod_unid_tramitacao=<dtml-var cod_unid_tramitacao missing>";
+    }
+  }
+
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Unidade de Tramitação</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="index_html"><i class="fa fa-fw fa-undo"></i> Voltar</a>         
+         </div>
+      </div>
+ </div>
+
+<form method="post" name="unidade_tramitacao_form" action="unidade_tramitacao_salvar_proc">
+
+  <div class="form-row">
+    <div class="col-12 col-sm-4 mb-3" id="list1">
+      <label for="lst_cod_orgao">Órgão</label>                 
+             <select class="custom-select" id="lst_cod_orgao" name="lst_cod_orgao">
+               <option value=""></option>
+               <dtml-in expr="zsql.orgao_obter_zsql(ind_excluido=0)">
+                   <option
+                      <dtml-if expr="_.has_key('cod_unid_tramitacao')">
+                        <dtml-if expr="cod_orgao == unidade_tramitacao_form.cod_orgao">
+                            selected
+                        </dtml-if>
+                       </dtml-if>
+                   value="<dtml-var cod_orgao>"> 
+                   <dtml-var nom_orgao></option>
+               </dtml-in>
+             </select>
+    </div>
+    <div class="col-12 col-sm-4 mb-3" id="list2">
+      <label for="lst_cod_comissao">Comissão</label>                     
+            <select class="custom-select" id="lst_cod_comissao" name="lst_cod_comissao">  
+              <option value=""></option>
+              <dtml-in expr="zsql.comissao_obter_zsql(ind_excluido=0)">
+                 <option               
+                     <dtml-if expr="_.has_key('cod_unid_tramitacao')">
+                       <dtml-if expr="cod_comissao == unidade_tramitacao_form.cod_comissao">
+                            selected
+                        </dtml-if>
+                     </dtml-if>
+                  value="<dtml-var cod_comissao>"> 
+                  <dtml-var nom_comissao></option>
+              </dtml-in>
+            </select>
+    </div>
+    <div class="col-12 col-sm-4 mb-3" id="list3">
+      <label for="lst_cod_parlamentar">Vereador</label>                         
+             <select class="custom-select" id="lst_cod_parlamentar" name="lst_cod_parlamentar">
+               <option value=""></option>
+               <dtml-in expr="zsql.parlamentar_obter_zsql(ind_excluido=0)">
+                   <option
+                      <dtml-if expr="_.has_key('cod_unid_tramitacao')">
+                        <dtml-if expr="cod_parlamentar == unidade_tramitacao_form.cod_parlamentar">
+                            selected
+                        </dtml-if>
+                       </dtml-if>
+                   value="<dtml-var cod_parlamentar>"> 
+                   <dtml-var nom_completo></option>
+               </dtml-in>
+             </select>
+    </div>        
+  </div>
+
+   
+  <dtml-if cod_unid_tramitacao>
+  
+  <legend>Permissões de Tramitação Eletrônica</legend>  
+
+
+  <div class="form-row">
+    <div class="col-12 col-sm-4 mb-3">
+       <label class="d-block">Tipo de Unidade</label>                             
+       <div class="form-check form-check-inline">
+         <input class="form-check-input" type="checkbox" id="chk_ind_adm" name="chk_ind_adm"
+           <dtml-if expr="_.has_key('ind_adm') and ind_adm==1">
+              checked
+           </dtml-if> >
+         <label class="form-check-label" for="chk_ind_adm">Administrativa</label>
+       </div>
+       <div class="form-check form-check-inline">
+         <input class="form-check-input" type="checkbox" id="chk_ind_leg" name="chk_ind_leg"
+           <dtml-if expr="_.has_key('ind_leg') and ind_leg==1">
+              checked
+           </dtml-if> >
+         <label class="form-check-label" for="chk_ind_leg">Legislativa</label>
+       </div>          
+    </div>
+  </div>
+
+  <div class="form-row">    
+    <div class="col-12 col-sm-4 mb-3">
+      <label for="chk_cod_unid_tram_dest">Unidades de Destino Permitidas</label>
+       <select id="chk_cod_unid_tram_dest" name="chk_cod_unid_tram_dest" class="form-control selectpicker show-tick" multiple data-actions-box="true" data-size="10" data-selected-text-format="count > 4">
+          <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_excluido=0)">        
+            <dtml-if cod_comissao>
+              <option value="<dtml-var cod_unid_tramitacao>"
+                <dtml-if expr="_.has_key('unid_dest_permitidas_sel') and _.str(cod_unid_tramitacao) in _.string.split(_.str(unid_dest_permitidas_sel),',')">
+                   selected
+                </dtml-if> >
+              <dtml-var sgl_comissao></option>            
+            <dtml-else>
+              <option value="<dtml-var cod_unid_tramitacao>"
+                <dtml-if expr="_.has_key('unid_dest_permitidas_sel') and _.str(cod_unid_tramitacao) in _.string.split(_.str(unid_dest_permitidas_sel),',')">
+                   selected
+                </dtml-if> >
+              <dtml-var nom_unidade_join></option>
+            </dtml-if>
+         </dtml-in>     
+       </select>
+    </div>       
+
+   <dtml-if expr="ind_leg==1">    
+    <div class="col-12 col-sm-4 mb-3">
+      <label for="chk_cod_status">Status Permitidos (Processo Legislativo)</label>    
+       <select id="chk_cod_status" name="chk_cod_status" class="form-control selectpicker show-tick" multiple data-actions-box="true" data-size="10" data-selected-text-format="count > 1" title="Selecione">
+          <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var cod_status>"
+                <dtml-if expr="_.has_key('status_permitidos_sel') and _.str(cod_status) in _.string.split(_.str(status_permitidos_sel),',')">
+                   selected
+                </dtml-if> >
+              <dtml-var des_status></option>          
+          </dtml-in>
+       </select>  
+    </div>  
+  </dtml-if>
+
+   <dtml-if expr="ind_adm==1">    
+    <div class="col-12 col-sm-4 mb-3">
+      <label for="chk_cod_status_adm">Status Permitidos (Processo Administrativo)</label>    
+       <select id="chk_cod_status_adm" name="chk_cod_status_adm" class="form-control selectpicker show-tick" multiple data-actions-box="true" data-size="10" data-selected-text-format="count > 1" title="Selecione">
+          <dtml-in expr="zsql.status_tramitacao_administrativo_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var cod_status>"
+                <dtml-if expr="_.has_key('status_adm_permitidos_sel') and _.str(cod_status) in _.string.split(_.str(status_adm_permitidos_sel),',')">
+                   selected
+                </dtml-if> >
+              <dtml-var des_status></option>          
+          </dtml-in>
+       </select>  
+    </div>  
+  </dtml-if>
+ </div>
+</dtml-if>
+
+
+
+ <dtml-if expr="_.has_key('cod_unid_tramitacao')">
+  <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_unid_tramitacao=cod_unid_tramitacao)">
+   <dtml-if sequence-start>
+     <dtml-call expr="REQUEST.set('temVinculo', 1)">
+     <legend>Usuários Vinculados</legend>
+     <table class="table">
+       <thead class="table-secondary">
+       <tr>
+         <th>Login</th>
+         <th>Nome Completo</th>
+         <th>Cargo / Função</th>
+       </tr>
+       </thead>
+   </dtml-if>
+     <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario)">
+       <tr>
+         <td>
+             <dtml-var col_username>
+         </td>
+         <td>
+             <dtml-var nom_completo missing>
+         </td>
+         <td>
+             <dtml-var nom_cargo missing>
+         </td>
+       </tr>
+     </dtml-in>
+   <dtml-if sequence-end>
+      </table>
+   </dtml-if>
+  </dtml-in>
+ </dtml-if>
+
+ <dtml-if expr="_.has_key('cod_unid_tramitacao')">
+   <input class="btn btn-primary" type="button" value="Salvar" onClick="return campos_criticar()" />
+   <input class="btn btn-danger" type="button" value="Excluir" onClick="unidade_tramitacao_excluir()" />
+ <dtml-else>
+   <input class="btn btn-primary" type="button" value="Incluir" onClick="return campos_criticar()" />
+ </dtml-if>
+    <input type="hidden" name="hdn_cod_unid_tramitacao" value="<dtml-var cod_unid_tramitacao missing>" />
+ <dtml-if cod_unid_tramitacao>
+    <input type="hidden" name="hdn_url" value="unidade_tramitacao_mostrar_proc?cod_unid_tramitacao=<dtml-var cod_unid_tramitacao>" />
+ </dtml-if>
+  
+</form>
+<dtml-var standard_html_footer>

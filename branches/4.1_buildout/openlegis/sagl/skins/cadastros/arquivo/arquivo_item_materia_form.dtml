@@ -1,0 +1,139 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js"></script>
+
+<script type="text/javascript">
+
+  function campos_criticar(form){
+
+     if ((form.lst_tip_id_basica.selectedIndex==0) ||
+         (form.txt_num_ident_basica.value=="") || 
+         (form.txt_ano_ident_basica.value=="")){
+         alert("Os campos de identificação da matéria devem ser preenchidos!");
+         form.lst_tip_id_basica.focus();
+         return false;
+     }
+
+     if (form.txt_dat_arquivamento.value==""){
+         alert("A data de arquivamento deve ser preenchida");
+         form.txt_dat_arquivamento.focus();
+         return false;
+      }
+
+     if (form.txt_dat_arquivamento.value!="" && !IsValidDate(form.txt_dat_arquivamento.value)){
+         alert("Digite uma data de arquivamento válida!");
+         form.txt_dat_arquivamento.focus();
+         form.txt_dat_arquivamento.select();
+         return false;
+      }
+
+      if (form.txa_txt_ementa.value == "") {
+         alert("A ementa deve estar preenchida!");
+         form.txa_txt_ementa.focus();
+         return false;
+      }
+
+      if (form.lst_tip_suporte.selectedIndex==0){
+          alert("Selecione um tipo de suporte!");
+          form.lst_tip_suporte.focus();
+          return false;
+      }
+
+      form.submit();
+  }
+
+  function ementa_buscar(form){
+   if ((form.lst_tip_id_basica.selectedIndex != 0) &&
+      (form.txt_num_ident_basica.value!="") && 
+      (form.txt_ano_ident_basica.value!="")){
+      location.href="ementa_materia_buscar_proc?tip_ident_basica="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+"&num_ident_basica="+form.txt_num_ident_basica.value+"&ano_ident_basica="+form.txt_ano_ident_basica.value+"&cod_recipiente="+form.hdn_cod_recipiente.value+"&modal=1";
+    }
+  }
+ 
+</script>
+
+<h1 class="firstHeading">Dados da Matéria</h1>
+
+<form name="arquivo_item_materia_form" method="post" action="arquivo_item_salvar_proc">
+    <table class="table table-borderless">
+      <tr> 
+        <td width="40%">
+           <label for="lst_tip_id_basica" class="required">Tipo de Matéria</label>
+           <select class="custom-select" name="lst_tip_id_basica" id="lst_tip_id_basica" onChange="ementa_buscar(document.arquivo_item_materia_form)">
+            <option>
+              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+                 <option
+                    <dtml-if tip_id_basica_sel>
+                      <dtml-if expr="_.int(tip_materia) == _.int(tip_id_basica_sel)">
+                         selected
+                      </dtml-if>
+                   </dtml-if>
+                    value="<dtml-var tip_materia missing>"> <dtml-var des_tipo_materia>
+                   </option>
+              </dtml-in>
+           </select></td>
+        <td>
+           <label for="txt_num_ident_basica" class="required">Número</label>
+            <input class="form-control number" type="number" name="txt_num_ident_basica" id="txt_num_ident_basica" value="<dtml-var num_ident_basica_sel missing>" maxlength="5" onChange="ementa_buscar(document.arquivo_item_materia_form)">
+        </td>
+        <td>
+           <label for="txt_ano_ident_basica" class="required">Ano</label>
+            <input class="form-control year" type="number" name="txt_ano_ident_basica" id="txt_ano_ident_basica" size="4" value="<dtml-var ano_ident_basica_sel missing>" maxlength="4" onChange="ementa_buscar(document.arquivo_item_materia_form)">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3"><label for="txa_txt_ementa" class="required">Ementa</label>
+          <textarea class="form-control auto-resize" name="txa_txt_ementa" id="txa_txt_ementa" rows="1" readonly><dtml-var txt_ementa missing></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="txt_dat_arquivamento" class="required">Data de Arquivamento</label>
+            <dtml-unless dat_arquivamento>
+               <dtml-call expr="REQUEST.set('dat_arquivamento', _.DateTime().strftime('%d/%m/%Y'))">
+            </dtml-unless>
+            <input class="form-control date" type="text" id="txt_dat_arquivamento" name="txt_dat_arquivamento" value="<dtml-var dat_arquivamento missing null="">" required />             
+        </td>
+        <td colspan="2"><label for="lst_tip_suporte" class="required">Suporte Físico</label>
+           <select class="custom-select"  id="lst_tip_suporte" name="lst_tip_suporte">
+             <option value="0">Selecione</option>
+             <dtml-in expr="zsql.arquivo_tipo_suporte_obter_zsql(ind_excluido=0)">
+             <option 
+               <dtml-if tip_suporte_sel>
+                 <dtml-if expr="_.int(tip_suporte) == _.int(tip_suporte_sel)">
+                    selected
+                 </dtml-if>
+               <dtml-else>
+                 <dtml-if expr="_.int(tip_suporte) == 1">
+                    selected
+                 </dtml-if> 
+               </dtml-if>
+                    value="<dtml-var tip_suporte>">
+                    <dtml-var des_tipo_suporte>
+             </option>
+             </dtml-in>
+           </select>
+        </td>
+      <tr>
+        <td colspan="3"><label for="txa_txt_observacao">Observações</label> 
+           <textarea class="form-control"  id="txa_txt_observacao" name="txa_txt_observacao" rows="1" onChange="javascript:form.hdn_alterou.value=1"><dtml-var txt_observacao missing null=""></textarea>
+        </td>
+      </tr>
+    </table>
+</fieldset>
+
+<p align="center">
+  <input class="btn btn-primary" type="button" value="Incluir" onClick="campos_criticar(document.arquivo_item_materia_form)" />
+</p>
+  <input type="hidden" name="hdn_cod_recipiente" value="<dtml-var cod_recipiente>"/>
+  <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia_sel missing>"/>
+  <input type="hidden" name="modal" value="1"/>  
+</form>
+
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
+
+<dtml-var standard_html_footer>
+
+
+

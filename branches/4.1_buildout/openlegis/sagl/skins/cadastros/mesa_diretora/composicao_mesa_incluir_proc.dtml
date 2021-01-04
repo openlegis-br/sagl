@@ -1,0 +1,66 @@
+<dtml-in expr="zsql.periodo_comp_mesa_obter_zsql(cod_periodo_comp=hdn_cod_periodo_comp)">
+  <dtml-call expr="REQUEST.set('hdn_dat_inicio', _.DateTime(dat_inicio_periodo).strftime('%Y/%m/%d'))">
+</dtml-in>
+
+<dtml-in expr="zsql.sessao_legislativa_obter_zsql(data=hdn_dat_inicio)">
+  <dtml-call expr="REQUEST.set('lst_sessao_leg', cod_sessao_leg)">
+</dtml-in>
+
+<dtml-call expr="REQUEST.set('ainda_ok', 1)">
+
+<dtml-in expr="zsql.composicao_mesa_obter_zsql(ind_excluido=0,
+                                               cod_cargo = lst_cod_cargo,
+                                               cod_sessao_leg = lst_sessao_leg, 
+                                               cod_periodo_comp = lst_periodo_comp)">
+    <dtml-in expr="zsql.cargo_mesa_obter_zsql(ind_excluido=0, cod_cargo=lst_cod_cargo)">    
+        <dtml-if expr="ind_unico == 1">
+            <dtml-call expr="REQUEST.set('ainda_ok', 0)">
+            <dtml-let mensagem="'Esse cargo não pode ser exercido por mais de um Parlamentar!'">
+                <dtml-var mensagem_emitir>
+            </dtml-let>
+        </dtml-if>
+    </dtml-in>
+</dtml-in>
+
+<dtml-if expr="ainda_ok == 1">
+    <dtml-in expr="zsql.composicao_mesa_obter_zsql(cod_parlamentar = lst_cod_parlamentar,
+                                                   cod_sessao_leg = lst_sessao_leg, 
+                                                   cod_periodo_comp = lst_periodo_comp,
+                                                   ind_excluido = 0)">
+        <dtml-call expr="REQUEST.set('ainda_ok', 0)">
+        <dtml-let mensagem="'Esse Parlamentar já está associado a outro cargo da Mesa!'">
+            <dtml-var mensagem_emitir>
+        </dtml-let>      
+    </dtml-in>
+</dtml-if>
+
+<dtml-if expr="ainda_ok == 1">
+    <dtml-in expr="zsql.composicao_mesa_obter_zsql(cod_parlamentar=lst_cod_parlamentar,
+                                                   cod_sessao_leg = lst_sessao_leg, 
+                                                   cod_periodo_comp = lst_periodo_comp,
+                                                   cod_cargo = lst_cod_cargo, 
+                                                   ind_excluido = 1)">
+        <dtml-call expr="REQUEST.set('metodo', zsql.composicao_estado_alterar_zsql)">   
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('metodo', zsql.composicao_mesa_incluir_zsql)">      
+    </dtml-in> 
+</dtml-if>
+
+<dtml-if expr="_.has_key('metodo')">
+    <dtml-try>
+        <dtml-call expr="metodo(cod_parlamentar = lst_cod_parlamentar,
+                                cod_sessao_leg = lst_sessao_leg,
+                                cod_periodo_comp = lst_periodo_comp,         
+                                cod_cargo = lst_cod_cargo,
+                                ind_excluido = 0)">
+
+    <dtml-except>
+        <dtml-let mensagem="'Não foi possível incluir o Parlamentar na composição da Mesa. Tente novamente!'">
+            <dtml-var mensagem_emitir>
+        </dtml-let> 
+    <dtml-else>
+        <dtml-let mensagem="'Parlamentar incluído com sucesso na composição da Mesa!'" url="'index_html?num_legislatura_sel=' + hdn_num_legislatura + '&cod_periodo_comp_sel=' + hdn_cod_periodo_comp">
+            <dtml-var mensagem_emitir>
+        </dtml-let>
+    </dtml-try>
+</dtml-if>

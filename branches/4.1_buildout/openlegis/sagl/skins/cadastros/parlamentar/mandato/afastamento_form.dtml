@@ -1,0 +1,183 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/data_validar.js"></script>
+
+<script type="text/javascript">
+
+function afastamento_criticar(form){  
+
+  var form = document.afastamento_form;
+
+  if (form.txt_dat_inicio_afastamento.value == "") {
+    $('#txt_dat_inicio_afastamento').addClass('is-invalid');
+    form.txt_dat_inicio_afastamento.focus();
+    return false;
+  }
+
+  if (form.txt_dat_fim_afastamento.value == "") {
+    $('#txt_dat_fim_afastamento').addClass('is-invalid');
+    $.showAlert({title: "Mensagem do Sistema", body: "A data de fim do afastamento é campo obrigatório! Caso não haja data previamente definida, informe a data final da legislatura!"});    
+    form.txt_dat_fim_afastamento.focus();
+    return false;
+  }
+
+  if (!IsValidDate(form.txt_dat_inicio_afastamento.value)) {
+    form.txt_dat_inicio_afastamento.focus();
+    return false;
+  }
+  
+  if (!IsValidDate(form.txt_dat_fim_afastamento.value)) {
+    form.txt_dat_fim_afastamento.focus();
+    return false;
+  }   
+
+  var dat_fim_afastamento = form.txt_dat_fim_afastamento.value;
+  dat_fim_afastamento = dat_fim_afastamento.substring(6,10) +'/'+ dat_fim_afastamento.substring(3,5) +'/'+ dat_fim_afastamento.substring(0,2);
+  var dat_inicio_afastamento = form.txt_dat_inicio_afastamento.value;
+  dat_inicio_afastamento = dat_inicio_afastamento.substring(6,10) +'/'+ dat_inicio_afastamento.substring(3,5) +'/'+ dat_inicio_afastamento.substring(0,2);
+
+  if (form.txt_dat_fim_afastamento.value != "") {
+     if (!IsValidDate(form.txt_dat_fim_afastamento.value)) {
+        $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data válida para o fim do afastamento!"});
+        form.txt_dat_fim_afastamento.focus();
+        return false;
+     }
+     if (dat_inicio_afastamento >= dat_fim_afastamento) {
+        $.showAlert({title: "Mensagem do Sistema", body: "A data de fim do afastamento deve posterior à data de início!"});
+        return false;
+     }
+  }
+
+  <dtml-try>
+     <dtml-call expr="REQUEST.set('num_legislatura', num_legislatura)">
+     <dtml-except>
+  </dtml-try>
+
+  <dtml-in expr="zsql.legislatura_obter_zsql(num_legislatura=num_legislatura)">
+    if ((dat_inicio_afastamento > '<dtml-var dat_fim>')||('<dtml-var dat_inicio>' > dat_inicio_afastamento)) {
+       $.showAlert({title: "Mensagem do Sistema", body: "A data inicial deve estar compreendida no perí­odo da legislatura (<dtml-var dat_inicio_conv> a <dtml-var dat_fim_conv>)!"});
+       form.txt_dat_inicio_afastamento.focus();
+       return false;
+    }
+
+    if (form.txt_dat_fim_afastamento.value != "") {  
+       if ((dat_fim_afastamento < '<dtml-var dat_inicio>')||('<dtml-var dat_fim>' < dat_fim_afastamento)){
+          $.showAlert({title: "Mensagem do Sistema", body: "A data final deve estar entre compreendida no perí­odo da legislatura (<dtml-var dat_inicio_conv> a <dtml-var dat_fim_conv>)!"});
+          form.txt_dat_fim_afastamento.focus(); 
+          return false;
+       }
+    }
+  </dtml-in>
+
+  if (form.lst_tip_afastamento.selectedIndex==""){
+     $('#lst_tip_afastamento').removeClass('is-valid');
+     $('#lst_tip_afastamento').addClass('is-invalid');
+     form.lst_tip_afastamento.focus();
+     return false;
+  }
+  
+  if (form.lst_suplente.selectedIndex==""){
+     $('#lst_suplente').removeClass('is-valid');
+     $('#lst_suplente').addClass('is-invalid');
+     form.lst_suplente.focus();
+     return false;
+  }
+
+  form.submit();
+}
+
+</script>
+
+<legend>Cadastro de Afastamento</legend> 
+
+<form id="afastamento_form" name="afastamento_form" action="afastamento_salvar_proc">
+   <div class="form-row"> 
+     <div class="col-6 mb-3">
+        <label for="txt_dat_inicio_afastamento" class="required">Data Inicial</label>
+        <input class="form-control date" type="text" name="txt_dat_inicio_afastamento" id="txt_dat_inicio_afastamento"  value="<dtml-var dat_inicio_afastamento missing null>" />
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+     </div>
+     <div class="col-6 mb-3">
+        <label for="txt_dat_fim_afastamento" class="required">Data Final</label>
+        <input class="form-control date" type="text" name="txt_dat_fim_afastamento" id="txt_dat_fim_afastamento"  value="<dtml-var dat_fim_afastamento missing null>" />
+     </div>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>     
+   </div> 
+   <div class="form-row">  
+     <div class="col-6 mb-3">
+       <label for="lst_tip_afastamento" class="required">Motivo do Afastamento</label>
+       <select class="custom-select" name="lst_tip_afastamento" id="lst_tip_afastamento" required>
+          <option value="">Selecione</option> 
+          <dtml-in expr="zsql.tipo_afastamento_obter_zsql(ind_excluido=0)">
+            <option 
+             <dtml-if tip_afastamento_sel>
+              <dtml-if expr="_.int(tip_afastamento) == _.int(tip_afastamento_sel)">
+               selected
+              </dtml-if>
+             </dtml-if>
+             value="<dtml-var tip_afastamento>">
+              <dtml-var des_afastamento>
+            </option>
+          </dtml-in>
+       </select>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+     </div>
+     <div class="col-6 mb-3">
+       <label for="lst_suplente" class="required">Suplente</label>
+       <select class="custom-select" name="lst_suplente" id="lst_suplente">
+          <option value="">Selecione</option> 
+          <dtml-in expr="zsql.parlamentar_obter_zsql(num_legislatura=num_legislatura,ind_titular='0')">
+            <option 
+             <dtml-if cod_parlamentar_suplente>
+              <dtml-if expr="_.int(cod_parlamentar) == _.int(cod_parlamentar_suplente)">
+               selected
+              </dtml-if>
+             </dtml-if>
+             value="<dtml-var cod_parlamentar>">
+              <dtml-var nom_completo> <dtml-if sgl_partido>/ <dtml-var sgl_partido missing null></dtml-if>
+            </option>
+          </dtml-in>
+       </select>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+     </div>
+   </div>  
+   <div class="form-row">  
+     <div class="col-12 mb-3">
+        <label for="txa_txt_observacao">Observações</label>
+        <textarea class="form-control auto-resize" name="txa_txt_observacao" id="txa_txt_observacao" cols="40" rows="1"><dtml-var txt_observacao missing null=""></textarea>
+     </div>
+   </div>     
+   <input type="hidden" name="hdn_cod_afastamento" value="<dtml-var cod_afastamento missing>" />
+   <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>" />
+   <input type="hidden" name="hdn_cod_mandato" value="<dtml-var cod_mandato missing>" />
+   <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura missing>" />
+   <input type="hidden" name="hdn_url" value="mandato_mostrar_proc?cod_mandato=<dtml-var cod_mandato>&cod_parlamentar=<dtml-var cod_parlamentar>&modal=1#afastamentos" />
+   <input type="hidden" name="modal" value="1"/>
+</form>
+
+<div class="text-left">
+  <input class="btn btn-primary" type="button" name="btn_salvar" value="Salvar" onClick=" return afastamento_criticar()" />
+  <dtml-if cod_afastamento>
+     <a class="btn btn-danger" href="afastamento_excluir_proc?cod_afastamento=<dtml-var cod_afastamento>&modal=1" data-confirm="Deseja realmente excluir o registro de afastamento?">Excluir</a>
+  </dtml-if>
+     <a class="btn btn-secondary" href="mandato_mostrar_proc?cod_mandato=<dtml-var cod_mandato>&cod_parlamentar=<dtml-var cod_parlamentar>&modal=1">Voltar</a>    
+<div class="row">
+   <div class="col-md-12 mt-2">
+      <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+   </div>
+</div>
+
+<script>
+autoResizeTextarea(document.querySelectorAll("textarea.auto-resize"), {maxHeight: 120})
+</script>  
+
+<dtml-var standard_html_footer>
+

@@ -1,0 +1,89 @@
+<dtml-var standard_html_header>
+
+<dtml-var legislacao_header_html>
+
+<div class="legis_container">
+
+<h1 class="firstHeading" id="indice">Emendas à Lei Orgânica</h1>
+
+<span id="lista"><b>As emendas à lei orgânica possibilitam a inserção de acréscimos, supressões ou modificações do texto constitucional municipal. Não se sujeitam à sanção do executivo e têm a mesma natureza e eficácia das normas constitucionais de âmbito municipal.
+</b></span>
+
+<div class="form-row ano-lei mt-3 mb-3 p-1">
+  <form class="form-inline">
+    <label for="lst_ano" class="required mr-2">Selecione o Ano</label>
+    <select class="custom-select jumpmenu" id="lst_ano" name="lst_ano">
+       <option value="<dtml-var ACTUAL_URL>#lista"></option>
+       <dtml-in expr="ano_tipo_obter_zsql(des_tipo_norma='Emenda à Lei Orgânica')">
+           <option value="<dtml-var ACTUAL_URL>?ano_norma=<dtml-var ano_norma>#lista"
+             <dtml-if expr="REQUEST.has_key('ano_norma') and int(REQUEST.form['ano_norma'])==int(_['sequence-key'])">
+                selected
+             </dtml-if>
+           ><dtml-var ano_norma></option>       
+       </dtml-in>
+    </select>
+  </form>
+</div>
+
+<dtml-if ano_norma>
+  <p class="h5 text-center mb-3" id="lista"><b>Emendas à Lei Orgânica - <dtml-var ano_norma></b></p>
+  <dtml-in expr="zsql.norma_juridica_obter_zsql(des_tipo_norma='Emenda à Lei Orgânica',ano_norma=ano_norma)">
+    <dtml-if sequence-start>
+     <table class="table">
+      <caption>Leis Complementares - <dtml-var ano_norma></caption>
+      <thead class="table-secondary">      
+      <tr>
+       <th width="30%" style="text-align:center">Número</th>
+       <th>Ementa</th>
+      </tr>
+      </thead>
+    </dtml-if sequence-start>
+      <tr>
+       <td style="text-align:center">
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+           <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
+         <dtml-else>
+           <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma missing>">
+         </dtml-if>
+         <dtml-var num_norma>, de <dtml-var dat_norma></a>
+         <dtml-if dat_publicacao>
+           <br /><span style="font-size:90%">Publicada <dtml-if des_veiculo_publicacao> no <dtml-var des_veiculo_publicacao></dtml-if> em <dtml-var dat_publicacao missing null=""></span>
+         </dtml-if>
+       </td>
+       <td><dtml-var txt_ementa></td>
+      </tr>
+    <dtml-if sequence-end>
+      <tr>
+       <th colspan="2" style="text-align:center">
+        Total de Registros: <dtml-var sequence-length>
+       </th>
+      </tr>
+     </table>
+    </dtml-if sequence-end>
+  </dtml-in>
+</dtml-if>
+</div>
+
+<script type="text/javascript">
+    function initJumpMenus() {
+        // Turns all <select> elements with the 'jumpmenu' class into jump menus
+        var selectElements = document.getElementsByTagName("select");
+        for( i = 0; i < selectElements.length; i++ ) {
+            // Check for the class and make sure the element has an ID
+            if( selectElements[i].className == "custom-select jumpmenu" && document.getElementById(selectElements[i].id) != "" ) {
+                jumpmenu = document.getElementById(selectElements[i].id);
+                jumpmenu.onchange = function() {
+                    if( this.options[this.selectedIndex].value != '' ) {
+                        // Redirect
+                        location.href=this.options[this.selectedIndex].value;
+                    }
+                }
+            }
+        }
+    }
+    window.onload = function() {
+        initJumpMenus();
+    }
+</script>
+
+<dtml-var standard_html_footer>

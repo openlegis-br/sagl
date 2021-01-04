@@ -1,0 +1,104 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+  function campos_criticar(form){  
+
+     if (form.des_tipo_proposicao.value == "") {
+        alert("A descrição do tipo de proposicao deve ser preenchida.");
+        form.des_tipo_proposicao.focus();
+        return false;
+     }
+    if (form.tip_mat_ou_doc.value == ""){
+        alert("Escolha um tipo de Matéria ou Documento");
+        form.tip_mat_ou_doc.focus();
+        return false;
+    }
+
+     form.submit();
+  }
+
+  function tip_proposicao_excluir(form) {
+
+     if (confirm("Deseja realmente excluir?")) {  
+        location.href = "tipo_proposicao_excluir_proc?tip_proposicao=" + form.tip_proposicao.value;
+     }
+  }
+  function set_ind_mat_doc(valor){
+       location.href = "tipo_proposicao_form?escolha="+valor+'&tip_mat_ou_doc='+document.tip_proposicao_form.tip_mat_ou_doc.value+ '&des_tipo_proposicao='+document.tip_proposicao_form.des_tipo_proposicao.value+'&tip_proposicao='+'<dtml-var tip_proposicao missing>';
+  }
+
+//-->
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Tipo de Proposição Eletrônica</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="index_html"><i class="fa fa-fw fa-undo"></i> Voltar</a>         
+         </div>
+      </div>
+ </div>
+
+<form name="tip_proposicao_form" method="post" action="tipo_proposicao_salvar_proc">
+
+  <input type="hidden" name="tip_proposicao" value="<dtml-var tip_proposicao missing>" />
+  <input type="hidden" name="nom_modelo" value="" />
+  
+  <div class="form-row">
+    <div class="col-12 mb-3">
+       <label for="des_tipo_proposicao" class="required">Descrição</label>        
+       <input class="form-control" type="text" id="des_tipo_proposicao" name="des_tipo_proposicao" value="<dtml-var des_tipo_proposicao missing>" maxlength="50" required />
+    </div>  
+  </div>
+
+  <div class="form-row">
+    <div class="col-12  mb-3">
+       <label class="d-block required">Incorporar como:</label>    
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="inlineRadio1" name="ind_mat_ou_doc" value="M" size="50" maxlength="50" onClick="set_ind_mat_doc('M')"<dtml-if expr="REQUEST.get('escolha','')=='M' or (_.has_key('ind_mat_ou_doc') and ind_mat_ou_doc=='M')">checked</dtml-if> />
+            <label class="form-check-label" for="inlineRadio1">Matéria Principal</label>
+          </div>
+          <div class="form-check form-check-inline">         
+             <input class="form-check-input" type="radio" id="inlineRadio2" name="ind_mat_ou_doc" value="D" size="50" maxlength="50" onClick="set_ind_mat_doc('D')"<dtml-if expr="REQUEST.get('escolha','')=='D' or (_.has_key('ind_mat_ou_doc') and ind_mat_ou_doc=='D')">checked</dtml-if> />
+            <label class="form-check-label" for="inlineRadio2">Matéria / Documento Acessório</label>             
+          </div>
+    </div> 
+  </div>
+
+  <div class="form-row">
+    <div class="col-12  mb-3">
+           <dtml-if expr="REQUEST.get('escolha','')=='M'">
+             <label for="tip_mat_ou_doc" class="required">Tipo de Matéria Principal</label>
+              <select class="custom-select" id="tip_mat_ou_doc" name="tip_mat_ou_doc">
+                 <option></option>
+                 <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P')">
+                   <option 
+                     value="<dtml-var tip_materia>"<dtml-if expr="tip_mat_ou_doc==tip_materia">selected</dtml-if>>
+                     <dtml-var des_tipo_materia></option>
+                </dtml-in>
+             </select>     
+           <dtml-elif expr="REQUEST.get('escolha','')=='D'">
+             <label for="tip_mat_ou_doc" class="required">Tipo de Matéria / Documento Acessório</label>
+              <select class="custom-select" id="tip_mat_ou_doc" name="tip_mat_ou_doc">
+                <option></option>              
+                <dtml-in expr="zsql.tipo_documento_obter_zsql()">
+                  <option 
+                     value="<dtml-var tip_documento>"<dtml-if expr="(_.has_key('tip_mat_ou_doc') and tip_mat_ou_doc==tip_documento)">selected</dtml-if>>
+                     <dtml-var des_tipo_documento></option>
+                </dtml-in>
+             </select>    
+           </dtml-if>   
+    </div>
+  </div>
+
+  <input class="btn btn-primary" type="button" name="btn_tip_proposicao_salvar" value="Salvar" onClick="campos_criticar(window.document.tip_proposicao_form)" />
+  <dtml-if tip_proposicao>
+    <input class="btn btn-danger" type="button" name="btn_tip_proposicao_excluir" value="Excluir" onClick="tip_proposicao_excluir(window.document.tip_proposicao_form)" />
+  </dtml-if>
+
+</form>
+
+<dtml-var standard_html_footer>

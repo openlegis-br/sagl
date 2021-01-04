@@ -1,0 +1,32 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_reuniao="" cod_comissao="" num_reuniao="" dat_inicio_reuniao="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT
+     REPLACE(reuniao_comissao.cod_reuniao,  'L', '') as cod_reuniao,
+     REPLACE(reuniao_comissao.cod_comissao, 'L', '') as cod_comissao,
+     REPLACE(reuniao_comissao.num_reuniao,  'L', '') as num_reuniao,
+     DATE_FORMAT(reuniao_comissao.dat_inicio_reuniao, '%d/%m/%Y') as dat_inicio_reuniao,
+     reuniao_comissao.dat_inicio_reuniao as dat_inicio_reuniao_ord,
+     reuniao_comissao.hr_inicio_reuniao,
+     reuniao_comissao.txt_observacao,
+     reuniao_comissao.ind_excluido
+
+FROM
+   reuniao_comissao
+
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_reuniao        op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_reuniao        op="=" type="int" optional><dtml-and>
+    <dtml-sqltest dat_inicio_reuniao op="=" type="nb" optional><dtml-and>
+    reuniao_comissao.ind_excluido = 0 
+  </dtml-sqlgroup>
+
+  <dtml-if expr="cod_comissao and cod_comissao != '-1'">
+     AND reuniao_comissao.cod_comissao = <dtml-sqlvar cod_comissao type="int" optional>
+  </dtml-if>
+
+ORDER BY dat_inicio_reuniao_ord DESC
+

@@ -1,0 +1,96 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+   function sessao_leg_listar(form){
+
+      var URL = '<dtml-var absolute_url>?hdn_num_legislatura=' + 
+                form.lst_num_legislatura[form.lst_num_legislatura.selectedIndex].value;
+      location.href = URL;
+   }
+
+   function campos_criticar(form){
+
+      if (form.lst_num_legislatura.selectedIndex == -1) {
+         alert("Legislatura deve ser cadastrada antes de incluir um período de composição da Mesa.");
+         return;
+      }
+      
+      form.submit();
+   }
+
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-lg-6 align-self-center">
+        <h1 class="firstHeading">Períodos Composição da Mesa</h1>
+      </div>
+      <div class="col-12 col-lg-6">
+<form class="form-inline mb-3 float-lg-right" name="index_form" action="periodo_comp_mesa_form">
+         <label for="lst_num_legislatura" class="required mr-sm-2">Legislatura</label>   
+         <div class="input-group">       
+         <select class="custom-select custom-select-sm" id="lst_num_legislatura" name="lst_num_legislatura" onChange="sessao_leg_listar(document.index_form)">    
+            <dtml-in expr="zsql.legislatura_obter_zsql()">
+              <option 
+                 <dtml-if expr="_.has_key('hdn_num_legislatura') and num_legislatura==_.int(hdn_num_legislatura)"> 
+                 selected
+                 <dtml-elif expr="not _.has_key('hdn_num_legislatura') and (_.DateTime() <= dat_fim and _.DateTime() >= dat_inicio)">
+                    <dtml-call expr="REQUEST.set('hdn_num_legislatura', num_legislatura)">
+                    <dtml-call expr="REQUEST.set('atual', 1)">
+                    selected
+                  </dtml-if>
+                  value="<dtml-var num_legislatura>">
+                 <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">
+                  <dtml-if expr="(_.DateTime() <= dat_fim and _.DateTime() >= dat_inicio)">   
+                    (Atual)
+                  </dtml-if>
+              </option>
+            </dtml-in>
+         </select>
+         <dtml-if expr="not _.has_key('hdn_num_legislatura')"> 
+           <dtml-call expr="REQUEST.set('hdn_num_legislatura', -1)">                            
+         </dtml-if>
+         <dtml-if expr="not _.has_key('hdn_num_legislatura')">
+           <dtml-in expr="zsql.legislatura_obter_zsql()">
+               <dtml-if sequence-start>
+                   <dtml-call expr="REQUEST.set('hdn_num_legislatura', num_legislatura)">
+               </dtml-if>
+           </dtml-in>
+         </dtml-if>
+         <div class="input-group-append">
+         <input class="btn btn-primary btn-sm" type="button" name="btn_incluir" value="Incluir Período" onClick="campos_criticar(document.index_form)" />
+         </div>
+       </div>
+   <input type="hidden" name="hdn_num_legislatura" value="<dtml-var hdn_num_legislatura missing>" />       
+</form>
+      </div>
+ </div>
+
+<dtml-in expr="zsql.periodo_comp_mesa_obter_zsql(num_legislatura=hdn_num_legislatura,ind_excluido=0)"> 
+  <dtml-if sequence-start>
+     <table class="table">
+        <thead class="table-secondary">     
+          <tr>
+            <th>Período de Composição</th>
+            <th>Legislatura</th>
+          </tr>
+        </thead>
+  </dtml-if>
+          <tr>
+            <td>
+               <a href="periodo_comp_mesa_mostrar_proc?cod_periodo_comp=<dtml-var cod_periodo_comp>">
+                 <dtml-var dat_inicio_periodo> a <dtml-var dat_fim_periodo>
+               </a>
+            </td>
+            <td>                 
+              <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura, dat_inicio, dat_fim)">
+            </td>            
+          </tr>
+  <dtml-if sequence-end>
+     </table>
+  </dtml-if sequence-end>
+<dtml-else>
+   <p>Nenhum período cadastrado.</p>
+</dtml-in>
+
+<dtml-var standard_html_footer>

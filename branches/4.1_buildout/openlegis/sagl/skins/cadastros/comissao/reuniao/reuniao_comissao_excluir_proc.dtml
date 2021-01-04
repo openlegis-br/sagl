@@ -1,0 +1,35 @@
+<dtml-call expr="REQUEST.set('id_pauta', _.str(cod_reuniao)+'_pauta.pdf')">
+<dtml-call expr="REQUEST.set('status','D')">
+<dtml-if expr="_.hasattr(sapl_documentos.reuniao_comissao,id_pauta)">
+    <dtml-try>
+	  <dtml-call expr="sapl_documentos.reuniao_comissao.manage_delObjects(id_pauta)">
+	  <dtml-except>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-try>
+</dtml-if>
+<dtml-call expr="REQUEST.set('id_ata', _.str(cod_reuniao)+'_ata.pdf')">
+<dtml-if expr="_.hasattr(sapl_documentos.reuniao_comissao,id_ata)">
+    <dtml-try>
+	  <dtml-call expr="sapl_documentos.reuniao_comissao.manage_delObjects(id_ata)">
+	  <dtml-except>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-try>
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="zsql.reuniao_comissao_excluir_zsql(cod_reuniao=cod_reuniao)">
+  <dtml-except>  
+    <dtml-call expr="REQUEST.set('erro', 1)">   
+  <dtml-else>
+    <dtml-let mensagem="'Reunião excluída com sucesso.'" tipo_mensagem="'success'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+</dtml-unless>
+
+<dtml-if erro>
+  <dtml-let mensagem="'Não foi possível excluir a Reunião. Tente novamente!'" tipo_mensagem="'danger'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-if>

@@ -1,0 +1,105 @@
+
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--  
+
+  function submeter(cod_partido, lst_cod_partido) {    
+    if (lst_cod_partido.selectedIndex == 0) {
+      alert("O campo não pode ficar vazio!");
+      lst_cod_partido.focus();
+    }
+    else if (cod_partido != 0) {
+      if (cod_partido != lst_cod_partido[lst_cod_partido.selectedIndex].value)
+         location.href = "composicao_coligacao_salvar_proc?hdn_cod_coligacao=<dtml-var cod_coligacao>&lst_cod_coligacao=<dtml-var cod_coligacao>&hdn_cod_partido=" + cod_partido + 
+            "&lst_cod_partido=" + lst_cod_partido[lst_cod_partido.selectedIndex].value;
+    }
+    else {
+      document.composicao_coligacao_form.submit();
+    }
+  }
+
+  function excluir(cod_partido) {
+     if (confirm("Confirma a exclusão?"))
+       location.href = "composicao_coligacao_excluir_proc?cod_coligacao=<dtml-var cod_coligacao>&cod_partido=" + cod_partido;
+  }
+  
+//-->
+</script>
+
+<form name="composicao_coligacao_form" method="post" action="composicao_coligacao_salvar_proc">
+
+<a id="ajuda" href="<dtml-var portal_url>/ajuda/coligacao">Ajuda</a>
+
+<h1 class="firstHeading">Tabelas Auxiliares</h1> 
+
+<table class="table">
+  <tr> 
+    <td align="left">| Composição |
+    | <a href="<dtml-var URL2>/coligacao_mostrar_proc?cod_coligacao=<dtml-var cod_coligacao>">Início</a> |</td>
+   </tr>
+</table>  
+
+<fieldset><legend>Coligação</legend>
+<input type="hidden" name="lst_cod_coligacao" value="<dtml-var cod_coligacao>" />
+
+  <dtml-in expr="zsql.composicao_coligacao_obter_zsql(cod_coligacao=cod_coligacao)">    
+    <dtml-if sequence-start>
+       <table class="table">
+         <tr><th colspan="2">
+           <dtml-in expr="zsql.coligacao_obter_zsql(cod_coligacao=cod_coligacao)">
+              <dtml-var nom_coligacao>
+            </dtml-in></th></tr>
+         <tr>
+           <th width="75%">Partido</th>
+           <th width="25%">Ação</th>
+         </tr>
+      </dtml-if sequence-start>
+        <tr> 
+           <td width="75%">
+            <select class="custom-select"  name="lst_cod_partido_<dtml-var cod_partido>" size="1">
+                 <dtml-in expr="zsql.partido_obter_zsql(cod_partido='')">
+                  <option 
+                     <dtml-if expr="cod_partido==index_html.cod_partido">
+                    selected 
+                     </dtml-if>
+                    value="<dtml-var cod_partido>"><dtml-var sgl_partido> - <dtml-var nom_partido>
+                  </option>
+                 </dtml-in>
+             </select></td>
+           <td width="25%">
+               <a href="javascript:submeter(<dtml-var cod_partido>,document.composicao_coligacao_form.lst_cod_partido_<dtml-var cod_partido>)">
+                Atualizar</a> / <a href="javascript:excluir(<dtml-var cod_partido>)">Excluir</a>
+	   </td>
+	   </tr>
+     <dtml-if sequence-end>
+        </table>
+     </dtml-if sequence-end>
+   <dtml-else>
+       <table class="table">
+         <tr><th>
+           <dtml-in expr="zsql.coligacao_obter_zsql(cod_coligacao=cod_coligacao)">
+              <dtml-var nom_coligacao>
+            </dtml-in></th></tr>
+         <tr><td>Nenhuma composição cadastrada para esta coligação.</td></tr>
+       </table>
+   </dtml-in>
+    </td>
+  </tr>
+</table>
+       <table class="table">
+          <tr>
+           <td>
+            <select class="custom-select"  name="lst_cod_partido" size="1">
+		 <option value="0"></option>
+               <dtml-in expr="zsql.partido_obter_zsql()">
+                 <option value="<dtml-var cod_partido>"><dtml-var sgl_partido> - <dtml-var nom_partido></option>
+               </dtml-in>
+             </select> 
+             <input class="btn btn-primary" type="button" value="Incluir" onClick="submeter(0, document.composicao_coligacao_form.lst_cod_partido)" />
+           </td>
+         </tr>
+      </table>
+</fieldset>
+</form>
+<dtml-var standard_html_footer>

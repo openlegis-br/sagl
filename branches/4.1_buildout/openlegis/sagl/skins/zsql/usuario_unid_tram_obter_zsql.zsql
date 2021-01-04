@@ -1,0 +1,43 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_usuario cod_unid_tramitacao ind_responsavel ind_excluido=0
+max_rows : 100
+max_cache : 100
+</dtml-comment>
+SELECT
+     REPLACE(usuario_unid_tram.cod_usuario, 'L', '')   as cod_usuario,
+     REPLACE(usuario_unid_tram.cod_unid_tramitacao, 'L', '') as cod_unid_tramitacao,
+     usuario_unid_tram.ind_responsavel,
+     usuario.col_username,
+     usuario.nom_completo,
+     unidade_tramitacao.ind_adm,
+     unidade_tramitacao.ind_leg,
+     if (unidade_tramitacao.cod_orgao is not null,orgao.nom_orgao,
+      if (unidade_tramitacao.cod_parlamentar > 0,parlamentar.nom_parlamentar,comissao.nom_comissao)) as nom_unidade_join,
+     unidade_tramitacao.unid_dest_permitidas as unid_dest_permitidas_sel,
+     unidade_tramitacao.status_permitidos as status_permitidos_sel,
+     unidade_tramitacao.status_adm_permitidos as status_adm_permitidos_sel
+
+FROM 
+    usuario_unid_tram
+    LEFT JOIN usuario ON 
+      usuario_unid_tram.cod_usuario=usuario.cod_usuario and usuario.ind_excluido = 0
+    LEFT JOIN unidade_tramitacao ON 
+      usuario_unid_tram.cod_unid_tramitacao = unidade_tramitacao.cod_unid_tramitacao and unidade_tramitacao.ind_excluido = 0
+    LEFT JOIN orgao ON 
+      unidade_tramitacao.cod_orgao = orgao.cod_orgao
+    LEFT JOIN comissao ON 
+      unidade_tramitacao.cod_comissao = comissao.cod_comissao
+    LEFT JOIN parlamentar ON
+      unidade_tramitacao.cod_parlamentar = parlamentar.cod_parlamentar
+
+<dtml-sqlgroup where>  
+  <dtml-sqltest cod_usuario          column="usuario_unid_tram.cod_usuario"         op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest cod_unid_tramitacao  column="usuario_unid_tram.cod_unid_tramitacao" op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest ind_responsavel      column="usuario_unid_tram.ind_responsavel"     op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest ind_excluido         column="usuario_unid_tram.ind_excluido"        op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest ind_excluido         column="usuario.ind_excluido"                  op="=" type="int">
+</dtml-sqlgroup>
+
+ORDER BY 
+  usuario_unid_tram.cod_usuario, nom_unidade_join

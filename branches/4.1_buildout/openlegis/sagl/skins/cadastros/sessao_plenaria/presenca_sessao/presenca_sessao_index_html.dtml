@@ -1,0 +1,86 @@
+<dtml-var standard_html_header>
+
+<dtml-var sessao_plenaria_menu>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
+
+<legend>Presenças na Sessão</legend>
+
+<form name="presenca_sessao_form" method="post" action="presenca_sessao_salvar_proc">
+    <input type="hidden" name="hdn_url" value="index_html?cod_sessao_plen=<dtml-var cod_sessao_plen missing>&num_legislatura=<dtml-var num_legislatura missing>&cod_sessao_leg=<dtml-var cod_sessao_leg missing>&dat_sessao=<dtml-var dat_sessao missing>&tip_sessao=<dtml-var tip_sessao missing>" />
+    <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>">
+   <div class="table-reponsive">
+    <table class="table">
+          <thead class="table-secondary">
+             <tr>
+                  <th>
+                    Parlamentar
+                  </th>
+                  <th>
+                    Registro
+                  </th>
+                  <th>
+                   Justificativa
+                  </th>
+             </tr>
+          </thead>
+       <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+              <tr>
+                  <td>
+                    <dtml-var nom_parlamentar>
+                    <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar missing>"/>
+                  </td>
+                  <td>
+                    <select class="custom-select" name="lst_tip_frequencia">
+                        <dtml-in expr="['Presença', 'Falta', 'Ausência Justificada']">                 
+                         <option
+                           <dtml-in expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                             <dtml-if expr="_.has_key('tip_frequencia')">
+                                <dtml-call expr="REQUEST.set('tip_frequencia',_.str(tip_frequencia))">
+                             </dtml-if>
+                           </dtml-in>
+                             <dtml-if expr="_.has_key('tip_frequencia') and tip_frequencia==_['sequence-item'][0]">
+                                selected
+                             <dtml-elif expr="not _.has_key('tip_frequencia')">
+                                <dtml-if expr="_['sequence-item'][0]=='P'">selected</dtml-if>
+                             </dtml-if>
+                          value="<dtml-var expr="_['sequence-item'][0]">"><dtml-var expr="_['sequence-item']">
+                         </option>
+                        </dtml-in>
+                    </select>
+                  </td>
+                  <td>
+                    <dtml-in expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                      <dtml-if expr="_.has_key('txt_justif_ausencia') and txt_justif_ausencia!='None'">
+                        <dtml-call expr="REQUEST.set('txa_txt_justif_ausencia',txt_justif_ausencia)">
+                      </dtml-if>
+                    </dtml-in>
+                      <input class="form-control" type="text" id="txa_txt_justif_ausencia" name="txa_txt_justif_ausencia" value="<dtml-var txa_txt_justif_ausencia missing null>" size="30" maxlenght="200">
+                  </td>
+              </tr>
+       <dtml-else>
+              <tr>
+                  <td>Nenhum parlamentar com mandato na Legislatura.</td>
+              </tr>
+       </dtml-in>
+           <dtml-if tip_sessao>
+              <tr>
+                  <td class="text" colspan="3">
+                    <p class="h5">Parlamentares presentes: <dtml-var expr="pysc.quantidade_presentes_sessao_plenaria_contar_pysc(cod_sessao_plen=cod_sessao_plen)"></p>
+                    <dtml-var expr="pysc.quantidade_presentes_sessao_plenaria_pysc(cod_sessao_plen=cod_sessao_plen,tip_sessao=tip_sessao)">
+                  </td>
+               </tr>
+           </dtml-if>
+    </table>
+   </div>
+  <div clas="text-left">
+     <input class="btn btn-primary" type="submit" name="button" value="Salvar" />
+  </div>
+  </form>
+
+</div>
+</div>
+
+<dtml-var standard_html_footer>
+

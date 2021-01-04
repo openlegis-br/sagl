@@ -1,0 +1,123 @@
+<dtml-var standard_html_header>
+
+  <h1 class="firstHeading">Assinatura Digital de Documentos</h1> 
+
+  <dtml-in expr="zsql.assinatura_documento_obter_zsql(cod_usuario=cod_usuario_corrente, ind_assinado=0)">
+    <dtml-if cod_assinatura_doc>
+       <dtml-call expr="REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+       <dtml-call expr="REQUEST.set('formatted_code', format_verification_code(cod_assinatura_doc))">
+    </dtml-if>
+    <dtml-if sequence-start>
+     <div class="table-responsive">
+      <table class="table">
+        <thead class="table-secondary">
+         <tr>
+           <th>Data da Solicitação</th>
+           <th width="40%">Identificação do Documento</th>
+           <th>Código de Validação</th>
+           <th>Ações</th>
+         </tr>
+        </thead>
+    </dtml-if>
+         <tr>
+           <td><dtml-var dat_solicitacao></td>         
+           <td>          
+               <dtml-if expr="tipo_doc == 'ata'">
+                  <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=codigo, ind_excluido=0)">
+                     <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">                  
+                        Ata da <dtml-var num_sessao_plen>ª Sessão <dtml-var nom_sessao> de <dtml-var dat_inicio_sessao>
+                     </dtml-in>
+                  </dtml-in>               
+               <dtml-elif expr="tipo_doc == 'doc_acessorio'">
+                  <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_documento=codigo, ind_excluido=0)">
+                    <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                       <dtml-var des_tipo_documento> - <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                    </dtml-in> 
+                  </dtml-in>                            
+               <dtml-elif expr="tipo_doc == 'doc_acessorio_adm'"> 
+                  <dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento_acessorio=codigo, ind_excluido=0)">
+                    <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+                       Documento Acessório ao <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento>
+                    </dtml-in> 
+                  </dtml-in>                             
+               <dtml-elif expr="tipo_doc == 'documento'">
+                  <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=codigo, ind_excluido=0)">
+                     <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento>
+                  </dtml-in>                              
+               <dtml-elif expr="tipo_doc == 'emenda'">
+                  <dtml-in expr="zsql.emenda_obter_zsql(cod_emenda=codigo, ind_excluido=0)">
+                    <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                       Emenda nº <dtml-var num_emenda> (<dtml-var des_tipo_emenda>) ao <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                    </dtml-in> 
+                  </dtml-in>                          
+               <dtml-elif expr="tipo_doc == 'materia'">
+                  <dtml-in expr="zsql.materia_obter_zsql(cod_materia=codigo, ind_excluido=0)">
+                     <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                  </dtml-in>                              
+               <dtml-elif expr="tipo_doc == 'norma'"> 
+                  <dtml-in expr="zsql.norma_juridica_obter_zsql(cod_norma=codigo, ind_excluido=0)">
+                     <dtml-var des_tipo_norma> nº <dtml-var num_norma>/<dtml-var ano_norma>
+                  </dtml-in>                              
+               <dtml-elif expr="tipo_doc == 'parecer_comissao'">
+                  <dtml-in expr="zsql.relatoria_obter_zsql(cod_relatoria=codigo, ind_excluido=0)">
+                    <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao, ind_excluido=0)">
+                      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                         Parecer <dtml-var nom_comissao> nº <dtml-var num_parecer missing> ao <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                      </dtml-in>
+                    </dtml-in>
+                  </dtml-in>                             
+               <dtml-elif expr="tipo_doc == 'pauta'">
+                  <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=codigo, ind_excluido=0)">
+                     <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">                  
+                        Pauta da <dtml-var num_sessao_plen>ª Sessão <dtml-var nom_sessao> de <dtml-var dat_inicio_sessao>
+                     </dtml-in>
+                  </dtml-in>                             
+               <dtml-elif expr="tipo_doc == 'peticao'">
+                  Petição Eletrônica          
+               <dtml-elif expr="tipo_doc == 'proposicao'">
+                  <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=codigo, ind_excluido=0)">
+                     Proposição Eletrônica nº <dtml-var cod_proposicao>
+                  </dtml-in>                              
+               <dtml-elif expr="tipo_doc == 'protocolo'">
+                  <dtml-in expr="zsql.protocolo_obter_zsql(cod_protocolo=codigo, ind_excluido=0)">
+                     Protocolo nº <dtml-var num_protocolo>/<dtml-var ano_protocolo>
+                  </dtml-in>                                          
+               <dtml-elif expr="tipo_doc == 'redacao_final'">
+                  <dtml-in expr="zsql.materia_obter_zsql(cod_materia=codigo, ind_excluido=0)">
+                     Redação Final do <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                  </dtml-in>                   
+               <dtml-elif expr="tipo_doc == 'substitutivo'">
+                  <dtml-in expr="zsql.substitutivo_obter_zsql(cod_substitutivo=codigo, ind_excluido=0)">
+                    <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                       Substitutivo nº <dtml-var num_substitutivo> ao <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                    </dtml-in> 
+                  </dtml-in>                                                          
+               <dtml-elif expr="tipo_doc == 'tramitacao'">
+                  <dtml-in expr="zsql.tramitacao_obter_zsql(cod_tramitacao=codigo, ind_excluido=0)">
+                    <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                       Tramitação em Matéria - <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                    </dtml-in> 
+                  </dtml-in>                                          
+               <dtml-elif expr="tipo_doc == 'tramitacao_adm'">
+                  <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_tramitacao=codigo, ind_excluido=0)">
+                    <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+                       Tramitação em Proc. Administrativo - <dtml-var num_documento> nº <dtml-var num_documento>/<dtml-var ano_documento>
+                    </dtml-in> 
+                  </dtml-in>                
+               </dtml-if>
+           </td>
+           <td><dtml-var formatted_code></td>           
+           <td>
+              <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/<dtml-var expr="gerar_link_pysc(tipo_doc,codigo)">" target="_blank"><i class="far fa-file-pdf"></i> Visualizar</a>
+              <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var codigo>&tipo_doc=<dtml-var tipo_doc>&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
+           </td>
+         </tr>
+    <dtml-if sequence-end>
+      </table>
+     </div>
+    </dtml-if>
+  <dtml-else>
+     <p>Nenhum documento pendente de assinatura.</p>
+  </dtml-in>
+  
+<dtml-var standard_html_footer>

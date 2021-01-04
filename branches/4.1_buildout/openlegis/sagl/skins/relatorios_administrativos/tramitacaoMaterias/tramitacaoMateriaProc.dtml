@@ -1,0 +1,61 @@
+<dtml-var standard_html_header>
+
+<h1 class="firstHeading">Tramitação de Matérias</h1>
+
+<dtml-if lst_tip_materia>
+    <dtml-call expr="REQUEST.set('lst_tip_materia', str(lst_tip_materia))">
+<dtml-else>
+    <dtml-call expr="REQUEST.set('lst_tip_materia', '')">
+</dtml-if>
+
+<dtml-if selAno>
+  <dtml-in "qtdeTipoAno(ano=selAno, autor=hdn_cod_autor, tipo=lst_tip_materia, tramLocal=Dst_cod_unid_tram_local,  status=lst_status, dat_prazofim=dat_przlim, texto=txt_texto_acao)">
+    <p> 
+     <b>Tipo de Matéria: </b><dtml-var des_tipo_materia>
+     | <b>Ano: </b><dtml-var selAno>
+     <dtml-if Dst_cod_unid_tram_local>
+       | <b>Localização Atual: </b><dtml-var nom_unidade missing>
+     </dtml-if>
+    <dtml-if lst_status>
+      | <b>Situação:</b> <dtml-var nom_status missing>
+    </dtml-if>
+    <dtml-if dat_przlim>
+      | <b>Prazo até: </b><dtml-var dat_przlim>
+    </dtml-if>
+    </p>
+  <dtml-else>
+     <p>Nenhuma ocorrência encontrada.</p>
+  </dtml-in>
+
+    <hr />
+  
+ <dtml-in "autorMateriaAno(ano=selAno, autor=hdn_cod_autor, tipo=lst_tip_materia, tramLocal=Dst_cod_unid_tram_local, status=lst_status, dat_prazofim=dat_przlim, texto=txt_texto_acao)">
+  
+    <p class="h5"><b>Autoria:</b> <dtml-var nom_autor_join></p>
+
+  <dtml-in "materiaAutorAno(autor=autor,ano=selAno,tipo=lst_tip_materia,tramLocal=Dst_cod_unid_tram_local,  status=lst_status, dat_prazofim=dat_przlim, texto=txt_texto_acao)">
+    <p><dtml-var sequence-number>)
+    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+       <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
+    <dtml-else>
+       <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" target="_blank" >
+    </dtml-if>
+       <b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></a>
+       - <dtml-var txt_ementa>
+      <br /><b>Localização Atual:</b> <dtml-var nom_unidade_join missing null>      
+      <br /><b>Situação:</b> <dtml-var des_status missing>
+       <dtml-if txt_tramitacao>      
+        <br /><b>Texto do Despacho:</b> <dtml-var txt_tramitacao>
+      </dtml-if>
+      <dtml-if dat_fim_prazo>
+        <br /><b>Prazo:</b> <dtml-var dat_fim_prazo>
+      </dtml-if>
+    </p>
+  </dtml-in>
+     <hr>
+</dtml-in>
+
+</dtml-if>
+
+<dtml-var standard_html_footer>
+

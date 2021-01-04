@@ -1,0 +1,111 @@
+<dtml-var standard_html_header>
+
+<script>
+
+$(document).ready(function() {
+
+    $('#inbox').DataTable( {
+        "responsive": true,
+        "bStateSave": true,        
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('raDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('raDataTable'));
+        },
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
+
+</script>
+
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+  <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+</dtml-in>
+
+<h1 class="firstHeading">Processos Arquivados</h1>
+
+
+           <table class="table" id="inbox">
+             <thead class="table-secondary">
+		 <tr>  
+		     <th width="42%">Identificação do Documento</th>
+		     <th width="20%">Destino</th>
+		     <th width="14%">Arquivamento</th>
+		 </tr>
+             </thead>
+             <tbody>
+              <dtml-in expr="arquivo_morto_pysc(cod_usuario=cod_usuario_corrente)">
+              <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_tramitacao=_['sequence-item'])">
+                   <dtml-call expr="REQUEST.set('prazo_a_vencer', _.DateTime()+3)">
+                   <tr>
+                   <form name="inbox_form_<dtml-var cod_tramitacao>" method="post" action="tramitacao_mostrar_proc"> 
+                   <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao>" />
+                     <td>
+                        <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento)">
+                           <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Formulário de Tramitação" data-src="tramitacao_mostrar_proc?cod_documento=<dtml-var cod_documento>&hdn_cod_tramitacao=<dtml-var cod_tramitacao>&modal=1"><i class="fas fa-eye"></i><b> <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></a> - <dtml-var txt_interessado><dtml-unless sequence-end>,</dtml-unless></b> - 
+                           <dtml-var txt_assunto>
+                        </dtml-in>
+                        <br /><b>Status:</b> <dtml-var des_status>
+                     </td>
+                     <td>
+                        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest,ind_adm=1)">
+                           <dtml-var nom_unidade_join>
+                        </dtml-in>
+                     </td>
+                     <td><div align="center"><dtml-var dat_encaminha missing null></div></td>
+                   </form>
+                   </tr>
+                </dtml-in></dtml-in>
+             </tbody>
+           </table>
+           
+           
+<dtml-var standard_html_footer>

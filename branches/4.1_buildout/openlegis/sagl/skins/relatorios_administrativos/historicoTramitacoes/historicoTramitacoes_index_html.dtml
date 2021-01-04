@@ -1,0 +1,109 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js"></script>
+
+<script language="javascript">
+
+  function campos_criticar(form){
+
+
+     if (!IsValidDate(form.txt_dat_inicio_periodo.value)) {
+         alert("Digite uma data válida!");
+         form.txt_dat_inicio_periodo.focus();
+         form.txt_dat_inicio_periodo.select();
+         return false;
+     }
+     
+     if (!IsValidDate(form.txt_dat_fim_periodo.value)) {
+         alert("Digite uma data válida!");
+         form.txt_dat_fim_periodo.focus();
+         form.txt_dat_fim_periodo.select();
+         return false;
+     }
+  form.submit();
+
+  }
+
+//-->
+</script>
+
+<h1 class="firstHeading">Histórico de Tramitações</h1> 
+
+<form method="post" name="form" action="historicoTramitacoes_mostrar_proc">
+   
+   <div class="form-row">
+     <div class="col-6 col-md-3 mb-3">
+            <label for="txt_dat_inicio_periodo" class="required">Data Inicial</label>
+            <input class="form-control date" type="text" name="txt_dat_inicio_periodo" id="txt_dat_inicio_periodo" required />
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+           <label for="txt_dat_fim_periodo" class="required">Data Final</label>
+           <input class="form-control date" type="text" name="txt_dat_fim_periodo" id="txt_dat_fim_periodo" required />
+     </div>
+    <script>
+        $('#txt_dat_inicio_periodo').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#txt_dat_fim_periodo').val();
+            }
+        });
+        $('#txt_dat_fim_periodo').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#txt_dat_inicio_periodo').val();
+            }
+        });
+    </script>
+     <div class="col-12 col-md-6 mb-3">
+             <label for="lst_cod_unid_tram_dest">Unidade de Tramitação</label>
+             <select class="custom-select" id="lst_cod_unid_tram_dest" name="lst_cod_unid_tram_dest">
+               <option selected value="0">Todos</option>
+                 <dtml-in listaLocaisTramitacao>
+                   <option value="<dtml-var cod_unid_tramitacao>">
+                     <dtml-if cod_orgao><dtml-var nom_orgao missing>
+                     <dtml-elif cod_comissao><dtml-var nom_comissao missing>
+                     <dtml-else><dtml-var nom_parlamentar>
+                     </dtml-if>
+                   </option>
+                 </dtml-in>
+             </select>     
+     </div>         
+   </div>
+
+   <div class="form-row">
+     <div class="col-12 col-md-6 mb-3">
+             <label for="lst_tip_materia">Tipo de Matéria</label>
+             <select class="custom-select" id="lst_tip_materia" name="lst_tip_materia">
+                <option selected value="0">Todos</option>
+                    <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)">
+                        <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia></option>
+                    </dtml-in>
+             </select>
+     </div>
+     <div class="col-12 col-md-6 mb-3">
+           <label for="lst_status">Status de Tramitação</label><br />
+           <select class="custom-select" id="lst_status" name="lst_status">
+             <option selected value="0">Todos</option>
+             <dtml-in listaStatusTramitacao>
+               <option value="<dtml-var cod_status>"><dtml-var des_status></option>
+             </dtml-in>
+           </select>
+     </div>     
+   </div>   
+
+   <div class="text-left">
+    <input class="btn btn-primary" type="submit" value="Pesquisar" onClick="campos_criticar(form)" />
+    <input class="btn btn-secondary" type="reset" value="Limpar">
+   </div>
+
+</form>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,96 @@
+<dtml-var standard_html_header>
+
+<script src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm' );    //Formatação com Hora    
+    $('#historico').DataTable( {
+        "responsive": true,
+        "order": [[1, "desc"]],              
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
+
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Peticionamento Eletrônico</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#iFrameModal" data-title="Peticionamento Eletrônico" data-src="peticionamento_eletronico_form?modal=1" ><i class="fa fa-fw fa-paper-plane"></i> Peticionar</a>         
+         </div>
+      </div>
+ </div>
+ <dtml-call "REQUEST.set('username', AUTHENTICATED_USER)">
+
+   <dtml-in expr="zsql.usuario_obter_zsql(col_username=username)">
+       <dtml-call "REQUEST.set('nom_completo', nom_completo)">
+       <dtml-call "REQUEST.set('nom_cargo', nom_cargo)">
+   <dtml-else>
+       <dtml-call "REQUEST.set('nom_completo', username)">
+   </dtml-in>
+	  <dtml-in expr="zsql.protocolo_pesquisa_publica_zsql(txt_interessado=nom_completo)">
+	     <dtml-if sequence-start>
+	       <div class="table-responsive">
+                <table class="table" id="historico">
+                  <thead class="table-secondary">  
+		   <tr>
+                      <th>Nº de Protocolo</th>
+ 	              <th>Data de Protocolo</th>
+                      <th>Resumo da Solicitação</th>
+	              <th>Proc. Adm.</th>
+		   </tr>
+		  </thead>
+	     </dtml-if>
+	           <tr>
+   	              <td><dtml-var num_protocolo>/<dtml-var ano_protocolo></td>
+                      <td><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td>
+	              <td><dtml-var txt_assunto_ementa></td>
+                      <td>
+                       <dtml-if cod_documento>
+			 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                           <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                        <dtml-else>
+                           <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                         </dtml-if>
+                             <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+	                   </a>
+                       <dtml-else>
+                        <i>Aguardando autuação</i>
+                       </dtml-if>
+                      </td>
+	           </tr>
+             <dtml-if sequence-end>
+                 </table>
+                </div>
+             </dtml-if>
+	  <dtml-else>
+             <p>Nenhuma registro encontrado.</p>
+          </dtml-in>
+
+<dtml-var standard_html_footer>
+

@@ -1,0 +1,26 @@
+<dtml-call expr="REQUEST.set('erro', 0)">
+<dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
+<dtml-if expr="_.hasattr(sapl_documentos.administrativo,id_documento)">
+  <dtml-try>
+    <dtml-call "sapl_documentos.administrativo.manage_delObjects(id_documento)">
+  <dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  <dtml-else>
+    <dtml-try>
+      <dtml-call expr="zsql.proposicao_desincorporar_zsql(cod_mat_ou_doc = cod_documento)">
+    <dtml-except>   
+      <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-try>
+  </dtml-try>
+  
+  <dtml-if erro>
+    <dtml-let mensagem="'Ocorreu um erro ao tentar excluir o texto desse documento!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-let mensagem="'Texto do documento excluído com sucesso!'" url="'documento_acessorio_mostrar_proc?cod_documento='+cod_documento+'&cod_materia='+cod_materia">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-if>
+</dtml-if>
+

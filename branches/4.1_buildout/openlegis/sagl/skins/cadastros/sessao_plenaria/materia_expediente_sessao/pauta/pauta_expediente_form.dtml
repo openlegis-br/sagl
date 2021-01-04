@@ -1,0 +1,53 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+   function campos_criticar(form){
+      if (form.lst_status.selectedIndex == 0){
+          alert("O status de tramitação deve ser selecionado!");
+          form.lst_status.focus();
+          return false;
+      }
+
+      form.submit();
+  }
+</script>
+
+<h1 class="firstHeading">Matérias do Expediente</h1>
+
+<form name="pauta_expediente_form" method="post" action="pauta_expediente_gerar_proc">
+  
+  <div class="form-row">
+     <div class="col-12 mb-3">
+        <label for="lst_status" class="required">Selecione o Status Atual</label>
+        <select class="custom-select"  id="lst_status" name="lst_status">
+          <option value=""></option>
+          <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
+            <option value="<dtml-var cod_status missing>">
+              <dtml-var sgl_status> - <dtml-var des_status>
+            </option>
+          </dtml-in>
+        </select>
+     </div>
+  </div>
+
+  <div class="text-left">
+     <input class="btn btn-primary" type="button" value="Filtrar" onClick="campos_criticar(document.pauta_expediente_form)">
+     <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+     <input type="hidden" name="cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>" />
+     <input type="hidden" name="num_legislatura" value="<dtml-var num_legislatura missing>" />
+     <input type="hidden" name="tip_sessao" value="<dtml-var tip_sessao missing>" />
+     <input type="hidden" name="modal" value="1" />                 
+     <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+        <input type="hidden" name="dat_ordem" value="<dtml-var dat_inicio_sessao>" />
+     </dtml-in>
+ </div>
+
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+    </div>
+ </div>
+
+</form>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,55 @@
+<dtml-var standard_html_header>
+ <script type="text/javascript" >
+    function campos_criticar(form) {
+
+      if (form.txt_destinatario.value == ""){
+         alert("Preencha parte do nome!");
+         form.txt_destinatario.focus();
+         return false;        
+      }    
+     return true;
+    }
+
+    function submitForm()
+      {
+        document.getElementById("destinatario_pesquisar_form").action ="destinatario_salvar_proc";
+        document.getElementById("destinatario_pesquisar_form").submit();      
+      }    
+ </script>
+
+<h1 class="firstHeading">Incluir Destinatários</h1> 
+
+<form name="destinatario_pesquisar_form" id="destinatario_pesquisar_form" action="destinatario_pesquisar_form" onsubmit="return false;">
+  <div class="form-row">
+    <div class="col-12 mb-3">
+      <label for="txt_destinatario" class="required">Nome do Destinatário</label>     
+      <input class="form-control" type="text" id="txt_destinatario" name="txt_destinatario" value="<dtml-var txt_destinatario missing="">">
+    </div>
+  </div>
+  
+  <div class="text-left mb-3">
+     <a class="btn btn-primary" href="javascript:if (campos_criticar(document.destinatario_pesquisar_form)) {document.destinatario_pesquisar_form.submit()}" class="btn btn-sm btn-secondary">Pesquisar</a>
+  </div>
+  
+ <input type="hidden" name="modal" value="1" />   
+ <input type="hidden" name="cod_documento" value="<dtml-var hdn_cod_documento missing>" />
+ <dtml-if expr="REQUEST.has_key('txt_destinatario')">
+    <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento missing>" />
+    <div class="form-row">
+       <div class="col-12 mb-3">
+         <label for="lst_cod_instituicao" class="required">Selecione o(s) destinatário(s):</label>
+         <select class="custom-select" id="lst_cod_instituicao" name="lst_cod_instituicao" size="10" multiple>
+           <dtml-in expr="zsql.instituicao_obter_zsql(txt_nom_instituicao=txt_destinatario)">
+              <option value="<dtml-var cod_instituicao>"> <dtml-var nom_instituicao> <dtml-if expr="nom_responsavel!=None">(<dtml-var nom_responsavel>)</dtml-if></option>
+           </dtml-in>
+         </select>
+       </div>
+     </div>
+     <div class="text-left">
+       <input class="btn btn-primary mt-2" type="button" value="Incluir" onclick="return submitForm()">
+     </div>
+ </dtml-if>
+
+</form>
+
+<dtml-var standard_html_footer>

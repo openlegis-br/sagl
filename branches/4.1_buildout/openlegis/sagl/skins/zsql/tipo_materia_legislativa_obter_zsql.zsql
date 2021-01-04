@@ -1,0 +1,30 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : tip_materia="" sgl_tipo_materia="" tip_natureza="" ind_publico="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT 
+  tip_materia,
+  sgl_tipo_materia,
+  des_tipo_materia,
+  tip_natureza,
+  ind_publico,  
+  ind_excluido 
+FROM 
+  tipo_materia_legislativa
+
+<dtml-sqlgroup where>
+  <dtml-sqltest tip_materia      op="=" type="int" optional> <dtml-and>
+  <dtml-sqltest sgl_tipo_materia op="=" type="nb"  optional> <dtml-and>
+  <dtml-sqltest tip_natureza     op="=" type="nb"  optional> <dtml-and>
+  <dtml-sqltest ind_excluido     op="=" type="int" optional>
+</dtml-sqlgroup>
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="isAnon">
+   AND ind_publico = 1
+ </dtml-if>
+</dtml-let>
+
+ORDER by des_tipo_materia

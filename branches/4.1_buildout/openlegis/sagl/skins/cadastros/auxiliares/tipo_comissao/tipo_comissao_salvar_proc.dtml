@@ -1,0 +1,37 @@
+<dtml-comment> 
+*****************************************************************
+*    Função: Salva os dados di tipo de comissao vindos do formu-*
+*         lário, seja uma inclusão/atualização.                 *
+*    Argumentos: hdn_tip_comissao: int - argumento que determina*
+*         se esse método vai ser uma inclusão/atualização.      * 
+*    Retorno: Mensagem de sucesso ou erro.                      *
+*    Daniel C. Azevedo em 19/03/2001                            *
+*****************************************************************
+</dtml-comment>   
+
+<dtml-if hdn_tip_comissao>
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_comissao_atualizar_zsql)">
+<dtml-else>  
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_comissao_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(tip_comissao               = hdn_tip_comissao,
+                          nom_tipo_comissao          = txt_nom_tipo_comissao,
+                          sgl_tipo_comissao          = txt_sgl_tipo_comissao,
+                          sgl_natureza_comissao      = lst_sgl_natureza_comissao,
+                          des_dispositivo_regimental = txt_des_dispositivo_regimental,
+                          ind_excluido = 0
+                          )">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar Tipo de Comissão. Tente novamente!'"> 
+     <dtml-var mensagem_emitir>
+  </dtml-let> 
+  
+<dtml-else>
+  <dtml-let mensagem="'Tipo de Comissão salvo com sucesso!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+  
+</dtml-try>

@@ -1,0 +1,47 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : tip_id_basica="" txt_busca="" ind_excluido=0
+max_rows : 5000
+max_cache : 100
+</dtml-comment>
+
+SELECT
+   materia.cod_materia,
+   materia.num_ident_basica,
+   materia.dat_apresentacao,
+   materia.ano_ident_basica,
+   materia.txt_ementa,
+   materia.txt_indexacao,
+   materia.txt_observacao,
+   materia.ind_tramitacao,
+   materia.cod_situacao,   
+   tipo_materia.sgl_tipo_materia,
+   tipo_materia.des_tipo_materia
+
+FROM
+   materia_legislativa AS materia LEFT JOIN tipo_materia_legislativa as tipo_materia ON materia.tip_id_basica = tipo_materia.tip_materia
+
+WHERE
+ <dtml-if tip_id_basica>
+   materia.tip_id_basica = '<dtml-var tip_id_basica>' AND
+ </dtml-if>
+   materia.ind_excluido = 0 AND
+   (
+   concat_ws('/',materia.num_ident_basica,materia.ano_ident_basica) like '%<dtml-var txt_busca>%' OR
+   num_ident_basica = '<dtml-var txt_busca>' OR
+   txt_ementa LIKE '%<dtml-var txt_busca>%' OR
+   txt_ementa LIKE '<dtml-var txt_busca>%' OR
+   txt_ementa LIKE '%<dtml-var txt_busca>' OR
+   txt_indexacao LIKE '%<dtml-var txt_busca>%')
+
+ORDER BY
+   CASE
+     WHEN concat_ws('/',materia.num_ident_basica,materia.ano_ident_basica) like '%<dtml-var txt_busca>%' THEN 1
+     WHEN num_ident_basica =  '<dtml-var txt_busca>' THEN 2
+     WHEN txt_ementa LIKE '%<dtml-var txt_busca>%' THEN 3
+     WHEN txt_ementa LIKE '<dtml-var txt_busca>%' THEN 4
+     WHEN txt_ementa LIKE '%<dtml-var txt_busca>' THEN 5
+     WHEN txt_indexacao LIKE '%<dtml-var txt_busca>%' THEN 6
+   ELSE 7 
+   END,
+   materia.ano_ident_basica ASC

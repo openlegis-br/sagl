@@ -1,0 +1,40 @@
+<dtml-if expr="_.int(num_ordem) != 0">
+  <dtml-call expr="REQUEST.set('metodo', zsql.despacho_inicial_atualizar_zsql)"> 
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.despacho_inicial_incluir_zsql)">
+  <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=cod_materia)">
+    <dtml-if sequence-end>
+      <dtml-call expr="REQUEST.set('num_ordem', _.int(num_ordem)+1)">
+    </dtml-if>
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('num_ordem', 1)">
+  </dtml-in>
+  <dtml-call expr="REQUEST.set('novoDespacho', 1)"> 
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(num_ordem    = num_ordem,
+                          cod_materia  = cod_materia,
+                          cod_comissao = lst_cod_comissao)">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível cadastrar a designação da Comissão! Tente novamente.'" tipo_mensagem="'warning'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+<dtml-else>
+  <dtml-if hdn_url>
+     <dtml-let mensagem="'Designação de Comissão salva com sucesso!'" url=hdn_url>
+       <dtml-var mensagem_emitir>
+     </dtml-let>
+  <dtml-else>
+     <dtml-let mensagem="'Designação de Comissão salva com sucesso!'">
+       <dtml-var mensagem_emitir>
+     </dtml-let>  
+  </dtml-if>
+
+<dtml-if novoDespacho>
+   <dtml-call expr="pysc.envia_despacho_comissao_pysc(cod_materia=cod_materia,cod_comissao=lst_cod_comissao)">
+</dtml-if>
+
+</dtml-try>

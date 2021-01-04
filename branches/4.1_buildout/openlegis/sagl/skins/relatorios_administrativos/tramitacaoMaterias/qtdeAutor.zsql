@@ -1,0 +1,55 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : ano autor tipo="" tramLocal="" status="" dat_prazofim=""
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT
+     count(*) as "qtde"
+FROM
+     materia_legislativa m 
+     LEFT JOIN tipo_materia_legislativa t ON m.tip_id_basica = t.tip_materia,
+     autoria au
+    <dtml-if expr="status or tramLocal or dat_prazofim">
+     ,tipo_materia_legislativa t, tramitacao tra
+    </dtml-if>
+    <dtml-if status>
+     ,status_tramitacao st
+    </dtml-if>
+    <dtml-if tramLocal>
+     ,unidade_tramitacao ut
+    </dtml-if>
+
+WHERE
+     m.ind_excluido = 0 and
+     au.ind_excluido = 0 and
+     au.cod_autor = <dtml-sqlvar autor type="int"> and
+     au.cod_materia = m.cod_materia and
+     m.ano_ident_basica = <dtml-sqlvar ano type="int"> 
+    <dtml-if expr="status or tramLocal or dat_prazofim">
+     and m.tip_id_basica = t.tip_materia
+     and m.cod_materia = tra.cod_materia
+     and tra.ind_ult_tramitacao = 1
+     and tra.ind_excluido = 0     
+    </dtml-if> 
+    <dtml-if tipo>
+     and m.tip_id_basica = <dtml-sqlvar tipo type="int"> 
+    </dtml-if>
+    <dtml-if status>
+     and tra.cod_status = st.cod_status 
+     and tra.cod_status = <dtml-sqlvar status type="int">  
+    </dtml-if>
+    <dtml-if tramLocal>
+     and tra.cod_unid_tram_dest = ut.cod_unid_tramitacao
+     and tra.cod_unid_tram_dest = <dtml-sqlvar tramLocal type="int">
+    </dtml-if> 
+    <dtml-if dat_prazofim>
+     and tra.dat_fim_prazo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_prazofim)" type="nb">
+    </dtml-if> 
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="isAnon">
+   AND t.ind_publico = 1
+ </dtml-if>
+</dtml-let>
+    

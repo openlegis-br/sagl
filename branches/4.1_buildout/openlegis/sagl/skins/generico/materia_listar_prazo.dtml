@@ -1,0 +1,124 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+    var table = $('#jdTable').DataTable( {
+        "responsive": true,
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "order": [[3, "asc"]],                             
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
+});
+</script>
+
+<h1 class="firstHeading">Tramitações Vencendo em <dtml-var expr="ZopeTime().strftime('%d/%m/%Y')"></h1>
+
+    <dtml-in expr="zsql.tramitacao_prazo_vincendo_obter_zsql()">
+        <dtml-if sequence-start>
+        <div class="table-responsive">
+        <table class="table" id="jdTable" class="tablesorter">
+         <thead class="table-secondary">
+            <tr>
+                <th>Matéria</th>
+                <th>Localização</th>
+                <th>Situação</th>
+                <th>Vencimento</th>
+            </tr>
+         </thead>
+        </dtml-if sequence-start>
+          <tr>
+            <td>
+              <b><a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>#tramitacao" target="_blank">
+                 <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a> - 
+                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                   <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
+                 </dtml-in>
+                 - <dtml-var txt_ementa>
+            </td>
+            <td>
+              <dtml-if cod_unid_tram_dest>
+                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest)">
+                   <dtml-var nom_unidade_join>
+                </dtml-in>
+              <dtml-else>
+                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local)">
+                   <dtml-var nom_unidade_join>
+                </dtml-in>
+              </dtml-if>
+            </td>
+            <td>
+               <dtml-var des_status>
+            </td>
+            <td>
+               <dtml-var dat_fim_prazo>
+            </td>
+        </tr>
+    <dtml-if sequence-end>
+     </table>
+     </div>
+  </dtml-if sequence-end>
+  <dtml-else>
+    <p>Nenhuma tramitação vencendo hoje.</p>
+</dtml-in>
+<dtml-var standard_html_footer>

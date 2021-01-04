@@ -1,0 +1,115 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+    function campos_criticar(form){
+
+
+       if (form.lst_cod_parlamentar[form.lst_cod_parlamentar.selectedIndex].value == -1){
+          alert ("O parlamentar deve ser selecionado para realizar a inclusão.");
+          return;
+        }
+
+       if (form.lst_cod_cargo.selectedIndex == -1){
+          alert ("O cargo na mesa deve ser selecionado para realizar a inclusão.");
+          return;
+        }
+
+        form.submit();
+    }
+
+    function composicao_mesa_sessao_excluir(valor, valor1, valor2) {
+       var form = document.composicao_mesa_sessao_form;
+       if (valor.selectedIndex == -1){
+          alert("Selecione um parlamentar na composição para efetuar a exclusão.");
+          return false;
+       }
+       valor = valor[valor.selectedIndex].value;
+       var fim1 = valor.indexOf(":");
+       var fim2 = valor.indexOf("-");
+       var cod_parlamentar = valor.substring(0,fim1);
+       var cod_cargo = valor.substring(fim1+1,fim2);
+       var cod_sessao_leg = valor1;
+       var cod_sessao_plen = valor2;
+       if (confirm("Deseja realmente excluir a composição da mesa?")){
+          location.href="composicao_mesa_sessao_excluir_proc?cod_sessao_leg=" + cod_sessao_leg + "&cod_parlamentar=" + cod_parlamentar + "&cod_cargo=" + cod_cargo + '&dat_sessao=' + form.hdn_dat_sessao.value + '&tip_sessao=' + form.hdn_tip_sessao.value + "&cod_sessao_plen=" + cod_sessao_plen + "&num_legislatura=<dtml-var num_legislatura missing>";
+       }
+    }
+
+</script>
+
+<dtml-var sessao_plenaria_menu>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
+
+<legend>Mesa da Sessão</legend>
+
+<form name="composicao_mesa_sessao_form" method="post" action="composicao_mesa_sessao_incluir_proc">
+  <input type="hidden" name="hdn_cod_sessao_leg" value="<dtml-var cod_sessao_leg>" />
+  <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen>" />
+  <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura>" />
+  <input type="hidden" name="hdn_dat_sessao" value="<dtml-var dat_sessao>" />
+  <input type="hidden" name="hdn_tip_sessao" value="<dtml-var tip_sessao>" />
+  
+  <div class="row">
+      <div class="form-group col-md-6">
+           <label for="lst_composicao_mesa_sessao">Membros Designados</label>
+           <select class="custom-select mb-3" id="lst_composicao_mesa_sessao" name="lst_composicao_mesa_sessao" size="6"> 
+              <dtml-in expr="zsql.composicao_mesa_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0)">
+                 <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                    <dtml-in expr="zsql.cargo_mesa_obter_zsql(cod_cargo=cod_cargo, ind_excluido=0)">
+                       <dtml-if cod_sessao_leg>
+                          <option
+                            <dtml-if expr="not _.has_key('prim_sel1')">
+                               selected
+                               <dtml-call expr="REQUEST.set('prim_sel1', cod_parlamentar)">
+                            </dtml-if>
+                            value="<dtml-var cod_parlamentar>:<dtml-var cod_cargo>-">
+                           <dtml-var nom_parlamentar>/<dtml-var sgl_partido missing null="">-<dtml-var des_cargo>
+                          </option>
+                       </dtml-if>
+                    </dtml-in>
+                 </dtml-in>
+              </dtml-in>
+           </select>
+           <button class="btn btn-danger mb-3" type="button" name="btn_excluir" onclick="javascript:composicao_mesa_sessao_excluir(lst_composicao_mesa_sessao,<dtml-var cod_sessao_leg>,<dtml-var cod_sessao_plen>)">Excluir</button>
+        </div>
+        <div class="form-group col-md-6">
+             <label for="lst_cod_parlamentar"">Parlamentar</label>
+             <select class="form-control selectpicker show-tick mb-3" id="lst_cod_parlamentar" name="lst_cod_parlamentar">
+               <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+                  <option
+                     <dtml-if expr=" (not _.has_key('prim_sel2') ) or (_.has_key('cod_parlamentar_sel') and cod_parlamentar == cod_parlamentar_sel)">
+                        selected
+                        <dtml-call expr="REQUEST.set('prim_sel2', nom_parlamentar)">
+                        <dtml-call expr="REQUEST.set('cod_parlamentar_sel', cod_parlamentar)">
+                     </dtml-if>
+                     value="<dtml-var cod_parlamentar >">
+                     <dtml-var nom_parlamentar>
+                   </option>
+               </dtml-in>
+             </select>
+             <label for="lst_cod_cargo"">Cargo na Mesa</label>
+             <select class="form-control selectpicker show-tick mb-3" id="lst_cod_cargo" name="lst_cod_cargo">
+               <dtml-in expr="zsql.comp_mesa_sessao_cargo_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0)">
+                  <option
+                   <dtml-if expr=" not _.has_key('prim_sel3') or (_.has_key('des_cargo_sel') and des_cargo == des_cargo_sel)">
+                      selected
+                      <dtml-call expr="REQUEST.set('prim_sel3', des_cargo)">
+                      <dtml-call expr="REQUEST.set('des_cargo_sel', des_cargo)">
+                   </dtml-if>
+                   value="<dtml-var cod_cargo >">
+                   <dtml-var des_cargo>
+                  </option>
+               </dtml-in>
+             </select>
+             <button class="btn btn-primary" type="button" name="btn_incluir" onclick="campos_criticar(document.composicao_mesa_sessao_form)">Incluir</button>
+        </div>
+     </div>
+</form>
+
+</div>
+</div>
+
+<dtml-var standard_html_footer>

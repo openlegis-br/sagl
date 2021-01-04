@@ -1,0 +1,75 @@
+<dtml-var standard_html_header>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Tipos de Relacionamento de Normas</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+          <a class="btn btn-sm btn-primary d-print-none mb-3" href="tipo_relacionamento_norma_form"><i class="fa fa-fw fa-plus"></i> Incluir Tipo</a>
+         </div>
+      </div>
+ </div>
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 10)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+  <dtml-in expr="zsql.tipo_vinculo_norma_obter_zsql()" size="step" start="start" orphan=0>
+    <dtml-if sequence-start>
+       <table class="table">
+         <thead class="table-secondary">
+          <tr>
+            <th>Tipo</th>
+            <th>Descrição Ativa</th>
+            <th>Descrição Passiva</th>
+            <th>Situação de Vigência</th>
+          </tr>
+         </thead>
+      <dtml-if previous-sequence>
+	<dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+      </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+          <tr> 
+            <td>
+               <a href="tipo_relacionamento_norma_mostrar_proc?cod_tip_vinculo=<dtml-var cod_tip_vinculo>">
+                  <dtml-var tipo_vinculo>
+               </a>
+            </td>
+            <td>
+               <dtml-var des_vinculo>
+            </td>
+            <td>
+               <dtml-var des_vinculo_passivo>
+            </td>
+            <td>
+               <dtml-var des_tipo_situacao missing null="">
+            </td>
+          </tr>
+    <dtml-if sequence-end>
+       </table>
+      <dtml-if next-sequence>
+	<dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+      </dtml-if next-sequence>
+<dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+     <nav aria-label="Paginação">
+       <ul class="pagination justify-content-center">
+          <dtml-var "pysc.PageListOutput_pysc('tipo_relacionamento_norma_index_html', page, step, _['sequence-length'])">
+       </ul>
+     </nav>
+    </dtml-if>
+    </dtml-if sequence-end>
+ <dtml-else>
+    <p><td>Nenhum tipo de relacionamento cadastrado.</p>
+ </dtml-in>
+
+<dtml-var standard_html_footer>

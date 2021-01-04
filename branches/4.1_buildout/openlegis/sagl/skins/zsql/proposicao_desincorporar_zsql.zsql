@@ -1,0 +1,36 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_mat_ou_doc="" cod_emenda="" cod_substitutivo=""
+max_rows : 1
+max_cache : 100
+</dtml-comment>
+UPDATE
+    proposicao
+    LEFT JOIN tipo_proposicao tp ON proposicao.tip_proposicao = tp.tip_proposicao
+
+SET
+    <dtml-if expr="cod_mat_ou_doc and not cod_emenda and not cod_substitutivo">
+      cod_mat_ou_doc = null,
+    </dtml-if>
+    <dtml-if expr="cod_emenda">
+      cod_mat_ou_doc = null,
+      cod_emenda = null,
+    </dtml-if>
+    <dtml-if expr="cod_substitutivo">
+      cod_mat_ou_doc = null,
+      cod_substitutivo = null,
+    </dtml-if>
+    dat_recebimento = null
+
+<dtml-sqlgroup where>
+    <dtml-sqltest cod_mat_ou_doc    op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_emenda        op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_substitutivo  op="=" type="int" optional><dtml-and>
+    <dtml-if cod_mat_ou_doc>
+        ind_mat_ou_doc='M' AND
+    <dtml-elif expr="cod_emenda or cod_substitutivo">
+        ind_mat_ou_doc='D' AND
+    </dtml-if>
+    proposicao.ind_excluido = 0
+</dtml-sqlgroup>
+

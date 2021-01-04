@@ -1,0 +1,92 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : autor ano tipo="" tramLocal="" status="" dat_prazofim="" texto=""
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT
+     m.num_ident_basica, 
+     t.des_tipo_materia, 
+     m.ano_ident_basica, 
+     m.txt_ementa, m.cod_materia,
+     if (ut.cod_orgao is not null,orgao.nom_orgao,
+        if (ut.cod_parlamentar > 0,parlamentar.nom_parlamentar,comissao.nom_comissao)) as nom_unidade_join, 
+     st.des_status,
+     tra.txt_tramitacao,
+     DATE_FORMAT(tra.dat_fim_prazo,'%d/%m/%Y') as dat_fim_prazo
+
+FROM 
+     materia_legislativa m 
+     LEFT JOIN tipo_materia_legislativa t ON m.tip_id_basica = t.tip_materia
+     LEFT JOIN autoria au ON au.cod_materia = m.cod_materia
+     LEFT JOIN autor ON autor.cod_autor = au.cod_autor
+     LEFT JOIN tipo_autor ON autor.tip_autor = tipo_autor.tip_autor   
+     LEFT JOIN tramitacao tra ON tra.cod_materia = m.cod_materia
+     LEFT JOIN status_tramitacao st ON tra.cod_status = st.cod_status
+     LEFT JOIN unidade_tramitacao ut ON tra.cod_unid_tram_dest = ut.cod_unid_tramitacao
+     LEFT JOIN comissao ON autor.cod_comissao = comissao.cod_comissao
+     LEFT JOIN bancada ON autor.cod_bancada = bancada.cod_bancada
+     LEFT JOIN parlamentar ON autor.cod_parlamentar = parlamentar.cod_parlamentar  
+     LEFT JOIN orgao ON ut.cod_orgao = orgao.cod_orgao
+
+WHERE
+     au.cod_autor = <dtml-sqlvar autor type="int" optional> and
+     au.cod_materia = m.cod_materia and
+     au.ind_excluido = 0 and
+     m.ind_excluido = 0 and
+     m.ano_ident_basica = <dtml-sqlvar ano type="int"> 
+    <dtml-if expr="tramLocal">
+     and tra.cod_unid_tram_dest = <dtml-sqlvar tramLocal type="int" optional> 
+    </dtml-if> 
+     and tra.ind_ult_tramitacao = 1
+     and tra.ind_excluido = 0
+     and m.cod_materia = tra.cod_materia
+   <dtml-if expr="texto">
+     AND (MATCH(tra.txt_tramitacao)
+      against (<dtml-sqlvar texto type="string"> IN BOOLEAN MODE)
+      <dtml-let texto="'%'+texto+'%'">
+        OR <dtml-sqltest texto column="tra.txt_tramitacao" type="string" op="like">)
+      </dtml-let>
+   </dtml-if>      
+   <dtml-if expr="tipo and tipo!=''">
+    AND (
+        <dtml-if expr="pysc.verifica_lista_pysc(tipo)">
+           m.tip_id_basica in (<dtml-var "tipo" sql_quote>)
+         <dtml-else>
+           m.tip_id_basica in (<dtml-var expr="tipo[1:-1]">)
+        </dtml-if>
+      )
+   </dtml-if>
+    <dtml-if status>
+     and tra.cod_status = <dtml-sqlvar status type="int">  
+    </dtml-if>
+    <dtml-if dat_prazofim>
+     and tra.dat_fim_prazo <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_prazofim)" type="nb">
+    </dtml-if> 
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+ <dtml-if expr="isAnon">
+   AND t.ind_publico = 1
+ </dtml-if>
+</dtml-let>
+
+ORDER BY
+     t.des_tipo_materia, 
+    <dtml-if dat_prazofim>
+     tra.dat_fim_prazo,
+    </dtml-if> 
+     m.num_ident_basica
+
+
+
+
+
+
+
+
+
+
+
+
+
+

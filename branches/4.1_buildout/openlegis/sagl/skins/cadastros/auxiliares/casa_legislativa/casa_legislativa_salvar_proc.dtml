@@ -1,0 +1,77 @@
+<dtml-in expr="zsql.localidade_obter_zsql(sgl_uf = lst_sgl_uf, tip_localidade='M', nom_localidade_pesq=txt_municipio)">
+  <dtml-call expr="REQUEST.set('cod_localidade', cod_localidade)">
+<dtml-else>
+  <dtml-let mensagem="'A localidade especificada não existe!'"> 
+     <dtml-var mensagem_emitir>
+     <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-let> 
+</dtml-in>
+
+<dtml-unless erro>
+  <dtml-try> 
+    <dtml-with expr="sapl_documentos.props_sagl">   
+      <dtml-call expr="manage_changeProperties
+        (cod_casa=REQUEST['txt_cod_casa'], 
+        nom_casa=REQUEST['txt_nom_casa'],
+        sgl_casa=REQUEST['txt_sgl_casa'],
+        end_casa=REQUEST['txt_end_casa'],
+        cod_localidade=REQUEST['cod_localidade'],     
+        num_cep=REQUEST['txt_num_cep'],
+        num_tel=REQUEST['txt_num_tel'],
+        num_fax=REQUEST['txt_num_fax'],
+	cor_fundo=REQUEST['txt_cor_fundo'],
+	cor_borda=REQUEST['txt_cor_borda'],
+	cor_principal=REQUEST['txt_cor_principal'],
+        txt_senha_inicial=REQUEST['txt_txt_senha_inicial'],
+        end_email_casa=REQUEST['txt_end_email_casa'],
+        end_web_casa=REQUEST['txt_end_web_casa'],
+        txt_informacao_geral=REQUEST['txt_informacao_geral'],
+        recaptcha_key=REQUEST['txt_recaptcha_key'],
+        numero_protocolo_anual=REQUEST['rad_protocolo'],
+        acompanhamento_materia=REQUEST['rad_acompanhamento'],
+        restpki_access_token=REQUEST['txt_restpki_access_token']
+        )">
+  </dtml-with>
+</dtml-try>
+</dtml-unless>
+
+<dtml-call expr="REQUEST.set('erro', 0)">   
+<dtml-if expr="radTI=='S'">                
+    <dtml-call expr="REQUEST.set('existe_logo', 0)">
+    <dtml-if expr="(_.int(hdn_file)==1)">
+       <dtml-call expr="REQUEST.set('id_logo', 'logo_casa.gif')">
+         <dtml-in expr="sapl_documentos.props_sagl.objectValues()"> 
+            <dtml-if expr="id() == 'logo_casa.gif'">
+               <dtml-let logo="_.getattr(sapl_documentos.props_sagl,id_logo) ">
+                  <dtml-call expr="REQUEST.set('existe_logo', 1)">    
+                  <dtml-try>
+                    <dtml-call "logo.manage_upload(file=file_nom_logo)">
+                  <dtml-except>
+                     <dtml-call expr="REQUEST.set('erro', 1)">              
+                  </dtml-try>
+                </dtml-let>
+            </dtml-if>
+         </dtml-in>
+    </dtml-if>
+
+<dtml-elif expr="radTI=='I'">  
+    <dtml-call expr="REQUEST.set('existe_logo', 0)">              
+    <dtml-if "(not existe_logo) and (_.int(hdn_file)==1)">
+       <dtml-try>    
+         <dtml-call expr="REQUEST.set('id_logo', 'logo_casa.gif')">
+          <dtml-call expr="sapl_documentos.props_sagl.manage_addImage(id=id_logo,file=file_nom_logo)">
+       <dtml-except> 
+         <dtml-call expr="REQUEST.set('erro', 1)">              
+       </dtml-try>      
+    </dtml-if>
+
+<dtml-elif expr="radTI=='E'">
+   <dtml-call expr="REQUEST.set('id_logo', 'logo_casa.gif')">
+   <dtml-call "sapl_documentos.props_sagl.manage_delObjects(id_logo)">
+</dtml-if>
+
+<dtml-let mensagem="'Casa Legislativa salva com sucesso!'" url=hdn_url>
+   <dtml-var mensagem_emitir>
+</dtml-let>
+
+

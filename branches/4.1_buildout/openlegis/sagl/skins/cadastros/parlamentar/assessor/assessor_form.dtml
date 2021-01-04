@@ -1,0 +1,231 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/data_validar.js" "></script>
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/email_validar.js" "></script>
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/cpf_validar.js" "></script>
+
+<script type="text/javascript">
+
+function assessor_criticar(form){  
+
+  var form = document.assessor_form;
+
+  if (form.txt_nom_assessor.value == "") {
+    $('#txt_nom_assessor').addClass('is-invalid');
+    form.txt_nom_assessor.focus();
+    return false;
+  }
+
+  if (form.txt_des_cargo.value == "") {
+    $('#txt_des_cargo').addClass('is-invalid');
+    form.txt_des_cargo.focus();
+    return false;
+  }
+
+  if (form.txt_dat_nomeacao.value == "") {
+    $('#txt_dat_nomeacao').addClass('is-invalid');
+    form.txt_dat_nomeacao.focus();
+    return false;
+  }
+
+  if (form.txt_dat_nascimento.value != "" && !IsValidDate(form.txt_dat_nascimento.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data de nascimento válida!"});
+    form.txt_dat_nascimento.focus();
+    return false;
+  }      
+
+  if (form.txt_num_cpf.value != "" && !cpf_validar(form.txt_num_cpf.value)) {
+    form.txt_num_cpf.focus();
+    return false;       
+  }
+
+  if (form.txt_end_email.value != "" && !email_validar(form.txt_end_email.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite um endereço de email  válido!"});
+    form.txt_end_email.focus();
+    return false;
+  }
+ 
+  if (form.txt_dat_nomeacao.value != "" && !IsValidDate(form.txt_dat_nomeacao.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data de nomeação válida!"});
+    form.txt_dat_nomeacao.focus();
+    return false;
+  } 
+
+  if (form.txt_dat_exoneracao.value != "" && !IsValidDate(form.txt_dat_exoneracao.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data de exoneração válida!"});
+    form.txt_dat_exoneracao.focus();
+    return false;
+  }
+
+  if (form.txt_dat_exoneracao.value != "") {
+     var dat_nomeacao = form.txt_dat_nomeacao.value.substring(6,10) + form.txt_dat_nomeacao.value.substring(3,5) + form.txt_dat_nomeacao.value.substring(0,2);
+     var dat_exoneracao = form.txt_dat_exoneracao.value.substring(6,10) + form.txt_dat_exoneracao.value.substring(3,5) + form.txt_dat_exoneracao.value.substring(0,2);
+     if (dat_nomeacao > dat_exoneracao) {
+        $.showAlert({title: "Mensagem do Sistema", body: "A data de exoneração deve ser igual ou posterior à  data de nomeação!"});
+        form.txt_dat_exoneracao.focus();
+        return false;
+     }
+  }
+
+  if ((form.rad_assessor_eh_usuario[0].checked) && (!form.txt_login.disabled) && (form.txt_login.value == '')) {
+     $.showAlert({title: "Mensagem do Sistema", body: "Informe um login para o assessor, ou marque 'Não' caso não deseje credenciá-lo como usuário do sistema!"});
+     form.txt_login.focus();
+     return false;
+  }
+
+  form.txt_login.disabled=0;
+
+  form.submit();
+}
+
+function setLogin (form, allowLogin, previousLogin) {
+   if (allowLogin) {
+      if (previousLogin) {
+         form.txt_login.value = previousLogin;
+         form.txt_login.disabled = 1
+      } else {
+         $.showAlert({title: "Mensagem do Sistema", body: "Informe um login para o Assessor!"});
+         form.txt_login.disabled = 0;
+         form.txt_login.focus()
+      }
+   } else {
+      if (previousLogin) 
+         form.txt_login.value = ''; 
+      form.txt_login.disabled = 1
+   }        
+}
+
+</script>
+
+<dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+  <dtml-call expr="REQUEST.set('nom_parlamentar', nom_parlamentar)">
+  <input type="hidden" name="nom_parlamentar" value="<dtml-var nom_parlamentar>"/>
+</dtml-in>
+
+<form name="assessor_form" method="post" action="assessor_salvar_proc">
+ <legend>Dados Pessoais</legend>
+  <div class="form-row"> 
+     <div class="col-8 col-sm-9 mb-3">
+        <label for="txt_nom_assessor" class="form-label required">Nome do Assessor</label>
+        <input class="form-control" type="text" name="txt_nom_assessor" id="txt_nom_assessor"  value="<dtml-var nom_assessor missing>" maxlength="50" />
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+     </div>
+     <div class="col-4 col-sm-3 mb-3">
+        <label for="txt_dat_nascimento">Nascimento</label>
+        <input class="form-control date" type="text" name="txt_dat_nascimento" id="txt_dat_nascimento"  value="<dtml-var dat_nascimento missing null>" />
+     </div>
+   </div>   
+  <div class="form-row"> 
+     <div class="col-12 col-sm-6 mb-3">
+        <label for="txt_des_cargo" class="form-label required">Cargo</label>
+        <input class="form-control" type="text" name="txt_des_cargo" id="txt_des_cargo"  value="<dtml-var des_cargo missing>" maxlength="50" />
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+     </div>
+     <div class="col-6 col-sm-3 mb-3">
+        <label for="txt_dat_nomeacao" class="form-label required">Nomeação</label>
+        <input class="form-control date" type="text" name="txt_dat_nomeacao" id="txt_dat_nomeacao"  value="<dtml-var dat_nomeacao missing null>" />
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+     </div>
+     <div class="col-6 col-sm-3 mb-3">
+        <label for="txt_dat_exoneracao">Exoneração</label>
+        <input class="form-control date" type="text" name="txt_dat_exoneracao" id="txt_dat_exoneracao"  value="<dtml-var dat_exoneracao missing null>" />
+     </div>
+   </div> 
+  <div class="form-row"> 
+     <div class="col-6 col-sm-4 mb-3">
+        <label for="txt_num_cpf">CPF</label>
+        <input class="form-control cpf" type="text" name="txt_num_cpf" id="txt_num_cpf"  value="<dtml-var num_cpf missing null>" maxlength="14" />
+     </div>
+     <div class="col-6 col-sm-4 mb-3">
+        <label for="txt_num_rg">RG</label>
+        <input class="form-control" type="text" name="txt_num_rg" id="txt_num_rg"  value="<dtml-var num_rg missing null>" maxlength="15" />
+     </div>
+     <div class="col-12 col-sm-4 mb-3">
+        <label for="txt_num_tit_eleitor">Tí­tulo de Eleitor</label>
+        <input class="form-control" type="number" name="txt_num_tit_eleitor" id="txt_num_tit_eleitor"  value="<dtml-var num_tit_eleitor missing null>" maxlength="15" />
+     </div>
+  </div> 
+  <div class="form-row">  
+     <div class="col-8 mb-3">
+        <label for="txt_end_residencial">Endereço Residencial</label>
+        <input class="form-control" type="text" name="txt_end_residencial" value="<dtml-var end_residencial missing null>" maxlength="100" />
+     </div>
+     <div class="col-4 mb-3">
+        <label for="txt_num_cep_resid">CEP</label>
+        <input class="form-control cep" type="text" name="txt_num_cep_resid" value="<dtml-var num_cep_resid missing null>" maxlength="9" />
+     </div>
+  </div> 
+  <div class="form-row"> 
+     <div class="col-12 col-sm-4 mb-3">
+        <label for="txt_end_email">E-mail</label>
+        <input class="form-control" type="text" name="txt_end_email" id="txt_end_email"  value="<dtml-var end_email missing null>" maxlength="100" />
+     </div>
+     <div class="col-6 col-sm-4 mb-3">
+        <label for="txt_num_tel_celular">Celular</label>
+        <input class="form-control phone" type="text" name="txt_num_tel_celular" id="txt_num_tel_celular"  value="<dtml-var num_tel_celular missing null>" maxlength="50" />
+     </div>
+     <div class="col-6 col-sm-4 mb-3">
+        <label for="txt_num_tel_resid phone">Telefone Residencial</label>
+        <input class="form-control" type="text" name="txt_num_tel_resid" id="txt_num_tel_resid"  value="<dtml-var num_tel_resid missing null>" maxlength="50" />
+     </div>
+  </div> 
+ <div class="form-row">  
+   <div class="col-12 mb-3">
+      <label for="txa_txt_observacao">Observações</label>
+      <textarea class="form-control auto-resize" name="txa_txt_observacao" id="txa_txt_observacao" cols="40" rows="1"><dtml-var txt_observacao missing null=""></textarea>
+   </div>
+ </div> 
+
+ <dtml-unless expr="_.has_key('col_username')">
+   <dtml-call expr="REQUEST.set('col_username',None)">
+ </dtml-unless>
+ <legend>Acesso ao Sistema</legend>
+ <div class="form-row">    
+   <div class="col-6 mb-3">
+      <label class="d-block">Conceder acesso ao módulo do Vereador?</label>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="rad_assessor_eh_usuario" id="rad1" value="Sim" <dtml-unless expr="col_username==None">checked</dtml-unless> onClick="setLogin(document.assessor_form,1,'<dtml-var col_username null="">')" />
+        <label class="form-check-label" for="rad1">Sim</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="rad_assessor_eh_usuario" id="rad2" value="Não" <dtml-if expr="col_username==None">checked</dtml-if> onClick="setLogin(document.assessor_form,0,'<dtml-var col_username null="">')" />
+        <label class="form-check-label" for="rad2">Não</label>
+      </div>
+   </div>
+   <div class="col-6 mb-3">
+         <label for="txt_login">Login</label>
+         <input class="form-control" type="text" name="txt_login" maxlength="20" size="20" value="<dtml-var col_username null="">" disabled />
+   </div>
+ </div> 
+ <input type="hidden" name="hdn_cod_assessor" value="<dtml-var cod_assessor missing>"/>
+ <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar>"/>
+ <input type="hidden" name="hdn_col_username" value="<dtml-var col_username missing>"/>
+ <dtml-if cod_assessor>
+   <input type="hidden" name="hdn_url" value="assessor_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>&cod_assessor=<dtml-var cod_assessor missing>&modal=1"/>
+ </dtml-if>
+ <input type="hidden" name="modal" value="1"/>
+
+ <div class="text-left">
+    <input class="btn btn-primary" type="button" name="btn_assessor_salvar" value="Salvar" onClick="assessor_criticar()"/>
+    <dtml-if cod_assessor>
+      <a class="btn btn-danger" href="assessor_excluir_proc?cod_assessor=<dtml-var cod_assessor missing>&hdn_cod_parlamentar=<dtml-var cod_parlamentar>&modal=1" data-confirm="Deseja realmente excluir o assessor?">Excluir</a>
+    </dtml-if>
+ </div>
+  <div class="row">
+     <div class="col-md-12 mt-2">
+        <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+     </div>
+  </div>
+</form>
+
+<script>
+autoResizeTextarea(document.querySelectorAll("textarea.auto-resize"), {maxHeight: 120})
+</script>  
+
+<dtml-var standard_html_footer>

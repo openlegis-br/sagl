@@ -1,0 +1,110 @@
+<dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+  <dtml-if sequence-start>  
+    <h1 class="firstHeading">Documentos Administrativos</h1> 
+    <div class="table-responsive">
+    <table class="table">
+     <thead class="table-secondary">    
+      <tr>
+        <th>Identificação do Documento</th>
+        <th width="15%">Data</th>
+        <th width="15%">Arquivo</th>
+      </tr>
+     </thead>
+  </dtml-if sequence-start>
+    <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
+      <tr>
+        <td>
+              <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia','Operador Modulo Administrativo'])">
+                 <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+              <dtml-else>
+                 <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+              </dtml-if>
+                <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento> </a> <dtml-if txt_interessado> - <dtml-var txt_interessado missing null=""> - </dtml-if><dtml-var txt_assunto></td>
+        <td>
+           <dtml-var dat_documento>
+        </td>
+        <td>   
+           <dtml-call expr="REQUEST.set('texto_original', _.str(cod_documento)+'_texto_integral.pdf')">
+           <dtml-call expr="REQUEST.set('texto_assinado', _.str(cod_documento)+'_texto_integral_signed.pdf')">
+           <dtml-if "_.hasattr(sapl_documentos.administrativo,texto_original)">
+              <a target="_blank" href="<dtml-var portal_url>/sapl_documentos/administrativo/<dtml-var texto_original>">
+                 <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;"></i>Texto Integral
+              </a>
+           <dtml-elif "_.hasattr(sapl_documentos.administrativo,texto_assinado)">
+              <a target="_blank" href="<dtml-var portal_url>/sapl_documentos/administrativo/<dtml-var texto_assinado>">
+                 <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;"></i>Documento Assinado
+              </a>
+           <dtml-else>
+             <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;color: #e9e9e9"></i>
+           </dtml-if> 
+        </td>
+      </tr>
+    </dtml-in>
+  <dtml-if sequence-end>
+    </table>
+    </div>
+  </dtml-if sequence-end>   
+</dtml-in>
+
+<h1 class="firstHeading">Documentos Acessórios</h1> 
+<dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+  <dtml-if sequence-start> 
+    <div class="table-responsive">
+    <table class="table">
+     <thead class="table-secondary">    
+       <tr> 
+          <th width="15%">Data</th>
+          <th width="15%">Tipo</th>
+          <th>Descrição</th>
+          <th>Autoria</th>
+          <th width="15%">Arquivo</th>
+       </tr>     
+     </thead>
+    </dtml-if sequence-start> 
+       <tr> 
+          <td>
+            <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Documento Acessório" data-src="documento_acessorio/documento_acessorio_mostrar_proc?cod_documento=<dtml-var cod_documento missing>&modal=1">
+             <dtml-var dat_documento missing null="">
+            </a>
+          </td>
+          <td>
+              <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0,tip_documento=tip_documento)">
+                 <dtml-var des_tipo_documento missing null="">
+              </dtml-in></td>
+          <td><dtml-var nom_documento missing null=""></td>
+          <td><dtml-var nom_autor_documento missing null=""></td>
+          <td>
+             <dtml-call expr="REQUEST.set('id_doc', _.str(cod_documento)+'.pdf')">
+             <dtml-if "_.hasattr(sapl_documentos.materia,id_doc)">
+                <dtml-let documento="_.getattr(sapl_documentos.materia,id_doc).absolute_url"> 
+                   <a target="_blank" href="<dtml-var documento>" title="Texto Integral"><i class="fa fa-file-pdf" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>                           
+                </dtml-let>
+             <dtml-elif expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
+                <dtml-in expr="zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento)">
+                   <dtml-if cod_proposicao>
+                      <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+                         <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+                            <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                              <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                              <a target="blank" href="<dtml-var proposicao>" title="Proposição Eletrônica"><i class="fas fa-certificate" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>
+                            </dtml-let>
+                         </dtml-if>
+                      </dtml-let>
+                   </dtml-if>             
+                </dtml-in>
+             <dtml-else>
+                <i class="fa fa-file-pdf" style="font-size: 21px; color: #e9e9e9"></i>                  
+             </dtml-if>
+          </td>
+       </tr>
+  <dtml-if sequence-end>
+   </table>
+   </div>
+  </dtml-if sequence-end>
+<dtml-else>
+       <p>Nenhum documento acessório cadastrado.</p>
+</dtml-in>
+
+  <button type="button" class="btn m btn-primary d-print-none mt-3" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Documento Acessório" data-src="documento_acessorio/documento_acessorio_form?cod_materia=<dtml-var cod_materia>&modal=1">Incluir Documento Acessório</button>
+</form>
+

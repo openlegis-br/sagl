@@ -1,0 +1,123 @@
+<dtml-var standard_html_header>
+
+<dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+  <dtml-call expr="REQUEST.set('nom_comissao', nom_comissao)">
+</dtml-in>
+
+<script type="text/javascript">
+<!--
+function submeter(endereco){
+var form = document.comissao_form;      
+endereco += '?cod_comissao=<dtml-var cod_comissao>&incluir=1';
+location.href = endereco;
+}   
+//-->
+</script>
+
+<a id="ajuda" href="<dtml-var portal_url>/ajuda/modulo_comissoes">Ajuda</a>
+
+<h1 class="firstHeading"><dtml-var nom_comissao></h1> 
+
+<dtml-if cod_comissao>
+<div id="barra-conteudo">
+<ul>
+   <li>
+      <a href="<dtml-var portal_url>/consultas/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>">Início</a>
+   </li>
+   <li>
+      <a href="<dtml-var portal_url>/consultas/comissao/composicao/index_html?cod_comissao=<dtml-var cod_comissao>">Composição</a>
+   </li>
+   <li>
+      <a href="<dtml-var portal_url>/consultas/comissao/materia/index_html?cod_comissao=<dtml-var cod_comissao>">Matérias</a>
+   </li>
+   <li>
+      <a class="selecionado">Reuniões</a>
+   </li>
+   <li>
+      <a href="<dtml-var portal_url>/consultas/comissao/documento/index_html?cod_comissao=<dtml-var cod_comissao>">Documentos</a>
+   </li>
+</ul>
+</div>
+</dtml-if>
+
+<form name="reuniao_index_form" action="reuniao_comissao_form">
+ <input type="hidden" name="cod_comissao" value="<dtml-var cod_comissao>" />
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+<dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+<dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+<dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+<dtml-call "REQUEST.set('step', 12)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+ <dtml-in expr="zsql.reuniao_comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)" size="step" start="start" orphan=0>
+    <dtml-if sequence-start>
+      <fieldset><legend>Reuniões</legend>
+      <table class="table">
+        <tr>
+          <th width="10%">Número</th>
+          <th width="20%">Data / Horário</th>
+          <th width="10%">Pauta</th>
+          <th width="10%">Ata</th>
+          <th>Observações</th>
+        </tr>
+  <dtml-if previous-sequence>
+     <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+  </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+       <dtml-if sequence-even>
+         <tr>
+       <dtml-else>
+         <tr class="even">
+       </dtml-if>
+             <td><strong><dtml-var num_reuniao></strong></td>
+             <td><strong><dtml-var dat_inicio_reuniao> <dtml-if hr_inicio_reuniao>- <dtml-var hr_inicio_reuniao missing null=""></strong></dtml-if></td>
+              <td>
+                <dtml-let id_pauta="_.str(cod_reuniao)+'_pauta.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_pauta)">
+                    <dtml-let pauta="_.getattr(sapl_documentos.reuniao_comissao,id_pauta).absolute_url">
+                      <a target="_blank" href="<dtml-var pauta>"><img align="middle" border="0" src="<dtml-var portal_url>/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                    </dtml-let>
+                  <dtml-else>
+                  <img class="img-disabled" src="<dtml-var portal_url>/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                  </dtml-if>
+                </dtml-let>
+              </td>
+              <td>
+                <dtml-let id_ata="_.str(cod_reuniao)+'_ata.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_ata)">
+                    <dtml-let ata="_.getattr(sapl_documentos.reuniao_comissao,id_ata).absolute_url">
+                      <a target="_blank" href="<dtml-var ata>"><img align="middle" border="0" src="<dtml-var portal_url>/imagens/archiv.gif" alt="Texto Integral" title="Texto Integral"></a>
+                    </dtml-let>
+                  <dtml-else>
+                  <img class="img-disabled" src="<dtml-var portal_url>/imagens/archiv.gif" alt="Arquivo não disponível" title="Arquivo não disponível">
+                  </dtml-if>
+                </dtml-let>
+              </td>
+             <td><dtml-var txt_observacao missing null=""></td>
+        </tr>
+    <dtml-if sequence-end>
+      </table>
+     </fieldset>
+  <dtml-if next-sequence>
+    <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+ </dtml-if next-sequence>
+ <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+  <p align="center"><b> 
+   <dtml-var "pysc.PageListOutput_pysc('reuniao_index_html', page, step, _['sequence-length'], cod_comissao=cod_comissao)">
+  </p>
+  </dtml-if>
+    </dtml-if sequence-end>
+<dtml-else>
+ <fieldset><legend>Reuniões</legend>
+ <p>Nenhuma reunião cadastrada para esta comissão.</p>
+ </fieldset>
+</dtml-in>
+</form>
+<dtml-var standard_html_footer>
+

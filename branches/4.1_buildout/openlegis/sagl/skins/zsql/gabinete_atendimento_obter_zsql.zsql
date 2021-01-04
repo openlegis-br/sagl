@@ -1,0 +1,37 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_atendimento cod_parlamentar cod_eleitor ind_excluido=0
+max_rows : 10000
+max_cache : 100
+</dtml-comment>
+SELECT
+     a.cod_atendimento,
+     e.cod_parlamentar,
+     a.cod_eleitor,
+     e.nom_eleitor,
+     DATE_FORMAT(a.dat_atendimento, '%d/%m/%Y') as dat_atendimento,
+     a.txt_assunto,
+     DATE_FORMAT(a.dat_resultado, '%d/%m/%Y') as dat_resultado,
+     a.txt_resultado,
+     a.nom_atendente,
+     a.txt_status,
+     a.ind_excluido
+
+FROM   
+     gabinete_atendimento a
+     LEFT JOIN gabinete_eleitor e ON a.cod_eleitor = e.cod_eleitor
+       
+  <dtml-sqlgroup where>
+    <dtml-sqltest cod_atendimento                             op="="  type="int"  optional> <dtml-and>
+    <dtml-sqltest ncod_atendimento                            op="!=" type="int"  optional> <dtml-and>
+    <dtml-sqltest cod_eleitor      column="a.cod_eleitor"     op="="  type="int"  optional> <dtml-and>
+    <dtml-sqltest cod_parlamentar  column="a.cod_parlamentar" op="="  type="int"> <dtml-and>
+    <dtml-sqltest txt_status                                  op="="  type="nb"   optional> <dtml-and>
+    <dtml-sqltest ind_excluido     column="a.ind_excluido"    op="="  type="int"  optional>
+    AND a.cod_parlamentar IS NOT NULL
+  </dtml-sqlgroup>
+
+ORDER BY 
+    a.dat_atendimento DESC
+
+

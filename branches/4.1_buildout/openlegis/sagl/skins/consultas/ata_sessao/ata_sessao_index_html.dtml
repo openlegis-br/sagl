@@ -1,0 +1,147 @@
+<dtml-var standard_html_header>
+
+<h1 class="firstHeading">Atas das Sessões</h1>
+
+<form name="pauta_form" method="post" action="ata_mostrar">
+
+<div class="row">
+  <div class="col-6 mt-1 mb-4">
+     <label for="lst_ano_sessao">Selecione o Ano:</label>
+     <select class="custom-select jumpmenu" id="lst_ano_sessao" name="lst_ano_sessao">
+         <dtml-in expr="zsql.sessao_plenaria_listar_ano_zsql()">
+             <option value="<dtml-var ACTUAL_URL>?ano_sessao_sel=<dtml-var ano_sessao missing>" 
+               <dtml-if expr="((not _.has_key('ano_sessao_sel') and (_.DateTime().year() == ano_sessao)))
+                                or (not _.has_key('ano_sessao_sel') and (_.DateTime().year() > ano_sessao))
+                                or (_.has_key('ano_sessao_sel') and ano_sessao == _.int(ano_sessao_sel))">
+                 selected
+                 <dtml-call expr="REQUEST.set('ano_sessao_sel', ano_sessao)">
+               </dtml-if>>
+                <dtml-var ano_sessao missing>
+             </option>
+         </dtml-in>
+     </select>
+  </div>
+  <div class="col-6 mt-1 mb-4">
+     <label for="lst_tip_sessao">Tipo de Sessão:</label>
+     <select class="custom-select jumpmenu" id="lst_tip_sessao" name="lst_tip_sessao">
+       <option value="<dtml-var ACTUAL_URL>?ano_sessao_sel=<dtml-var ano_sessao_sel missing>">Todos</option>
+         <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(ind_excluido=0)">
+             <option value="<dtml-var ACTUAL_URL>?ano_sessao_sel=<dtml-var ano_sessao_sel missing>&tip_sessao_sel=<dtml-var tip_sessao missing>"
+               <dtml-if expr="(_.has_key('tip_sessao_sel') and tip_sessao == _.int(tip_sessao_sel))">
+                  selected
+                 <dtml-call expr="REQUEST.set('tip_sessao_sel', tip_sessao)">
+               </dtml-if>>
+                <dtml-var nom_sessao>
+             </option>
+         </dtml-in>
+     </select>
+   </div>
+</div>
+
+  <dtml-if expr="not _.has_key('tip_sessao_sel')">
+        <dtml-call "REQUEST.set('tip_sessao_sel', '-1')">
+  </dtml-if>
+
+  <dtml-if expr="not _.has_key('ano_sessao_sel')">
+        <dtml-call "REQUEST.set('ano_sessao_sel', '')">
+  </dtml-if>
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 10)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+  <dtml-in expr="zsql.sessao_plenaria_obter_zsql(ano_sessao=ano_sessao_sel, tip_sessao=tip_sessao_sel, ind_excluido=0)" size="step" start="start" orphan=0>
+
+    <dtml-if sequence-start>
+     <dtml-if previous-sequence>
+        <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+     </dtml-if previous-sequence>
+     <div class="card mb-3">
+       <div class="card-header">
+        <div class="row">
+          <div class="col-12">
+            <i class="far fa-list-alt"></i> Número de sessões: <dtml-var sequence-length>
+          </div>
+        </div>
+       </div>
+       <ul class="list-group list-group-flush">
+    </dtml-if sequence-start>
+
+   <li class="list-group-item">
+     <div class="row">
+       <div class="col-12 col-md-7">
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria'])">
+            <a href="<dtml-var portal_url>/cadastros/sessao_plenaria/sessao_plenaria_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
+         <dtml-else>
+            <a href="<dtml-var portal_url>/consultas/sessao_plenaria/agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
+         </dtml-if>
+         <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+             <b><i class="fas fa-caret-right"></i> <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> - <dtml-var dat_inicio_sessao></b></a>
+         </dtml-in>  
+       </div>
+       <div class="col-12 col-md-5 mt-1 mb-sm-0 text-left text-md-right">
+         <dtml-let id_ata="_.str(cod_sessao_plen)+'_ata_sessao.pdf'">
+            <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_ata)">
+               <dtml-let ata="_.getattr(sapl_documentos.ata_sessao,id_ata).absolute_url">
+                  <a class="btn btn-sm btn-link" href="<dtml-var ata>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Ata da Sessão</span></a>
+               </dtml-let>
+            </dtml-if>
+         </dtml-let>    
+       </div>
+     </div>
+
+ <dtml-if sequence-end>
+   </ul>
+  </div>
+ <dtml-if next-sequence>
+    <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+ </dtml-if next-sequence>
+ <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+      <nav aria-label="Paginação">
+        <ul class="pagination justify-content-center mb-0">
+   <dtml-var "pysc.PageListOutput_pysc('ata_sessao_index_html', page, step, _['sequence-length'], ano_sessao_sel=ano_sessao_sel, tip_sessao_sel=tip_sessao_sel, ind_excluido=ind_excluido)">
+        </ul>
+      </nav>
+  </dtml-if>
+  </dtml-if sequence-end>
+<dtml-else>
+ <div class="row">
+    <div class="col-12">
+       Nehnuma sessão cadastrada.
+    </div>
+ </div>
+</dtml-in>
+</form>
+
+<script type="text/javascript">
+    function initJumpMenus() {
+        // Turns all <select> elements with the 'jumpmenu' class into jump menus
+        var selectElements = document.getElementsByTagName("select");
+        for( i = 0; i < selectElements.length; i++ ) {
+            // Check for the class and make sure the element has an ID
+            if( selectElements[i].className == "custom-select jumpmenu" && document.getElementById(selectElements[i].id) != "" ) {
+                jumpmenu = document.getElementById(selectElements[i].id);
+                jumpmenu.onchange = function() {
+                    if( this.options[this.selectedIndex].value != '' ) {
+                        // Redirect
+                        location.href=this.options[this.selectedIndex].value;
+                    }
+                }
+            }
+        }
+    }
+    window.onload = function() {
+        initJumpMenus();
+    }
+</script>
+
+<dtml-var standard_html_footer>

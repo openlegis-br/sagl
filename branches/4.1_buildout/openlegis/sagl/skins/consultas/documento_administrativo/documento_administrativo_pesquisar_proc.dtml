@@ -1,0 +1,260 @@
+<dtml-var standard_html_header>
+
+ <div class="row mb-2">
+      <div class="col-12 col-sm-8 align-self-center">
+        <h1 class="firstHeading">Pesquisa de Documentos</h1>
+      </div>
+      <div class="col-12 col-sm-4 text-left text-sm-right mb-2">
+       <div class="btn-group" role="group">      
+        <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/consultas/documento_administrativo" ><i class="fa fa-fw fa-search"></i> Nova Pesquisa</a>
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Materia'])"> 
+        <a class="btn btn-primary btn-sm d-print-none" href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_form" ><i class="fa fa-fw fa-plus"></i> Incluir Documento</a>
+         </dtml-if>
+       </div>
+      </div>
+ </div>
+
+
+<dtml-if lst_tip_documento>
+    <dtml-call expr="REQUEST.set('lst_tip_documento', str(lst_tip_documento))">
+<dtml-else>
+    <dtml-call expr="REQUEST.set('lst_tip_documento', '')">
+</dtml-if>
+
+<dtml-if expr="REQUEST.get('g-recaptcha-response')!=''">
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 10)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Consulta Modulo Administrativo'])">
+  <dtml-call expr="REQUEST.set('metodo', zsql.documento_administrativo_pesquisar_zsql)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.documento_administrativo_pesquisar_publico_zsql)">
+</dtml-if>
+
+<dtml-in expr="metodo(num_protocolo=pysc.extrai_id_pysc(id=txt_num_protocolo), ano_documento=txt_ano_documento, tip_documento=lst_tip_documento, num_documento=pysc.extrai_id_pysc(id=txt_num_documento), ind_tramitacao=rad_tramitando, des_assunto=txa_txt_assunto, txt_interessado=txa_txt_interessado, cod_status=lst_status, dat_apres1=dt_apres1, cod_unid_tramitacao=lst_localizacao, dat_apres2=dt_apres2, rd_ordem=rd_ordenacao)" size="step" start="start" orphan=0>
+  <dtml-if sequence-start>
+    <dtml-if next-sequence>
+       <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+    </dtml-if>
+    <dtml-if previous-sequence>
+       <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+    </dtml-if>
+    <div class="card mb-3">
+      <div class="card-header">
+       <div class="row">
+      <div class="col-10 col-sm-9 align-self-center">
+         <i class="far fa-list-alt"></i> Resultado: <dtml-var sequence-length> documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>
+      </div>
+      <div class="col-4 col-sm-3 text-right align-self-center">
+       <dtml-let isAnon="portal_membership.isAnonymousUser()">
+        <dtml-if expr="not isAnon">
+         <div class="dropdown d-print-none">
+           <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <i class="fas fa-file-export"></i> Exportar
+           </button>
+           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                     <a class="dropdown-item" href="<dtml-var portal_url>/relatorios/pdf_documento_administrativo_preparar_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">&tipo_documento=<dtml-var "REQUEST.form.get('lst_tip_documento')">" target="_blank"><i class="far fa-file-pdf"></i> PDF</a>
+           </div>
+         </div>
+        </dtml-if>
+       </dtml-let>
+      </div>
+       </div>
+      </div>
+      <ul class="list-group list-group-flush">
+  </dtml-if sequence-start>
+        <li class="list-group-item">
+        <div class="row">
+          <div class="col-12">
+            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+               <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+            <dtml-else>
+               <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+            </dtml-if>
+           <span class="h6 font-weight-bold text-uppercase"><i class="fas fa-caret-right"></i>  <dtml-var des_tipo_documento> nº <dtml-var num_documento>, de <dtml-var dat_documento></span></a> <dtml-if expr="ind_tramitacao == 1"><span class="badge badge-primary float-right">Em Tramitação</span></dtml-if>
+          </div>
+        </div>
+        <div class="row">
+           <div class="col-12">
+              <dtml-var txt_assunto missing>
+           </div>
+        </div>
+        <div class="row">
+           <div class="col-12">
+              <b>Interessado: </b><dtml-var txt_interessado missing>
+           </div>
+        </div>
+        <div class="row">
+           <div class="col-12">
+             <dtml-if num_protocolo>
+                <b>Protocolo Geral: </b><dtml-var num_protocolo>/<dtml-var ano_documento>    
+                <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=num_protocolo,ano_protocolo=ano_documento)">
+                   -  <b>Data de Entrada:</b> <dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"><br />
+                <dtml-else>
+                     <b>Data:</b> <dtml-var dat_documento>
+                </dtml-in>
+             <dtml-else>
+                  <b>Data:</b> <dtml-var dat_documento>
+             </dtml-if>        
+             <dtml-if dat_fim_prazo>
+                 <br /> <b>Prazo de Conclusão: </b> <dtml-var dat_fim_prazo>
+             </dtml-if>
+            </div>
+        </div>   
+                
+        <dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_documento=cod_documento)">
+           <dtml-if sequence-start>
+              <div class="row">
+                <div class="col-12">
+                  <b>Matéria<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculada<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </b>
+           </dtml-if>
+           <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+              <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+	         <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+              <dtml-else>
+	         <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
+              </dtml-if>                     
+              <b><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></a>
+              <dtml-unless sequence-end>,</dtml-unless>
+           </dtml-in>
+           <dtml-if sequence-end>
+                </div>
+              </div>   
+           </dtml-if>
+        </dtml-in>
+
+        <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculado = cod_documento)">
+           <dtml-if sequence-start>
+              <div class="row">
+                <div class="col-12">
+              <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculante<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </b>
+           </dtml-if>
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+              <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculante>">
+           <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+              <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculante>">
+           <dtml-else>
+              <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculante>" >
+           </dtml-if>             
+           <b><dtml-var sgl_tipo_documento_vinculante> <dtml-var num_documento_vinculante>/<dtml-var ano_documento_vinculante></b></a>
+           <dtml-unless sequence-end>,</dtml-unless>
+           <dtml-if sequence-end>
+                </div>
+              </div>   
+           </dtml-if>
+        </dtml-in>
+
+        <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante = cod_documento)">
+           <dtml-if sequence-start>
+              <div class="row">
+                <div class="col-12">
+              <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculado<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </b> 
+           </dtml-if>
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+              <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>">
+           <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+              <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>">
+           <dtml-else>
+              <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>" >  
+           </dtml-if>                            
+           <b><dtml-var sgl_tipo_documento_vinculado> <dtml-var num_documento_vinculado>/<dtml-var ano_documento_vinculado></b></a>
+           <dtml-unless sequence-end>,</dtml-unless>
+           <dtml-if sequence-end>
+                </div>
+              </div>   
+           </dtml-if>
+        </dtml-in>
+
+        <dtml-call expr="REQUEST.set('des_status', '')">
+        <dtml-call expr="REQUEST.set('txt_tramitacao', '')">
+        <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento, ind_ult_tramitacao=1)">
+           <dtml-if cod_unid_tram_dest>
+              <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
+           <dtml-else>
+              <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_local)">
+           </dtml-if>
+           <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram)">
+             <div class="row">
+               <div class="col-12">
+                  <dtml-if cod_orgao>
+                     <b>Localização: </b><dtml-var nom_orgao>
+                  <dtml-elif cod_comissao>
+                     <b>Localização: </b><dtml-var nom_comissao>
+                  <dtml-else> 
+                     <b>Localização: </b><dtml-var nom_parlamentar> 
+                  </dtml-if>
+               </div>
+             </div>
+           </dtml-in>
+           <dtml-call expr="REQUEST.set('des_status', des_status)">
+           <dtml-call expr="REQUEST.set('txt_tramitacao', txt_tramitacao)">
+           <dtml-if des_status>
+              <div class="row">
+                <div class="col-12">
+                   <b>Situação: </b><dtml-var des_status null="">
+                </div>
+              </div>
+           </dtml-if>
+        </dtml-in>
+
+        <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_documento=cod_documento)" mapping>
+          <b>Arquivo Permanente:</b> <dtml-var num_recipiente>
+        </dtml-in>
+
+        <dtml-call expr="REQUEST.set('texto_assinado', _.str(cod_documento)+'_texto_integral_signed.pdf')">
+        <dtml-call expr="REQUEST.set('texto_original', _.str(cod_documento)+'_texto_integral.pdf')">
+        <dtml-if "_.hasattr(sapl_documentos.administrativo,texto_assinado) or _.hasattr(sapl_documentos.administrativo,texto_original)">
+           <div class="row d-print-none">
+             <div class="col-12 text-left mt-1"> 
+                <div class="btn-group btn-group-sm">
+                  <dtml-if "_.hasattr(sapl_documentos.administrativo,texto_assinado)">
+                    <a class="btn btn-primary" href="<dtml-var portal_url>/sapl_documentos/administrativo/<dtml-var texto_assinado>" target="_blank"><i class="far fa-file-pdf"></i> Documento Assinado</a>
+                  </dtml-if> 
+                  <dtml-if "_.hasattr(sapl_documentos.administrativo,texto_original)">
+                     <a class="btn btn-primary" href="<dtml-var portal_url>/sapl_documentos/administrativo/<dtml-var texto_original>" target="_blank"><i class="fas fa-file-pdf"></i> Texto Integral</a>
+                 </dtml-if>    
+                </div>
+             </div>
+           </div>
+        </dtml-if>
+  <dtml-if sequence-end>
+     </ul>
+    </div>
+    <dtml-if next-sequence>
+        <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+    </dtml-if next-sequence>
+    <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+      <nav aria-label="Paginação">
+        <ul class="pagination justify-content-center">
+          <dtml-var "pysc.PageListOutput_pysc('documento_administrativo_pesquisar_proc', page, step, _['sequence-length'], existe_ocorrencia=existe_ocorrencia, txt_num_protocolo=txt_num_protocolo, txt_ano_documento=txt_ano_documento, lst_tip_documento=lst_tip_documento, txt_num_documento=txt_num_documento, rad_tramitando=rad_tramitando, txa_txt_assunto=txa_txt_assunto, txa_txt_interessado=txa_txt_interessado, lst_status=lst_status, dt_apres1=dt_apres1, lst_localizacao=lst_localizacao, dt_apres2=dt_apres2, rd_ordenacao=rd_ordenacao)">
+       </ul>
+      </nav>
+    </dtml-if>
+  </dtml-if sequence-end>
+<dtml-else>
+   <p>Nenhuma ocorrência encontrada.</p>
+ </dtml-in>
+
+<dtml-else>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <h5 class="alert-heading">Confirme que você não é um robô.</h5>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+       <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <a class="btn btn-danger" href="javascript:void(0)" onClick="window.history.go(-1); return false;"><i class="fa fa-fw fa-undo"></i> Voltar</a>
+</dtml-if>
+
+<dtml-var standard_html_footer>

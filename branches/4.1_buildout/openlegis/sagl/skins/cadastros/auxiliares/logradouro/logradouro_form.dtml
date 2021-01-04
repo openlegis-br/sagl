@@ -1,0 +1,178 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+
+  function campos_criticar(form){  
+
+  if (form.txt_nom_logradouro.value == "") {
+    alert("O nome do Logradouro deve ser preenchido.");
+    form.txt_nom_logradouro.focus();
+    return false;
+  }
+
+  if (form.txt_nom_bairro.value == "") {
+    alert("O Bairro deve ser preenchido.");
+    form.txt_nom_bairro.focus();
+    return false;
+  }
+
+  if (form.txt_municipio.value == "") {
+     alert("O nome do Município deve ser informado!");
+     form.txt_municipio.focus();
+     return false;
+  }
+
+  if (form.txt_municipio.value == "" && form.lst_sgl_uf.selectedIndex != 0) {
+     alert("O campo Município deve ser preenchido uma vez que UF está preenchido!");
+     form.txt_municipio.focus();
+     return false;
+  } 
+
+  if (form.txt_municipio.value != "" && form.lst_sgl_uf.selectedIndex == 0) {
+     alert("O campo UF deve ser preenchido uma vez que Município está preenchido!");
+     form.lst_sgl_uf.focus();
+     return false;
+  }
+
+  form.submit();
+  }
+
+  function logradouro_excluir() {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "logradouro_excluir_proc?cod_logradouro=<dtml-var cod_logradouro missing>";
+  }
+  }
+
+  function localidade_mostrar(form) {
+
+     if (form.txt_municipio.value=="") {
+        alert("Preencha parte do município!");
+        form.txt_municipio.focus();
+        return false;
+     }
+
+     if (form.lst_sgl_uf.selectedIndex==0) {
+        alert("Selecione uma UF!");
+        form.lst_sgl_uf.focus();
+        return false;
+     }
+     
+     var municipio = form.txt_municipio.value;
+     var sgl_uf = form.lst_sgl_uf[form.lst_sgl_uf.selectedIndex].value;
+
+     var municipio_pesq = municipio.toUpperCase();
+     municipio_pesq = municipio_pesq.replace(/Ã|Â|Á|À/g, 'A');
+     municipio_pesq = municipio_pesq.replace(/É|Ê|È/g,'E');   
+     municipio_pesq = municipio_pesq.replace(/Í|Ì|Î|Ï/g, 'I');
+     municipio_pesq = municipio_pesq.replace(/Õ|Ô|Ó|Ò/g, 'O');
+     municipio_pesq = municipio_pesq.replace(/Ú|Ù|Û|Ü/g, 'U');
+
+     var url="municipio_listar_form?municipio=" + municipio +
+              "&municipio_pesq=" + municipio_pesq + "&sgl_uf=" + sgl_uf;
+     MunicipioWin = window.open(url , "MunicipioWin", "width=500,height=330,resizable=0");
+     return;
+  }
+
+//-->
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Cadastro de Logradouro</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="index_html"><i class="fa fa-fw fa-undo"></i> Voltar</a>         
+         </div>
+      </div>
+ </div>
+
+<form name="logradouro_form" method="post" action="logradouro_salvar_proc">
+  <input type="hidden" name="hdn_cod_logradouro" value="<dtml-var cod_logradouro missing>" />
+       <table class="table table-borderless">
+        <tr> 
+           <td><label for="txt_nom_logradouro" class="required">Nome do Logradouro</label>
+            <input class="form-control" type="text" id="txt_nom_logradouro" name="txt_nom_logradouro" value="<dtml-var nom_logradouro missing>" maxlength="100" /></td>
+           <td colspan="2"><label for="txt_nom_bairro" class="required">Bairro</label>
+            <input class="form-control" type="text" id="txt_nom_bairro" name="txt_nom_bairro" value="<dtml-var nom_bairro missing null>" maxlength="100" /></td>
+        </tr>
+        <tr>
+          <td><label for="txt_num_cep">CEP</label>
+            <input class="form-control" type="text" id="txt_num_cep" name="txt_num_cep" value="<dtml-var num_cep missing null="">" size="20" maxlength="9" />
+          </td>
+          <td><label for="txt_municipio" class="required">Município</label>
+              <div class="input-group">
+                <input class="form-control" type="text" id="txt_municipio" name="txt_municipio" value="<dtml-if expr="_.has_key('cod_logradouro') and cod_localidade_sel!=None"><dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade_sel)"><dtml-var nom_localidade missing
+	    null=""></dtml-in></dtml-if>" size="46" maxlength="50" />
+                <div class="input-group-append">
+                <input class="btn btn-primary" type="button" name="btn_localidade" value=" ? "
+	        onClick="localidade_mostrar(document.logradouro_form)" />
+	        </div>
+	      </div>
+          </td>
+          <td><label for="lst_sgl_uf" class="required">UF</label>
+             <select class="custom-select" id="lst_sgl_uf" name="lst_sgl_uf" size="1">
+               <option>Selecione</option>
+               <dtml-if expr="_.has_key('cod_logradouro') and cod_localidade_sel!=None">
+                  <dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade_sel)">
+                     <dtml-call expr="REQUEST.set('sgl_uf_sel', sgl_uf)">
+                  </dtml-in>
+               </dtml-if>
+               <dtml-in expr="zsql.localidade_obter_zsql(tip_localidade='U')">
+                  <option 
+                    <dtml-if expr="_.has_key('cod_localidade_sel') and cod_localidade_sel!=None and sgl_uf_sel==sgl_uf">
+                     selected 
+                    </dtml-if>
+                    value="<dtml-var sgl_uf>"><dtml-var sgl_uf>
+                  </option>
+               </dtml-in>
+             </select>
+          </td>
+        </tr>
+        <td><label for="lst_tip_norma">Lei Denominativa</label>
+           <select class="custom-select" id="lst_tip_norma" name="lst_tip_norma">
+            <option>
+              <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
+                 <option
+                    <dtml-if tip_norma_sel>
+                      <dtml-if expr="_.int(tip_norma) == _.int(tip_norma_sel)">
+                         selected
+                      </dtml-if>
+                   </dtml-if>
+                    value="<dtml-var tip_norma missing>"> <dtml-var sgl_tipo_norma> - <dtml-var des_tipo_norma>
+                   </option>
+              </dtml-in>
+           </select>
+           <dtml-if cod_norma>
+             <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+               <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>" target="_blank">
+             <dtml-else>
+               <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma missing>" target="_blank">
+             </dtml-if>
+               Ver Norma
+               </a>
+           </dtml-if>
+        </td>
+        <td>
+           <label for="txt_num_norma">Número</label>
+            <input class="form-control number" type="number" id="txt_num_norma" name="txt_num_norma" value="<dtml-var num_norma missing>" maxlength="5">
+        </td>
+        <td>
+           <label for="txt_ano_norma">Ano</label><br>
+            <input class="form-control year" type="number" id="txt_ano_norma" name="txt_ano_norma" value="<dtml-var ano_norma missing>" maxlength="4">
+        </td>
+      </tr>
+      </table>
+
+  <p align="center">
+  <input class="btn btn-primary" type="button" name="btn_logradouro_salvar" value="Salvar" onClick="campos_criticar(document.logradouro_form)" />
+  <dtml-if cod_logradouro>
+    <input class="btn btn-danger" type="button" name="btn_logradouro_excluir" value="Excluir" onClick="logradouro_excluir(document.logradouro_form)" />
+  </dtml-if>
+  </p>
+
+</form>
+
+<dtml-var standard_html_footer>

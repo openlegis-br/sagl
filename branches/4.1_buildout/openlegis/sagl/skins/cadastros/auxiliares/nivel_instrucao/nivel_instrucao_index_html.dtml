@@ -1,0 +1,80 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+  function submeter(cod_nivel_instrucao, campo, form) {
+    if (campo.value == "") {
+      alert("Este campo é obrigatório!");
+      campo.focus();
+      return; 
+    }
+   
+    form.hdn_cod_nivel_instrucao.value = cod_nivel_instrucao;
+    form.hdn_des_nivel_instrucao.value = campo.value;
+
+    form.submit(); 
+    
+  }
+
+  function excluir(cod_nivel_instrucao) {
+    if (confirm("Deseja realmente excluir?")) {    
+      location.href = "<dtml-var absolute_url>/nivel_instrucao_excluir_proc?cod_nivel_instrucao=" + cod_nivel_instrucao;
+    } 
+  }
+  
+//-->
+</script>
+
+<h1 class="firstHeading">Níveis de Instrução</h1>
+
+<form name="nivel_instrucao_form" method="post" action="nivel_instrucao_salvar_proc">  
+
+<input type="hidden" name="hdn_cod_nivel_instrucao" value=0 />   
+<input type="hidden" name="hdn_des_nivel_instrucao" />  
+
+  <dtml-in expr="zsql.nivel_instrucao_obter_zsql()">
+    <dtml-if sequence-start>
+       <table class="table">
+         <thead class="table-secondary">
+	   <tr>
+               <th width="10%">Código</th>
+               <th width="65%">Nível de Instrução</th>
+               <th width="25%">Ação</th>
+           </tr>
+         </thead>
+     </dtml-if sequence-start>
+             <tr> 
+               <td><dtml-var cod_nivel_instrucao></td>
+               <td><input class="form-control" type="text" name="txt_des_nivel_instrucao_<dtml-var cod_nivel_instrucao>" value="<dtml-var des_nivel_instrucao>" size="40" maxlength="50" /></td>
+               <td>
+                <a class="btn btn-primary mb-1" href="javascript:submeter(<dtml-var cod_nivel_instrucao>,document.nivel_instrucao_form.txt_des_nivel_instrucao_<dtml-var cod_nivel_instrucao>,document.nivel_instrucao_form)">
+                 Atualizar</a>  
+                 <a class="btn btn-danger mb-1" href="javascript:excluir(<dtml-var cod_nivel_instrucao>)">Excluir</a>
+             </tr>
+    <dtml-if sequence-end>
+      </table>
+    </dtml-if sequence-end>
+ <dtml-else>
+    <p>Nenhum nível de instrução cadastrado.</p>
+ </dtml-in>
+
+ <legend>Formulário de Inclusão</legend>
+ <div class="form-row">
+   <div class="col-12 mb-3">
+      <label for="txt_des_nivel_instrucao" class="required">Nível de Instrução</label>
+      <div class="input-group">                   
+          <input class="form-control" type="text" id="txt_des_nivel_instrucao" name="txt_des_nivel_instrucao" maxlength="30" />
+         <div class="input-group-append">
+           <input class="btn btn-primary" type="button" name="btn_nivel_instrucao_incluir" value="Incluir" onClick="submeter(0, document.nivel_instrucao_form.txt_des_nivel_instrucao, document.nivel_instrucao_form)" />         
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-md-12">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+      </div>
+   </div> 
+
+</form>
+
+<dtml-var standard_html_footer>

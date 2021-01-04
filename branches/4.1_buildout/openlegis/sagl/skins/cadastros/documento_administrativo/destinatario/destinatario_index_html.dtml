@@ -1,0 +1,130 @@
+<script type="text/javascript">
+
+    function lista_destinatarios_excluir(){
+        if (confirm("Deseja realmente excluir a lista de destinatários?")) {
+            location.href="<dtml-var absolute_url>/lista_destinatarios_excluir_proc?cod_documento=<dtml-var cod_documento>&hdn_url=<dtml-var ACTUAL_URL>?cod_documento=<dtml-var cod_documento>#destinatarios";
+        }
+       return;
+    }
+
+    function excluir(cod_destinatario,cod_documento) {
+       location.href = "<dtml-var absolute_url>/destinatario_excluir_proc?cod_documento="+cod_documento+"&cod_destinatario="+cod_destinatario+"&hdn_url=<dtml-var ACTUAL_URL>?cod_documento=<dtml-var cod_documento>#destinatarios";
+    }
+</script>
+
+<script>
+$(document).ready(function() {
+    $('table.data').DataTable( {
+        "responsive": true,
+        "order": [[0, "desc"]],
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
+</script>
+
+ <div class="row mb-2">
+  <div class="col-12 col-lg-8 align-self-center">
+    <legend>Destinatários</legend>
+  </div>
+  <div class="col-12 col-lg-4 text-left text-lg-right mb-2">
+     <dtml-if expr="zsql.destinatario_oficio_obter_zsql(cod_documento = cod_documento, ind_excluido=0)">  
+         <div class="dropdown d-print-none">
+           <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <i class="fas fa-file-export"></i> Gerar
+           </button>
+           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+               <a class="dropdown-item" href="<dtml-var portal_url>/relatorios/pdf_envelope_impresso_preparar_pysc?cod_documento=<dtml-var cod_documento missing>" target="_blank">Impresso</a>
+               <a class="dropdown-item" href="<dtml-var portal_url>/cadastros/documento_administrativo/destinatario/pdf_gerar_etiquetas_pimaco_pysc?cod_documento=<dtml-var cod_documento missing>" target="_blank">Etiqueta 1</a>
+               <a class="dropdown-item" href="<dtml-var portal_url>/relatorios/pdf_etiqueta_impresso_preparar_pysc?cod_documento=<dtml-var cod_documento missing>" target="_blank">Etiqueta 2</a>               
+           </div>           
+         </div>
+     </dtml-if>
+  </div>
+ </div>
+
+<dtml-in expr="zsql.destinatario_oficio_obter_zsql(cod_documento = cod_documento, ind_excluido=0)">
+    <dtml-if sequence-start>
+        <table class="table data">
+          <thead class="table-secondary">
+            <tr>
+                <th>Nome</th>
+                <th>Responsável</th>
+                <th>Ação</th>
+            </tr>
+          </thead>
+    </dtml-if sequence-start>
+        <tr>
+                <td>
+                  <a href="<dtml-var portal_url>/cadastros/instituicao/instituicao_mostrar_proc?cod_instituicao=<dtml-var cod_instituicao>" target="_blank">
+                   <dtml-var nom_instituicao>
+                  </a>
+                </td>
+               <td>
+                   <dtml-var nom_responsavel missing null="">
+               </td>
+            <td>
+             <a class="btn btn-sm btn-danger" href="javascript:excluir(<dtml-var cod_destinatario>,<dtml-var cod_documento>)">Excluir</a>
+            </td>
+        </tr>
+   <dtml-if sequence-end>
+      </table>
+   </dtml-if sequence-end>
+<dtml-else>
+     <p>Nenhum destinatário cadastrado.</p>
+</dtml-in>
+
+<div class="text-left mt-2">
+  <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Inclusão de Destinatário" data-src="destinatario/destinatario_pesquisar_form?hdn_cod_documento=<dtml-var cod_documento>&modal=1"> Incluir Destinatário </a>
+  <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Geração de Lista" data-src="destinatario/destinatario_form?cod_documento=<dtml-var cod_documento>&modal=1"> Gerar Lista </a>
+  <dtml-if expr="zsql.destinatario_oficio_obter_zsql(cod_documento = cod_documento, ind_excluido=0) and AUTHENTICATED_USER.has_role(['Operador','Operador Modulo Administrativo', 'Operador Materia'])">
+    <input class="btn btn-danger" type="button" value="Excluir Lista" onClick="lista_destinatarios_excluir()" />
+  </dtml-if>
+</div>
+

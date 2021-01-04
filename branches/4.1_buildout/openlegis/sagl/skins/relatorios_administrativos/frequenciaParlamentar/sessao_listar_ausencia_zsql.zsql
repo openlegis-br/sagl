@@ -1,0 +1,25 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_sessao_plen
+max_rows : 50
+max_cache : 100
+</dtml-comment>
+
+SELECT 
+    pl.nom_completo,
+    pl.nom_parlamentar,
+    p.txt_justif_ausencia
+
+FROM
+    ordem_dia_presenca p
+    LEFT JOIN sessao_plenaria s ON p.cod_sessao_plen = s.cod_sessao_plen
+    LEFT JOIN parlamentar pl ON p.cod_parlamentar = pl.cod_parlamentar
+
+WHERE
+   p.cod_sessao_plen = <dtml-sqlvar cod_sessao_plen type="int"> AND
+   p.tip_frequencia = 'A' AND
+   s.ind_excluido = 0 AND
+   p.ind_excluido = 0 AND
+   pl.ind_excluido = 0
+
+ORDER BY pl.nom_completo

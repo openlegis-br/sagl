@@ -1,0 +1,114 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+
+ function documento_criticar(form){
+    var form = document.documento_form;
+    if (form.txt_dat_documento.value == "") {
+       $('#txt_dat_documento').addClass('is-invalid');
+       form.txt_dat_documento.focus();
+       return false;
+    }
+    if (form.txa_txt_descricao_doc.value == "") {
+       $('#txa_txt_descricao_doc').addClass('is-invalid');
+       form.txa_txt_descricao_doc.focus();
+       return false;
+    }
+    if (!IsValidDate(form.txt_dat_documento.value)) {
+       $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data válida!"});
+       form.txt_dat_documento.focus();
+       return false;     
+    }
+    if (form.file_nom_arquivo.value != "") {
+       form.hdn_file.value = 1;
+    }
+    form.submit();
+ }
+ function ativa_desativa_file_field(form) {
+    form.file_nom_arquivo.disabled = !(form.radTI[2].checked);
+ }
+</script>
+
+<legend>Dados do Documento</legend>
+
+<form name="documento_form" id="documento_form" method="post" action="documento_salvar_proc" method="post" enctype="multipart/form-data">
+
+  <input type="hidden" name="hdn_cod_documento"  value="<dtml-var cod_documento missing>">
+  <input type="hidden" name="hdn_cod_comissao" value="<dtml-var cod_comissao missing>">
+  <dtml-if cod_reuniao>
+    <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/cadastros/comissao/documento/documento_mostrar_proc?cod_documento=<dtml-var cod_documento>" />
+  </dtml-if>
+  <input type="hidden" name="modal" value="1">
+
+   <div class="form-row">
+     <div class="col-4 col-sm-3 mb-3">
+        <label for="txt_dat_documento" class="form-label required">Data</label>
+        <input class="form-control date" type="text" name="txt_dat_documento" id="txt_dat_documento"  value="<dtml-var dat_documento missing null>" required />
+        <div class="invalid-feedback">
+          Este campo é obrigatório !
+        </div>
+     </div>
+     <div class="col-8 col-sm-9 mb-3">
+        <label for="txa_txt_descricao_doc" class="form-label required">Descrição</label>
+        <input class="form-control" type="text" id="txa_txt_descricao_doc" name="txa_txt_descricao" value="<dtml-var txt_descricao missing>" maxlength="200" required>
+        <div class="invalid-feedback">
+          Este campo é obrigatório !
+        </div>
+     </div>
+   </div>
+   <div class="form-row">
+     <div class="col-12 mb-3">
+       <label for="txa_txt_observacao">Observações</label>
+       <textarea class="form-control" id="txa_txt_observacao" name="txa_txt_observacao"><dtml-var txt_observacao missing null=""></textarea>
+     </div>
+   </div> 
+   <div class="form-row">
+     <div class="col-12 mb-3">
+            <label class="d-block" for="file_nom_arquivo">Texto Integral</label>
+            <input type="hidden" name="hdn_file" value="0"/>
+            <dtml-if cod_documento>
+             <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_documento.pdf')">
+             <dtml-if "_.hasattr(sapl_documentos.documento_comissao,id_documento)">
+              <dtml-let documento="_.getattr(sapl_documentos.documento_comissao,id_documento).absolute_url">
+                 <a href="<dtml-var documento>" target="_blank"><i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;"></i></a>
+              </dtml-let>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" class="custom-control-input" id="radTI_1" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field(document.documento_form)"/>
+                  <label class="custom-control-label" for="radTI_1">Manter</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" class="custom-control-input" id="radTI_2" name="radTI" value="E" onClick="ativa_desativa_file_field(document.documento_form)"/>
+                  <label class="custom-control-label" for="radTI_2">Excluir</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" class="custom-control-input" id="radTI_3" name="radTI" value="S" onClick="ativa_desativa_file_field(document.documento_form)"/>
+                  <label class="custom-control-label" for="radTI_3">Substituir</label>
+                </div>
+              <input type="file" class="form-control-file" name="file_nom_arquivo" id="file_nom_arquivo" disabled>
+             <dtml-else>
+               <input type="file" class="form-control-file" name="file_nom_arquivo" id="file_nom_arquivo" accept=".pdf" />
+               <input type="hidden" name="radTI" value="I"/>
+             </dtml-if>
+            <dtml-else>
+              <input type="file" class="form-control-file" name="file_nom_arquivo" id="file_nom_arquivo" accept=".pdf" />
+              <input type="hidden" name="radTI" value="I"/>
+            </dtml-if>
+     </div>
+   </div>
+
+  <div class="text-left">
+    <button class="btn btn-primary" onClick="return documento_criticar()">Salvar</button>
+  <dtml-if cod_documento>
+    <a class="btn btn-danger" href="documento_excluir_proc?cod_documento=<dtml-var cod_documento>&cod_comissao=<dtml-var cod_comissao>&modal=1" data-confirm="Deseja realmente excluir o documento?">Excluir</a>
+  </dtml-if>
+  </div">
+   <div class="row">
+      <div class="col-md-12 mt-2">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+      </div>
+   </div>
+</form>
+
+<dtml-var standard_html_footer>

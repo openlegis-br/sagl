@@ -1,0 +1,32 @@
+<dtml-if expr="rad_indicador=='0'">
+  <dtml-call expr="REQUEST.set('ind_afastamento', 1)">
+  <dtml-call expr="REQUEST.set('ind_fim_mandato', 0)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('ind_afastamento', 0)">
+  <dtml-call expr="REQUEST.set('ind_fim_mandato', 1)">
+</dtml-if>
+
+<dtml-if hdn_tip_afastamento>
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_afastamento_atualizar_zsql)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_afastamento_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(tip_afastamento = hdn_tip_afastamento,
+                          des_afastamento = txt_des_afastamento,
+                          ind_afastamento = ind_afastamento,
+                          ind_fim_mandato = ind_fim_mandato,
+                          des_dispositivo = txt_des_dispositivo 
+                          )">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar os dados do tipo de afastamento. Tente novamente!'" tipo_mensagem="'danger'"> 
+     <dtml-var mensagem_emitir>
+  </dtml-let> 
+
+<dtml-else>
+  <dtml-let mensagem="'Tipo de afastamento salvo com sucesso!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+ </dtml-try>

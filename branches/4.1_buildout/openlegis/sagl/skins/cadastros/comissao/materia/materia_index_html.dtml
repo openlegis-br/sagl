@@ -1,0 +1,34 @@
+<legend>Matérias em Análise</legend>
+
+<dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
+  <dtml-call expr="REQUEST.set('cod_unidade', cod_unid_tramitacao)">
+</dtml-in>
+
+<dtml-in expr="zsql.tramitacao_obter_zsql(cod_unid_tram_destino=cod_unidade,ind_ult_tramitacao=1,ind_tramitacao=1)">
+     <dtml-if sequence-start>
+       <div class="row">
+     </dtml-if>
+     <div class="col-12">
+      <dtml-var sequence-number>)   
+      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+        <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+           <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+        <dtml-else>
+           <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" >
+        </dtml-if>
+           <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a></br />
+           <dtml-var txt_ementa missing><br />           
+          <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+             Autoria: <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+          </dtml-in>
+       </dtml-in>
+      </div>
+     <dtml-if sequence-end>
+       </div>
+     </dtml-if>      
+<dtml-else>
+  Não há nenhuma matéria em análise nesta Comissão.
+</dtml-in>
+
+
+

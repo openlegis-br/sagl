@@ -1,0 +1,41 @@
+<dtml-if hdn_cod_orgao>
+  <dtml-call expr="REQUEST.set('metodo', zsql.orgao_atualizar_zsql)">
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.orgao_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_orgao = hdn_cod_orgao,
+                          sgl_orgao = txt_sgl_orgao,
+                          nom_orgao = txt_nom_orgao,
+                          ind_unid_deliberativa = rad_ind_unidade_deliberativa,
+                          end_orgao = txt_end_orgao,
+                          num_tel_orgao = txt_num_tel_orgao,
+                          end_email = txt_end_email
+                          )">
+
+<dtml-except>
+
+  <dtml-let mensagem="'Não foi possível salvar os dados do órgão. Tente novamente!'" tipo_mensagem="'danger'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+
+<dtml-else>
+
+  <dtml-in expr="zsql.orgao_incluido_codigo_obter_zsql()">
+     <dtml-call expr="REQUEST.set('cod_orgao', _.str(_.int(cod_orgao)))">
+  </dtml-in> 
+
+  <dtml-if expr="metodo==zsql.orgao_incluir_zsql">
+    <dtml-call expr="zsql.unidade_tramitacao_incluir_zsql(cod_orgao=cod_orgao,ind_leg=0,ind_adm=0)">  
+    <dtml-let mensagem="'Órgão incluído e cadastrado como unidade de tramitação.'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+
+  <dtml-else>  
+    <dtml-let mensagem="'Órgão salvo com sucesso!'">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-if>
+
+</dtml-try>

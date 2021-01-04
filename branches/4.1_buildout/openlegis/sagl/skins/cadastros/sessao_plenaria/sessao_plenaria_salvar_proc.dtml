@@ -1,0 +1,59 @@
+<dtml-if hdn_cod_sessao_plen>
+    <dtml-call expr="REQUEST.set('metodo', zsql.sessao_plenaria_atualizar_zsql)">
+<dtml-elif expr="zsql.sessao_plenaria_obter_zsql(num_sessao_plen=txt_num_sessao_plen,tip_sessao=lst_tip_sessao_plen,dat_inicio_sessao=pysc.data_converter_pysc(data=txt_dat_inicio_sessao))">
+    <dtml-call expr="REQUEST.set('erro', 1)">
+    <dtml-let mensagem="'Já existe uma sessão com esse tipo e número!'" tipo_mensagem="'warning'">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.sessao_plenaria_incluir_zsql)">
+</dtml-if>
+
+<dtml-unless erro>
+    <dtml-try>
+        <dtml-call expr="metodo(cod_sessao_plen         = hdn_cod_sessao_plen,
+                                tip_sessao              = lst_tip_sessao_plen,
+                                cod_sessao_leg          = lst_sessao_leg,
+                                dia_sessao              = pysc.data_converter_dia_semana_pysc(data=txt_dat_inicio_sessao),
+                                dat_inicio_sessao       = pysc.data_converter_pysc(data=txt_dat_inicio_sessao),
+                                dat_fim_sessao          = pysc.data_converter_pysc(data=txt_dat_fim_sessao),
+                                hr_inicio_sessao        = txt_hr_inicio_sessao,
+                                hr_fim_sessao           = txt_hr_fim_sessao,
+                                num_legislatura         = lst_num_legislatura,
+                                num_sessao_plen         = txt_num_sessao_plen,
+                                url_fotos               = txt_url_fotos,
+                                url_audio               = txt_url_audio,
+                                url_video               = txt_url_video)">
+    <dtml-except>
+        <dtml-let mensagem="'Não foi possível salvar a sessão. Tente novamente!'" tipo_mensagem="'danger'">
+            <dtml-var mensagem_emitir>
+        </dtml-let>
+    <dtml-else>
+        <dtml-if expr="hdn_url[-1:]=='='">
+            <dtml-in expr="zsql.sessao_plenaria_incluida_codigo_obter_zsql()">
+                <dtml-call expr="REQUEST.set('hdn_cod_sessao_plen', cod_sessao_plen)">
+                <dtml-call expr="REQUEST.set('hdn_url', hdn_url + cod_sessao_plen)">
+            </dtml-in>
+        </dtml-if>
+
+        <dtml-if file_nom_arquivo_ata>
+           <dtml-call expr="REQUEST.set('id_ata', _.str(hdn_cod_sessao_plen)+'_ata_sessao.pdf')">
+           <dtml-try>
+              <dtml-call expr="sapl_documentos.ata_sessao.manage_addFile(id=id_ata,file=file_nom_arquivo_ata)">
+           <dtml-except> 
+           </dtml-try>
+        </dtml-if>
+
+        <dtml-if file_nom_arquivo_roteiro>
+           <dtml-call expr="REQUEST.set('id_roteiro', _.str(hdn_cod_sessao_plen)+'_roteiro_sessao.pdf')">
+           <dtml-try>
+              <dtml-call expr="sapl_documentos.pauta_sessao.manage_addFile(id=id_roteiro, file=file_nom_arquivo_roteiro)">
+           <dtml-except> 
+           </dtml-try>
+        </dtml-if>
+
+        <dtml-let mensagem="'Sessão salva com sucesso!'" tipo_mensagem="'success'" url="'sessao_plenaria_mostrar_proc?cod_sessao_plen=' + hdn_cod_sessao_plen + '&dat_inicio_sessao=' + txt_dat_inicio_sessao + '&num_legislatura=' + lst_num_legislatura">
+            <dtml-var mensagem_emitir>
+        </dtml-let>
+    </dtml-try>
+</dtml-unless>

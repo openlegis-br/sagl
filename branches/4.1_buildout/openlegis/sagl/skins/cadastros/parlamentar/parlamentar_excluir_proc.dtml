@@ -1,0 +1,26 @@
+<dtml-try>
+   <dtml-call expr="zsql.parlamentar_excluir_zsql(cod_parlamentar=cod_parlamentar)">
+<dtml-except>
+  <dtml-let mensagem="'Houve um erro! Parlamentar não excluído!'" tipo_mensagem="'danger'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+  <dtml-call expr="REQUEST.set('erro', 1)">
+</dtml-try>
+
+<dtml-unless erro>
+  <dtml-try>
+     <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+        <dtml-call expr="zsql.autor_excluir_zsql(cod_autor)">
+        <dtml-call expr="pysc.username_excluir_pysc(username=col_username)">
+     </dtml-in>
+  <dtml-except>
+     <dtml-let mensagem="'Parlamentar excluído com sucesso! Porém o autor vinculado não foi excluído. Exclua-ao manualmente.!'" tipo_mensagem="'warning'">
+        <dtml-var mensagem_emitir>
+     </dtml-let>  
+  <dtml-else>
+     <dtml-let mensagem="'Parlamentar excluído com sucesso!'" tipo_mensagem="'success'">
+        <dtml-var mensagem_emitir>
+     </dtml-let>
+  </dtml-try>
+
+</dtml-unless>

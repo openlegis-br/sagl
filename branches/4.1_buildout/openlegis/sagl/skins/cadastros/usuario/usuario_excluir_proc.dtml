@@ -1,0 +1,31 @@
+<dtml-call expr="REQUEST.set('name', names)">
+
+<dtml-if expr="(name == AUTHENTICATED_USER.getUserName()) and (roles == ['Operador'])">
+  <dtml-call expr="REQUEST.set('url', portal_url() + '/index_html')">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('url', 'index_html')">
+</dtml-if>
+
+<dtml-in names>
+  <dtml-call expr="REQUEST.set('item', _['sequence-item'])">
+  <dtml-in expr="zsql.usuario_obter_zsql(col_username=_['sequence-item'])">
+    <dtml-try>
+      <dtml-call expr="zsql.usuario_excluir_zsql(cod_usuario=cod_usuario)">
+    <dtml-except>
+       <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-try>
+  </dtml-in>
+</dtml-in>
+
+<dtml-unless erro>
+<dtml-if expr="acl_users.manage_users('Delete', REQUEST)">
+  <dtml-let mensagem="'Usuário(s) excluído(s) com sucesso!'" url=url>
+       <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
+  <dtml-let mensagem="'Não foi possível excluir o(s) usuário(s)'">
+       <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-if>
+</dtml-unless> 
+

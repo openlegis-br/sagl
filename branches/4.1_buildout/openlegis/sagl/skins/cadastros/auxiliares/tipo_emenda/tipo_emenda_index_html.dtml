@@ -1,0 +1,82 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+<!--
+  function submeter(tip_emenda, campo, form) {
+    if (campo.value == "") {
+      alert("O campo não pode ficar vazio!");
+      campo.focus();
+      return;
+    }
+
+    form.hdn_tip_emenda.value = tip_emenda;
+    form.hdn_des_tipo_emenda.value = campo.value;
+
+    form.submit();
+
+  }
+
+  function excluir(tip_emenda) {
+    if (confirm("Deseja realmente excluir?")) {      
+     location.href = "<dtml-var absolute_url>/tipo_emenda_excluir_proc?tip_emenda=" + tip_emenda;
+    }
+  } 
+//-->
+</script>
+
+<h1 class="firstHeading">Tipos de Emenda</h1>
+
+<form name="tipo_emenda_form" method="post" action="tipo_emenda_salvar_proc">  
+
+ <input type="hidden" name="hdn_tip_emenda" value=0 />
+ <input type="hidden" name="hdn_des_tipo_emenda" />  
+
+  <dtml-in expr="zsql.tipo_emenda_obter_zsql(ind_excluido=0)">
+    <dtml-if sequence-start>
+       <table class="table">
+        <thead class="table-secondary">   
+         <tr> 
+           <th width="10%">Código</th>
+           <th>Tipo de Emenda</th>
+           <th width="25%">Ações</th>
+         </tr>
+        </thead>
+       </dtml-if sequence-start>
+         <tr> 
+           <td width="10%"><dtml-var tip_emenda></td>
+           <td width="65%">
+             <input class="form-control" type="text" name="txt_des_tipo_emenda_<dtml-var tip_emenda>" value="<dtml-var des_tipo_emenda>" maxlength="50" />
+           </td>
+           <td>
+             <a class="btn btn-primary mb-1" href="javascript:submeter(<dtml-var tip_emenda>,document.tipo_emenda_form.txt_des_tipo_emenda_<dtml-var tip_emenda>,document.tipo_emenda_form)">Atualizar</a>
+             <a class="btn btn-danger mb-1" href="javascript:excluir(<dtml-var tip_emenda>)">Excluir</a>
+        </tr>
+    <dtml-if sequence-end>
+       </table>
+    </dtml-if sequence-end>
+   <dtml-else>
+      <p>Nenhum tipo de emenda cadastrado.</p>
+   </dtml-in>
+   
+ <legend>Formulário de Inclusão</legend>
+ <div class="form-row">
+   <div class="col-12 mb-3">
+      <label for="txt_des_tipo_emenda" class="required">Tipo de Emenda</label>
+      <div class="input-group">                   
+        <input class="form-control" type="text" id="txt_des_tipo_emenda" name="txt_des_tipo_emenda" maxlength="50" />
+        <div class="input-group-append">
+          <input class="btn btn-primary" type="button" name="btn_tipo_emenda_incluir" value="Incluir" onClick="submeter(0, document.tipo_emenda_form.txt_des_tipo_emenda, document.tipo_emenda_form)" />         
+        </div>
+      </div>
+   </div>
+ </div>
+
+   <div class="row">
+      <div class="col-md-12">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+      </div>
+   </div>    
+
+</form>
+
+<dtml-var standard_html_footer>

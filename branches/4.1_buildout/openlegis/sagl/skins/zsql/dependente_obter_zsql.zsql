@@ -1,0 +1,29 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_dependente="" cod_parlamentar="" nom_dependente="" tip_dependente ind_excluido=0
+max_rows : 100
+max_cache : 100
+</dtml-comment>
+SELECT 
+  REPLACE(d.cod_dependente, 'L', '') as cod_dependente,
+  d.tip_dependente,       
+  d.nom_dependente,
+  d.sex_dependente,
+  DATE_FORMAT(d.dat_nascimento, '%d/%m/%Y') as dat_nascimento,
+  d.num_cpf,
+  d.num_rg,
+  d.num_tit_eleitor,
+  td.des_tipo_dependente 
+
+FROM 
+     dependente d
+     LEFT JOIN tipo_dependente td ON d.tip_dependente = td.tip_dependente
+
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_dependente column="d.cod_dependente" op="=" type="nb" optional><dtml-and>
+  <dtml-sqltest cod_parlamentar column="d.cod_parlamentar" op="=" type="nb" optional><dtml-and>
+  <dtml-sqltest nom_dependente column="d.nom_dependente" op="=" type="nb" optional><dtml-and>
+  <dtml-sqltest tip_dependente column="d.tip_dependente" op="=" type="int" optional><dtml-and>  
+  <dtml-sqltest ind_excluido column="d.ind_excluido" op="=" type="nb" optional>
+</dtml-sqlgroup>  
+

@@ -1,0 +1,23 @@
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+  <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+  </dtml-in>
+<dtml-elif expr="AUTHENTICATED_USER.has_role(['Autor'])">
+  <dtml-in expr="zsql.autor_obter_zsql(parlamentar=1,col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-if cod_parlamentar>
+          <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+      </dtml-if>
+  </dtml-in>
+</dtml-if>
+
+<dtml-try>
+ <dtml-call expr="zsql.gabinete_atendimento_excluir_zsql(cod_atendimento = cod_atendimento, cod_parlamentar = cod_parlamentar_corrente)">
+<dtml-except>
+   <dtml-let mensagem="'Houve um erro! Atendimento não excluído!'">
+      <dtml-var mensagem_emitir>
+   </dtml-let>
+<dtml-else>
+   <dtml-let mensagem="'Atendimento excluído com sucesso!'" url="'javascript:parent.jQuery.fancybox.close();'">
+      <dtml-var mensagem_emitir>
+   </dtml-let>
+</dtml-try>

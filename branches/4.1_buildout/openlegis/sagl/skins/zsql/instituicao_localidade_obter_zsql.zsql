@@ -1,0 +1,28 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_instituicao="" ind_excluido
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+SELECT 
+     instituicao.cod_localidade, 
+     CONCAT( UPPER(localidade.nom_localidade),   ' - ', localidade.sgl_uf ) AS nom_localidade
+
+FROM 
+     instituicao
+     LEFT JOIN localidade ON instituicao.cod_localidade = localidade.cod_localidade
+
+WHERE
+     instituicao.ind_excluido = 0
+     and instituicao.cod_localidade is not null
+     <dtml-if cod_instituicao>
+     and instituicao.cod_instituicao = <dtml-sqlvar cod_instituicao type="nb">
+     </dtml-if>
+
+GROUP BY 
+     instituicao.cod_localidade
+
+ORDER BY 
+     localidade.nom_localidade
+

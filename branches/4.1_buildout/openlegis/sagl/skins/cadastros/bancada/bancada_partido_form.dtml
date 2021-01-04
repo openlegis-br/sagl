@@ -1,0 +1,81 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+   function campos_criticar(form){
+   if (form.lst_cargo_bancada.selectedIndex==0){
+   alert("O cargo deve ser selecionado!");
+   form.lst_cargo_bancada.focus();
+   return false;
+   }
+
+   form.submit();
+   }
+
+</script>
+
+<a id="ajuda" href="<dtml-var portal_url>/ajuda/consultas#cons_comp_bancada">Ajuda</a>
+
+<dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
+  <h1 class="firstHeading"><dtml-var nom_bancada></h1>
+</dtml-in>
+
+<fieldset>
+ <table class="table">
+  <dtml-in expr="zsql.bancada_obter_parlamentares_zsql(cod_partido=cod_partido,num_legislatura=num_legislatura)">
+   <dtml-if sequence-start>
+    <th width="10%">Sequência</th>
+    <th width="45%">Parlamentar</th>
+    <th width="30%">Cargo na Bancada</th>
+    <th width="15%">Ação</th>
+   </dtml-if sequence-start>
+
+ <form name="parlamentar_<dtml-var cod_parlamentar>_form" method="post" action="composicao_bancada_salvar_proc">
+    <tr>
+       <td><b><dtml-var sequence-number></b></td>
+      <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+       <td>
+         <b><dtml-var nom_parlamentar></b> 
+       </td>
+      </dtml-in>
+       <td>
+      <dtml-in expr="zsql.composicao_bancada_obter_zsql(cod_bancada=cod_bancada,cod_parlamentar=cod_parlamentar)">
+       <dtml-if expr="_.has_key('cod_comp_bancada')">
+         <dtml-call expr="REQUEST.set('cod_cargo_sel', cod_cargo)">
+         <dtml-call expr="REQUEST.set('cod_parlamentar_sel', cod_parlamentar)">
+         <input type="hidden" name="hdn_cod_comp_bancada" value="<dtml-var cod_comp_bancada missing>">
+       </dtml-if>
+      </dtml-in>
+      <select class="custom-select"  id="lst_cargo_bancada" name="lst_cargo_bancada">
+        <option value="0">Selecione</option>
+      <dtml-in expr="zsql.cargo_bancada_obter_zsql(ind_excluido=0)">
+        <option 
+            <dtml-if expr="_.has_key('cod_cargo_sel') and _.int(cod_cargo) == _.int(cod_cargo_sel) and _.int(cod_parlamentar) == _.int(cod_parlamentar_sel)">
+               selected=selected
+            </dtml-if>
+          value="<dtml-var cod_cargo>"><dtml-var des_cargo></option>
+      </dtml-in>
+      </select>
+       </td>
+       <td>
+         <input type="hidden" name="lst_parlamentar" value="<dtml-var cod_parlamentar>">
+         <input type="hidden" name="hdn_cod_partido" value="<dtml-var cod_partido>">
+         <input type="hidden" name="hdn_cod_bancada" value="<dtml-var cod_bancada>">
+         <input type="hidden" name="rad_ind_titular" value="1">
+         <input type="hidden" name="txt_dat_designacao" value="<dtml-var ZopeTime fmt="%d/%m/%Y">">
+         <input type="hidden" name="txt_dat_desligamento" value="<dtml-var txt_dat_desligamento missing>">
+         <input type="hidden" name="txt_des_motivo_desligamento" value="<dtml-var txt_des_motivo_desligamento missing>">
+         <input type="hidden" name="txt_obs_composicao" value="<dtml-var txt_obs_composicao missing>">
+         <input class="btn btn-primary" type="button" name="btn_salvar" value="Salvar" onClick="campos_criticar(this.form)" />
+      </td>
+    </tr>
+  </form>
+  </dtml-in>
+</table>
+</fieldset>
+
+<p align="center">
+  <input class="btn btn-primary" type="button" name="retornar" value="Voltar" onClick="javascript:history.go(-1)">
+</p>
+
+<dtml-var standard_html_footer>

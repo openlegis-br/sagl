@@ -1,0 +1,143 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
+<script>
+$(document).ready(function() {
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+    $('#enviadas').DataTable( {
+        "responsive": true,
+        "bStateSave": true,   
+        "order": [[0, "desc"]],             
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('envmDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('envmraDataTable'));
+        },
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
+</script>
+
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+  <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+</dtml-in>
+
+<h1 class="firstHeading">Tramitações Enviadas - Matérias Legislativas</h1>
+     <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_local=cod_usuario_corrente, ind_ult_tramitacao=1, ind_encaminha=1, ind_recebido=0)">
+      <dtml-if sequence-start>
+        <div class="table-responsive">
+           <table class="table" id="enviadas">
+             <thead class="table-secondary">
+		 <tr>  
+		     <th width="20%">Data de Envio</th>
+		     <th>Identificação da Matéria</th>
+                     <th width="15%">Origem</th>		     
+		     <th width="15%">Destino</th>
+		     <th width="15%">Status</th>
+		 </tr>
+             </thead>
+       </dtml-if>
+       <dtml-call expr="REQUEST.set('prazo_a_vencer', _.DateTime()+3)">
+       <dtml-call expr="REQUEST.set('prazo_tramitacao', dat_fim_prazo)">
+
+                   <tr>
+                     <td>
+                       <dtml-if dat_tramitacao>
+                         <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Formulário de Tramitação" data-src="tramitacao_mostrar_proc?hdn_cod_materia=<dtml-var cod_materia>&hdn_cod_tramitacao=<dtml-var cod_tramitacao>&modal=1" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i><span class="d-none">Link</span> <dtml-var dat_encaminha></a>
+                       </dtml-if>
+                     </td> 
+                     <td>
+                        <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+                           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador materia'])">        
+                              <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
+                           <dtml-else>
+                              <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
+                          </dtml-if>
+                        
+                           <b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></a> - 
+                           <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                              <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
+                           </dtml-in> 
+                           - <dtml-var txt_ementa>
+                        </dtml-in>
+                     </td>
+                     <td>
+                       <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local, ind_leg=1)">
+                          <dtml-var nom_unidade_join>
+                       </dtml-in>          
+                    </td>                     
+                     <td>
+                        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest,ind_leg=1)">
+                          <dtml-var nom_unidade_join>
+                        </dtml-in>
+                     </td>
+                     <td>
+                       <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+                       <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+                         <dtml-let arquivo_pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+                           <a href="<dtml-var arquivo_pdf>" target="_blank"><dtml-var expr="des_status"></a>
+                         </dtml-let>
+                       <dtml-else>
+                         <dtml-var expr="des_status">
+                       </dtml-if>                       
+                     </td>
+                   </tr>
+      <dtml-if sequence-end>
+           </table>                   
+      </dtml-if>
+   <dtml-else>
+     <p>Nenhuma tramitação enviada.</p>      
+   </dtml-in>
+
+<dtml-var standard_html_footer>

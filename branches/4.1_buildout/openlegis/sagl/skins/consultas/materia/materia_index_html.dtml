@@ -1,0 +1,285 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js"></script>
+
+<script type="text/javascript">
+
+(function ($) {
+  $(function () {
+    document.onkeypress = function (event) {
+      var form = pesq_basica_form;
+      if (event.keyCode === 13) {
+        form.submit();
+      }
+    };
+  });
+}(jQuery));
+
+function pesquisam_criticar(form){  
+
+  var form = document.pesq_basica_form;
+
+  if (form.dt_apres.value != "" && !IsValidDate(form.dt_apres.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data inicial válida!"});
+    return false;
+  } 
+
+  if (form.dt_apres2.value != "" && !IsValidDate(form.dt_apres2.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data final válida!"});
+    return false;
+  } 
+  
+  form.submit();
+}
+
+  $(document).ready(function(){
+    $('[data-toggle="popover"]').popover({
+		placement : 'top'
+    });
+  });
+
+  $(document).ready(function(){
+    $('#chk_textual').change(function(){
+          var form = document.pesq_basica_form;
+          var checked = $('#chk_textual').is(':checked');
+          if(checked){
+              $('#pesq_basica_form').attr('action','materia_texto_pesquisar_proc');
+              if($('#txt_assunto').val() == '') {
+                 $.showAlert({title: "Informação", body: "Para realizar uma pesquisa textual, é necessário prencher o campo 'Termos da Pesquisa'."})
+              }
+          }
+          else{
+              $('#pesq_basica_form').attr('action','materia_pesquisar_proc');
+          }
+    })
+  });
+
+  window.onload = function(){  
+     var url = document.location.toString();
+     if (url.match('#')) {
+         $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+     }
+     //Change hash for page-reload
+     $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').on('shown', function (e) {
+         window.location.hash = e.target.hash;
+     }); 
+  } 
+
+  $(document).ready(() => {
+    let url = location.href.replace(/\/$/, "");
+     if (location.hash) {
+      const hash = url.split("#");
+      $('#myTab a[href="#'+hash[1]+'"]').tab("show");
+      url = location.href.replace(/\/#/, "#");
+      history.replaceState(null, null, url);
+    } 
+
+    $('a[data-toggle="tab"]').on("click", function() {
+      let newUrl;
+      const hash = $(this).attr("href");
+      if(hash == "#home") {
+        newUrl = url.split("#")[0];
+      } else {
+        newUrl = url.split("#")[0] + hash;
+      }
+      newUrl += "";
+      history.replaceState(null, null, newUrl);
+    });
+  });
+
+</script>
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+  <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
+     <script src='https://www.google.com/recaptcha/api.js?hl=pt-BR' async defer></script>
+  </dtml-if>
+</dtml-let>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Pesquisa de Matérias</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">      
+             <a class="btn btn-primary btn-sm d-print-none" href="<dtml-var portal_url>/cadastros/materia/materia_form_resumido"><i class="fa fa-fw fa-plus"></i> Incluir Matéria</a>
+         </dtml-if>
+      </div>
+ </div>
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs border-0" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="principais-tab" data-toggle="tab" href="#principais" role="tab" aria-controls="principais" aria-selected="true">Matérias Principais</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="acessorias-tab" data-toggle="tab" href="#acessorias" role="tab" aria-controls="acessorias" aria-selected="false">Matérias Acessórias</a>
+  </li>
+</ul>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active" id="principais">
+
+<form name="pesq_basica_form" id="pesq_basica_form" action="materia_pesquisar_proc">
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_tip_materia">Tipo de Matéria</label>
+      <select id="lst_tip_materia" name="lst_tip_materia" class="form-control selectpicker" data-dropup-auto="false" data-size="6" multiple="multiple" data-actions-box="true" title="Todos" data-header="Tipo de Matéria" data-selected-text-format="count > 3">
+            <optgroup label="Matérias Principais">
+              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)">
+                <dtml-if expr="_.has_key('tip_materia_sel')">
+                  <option <dtml-if expr="_.int(tip_materia)==_.int(tip_materia_sel)">selected</dtml-if>
+                   value="<dtml-var tip_materia>"><dtml-var des_tipo_materia>
+                <dtml-else>
+                  <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia>
+                  </option>
+                </dtml-if>
+              </dtml-in>
+            </optgroup>
+            <optgroup label="Matérias Acessórias">
+              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='A', ind_excluido=0)">
+                <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia></option>
+              </dtml-in>
+            </optgroup>
+      </select>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_numero">Número</label>
+      <input name="txt_numero" id="txt_numero" type="number" min="1" maxlength="6" class="form-control number" autocomplete="off">
+    </div>
+    <div class="col-6 col-md-3 mb-3 controls">
+      <label for="txt_ano">Ano</label>
+      <input name="txt_ano" id="txt_ano" type="number" min="1900" minlength="4" maxlength="4" class="form-control year" autocomplete="off">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_num_protocolo">Protocolo</label>
+      <input id="txt_num_protocolo" name="txt_num_protocolo" min="1" type="number" maxlength="8" class="form-control number" autocomplete="off">
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_num_processo">Processo</label>
+      <input id="txt_num_processo" name="txt_num_processo" min="1" type="number" maxlength="6" class="form-control number" autocomplete="off">
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="dt_apres">Data Inicial</label>
+        <input type="text" class="form-control date" id="dt_apres" name="dt_apres" autocomplete="off">
+    </div>
+   <div class="col-6 col-md-3 mb-3">
+      <label for="dt_apres2">Data Final</label>
+      <input type="text" class="form-control date" id="dt_apres2" name="dt_apres2" autocomplete="off">
+    </div>
+    <script>
+        $('#dt_apres').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#dt_apres2').val();
+            }
+        });
+        $('#dt_apres2').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#dt_apres').val();
+            }
+        });
+    </script>    
+  </div>
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="hdn_cod_autor">Autoria</label>
+        <select id="hdn_cod_autor" name="hdn_cod_autor" class="form-control selectpicker show-tick" data-size="6" data-live-search="true" title="Todas" data-header="Pesquisar Autor">
+              <option value="">Todas</option>
+              <dtml-in expr="zsql.autor_obter_zsql(ind_excluido=0)">
+                <option value="<dtml-var cod_autor>"><dtml-var nom_autor_join></option>
+              </dtml-in>
+       </select>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_status">Situação</label>
+        <select id="lst_status" name="lst_status" class="custom-select">
+            <option value="">Todas</option>
+            <dtml-in expr="zsql.status_tramitacao_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var cod_status missing>">
+                <dtml-var sgl_status> - <dtml-var des_status>
+              </option>
+            </dtml-in>
+       </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_localizacao">Localização Atual</label>
+        <select id="lst_localizacao" name="lst_localizacao" class="custom-select">
+            <option value="">Todas</option>
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_leg=1)">
+              <option value="<dtml-var cod_unid_tramitacao missing>">                
+                <dtml-var nom_unidade_join>
+              </option>
+            </dtml-in>
+       </select>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <label for="txt_assunto">Termos da Pesquisa</label>
+      <input type="text" class="form-control" name="txt_assunto" id="txt_assunto" maxlenght="50" autocomplete="off" data-toggle="popover" data-trigger="focus" title="Dicas de Preenchimento" data-content="A frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no texto. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do texto." />
+    </div>
+  </div>
+  <div class="form-row">
+  <div class="col-12 col-sm-4 mb-3">
+      <label for="rad_tramitando" class="d-block">Em Tramitação?</label>
+        <select id="rad_tramitando" name="rad_tramitando" class="custom-select">
+         <dtml-in expr="[('Não', '0'), ('Sim', '1'), ('Tanto faz', '')]">      
+            <option value="<dtml-var expr="_['sequence-item']">" <dtml-if expr="_['sequence-item']==''">selected</dtml-if>><dtml-var expr="_['sequence-key']"></option>
+         </dtml-in>
+        </select>
+   </div>                         
+    <div class="col-12 col-sm-4 mb-3">
+      <label for="rd_ordenacao" class="d-block">Ordenação</label>
+        <select id="rd_ordenacao" name="rd_ordenacao" class="custom-select">
+         <dtml-in expr="[('Descendente', '1'), ('Ascendente', '2')]">      
+            <option value="<dtml-var expr="_['sequence-item']">" <dtml-if expr="_['sequence-item']==''">selected</dtml-if>><dtml-var expr="_['sequence-key']"></option>
+         </dtml-in>
+        </select>
+    </div>
+    <div class="col-12 col-sm-4 mb-3">
+      <label class="d-block">Pesquisa Textual</label>
+      <div class="custom-control custom-switch">
+      <input type="checkbox" class="custom-control-input" name ="chk_textual" id="chk_textual">
+        <label class="custom-control-label" for="chk_textual">Pesquisar nos Textos Integrais</label>
+      </div>
+    </div>        
+  </div>    
+  <div class="form-row">
+    <div class="col-12 col-md-12 mt-2 text-left"> 
+        <dtml-let isAnon="portal_membership.isAnonymousUser()">
+            <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
+                <div class="g-recaptcha mb-3" data-sitekey="<dtml-var "sapl_documentos.props_sagl.recaptcha_key">"></div>
+            </dtml-if>
+         </dtml-let>
+          <button type="button" id="search-btn" class="btn btn-primary" onClick="return pesquisam_criticar()"><i class="fa fa-fw fa-search"></i> Pesquisar</button>
+         <input class="btn btn-secondary" type="reset" value="Limpar" />
+    </div>
+  </div>
+  <input type="hidden" name="incluir" value="<dtml-var incluir missing>" />
+  <input type="hidden" name="existe_ocorrencia" value="0" />
+  <input type="hidden" name="txt_relator" value="" />
+  <input type="hidden" name="lst_cod_partido" value="" />
+  <input type="hidden" name="lst_tip_autor" value="" />
+  <input type="hidden" name="hdn_txt_autor" value="" />
+  <input type="hidden" name="chk_coautor" value="" />
+  <input type="hidden" name="dt_public" value="" />
+  <input type="hidden" name="dt_public2" value="" />
+ </form>
+</div>
+<div class="tab-pane p-3 border fade" id="acessorias">
+       <dtml-var materia_acessoria_pesquisar_form>
+</div>
+</div>
+
+<dtml-var standard_html_footer>

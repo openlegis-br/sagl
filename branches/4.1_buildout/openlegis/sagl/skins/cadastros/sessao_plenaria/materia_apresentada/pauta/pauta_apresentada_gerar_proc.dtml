@@ -1,0 +1,65 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+  function campos_criticar(form){
+      form.submit();
+  }
+</script>
+
+<h1 class="firstHeading">Matérias Apresentadas</h1>
+
+<form name="pauta_apresentadas_gerar" method="post" action="pauta_apresentada_salvar_proc">
+
+  <dtml-in expr="zsql.tramitacao_pesquisar_status_zsql(cod_status=lst_status)" prefix=item>
+     <dtml-if sequence-start>
+	<p>
+	  <b>Resultado: </b>foram encontradas <dtml-var sequence-length> matérias com o status 
+             <dtml-in expr="zsql.status_tramitacao_obter_zsql(cod_status=lst_status, ind_excluido=0)">
+               "<dtml-var des_status>"
+             </dtml-in>
+	</p>
+        <div class="table-responsive">
+        <table class="table">
+          <thead class="table-secondary">
+            <tr>
+              <th width="5%">Item</th>
+              <th>Matéria</th>
+            </tr>
+          </thead>
+     </dtml-if sequence-start>
+            <tr>
+              <td>
+                <b><dtml-var sequence-number></b>
+              </td>
+              <td>
+                <input type="hidden" name="txt_cod_materia" value="<dtml-var cod_materia>" />
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+                   <b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b>
+                   <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                      - <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
+                   </dtml-in>                   
+                   - <dtml-var txt_ementa>
+                </dtml-in>
+              </td>
+            </tr> 
+     <dtml-if sequence-end>
+          </table>
+          <div class="text-left">
+            <input class="btn btn-primary" type="button" name="btn_pauta_apresentadas_gerar" value="Gerar Lista" onClick="campos_criticar(document.pauta_apresentadas_gerar)" />
+           </div>
+     </dtml-if sequence-end>
+      <dtml-else>
+        <p>Não foram encontradas matérias com o status selecionado.</p>
+      </dtml-in> 
+
+      <input type="hidden" name="cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+      <input type="hidden" name="cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>" />
+      <input type="hidden" name="num_legislatura" value="<dtml-var num_legislatura missing>" />
+      <input type="hidden" name="tip_sessao" value="<dtml-var tip_sessao missing>" />
+      <input type="hidden" name="txt_dat_ordem" value="<dtml-var "pysc.port_to_iso_pysc(dat_ordem)">" />
+      <input type="hidden" name="rad_tip_votacao" value="1" />
+      <input type="hidden" name="modal" value="1" />          
+
+  </form>
+
+<dtml-var standard_html_footer>

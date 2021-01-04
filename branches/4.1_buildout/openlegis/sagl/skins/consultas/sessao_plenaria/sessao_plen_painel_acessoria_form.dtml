@@ -1,0 +1,143 @@
+<dtml-var standard_html_header>
+
+  <script type="text/javascript">
+    function printFrame() {
+      $('#print_button').hide();
+        window.print();
+      $('#print_button').show();
+    }
+  </script>
+
+<dtml-if cod_emenda>
+  <dtml-call expr="REQUEST.set('cod_emenda', cod_emenda)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('cod_emenda', '')">
+</dtml-if>
+
+<dtml-if cod_subemenda>
+  <dtml-call expr="REQUEST.set('cod_subemenda', cod_subemenda)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('cod_subemenda', '')">
+</dtml-if>
+
+<dtml-if cod_substitutivo>
+  <dtml-call expr="REQUEST.set('cod_substitutivo', cod_substitutivo)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('cod_substitutivo', '')">
+</dtml-if>
+
+<dtml-call expr="REQUEST.set('cod_ordem', cod_ordem)">
+
+<dtml-call expr="REQUEST.set('cod_sessao_plen', cod_sessao_plen)">
+
+<dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
+   <dtml-call expr="REQUEST.set('cod_num_legislatura', num_legislatura)">
+   <dtml-call expr="REQUEST.set('dat_inicio_sessao', dat_inicio_sessao)">
+</dtml-in>
+
+<h3 align="center"><dtml-var sessao_plenaria_header></h3>
+
+<fieldset>
+ <legend>Ficha de Votação</legend>
+   <table class="table">
+      <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, cod_subemenda=cod_subemenda, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+       <tr>
+          <td>
+             <dtml-if cod_emenda>
+                <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, ind_excluido=0)">
+                  <p><b>Emenda nº <dtml-var num_emenda> (<dtml-var des_tipo_emenda>)</b>
+                     <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
+                      - <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                     </dtml-in>
+                     - <dtml-var txt_ementa>
+                   </p>
+                </dtml-in>
+             </dtml-if>
+             <dtml-if cod_substitutivo>
+                <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+                  <p><b>Substitutivo nº <dtml-var num_substitutivo></b>                           
+                     <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
+                       - <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                     </dtml-in>                         
+                     - <dtml-var txt_ementa>
+                  </p>               
+                </dtml-in>
+           </dtml-if>
+           <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+             <b><dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b>
+               <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                  <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
+                 <dtml-if sequence-end> - </dtml-if>
+               </dtml-in> <dtml-var txt_ementa>           
+           </dtml-in>
+          </td>
+       </tr>
+       <tr>
+          <td>
+            <h4><b>Resultado</b>: 
+            <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao)">
+                <dtml-var nom_resultado>
+            </dtml-in></h4>
+          </td>
+       </tr>
+       <tr>
+          <td>
+             <b>Votos Sim:</b> <dtml-var num_votos_sim>
+          </td>
+       </tr>
+       <tr>
+          <td>
+            <b>Votos Não:</b> <dtml-var num_votos_nao>
+          </td>
+       </tr>
+       <tr>
+          <td>
+             <b>Abstenções:</b> <dtml-var num_abstencao>
+          </td>
+       </tr>
+      </dtml-in>
+   </table>
+</fieldset>
+
+<fieldset>
+    <legend>Votação Nominal</legend>
+     <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_inicio_sessao)">
+      <dtml-if sequence-start>
+       <table class="table">
+        <tr>
+         <th width="50%" class="label">Parlamentar</th>
+         <th width="50%" class="label">Voto Proferido</th>
+        </tr>
+      </dtml-if>
+        <tr>
+         <td>
+           <dtml-var nom_parlamentar> 
+         </td>
+         <td>
+           <dtml-call expr="REQUEST.set('voto', 0)">
+              <dtml-in expr="zsql.votacao_obter_zsql(cod_materia=cod_materia, cod_emenda=cod_emenda, cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+                <dtml-in expr="zsql.votacao_parlamentar_obter_zsql(cod_votacao = cod_votacao, cod_parlamentar = cod_parlamentar, ind_excluido=0)">        
+                 <span>
+                    <dtml-if expr="vot_parlamentar!='-1'">
+                       <dtml-var vot_parlamentar>
+                       <dtml-call expr="REQUEST.set('voto', 1)">
+                    </dtml-if>
+                 </span>
+                </dtml-in>
+              </dtml-in>
+            <dtml-unless voto>
+                <span>Não votou</span>            
+            </dtml-unless>
+            </td>
+           </tr>
+       <dtml-if sequence-end>
+        </table>
+       </dtml-if>
+     </dtml-in>
+ </fieldset>
+
+  <div class="text-left">
+     <input type="button" class="btn btn-primary d-print-none" name="print_button" value="Imprimir" onClick="printFrame();return false;" />
+  </div>
+  
+<dtml-var standard_html_footer>

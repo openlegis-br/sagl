@@ -1,0 +1,88 @@
+<h1 class="firstHeading">Substitutivos</h1>
+
+<form name="index_form" action="substitutivo_form">
+<input type="hidden" name="cod_materia" value="<dtml-var cod_materia missing>">
+<dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+    <dtml-if sequence-start>
+    <div class="table-responsive">    
+    <table class="table">
+      <thead class="table-secondary">
+       <tr> 
+         <th width="10%">Número</th>
+         <th>Ementa</th>
+         <th width="20%">Autoria</th>
+         <th width="10%">Arquivo</th>
+         <th width="15%">Resultado</th>
+       </tr>
+      <thead>
+    </dtml-if sequence-start>
+       <tr> 
+          <td>
+             <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Substitutivo" data-src="substitutivo/substitutivo_mostrar_proc?cod_substitutivo=<dtml-var cod_substitutivo>&cod_materia=<dtml-var cod_materia>&modal=1">  
+                <dtml-var num_substitutivo>
+             </a>
+          </td>
+          <td><dtml-var txt_ementa></td>
+          <td>
+             <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
+                <dtml-var nom_autor_join><dtml-unless sequence-end>, </dtml-unless>
+             </dtml-in>
+          </td>
+          <td>
+             <dtml-call expr="REQUEST.set('id_sub', _.str(cod_substitutivo)+'_substitutivo.pdf')">
+             <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_sub)">
+                <dtml-let substitutivo="_.getattr(sapl_documentos.substitutivo,id_sub).absolute_url"> 
+                   <a target="_blank" href="<dtml-var substitutivo>" title="Texto Original"><i class="fa fa-file-pdf" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>                           
+                </dtml-let>
+             <dtml-elif expr="zsql.proposicao_obter_zsql(cod_materia=cod_materia,cod_substitutivo=cod_substitutivo)">
+                <dtml-in expr="zsql.proposicao_obter_zsql(cod_materia=cod_materia,cod_substitutivo=cod_substitutivo)">
+                   <dtml-if cod_proposicao>
+                      <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
+                         <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
+                            <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
+                              <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
+                              <a target="blank" href="<dtml-var proposicao>" title="Proposição Eletrônica"><i class="fas fa-certificate" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>
+                            </dtml-let>
+                         </dtml-if>
+                      </dtml-let>
+                   </dtml-if>             
+                </dtml-in>
+             <dtml-else>
+                <i class="fa fa-file-pdf" style="font-size: 21px; color: #e9e9e9"></i>                  
+             </dtml-if>
+          </td>
+            <td>
+             <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_materia=cod_materia,cod_substitutivo=cod_substitutivo, ind_excluido=0)">
+              <dtml-if sequence-end>   
+                <dtml-if tip_resultado_votacao>
+                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                    <dtml-if expr="tip_votacao == 2 ">
+                       <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Resultado de Votação" data-src="<dtml-var portal_url>/consultas/sessao_plenaria/sessao_plenaria_mostrar_painel_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_substitutivo=<dtml-var cod_substitutivo>&tipo_materia=acessoria&modal=1">  
+                         <dtml-var nom_resultado>
+                      </a>
+                    <dtml-else>
+                       <dtml-var nom_resultado>
+                    </dtml-if>
+                </dtml-in>
+                <dtml-else><i>Matéria não votada</i>
+                </dtml-if>
+              </dtml-if sequence-end>   
+             <dtml-else><i>Matéria não votada</i>
+             </dtml-in>
+            </td>
+       </tr>
+    <dtml-if sequence-end>
+       </table>
+       </div>
+    </dtml-if sequence-end>
+  <dtml-else>
+      <p>Nenhum substitutivo cadastrado.</p>
+      </table>
+   </dtml-in>
+   
+  <div class="text-left">
+     <button type="button" class="btn m btn-primary d-print-none" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Substitutivo" data-src="substitutivo/substitutivo_form?cod_materia=<dtml-var cod_materia>&modal=1">Incluir Substitutivo</button> 
+  </div>
+
+</form>
+
