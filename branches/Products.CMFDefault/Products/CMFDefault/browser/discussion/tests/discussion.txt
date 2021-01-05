@@ -1,0 +1,70 @@
+Discussion Views
+----------------
+
+Set up site
+
+    >>> from zope.component.hooks import setSite
+    >>> setSite(app.site)
+
+Add an object
+
+    >>> from Products.CMFDefault.Document import Document
+    >>> obj_id = app.site._setObject('myDocument', Document('myDocument'))
+    >>> obj = app.site[obj_id]
+    >>> obj.portal_type = 'Document'
+    >>> obj.setTitle('TITLE')
+    >>> obj.setDescription('DESCRIPTION')
+
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+
+Make superuser
+    >>> from AccessControl.SecurityManagement import newSecurityManager
+    >>> user = app.site.acl_users.getUser('mgr')
+    >>> newSecurityManager(None, user)
+
+Enable discussion for the object
+
+    >>> from zope.component import getUtility
+    >>> from Products.CMFCore.interfaces import IDiscussionTool
+    >>> dtool = getUtility(IDiscussionTool)
+    >>> dtool.isDiscussionAllowedFor(obj)
+    False
+    >>> dtool.overrideDiscussionFor(obj, 1)
+    >>> dtool.isDiscussionAllowedFor(obj)
+    True
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Add a comment
+
+    >>> browser.open("http://localhost/site/myDocument/@@discuss")
+    >>> "[[cmf_default][Reply body]]" in browser.contents
+    True
+    >>> browser.getControl(name='form.title').value = ('A reply')
+    >>> browser.getControl(name='form.text').value = ('What a fantastic article')
+
+Check previewing
+
+    >>> pass
+
+Check adding
+
+    >>> browser.getControl('[[cmf_default][Add]]').click()
+    >>> 'talkback' in browser.url
+    True
+    >>> 'A reply' in browser.contents
+    True
+
+Check deleting
+
+    >>> browser.open("{0}/@@delete".format(browser.url))
+    >>> 'talkback' in browser.url
+    False
+    >>> '[[cmf_default][Reply deleted.]]' in browser.contents
+    True

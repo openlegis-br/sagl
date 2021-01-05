@@ -1,0 +1,69 @@
+Membership forms
+----------------
+
+Set up Zope manager.
+
+    >>> from urllib import quote
+    >>> uf = app.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Open the membership form with no members
+    >>> browser.open("http://localhost/site/@@members.html")
+    >>> "[[cmf_default][Currently there are no members registered." in browser.contents
+    True
+
+Add a user
+    >>> mtool = app.site.portal_membership
+    >>> mtool.addMember("Bob", "secret", ("Owner",), ())
+
+Open the membership management form
+    >>> browser.open("http://localhost/site/@@members.html")
+    >>> "[[cmf_default][Manage Members]]" in browser.contents
+    True
+
+Add a new member
+    >>> browser.getControl(name="form.actions.new").click()
+    >>> "[[cmf_default][Register a New Member]]" in browser.contents
+    True
+
+Click delete with no member selected
+    >>> browser.open("http://localhost/site/@@members.html")
+    >>> browser.getControl(name="form.actions.select").click()
+    >>> "[[cmf_default][Please select one or more members first.]]" in browser.contents
+    True
+
+Click delete with member selected
+    >>> browser.getControl(name="form.select_ids").value = ('Bob',)
+    >>> browser.getControl(name="form.actions.select").click()
+    >>> "[[cmf_default][The following members - including all their data, home folders and roles - are selected for deletion" in browser.contents
+    True
+
+Cancel deletion
+    >>> browser.getControl(name="form.actions.cancel").click()
+    >>> "[[cmf_default][Manage Members]" in browser.contents
+    True
+
+Delete selected member
+    >>> browser.open("http://localhost/site/@@members.html")
+    >>> browser.getControl(name="form.select_ids").value = ('Bob',)
+    >>> browser.getControl(name="form.actions.select").click()
+    >>> browser.getControl(name="form.actions.delete").click()
+    >>> "[[cmf_default][Selected members deleted.]" in browser.contents
+    True
+
+Test batching. Add lots of users
+    >>> for user in ["Alice", "Bob", "Carol", "Dave", "Ted", "Eve", "Mallory", "Marvin", "Oscar", "Peggy", "Victor", "Trudy", "Trent", "Charlie", "Isaac", "Ivan", "Justin", "Matilda", "Oscar", "Plod", "Walter", "Zoe", "Peter", "Sven", "Gloria", "James", "Albert", "Edward", "Michael", "Quentin", "Richard", "Kate", "Freddy", "George", "Harry", "Lucy", "Nicholas", "Terry", "Thomas", "Unwin", "William", "Vince", "Xavier", "Yossarian"]:
+    ...     app.site.portal_membership.addMember(user,
+    ...            "secret", ("Owner",), ())
+    >>> browser.open("http://localhost/site/@@members.html")
+    >>> "[[cmf_default][Next 18 members]]" in browser.contents
+    True
+    >>> 'a href="http://localhost/site/@@members.html?form.b_start=25">2</a>' in browser.contents
+    True

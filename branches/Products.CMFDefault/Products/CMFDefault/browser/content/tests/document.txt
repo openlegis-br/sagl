@@ -1,0 +1,168 @@
+Document Views
+--------------
+
+Set up site, method alias, user and Document.
+
+    >>> from zope.component.hooks import setSite
+    >>> setSite(app.site)
+    >>> ti = app.site.portal_types.Document
+    >>> dummy = ti.setMethodAliases({'edit': '@@edit', 'gethtml': '@@source'})
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+    >>> from Products.CMFDefault.Document import Document
+    >>> obj_id = app.site._setObject('myDocument', Document('myDocument'))
+    >>> obj = app.site[obj_id]
+    >>> obj.portal_type = 'Document'
+    >>> obj.setTitle('TITLE')
+    >>> obj.setDescription('DESCRIPTION')
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Use the edit form without input.
+
+    >>> browser.open('http://localhost/site/myDocument/@@edit')
+    >>> '[[cmf_default][Edit [[cmf_default][Document]]]]' in browser.contents
+    True
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][Nothing to change.]]' in browser.contents
+    True
+
+Use the edit form with invalid input.
+
+    >>> browser.open('http://localhost/site/myDocument/@@edit')
+    >>> '[[cmf_default][Edit [[cmf_default][Document]]]]' in browser.contents
+    True
+    >>> browser.getControl('[[cmf_default][Body]]').value = '<script>'
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[zope][There were errors]]' in browser.contents
+    True
+    >>> '[[cmf_default][Dynamic tag \'script\' not ' in browser.contents
+    True
+
+Use the edit form with valid input.
+
+    >>> browser.getControl('[[cmf_default][Body]]').value = 'spam'
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][[[cmf_default][Document]] changed.]]' in browser.contents
+    True
+
+Look at the result.
+
+    >>> browser.open('http://localhost/site/myDocument/@@view')
+    >>> 'spam' in browser.contents
+    True
+
+Upload a file.
+
+    >>> from StringIO import StringIO
+    >>> browser.open('http://localhost/site/myDocument/@@edit')
+    >>> ctrl = browser.getControl(name='form.upload')
+    >>> ctrl.add_file(StringIO('FILE DATA'), 'text/plain', 'test.txt')
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][[[cmf_default][Document]] changed.]]' in browser.contents
+    True
+
+The file data overwrites the body.
+
+    >>> browser.open('http://localhost/site/myDocument/@@view')
+    >>> 'FILE DATA' in browser.contents
+    True
+
+Changes can't be saved if the safety belt is invalid.
+
+    >>> browser.open('http://localhost/site/myDocument/@@edit')
+
+    >>> app.site.myDocument._safety_belt = '1'
+
+    >>> browser.getControl('[[cmf_default][Body]]').value = 'spam and eggs'
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[zope][There were errors]]' in browser.contents
+    True
+    >>> '[[cmf_default][Intervening changes from ' in browser.contents
+    True
+
+Changes can't be saved if the document is locked.
+
+    >>> browser.open('http://localhost/site/myDocument/@@edit')
+
+    >>> from OFS.LockItem import LockItem
+    >>> lock = LockItem(uf.getUser('mgr').__of__(uf))
+    >>> app.site.myDocument.wl_setLock(lock.getLockToken(), lock)
+
+    >>> browser.getControl('[[cmf_default][Body]]').value = 'spam and eggs'
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[zope][There were errors]]' in browser.contents
+    True
+    >>> '[[cmf_default][This resource is locked ' in browser.contents
+    True
+
+    >>> app.site.myDocument.wl_clearLocks()
+    >>> app.site.myDocument.wl_isLocked()
+    0
+
+Structured Text will be formatted as HTML in the view.
+
+    >>> browser.open('http://localhost/site/myDocument/@@edit')
+    >>> browser.getControl(name='form.text_format').value == ['structured-text']
+    True
+    >>> browser.getControl('[[cmf_default][Body]]').value = '*spam and eggs*'
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+
+    >>> browser.open('http://localhost/site/myDocument/@@view')
+    >>> '*spam and eggs*' in browser.contents
+    False
+    >>> '<em>spam and eggs</em>' in browser.contents
+    True
+
+The source view is not used in 'structured-text' mode.
+
+    >>> browser.open('http://localhost/site/myDocument/manage_FTPget')
+    >>> print browser.contents
+    Title: TITLE
+    Subject:
+    Publisher:
+    Description: DESCRIPTION
+    Contributors:
+    Effective_date: None
+    Expiration_date: None
+    Type: Document
+    Format: text/plain
+    Language:
+    Rights:
+    SafetyBelt: ...
+    <BLANKLINE>
+    *spam and eggs*
+
+The source view is only used in 'html' mode.
+
+    >>> browser.open('http://localhost/site/myDocument/@@edit')
+    >>> browser.getControl(name='form.text_format').value = ['html']
+    >>> browser.getControl('[[cmf_default][Body]]').value = '<b>spam</b>'
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+
+    >>> browser.open('http://localhost/site/myDocument/manage_FTPget')
+    >>> print browser.contents
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html>
+     <head>
+     <title>TITLE</title>
+     <meta name="Subject" content="" />
+     <meta name="Publisher" content="" />
+     <meta name="Description" content="DESCRIPTION" />
+     <meta name="Contributors" content="" />
+     <meta name="Effective_date" content="None" />
+     <meta name="Expiration_date" content="None" />
+     <meta name="Type" content="Document" />
+     <meta name="Format" content="text/html" />
+     <meta name="Language" content="" />
+     <meta name="Rights" content="" />
+     <meta name="SafetyBelt" content="..." />
+     </head>
+     <body><b>spam</b></body>
+    </html>

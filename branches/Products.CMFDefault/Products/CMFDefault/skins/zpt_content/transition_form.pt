@@ -1,0 +1,71 @@
+<metal:macro metal:define-macro="master"
+><html metal:use-macro="context/main_template/macros/master">
+<body>
+
+<metal:slot metal:fill-slot="main" i18n:domain="cmf_default"
+   tal:define="wtool context/portal_workflow;
+               review_state python: wtool.getInfoFor(context, 'review_state');
+               review_history python: wtool.getInfoFor(context,
+                                                       'review_history')">
+<div metal:define-slot="main" i18n:domain="cmf_default">
+<h1 i18n:translate="">Transition of <span tal:replace="context/getId"
+                             i18n:name="objectid">Item</span>.</h1>
+
+<p i18n:translate="">Transition description.</p>
+</div>
+
+<form method="post" action="content_status_modify"
+   tal:attributes="action string:${context/absolute_url}/content_status_modify">
+ <table class="FormLayout">
+  <tr i18n:domain="cmf_default">
+   <td valign="top" align="left">
+    <strong i18n:translate="">Status</strong>
+   </td>
+   <td valign="top" align="left">
+    <span i18n:translate="">This item is currently in
+    <span i18n:name="status"><b tal:content="review_state"
+                                i18n:translate="">Private</b></span> status.
+    </span>
+   </td>
+  </tr>
+  <tr i18n:domain="cmf_default">
+   <td valign="top" align="left" colspan="2">
+    <strong><em i18n:translate="">Comments</em></strong>
+    <br />
+    <textarea name="comment" cols="60" rows="5"
+              style="width: 100%"></textarea>
+   </td>
+  </tr>
+  <tr>
+   <td colspan="2">
+    <div metal:define-slot="form" i18n:domain="cmf_default">
+     <input type="hidden" name="workflow_action" value="transition" />
+     <input type="submit" value="Transition"
+           i18n:attributes="value" />
+    </div>
+   </td>
+  </tr>
+ </table>
+</form>
+
+<tal:case tal:condition="review_history|nothing" i18n:domain="cmf_default">
+ <p><strong i18n:translate="">Reviewing history</strong>
+ <br />
+ <tal:loop tal:repeat="items python: review_history[::-1]">
+  <span tal:replace="python: items['time'].aCommon()"></span>
+  <span tal:omit-tag="" tal:content="items/action" i18n:translate=""></span>
+  <span tal:condition="items/effective_date|nothing" i18n:translate="">
+   (effective: <span tal:replace="python: items['effective_date'].aCommon()"
+                     i18n:name="eff_date"></span>)</span>
+  <span tal:omit-tag="" i18n:translate="">by
+   <span tal:replace="items/actor" i18n:name="actor">Actor</span></span>
+  <br />
+   <span tal:define="rhComments items/comments"
+         tal:replace="rhComments">Comments</span>
+ </tal:loop>
+ </p>
+</tal:case>
+</metal:slot>
+
+</body>
+</html></metal:macro>

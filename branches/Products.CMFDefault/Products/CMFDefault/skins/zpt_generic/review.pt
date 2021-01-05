@@ -1,0 +1,105 @@
+<html metal:use-macro="context/main_template/macros/master">
+<body>
+
+<metal:slot metal:fill-slot="main" i18n:domain="cmf_default"
+     tal:define="results python: context.portal_catalog(review_state='pending');
+                 Batch nocall: modules/ZTUtils/Batch;
+                 def_start string:0;
+                 bstart request/b_start | def_start;
+                 batch python: Batch( results, 25, int( bstart ), orphan=0 );
+                 purl context/portal_url;
+                ">
+
+<tal:case tal:condition="results">
+<h1 i18n:translate="">Items pending review</h1>
+
+<form action="/" method="get"
+      tal:attributes="action string:${purl}/"
+>
+
+<table class="SearchResults">
+ <tr>
+  <td width="16"><br /></td>
+  <td width="16"><br /></td>
+  <th i18n:translate="">Title</th>
+  <th i18n:translate="">Type</th>
+  <th i18n:translate="">Date</th>
+  </tr>
+
+  <tbody tal:repeat="item batch">
+  <tr tal:define="objURL string:${item/getURL}/view;
+                  objPath item/getPath;
+                  title item/Title;
+                 ">
+  <td>
+   <input type="checkbox" name="items:list"
+          tal:attributes="value objPath" />
+  </td>
+  <td>
+   <span tal:condition="item/getIconURL">
+   <a href="url"
+      tal:attributes="href objURL"
+   ><img border="0" src="icon" alt="Type" title="Type"
+         tal:attributes="src item/getIconURL;
+                         alt item/Type|nothing;
+                         title item/Type|nothing;
+                        " /></a>
+   </span>
+  </td>
+  <td>
+   <a href="url"
+      tal:attributes="href objURL"
+      tal:content="python: title or '(No title)'">Title</a>
+  </td>
+  <td i18n:translate="">
+    <span tal:replace="item/Type" />
+  </td>
+  <td>
+    <span tal:replace="item/Date" />
+  </td>
+ </tr>
+
+ <tr tal:define="desc item/Description">
+  <td>&nbsp;</td>
+  <td colspan="3"
+      tal:define="xdesc python: desc or '(No description)'"
+  >
+   <em><span tal:replace="python: xdesc[:100]">Description</span></em>
+  </td>
+ </tr>
+ </tbody>
+
+ <tr>
+  <td><br /></td>
+ </tr>
+
+ <tr>
+  <td><br /></td>
+  <td colspan="4">
+   <strong i18n:translate="">Comment:</strong>
+   <br />
+   <textarea name="comment:text" rows="3" cols="65"></textarea>
+  </td>
+ </tr>
+ <tr>
+  <td><br /></td>
+  <td colspan="4">
+   <input type="submit" name="publishItems:method" value="Publish"
+          i18n:attributes="value" />
+   <input type="submit" name="rejectItems:method" value="Reject"
+          i18n:attributes="value" />
+  </td>
+ </tr>
+
+</table>
+
+</form>
+</tal:case>
+
+<tal:case tal:condition="python: not results">
+ <p i18n:translate="">There are no items matching your specified criteria.</p>
+</tal:case>
+</metal:slot>
+
+</body>
+</html>

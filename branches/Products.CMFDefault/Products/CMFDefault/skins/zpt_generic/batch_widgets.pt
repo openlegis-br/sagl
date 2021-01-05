@@ -1,0 +1,87 @@
+<html>
+<head>
+ <link rel="stylesheet" type="text/css" href="zpt_stylesheet.css"/>
+</head>
+<body>
+
+<tal:test tal:define="summary python: {'length': '9.999', 'type': 'items',
+                                       'match': 'foo'};
+                      global batch python: {'summary': summary}" />
+
+ <metal:macro metal:define-macro="summary" i18n:domain="cmf_default"
+ ><p class="BatchSummary" tal:condition="batch/summary/length"
+     i18n:translate="">Found <span tal:replace="batch/summary/length"
+      i18n:name="count">N</span> <span i18n:name="type"><span tal:omit-tag=""
+       tal:content="batch/summary/type" i18n:translate="">ITEMS</span></span
+  ><tal:case tal:condition="python: batch['summary']['match'] is not None"
+   > matching '<span tal:replace="batch/summary/match" i18n:name="text"
+    >SEARCH TERM</span>'</tal:case>.</p
+ ><p class="BatchSummary" tal:condition="not:batch/summary/length"
+     i18n:translate="">There are no items matching your specified criteria.</p
+></metal:macro>
+
+
+<tal:test tal:define="items python: ( {'description': 'Description',
+                                       'format': 'application/pdf',
+                                       'icon': 'file_icon.gif',
+                                       'size': '99.9 kb', 'title': 'Title',
+                                       'type': 'File', 'url': '?'}, );
+                      global batch python: {'listItemInfos': items}" />
+
+ <metal:macro metal:define-macro="listing" i18n:domain="cmf_default">
+ <p class="BatchListing" tal:repeat="item_info batch/listItemInfos"
+ ><a href="" tal:attributes="href item_info/url"
+  ><img src="" alt="" title="" border="0" width="16" height="16"
+      tal:attributes="src item_info/icon; alt item_info/type;
+                      title item_info/type"
+      i18n:attributes="alt; title" /></a
+ ><tal:case tal:condition="item_info/title">&nbsp;
+  <a href="" tal:attributes="href item_info/url"
+     tal:content="item_info/title">TITLE</a></tal:case
+ ><tal:case tal:condition="item_info/description">
+  <br /><tal:span tal:content="item_info/description"
+ >DESCRIPTION</tal:span></tal:case
+ ><tal:case tal:condition="item_info/format">
+  <br /><span><tal:span tal:content="item_info/format" i18n:translate=""
+  >FORMAT</tal:span><tal:case tal:condition="item_info/size"
+  >, <tal:span tal:content="item_info/size">99.9 KB</tal:span></tal:case
+ ></span></tal:case></p
+></metal:macro>
+
+
+<tal:test tal:define="previous python: {'length': '20', 'text': 'Previous',
+                                        'type': 'items', 'url':'?'};
+                      next python: {'length': '', 'text': 'Next',
+                                    'type': 'item', 'url':'?'};
+                      navigation python: {'previous': previous, 'next': next};
+                      global batch python: {'navigation': navigation}" />
+
+ <metal:macro metal:define-macro="navigation"
+    tal:define="p batch/navigation/previous/url;
+                n batch/navigation/next/url"
+ ><p class="BatchNavigation" tal:condition="python: p or n"
+  ><tal:case tal:condition="p">
+  <a href="" tal:attributes="href p" i18n:translate=""
+  ><tal:span tal:content="batch/navigation/previous/text"
+   >PREVIOUS</tal:span
+  > <tal:case tal:condition="batch/navigation/previous/length"
+   ><span tal:replace="batch/navigation/previous/length"
+      i18n:name="count">N</span></tal:case
+  > <tal:span tal:content="batch/navigation/previous/type"
+   >ITEMS</tal:span></a></tal:case
+ ><tal:case tal:condition="python: p and n">
+  &nbsp;&nbsp;</tal:case
+ ><tal:case tal:condition="n">
+  <a href="" tal:attributes="href n" i18n:translate=""
+  ><tal:span tal:content="batch/navigation/next/text"
+   >NEXT</tal:span
+  > <tal:case tal:condition="batch/navigation/next/length"
+   ><span tal:replace="batch/navigation/next/length"
+      i18n:name="count">N</span></tal:case
+  > <tal:span tal:content="batch/navigation/next/type"
+   >ITEMS</tal:span></a></tal:case
+ ></p
+></metal:macro>
+
+</body>
+</html>

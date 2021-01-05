@@ -1,0 +1,41 @@
+Portal configuration form
+-------------------------
+
+Set up Zope manager.
+
+    >>> from urllib import quote
+    >>> uf = app.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Open configuration form
+    >>> browser.open("http://localhost/site/@@configure.html")
+    >>> "[[cmf_default][Portal Configuration]]" in browser.contents
+    True
+
+    >>> browser.getControl(name="form.email_from_name").value = "The man behind the curtain"
+    >>> browser.getControl(name="form.actions.change").click()
+    >>> "[[cmf_default][Portal settings changed.]" in browser.contents
+    True
+
+Make sure we get open the view not the PythonScript reconfig_portal
+    >>> browser.open("http://localhost/site/@@configure.html")
+    >>> browser.getControl(name="form.email_from_name").value == "The man behind the curtain"
+    True
+
+Test for error handling, default_charset must be ASCII onlye
+    >>> browser.open("http://localhost/site/@@configure.html")
+    >>> browser.getControl(name="form.default_charset").value = "Caché"
+    >>> browser.getControl(name="form.actions.change").click()
+    >>> "[[cmf_default][[[zope][There were errors]" in browser.contents
+    True
+    >>> browser.getControl(name="form.default_charset").value = "utf-9"
+    >>> browser.getControl(name="form.actions.change").click()
+    >>> "[Constraint not satisfied]" in browser.contents
+    True

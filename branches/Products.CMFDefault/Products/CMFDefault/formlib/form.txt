@@ -1,0 +1,156 @@
+_EditFormMixin
+--------------
+
+Create mockup and _EditFormMixin instance.
+
+    >>> import sys
+    >>> from Products.CMFDefault.formlib.form import _EditFormMixin
+
+    >>> class Mockup(object): pass
+    >>> provider = Mockup()
+    >>> provider.getActionInfo = lambda *args, **kw: {'url': 'ACTION_URL'}
+    >>> context = Mockup()
+    >>> context.portal_actions = provider
+    >>> response = Mockup()
+    >>> response.redirect = lambda x: sys.stdout.write(x)
+    >>> request = Mockup()
+    >>> request.response = response
+
+    >>> obj = _EditFormMixin(context, request)
+    >>> request.form = {'foo': 1, 'PREFIX.bar': u'BAR'}
+    >>> obj.prefix = 'PREFIX'
+    >>> obj.status = None
+    >>> obj._getBrowserCharset = lambda: 'utf-8'
+
+The _setRedirect method helps creating the correct redirect url.
+
+    >>> print obj._setRedirect('portal_actions', 'ACTION')
+    ACTION_URL
+
+    >>> print obj._setRedirect('portal_actions', 'ACTION', 'foo, bar')
+    ACTION_URL?foo:int=1&bar=BAR
+
+    >>> request.form = {'foo': 0, 'bar': '0'}
+    >>> print obj._setRedirect('portal_actions', 'ACTION', 'foo, bar')
+    ACTION_URL?bar=0
+
+    >>> obj.status = u'STATUS \xc4\xd6\xdc'
+    >>> print obj._setRedirect('portal_actions', 'ACTION', 'foo, bar')
+    ACTION_URL?portal_status_message=STATUS%20%C3%84%C3%96%C3%9C&bar=0
+
+Add Forms
+---------
+
+Set site and up user.
+
+    >>> from zope.component.hooks import setSite
+    >>> setSite(app.site)
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Register the content class and factory.
+
+    >>> from Products.CMFDefault.formlib.tests import CONTENT_ZCML
+    >>> from Zope2.App import zcml
+    >>> zcml.load_string(CONTENT_ZCML)
+
+Create the type info object.
+
+    >>> from Products.CMFDefault.formlib.tests import MYFOO_XML
+    >>> from Products.CMFDefault.formlib.tests import TYPES_XML
+    >>> from Products.GenericSetup.context import SetupEnviron
+    >>> from Products.GenericSetup.interfaces import IBody
+    >>> from zope.component import getMultiAdapter
+
+    >>> ttool = app.site.portal_types
+    >>> context = SetupEnviron()
+    >>> context._should_purge = False
+    >>> importer = getMultiAdapter((ttool, context), IBody)
+    >>> importer.body = TYPES_XML
+    >>> importer = getMultiAdapter((ttool.MyFoo, context), IBody)
+    >>> importer.body = MYFOO_XML
+
+If no add view is registered for 'test.foo' the fallback add view is used. It
+just has an ID field.
+
+    >>> browser.open('http://localhost/site/++add++MyFoo')
+    >>> '[[cmf_default][Add [[cmf_default][MyFoo]]]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.bar')
+    Traceback (most recent call last):
+    ...
+    LookupError: name 'form.bar'
+    ...
+    >>> browser.getControl(name='form.id').value = 'MY_ID'
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[cmf_default][[[cmf_default][MyFoo]] added.]]' in browser.contents
+    True
+    >>> 'MY_ID' in app.site.contentIds()
+    True
+
+This is the most simple add form you can create for 'test.foo'. Add views
+always belong to specific content factories. The name of the factory and the
+name of the add view have to be the same.
+
+    >>> from zope.component import getGlobalSiteManager
+    >>> from zope.formlib import form
+    >>> from Products.CMFDefault.formlib.form import ContentAddFormBase
+    >>> from Products.CMFDefault.formlib.tests import IFoo
+
+    >>> class FooAddView(ContentAddFormBase):
+    ...     form_fields = form.FormFields(IFoo)
+    >>> getGlobalSiteManager().registerAdapter(FooAddView, name='test.foo')
+
+The customized add form has the same title but no ID field. On the other hand
+it has the fields defined in IFoo.
+
+    >>> browser.open('http://localhost/site/++add++MyFoo')
+    >>> '[[cmf_default][Add [[cmf_default][MyFoo]]]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.id')
+    Traceback (most recent call last):
+    ...
+    LookupError: name 'form.id'
+    ...
+    >>> browser.getControl(name='form.bar').value = 'BAR'
+    >>> browser.getControl(name='form.baz').value = 'BAZ'
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[cmf_default][[[cmf_default][MyFoo]] added.]]' in browser.contents
+    True
+    >>> 'Foo' in app.site.contentIds()
+    True
+
+Now we add again the ID field.
+
+    >>> from Products.CMFDefault.formlib.widgets import IDInputWidget
+    >>> from Products.CMFDefault.utils import Message as _
+    >>> from zope.schema import ASCIILine
+
+    >>> class FooAddView(ContentAddFormBase):
+    ...     form_fields = (
+    ...         form.FormFields(ASCIILine(__name__='id', title=_(u'ID'))) +
+    ...         form.FormFields(IFoo)
+    ...         )
+    ...     form_fields['id'].custom_widget = IDInputWidget
+    >>> getGlobalSiteManager().registerAdapter(FooAddView, name='test.foo')
+
+The customized add form has the ID field and the fields defined in IFoo.
+
+    >>> browser.open('http://localhost/site/++add++MyFoo')
+    >>> '[[cmf_default][Add [[cmf_default][MyFoo]]]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.id').value = 'MY_ID2'
+    >>> browser.getControl(name='form.bar').value = 'BAR'
+    >>> browser.getControl(name='form.baz').value = 'BAZ'
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[cmf_default][[[cmf_default][MyFoo]] added.]]' in browser.contents
+    True
+    >>> 'MY_ID2' in app.site.contentIds()
+    True

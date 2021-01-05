@@ -1,0 +1,84 @@
+Join views
+----------
+
+Set up user.
+
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+
+Open the join form. Password field should be visible
+
+    >>> browser.open('http://localhost/site/@@join.html')
+    >>> '[[cmf_default][Become a Member]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.password').value == ''
+    True
+
+Cancel redirects anonymous users to the site root.
+
+    >>> browser.open('http://localhost/site/@@join.html')
+    >>> browser.getControl('[[cmf_default][Cancel]]').click()
+    >>> browser.url
+    'http://localhost/site'
+
+Use the form without input as anonymous user.
+
+    >>> browser.open('http://localhost/site/@@join.html')
+    >>> browser.getControl('[[cmf_default][Register]]').click()
+    >>> '[[zope][There were errors]]' in browser.contents
+    True
+    >>> '[[zope][Required input is missing.]]' in browser.contents
+    True
+
+Use the form with valid input as anonymous user.
+
+    >>> browser.open('http://localhost/site/@@join.html')
+    >>> browser.getControl(name='form.member_id').value = 'FOO'
+    >>> browser.getControl(name='form.email').value = 'FOO@EXAMPLE.ORG'
+    >>> browser.getControl(name='form.password').value = 'SECRET'
+    >>> browser.getControl(name='form.confirmation').value = 'SECRET'
+    >>> browser.getControl('[[cmf_default][Register]]').click()
+    >>> '[[cmf_default][You have been registered' in browser.contents
+    True
+
+Open the join form as manager.
+
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+    >>> browser.open('http://localhost/site/@@join.html')
+    >>> '[[cmf_default][Register a New Member]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.password').value == ''
+    True
+
+Cancel redirects managers to the members_manage_form.
+
+    >>> browser.open('http://localhost/site/@@join.html')
+    >>> browser.getControl('[[cmf_default][Cancel]]').click()
+    >>> browser.url
+    'http://localhost/site/members_manage_form'
+
+Use the form without input as manager.
+
+    >>> browser.open('http://localhost/site/@@join.html')
+    >>> browser.getControl('[[cmf_default][Register]]').click()
+    >>> '[[zope][There were errors]]' in browser.contents
+    True
+    >>> '[[zope][Required input is missing.]]' in browser.contents
+    True
+
+Use the form with valid input as manager.
+
+    >>> browser.open('http://localhost/site/@@join.html')
+    >>> browser.getControl(name='form.member_id').value = 'BAR'
+    >>> browser.getControl(name='form.email').value = 'BAR@EXAMPLE.ORG'
+    >>> browser.getControl(name='form.password').value = 'SECRET'
+    >>> browser.getControl(name='form.confirmation').value = 'SECRET'
+    >>> browser.getControl('[[cmf_default][Register]]').click()
+    >>> '[[cmf_default][Member registered.]]' in browser.contents
+    True

@@ -1,0 +1,74 @@
+<html>
+<body>
+
+ <metal:macro metal:define-macro="summary" i18n:domain="cmf_default"
+ ><p class="BatchSummary" tal:condition="view/summary_length"
+     i18n:translate="">Found <span tal:replace="view/summary_length"
+      i18n:name="count">N</span> <span i18n:name="type"><span tal:omit-tag=""
+       tal:content="view/summary_type" i18n:translate="">ITEMS</span></span
+  ><tal:case tal:condition="python: view.summary_match() is not None"
+   > matching '<span tal:replace="view/summary_match" i18n:name="text"
+    >SEARCH TERM</span>'</tal:case>.</p
+ ><p class="BatchSummary" tal:condition="not:view/summary_length"
+     i18n:translate="">There are no items matching your specified criteria.</p
+></metal:macro>
+
+ <metal:macro metal:define-macro="listing" i18n:domain="cmf_default">
+ <p class="BatchListing" tal:repeat="item_info view/listBatchItems"
+ ><a href="" tal:attributes="href item_info/url"
+  ><img src="" alt="" title="" border="0" width="16" height="16"
+      tal:attributes="src item_info/icon; alt item_info/type;
+                      title item_info/type"
+      i18n:attributes="alt; title" /></a
+ ><tal:case tal:condition="item_info/title">&nbsp;
+  <a href="" tal:attributes="href item_info/url"
+     tal:content="item_info/title">TITLE</a></tal:case
+ ><tal:case tal:condition="item_info/description">
+  <br /><tal:span tal:content="item_info/description"
+ >DESCRIPTION</tal:span></tal:case
+ ><tal:case tal:condition="item_info/format">
+  <br /><span><tal:span tal:content="item_info/format" i18n:translate=""
+  >FORMAT</tal:span><tal:case tal:condition="item_info/size"
+  >, <tal:span tal:content="item_info/size">99.9 KB</tal:span></tal:case
+ ></span></tal:case></p
+></metal:macro>
+
+ <metal:macro metal:define-macro="navigation"
+    tal:define="prev_info view/navigation_previous;
+                next_info view/navigation_next"
+ ><p class="BatchNavigation" tal:condition="python: prev_info or next_info"
+  ><tal:case tal:condition="prev_info">
+  <a href="" tal:attributes="href prev_info/url"
+     tal:content="prev_info/title">PREVIOUS N ITEMS</a></tal:case
+ ><tal:case tal:condition="python: prev_info and next_info">
+  &nbsp;&nbsp;</tal:case
+ ><tal:case tal:condition="next_info">
+  <a href="" tal:attributes="href next_info/url"
+     tal:content="next_info/title">NEXT N ITEMS</a></tal:case
+ ></p
+></metal:macro>
+
+<metal:macro metal:define-macro="pagination"
+  tal:define="current_page view/page_number;
+              prev_info view/navigation_previous;
+              next_info view/navigation_next">
+	<a href=""
+	   tal:condition="prev_info"
+		 tal:attributes="href prev_info/url">&lt;&lt;</a>
+  <tal:repeat condition="python: prev_info or next_info"
+                        repeat="page view/page_range">
+		<a tal:condition="python: not page['number'] == current_page"
+		  tal:attributes="href page/url"
+		  tal:content="page/number">Page number</a>
+	  <span tal:condition="python: page['number'] == current_page"
+	        tal:content="page/number">Page number</span>
+		<tal:condition condition="not: repeat/page/end">|</tal:condition>
+	</tal:repeat>
+	
+	<a href=""
+	   tal:condition="python: current_page != view.page_count() and next_info"
+	   tal:attributes="href next_info/url">&gt;&gt;</a>
+</metal:macro>
+
+</body>
+</html>

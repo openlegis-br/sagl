@@ -1,0 +1,168 @@
+Utilities
+
+
+  Testing ProxyFieldProperty:
+
+    Setting up content and adapter::
+
+      >>> from OFS.PropertyManager import PropertyManager
+      >>> class FooContent(PropertyManager):
+      ...     _properties=({'id':'foo_prop', 'type': 'string'},)
+      ...     foo_text = ''
+      ...     foo_bytes = ''
+      ...     _foo_upload = ''
+      ...     def _getUpload(self):
+      ...         return self._foo_upload
+      ...     def _setUpload(self, value):
+      ...         value.seek(0)
+      ...         self._foo_upload = value.read()
+      ...     foo_upload = property(_getUpload, _setUpload)
+      ...     foo_choice = ''
+      ...     foo_datetime = None
+      ...     foo_set = ()
+      ...     foo_list = []
+      ...     foo_tuple = ()
+      ...     foo_prop = ''
+
+      >>> from zope.interface import Interface
+      >>> from zope import schema
+      >>> from zope.schema.vocabulary import SimpleVocabulary
+      >>> from Products.CMFDefault.formlib.schema import FileUpload
+      >>> foo_vocabulary = SimpleVocabulary.fromItems((('a', u'f\xf6\xf6'),
+      ...                                              ('b', u'bar')))
+      >>> class IFooContentView(Interface):
+      ...     foo_text = schema.Text()
+      ...     foo_bytes = schema.Bytes()
+      ...     foo_upload = FileUpload()
+      ...     foo_choice = schema.Choice(vocabulary=foo_vocabulary)
+      ...     foo_datetime = schema.Datetime()
+      ...     foo_set = schema.Set()
+      ...     foo_list = schema.List()
+      ...     foo_tuple = schema.Tuple()
+      ...     foo_prop = schema.Text()
+
+      >>> from Products.CMFDefault.formlib.schema import ProxyFieldProperty
+      >>> class FooContentAdapter(object):
+      ... 
+      ...     foo_text = ProxyFieldProperty(IFooContentView['foo_text'])
+      ...     foo_bytes = ProxyFieldProperty(IFooContentView['foo_bytes'])
+      ...     foo_upload = ProxyFieldProperty(IFooContentView['foo_upload'])
+      ...     foo_choice = ProxyFieldProperty(IFooContentView['foo_choice'])
+      ...     foo_datetime = ProxyFieldProperty(IFooContentView['foo_datetime'])
+      ...     foo_set = ProxyFieldProperty(IFooContentView['foo_set'])
+      ...     foo_list = ProxyFieldProperty(IFooContentView['foo_list'])
+      ...     foo_tuple = ProxyFieldProperty(IFooContentView['foo_tuple'])
+      ...     foo_prop = ProxyFieldProperty(IFooContentView['foo_prop'])
+      ... 
+      ...     def __init__(self, context):
+      ...         self.context = context
+      ...         self.encoding = 'utf-8'
+
+      >>> content = FooContent()
+      >>> adapter = FooContentAdapter(content)
+
+    unicode is mapped to str::
+
+      >>> foo_text = u'foo'
+      >>> adapter.foo_text = foo_text
+      >>> content.foo_text
+      'foo'
+      >>> adapter.foo_text == foo_text
+      True
+
+      >>> foo_choice = u'f\xf6\xf6'
+      >>> adapter.foo_choice = foo_choice
+      >>> content.foo_choice
+      'f\xc3\xb6\xc3\xb6'
+      >>> adapter.foo_choice == foo_choice
+      True
+
+    bytes are not changed::
+
+      >>> foo_bytes = 'f\xc3\xb6\xc3\xb6'
+      >>> adapter.foo_bytes = foo_bytes
+      >>> content.foo_bytes
+      'f\xc3\xb6\xc3\xb6'
+      >>> adapter.foo_bytes == foo_bytes
+      True
+
+      >>> from StringIO import StringIO
+      >>> from ZPublisher.HTTPRequest import FileUpload
+      >>> foo_upload = 'f\xc3\xb6\xc3\xb6'
+      >>> class DummyFieldStorage(object):
+      ...     file = StringIO(foo_upload)
+      ...     filename = None
+      ...     headers = None
+      >>> adapter.foo_upload = FileUpload(DummyFieldStorage())
+      >>> content.foo_upload
+      'f\xc3\xb6\xc3\xb6'
+      >>> adapter.foo_upload == foo_upload
+      True
+
+    Pdata is read as str::
+
+      >>> from OFS.Image import Pdata
+      >>> foo_bytes = 'foo'
+      >>> content.foo_bytes = Pdata(foo_bytes)
+      >>> isinstance(content.foo_bytes, Pdata)
+      True
+      >>> isinstance(adapter.foo_bytes, Pdata)
+      False
+      >>> adapter.foo_bytes == foo_bytes
+      True
+
+    datetime is mapped to DateTime::
+
+      >>> from datetime import datetime
+      >>> from DateTime.DateTime import DateTime
+      >>> foo_datetime = datetime(2002, 2, 2, 2, 2, 2)
+      >>> adapter.foo_datetime = foo_datetime
+      >>> isinstance(content.foo_datetime, DateTime)
+      True
+      >>> adapter.foo_datetime == foo_datetime
+      True
+
+      >>> foo_zope_datetime = DateTime('1970/01/01 00:00:00')
+      >>> content.foo_datetime = foo_zope_datetime
+      >>> foo_python_datetime = adapter.foo_datetime
+      >>> adapter.foo_datetime = foo_python_datetime
+      >>> content.foo_datetime == foo_zope_datetime
+      True
+      >>> adapter.foo_datetime == foo_python_datetime
+      True
+
+    set is mapped to tuple::
+
+      >>> foo_set = set([3, 1, 4])
+      >>> adapter.foo_set = foo_set
+      >>> content.foo_set
+      (1, 3, 4)
+      >>> adapter.foo_set == foo_set
+      True
+
+    list with unicode is mapped to list with str::
+
+      >>> foo_list = [3, 1, u'foo']
+      >>> adapter.foo_list = foo_list
+      >>> content.foo_list
+      [3, 1, 'foo']
+      >>> adapter.foo_list == foo_list
+      True
+
+    tuple with unicode is mapped to tuple with str::
+
+      >>> foo_tuple = (3, 1, u'foo')
+      >>> adapter.foo_tuple = foo_tuple
+      >>> content.foo_tuple
+      (3, 1, 'foo')
+      >>> adapter.foo_tuple == foo_tuple
+      True
+
+    PropertyManager properties use _setProperty::
+
+      >>> foo_prop = u'foo'
+      >>> adapter.foo_prop = foo_text
+      >>> content.foo_prop
+      'foo'
+      >>> adapter.foo_prop == foo_prop
+      True

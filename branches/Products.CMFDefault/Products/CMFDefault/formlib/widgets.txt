@@ -1,0 +1,200 @@
+Widgets
+
+
+  Testing TupleTextAreaWidget:
+
+    Set one up::
+
+      >>> class DummyRequest(dict):
+      ...     def __init__(self):
+      ...         self.form = {}
+      ...     def get(self, key):
+      ...         return self.form.get(key)
+      >>> request = DummyRequest()
+      >>> request.form['PREFIX.NAME'] = u'FOO \n BAR'
+
+      >>> from Products.CMFDefault.formlib.widgets import TupleInputWidget
+      >>> from zope.schema import Tuple
+      >>> tuple_field = Tuple(__name__='NAME', title=u'FIELD TITLE',
+      ...                     required=False)
+
+      >>> widget = TupleInputWidget(tuple_field, request)
+
+    IWidget::
+
+      >>> widget.name
+      'field.NAME'
+      >>> widget.label
+      u'FIELD TITLE'
+      >>> widget.hint
+      u''
+      >>> widget.visible
+      True
+      >>> widget.setRenderedValue(('BAZ',))
+      >>> widget.setRenderedValue(widget._data_marker)
+      >>> widget.setPrefix('PREFIX')
+      >>> widget.name
+      'PREFIX.NAME'
+
+    IInputWidget::
+
+      >>> widget.required
+      False
+      >>> widget.getInputValue()
+      (u'FOO', u'BAR')
+      >>> #widget.applyChanges(content)
+      >>> widget.hasInput()
+      True
+      >>> widget.hasValidInput()
+      True
+
+    IBrowserWidget::
+
+      >>> print widget()
+      <textarea cols="60" id="PREFIX.NAME" name="PREFIX.NAME" rows="15" >FOO
+      BAR</textarea>
+      >>> #print widget.hidden()
+      >>> print widget.error()
+
+    Missing input::
+
+      >>> request.form['PREFIX.NAME'] = u' \n '
+      >>> print widget.getInputValue()
+      None
+
+
+  Testing IDInputWidget:
+
+    Set one up::
+
+      >>> class DummyFolder:
+      ...     def checkIdAvailable(self, value):
+      ...         if value == 'INVALID': return False
+      ...         return True
+      >>> class DummyView: pass
+      >>> view = DummyView()
+      >>> view.context = DummyFolder()
+
+      >>> request = DummyRequest()
+      >>> request.form['PREFIX.NAME'] = u'FOO'
+
+      >>> from Products.CMFDefault.formlib.widgets import IDInputWidget
+      >>> from zope.schema import ASCIILine
+      >>> ascii_field = ASCIILine(__name__='NAME',
+      ...                         title=u'FIELD TITLE').bind(view)
+
+      >>> widget = IDInputWidget(ascii_field, request)
+
+    IWidget::
+
+      >>> widget.name
+      'field.NAME'
+      >>> widget.label
+      u'FIELD TITLE'
+      >>> widget.hint
+      u''
+      >>> widget.visible
+      True
+      >>> widget.setRenderedValue(('BAZ',))
+      >>> widget.setRenderedValue(widget._data_marker)
+      >>> widget.setPrefix('PREFIX')
+      >>> widget.name
+      'PREFIX.NAME'
+
+    IInputWidget::
+
+      >>> widget.required
+      True
+      >>> widget.getInputValue()
+      'FOO'
+      >>> #widget.applyChanges(content)
+      >>> widget.hasInput()
+      True
+      >>> widget.hasValidInput()
+      True
+
+    IBrowserWidget::
+
+      >>> print widget()
+      <input class="textType" id="PREFIX.NAME" name="PREFIX.NAME" size="20"
+      type="text" value="FOO" />
+
+    Missing input::
+
+      >>> request.form['PREFIX.NAME'] = u''
+      >>> print widget.getInputValue()
+      Traceback (most recent call last):
+      ...
+      WidgetInputError: ('NAME', u'FIELD TITLE', ...)
+
+    Invalid input::
+
+      >>> request.form['PREFIX.NAME'] = u'INVALID'
+      >>> print widget.getInputValue()
+      Traceback (most recent call last):
+      ...
+      WidgetInputError: ('NAME', u'FIELD TITLE', u'Please choose another ID.')
+
+
+  Testing SubjectInputWidget:
+
+    Set one up::
+
+      >>> from zope.component import getSiteManager
+      >>> from Products.CMFCore.interfaces import IMetadataTool
+      >>> class DummyTool:
+      ...     def listAllowedSubjects(self, context): return ('SPAM', 'EGGS')
+      >>> view = DummyView()
+      >>> getSiteManager().registerUtility(DummyTool(), IMetadataTool)
+
+      >>> request = DummyRequest()
+      >>> request.form['PREFIX.NAME.1'] = ['EGGS']
+      >>> request.form['PREFIX.NAME'] = u'FOO \n BAR \n SPAM'
+
+      >>> from Products.CMFDefault.formlib.widgets import SubjectInputWidget
+      >>> from zope.schema import Set
+      >>> set_field = Set(__name__='NAME', title=u'FIELD TITLE').bind(view)
+
+      >>> widget = SubjectInputWidget(set_field, request)
+
+    IWidget::
+
+      >>> widget.name
+      'field.NAME'
+      >>> widget.label
+      u'FIELD TITLE'
+      >>> widget.hint
+      u''
+      >>> widget.visible
+      True
+      >>> widget.setRenderedValue(('BAZ',))
+      >>> widget.setRenderedValue(widget._data_marker)
+      >>> widget.setPrefix('PREFIX')
+      >>> widget.name
+      'PREFIX.NAME'
+
+    IInputWidget::
+
+      >>> widget.required
+      True
+      >>> widget.getInputValue()
+      set([u'EGGS', u'FOO', u'BAR', u'SPAM'])
+      >>> #widget.applyChanges(content)
+      >>> widget.hasInput()
+      True
+      >>> widget.hasValidInput()
+      True
+
+    IBrowserWidget::
+
+      >>> print widget()
+      <div>
+      <div class="value">
+      <select id="PREFIX.NAME.1" multiple="multiple" name="PREFIX.NAME.1:list"
+      size="3" ><option selected="selected" value="SPAM">SPAM</option>
+      <option selected="selected" value="EGGS">EGGS</option></select>
+      </div>
+      <input name="PREFIX.NAME.1-empty-marker" type="hidden" value="1" />
+      </div>
+      <textarea cols="60" id="PREFIX.NAME" name="PREFIX.NAME"
+      rows="2" >FOO BAR</textarea>

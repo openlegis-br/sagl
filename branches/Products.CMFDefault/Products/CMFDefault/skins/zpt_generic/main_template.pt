@@ -1,0 +1,341 @@
+<metal:macro metal:define-macro="master"
+><tal:doctype tal:replace="structure string:&lt;!DOCTYPE html PUBLIC
+  &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+  &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;" />
+
+<html tal:define="globals context/getMainGlobals;
+                  utool globals/utool;
+                  mtool globals/mtool;
+                  atool globals/atool;
+                  wtool globals/wtool;
+                  syndtool globals/syndtool;
+                  caltool_installed globals/caltool_installed;
+                  portal_object globals/portal_object;
+                  portal_title globals/portal_title;
+                  object_title globals/object_title;
+                  object_description globals/object_description;
+                  portal_url globals/portal_url;
+                  member globals/member;
+                  membersfolder globals/membersfolder;
+                  isAnon globals/isAnon;
+                  actions python: atool.listFilteredActionsFor(context);
+                  user_actions actions/user;
+                  object_actions actions/object;
+                  workflow_actions actions/workflow;
+                  folder_actions actions/folder;
+                  add_actions python: actions.get('folder/add', {});
+                  global_actions actions/global;
+                  wf_state globals/wf_state;
+                  show_actionicons globals/show_actionicons;
+                 "
+>
+
+<head>
+ <title tal:content="context/expanded_title">Title goes here</title>
+
+ <metal:slot define-slot="base" />
+
+ <link rel="stylesheet" type="text/css" href="zpt_stylesheet.css"
+       tal:attributes="href context/zpt_stylesheet.css/absolute_url" />
+ <link rel="stylesheet" type="text/css" href="calendar.css"
+       tal:condition="caltool_installed"
+       tal:attributes="href string:${portal_url}/++resource++calendar.css" />
+ <link rel="alternate" type="application/rss+xml"
+       tal:condition="python: syndtool.isSyndicationAllowed(context)"
+       tal:attributes="href string:${context/absolute_url}/@@rss.xml;
+                       title context/Title" />
+ <metal:slot define-slot="style_slot" />
+</head>
+
+<body>
+
+<div metal:define-macro="top_bar">
+
+ <!-- Top bar -->
+ <table id="Masthead"
+        width="100%" cellpadding="0" cellspacing="0" border="0">
+
+  <tr>
+   <td id="PortalLogo">
+    <a href="." tal:attributes="href string:${portal_url}/"
+    ><img src="Zope_logo.gif" alt="Zope Logo"
+          border="0" width="87" height="38"
+          tal:attributes="src string:${portal_url}/Zope_logo.gif" /></a>
+   </td>
+
+   <td id="PortalTitle">
+    <span tal:content="string:${portal_title}">Site Title</span>
+   </td>
+
+   <td id="NavBar" i18n:domain="cmf_default">
+   <form action="search" method="get"
+         tal:attributes="action globals/search_url">
+    <a href="."
+       tal:attributes="href string:${portal_url}/"
+       i18n:translate="">home</a>&nbsp;
+    <span tal:condition="membersfolder" tal:omit-tag="">
+    <a href="roster"
+       tal:attributes="href python: membersfolder.absolute_url()"
+       tal:content="python: membersfolder.getId().lower()"
+       i18n:translate="">members</a>&nbsp;
+    </span>
+    <a href="recent_news"
+       tal:attributes="href string:${portal_url}/recent_news"
+       i18n:translate="">news</a>&nbsp;
+    <a href="search_form"
+       tal:attributes="href globals/search_form_url"
+       i18n:translate="">search</a>
+
+    <input name="SearchableText" size="16" />
+    <input type="image" name="go" value="go" src="go.gif"
+           align="middle"
+           tal:attributes="src string:${portal_url}/go.gif" /> &nbsp;
+   </form>
+   </td>
+  </tr>
+
+ </table>
+ <!-- end topbar -->
+
+<!-- end top_bar-->
+</div>
+
+<div metal:define-macro="user_menu_bar">
+
+ <!-- user_menu_bar -->
+ <table id="MemberActionsBox"
+        width="100%" border="0" cellpadding="0" cellspacing="0"
+        i18n:domain="cmf_default">
+  <tr>
+   <td class="ActionTitle" tal:content="globals/membername">Guest</td>
+   <td class="ActionLink" align="right">
+    <tal:span tal:repeat="action user_actions"
+    ><img src="" alt="" title=""
+            tal:define="icon_url action/icon|nothing"
+            tal:condition="python: show_actionicons and icon_url"
+            tal:attributes="src icon_url;
+                            alt action/title;
+                            title action/title"/>
+    <a href="" tal:attributes="href action/url;
+                               target action/link_target|nothing"
+                tal:content="action/title" i18n:translate="">Login</a
+    ><tal:span tal:condition="not: repeat/action/end"> |</tal:span></tal:span>
+    <tal:span tal:condition="nothing"
+    ><a href="">Join</a></tal:span> </td>
+  </tr>
+ </table>
+ <!-- end user_menu_bar -->
+
+<!-- end user_menu_bar div-->
+</div>
+
+<div id="main_body" i18n:domain="cmf_default">
+
+ <table class="Forematter"
+        width="100%" border="0" cellpadding="0" cellspacing="0" >
+ <tr>
+ <td width="200px">
+
+  <!-- actions box -->
+  <table id="ContextActionsBox" metal:define-macro="actions_box">
+
+   <!-- object actions -->
+   <tr class="ContextActionsRow">
+
+    <td class="ActionTitle"
+        tal:define="icon_url python: getattr(context, 'getIconURL', '');
+                    typ python: getattr(context, 'Type', '');
+                    objID python: context.truncID(context.getId(), size=15)">
+
+     <img src="icon_url" align="left" title="Type" alt="[X]"
+          height="16" width="16"
+          tal:condition="icon_url"
+          tal:attributes="src icon_url;
+                          alt typ; "
+          i18n:attributes="alt" /> &nbsp;
+
+     <span tal:replace="structure objID">ID</span>
+    </td>
+   </tr>
+
+   <tr class="ContextActionsRow"
+       tal:condition="python: len( object_actions ) > 1"
+   >
+
+    <td class="ActionLink">
+
+     <span tal:repeat="action object_actions">
+       <img src="" alt="" title=""
+            tal:define="icon_url action/icon|nothing"
+            tal:condition="python: show_actionicons and icon_url"
+            tal:attributes="src icon_url;
+                            alt action/title;
+                            title action/title"/>
+      <a href=""
+         tal:attributes="href action/url;
+                         target action/link_target|nothing"
+         tal:content="action/title"
+         i18n:translate="">View</a><br />
+     </span>
+
+     <span tal:condition="nothing">
+      <a href="">Edit</a><br />
+     </span>
+
+     <span tal:condition="nothing">
+      <a href="">Metadata</a><br />
+     </span>
+
+    </td>
+   </tr>
+
+   <!-- workflow actions -->
+   <tr class="ContextActionsRow"
+       tal:condition="workflow_actions" >
+
+    <td class="ActionLink">
+
+      <span class="ObjectStatus">
+       <span tal:omit-tag=""
+             i18n:translate="">Status:</span>
+       <span tal:omit-tag=""
+             tal:content="wf_state"
+             i18n:translate="">Private</span><br />
+      </span>
+
+      <span tal:repeat="action workflow_actions">
+       <img src="" alt="" title=""
+            tal:define="icon_url action/icon|nothing"
+            tal:condition="python: show_actionicons and icon_url"
+            tal:attributes="src icon_url;
+                            alt action/title;
+                            title action/title"/>
+       <a href="content_submit_form"
+          tal:attributes="href action/url;
+                          target action/link_target|nothing"
+          tal:content="action/title"
+          i18n:translate="">Submit</a><br />
+      </span>
+    </td>
+   </tr>
+
+   <!-- folder actions -->
+   <tr class="ContextActionsRow"
+       tal:condition="folder_actions"
+   >
+    <td class="ActionLink">
+      <span tal:repeat="action folder_actions">
+       <img src="" alt="" title=""
+            tal:define="icon_url action/icon|nothing"
+            tal:condition="python: show_actionicons and icon_url"
+            tal:attributes="src icon_url;
+                            alt action/title;
+                            title action/title"/>
+       <a href="../folder_contents"
+          tal:attributes="href action/url;
+                          target action/link_target|nothing"
+          tal:content="action/title"
+          i18n:translate="">Folder contents</a><br />
+      </span>
+    </td>
+   </tr>
+
+   <!-- add actions -->
+   <tr class="ContextActionsRow"
+       tal:condition="add_actions"
+   >
+    <td class="ActionLink">
+      <span class="ObjectStatus">
+       <span tal:omit-tag=""
+             i18n:translate="">Add...</span><br />
+      </span>
+
+      <span tal:repeat="action add_actions">
+       <img src="" alt="" title=""
+            tal:define="icon_url action/icon|nothing"
+            tal:condition="python: show_actionicons and icon_url"
+            tal:attributes="src icon_url;
+                            alt action/title;
+                            title action/title"/>
+       <a href="+Document"
+          tal:attributes="href action/url;
+                          target action/link_target|nothing"
+          tal:content="action/title"
+          i18n:translate="">Document</a><br />
+      </span>
+    </td>
+   </tr>
+
+   <!-- global actions -->
+   <tr class="ContextActionsRow"
+       tal:condition="global_actions"
+   >
+    <td class="ActionLink">
+     <span tal:repeat="action global_actions">
+       <img src="" alt="" title=""
+            tal:define="icon_url action/icon|nothing"
+            tal:condition="python: show_actionicons and icon_url"
+            tal:attributes="src icon_url;
+                            alt action/title;
+                            title action/title"/>
+      <a href="undo_form"
+         tal:attributes="href action/url;
+                         target action/link_target|nothing"
+         tal:content="action/title"
+         i18n:translate="">Undo</a><br />
+     </span>
+    </td>
+   </tr>
+
+   <tr tal:condition="caltool_installed">
+    <td>
+     <div metal:use-macro="context/@@calendar_widget/calendarBox">
+     </div>
+    </td>
+   </tr>
+
+  </table>
+  <!-- end actions_box -->
+
+ </td>
+
+ <td width="16px">&nbsp;</td>
+
+ <td id="ForematterCell">
+  <div id="Desktop">
+
+  <p id="Breadcrumbs">
+   <span tal:repeat="bc context/breadcrumbs"
+    ><a href="."
+        tal:attributes="href bc/url" tal:content="bc/id"
+     >ID</a><span tal:condition="not: repeat/bc/end">&nbsp;/&nbsp;</span>
+   </span>
+  </p>
+
+  <p id="DesktopStatusBar"
+     tal:condition="globals/status_message"
+     tal:content="globals/status_message"
+     i18n:translate="">Status message.</p>
+
+<metal:slot metal:define-slot="body"
+><metal:slot metal:define-slot="header" />
+<metal:slot metal:define-slot="main" /></metal:slot>
+
+ <div id="Permalink"
+      tal:define="url context/get_permalink | nothing"
+      tal:condition="url">
+  <span i18n:translate="" tal:omit-tag="">Permanent Link:</span>
+  <a href="" tal:content="url" tal:attributes="href url">
+    the permanent link if enabled
+  </a>
+ </div>
+
+  </div>
+ </td>
+ </tr>
+ </table>
+
+</div>
+
+</body>
+</html></metal:macro>

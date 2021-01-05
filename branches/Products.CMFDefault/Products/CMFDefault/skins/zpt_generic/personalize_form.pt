@@ -1,0 +1,88 @@
+<html metal:use-macro="context/main_template/macros/master">
+<body>
+
+<metal:slot metal:fill-slot="main" i18n:domain="cmf_default"
+   tal:define="purl context/portal_url;
+               mtool context/portal_membership;
+               member mtool/getAuthenticatedMember">
+<tal:case tal:condition="python: not(mtool.checkPermission('Set own properties', context))">
+    <span id="dummy_for_redirect"
+          tal:define="aurl context/absolute_url;
+                      rurl string:${purl}/login_form?came_from=${aurl};
+                      response request/RESPONSE;
+                      redirect python:response.redirect( rurl )" />
+</tal:case>
+
+<h1 i18n:translate="">Member Preferences</h1>
+
+   <span tal:replace="request/msg"
+         tal:condition="request/msg|nothing" />
+
+   <p i18n:translate="">
+     <span i18n:name="link"><a href="password_form"
+                               i18n:translate="">Click here</a></span>
+     to change your password.</p>
+
+   <form action="personalize" method="post"
+         tal:attributes="action string:${purl}/personalize"
+   >
+    <table class="FormLayout">
+
+     <tr>
+      <th i18n:translate="">Email address</th>
+      <td><input type="text" name="email" value=""
+                 tal:attributes="value python: member.getProperty('email')" />
+      </td>
+     </tr>
+
+     <tr>
+      <th valign="top" i18n:translate="">Listed status</th>
+      <td tal:define="listed python: member.getProperty('listed')">
+        <input type="radio" name="listed"
+               tal:attributes="checked listed"
+               value="on" id="cb_listed" />
+        <label for="cb_listed" i18n:translate="">Listed</label>
+        <dl class="FieldHelp">
+          <dd i18n:translate="">You will show up on the public membership
+            roster.</dd>
+        </dl>
+
+        <input type="radio" name="listed"
+               tal:attributes="checked not: listed"
+               value="" id="cb_unlisted" />
+        <label for="cb_unlisted" i18n:translate="">Unlisted</label>
+        <dl class="FieldHelp">
+          <dd i18n:translate="">You will <i>not</i> show up on the public
+            membership roster.</dd>
+        </dl>
+      </td>
+     </tr>
+
+     <tr tal:condition="context/portal_skins|nothing">
+      <th i18n:translate="">Skin</th>
+      <td tal:define="s_tool context/portal_skins;
+                      current request/portal_skin|nothing;
+                     ">
+       <select name="portal_skin">
+        <option value=""
+                tal:define="skins python:s_tool.getSkinSelections()"
+                tal:repeat="skin skins"
+                tal:attributes="value skin;
+                                selected python:current == skin"
+                tal:content="skin"> skin </option>
+       </select>
+      </td>
+     </tr>
+
+     <tr>
+      <td><br /></td>
+      <td>
+       <input type="submit" value="Change" i18n:attributes="value" />
+      </td>
+     </tr>
+    </table>
+   </form>
+</metal:slot>
+
+</body>
+</html>

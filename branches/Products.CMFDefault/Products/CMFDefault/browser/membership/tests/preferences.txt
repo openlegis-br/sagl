@@ -1,0 +1,69 @@
+Preferences form
+----------------
+
+Set up user.
+
+    >>> from urllib import quote
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mbr', 'mbrpw', ['Member'], [])
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mbr:mbrpw')
+
+Use the preferences form without input.
+
+    >>> browser.open("http://localhost/site/@@preferences.html")
+    >>> '[[cmf_default][Member Preferences]]' in browser.contents
+    True
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[zope][There were errors]]' in browser.contents
+    True
+    >>> '[[zope][Required input is missing.]]' in browser.contents
+    True
+
+Use the preferences form with valid input. Keep skin unselected.
+
+    >>> browser.open("http://localhost/site/@@preferences.html")
+    >>> browser.getControl(name='form.fullname').value = 'MY NAME'
+    >>> browser.getControl(name='form.email').value = 'ME@EXAMPLE.ORG'
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][Member preferences changed.]]' in browser.contents
+    True
+
+Use the preferences form again without input.
+
+    >>> browser.open("http://localhost/site/@@preferences.html")
+    >>> '[[cmf_default][Member Preferences]]' in browser.contents
+    True
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][Nothing to change.]]' in browser.contents
+    True
+
+Use the preferences form with valid input. Select skin.
+
+    >>> browser.open("http://localhost/site/@@preferences.html")
+    >>> browser.getControl(name='form.listed').value = True
+    >>> browser.getControl(name='form.portal_skin').value = ('Basic',)
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][Member preferences changed.]]' in browser.contents
+    True
+
+Use the preferences form again without input.
+
+    >>> browser.open("http://localhost/site/@@preferences.html")
+    >>> '[[cmf_default][Member Preferences]]' in browser.contents
+    True
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][Nothing to change.]]' in browser.contents
+    True
+
+Cancel redirects users to the site root if no member area exists.
+
+    >>> browser.open('http://localhost/site/@@preferences.html')
+    >>> browser.getControl('[[cmf_default][Cancel]]').click()
+    >>> browser.url
+    'http://localhost/site'

@@ -1,0 +1,57 @@
+Link Views
+----------
+
+Set up user.
+
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Use the add form without input.
+
+    >>> browser.open('http://localhost/site/++add++Link')
+    >>> '[[cmf_default][Add [[cmf_default][Link]]]]' in browser.contents
+    True
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[zope][There were errors]]' in browser.contents
+    True
+    >>> '[[zope][Required input is missing.]]' in browser.contents
+    True
+
+Use the add form with valid input.
+
+    >>> browser.open('http://localhost/site/++add++Link')
+    >>> '[[cmf_default][Add [[cmf_default][Link]]]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.id').value = 'myLink'
+    >>> browser.getControl(name='form.title').value = 'LINK TITLE'
+    >>> browser.getControl(name='form.description').value = 'LINK DESCRIPTION.'
+    >>> browser.getControl(name='form.remote_url').value = 'WWW.EXAMPLE.ORG'
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[cmf_default][[[cmf_default][Link]] added.]]' in browser.contents
+    True
+
+Use the edit form without input.
+
+    >>> browser.open('http://localhost/site/myLink/@@edit')
+    >>> '[[cmf_default][Edit [[cmf_default][Link]]]]' in browser.contents
+    True
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][Nothing to change.]]' in browser.contents
+    True
+
+Use the edit form with valid input.
+
+    >>> browser.open('http://localhost/site/myLink/@@edit')
+    >>> '[[cmf_default][Edit [[cmf_default][Link]]]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.remote_url').value = 'WWW.EXAMPLE.COM'
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][[[cmf_default][Link]] changed.]]' in browser.contents
+    True

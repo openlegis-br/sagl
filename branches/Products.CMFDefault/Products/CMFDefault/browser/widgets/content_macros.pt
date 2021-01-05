@@ -1,0 +1,51 @@
+<metal:macro metal:define-macro="page"
+><html metal:use-macro="context/@@standard_macros/page">
+<head>
+
+<metal:slot fill-slot="style_slot">
+<base metal:define-macro="style_slot"
+   href="" tal:attributes="href string:${context/absolute_url}" />
+</metal:slot>
+
+</head>
+<body>
+
+<metal:slot metal:fill-slot="body" i18n:domain="cmf_default">
+<h1 id="DesktopTitle" tal:content="view/title">CONTENT TITLE</h1>
+
+<div id="DesktopDescription" tal:content="view/description">CONTENT DESCRIPTION
+ GOES HERE.</div>
+
+<div metal:define-macro="byline"
+   id="ContentByline" tal:define="mtool context/portal_membership">
+ <p><span tal:omit-tag="" i18n:translate="">Created by</span
+ > <tal:case tal:condition="context/listCreators"
+  ><tal:loop tal:repeat="creator context/listCreators"
+   ><tal:case tal:condition="not: repeat/creator/start"
+    ><tal:case tal:condition="not: repeat/creator/end">, </tal:case
+    ><tal:case tal:condition="repeat/creator/end"
+     > <span tal:omit-tag="" i18n:translate="">and</span> </tal:case
+   ></tal:case
+   ><a href="." title="creator"
+       tal:define="home_url python: mtool.getHomeUrl(creator)"
+       tal:attributes="href home_url; title creator"
+       tal:content="creator"
+       tal:omit-tag="not: home_url">creator</a></tal:loop></tal:case
+ ><tal:case tal:condition="not: context/listCreators"
+  ><span tal:omit-tag="" i18n:translate="">unknown</span></tal:case>.
+  <span tal:omit-tag="" i18n:translate="">Last modified</span
+ > <tal:span tal:content="context/ModificationDate">Today</tal:span>.</p>
+</div>
+
+<metal:slot metal:define-slot="main" />
+
+<div class="Discussion" tal:condition="context/talkback|nothing">
+ <div tal:condition="python: context.talkback.hasReplies(context)">
+  <h4 i18n:translate="">Comments:</h4>
+  <metal:macro metal:use-macro="context/talkback_tree/macros/tree" />
+ </div>
+</div>
+</metal:slot>
+
+</body>
+</html></metal:macro>

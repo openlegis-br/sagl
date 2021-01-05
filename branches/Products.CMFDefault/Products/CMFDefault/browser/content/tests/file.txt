@@ -1,0 +1,59 @@
+File Views
+----------
+
+Set up user.
+
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Use the add form without input.
+
+    >>> browser.open('http://localhost/site/++add++File')
+    >>> '[[cmf_default][Add [[cmf_default][File]]]]' in browser.contents
+    True
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[zope][There were errors]]' in browser.contents
+    True
+    >>> '[[zope][Required input is missing.]]' in browser.contents
+    True
+
+Use the add form with valid input.
+
+    >>> from StringIO import StringIO
+    >>> browser.open('http://localhost/site/++add++File')
+    >>> '[[cmf_default][Add [[cmf_default][File]]]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.title').value = 'FILE TITLE'
+    >>> browser.getControl(name='form.description').value = 'FILE DESCRIPTION.'
+    >>> ctrl = browser.getControl(name='form.file')
+    >>> ctrl.add_file(StringIO('FILE DATA'), 'text/plain', 'myFile')
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[cmf_default][[[cmf_default][File]] added.]]' in browser.contents
+    True
+
+Use the edit form without input.
+
+    >>> browser.open('http://localhost/site/myFile/@@edit')
+    >>> '[[cmf_default][Edit [[cmf_default][File]]]]' in browser.contents
+    True
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][Nothing to change.]]' in browser.contents
+    True
+
+Use the edit form with valid input.
+
+    >>> browser.open('http://localhost/site/myFile/@@edit')
+    >>> '[[cmf_default][Edit [[cmf_default][File]]]]' in browser.contents
+    True
+    >>> ctrl = browser.getControl(name='form.file')
+    >>> ctrl.add_file(StringIO('FILE DATA 2'), 'text/plain', 'test.txt')
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][[[cmf_default][File]] changed.]]' in browser.contents
+    True

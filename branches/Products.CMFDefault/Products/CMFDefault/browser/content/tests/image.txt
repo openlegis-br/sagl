@@ -1,0 +1,40 @@
+Image Views
+-----------
+
+For edit tests see "file.txt"
+
+Set up user.
+
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Use the add form with valid input.
+
+    >>> from StringIO import StringIO
+    >>> browser.open('http://localhost/site/++add++Image')
+    >>> '[[cmf_default][Add [[cmf_default][Image]]]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.title').value = 'IMAGE TITLE'
+    >>> browser.getControl(name='form.description').value = 'IMAGE DESCRIPTION.'
+    >>> ctrl = browser.getControl(name='form.file')
+    >>> image = StringIO("""GIF89a^P^@^P^@ @^@ @ @^@^@PPP^     @^@^ @@^@^@ ^@@^  @^ ^@@ ^@ ^ @^  ^   ^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@                    $""")
+    >>> ctrl.add_file(StringIO('IMAGE DATA'), 'text/plain', 'myImage.gif')
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[cmf_default][[[cmf_default][Image]] added.]]' in browser.contents
+    True
+
+Look at the result.
+
+    >>> browser.open('http://localhost/site/myImage.gif/@@view')
+    >>> 'IMAGE DESCRIPTION' in browser.contents
+    True
+
+    >>> '<img src="http://localhost/site/myImage.gif" alt="" title="IMAGE TITLE" />' in browser.contents
+    True

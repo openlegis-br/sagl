@@ -1,0 +1,205 @@
+<html metal:use-macro="context/main_template/macros/master">
+<body>
+
+<metal:slot metal:fill-slot="main" i18n:domain="cmf_default"
+   tal:define="searching python: request.get('role_submit', None);
+               mtool context/portal_membership">
+
+<tal:case tal:condition="python: not searching">
+<!-- Search -->
+
+<h2 i18n:translate="">Assign local roles: Search Members</h2>
+
+<form method="post" action="folder_localrole_form"
+      tal:attributes="action string:${context/absolute_url}/folder_localrole_form"
+>
+
+<table class="FormLayout">
+ <tr>
+  <th i18n:translate="">Search by</th>
+  <td>
+    <select name="search_param">
+      <option value="username" i18n:translate="">User Name</option>
+      <option value="email" i18n:translate="">Email Address</option>
+    </select>
+  </td>
+ </tr>
+ <tr>
+   <th i18n:translate="">Search Term</th>
+   <td><input type="text" name="search_term" size="30" /></td>
+ </tr>
+ <tr>
+   <td><br /></td>
+   <td>
+    <input type="submit" name="role_submit" value="Search"
+           i18n:attributes="value" />
+   </td>
+ </tr>
+</table>
+
+</form>
+
+
+<!-- End search -->
+</tal:case>
+
+<tal:case tal:condition="searching"
+     tal:define="search_param python: request.get( 'search_param', '' );
+                 search_term  python: request.get( 'search_term', '' );
+                 found python:mtool.searchMembers( search_param=search_param
+                                                 , search_term=search_term
+                                                 );
+                "
+>
+<!-- Assignment -->
+
+<h2 i18n:translate="">Assign local roles: Search Results</h2>
+
+<tal:case tal:condition="found">
+
+ <p i18n:translate="">Select Member(s) and a role to assign:</p>
+
+ <form method="post" action="folder_localrole_edit"
+       tal:attributes="action string:${context/absolute_url}/folder_localrole_edit"
+ >
+  <input type="hidden" name="change_type" value="add" />
+
+  <table class="FormLayout">
+
+   <tr>
+    <td width="16"><br /></td>
+    <th style="text-align:left;" i18n:translate="">User</th>
+    <th style="text-align:left;" i18n:translate="">Email address</th>
+   </tr>
+
+   <tr tal:repeat="member found">
+    <td width="16">
+     <input type="checkbox" name="member_ids:list"
+            value=""
+            tal:attributes="value member/username" />
+    </td>
+    <td tal:content="member/username"> Username 1 </td>
+    <td tal:content="member/email"> Email 1 </td>
+   </tr>
+
+   <tr tal:condition="nothing">
+    <td width="16">
+     <input type="checkbox" name="member_ids:list" value="" />
+    </td>
+    <td> Username 2 </td>
+    <td> Email 2 </td>
+   </tr>
+
+   <tr>
+    <td colspan="3"><br /></td>
+   </tr>
+
+   <tr>
+    <th colspan="2" i18n:translate="">Role to assign:</th>
+    <td>
+     <select name="member_role"
+             tal:define="roles python: mtool.getCandidateLocalRoles(context)">
+      <option tal:repeat="role roles"
+              tal:content="role"> Role1 </option>
+      <option tal:condition="nothing"> Role2 </option>
+      <option tal:condition="nothing"> Role3 </option>
+     </select>
+    </td>
+   </tr>
+
+   <tr>
+    <td colspan="3"><br /></td>
+   </tr>
+
+   <tr>
+    <td width="16"><br /></td>
+    <td colspan="2">
+     <input type="submit" value="Assign Roles" i18n:attributes="value" />
+    </td>
+   </tr>
+
+  </table>
+ </form>
+</tal:case>
+
+<tal:case tal:condition="python: not found">
+ <p i18n:translate="">Sorry, no members matched your search.</p>
+</tal:case>
+
+<!-- End assignment -->
+</tal:case>
+
+<hr />
+
+<h2 i18n:translate="">Currently assigned local roles</h2>
+
+<p i18n:translate="">These users currently have local roles assigned in this
+  folder:</p>
+
+<form method="post" action="folder_localrole_edit"
+      tal:attributes="action string:${context/absolute_url}/folder_localrole_edit"
+>
+ <input type="hidden" name="change_type" value="delete" />
+ <input type="hidden" name="member_role" value="" />
+
+ <table class="FormLayout" tal:define="lroles context/get_local_roles">
+ <tr>
+   <td width="16"><br /></td>
+   <th style="text-align:left;" i18n:translate="">User</th>
+   <th style="text-align:left;" i18n:translate="">Role(s)</th>
+ </tr>
+
+ <tbody tal:repeat="role_tuple lroles">
+ <tr tal:define="user_name python: role_tuple[0];
+                 roles python: role_tuple[1];
+                 auth mtool/getAuthenticatedMember;
+                 auth_name auth/getId;
+                "
+ >
+  <td width="16">
+   <input type="checkbox" name="member_ids:list"
+          value="id"
+          tal:attributes="value user_name"
+          tal:condition="python: user_name != auth_name" />
+   <br tal:condition="python: user_name == auth_name" />
+  </td>
+  <td tal:content="user_name"> Username 1 </td>
+  <td tal:content="python: modules['string'].join( roles, ', ' )">
+   Role1, Role2
+  </td>
+ </tr>
+ </tbody>
+
+ <tr tal:condition="nothing">
+  <td width="16">
+   <input type="checkbox" name="member_ids:list" value="id" />
+  </td>
+  <td> Username 2 </td>
+  <td> Role3 </td>
+ </tr>
+
+ <tr tal:condition="nothing">
+  <td width="16">
+   <br />
+  </td>
+  <td> Auth username </td>
+  <td> Role1, Role2, Role3 </td>
+ </tr>
+
+ <tr>
+  <td colspan="3"><br /></td>
+ </tr>
+
+ <tr>
+   <td><br /></td>
+   <td colspan="2">
+    <input type="submit" value="Delete" i18n:attributes="value" />
+   </td>
+ </tr>
+
+</table>
+</form>
+</metal:slot>
+
+</body>
+</html>

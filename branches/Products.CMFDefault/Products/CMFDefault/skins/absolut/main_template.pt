@@ -1,0 +1,193 @@
+<metal:macro metal:define-macro="master">
+<!DOCTYPE html>
+<html tal:define="globals nocall:context/@@ursine_globals;
+                  portal_url globals/portal_url;
+                  object_title globals/object_title;
+                  object_description globals/object_description;
+                  atool globals/atool;
+                  mtool globals/mtool;
+                  syndtool globals/syndtool"
+      i18n:domain="cmf_default">
+<head>
+
+ <title tal:content="globals/page_title">Title goes here</title>
+
+ <!--[if IE]>
+ <script src="/js/html5.js"
+         tal:attributes="src string: ${portal_url}/js/html5.js"></script>
+ <![endif]-->
+
+ <!-- <link rel="icon" href="/favicon.ico" type="image/x-icon" /> -->
+
+ <meta name="content-type" content="text/html; charset=utf-8" />
+
+  <link rel="stylesheet" type="text/css"
+      tal:attributes="href string:${portal_url}/css/cmf.css"
+      href="cmf.css" media="screen" />
+  <link rel="stylesheet" type="text/css"
+      tal:attributes="href string:${portal_url}/css/screen.css"
+      href="/screen.css" media="screen"/>
+  <link rel="stylesheet" type="text/css"
+        tal:attributes="href string:${portal_url}/css/icons.css"
+        href="/icons.css" media="screen"/>
+  <link rel="stylesheet" type="text/css"
+      tal:attributes="href string:${portal_url}/css/print.css"
+      href="print.css" media="print" />
+  <link rel="alternate" type="application/rss+xml"
+        tal:condition="python: syndtool.isSyndicationAllowed(context)"
+        tal:attributes="href string:${context/absolute_url}/@@rss.xml;
+                        title context/Title" />
+
+ <metal:slot define-slot="base" />
+ <metal:slot define-slot="styles" />
+</head>
+
+<body>
+
+ <nav id="site" i18n:domain="cmf_default">
+   <a href="/" tal:attributes="href string:${portal_url}/">
+      <img src="Zope_logo.gif" alt="Zope Logo"
+         border="0" width="87" height="38"
+         tal:attributes="src string:${portal_url}/Zope_logo.gif" />
+   </a>
+   <ul>
+    <li>
+      <a href="."
+       tal:attributes="href portal_url"
+       i18n:translate="">home</a>
+    </li>
+    <li>
+    <a href="roster"
+       tal:attributes="href globals/membersfolder/absolute_url"
+       tal:content="globals/membersfolder/getId"
+       i18n:translate="">members</a>
+    </li>
+    <li>
+    <a href="recent_news"
+       tal:attributes="href string:${portal_url}/recent_news"
+       i18n:translate="">news</a>
+    </li>
+    <li>
+    <a href="search_form"
+       tal:attributes="href globals/search_form_url"
+       i18n:translate="">search</a>
+    </li>
+     <form action="search" method="get"
+           tal:attributes="action globals/search_url">
+     <input name="SearchableText" type="search" />
+     <input type="image" name="go" value="go" src="go.gif"
+            align="middle"
+            tal:attributes="src string:${portal_url}/go.gif" />
+    </form>
+  </ul>
+
+ </nav>
+
+ <nav id="user" i18n:domain="cmf_default">
+   <div class="username" tal:content="globals/membername">USERNAME</div>
+   <ul>
+    <li tal:repeat="action globals/user_actions">
+     <a href="#user_action"
+        tal:attributes="href action/url;
+                        target action/link_target|nothing;
+                        class string:icon ${action/id}"
+        tal:content="action/title" i18n:translate="">USER ACTION TITLE</a>
+    </li>
+   </ul>
+ </nav>
+
+ <nav id="actions" i18n:domain="cmf_default">
+ <span class="icon" tal:content="globals/trunc_id"
+      tal:attributes="class string:icon ${globals/typename}">ID</span>
+
+ <ul id="object_actions_menu" tal:condition="globals/object_actions">
+  <li tal:repeat="action globals/object_actions">
+  <a href="#object_action"
+      tal:attributes="href action/url;
+                      target action/link_target|nothing;
+                      class string:icon ${action/id}"
+      tal:content="action/title"
+      i18n:translate="">OBJECT ACTION_TITLE</a>
+  </li>
+ </ul>
+
+ <ul id="workflow_actions_menu" tal:condition="globals/workflow_actions">
+  <li tal:content="globals/wf_state">WORKFLOW STATE</li>
+  <li tal:repeat="action globals/workflow_actions">
+  <a href="#workflow_action"
+      tal:attributes="href action/url;
+                      target action/link_target|nothing;
+                      class string:icon ${action/id}"
+      tal:content="action/title"
+      i18n:translate="">OBJECT ACTION_TITLE</a>
+  </li>
+ </ul>
+
+ <ul id="folder_actions_menu" tal:condition="globals/folder_actions">
+  <li tal:repeat="action globals/folder_actions">
+  <a href="#folder_action"
+      tal:attributes="href action/url;
+                      target action/link_target|nothing;
+                      class string:icon ${action/id}"
+      tal:content="action/title"
+      i18n:translate="">FOLDER ACTION_TITLE</a>
+  </li>
+ </ul>
+
+ <ul id="add_actions_menu" tal:condition="globals/add_actions">
+  <li tal:repeat="action globals/add_actions">
+  <a href="#add_action"
+      tal:attributes="href action/url;
+                      target action/link_target|nothing;
+                      class string:icon ${action/id}"
+      tal:content="action/title"
+      i18n:translate="">ADD ACTION_TITLE</a>
+  </li>
+ </ul>
+
+ <ul id="global_actions_menu" tal:condition="globals/global_actions">
+  <li tal:repeat="action globals/global_actions">
+   <a href="#global_action"
+      tal:attributes="href action/url;
+                      target action/link_target|nothing;
+                      class string:icon ${action/id}"
+      tal:content="action/title" i18n:translate="">GLOBAL ACTION TITLE</a>
+  </li>
+ </ul>
+ </nav>
+
+ <div id="Desktop">
+
+  <div id="Breadcrumbs">
+   <span class="breadcrumb"
+         tal:repeat="bc globals/breadcrumbs">
+    <a href="."
+        tal:attributes="href bc/url"
+        tal:content="bc/id">ID</a>
+   </span>
+  </div>
+
+  <p id="DesktopStatusBar"
+     tal:condition="globals/status_message"
+     tal:content="globals/status_message"
+     i18n:translate="">Status message.</p>
+
+  <metal:slot metal:define-slot="body">
+   <metal:slot metal:define-slot="header" />
+   <metal:slot metal:define-slot="main" />
+  </metal:slot>
+
+  <div id="Permalink"
+       tal:define="url context/get_permalink | nothing"
+       tal:condition="url">
+   <span i18n:translate="" tal:omit-tag="">Permanent Link:</span>
+   <a href="" tal:content="url" tal:attributes="href url">
+     the permanent link if enabled
+   </a>
+  </div>
+
+ </div>
+
+</body>
+</html>
+</metal:macro>

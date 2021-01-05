@@ -1,0 +1,82 @@
+<html metal:use-macro="context/@@standard_macros/page">
+<body>
+
+<metal:slot metal:fill-slot="body" i18n:domain="cmf_default">
+<metal:macro metal:use-macro="context/@@formlib_macros/errors" />
+
+<metal:macro metal:use-macro="context/@@formlib_macros/header" />
+
+<p tal:define="up_info view/up_info" tal:condition="up_info"
+><tal:case tal:condition="up_info/url"
+ ><a href="" tal:attributes="href up_info/url"
+  ><img src="" alt="[Link]" border="0" tal:attributes="src up_info/icon"
+      i18n:attributes="alt" /></a>
+  <span tal:omit-tag="" i18n:translate="">Up to</span>
+  <a href="" tal:attributes="href up_info/url"
+     tal:content="up_info/id">ID</a></tal:case
+><tal:case tal:condition="not: up_info/url"
+ ><span class="mild" i18n:translate="">Root</span></tal:case></p>
+
+<form action="." method="post" tal:attributes="action request/ACTUAL_URL">
+ <tal:block repeat="widget view/hidden_widgets"
+    replace="structure widget/hidden" />
+<div class="pagination"
+><metal:macro metal:use-macro="context/@@batch_widget/pagination" /></div>
+<div class="form">
+ <table class="BatchTable" tal:condition="view/listBatchItems">
+  <thead>
+   <tr class="list-header">
+    <th tal:repeat="column view/column_headings"
+       tal:attributes="colspan column/colspan | nothing;
+                       class column/class"
+    ><a href="" tal:attributes="href column/url"
+        tal:content="column/title"
+        tal:omit-tag="not: column/url">COLUMN TITLE</a></th>
+   </tr>
+  </thead>
+  <tbody>
+   <tr tal:repeat="item view/listBatchItems"
+      tal:attributes="class python: (repeat['item'].even() and 'row-hilite') or 'row-normal'">
+    <td><input name="form.select_ids" type="checkbox" value=""
+        tal:condition="item/checkbox" tal:attributes="value item/name" /></td>
+    <td><a href="" tal:attributes="href item/url"
+        tal:condition="item/icon"
+     ><img src="" alt="" border="0"
+         tal:attributes="src item/icon; alt item/type"
+         i18n:attributes="alt" /></a></td>
+    <td><a tal:attributes="href item/url" tal:content="string:${item/name} (${item/title})"></a></td>
+    <td tal:content="item/ModificationDate"></td>
+    <td tal:content="item/position"></td>
+   </tr>
+  </tbody>
+ </table>
+<div class="clear"></div>
+
+<div class="buttons"
+   tal:condition="python: view.show_basic() or view.show_paste()">
+ <tal:loop tal:repeat="action view/object_actions"
+    tal:replace="structure action/render" />
+</div>
+<div class="buttons">
+ <tal:loop tal:repeat="action view/delta_actions"
+    tal:replace="structure action/render" />
+ <div tal:condition="view/is_orderable"
+    tal:define="widget python: view.widgets.get('delta');
+                hint widget/hint | nothing">
+  <label tal:attributes="for widget/name; title python: hint or None"
+     tal:content="widget/label">Move By</label>
+  <tal:block tal:replace="structure view/widgets/delta" />
+ </div>
+ <tal:loop tal:repeat="action view/absolute_actions"
+    tal:replace="structure action/render" />
+ <tal:loop tal:repeat="action view/sort_actions"
+    tal:replace="structure action/render" />
+</div>
+</div>
+<div class="pagination"
+><metal:macro metal:use-macro="context/@@batch_widget/navigation" /></div>
+</form>
+</metal:slot>
+
+</body>
+</html>

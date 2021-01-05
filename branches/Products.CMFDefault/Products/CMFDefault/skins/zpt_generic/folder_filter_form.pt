@@ -1,0 +1,81 @@
+<span tal:condition="python:request.get('close_filter_form', 0)">
+    <span tal:define="
+        dummy1 python:request.RESPONSE.expireCookie('show_filter_form', path='/');
+        dummy2 python:request.RESPONSE.setCookie('show_filter_form', '');
+        dummy3 python:request.set('show_filter_form', '')
+        " />
+</span>
+<span tal:condition="python:request.get('open_filter_form', 0)">
+    <span tal:define="dummy1 python:request.RESPONSE.setCookie(
+                                      'show_filter_form',
+                                      path='/',
+                                      expires='Wed, 19 Feb 2020 14:28:00 GMT',
+                                      value='1');
+                      dummy2 python:request.set('show_filter_form', '1');
+                     " />
+</span>
+<form action="" method="post"
+      tal:define="showfilter request/show_filter_form|nothing;
+                  hidefilter python:not showfilter;
+                 "
+      tal:attributes="action string:${context/absolute_url}/folder_contents"
+      i18n:domain="cmf_default"
+>
+<table class="FormLayout"
+    tal:condition="showfilter"
+    tal:define="filter python:context.decodeFolderFilter(
+                                        request.get('folderfilter', '') );
+                portal_type python:filter.get( 'portal_type', [] );
+                Subject python:filter.get( 'Subject', () );
+               ">
+<tr>
+    <td colspan="2" align="left" valign="top" i18n:translate="">
+        Contents View Filter
+    </td>
+</tr>
+<tr>
+    <td align="left" valign="top" width="*"
+        i18n:translate="">Subject:</td>
+    <td align="left" valign="top">
+     <input type="text" name="filter_by_Subject:tokens" value=""
+            tal:attributes="value python:modules['string'].join(Subject, ' ');
+                           " />
+    </td>
+</tr>
+<tr>
+    <td align="left" valign="top" width="*"
+        i18n:translate="">Content Type:</td>
+    <td align="left" valign="top">
+        <select name="filter_by_portal_type:list" multiple="multiple" size="3"
+            tal:define="typeinfos context/portal_types/listTypeInfo">
+            <option value="type"
+                tal:repeat="typeinfo typeinfos"
+                tal:attributes="value typeinfo/getId;
+                                selected python:typeinfo.getId() in portal_type;
+                               "
+                tal:content="typeinfo/Title"
+                i18n:translate=""
+                > type </option>
+            <option tal:condition="nothing">Foo</option>
+        </select>
+    </td>
+</tr>
+<tr>
+    <td colspan="1" align="left">
+      <input type="submit" name="set_view_filter" value="Set Filter"
+             i18n:attributes="value" />
+    </td>
+    <td colspan="1" align="left">
+      <input type="submit" name="close_filter_form" value="Close View Filter"
+             i18n:attributes="value" />
+    </td>
+    <td colspan="1" align="left">
+      <input type="submit" name="clear_view_filter" value="Clear View Filter"
+             i18n:attributes="value" />
+    </td>
+</tr>
+</table>
+ <div tal:condition="hidefilter" class="FormButtons">
+  <input type="submit" name="open_filter_form" value="Set View Filter"
+     i18n:attributes="value" /></div>
+</form>

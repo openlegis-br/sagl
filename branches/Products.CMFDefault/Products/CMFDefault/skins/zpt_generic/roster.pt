@@ -1,0 +1,59 @@
+<html metal:use-macro="context/main_template/macros/master">
+<body>
+
+<metal:slot metal:fill-slot="main">
+<div tal:condition="python:not('bs' in request)"
+     tal:define="dummy python:request.set('bs', '25')"></div>
+
+<div metal:define-macro="roster"
+     i18n:domain="cmf_default"
+>
+
+<h2 i18n:translate="">Portal Members</h2>
+
+<table class="SearchResults"
+    tal:define="mtool context/portal_membership;
+                isUserManager python: mtool.checkPermission( 'Manage users',
+                                                  mtool.getMembersFolder() )">
+<thead>
+ <tr>
+  <td width="16"> <br /> </td>
+  <th i18n:translate="">Member</th>
+  <th tal:condition="isUserManager" i18n:translate="">Listed?</th>
+ </tr>
+</thead>
+<tbody tal:define="b_start string:0;
+                   b_start request/b_start | b_start;
+                   members mtool/getRoster;
+                   Batch python:modules['ZTUtils'].Batch;
+                   global batch python:Batch(members, 25, int(b_start), orphan=1)">
+ <tr tal:repeat="members batch">
+  <td> <br /> </td>
+  <td tal:define="id members/id;
+                  homeUrl python: mtool.getHomeUrl(id, verifyPermission=1)">
+   <a href="www.example.org"
+       tal:condition="homeUrl"
+       tal:attributes="href homeUrl"
+       tal:content="id">ID</a>
+   <span tal:condition="not:homeUrl"
+       tal:replace="id">ID</span>
+  </td>
+  <td tal:condition="isUserManager"
+      tal:define="listed members/listed" i18n:translate="">
+   <span tal:replace="python: listed and 'Yes' or 'No'">Yes...Or No</span>
+  </td>
+ </tr>
+</tbody>
+</table>
+
+<tal:span tal:define="target python: mtool.getMembersFolder().absolute_url();
+                      batch python: {'navigation':
+               context.getBatchNavigation(batch, target, 'member', 'members') }">
+ <metal:macro metal:use-macro="context/batch_widgets/macros/navigation" />
+</tal:span>
+
+</div>
+</metal:slot>
+
+</body>
+</html>

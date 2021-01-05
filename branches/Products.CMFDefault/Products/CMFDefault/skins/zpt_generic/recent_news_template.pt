@@ -1,0 +1,51 @@
+<html metal:use-macro="context/main_template/macros/master">
+<body>
+
+<metal:slot metal:fill-slot="main" i18n:domain="cmf_default"
+   tal:define="batch options/batch">
+<p tal:define="p batch/navigation/previous" tal:condition="p/url">
+ <a href="" tal:attributes="href p/url"
+    i18n:translate=""><span tal:replace="p/length"
+                            i18n:name="count">n</span> more recent articles</a></p>
+
+<table cellspacing="0" border="0" width="90%"
+        tal:repeat="item_info batch/listItemInfos">
+ <tr>
+  <td class="NewsListing">
+   <a href="" class="NewsListing" tal:attributes="href item_info/url"
+      tal:content="item_info/title">Title</a>
+  </td>
+  <td class="NewsListing" align="right" tal:content="item_info/date">
+   Date
+  </td>
+ </tr>
+ <tr>
+  <td class="NewsByLine" colspan="2">
+   By <tal:case tal:condition="item_info/creators"
+   ><tal:loop tal:repeat="creator item_info/creators"
+    ><tal:case tal:condition="not: repeat/creator/start"
+     ><tal:case tal:condition="not: repeat/creator/end">, </tal:case
+     ><tal:case tal:condition="repeat/creator/end"
+      > <tal:span i18n:translate="">and</tal:span> </tal:case></tal:case
+    ><tal:span tal:content="creator">creator</tal:span></tal:loop></tal:case
+  ><tal:case tal:condition="not: item_info/creators"
+   ><tal:span i18n:translate="">unknown</tal:span></tal:case>
+  </td>
+ </tr>
+ <tr>
+  <td colspan="2" style="font-style: italic">
+   <tal:span tal:replace="structure item_info/description" />
+  </td>
+ </tr>
+</table>
+<p tal:condition="not: batch/listItemInfos" i18n:translate="">No news
+ is good news!</p>
+
+<p tal:define="n batch/navigation/next" tal:condition="n/url">
+ <a href="" tal:attributes="href n/url"
+    i18n:translate=""><span tal:replace="n/length"
+                            i18n:name="count">n</span> older articles</a></p>
+</metal:slot>
+
+</body>
+</html>

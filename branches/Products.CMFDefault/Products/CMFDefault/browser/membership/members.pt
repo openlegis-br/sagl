@@ -1,0 +1,51 @@
+<html metal:use-macro="context/@@standard_macros/page">
+<body>
+
+<metal:slot metal:fill-slot="body" i18n:domain="cmf_default">
+<metal:macro metal:use-macro="context/@@formlib_macros/errors" />
+
+<metal:macro metal:use-macro="context/@@formlib_macros/header" />
+
+<form action="." method="post" tal:attributes="action request/ACTUAL_URL">
+ <tal:block repeat="widget view/hidden_widgets"
+    replace="structure widget/hidden" />
+<div class="pagination"
+><metal:macro metal:use-macro="context/@@batch_widget/pagination" /></div>
+<div class="form">
+ <table class="BatchTable" tal:condition="view/listBatchItems">
+  <thead>
+   <tr class="list-header">
+    <td class="members_select_col">&nbsp;</td>
+    <th class="members_name_col" i18n:translate="">Member</th>
+    <th class="members_address_col" i18n:translate="">Email Address</th>
+    <th class="members_login_col" i18n:translate="">Last Login</th>
+   </tr>
+  </thead>
+  <tbody>
+   <tr tal:repeat="item view/listBatchItems"
+      tal:attributes="class python: (repeat['item'].even() and 'row-hilite') or 'row-normal'">
+    <td><input name="form.select_ids" type="checkbox" value=""
+        tal:attributes="value item/name" /></td>
+    <td><a href="" tal:omit-tag="not: item/home"
+        tal:content="string:${item/fullname} (${item/name})"
+        tal:attributes="href item/home">FULL NAME (ID)</a></td>
+    <td><a href="" tal:attributes="href string:mailto:${item/email}"
+        tal:content="item/email"></a></td>
+    <td tal:content="item/login_time"></td>
+   </tr>
+  </tbody>
+ </table>
+<div class="clear"></div>
+
+<div class="buttons">
+ <tal:loop tal:repeat="action view/manage_actions"
+    tal:replace="structure action/render" />
+</div>
+</div>
+<div class="pagination"
+><metal:macro metal:use-macro="context/@@batch_widget/navigation" /></div>
+</form>
+</metal:slot>
+
+</body>
+</html>

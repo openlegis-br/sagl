@@ -1,0 +1,52 @@
+Folder Views
+------------
+
+Set up user.
+
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Use the add form without input.
+
+    >>> browser.open('http://localhost/site/++add++CMF BTree Folder')
+    >>> '[[cmf_default][Add [[cmf_default][CMF BTree Folder]]]]' in browser.contents
+    True
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[zope][There were errors]]' in browser.contents
+    True
+    >>> '[[zope][Required input is missing.]]' in browser.contents
+    True
+
+Use the add form with valid input.
+
+    >>> from StringIO import StringIO
+    >>> browser.open('http://localhost/site/++add++CMF BTree Folder')
+    >>> '[[cmf_default][Add [[cmf_default][CMF BTree Folder]]]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.id').value = 'myFolder'
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[cmf_default][[[cmf_default][CMF BTree Folder]] added.]]' in browser.contents
+    True
+
+Use the folder contents form without input.
+
+    >>> browser.open('http://localhost/site/myFolder/@@edit')
+    >>> '[[cmf_default][Folder Contents: ]]' in browser.contents
+    True
+
+Try to add something to this folder.
+
+    >>> browser.open('http://localhost/site/myFolder/++add++Document')
+    >>> '[[cmf_default][Add [[cmf_default][Document]]]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.id').value = 'myDocument'
+    >>> browser.getControl('[[zope][Add]]').click()
+    >>> '[[cmf_default][[[cmf_default][Document]] added.]]' in browser.contents
+    True

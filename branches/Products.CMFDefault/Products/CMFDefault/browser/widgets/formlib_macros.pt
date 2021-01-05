@@ -1,0 +1,48 @@
+<html>
+<body>
+
+<metal:macro metal:define-macro="body"
+><ul class="errors" metal:define-macro="errors"
+   tal:condition="view/errors">
+ <li tal:repeat="error view/error_views"><tal:span
+     tal:replace="structure error" /></li>
+</ul>
+
+<metal:macro metal:define-macro="header"
+><h1 tal:content="view/label">FORM LABEL</h1>
+
+<p tal:condition="view/description|nothing"
+   tal:content="view/description">DESCRIPTION OF THE FORM.</p
+></metal:macro>
+
+<form action="." method="post" enctype="multipart/form-data"
+   tal:attributes="action request/ACTUAL_URL">
+<div class="form" metal:define-macro="form">
+<div class="widgets">
+ <tal:loop tal:repeat="widget view/widgets"
+><div class="widget" tal:condition="not: widget/hide|nothing"
+    tal:define="split widget/split|nothing; hint widget/hint|nothing"
+    tal:attributes="class python: split and 'widget split' or 'widget'">
+  <label tal:attributes="for widget/name; title python: hint or None"
+  ><span class="required" tal:condition="widget/required">*</span
+  ><tal:span tal:content="widget/label" /></label>
+  <div class="field">
+   <div class="data"><tal:span tal:replace="structure widget" /></div
+  ><tal:case tal:condition="widget/error"
+      tal:replace="structure widget/error" /></div>
+ </div
+><tal:span tal:condition="widget/hide|nothing"
+    tal:replace="structure widget/hidden" /></tal:loop>
+</div>
+<div class="clear"></div>
+
+<div class="buttons">
+ <tal:loop tal:repeat="action view/actions"
+    tal:replace="structure action/render" />
+</div>
+</div>
+</form
+></metal:macro>
+
+</body>
+</html>

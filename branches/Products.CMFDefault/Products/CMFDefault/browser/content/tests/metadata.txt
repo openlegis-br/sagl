@@ -1,0 +1,40 @@
+Metadata Views
+--------------
+
+Set up site, content and user.
+
+    >>> from zope.component.hooks import setSite
+    >>> setSite(app.site)
+
+    >>> from Products.CMFDefault.Document import Document
+    >>> id = app.site._setObject('myContent', Document('myContent'))
+    >>> app.site.myContent._setPortalTypeName('Document')
+
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Use the edit form with valid input.
+
+    >>> browser.open('http://localhost/site/myContent/@@properties')
+    >>> '[[cmf_default][Properties]]' in browser.contents
+    True
+    >>> browser.getControl(name='form.allow_discussion').value = ('off',)
+    >>> browser.getControl(name='form.title').value = 'CONTENT TITLE'
+    >>> browser.getControl(name='form.description').value = 'CONTENT DESCRIPTION.'
+    >>> browser.getControl(name='form.subject').value = 'spam\neggs'
+    >>> browser.getControl(name='form.contributors').value = 'foo\nbar\nbaz'
+    >>> browser.getControl(name='form.effective').value = '2006 11 11  12:00:00 '
+    >>> browser.getControl(name='form.expires').value = '2007 11 11  12:00:00 '
+    >>> browser.getControl(name='form.format').value = 'text/html'
+    >>> browser.getControl(name='form.language').value = 'test'
+    >>> browser.getControl(name='form.rights').value = 'CONTENT RIGHTS'
+    >>> browser.getControl('[[cmf_default][Change]]').click()
+    >>> '[[cmf_default][[[cmf_default][Document]] changed.]]' in browser.contents
+    True

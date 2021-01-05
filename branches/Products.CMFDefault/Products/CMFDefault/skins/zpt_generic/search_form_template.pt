@@ -1,0 +1,139 @@
+<html metal:use-macro="context/main_template/macros/master">
+<body>
+
+<metal:slot metal:fill-slot="header" i18n:domain="cmf_default">
+<h1 i18n:translate="">Search <tal:span
+    tal:content="options/title" i18n:name="obj_title">Title</tal:span></h1>
+</metal:slot>
+
+<metal:slot metal:fill-slot="main" i18n:domain="cmf_default"
+   tal:define="form options/form">
+<form action="search" method="post"
+   tal:attributes="action form/action">
+<table class="FormLayout">
+ <tr tal:condition="options/is_review_allowed">
+  <th i18n:translate="">Review Status</th>
+  <td>
+   <select name="review_state" size="3" multiple="multiple">
+    <option value="" selected="selected" i18n:translate="">-- any --</option>
+    <option value="private" i18n:translate="">private</option>
+    <option value="pending" i18n:translate="">pending</option>
+    <option value="published" i18n:translate="">published</option>
+   </select>
+   <dl class="FieldHelp">
+    <dd i18n:translate="">As a reviewer, you may search for items based on
+      their review state.  If you wish to constrain results to items in
+      certain states, select them from this list.
+    </dd>
+   </dl>
+  </td>
+ </tr>
+
+ <tr valign="top">
+  <th i18n:translate="">Full Text</th>
+  <td>
+    <input name="SearchableText" size="40" />
+   <dl class="FieldHelp">
+    <dd i18n:translate="">For a simple text search, enter your search term
+         here.  Multiple words may be found by combining
+         them with <b>AND</b> and <b>OR</b>.  This will
+         find text in items' contents, title and
+         description.
+    </dd>
+   </dl>
+  </td>
+ </tr>
+
+ <tr>
+  <th i18n:translate="">Title</th>
+  <td>
+   <input name="Title" size="20" />
+  </td>
+ </tr>
+
+ <tr valign="top">
+  <th i18n:translate="">Subject</th>
+  <td>
+   <select name="Subject:list" multiple="multiple" size="5">
+    <option value="" selected="selected" i18n:translate="">-- any --</option>
+    <option value="" tal:repeat="item options/listAvailableSubjects"
+       tal:attributes="value item"
+       tal:content="item">Subject</option>
+   </select>
+  </td>
+ </tr>
+
+ <tr>
+  <th i18n:translate="">Description</th>
+  <td>
+   <input name="Description" size="20" />
+   <dl class="FieldHelp">
+    <dd i18n:translate=""> You may also search the items' descriptions and
+         titles specifically.  Multiple words may be found
+         by combining them with <b>AND</b> and <b>OR</b>.
+    </dd>
+   </dl>
+  </td>
+ </tr>
+
+ <tr>
+  <th i18n:translate="">Find new items since...</th>
+  <td>
+   <select name="created.query:record:date">
+    <option value="" tal:repeat="info options/listCreatedInfos"
+       tal:attributes="value info/value"
+       tal:content="info/title">Date</option>
+   </select>
+   <input type="hidden" name="created.range:record" value="min" />
+   <dl class="FieldHelp">
+    <dd i18n:translate="">You may find only recent items by selecting a
+      time-frame.
+    </dd>
+   </dl>
+  </td>
+ </tr>
+
+ <tr>
+  <th i18n:translate="">Item type</th>
+  <td>
+   <select name="portal_type:list" multiple="multiple" size="5">
+    <option value="" selected="selected" i18n:translate="">-- any --</option>
+    <option value="" tal:repeat="typeinfo options/listTypeInfos"
+       tal:attributes="value typeinfo/getId"
+       tal:content="typeinfo/Title">TYPE</option>
+    </select>
+   <dl class="FieldHelp">
+    <dd i18n:translate="">You may limit your results to particular kinds of
+         items by selecting them above.  To find all kinds
+         of items, do not select anything.
+    </dd>
+   </dl>
+  </td>
+ </tr>
+
+ <tr>
+  <th i18n:translate="">Creator</th>
+  <td>
+   <input name="listCreators" size="20" />
+
+   <dl class="FieldHelp">
+    <dd i18n:translate="">To find items by a particular user only, enter
+         their username above.  Note that you must enter
+         their username <i>exactly</i>.
+    </dd>
+   </dl>
+  </td>
+ </tr>
+
+ <tr>
+  <td>&nbsp;</td>
+  <td>
+   <metal:macro metal:use-macro="context/form_widgets/macros/buttons" />
+  </td>
+ </tr>
+</table>
+</form>
+</metal:slot>
+
+</body>
+</html>

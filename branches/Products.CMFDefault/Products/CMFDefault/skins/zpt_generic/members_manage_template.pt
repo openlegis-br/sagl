@@ -1,0 +1,52 @@
+<html metal:use-macro="context/main_template/macros/master">
+<body>
+
+<metal:slot metal:fill-slot="header" i18n:domain="cmf_default">
+<h1 i18n:translate="">Manage Members</h1>
+</metal:slot>
+
+<metal:slot metal:fill-slot="main" i18n:domain="cmf_default"
+   tal:define="batch options/batch;
+               form options/form">
+<form action="members_manage" method="post"
+   tal:attributes="action form/action"
+><metal:macro metal:use-macro="context/form_widgets/macros/hidden_vars" />
+ <table class="BatchTable"
+    tal:condition="batch/listItemInfos">
+  <thead>
+   <tr class="list-header">
+    <td width="20">&nbsp;</td>
+    <th width="260" i18n:translate="">Member</th>
+    <th width="260" i18n:translate="">Email Address</th>
+    <th width="100" i18n:translate="">Last Login</th>
+   </tr>
+  </thead>
+  <tbody tal:repeat="member batch/listItemInfos">
+   <tr class="" tal:define="even repeat/member/even;"
+      tal:attributes="class python: (even and 'row-hilite') or 'row-normal'">
+    <td
+    ><input type="checkbox" name="ids:list" value="" id=""
+        tal:attributes="value member/id; id member/checkbox"
+        tal:condition="member/checkbox" /></td>
+    <td
+    ><a href="" tal:attributes="href member/home"
+        tal:omit-tag="not:member/home"
+        tal:content="member/name">NAME (ID)</a></td>
+    <td
+    ><a href="" tal:attributes="href string:mailto:${member/email}"
+        tal:omit-tag="not:member/email"
+        tal:content="member/email">user@example.org</a></td>
+    <td tal:content="member/login"
+    >2003/03/03</td>
+   </tr>
+  </tbody>
+ </table>
+ <p tal:condition="not: batch/listItemInfos" i18n:translate="">Currently there
+  are no members registered.</p>
+ <metal:macro metal:use-macro="context/batch_widgets/macros/navigation" />
+ <metal:macro metal:use-macro="context/form_widgets/macros/buttons" />
+</form>
+</metal:slot>
+
+</body>
+</html>

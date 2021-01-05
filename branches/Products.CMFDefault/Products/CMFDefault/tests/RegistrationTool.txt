@@ -1,0 +1,161 @@
+RegistrationTool
+----------------
+
+  First we need some dummy code::
+
+    >>> class Member:
+    ...     def __repr__(self): return 'foo'
+    ...     def getProperty(self, id): return 'foo@example.org'
+    ...     def getPassword(self): return 'secret'
+
+    >>> from Acquisition import Implicit
+    >>> class MembershipTool(Implicit):
+    ...     def getMemberById(self, id): return Member()
+
+    >>> class MailHost:
+    ...     def send(self, messageText, immediate=False):
+    ...         self.lastMessage = messageText
+
+    >>> class PasswordEmail(Implicit):
+    ...     def __call__(self, **kw):
+    ...         container = self.aq_parent.aq_inner
+    ...         kw['ip'] = container.REQUEST['HTTP_X_FORWARDED_FOR']
+    ...         return 'Reminder: %(member)s, %(password)s, %(ip)s' % kw
+
+    >>> def registered_email(**kw):
+    ...     return 'Welcome: %(member)s, %(password)s, %(email)s' % kw
+
+  Now we can set up a RegistrationTool with dummy context::
+
+    >>> from zope.component import getSiteManager
+    >>> from zope.component import getUtility
+    >>> from zope.component.hooks import setSite
+    >>> from zope.globalrequest import setRequest
+    >>> from Products.CMFCore.interfaces import IMembershipTool
+    >>> from Products.CMFCore.interfaces import IRegistrationTool
+    >>> from Products.MailHost.interfaces import IMailHost
+    >>> setSite(app.site)
+    >>> setRequest(app.REQUEST)
+    >>> app.site.setupCurrentSkin(app.REQUEST)
+    >>> sm = getSiteManager()
+    >>> sm.registerUtility(MailHost(), IMailHost)
+    >>> sm.registerUtility(MembershipTool(), IMembershipTool)
+    >>> rtool = sm.getUtility(IRegistrationTool)
+    >>> rtool.password_email = PasswordEmail()
+    >>> rtool.registered_email = registered_email
+    >>> app.REQUEST.environ['HTTP_X_FORWARDED_FOR'] = 'NNN.NNN.NNN.NNN'
+
+  mailPassword sends a password reminder::
+
+    >>> rtool.mailPassword('foo', app.REQUEST)
+
+    >>> getUtility(IMailHost).lastMessage
+    'Reminder: foo, secret, NNN.NNN.NNN.NNN'
+
+  registeredNotify sends a welcome message::
+
+    >>> rtool.registeredNotify('foo', REQUEST=app.REQUEST)
+
+    >>> getUtility(IMailHost).lastMessage
+    'Welcome: foo, secret, foo@example.org'
+
+  Now we have to restore the normal MembershipTool::
+
+    >>> sm.registerUtility(app.site.portal_membership, IMembershipTool)
+
+password_email and registered_email
+-----------------------------------
+
+  First we have to set up some site properties::
+
+    >>> s = app.site
+    >>> s.REQUEST.environ['HTTP_X_FORWARDED_FOR'] = 'NNN.NNN.NNN.NNN'
+    >>> s.ZopeTime = 'NNNN/NN/NN'
+    >>> s.description = 'THE SITE DESCRIPTION.'
+    >>> s.default_charset = 'utf-8'
+    >>> s.email_from_name = u'WEBMASTER \xc4\xd6\xdc'.encode('utf-8')
+    >>> s.email_from_address = 'WEBMASTER@EXAMPLE.ORG'
+    >>> s.title = 'WWW.EXAMPLE.ORG'
+
+  password_email creates a complete reminder email::
+
+    >>> s.email_charset = 'iso-8859-1'
+    >>> print s.password_email()
+    Content-Type: text/plain; charset="us-ascii"
+    MIME-Version: 1.0
+    Content-Transfer-Encoding: 7bit
+    To: <foo@example.org>
+    From: WEBMASTER =?iso-8859-1?q?=C4=D6=DC?= <WEBMASTER@EXAMPLE.ORG>
+    Subject: [[cmf_default][WWW.EXAMPLE.ORG: Membership reminder]]
+    <BLANKLINE>
+    [[cmf_default][Your password: secret]]
+    <BLANKLINE>
+    [[cmf_default][Request made by IP NNN.NNN.NNN.NNN at NNNN/NN/NN]]
+    <BLANKLINE>
+    <BLANKLINE>
+
+    >>> s.email_charset = ''
+    >>> print s.password_email()
+    Content-Type: text/plain; charset="us-ascii"
+    MIME-Version: 1.0
+    Content-Transfer-Encoding: 7bit
+    To: <foo@example.org>
+    From: WEBMASTER =?utf-8?...?= <WEBMASTER@EXAMPLE.ORG>
+    Subject: [[cmf_default][WWW.EXAMPLE.ORG: Membership reminder]]
+    <BLANKLINE>
+    [[cmf_default][Your password: secret]]
+    <BLANKLINE>
+    [[cmf_default][Request made by IP NNN.NNN.NNN.NNN at NNNN/NN/NN]]
+    <BLANKLINE>
+    <BLANKLINE>
+
+  registered_email creates a complete welcome email::
+
+    >>> s.email_charset = 'iso-8859-1'
+    >>> print s.registered_email()
+    Content-Type: text/plain; charset="iso-8859-1"
+    MIME-Version: 1.0
+    Content-Transfer-Encoding: quoted-printable
+    To: <foo@example.org>
+    From: WEBMASTER =?iso-8859-1?q?=C4=D6=DC?= <WEBMASTER@EXAMPLE.ORG>
+    Subject: [[cmf_default][WWW.EXAMPLE.ORG: Your Membership Information]]
+    <BLANKLINE>
+    [[cmf_default][You have been registered as a member of ...]]
+    <BLANKLINE>
+    [[cmf_default][This describes the purpose of the website:]]
+    <BLANKLINE>
+    THE SITE DESCRIPTION.
+    <BLANKLINE>
+    [[cmf_default][Visit us at http://nohost/site]]
+    <BLANKLINE>
+    [[cmf_default][Here is your login data (mind upper and lower case):]]
+    <BLANKLINE>
+    [[cmf_default][Member ID]]: foo
+    [[cmf_default][Password]]: secret
+    <BLANKLINE>
+    [[cmf_default][You can use this URL to log in:]]
+    <BLANKLINE>
+    http://nohost/site/login_form
+    <BLANKLINE>
+    <BLANKLINE>
+    WEBMASTER =C4=D6=DC
+    <BLANKLINE>
+    <BLANKLINE>
+
+    >>> s.email_charset = ''
+    >>> print s.registered_email()
+    Content-Type: text/plain; charset="utf-8"
+    MIME-Version: 1.0
+    Content-Transfer-Encoding: ...
+    To: <foo@example.org>
+    From: WEBMASTER =?utf-8?...?= <WEBMASTER@EXAMPLE.ORG>
+    Subject: [[cmf_default][WWW.EXAMPLE.ORG: Your Membership Information]]
+    <BLANKLINE>
+    ...
+    <BLANKLINE>
+
+Clean up
+--------
+
+    >>> from zope.globalrequest import clearRequest
+    >>> clearRequest()

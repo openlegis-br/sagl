@@ -1,0 +1,133 @@
+<html metal:use-macro="context/main_template/macros/master">
+<body>
+
+<metal:slot metal:fill-slot="main" i18n:domain="cmf_default"
+   tal:define="s_tool options/s_tool">
+<h2 i18n:translate="">Syndication Properties</h2>
+
+<tal:case tal:condition="options/s_allowed"
+><form action="editSynProperties" method="post"
+   tal:attributes="action string:${context/absolute_url}/editSynProperties">
+
+<table width="100%" border="0">
+ <tr>
+    <th colspan="2" valign="top" align="left"
+        i18n:translate="">Channel Properties</th>
+ </tr>
+ <tr>
+  <td colspan="2">
+   <table width="90%" border="1">
+    <tr>
+     <td>
+
+        <table>
+         <tr>
+          <td valign="top" height="30"
+              i18n:translate="">Channel Title:</td>
+          <td valign="top" height="30"
+              tal:content="options/title">Title</td>
+         </tr>
+         <tr>
+          <td valign="top" height="30"
+              i18n:translate="">Channel Description:</td>
+          <td valign="top" height="30"
+              tal:content="options/description">Description</td>
+         </tr>
+        </table>
+
+     </td>
+    </tr>
+   </table>
+
+  </td>
+ </tr>
+
+</table>
+
+<table width="100%" border="0">
+ <tr>
+  <th valign="top" align="left" i18n:translate="">Syndication Module Properties</th>
+ </tr>
+ <tr>
+  <td colspan="2">
+   <table width="90%" border="1">
+    <tr>
+     <td>
+
+        <table>
+         <tr>
+          <td i18n:translate="">Update period</td>
+          <td>
+           <select name="updatePeriod">
+            <option value="hourly"
+                    tal:define="upd python:s_tool.getUpdatePeriod(context)"
+                    tal:repeat="item s_tool/buildUpdatePeriods"
+                    tal:attributes="value python:item[0];
+                                    selected python:item[0] == upd"
+                    tal:content="python: item[1]"
+                    i18n:translate="">Hourly
+            </option>
+           </select>
+           </td>
+         </tr>
+         <tr>
+          <td i18n:translate="">Update frequency</td>
+          <td>
+           <input type="text" name="updateFrequency:int" size="3" value=""
+                  tal:attributes="value python:s_tool.getUpdateFrequency(context)"
+           />
+          </td>
+         </tr>
+         <tr>
+          <td i18n:translate="">Update base</td>
+          <td>
+           <input type="text" name="updateBase:date" value="" size="25"
+                  tal:attributes="value python:s_tool.getUpdateBase(context)"/>
+          </td>
+         </tr>
+         <tr>
+          <td i18n:translate="">Maximum number of items</td>
+          <td>
+           <input type="text" name="max_items:int" value=""  size="3"
+                  tal:attributes="value python:s_tool.getMaxItems(context)"/>
+          </td>
+         </tr>
+         <tr>
+          <td colspan="2"><input type="submit" name="edit" value="Change"
+                                 i18n:attributes="value"/></td>
+         </tr>
+        </table>
+
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td> <br /> </td>
+ </tr>
+</table>
+</form>
+
+<form action="disableSyndication" method="post"
+   tal:attributes="action string:${context/absolute_url}/disableSyndication">
+ <input type="submit" value="Disable Syndication" i18n:attributes="value"/>
+ <input type="hidden" name="isAllowed:int" value="0"/>
+</form>
+</tal:case><!-- s_allowed -->
+
+<tal:case tal:condition="python: options['s_site_allowed'] and not options['s_here_allowed']"
+><form action="enableSyndication" method="post"
+   tal:attributes="action string:${context/absolute_url}/enableSyndication">
+ <input type="hidden" name="isAllowed:int" value="1"/>
+ <input type="submit" value="Enable Syndication" i18n:attributes="value"/>
+</form>
+</tal:case><!-- s_site_allowed and not s_here_allowed -->
+
+<tal:case tal:condition="not: options/s_allowed"
+><h4 i18n:translate="">Syndication is Disabled</h4>
+</tal:case>
+</metal:slot>
+
+</body>
+</html>

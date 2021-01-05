@@ -1,0 +1,239 @@
+Form Views
+----------
+
+Set up user and content.
+
+    >>> uf = app.site.acl_users
+    >>> _ignored = uf._doAddUser('mgr', 'mgrpw', ['Manager'], [])
+    >>> from zope.component.hooks import setSite
+    >>> setSite(app.site)
+
+    >>> app.site._delObject('Members')
+    >>> from Products.CMFDefault.Document import Document
+    >>> id = app.site._setObject('myContent', Document('myContent'))
+    >>> app.site.myContent._setPortalTypeName('Document')
+
+Create the browser object we'll be using.
+
+    >>> from Testing.testbrowser import Browser
+    >>> browser = Browser()
+    >>> browser.handleErrors = False
+    >>> browser.addHeader('Authorization', 'Basic mgr:mgrpw')
+
+Open the contents view with the various options selected.
+All sort options apart from position are reversible.
+
+    >>> browser.open('http://localhost/site/@@edit?form.b_start=25')
+    >>> 'name="form.b_start" type="hidden" value="25"' in browser.contents
+    True
+    >>> browser.open('http://localhost/site/@@edit?form.sort_key=Type')
+    >>> 'name="form.sort_key" type="hidden" value="Type"' in browser.contents
+    True
+    >>> 'href="http://localhost/site/@@edit?form.sort_key=Type&amp;form.reverse=1">' \
+    ... in browser.contents
+    True
+    >>> browser.open('http://localhost/site/@@edit?form.sort_key=getId')
+    >>> 'name="form.sort_key" type="hidden" value="getId"' in browser.contents
+    True
+    >>> 'href="http://localhost/site/@@edit?form.sort_key=getId&amp;form.reverse=1">' \
+    ... in browser.contents
+    True
+    >>> browser.open('http://localhost/site/@@edit?form.sort_key=modified')
+    >>> 'name="form.sort_key" type="hidden" value="modified"' in browser.contents
+    True
+    >>> 'href="http://localhost/site/@@edit?form.sort_key=modified&amp;form.reverse=1">' \
+    ... in browser.contents
+    True
+    >>> browser.open('http://localhost/site/@@edit?form.sort_key=position')
+    >>> 'name="form.sort_key" type="hidden" value="position"' in browser.contents
+    True
+    >>> 'href="http://localhost/site/@@edit?form.sort_key=position&amp;form.reverse=1">' \
+    ... in browser.contents
+    False
+
+
+
+    >>> browser.open('http://localhost/site/@@edit?form.sort_key=Type&form.reverse=1')
+    >>> 'name="form.reverse" type="hidden" value="1"' in browser.contents
+    True
+    >>> browser.open('http://localhost/site/@@edit?form.sort_key=getId&form.reverse=1')
+    >>> 'name="form.reverse" type="hidden" value="1"' in browser.contents
+    True
+    >>> browser.open('http://localhost/site/@@edit?form.sort_key=modified&form.reverse=1')
+    >>> 'name="form.reverse" type="hidden" value="1"' in browser.contents
+    True
+    >>> browser.open('http://localhost/site/@@edit?form.sort_key=position&form.reverse=1')
+    >>> 'name="form.reverse" type="hidden" value="1"' in browser.contents
+    True
+
+Verify initially visible buttons:
+
+    >>> browser.open('http://localhost/site/@@edit')
+    >>> '[[cmf_default][Rename...]]' in browser.contents
+    True
+    >>> '[[cmf_default][Cut]]' in browser.contents
+    True
+    >>> '[[cmf_default][Copy]]' in browser.contents
+    True
+    >>> '[[cmf_default][Paste]]' in browser.contents
+    False
+    >>> '[[cmf_default][Delete]]' in browser.contents
+    True
+    >>> '[[cmf_default][Up]]' in browser.contents
+    False
+    >>> '[[cmf_default][Down]]' in browser.contents
+    False
+    >>> '[[cmf_default][Top]]' in browser.contents
+    False
+    >>> '[[cmf_default][Bottom]]' in browser.contents
+    False
+    >>> '[[cmf_default][Set as Default Sort]]' in browser.contents
+    False
+
+Copy the 'myContent' object:
+
+    >>> browser.getControl(name='form.select_ids').value = ('myContent',)
+    >>> browser.getControl('[[cmf_default][Copy]]').click()
+    >>> '[[cmf_default][Item copied.]]' in browser.contents
+    True
+
+Now there is clipboard data and the paste button is also visible:
+
+    >>> browser.open('http://localhost/site/@@edit')
+    >>> '[[cmf_default][Rename...]]' in browser.contents
+    True
+    >>> '[[cmf_default][Cut]]' in browser.contents
+    True
+    >>> '[[cmf_default][Copy]]' in browser.contents
+    True
+    >>> '[[cmf_default][Paste]]' in browser.contents
+    True
+    >>> '[[cmf_default][Delete]]' in browser.contents
+    True
+    >>> '[[cmf_default][Up]]' in browser.contents
+    False
+    >>> '[[cmf_default][Down]]' in browser.contents
+    False
+    >>> '[[cmf_default][Top]]' in browser.contents
+    False
+    >>> '[[cmf_default][Bottom]]' in browser.contents
+    False
+    >>> '[[cmf_default][Set as Default Sort]]' in browser.contents
+    False
+
+Paste the object from the clipboard:
+
+    >>> browser.getControl('[[cmf_default][Paste]]').click()
+    >>> '[[cmf_default][Item pasted.]]' in browser.contents
+    True
+
+Now there is more than one object and the order buttons are visible:
+
+    >>> browser.open('http://localhost/site/@@edit')
+    >>> '[[cmf_default][Rename...]]' in browser.contents
+    True
+    >>> '[[cmf_default][Cut]]' in browser.contents
+    True
+    >>> '[[cmf_default][Copy]]' in browser.contents
+    True
+    >>> '[[cmf_default][Paste]]' in browser.contents
+    True
+    >>> '[[cmf_default][Delete]]' in browser.contents
+    True
+    >>> '[[cmf_default][Up]]' in browser.contents
+    True
+    >>> '[[cmf_default][Down]]' in browser.contents
+    True
+    >>> '[[cmf_default][Top]]' in browser.contents
+    True
+    >>> '[[cmf_default][Bottom]]' in browser.contents
+    True
+    >>> '[[cmf_default][Set as Default Sort]]' in browser.contents
+    False
+
+Without the necessary permissions some buttons are not visible:
+
+    >>> from Products.CMFDefault.permissions import AddPortalContent
+    >>> app.site.manage_permission(AddPortalContent, roles=[])
+    >>> browser.open('http://localhost/site/@@edit')
+    >>> '[[cmf_default][Rename...]]' in browser.contents
+    False
+    >>> '[[cmf_default][Cut]]' in browser.contents
+    True
+    >>> '[[cmf_default][Copy]]' in browser.contents
+    True
+    >>> '[[cmf_default][Paste]]' in browser.contents
+    False
+    >>> '[[cmf_default][Delete]]' in browser.contents
+    True
+    >>> app.site.manage_permission(AddPortalContent, roles=['Manager'])
+
+    >>> from Products.CMFDefault.permissions import DeleteObjects
+    >>> app.site.manage_permission(DeleteObjects, roles=[])
+    >>> browser.open('http://localhost/site/@@edit')
+    >>> '[[cmf_default][Rename...]]' in browser.contents
+    True
+    >>> '[[cmf_default][Cut]]' in browser.contents
+    True
+    >>> '[[cmf_default][Copy]]' in browser.contents
+    True
+    >>> '[[cmf_default][Paste]]' in browser.contents
+    True
+    >>> '[[cmf_default][Delete]]' in browser.contents
+    False
+    >>> app.site.manage_permission(DeleteObjects, roles=['Manager'])
+
+    >>> from Products.CMFDefault.permissions import ViewManagementScreens
+    >>> app.site.manage_permission(ViewManagementScreens, roles=[])
+    >>> browser.open('http://localhost/site/@@edit')
+    >>> '[[cmf_default][Rename...]]' in browser.contents
+    False
+    >>> '[[cmf_default][Cut]]' in browser.contents
+    False
+    >>> '[[cmf_default][Copy]]' in browser.contents
+    False
+    >>> '[[cmf_default][Paste]]' in browser.contents
+    False
+    >>> '[[cmf_default][Delete]]' in browser.contents
+    False
+    >>> app.site.manage_permission(ViewManagementScreens, roles=['Manager'])
+
+Sorted by getId different buttons are visible:
+
+    >>> browser.open('http://localhost/site/@@edit?form.sort_key=getId')
+    >>> '[[cmf_default][Rename...]]' in browser.contents
+    True
+    >>> '[[cmf_default][Cut]]' in browser.contents
+    True
+    >>> '[[cmf_default][Copy]]' in browser.contents
+    True
+    >>> '[[cmf_default][Paste]]' in browser.contents
+    True
+    >>> '[[cmf_default][Delete]]' in browser.contents
+    True
+    >>> '[[cmf_default][Up]]' in browser.contents
+    False
+    >>> '[[cmf_default][Down]]' in browser.contents
+    False
+    >>> '[[cmf_default][Top]]' in browser.contents
+    False
+    >>> '[[cmf_default][Bottom]]' in browser.contents
+    False
+    >>> '[[cmf_default][Set as Default Sort]]' in browser.contents
+    True
+
+Change the default sort order:
+
+    >>> browser.getControl('[[cmf_default][Set as Default Sort]]').click()
+    >>> '[[cmf_default][Default sort order changed.]]' in browser.contents
+    True
+    >>> '[[cmf_default][Set as Default Sort]]' in browser.contents
+    False
+
+Select 'myContent' object for renaming:
+
+    >>> browser.open('http://localhost/site/@@edit')
+    >>> browser.getControl(name='form.select_ids').value = ('myContent',)
+    >>> browser.getControl('[[cmf_default][Rename...]]').click()
+    >>> '[[cmf_default][Rename Items]]' in browser.contents
+    True
