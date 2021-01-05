@@ -13,7 +13,10 @@
 """ Favorites are references to other objects within the same CMF site.
 """
 
-from urllib import parse
+try:
+  import urlparse #py2
+except ImportError:
+  import urllib.parse #py3
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Acquisition import aq_base

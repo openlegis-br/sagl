@@ -12,8 +12,10 @@
 ##############################################################################
 """Browser views for links.
 """
-
-import urllib.parse
+try:
+  import urlparse #py2
+except ImportError:
+  import urllib.parse #py3
 
 from zope.component import adapts
 from zope.formlib import form

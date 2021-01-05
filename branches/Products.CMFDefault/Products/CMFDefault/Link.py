@@ -13,7 +13,10 @@
 """ Link instances represent explicit links-as-content.
 """
 
-from urllib import parse
+try:
+  import urlparse #py2
+except ImportError:
+  import urllib.parse #py3
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass

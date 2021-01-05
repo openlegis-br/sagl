@@ -13,7 +13,10 @@
 """Browser views for favorites.
 """
 
-import urllib.parse
+try:
+  import urlparse #py2
+except ImportError:
+  import urllib.parse #py3
 
 from zope.component import adapts
 from zope.component import getUtility

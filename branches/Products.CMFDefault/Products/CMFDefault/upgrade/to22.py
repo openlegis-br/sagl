@@ -13,8 +13,10 @@
 """Upgrade steps to CMFDefault 2.2.
 """
 import logging
-#import urlparse
-from urllib import parse
+try:
+  import urlparse #py2
+except ImportError:
+  import urllib.parse #py3
 
 from AccessControl.Permissions import access_contents_information
 from AccessControl.Permissions import view

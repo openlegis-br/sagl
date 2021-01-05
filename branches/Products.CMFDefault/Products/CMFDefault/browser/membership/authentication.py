@@ -12,9 +12,11 @@
 ##############################################################################
 """Authentication browser views.
 """
-
-from urllib.parse import quote, urlencode
-
+try:
+   from urllib import quote #py2
+   from urllib import urlencode #py2
+except ImportError:
+   from urllib.parse import quote, urlencode #py3
 
 from Acquisition import aq_inner
 from Acquisition import aq_parent
