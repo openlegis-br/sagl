@@ -34,6 +34,9 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
 
 inf_basicas_dic['url_validacao'] = "" + context.generico.absolute_url()+"/conferir_assinatura"
 
+inf_basicas_dic['nom_prefeito'] = 'Não Cadastrado'
+inf_basicas_dic['par_prefeito'] = 'Não Cadastrado'
+
 for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
     num_proposicao = " "
     nom_arquivo = str(materia.cod_materia)+'_texto_integral.odt'
@@ -42,6 +45,9 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
     ano_ident_basica = materia.ano_ident_basica
     txt_ementa = materia.txt_ementa
     dat_apresentacao = context.pysc.data_converter_por_extenso_pysc(data=materia.dat_apresentacao)
+    for prefeito in context.zsql.prefeito_atual_obter_zsql(data_composicao = materia.dat_apresentacao):
+        inf_basicas_dic['nom_prefeito'] = prefeito.nom_completo
+        inf_basicas_dic['par_prefeito'] = prefeito.sgl_partido        
     materia_vinculada = " "
     apelido_autor = ''
     nom_autor = []
