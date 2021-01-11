@@ -6,7 +6,7 @@ CREATE SCHEMA IF NOT EXISTS `openlegis` DEFAULT CHARACTER SET utf8mb4 COLLATE ut
 
 CREATE USER 'sagl'@'localhost' IDENTIFIED BY 'sagl';
 
-GRANT ALL ON interlegis.* TO 'sagl'@'localhost' WITH GRANT OPTION;
+GRANT ALL ON openlegis.* TO 'sagl'@'localhost' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
 
