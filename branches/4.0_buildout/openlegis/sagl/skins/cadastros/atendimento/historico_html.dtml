@@ -1,11 +1,18 @@
 <dtml-var standard_html_header>
 
+<script src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
 <script type="text/javascript">
 
 $(document).ready(function() {
 
-    $('#visitas').DataTable( {
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+
+    $('table.display').DataTable( {
         "responsive": true,
+        "order": [[0, "desc"]],
         "bStateSave": true,        
         "fnStateSave": function (oSettings, oData) {
             localStorage.setItem('viDataTable', JSON.stringify(oData));
@@ -15,35 +22,6 @@ $(document).ready(function() {
         },
         "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
         "lengthChange": true,
-        "buttons": [
-            {
-                extend: 'collection',
-                text: 'Exportar',
-                buttons: [ 
-                           {
-                             extend:    'excelHtml5',
-                             text:      '<i class="far fa-file-excel"></i> Excel',
-                             titleAttr: 'PDF'
-                           },
-                           {
-                             extend:    'pdfHtml5',
-                             download: 'open',
-                             text:      '<i class="fa fa-file-adobe"></i> PDF',
-                             titleAttr: 'PDF'
-                           },
-                           {
-                             extend:    'print',
-                             text:      '<i class="fa fa-print"></i> Impressão',
-                             titleAttr: 'Impressão'
-                           },
-                         ],
-               className: '',
-               dropup: true,
-               autoClose: true,
-               fade: true
-
-            }
-        ],
         "language": {
           search: "Pesquisar:",
           processing:     "Processando...",
@@ -74,11 +52,11 @@ $(document).ready(function() {
            <dtml-call expr="REQUEST.set('cod_funcionario_corrente', int(cod_funcionario))">
          </dtml-in>
        </dtml-if>
-   </dtml-in>
+  </dtml-in>
 
  <dtml-in expr="zsql.visita_obter_zsql(cod_funcionario=cod_funcionario_corrente)">
   <dtml-if sequence-start>
-    <table class="table" id="visitas">
+    <table class="table display" id="visitas">
      <thead class="table-secondary">
        <tr>
         <th>Entrada</th>
