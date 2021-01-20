@@ -610,15 +610,20 @@ $(document).ready(function(){
       <dtml-else>
         <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.odt')">      
         <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
-        <dtml-if expr="(_.hasattr(sapl_documentos.proposicao,id_documento) or _.hasattr(sapl_documentos.proposicao,id_documento_assinado)) and AUTHENTICATED_USER.has_role(['Autor']) or AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+        <dtml-if expr="(_.hasattr(sapl_documentos.proposicao,id_documento) or _.hasattr(sapl_documentos.proposicao,id_documento_assinado)) and AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
            <input class="btn btn-primary" type="button" value="Enviar" onClick="proposicao_enviar()" />
         </dtml-if>
-        <dtml-if "AUTHENTICATED_USER.has_role(['Autor'])">
+        <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
            <input class="btn btn-danger" type="button" value="Excluir" onClick="proposicao_excluir()" />
+           <a class="btn btn-primary" href="<dtml-var portal_url>/cadastros/proposicao/"><i class="fas fa-undo"></i> Voltar</a> 
         </dtml-if>
       </dtml-if>
    </dtml-if>
-     <a class="btn btn-primary" href="<dtml-var portal_url>/cadastros/proposicao/"><i class="fas fa-undo"></i> Voltar</a>    
+
+   <dtml-if expr="AUTHENTICATED_USER.has_role([''Operador', 'Operador Materia''])">
+         <a class="btn btn-primary" href="<dtml-var portal_url>/cadastros/recebimento_proposicao/"><i class="fas fa-undo"></i> Voltar</a>    
+   </dtml-if>
+  
 <dtml-else>
    <dtml-unless cod_mat_ou_doc> 
       <dtml-unless dat_devolucao>
