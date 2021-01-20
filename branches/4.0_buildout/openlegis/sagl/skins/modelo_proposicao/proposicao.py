@@ -34,6 +34,8 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
 
 inf_basicas_dic['url_validacao'] = "" + context.generico.absolute_url()+"/conferir_assinatura"
 
+inf_basicas_dic['id_materia']= ''
+
 for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao):
     num_proposicao = 'PN ' + str(cod_proposicao)
     nom_arquivo = str(proposicao.cod_proposicao)+'.odt'
