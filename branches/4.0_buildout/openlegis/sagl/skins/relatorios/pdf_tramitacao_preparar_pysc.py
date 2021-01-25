@@ -8,6 +8,7 @@
 ##title=
 ##
 import os
+from xml.sax.saxutils import escape
 
 request=context.REQUEST
 response=request.RESPONSE
@@ -71,6 +72,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
   # dados da materia
   autoria = ""
   for materia in context.zsql.materia_obter_zsql(cod_materia=tramitacao.cod_materia):
+   txt_ementa = escape(materia.txt_ementa)
    autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
    fields = autores.data_dictionary().keys()
    lista_autor = []
@@ -79,7 +81,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
        nome_autor = autor['nom_autor_join']
      lista_autor.append(nome_autor)
      autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
-   tramitacao_dic['id_materia'] = materia.des_tipo_materia.decode('utf-8').upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)+" - "+ str(autoria)+" - "+materia.txt_ementa
+   tramitacao_dic['id_materia'] = materia.des_tipo_materia.decode('utf-8').upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)+" - "+ str(autoria)+" - "+ txt_ementa
 
   # unidade de origem
   for unid_origem in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tramitacao.cod_unid_tram_local):
