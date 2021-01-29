@@ -50,8 +50,8 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
         cod_documento = int(codigo.cod_documento)
         id_documento = str(cod_documento)+'_texto_integral.pdf'
 
-    if REQUEST.form['hdn_codigo']:
-       hdn_codigo =  REQUEST.form['hdn_codigo']
+    if REQUEST.form['codigo']:
+       hdn_codigo =  REQUEST.form['codigo']
        peticao = str(hdn_codigo)+'.pdf'
        peticao_signed = str(hdn_codigo)+'_signed.pdf'
 
