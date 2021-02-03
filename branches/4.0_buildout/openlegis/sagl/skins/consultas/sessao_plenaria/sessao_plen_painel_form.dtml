@@ -8,24 +8,6 @@
     }
   </script>
 
-<dtml-if cod_emenda>
-  <dtml-call expr="REQUEST.set('cod_emenda', cod_emenda)">
-<dtml-else>
-  <dtml-call expr="REQUEST.set('cod_emenda', '')">
-</dtml-if>
-
-<dtml-if cod_subemenda>
-  <dtml-call expr="REQUEST.set('cod_subemenda', cod_subemenda)">
-<dtml-else>
-  <dtml-call expr="REQUEST.set('cod_subemenda', '')">
-</dtml-if>
-
-<dtml-if cod_substitutivo>
-  <dtml-call expr="REQUEST.set('cod_substitutivo', cod_substitutivo)">
-<dtml-else>
-  <dtml-call expr="REQUEST.set('cod_substitutivo', '')">
-</dtml-if>
-
 <dtml-call expr="REQUEST.set('cod_ordem', cod_ordem)">
 
 <dtml-call expr="REQUEST.set('cod_sessao_plen', cod_sessao_plen)">
@@ -36,17 +18,15 @@
 </dtml-in>
 
 <h3 align="center"><dtml-var sessao_plenaria_header></h3>
-
-<fieldset>
  <legend>Ficha de Votação</legend>
   <dtml-if expr="tipo_materia == 'expediente'">
      <dtml-call expr="REQUEST.set('zsqlmethod',zsql.votacao_expediente_materia_obter_zsql)">
   <dtml-else>
      <dtml-call expr="REQUEST.set('zsqlmethod',zsql.votacao_ordem_dia_obter_zsql)">
   </dtml-if>
-  <dtml-if cod_materia>
+ <dtml-if cod_materia>
    <table class="table">
-      <dtml-in expr="zsqlmethod(cod_ordem = cod_ordem, cod_materia=cod_materia, ind_excluido=0)">
+      <dtml-in expr="zsqlmethod(cod_ordem=cod_ordem, cod_materia=cod_materia, ind_excluido=0)">
       <thead>
        <tr>
           <td>
@@ -59,9 +39,11 @@
              </dtml-in>                 
              <dtml-var txt_ementa>
              </p>
-             <dtml-in expr="zsql.turno_discussao_obter_zsql(cod_turno=tip_turno)">
-                <b>Turno:</b> <dtml-var des_turno> 
-             </dtml-in>              
+             <dtml-if tip_turno>
+               <dtml-in expr="zsql.turno_discussao_obter_zsql(cod_turno=tip_turno)">
+                  <b>Turno:</b> <dtml-var des_turno> 
+               </dtml-in>              
+             </dtml-if>
            </dtml-in>
           </td>
        </tr>
@@ -91,11 +73,7 @@
        </tr>
       </dtml-in>
    </table>
-
-</fieldset>
-
-<fieldset>
-    <legend>Votação Nominal</legend>
+   <legend>Votação Nominal</legend>
      <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_inicio_sessao)">
       <dtml-if sequence-start>
        <table class="table table-striped">
@@ -133,7 +111,6 @@
         </table>
        </dtml-if>
      </dtml-in>
- </fieldset>
 
 <dtml-elif cod_parecer>
    <table class="table">
@@ -181,9 +158,7 @@
        </tr>
       </dtml-in>
    </table>
-</fieldset>
    
-<fieldset>
     <legend>Votação Nominal</legend>
      <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_inicio_sessao)">
       <dtml-if sequence-start>
@@ -221,7 +196,6 @@
        </dtml-if>
      </dtml-in>
 </dtml-if>
- </fieldset>
 
   <div class="text-left">
      <input type="button" class="btn btn-primary d-print-none" name="print_button" value="Imprimir" onClick="printFrame();return false;" />
