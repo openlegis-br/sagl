@@ -680,7 +680,7 @@
                       <th>Data</th>
                       <th>Origem</th>
                       <th>Destino</th>
-                      <th>Status</th>                      
+                      <th width="30%">Status</th>                      
                     </tr>
                   </thead>
             </dtml-if>
@@ -701,16 +701,21 @@
                       </td>
                       <td>
                         <dtml-if expr="dat_encaminha!=None">
+                          <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
                           <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
-                            <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+                            <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+                              <dtml-let arquivo_pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
+                                <a href="<dtml-var arquivo_pdf>" target="_blank"><i class="fas fa-certificate" style="font-size: 21px;"></i> <dtml-var expr="des_status"></a>
+                              </dtml-let>                          
+                            <dtml-elif "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
                               <dtml-let arquivo_pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
-                                <a href="<dtml-var arquivo_pdf>" target="_blank"><dtml-var expr="des_status"></a>
+                                <a href="<dtml-var arquivo_pdf>" target="_blank"><i class="fa fa-file-pdf" style="font-size: 21px;"></i> <dtml-var expr="des_status"></a>
                               </dtml-let>
                             <dtml-else>
-                              <dtml-var expr="des_status">
+                              <dtml-var expr="des_status"><dtml-if txt_tramitacao><br /><span class="text-muted small"><dtml-var txt_tramitacao></span></dtml-if>
                             </dtml-if>
                        <dtml-else>
-                         <dtml-var expr="des_status">
+                         <dtml-var expr="des_status"><dtml-if txt_tramitacao><br /><span class="text-muted small"><dtml-var txt_tramitacao></span></dtml-if>
                        </dtml-if>
                       </td>  
                     </tr>                                          
