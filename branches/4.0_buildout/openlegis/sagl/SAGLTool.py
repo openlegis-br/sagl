@@ -1672,7 +1672,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             lab.boxAnchor = 'n'
             lab.setText(mensagem)
             d.add(lab)
-            renderPDF.draw(d, can, pwidth-28, 85)
+            renderPDF.draw(d, can, pwidth-28, 120)
             # Numero de pagina
             footer_text = "Pag. %s/%s" % (page_num, numPages)
             can.saveState()
@@ -1687,8 +1687,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         packet2 = StringIO.StringIO()
         d = canvas.Canvas(packet2, pagesize=A4)
         d.setFillColorRGB(0,0,0)
-        d.setFont("Arial_Bold", 12)
-        d.drawString(170, 716, texto)
+        d.setFont("Arial_Bold", 13)
+        d.drawString(100, 700, texto)
         d.save()
         packet2.seek(0)
         new_pdf2 = PdfFileReader(packet2)
