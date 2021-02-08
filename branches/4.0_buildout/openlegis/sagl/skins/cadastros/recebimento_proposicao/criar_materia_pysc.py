@@ -60,7 +60,7 @@ def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, 
 def inserir_autoria(cod_materia, cod_autor, cod_proposicao):
     context.zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 1)
     
-    return autuar_materia(cod_materia)
+    return autuar_materia(cod_materia, cod_proposicao)
 
 
 def autuar_materia(cod_materia, cod_proposicao):
