@@ -94,8 +94,8 @@ def tramitar_materia(cod_materia, cod_proposicao):
         cod_tramitacao = tramitacao.cod_tramitacao
         
     id_proposicao_signed = str(cod_proposicao)+'_signed.pdf'
-    if hasattr(context.sapl_documentos.proposicao,id_proposicao_signed):
-       context.modelo_proposicao.proposicao_autuar(cod_proposicao=cod_proposicao)
+#    if hasattr(context.sapl_documentos.proposicao,id_proposicao_signed):
+#       context.modelo_proposicao.proposicao_autuar(cod_proposicao=cod_proposicao)
 
     return context.relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=cod_tramitacao, hdn_url=hdn_url)
 
