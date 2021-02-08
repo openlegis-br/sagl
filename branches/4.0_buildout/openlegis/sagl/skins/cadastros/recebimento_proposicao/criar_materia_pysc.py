@@ -96,7 +96,7 @@ def tramitar_materia(cod_materia, cod_proposicao):
     if cod_materia != None:
        if hasattr(context.sapl_documentos.proposicao,id_proposicao_signed):
           context.modelo_proposicao.proposicao_autuar(cod_proposicao=cod_proposicao)
-       context.zsql.proposicao_registrar_recebimento_zsql(cod_proposicao = cod_proposicao, dat_recebimento = context.pysc.data_atual_iso_pysc(),cod_mat_ou_doc = _.int(cod_materia))">
+       context.zsql.proposicao_registrar_recebimento_zsql(cod_proposicao = cod_proposicao, dat_recebimento = context.pysc.data_atual_iso_pysc(),cod_mat_ou_doc = _.int(cod_materia))
 
     return context.relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=cod_tramitacao, hdn_url=hdn_url)
 
