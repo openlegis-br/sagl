@@ -46,7 +46,6 @@ def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, 
         cod_materia = int(codigo.cod_materia)
         id_materia = str(cod_materia)+'_texto+_integral.pdf'
         
-    id_proposicao_signed = str(cod_proposicao)+'_signed.pdf'
     id_proposicao_odt = str(cod_proposicao)+'.odt'
     
     if hasattr(context.sapl_documentos.proposicao,id_proposicao_odt):
@@ -64,6 +63,7 @@ def inserir_autoria(cod_materia, cod_autor, cod_proposicao):
 
 
 def autuar_materia(cod_materia, cod_proposicao):
+    id_proposicao_signed = str(cod_proposicao)+'_signed.pdf'
     if hasattr(context.sapl_documentos.proposicao,id_proposicao_signed):
        context.modelo_proposicao.proposicao_autuar(cod_proposicao=cod_proposicao)
 
