@@ -38,7 +38,7 @@ ano_ident_basica = ano_materia, ind_excluido = 0):
         num_ident_basica = numero.novo_numero
 
 
-def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar):
+def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao):
 
     context.zsql.materia_incluir_zsql(tip_id_basica = tip_materia, num_ident_basica = num_ident_basica, ano_ident_basica = ano_materia, dat_apresentacao = dat_apresentacao, tip_apresentacao = 'E', tip_quorum = tip_quorum, ind_tramitacao = 1, ind_complementar = ind_complementar, cod_regime_tramitacao = 1, txt_ementa = txt_ementa, txt_observacao = txt_observacao)
     
@@ -103,6 +103,6 @@ def tramitar_materia(cod_materia):
     return context.relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=cod_tramitacao, hdn_url=hdn_url)
   
 
-return criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar)
+return criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao)
     
     
