@@ -42,4 +42,21 @@ for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=
     dia_documento = context.pysc.data_converter_por_extenso_pysc(data=documento.dat_documento)
     nom_autor = documento.txt_interessado
 
+# Presidente
+lst_presidente = []
+data = context.pysc.data_converter_pysc(dat_documento)
+for legislatura in context.zsql.legislatura_obter_zsql(data=data):
+  for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=legislatura.num_legislatura,data=data):
+    for cod_presidente in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=1):
+      for presidencia in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
+        inf_basicas_dic["lst_presidente"] = presidencia.nom_parlamentar
+
+# 1o. Secretario
+lst_psecretario = []
+for legislatura in context.zsql.legislatura_obter_zsql(data=data):
+  for sleg in context.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=legislatura.num_legislatura,data=data):
+    for cod_psecretaria in context.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp,cod_cargo=4):
+      for psecretaria in context.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_psecretaria.cod_parlamentar):
+        inf_basicas_dic["lst_psecretario"] = psecretaria.nom_parlamentar
+
 return st.oficio_gerar_odt(inf_basicas_dic, nom_arquivo, sgl_tipo_documento, num_documento, ano_documento, txt_ementa, dat_documento, dia_documento, nom_autor, modelo_documento)
