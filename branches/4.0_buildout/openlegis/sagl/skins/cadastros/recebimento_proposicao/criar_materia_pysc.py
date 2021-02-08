@@ -84,8 +84,7 @@ def tramitar_materia(cod_materia, cod_proposicao):
            
     hr_tramitacao = DateTime().strftime('%d/%m/%Y às %H:%M')
     txt_tramitacao = 'Matéria incorporada em ' + hr_tramitacao
-    hdn_url = context.url() + '/cadastros/materia/materia_mostrar_proc?cod_materia=' + str(cod_materia)
-#    context.portal_url() + '/cadastros/materia/materia_mostrar_proc?cod_materia=' + str(cod_materia)    
+    context.portal_url() + '/cadastros/materia/materia_mostrar_proc?cod_materia=' + str(cod_materia)    
 
     
     if cod_unid_tram_local != None and cod_unid_tram_dest != None and cod_status != None:
