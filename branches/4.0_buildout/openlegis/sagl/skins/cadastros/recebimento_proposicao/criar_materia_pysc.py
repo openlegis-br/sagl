@@ -56,20 +56,12 @@ def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, 
     return inserir_autoria(cod_materia, cod_autor, cod_proposicao)
     
 
-def inserir_autoria(cod_materia, cod_autor, cod_proposicao):
+def inserir_autoria(cod_materia, cod_autor):
     context.zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 1)
     
-    return autuar_materia(cod_materia, cod_proposicao)
+    return tramitar_materia(cod_materia, cod_proposicao)
 
-
-def autuar_materia(cod_materia, cod_proposicao):
-    id_proposicao_signed = str(cod_proposicao)+'_signed.pdf'
-    if hasattr(context.sapl_documentos.proposicao,id_proposicao_signed):
-       context.modelo_proposicao.proposicao_autuar(cod_proposicao=cod_proposicao)
-
-    return tramitar_materia(cod_materia)       
-
-def tramitar_materia(cod_materia):
+def tramitar_materia(cod_materia, cod_proposicao):
 
     for unidade in context.zsql.unidade_tramitacao_obter_zsql(ind_excluido=0):
         if 'Protocolo Eletrônico' == unidade.nom_unidade_join:
@@ -101,10 +93,15 @@ def tramitar_materia(cod_materia):
         
     for tramitacao in context.zsql.tramitacao_incluida_codigo_obter_zsql():
         cod_tramitacao = tramitacao.cod_tramitacao
+        
+    id_proposicao_signed = str(cod_proposicao)+'_signed.pdf'
+    if hasattr(context.sapl_documentos.proposicao,id_proposicao_signed):
+       context.modelo_proposicao.proposicao_autuar(cod_proposicao=cod_proposicao)
 
     return context.relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=cod_tramitacao, hdn_url=hdn_url)
-  
+
 
 return criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao)
+
     
     
