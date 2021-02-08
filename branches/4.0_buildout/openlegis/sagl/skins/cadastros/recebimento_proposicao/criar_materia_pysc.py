@@ -54,18 +54,20 @@ def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, 
        tmp_id = context.sapl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
        context.sapl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_materia]))
        
+    return inserir_autoria(cod_materia, cod_autor, cod_proposicao)
+    
+
+def inserir_autoria(cod_materia, cod_autor, cod_proposicao):
+    context.zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 1)
+    
+    return autuar_materia(cod_materia)
+
+
+def autuar_materia(cod_materia, cod_proposicao):
     if hasattr(context.sapl_documentos.proposicao,id_proposicao_signed):
        context.modelo_proposicao.proposicao_autuar(cod_proposicao=cod_proposicao)
 
-    return inserir_autoria(cod_materia, cod_autor)
-    
-
-def inserir_autoria(cod_materia, cod_autor):
-
-    context.zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 1)
-    
-    return tramitar_materia(cod_materia)
-
+    return tramitar_materia(cod_materia)       
 
 def tramitar_materia(cod_materia):
 
