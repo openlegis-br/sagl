@@ -10,7 +10,7 @@
 
 from Products.CMFCore.utils import getToolByName
 
-utool = getToolByName(self, 'portal_url')
+utool = getToolByName(context, 'portal_url')
 portal = utool.getPortalObject()
 
 REQUEST = context.REQUEST
