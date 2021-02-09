@@ -44,7 +44,7 @@ def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, 
     
     for codigo in context.zsql.materia_incluida_codigo_obter_zsql():
         cod_materia = int(codigo.cod_materia)
-        id_materia = str(cod_materia)+'_texto+_integral.pdf'
+        id_materia = str(cod_materia)+'_texto_integral.pdf'
         
     id_proposicao_odt = str(cod_proposicao)+'.odt'
     
