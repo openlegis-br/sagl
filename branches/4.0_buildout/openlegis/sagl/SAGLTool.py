@@ -2102,6 +2102,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            for metodo in self.zsql.reuniao_comissao_obter_zsql(cod_reuniao=codigo):
                for comissao in self.zsql.comissao_obter_zsql(cod_comissao=metodo.cod_comissao):
                    texto = 'ATA - ' + metodo.num_reuniao + 'ª Reunião da ' + comissao.sgl_comissao + ', em ' + metodo.dat_inicio_reuniao
+        elif tipo_doc == 'documento_comissao':
+           storage_path = self.sapl_documentos.documento_comissao      
+           for metodo in self.zsql.documento_comissao_obter_zsql(cod_documento=codigo):
+               for comissao in self.zsql.comissao_obter_zsql(cod_comissao=metodo.cod_comissao):
+                   texto = metodo.txt_descricao + ' - ' + comissao.sgl_comissao                   
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros + '.'
         mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ string
