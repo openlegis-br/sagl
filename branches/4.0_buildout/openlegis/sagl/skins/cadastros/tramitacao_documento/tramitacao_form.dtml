@@ -74,7 +74,7 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function(){
-
+<dtml-unless hdn_cod_tramitacao>
         var unid_origem = $("#lst_cod_unid_tram_local").val();
         $.ajax({
             url: 'unidades_carregar_pysc',
@@ -107,7 +107,7 @@ $(document).ready(function(){
                 }
             }
         }); 
-
+</dtml-unless>
     $("#lst_cod_unid_tram_dest").change(function(){
         var unid_dest = $(this).val();
         $.ajax({
@@ -328,7 +328,7 @@ $(document).ready(function(){
       </div>          
     </div>
     <div class="col-12 col-md-3 mb-3">
-      <label for="lst_cod_usuario_dest">Usuário de Destino</label>
+      <label for="lst_cod_usuario_dest">Usuário de Destino</label>     
        <select class="custom-select" name="lst_cod_usuario_dest" id="lst_cod_usuario_dest">
           <option value="<dtml-var cod_usuario_dest missing>">
               <dtml-if cod_usuario_dest>
@@ -397,7 +397,7 @@ $(document).ready(function(){
     <dtml-call expr="REQUEST.set('pdf', _.str(hdn_cod_tramitacao)+'_tram.pdf')">
     <dtml-call expr="REQUEST.set('pdf_assinado', _.str(hdn_cod_tramitacao)+'_tram_signed.pdf')">
     <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)"> 
-      <div class="col-12 col-sm-4 col-lg-3 mb-3">
+      <div class="col-12 col-sm-6 col-lg-6 mb-3">
         <label class="d-block">Despacho em PDF</label>
        
         <div class="btn-group" role="group" aria-label="tram_button">
@@ -407,11 +407,15 @@ $(document).ready(function(){
              </a>
           </dtml-let>
           <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf) and sapl_documentos.props_sagl.restpki_access_token!=''">
-             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var hdn_cod_tramitacao>&tipo_doc=tramitacao_adm&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
+             <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=hdn_cod_tramitacao,tipo_doc='tramitacao_adm')">             
+               <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var hdn_cod_tramitacao>&tipo_doc=tramitacao_adm&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+             <dtml-else>
+               <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var hdn_cod_tramitacao>&tipo_doc=tramitacao_adm&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>               
+             </dtml-if>                
           </dtml-if>
         </div>
       </div>
-      <div class="col-12 col-sm-8 col-lg-6 form-group">
+      <div class="col-12 col-sm-6 col-lg-6 form-group">
        <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" id="inlineRadio2" name="radTI" value="G" onClick="ativa_desativa_file_field(document.tramitacao_form)" checked />        
           <label class="form-check-label" for="inlineRadio2">Gerar</label>

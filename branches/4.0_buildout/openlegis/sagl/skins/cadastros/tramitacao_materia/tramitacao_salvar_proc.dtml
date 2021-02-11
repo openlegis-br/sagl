@@ -96,6 +96,16 @@
     <dtml-let mensagem="'Tramitação salva com sucesso.'" cod_materia=hdn_cod_materia cod_tramitacao=hdn_cod_tramitacao>
         <dtml-var tramitacao_mostrar_proc>
         <dtml-if expr="radTI!='M'">
+           <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=hdn_cod_tramitacao,tipo_doc='tramitacao')">
+             <dtml-try>
+               <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                       cod_assinatura_doc  = cod_assinatura_doc,
+                       codigo              = codigo,
+                       tipo_doc            = tipo_doc)">
+             <dtml-except>
+               <dtml-call expr="REQUEST.set('erro', 1)">
+             </dtml-try>
+           </dtml-in>         
            <dtml-if modal>
               <dtml-call expr="REQUEST.set('hdn_url', 'tramitacao_mostrar_proc?hdn_cod_tramitacao=' + str(hdn_cod_tramitacao) + '&hdn_cod_materia=' + str(hdn_cod_materia)+ '&modal=1')">        
            <dtml-else>

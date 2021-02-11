@@ -1596,13 +1596,16 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
           nom_autor = proposicao.nom_autor
           cod_validacao_doc = ''
           outros = ''
+          qtde_assinaturas = []        
           for validacao in self.zsql.assinatura_documento_obter_zsql(codigo=cod_proposicao,tipo_doc='proposicao',ind_assinado=1):
+            qtde_assinaturas.append(validacao.cod_usuario)          
             if validacao.ind_prim_assinatura == 1:
                cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
                break
-            if len([validacao]) > 1:
+            if len(qtde_assinaturas) == 2:
+               outros = " e outro"
+            elif len(qtde_assinaturas) > 2:
                outros = " e outros"
-               break
           for tipo_proposicao in self.zsql.tipo_proposicao_obter_zsql(tip_proposicao=proposicao.tip_proposicao):
             if tipo_proposicao.ind_mat_ou_doc == "M":
               for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
@@ -1632,7 +1635,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 nom_pdf_saida = str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros
-        mensagem2 = 'Para conferir o original, utilize o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
+        mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
@@ -1688,7 +1691,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         d = canvas.Canvas(packet2, pagesize=A4)
         d.setFillColorRGB(0,0,0)
         d.setFont("Arial_Bold", 13)
-        d.drawString(100, 700, texto)
+        d.drawString(90, 700, texto)
         d.save()
         packet2.seek(0)
         new_pdf2 = PdfFileReader(packet2)
@@ -1781,7 +1784,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signature_starter.set_pdf_path(pdf_path)
         signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
         signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
-        if tipo_doc == 'peticao' or tipo_doc == 'documento' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm' or tipo_doc == 'norma':
+        if tipo_doc == 'peticao' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm' or tipo_doc == 'norma':
            signature_starter.visual_representation = ({
                'text': {
                    # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
@@ -1991,16 +1994,19 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             nom_pdf_assinado = str(cod_assinatura_doc) + '.pdf'
             nom_pdf_documento = str(codigo) + str(storage.pdf_file)
 
-        for item in self.zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=cod_assinatura_doc):
+        qtde_assinaturas = []
+        for item in self.zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=cod_assinatura_doc, ind_assinado=1):
+            qtde_assinaturas.append(item.cod_usuario)        
             if item.ind_prim_assinatura == 1:
                for usuario in self.zsql.usuario_obter_zsql(cod_usuario=item.cod_usuario):
                    nom_autor = usuario.nom_completo
                    break
-            if len([item]) > 1:
+            if len(qtde_assinaturas) == 2:
+               outros = " e outro"
+            elif len(qtde_assinaturas) > 2:
                outros = " e outros"
             else:
-               outros = ''
-               break
+               outros = ''               
 
         string = str(self.cadastros.assinatura.format_verification_code(cod_assinatura_doc))
 
@@ -2086,6 +2092,16 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif tipo_doc == 'peticao':
            storage_path = self.sapl_documentos.administrativo
            texto = 'PETIÇÃO ELETRÔNICA'
+        elif tipo_doc == 'pauta_comissao':
+           storage_path = self.sapl_documentos.reuniao_comissao
+           for metodo in self.zsql.reuniao_comissao_obter_zsql(cod_reuniao=codigo):
+               for comissao in self.zsql.comissao_obter_zsql(cod_comissao=metodo.cod_comissao):
+                   texto = 'PAUTA - ' + metodo.num_reuniao + 'ª Reunião da ' + comissao.sgl_comissao + ', em ' + metodo.dat_inicio_reuniao
+        elif tipo_doc == 'ata_comissao':
+           storage_path = self.sapl_documentos.reuniao_comissao      
+           for metodo in self.zsql.reuniao_comissao_obter_zsql(cod_reuniao=codigo):
+               for comissao in self.zsql.comissao_obter_zsql(cod_comissao=metodo.cod_comissao):
+                   texto = 'ATA - ' + metodo.num_reuniao + 'ª Reunião da ' + comissao.sgl_comissao + ', em ' + metodo.dat_inicio_reuniao
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros + '.'
         mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ string
