@@ -45,13 +45,6 @@ $(document).ready(function() {
           },
         }
     });
-
-    var table = $('#tramitacao').DataTable();
- 
-    $('#lst_cod_unid_tram_local').on('change', function(){
-        var text = $("#lst_cod_unid_tram_local option:selected").text();       
-        table.column([3]).search(text).draw();  
-    });
     
    $('#tramitacao_form').on('submit', function(e){
       var form = this;
@@ -148,10 +141,10 @@ $(document).ready(function() {
 });
 </script>
 
+<dtml-if hdn_cod_unidade>
 <script>
 $(document).ready(function(){
-    $("#lst_cod_unid_tram_local").change(function(){  
-        var unid_origem = $(this).val();
+        var unid_origem = <dtml-var hdn_cod_unidade>;
         $.ajax({
             url: 'unidades_carregar_pysc',
             type: 'post',
@@ -160,7 +153,7 @@ $(document).ready(function(){
             success:function(response){
                 var len = response.length;
                 $("#lst_cod_unid_tram_dest").empty();
-                $("#lst_cod_usuario_dest").empty();                
+                $("#lst_cod_usuario_dest").empty();                                
                 for( var i = 0; i<len; i++){
                     var id = response[i]['id'];
                     var name = response[i]['name'];
@@ -168,7 +161,6 @@ $(document).ready(function(){
                 }
             }
         });
-        var unid_origem = $(this).val();
         $.ajax({
             url: 'status_carregar_pysc',
             type: 'post',
@@ -183,8 +175,7 @@ $(document).ready(function(){
                     $("#lst_cod_status").append("<option value='"+id+"'>"+name+"</option>");
                 }
             }
-        });        
-    });
+        });
     $("#lst_cod_unid_tram_dest").change(function(){
         var unid_dest = $(this).val();
         $.ajax({
@@ -202,9 +193,10 @@ $(document).ready(function(){
                 }
             }
         });
-    });    
+    });            
 });
 </script>
+</dtml-if>
 
 <h1 class="firstHeading">Tramitação de Matérias Legislativas</h1>
 
@@ -215,19 +207,45 @@ $(document).ready(function(){
 
 <dtml-call expr="REQUEST.set('contador', 0)">
 
-<dtml-in expr="caixa_entrada_pysc(cod_usuario=cod_usuario_corrente)">
-<dtml-if sequence-start>
- <label class="d-block font-weight-bold">1. Preencha os dados da nova tramitação</label>  
  <form name="tramitacao_form" id="tramitacao_form" method="POST" action="tramitacao_lote_salvar_proc">
+
+  <label class="d-block font-weight-bold">1. Origem da tramitação</label>  
+  <div class="form-row">
+    <div class="col-12 col-md-3 mb-3">
+      <label for="txt_nom_usuario"class="d-block">Usuário Local</label>
+      <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">      
+         <input class="form-control" type="text" id="txt_nom_usuario" value="<dtml-var nom_completo>" disabled> 
+          <input type="hidden" name="hdn_cod_usuario_local" id="hdn_cod_usuario_local" value="<dtml-var cod_usuario_corrente>">     
+     </dtml-in>
+    </div> 
+      
+    <div class="col-12 col-md-9 mb-3">  
+    <label class="d-block required">Unidade de Origem</label> 
+          <select class="custom-select jumpmenu" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local">
+             <option value="<dtml-var ACTUAL_URL>"></option>
+              <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
+                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tramitacao, ind_leg=1)">
+                    <option value="<dtml-var ACTUAL_URL>?hdn_cod_unidade=<dtml-var cod_unid_tramitacao>" <dtml-if expr="_.has_key('hdn_cod_unidade') and hdn_cod_unidade == cod_unid_tramitacao">selected</dtml-if>><dtml-var nom_unidade_join></option>
+                    
+                </dtml-in>
+               </dtml-in>
+          </select>
+      </div>
+   </div>
+
+
+<dtml-if expr="_.has_key('hdn_cod_unidade')">
+<input type="hidden" name="unidade_local" value="<dtml-var hdn_cod_unidade>">
+<dtml-in expr="caixa_entrada_pysc(cod_usuario=cod_usuario_corrente, cod_unidade=hdn_cod_unidade)">
+<dtml-if sequence-start>
+ <label class="d-block font-weight-bold">2. Dados da nova tramitação</label>  
   <div class="form-row">
     <div class="col-12 col-md-3 mb-3">
        <label for="txt_dat_tramitacao" class="required">Data da Tramitação</label>
        <dtml-unless dat_tramitacao>
           <dtml-call expr="REQUEST.set('dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
        </dtml-unless>
-       <input type="hidden" name="hdn_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" />       
        <input class="form-control date" type="text" name="txt_dat_tramitacao" id="txt_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" readonly required autocomplete="off" />
-       <dtml-comment>
         <script>
         $('#txt_dat_tramitacao').datepicker({
             locale: 'pt-br',
@@ -237,37 +255,11 @@ $(document).ready(function(){
             iconsLibrary: 'fontawesome'
         });
         </script> 
-       </dtml-comment>     
+
       <div class="invalid-feedback">
         Este campo é obrigatório!
       </div>        
-    </div>
-    <div class="col-12 col-md-6 mb-3">
-      <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>
-          <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
-             <option value="0">Selecione</option>
-              <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
-                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tramitacao, ind_leg=1)">
-                  <dtml-if expr="not dat_extincao">
-                    <option value="<dtml-var cod_unid_tramitacao>"><dtml-var nom_unidade_join></option>
-                  </dtml-if>
-                </dtml-in>
-               </dtml-in>
-          </select> 
-       <div class="invalid-feedback">
-          Este campo é obrigatório!
-       </div>
-    </div>    
-    <div class="col-12 col-md-3 mb-3">
-      <label for="txt_nom_usuario"class="d-block">Usuário de Origem</label>
-      <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">      
-         <input class="form-control" type="text" id="txt_nom_usuario" value="<dtml-var nom_completo>" disabled> 
-          <input type="hidden" name="hdn_cod_usuario_local" id="hdn_cod_usuario_local" value="<dtml-var cod_usuario_corrente>">     
-     </dtml-in>
-    </div>     
-  </div> 
- 
-  <div class="form-row">
+    </div>   
     <div class="col-12 col-md-6 mb-3">  
       <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
           <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
@@ -282,7 +274,10 @@ $(document).ready(function(){
       <select class="custom-select" name="lst_cod_usuario_dest" id="lst_cod_usuario_dest">
          <option></option>
       </select>    
-    </div>
+    </div>    
+  </div> 
+ 
+  <div class="form-row">
     <div class="col-12 col-md-3 mb-3">
       <label for="txt_dat_fim_prazo">Data Fim de Prazo</label>
       <input class="form-control date" type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" value="" autocomplete="off" />
@@ -296,10 +291,7 @@ $(document).ready(function(){
         });
         </script>       
     </div>    
-  </div> 
-
-  <div class="form-row">
-    <div class="col-12 col-md-9 mb-3"> 
+    <div class="col-12 col-md-6 mb-3"> 
       <label for="lst_cod_status" class="required">Status</label>
       <select class="custom-select" title="Selecione" data-live-search="true" id="lst_cod_status" name="lst_cod_status" data-size="6" required>
          <option value="0"></option>
@@ -314,7 +306,12 @@ $(document).ready(function(){
              <label class="custom-control-label" for="rad<dtml-var expr="_['sequence-item'][0]">"><dtml-var sequence-item></label>
          </div>
       </dtml-in>    
-    </div>    
+    </div>     
+  </div> 
+
+  <div class="form-row">
+
+   
   </div> 
 
   <div class="form-row">
@@ -327,7 +324,7 @@ $(document).ready(function(){
   <input type="hidden" name="txt_tamanho" value="<dtml-var sequence-length>">
   <input type="hidden" name="txt_check" value="">
 
-  <label class="d-block font-weight-bold required">2. Selecione as matérias a tramitar</label>  
+  <label class="d-block font-weight-bold required">3. Matérias a tramitar</label>  
 
   <table class="table display" width="100%" id="tramitacao">
     <thead class="table-secondary">
@@ -396,11 +393,13 @@ $(document).ready(function(){
          <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
       </div>
   </div>
-  </form>
   </dtml-if sequence-end>
   <dtml-else>
   <p>Não há matérias para tramitação nesta unidade.</p>
 </dtml-in>
+</dtml-if>
+
+</form>
 
 <script>
 tinymce.init({
@@ -418,5 +417,28 @@ tinymce.init({
   content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
 });
 </script>
+
+<script type="text/javascript">
+    function initJumpMenus() {
+        // Turns all <select> elements with the 'jumpmenu' class into jump menus
+        var selectElements = document.getElementsByTagName("select");
+        for( i = 0; i < selectElements.length; i++ ) {
+            // Check for the class and make sure the element has an ID
+            if( selectElements[i].className == "custom-select jumpmenu" && document.getElementById(selectElements[i].id) != "" ) {
+                jumpmenu = document.getElementById(selectElements[i].id);
+                jumpmenu.onchange = function() {
+                    if( this.options[this.selectedIndex].value != '' ) {
+                        // Redirect
+                        location.href=this.options[this.selectedIndex].value;
+                    }
+                }
+            }
+        }
+    }
+    window.onload = function() {
+        initJumpMenus();
+    }
+</script>
+
 
 <dtml-var standard_html_footer>
