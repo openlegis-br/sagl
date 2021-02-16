@@ -12,7 +12,7 @@
       }
    
       if (form.txt_descricao.value=="") {
-          alert("Informe uma descrição para a Proposição!");
+          alert("Informe a ementa da Proposição!");
           form.txt_descricao.focus();
           return false;
       }
@@ -251,10 +251,10 @@ $(document).ready(function(){
            </dtml-if>
          </dtml-if>
         <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
-           <input class="btn btn-danger" type="button" value="Excluir" onClick="proposicao_excluir()" />
+           <input class="btn btn-danger btn-sm" type="button" value="Excluir" onClick="proposicao_excluir()" />
            <a class="btn btn-primary" href="<dtml-var portal_url>/cadastros/proposicao/"><i class="fas fa-undo"></i> Voltar</a>
         <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
-           <a class="btn btn-sm btn-secondary" href="<dtml-var portal_url>/cadastros/recebimento_proposicao/"><i class="fas fa-undo"></i> Voltar</a>                
+           <a class="btn btn-sm btn-secondary btn-sm" href="<dtml-var portal_url>/cadastros/recebimento_proposicao/"><i class="fas fa-undo"></i> Voltar</a>                
         </dtml-if>         
       </div>
  </div>
@@ -605,7 +605,7 @@ $(document).ready(function(){
    <dtml-if expr="_.has_key('cod_proposicao')">
       <dtml-if prop_enviada>
          <dtml-unless dat_recebimento>
-           <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor'])">
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
               <dtml-if dat_devolucao>
                  <input class="btn btn-primary" type="button" value="Reaproveitar" onClick="proposicao_retomar()" />
               <dtml-else>
@@ -616,13 +616,14 @@ $(document).ready(function(){
       <dtml-else>
         <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.odt')">      
         <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
-        <dtml-if expr="(_.hasattr(sapl_documentos.proposicao,id_documento) or _.hasattr(sapl_documentos.proposicao,id_documento_assinado)) and AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
-           <input class="btn btn-primary" type="button" value="Enviar" onClick="proposicao_enviar()" />
+        <dtml-if expr="( _.hasattr(sapl_documentos.proposicao,id_documento_assinado)) and AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
+           <input class="btn btn-primary" type="button" value="Enviar para Protocolo" onClick="proposicao_enviar()" />
+        <dtml-elif expr="(_.hasattr(sapl_documentos.proposicao,id_documento) and AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
+           <input class="btn btn-primary" type="button" value="Enviar para Revisão" onClick="proposicao_enviar()" />           
         </dtml-if>
       </dtml-if>
    </dtml-if>
 
-  
 <dtml-else>
    <dtml-unless cod_mat_ou_doc> 
       <dtml-unless dat_devolucao>
