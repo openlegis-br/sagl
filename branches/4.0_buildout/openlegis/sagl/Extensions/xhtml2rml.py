@@ -28,11 +28,11 @@ def xhtml2rml(self,chaineHtml,chaineStyle):
 
        entite = str(match.group(1))
 
-       dEnt = {"agrave":"à", "Agrave":"À", "aacute":"á", "Aacute":"Á", "acirc":"â", "Acirc":"Â",\
+       dEnt = {"ordf":"ª", "ordm":"º", "agrave":"à", "Agrave":"À", "aacute":"á", "Aacute":"Á", "acirc":"â", "Acirc":"Â",\
  "atilde":"ã", "Atilde":"Ã", "auml":"ä", "Auml":"Ä", "aring":"å", "Aring":"Å", "aelig":"æ", "AElig":"Æ",\
  "egrave":"è", "Egrave":"È", "eacute":"é", "Eacute":"É", "ecirc":"ê", "Ecirc":"Ê", "euml":"ë", "Euml":"Ë",\
  "igrave":"ì", "Igrave":"Ì", "iacute":"í", "Iacute":"Í", "icirc":"î", "Icirc":"Î", "iuml":"ï", "Iuml":"Ï",\
- "ograve":"ò", "Ograve":"Ò", "oacute":"ó", "Oacute":"Ó", "ocirc":"ô", "Ocirc":"Ô", "ouml":"ö", "Ouml":"Ö",\
+ "ograve":"ò", "Ograve":"Ò", "oacute":"ó", "Oacute":"Ó", "ocirc":"ô", "otilde":"õ", "Otilde":"Ô", "Ocirc":"Ô", "ouml":"ö", "Ouml":"Ö",\
  "oslash":"ø", "Oslash":"Ø", "oelig":"oe", "OElig":"OE", "ugrave":"ù", "Ugrave":"Ù", "uacute":"ú",\
  "Uacute":"Ú", "ucirc":"û", "Ucirc":"Û", "uuml":"ü", "Uuml":"Ü", "ntilde":"ñ", "Ntilde":"Ñ", "ccedil":"ç",\
  "Ccedil":"Ç", "yacute":"ý", "Yacute":"Ý", "szlig":"ß", "laquo":"«", "raqo":"»", "para":"§", "copy":"©",\
@@ -73,7 +73,7 @@ def xhtml2rml(self,chaineHtml,chaineStyle):
           contentTag = reEntites.sub(replace_entites, contentTag)
           debutTag='para' + ' style="' + chaineStyle + '"'
           finTag='</para>'
-          return '\r\n' + finTag + '\r\n' + '<'+ debutTag + attrTag +'>\r\n'+ contentTag + '\r\n'
+          return  contentTag
 
        if debutTag.lower() in ('pre','code'):
           debutTag='xpre'
@@ -137,9 +137,10 @@ def xhtml2rml(self,chaineHtml,chaineStyle):
 
  def replace_tag_br(match):
 
-       entete = '</para>\r\n'
-       fin='<para' + ' style="' + chaineStyle + 'BR">\r\n'      
-
+#       entete = '</para>\r\n'
+#       fin='<para' + ' style="' + chaineStyle + 'BR">\r\n'      
+       entete = ''
+       fin = ''
        return entete + fin       
 
  chaineRml = chaineHtml
