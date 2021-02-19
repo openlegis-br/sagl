@@ -1893,7 +1893,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         for file in [filename]:
             if tipo_doc != 'proposicao':  
-               self.margem_direita(codigo,tipo_doc,cod_assinatura_doc)
+               self.margem_direita(codigo, tipo_doc, cod_assinatura_doc, cod_usuario)
             if hasattr(storage_path,filename):
                documento = getattr(storage_path,filename)
                documento.manage_upload(file=data)
@@ -1988,25 +1988,34 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         else:
             return None
 
-    def margem_direita(self,codigo,tipo_doc,cod_assinatura_doc):
+    def margem_direita(self, codigo, tipo_doc, cod_assinatura_doc, cod_usuario):
 
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
             nom_pdf_assinado = str(cod_assinatura_doc) + '.pdf'
             nom_pdf_documento = str(codigo) + str(storage.pdf_file)
 
         qtde_assinaturas = []
-        for item in self.zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=cod_assinatura_doc, ind_assinado=1):
+        for item in self.zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=cod_assinatura_doc):
             qtde_assinaturas.append(item.cod_usuario)        
-            if item.ind_prim_assinatura == 1:
-               for usuario in self.zsql.usuario_obter_zsql(cod_usuario=item.cod_usuario):
-                   nom_autor = usuario.nom_completo
-                   break
+            if item.ind_assinado == 1:
+               if item.ind_prim_assinatura == 1:
+                  for usuario in self.zsql.usuario_obter_zsql(cod_usuario=item.cod_usuario):
+                      nom_autor = usuario.nom_completo
+                      break
+               else:
+                  for usuario in self.zsql.usuario_obter_zsql(cod_usuario=cod_usuario): 
+                      nom_autor = usuario.nom_completo
+                      break 
+            else:
+                  for usuario in self.zsql.usuario_obter_zsql(cod_usuario=cod_usuario): 
+                      nom_autor = usuario.nom_completo
+                      break             
             if len(qtde_assinaturas) == 2:
                outros = " e outro"
             elif len(qtde_assinaturas) > 2:
                outros = " e outros"
             else:
-               outros = ''               
+               outros = ''                                 
 
         string = str(self.cadastros.assinatura.format_verification_code(cod_assinatura_doc))
 
