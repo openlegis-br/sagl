@@ -91,7 +91,8 @@ def tramitar_materia(cod_materia, cod_proposicao):
            
     hr_tramitacao = DateTime().strftime('%d/%m/%Y às %H:%M')
     txt_tramitacao = 'Matéria incorporada em ' + hr_tramitacao
-    hdn_url = context.portal_url() + '/cadastros/materia/materia_mostrar_proc?cod_materia=' + str(cod_materia)    
+#    hdn_url = context.portal_url() + '/cadastros/materia/materia_mostrar_proc?cod_materia=' + str(cod_materia)    
+    hdn_url = context.portal_url() + '/cadastros/recebimento_proposicao/recebimento_proposicao_index_html#protocolo'
     
     if cod_unid_tram_local != None and cod_unid_tram_dest != None and cod_status != None:
        context.zsql.tramitacao_incluir_zsql(cod_materia=cod_materia, dat_tramitacao=DateTime().strftime('%Y-%m-%d'), cod_unid_tram_local=cod_unid_tram_local, cod_usuario_local=cod_usuario_corrente, cod_unid_tram_dest=cod_unid_tram_dest, dat_encaminha=DateTime().strftime('%Y-%m-%d %H:%M:%S'), cod_status=cod_status, ind_urgencia=0, txt_tramitacao = txt_tramitacao, ind_ult_tramitacao=1)
