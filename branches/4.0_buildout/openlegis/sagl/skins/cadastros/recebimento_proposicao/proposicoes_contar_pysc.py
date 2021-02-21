@@ -25,13 +25,13 @@ if caixa == 'revisao' or caixa == 'assinatura' or caixa == 'protocolo':
        id_documento = str(proposicao.cod_proposicao) +'.pdf'
        id_documento_assinado = str(proposicao.cod_proposicao) +'_signed.pdf'
 
-       if proposicao.dat_recebimento==None and hasattr(sapl_documentos.proposicao,id_odt) and not hasattr(sapl_documentos.proposicao,id_documento_assinado):
+       if proposicao.dat_recebimento==None and hasattr(context.sapl_documentos.proposicao,id_odt) and not hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
           revisao.append(proposicao.cod_proposicao)
 
-       if proposicao.dat_recebimento==None and hasattr(sapl_documentos.proposicao,id_documento) and not hasattr(sapl_documentos.proposicao,id_documento_assinado):
+       if proposicao.dat_recebimento==None and hasattr(context.sapl_documentos.proposicao,id_documento) and not hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
           assinatura.append(proposicao.cod_proposicao)
 
-       if hasattr(sapl_documentos.proposicao,id_documento_assinado):
+       if hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
           protocolo.append(proposicao.cod_proposicao)
 
    if caixa == 'revisao':
@@ -65,4 +65,5 @@ if caixa == 'devolvido':
    else: qtde = '' 
 
 return qtde
+
 
