@@ -71,7 +71,7 @@ for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_tramitac
   # dados do documento
   for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=tramitacao.cod_documento):
    txt_assunto = escape(documento.txt_assunto)  
-   tramitacao_dic['id_documento'] = str(documento.des_tipo_documento)+" n° "+ str(documento.num_documento)+"/"+ str(documento.ano_documento)+" - "+ str(documento.txt_interessado)+" - "+ txt_assunto
+   tramitacao_dic['id_documento'] = str(documento.des_tipo_documento)+" N° "+ str(documento.num_documento)+"/"+ str(documento.ano_documento)+" - "+ str(documento.txt_interessado)+" - "+ txt_assunto
 
   # unidade de origem
   for unid_origem in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tramitacao.cod_unid_tram_local):
