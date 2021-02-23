@@ -1,0 +1,189 @@
+<dtml-var standard_html_header>
+
+<script src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+    var table = $('.table').DataTable( {
+        "responsive": true,
+        "order": [[ 1, "desc" ], [ 0, "asc" ]],
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );      
+});
+</script>
+
+<dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+  <dtml-call expr="REQUEST.set('nom_comissao', nom_comissao)">
+  <dtml-call expr="REQUEST.set('sgl_comissao', sgl_comissao)">
+</dtml-in>
+
+<div class="row mb-2">
+ <div class="col-12 col-md-10 align-self-center"> 
+    <h1 class="firstHeading"><dtml-var nom_comissao></h1>
+ </div>
+ <div class="col-12 col-md-2 text-left text-md-right">
+   <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])"> 
+      <a class="btn btn-sm btn-primary btn-sm" href="<dtml-var portal_url>/cadastros/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><i class="fas fa-undo"></i> Voltar</a>  
+   <dtml-else>
+      <a class="btn btn-sm btn-primary btn-sm" href="<dtml-var portal_url>/consultas/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><i class="fas fa-undo"></i> Voltar</a>    
+   </dtml-if>
+ </div>
+</div>
+
+<div class="row mb-2">
+ <div class="col-12 col-md-6">
+      <legend>Pareceres Emitidos</legend>
+ </div>
+</div>
+
+<div class="row">
+ <div class="col-12 col-md-6 form-group">
+   <label for="ano_parecer">Selecione o ano:</label>
+   <select class="selectpicker show-tick jumpmenu" id="ano_parecer" name="ano_parecer">
+     <option></option>
+     <dtml-in expr="pareceres(listar='anos', cod_comissao=cod_comissao)">
+        <option value="<dtml-var ACTUAL_URL>?cod_comissao=<dtml-var cod_comissao>&ano=<dtml-var sequence-item>"
+           <dtml-if expr="_.has_key('ano') and _.int(ano)==_.int(_['sequence-item'])"> selected</dtml-if>
+        ><dtml-var sequence-item></option>     
+     </dtml-in>
+   </select>
+ </div>
+</div>
+
+<dtml-if expr="_.has_key('ano')">
+   <table id="pareceres" class="table" style="width:100%">
+      <thead class="table-secondary">
+         <tr>
+           <th>Número</th>
+           <th>Data</th>
+           <th>Matéria</th>
+           <th>Relatoria</th>
+           <th>Conclusão</th>           
+         </tr>
+      </thead>
+      <tbody>
+
+  <dtml-in expr="pareceres(listar='pareceres', cod_comissao=cod_comissao, ano_parecer=ano)" mapping>
+        <tr>
+          <td>
+               <dtml-call expr="REQUEST.set('texto_parecer', _.str(cod_relatoria)+'_parecer.pdf')">
+               <dtml-if "_.hasattr(sapl_documentos.parecer_comissao,texto_parecer)">  
+                 <dtml-let parecer="_.getattr(sapl_documentos.parecer_comissao,texto_parecer).absolute_url">
+                    <a target="_blank" href="<dtml-var parecer>">        
+                       <dtml-var num_parecer>
+                    </a>
+                 </dtml-let>
+               <dtml-else>
+                 <dtml-var num_parecer>               
+               </dtml-if>
+          </td>
+          <td> 
+                <dtml-var dat_parecer>          
+          </td>
+          <td> 
+               <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank"><dtml-var tipo_materia> nº <dtml-var numero_materia>/<dtml-var ano_materia></a> - <dtml-if expr="_.has_key('autoria_materia')"><dtml-var autoria_materia></dtml-if></b> - <dtml-var ementa_materia>
+          </td>          
+          <td>  
+           <dtml-if expr="_.has_key('relator')">
+             <dtml-var relator>
+           </dtml-if>
+          </td>
+          <td> 
+             <dtml-if expr="tip_conclusao=='F'">Favorável</dtml-if><dtml-if expr="tip_conclusao=='C'">Contrário</dtml-if>         
+          </td>          
+        </tr>
+  </dtml-in>
+  
+      </tbody>
+  </table>
+
+    <div id="panelBtn" class="d-print-none" style="margin-bottom: 20px;">
+      <div class="row">
+         <div class="col-sm-12 mt-2"></div>
+      </div>
+    </div>
+  
+</dtml-if>
+
+<script type="text/javascript">
+    function initJumpMenus() {
+        // Turns all <select> elements with the 'jumpmenu' class into jump menus
+        var selectElements = document.getElementsByTagName("select");
+        for( i = 0; i < selectElements.length; i++ ) {
+            // Check for the class and make sure the element has an ID
+            if( selectElements[i].className == "selectpicker show-tick jumpmenu" && document.getElementById(selectElements[i].id) != "" ) {
+                jumpmenu = document.getElementById(selectElements[i].id);
+                jumpmenu.onchange = function() {
+                    if( this.options[this.selectedIndex].value != '' ) {
+                        // Redirect
+                        location.href=this.options[this.selectedIndex].value;
+                    }
+                }
+            }
+        }
+    }
+    window.onload = function() {
+        initJumpMenus();
+    }
+</script>
+
+<dtml-var standard_html_footer>
