@@ -272,14 +272,29 @@
                       </td>
                       <td>
                         <dtml-if expr="dat_encaminha!=None">
-                          <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
-                            <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
-                              <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
-                                <a href="<dtml-var pdf>" target="_blank"><dtml-var expr="des_status"></a>
-                              </dtml-let>
-                            <dtml-else>
-                              <dtml-var expr="des_status">
-                            </dtml-if>
+                         <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+                         <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+                         <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
+                           <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo.tramitacao,pdf_assinado).absolute_url">
+                             <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i><dtml-var expr="des_status"></a>
+                           </dtml-let>
+                         <dtml-elif expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao,tipo_doc='tramitacao_adm',ind_assinado=1)">
+                            <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao,tipo_doc='tramitacao_adm',ind_assinado=1)"> 
+                              <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
+                                 <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
+                                    <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i><dtml-var expr="des_status"></a>
+                                </dtml-let>
+                              <dtml-else>             
+                                 <a href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i><dtml-var expr="des_status"></a>
+                              </dtml-if>
+                            </dtml-in>        
+                         <dtml-elif "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
+                           <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
+                               <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i><dtml-var expr="des_status"></a>
+                           </dtml-let>
+                         <dtml-else>
+                             <dtml-var expr="des_status">                 
+                         </dtml-if> 
                        <dtml-else>
                          <dtml-var expr="des_status">
                        </dtml-if>

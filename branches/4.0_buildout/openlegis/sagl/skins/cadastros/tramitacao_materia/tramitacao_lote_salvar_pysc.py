@@ -47,6 +47,7 @@ for item in cod_materia:
 for dic in lst_novas:
     context.pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia = dic['cod_materia'], cod_status = lst_cod_status)
     context.pysc.envia_tramitacao_autor_pysc(cod_materia = dic['cod_materia'])
+    context.pysc.envia_acomp_materia_pysc(cod_materia = dic['cod_materia'])         
     hdn_url = 'tramitacao_mostrar_proc?hdn_cod_tramitacao=' + str(dic['cod_tramitacao'])+ '&hdn_cod_materia=' + str(dic['cod_materia'])+'&lote=1'
     context.relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao = dic['cod_tramitacao'], hdn_url = hdn_url)
 

@@ -48,7 +48,7 @@
   </dtml-if>
 
   <dtml-call expr="pysc.atualiza_indicador_tramitacao_documento_pysc(cod_documento=hdn_cod_documento, cod_status=lst_cod_status)">
-
+  <dtml-call expr="pysc.envia_acomp_documento_pysc(cod_documento=hdn_cod_documento)">
 <dtml-except>
     <dtml-let mensagem="'Houve um erro no banco de dados.'" tipo_mensagem="'danger'">
         <dtml-var mensagem_emitir>
@@ -68,6 +68,16 @@
       <dtml-call expr="REQUEST.set('existe_arquivo', 0)">        
       <dtml-if expr="(_.int(hdn_file)==1)">
           <dtml-if hdn_cod_tramitacao>
+              <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=hdn_cod_tramitacao,tipo_doc='tramitacao')">
+                <dtml-try>
+                  <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                       cod_assinatura_doc  = cod_assinatura_doc,
+                       codigo              = codigo,
+                       tipo_doc            = tipo_doc)">
+                <dtml-except>
+                  <dtml-call expr="REQUEST.set('erro', 1)">
+                </dtml-try>
+              </dtml-in>           
               <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_tramitacao)+'_tram_anexo1.pdf')">
               <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,id_documento)">
                   <dtml-let documento="_.getattr(sapl_documentos.administrativo.tramitacao,id_documento) ">
@@ -88,18 +98,30 @@
               </dtml-try>      
           </dtml-if>
       </dtml-if>
-
   </dtml-if>
     
-    <dtml-let mensagem="'Tramitação salva com sucesso!'" cod_documento=hdn_cod_documento cod_tramitacao=hdn_cod_tramitacao>
+  <dtml-let mensagem="'Tramitação salva com sucesso!'" cod_documento=hdn_cod_documento cod_tramitacao=hdn_cod_tramitacao>
         <dtml-var tramitacao_mostrar_proc>
         <dtml-call expr="REQUEST.set('hdn_url', 'tramitacao_mostrar_proc?hdn_cod_tramitacao=' + str(hdn_cod_tramitacao) + '&cod_documento=' + str(hdn_cod_documento)+ '&modal=1')">
-        <dtml-call expr="relatorios.pdf_tramitacao_administrativo_preparar_pysc(hdn_cod_tramitacao = hdn_cod_tramitacao, hdn_url = hdn_url)">
-        <dtml-call expr="pysc.envia_acomp_documento_pysc(cod_documento=hdn_cod_documento)">
-    </dtml-let>
+        <dtml-if expr="radTI=='G'">
+           <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=hdn_cod_tramitacao,tipo_doc='tramitacao')">
+             <dtml-try>
+               <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                       cod_assinatura_doc  = cod_assinatura_doc,
+                       codigo              = codigo,
+                       tipo_doc            = tipo_doc)">
+             <dtml-except>
+               <dtml-call expr="REQUEST.set('erro', 1)">
+             </dtml-try>
+           </dtml-in>             
+           <dtml-call expr="relatorios.pdf_tramitacao_administrativo_preparar_pysc(hdn_cod_tramitacao = hdn_cod_tramitacao, hdn_url = hdn_url)">
+        </dtml-if>
+  </dtml-let>
 </dtml-try>
 
+<dtml-if expr="radTI=='S'">
   <dtml-call expr="REQUEST.set('pdf_anexo', _.str(hdn_cod_tramitacao)+'_tram_anexo1.pdf')">
   <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_anexo)">
     <dtml-call expr="cadastros.tramitacao_documento.tramitacao_juntar_pdf(cod_tramitacao=hdn_cod_tramitacao)">
   </dtml-if>
+</dtml-if>
