@@ -11,29 +11,31 @@ import simplejson as json
 
 context.REQUEST.RESPONSE.setHeader("Access-Control-Allow-Origin", "*")
 
-unidades = context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = svalue)
- 
-fields = unidades.data_dictionary().keys()
+unidades = ''
+
+if svalue != '':
+   unidades = context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = svalue)
+   fields = unidades.data_dictionary().keys()
 
 listaDic={}     
 unidadeArray = []
 
 unidades_destino = None
 
-if svalue == '0':
+if svalue == '':
    dic = {}
    dic['name'] = ''
-   dic['id'] = '0'
+   dic['id'] = ''
    unidadeArray.append(dic)
 
 for unidade in unidades:
     unidades_destino = unidade['unid_dest_permitidas_sel']
 
 if unidades_destino != None:
-   if svalue != '0':
+   if svalue != '':
       dic = {}
       dic['name'] = 'Selecione'
-      dic['id'] = '0'
+      dic['id'] = ''
       unidadeArray.append(dic)
    for item in string.split(str(unidades_destino),','):
        unidadeDict = {}
@@ -44,7 +46,7 @@ if unidades_destino != None:
               unidadeArray.append(unidadeDict)
    listaDic.update({'options': unidadeArray})
 else:
-   if svalue != '0':
+   if svalue != '':
       unidadeDict = {}
       unidadeDict['name'] = '* Configure as permissões da unidade da origem !'
       unidadeDict['id'] = ''

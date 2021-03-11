@@ -2,8 +2,6 @@
 
 <link type="text/css" href="<dtml-var portal_url>/css/dataTables.checkboxes.css" rel="stylesheet" />
 <script type="text/javascript" src="<dtml-var portal_url>/js/dataTables.checkboxes.min.js"></script>
-<script type="text/javascript" src="javascript/data_validar.js"></script>
-
 <script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
 <script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
 
@@ -58,75 +56,10 @@ $(document).ready(function() {
              $('<input>')
                 .attr('type', 'hidden')
                 .attr('name', 'check_tram')
+                .attr('required', 'required')
                 .val(rowId)
          );
       });
-
-
-      if (form.txt_dat_tramitacao.value == "") {
-         $('#txt_dat_tramitacao').addClass('is-invalid');         
-         alert("A data de tramitação deve ser preenchida!");
-         form.txt_dat_tramitacao.focus();
-         return false;
-window.location.reload();
-      }
-
-
-      if (form.lst_cod_unid_tram_local.selectedIndex == 0 ){
-          $('#lst_cod_unid_tram_local').addClass('is-invalid');               
-          alert("A unidade de origem deve ser selecionada!");
-          form.lst_cod_unid_tram_local.focus();
-          return false;
-      }
-      
-      if (form.lst_cod_unid_tram_dest.selectedIndex == 0){
-          $('#lst_cod_unid_tram_dest').addClass('is-invalid');                     
-          alert("A unidade de destino deve ser selecionada!");
-          form.lst_cod_unid_tram_dest.focus();
-          return false;
-      }
-
-      if (form.lst_cod_status.selectedIndex == 0){
-          $('#lst_cod_status').addClass('is-invalid');                           
-          alert("O status da tramitação deve ser selecionado!");
-          form.lst_cod_status.focus();
-          return false;
-      }
-
-      if (form.txt_dat_tramitacao.value!="") {
-         if (!IsValidDate(form.txt_dat_tramitacao.value)){
-           alert("Digite uma data de tramitação válida!");
-           form.txt_dat_tramitacao.focus();
-           form.txt_dat_tramitacao.select();
-           return false;
-         }
-      }
-
-     if (!(form.rad_ind_urgencia[0].checked || form.rad_ind_urgencia[1].checked)){
-         alert("O índice de urgência deve ser preenchido!");
-         form.rad_ind_urgencia[0].focus();
-         return false;
-      }
-
-      var dat_tramitacao = form.hdn_dat_tramitacao.value.substring(6,10) + form.hdn_dat_tramitacao.value.substring(3,5) + form.hdn_dat_tramitacao.value.substring(0,2);
-
-      if (form.txt_dat_fim_prazo.value!="") {
-         if (!IsValidDate(form.txt_dat_fim_prazo.value)){
-           alert("Digite uma data de fim de prazo válida!");
-           form.txt_dat_fim_prazo.focus();
-           form.txt_dat_fim_prazo.select();
-           return false;
-         }
-
-         var dat_fim_prazo = form.txt_dat_fim_prazo.value.substring(6,10) + form.txt_dat_fim_prazo.value.substring(3,5) + form.txt_dat_fim_prazo.value.substring(0,2);
-
-         if (dat_fim_prazo < dat_tramitacao) {
-           alert("A data de fim de prazo deve ser maior ou igual à data da tramitação!");
-           form.txt_dat_fim_prazo.focus();
-           form.txt_dat_fim_prazo.select();
-           return false;
-         }
-      }
 
       var checkinputs = document.querySelectorAll('input[type=checkbox]'); 
       var empty = [].filter.call( checkinputs, function( el ) {
@@ -134,12 +67,18 @@ window.location.reload();
       })
 
       if (checkinputs.length == empty.length) {
-          alert("Selecione ao menos uma matéria!");
+          $.showAlert({title: "Mensagem do Sistema", body: "Nenhuma matéria foi selecionada para tramitação. Informe as matérias que deseja tramitar e tente novamente."});
           return false;
       }
 
-   });      
+      $("#tramitar", this)
+        .html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Tramitando Matérias...')
+        .attr('disabled', 'disabled');
+      return true;
+      
+   });        
 });
+
 </script>
 
 <dtml-if hdn_cod_unidade>
@@ -195,24 +134,9 @@ $(document).ready(function(){
             }
         });
     });
-
-    $('.submit').click(function () {
-        $(this).parent().prepend('<img src="data:image/gif;base64,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" />');
-        $(this).hide();
-    });
-        $(document).ready(function () { 
-            $("button").click(function () { 
-                location.reload(true); 
-                return false;                
-            }); 
-        });     
 });
 </script>
 </dtml-if>
-
-    <script type="text/javascript"> 
-
-    </script> 
 
 <h1 class="firstHeading">Tramitação de Matérias Legislativas</h1>
 
@@ -223,7 +147,7 @@ $(document).ready(function(){
 
 <dtml-call expr="REQUEST.set('contador', 0)">
 
- <form name="tramitacao_form" id="tramitacao_form" method="POST" action="tramitacao_lote_salvar_pysc">
+ <form name="tramitacao_form" id="tramitacao_form" method="post" action="tramitacao_lote_salvar_pysc" class="was-validated">
 
   <label class="d-block font-weight-bold">1. Origem da tramitação</label>  
   <div class="form-row">
@@ -237,7 +161,7 @@ $(document).ready(function(){
       
     <div class="col-12 col-md-9 mb-3">  
     <label class="d-block required">Unidade de Origem</label> 
-          <select class="custom-select jumpmenu" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local">
+         <select class="custom-select jumpmenu" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required >
              <option value="<dtml-var ACTUAL_URL>"></option>
               <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tramitacao, ind_leg=1)">
@@ -245,7 +169,10 @@ $(document).ready(function(){
                     
                 </dtml-in>
                </dtml-in>
-          </select>
+         </select>
+         <div class="invalid-feedback">
+           Este campo é obrigatório!
+         </div>            
       </div>
    </div>
 
@@ -282,15 +209,15 @@ $(document).ready(function(){
           <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
             <option></option>
           </select>
-      <div class="invalid-feedback">
-        Este campo é obrigatório!
-      </div>          
+          <div class="invalid-feedback">
+            Este campo é obrigatório!
+          </div>          
     </div>
     <div class="col-12 col-md-3 mb-3">
       <label for="lst_cod_usuario_dest">Usuário de Destino</label>   
       <select class="custom-select" name="lst_cod_usuario_dest" id="lst_cod_usuario_dest">
          <option></option>
-      </select>    
+      </select>
     </div>    
   </div> 
  
@@ -312,7 +239,10 @@ $(document).ready(function(){
       <label for="lst_cod_status" class="required">Status</label>
       <select class="custom-select" title="Selecione" data-live-search="true" id="lst_cod_status" name="lst_cod_status" data-size="6" required>
          <option value="0"></option>
-      </select>     
+      </select>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>         
     </div>  
     <div class="col-12 col-md-3 mb-3">
       <label class="d-block required">Urgente ?</label>
@@ -324,11 +254,6 @@ $(document).ready(function(){
          </div>
       </dtml-in>    
     </div>     
-  </div> 
-
-  <div class="form-row">
-
-   
   </div> 
 
   <div class="form-row">
@@ -404,11 +329,7 @@ $(document).ready(function(){
  </table>
  <div class="row">
    <div class="col-6 text-left mt-2">
-      <input class="btn btn-primary submit" type="submit" value="Tramitar Matérias" />
-      <button class="btn btn-secondary"/>Recarregar</button>   
-   </div>
-   <div class="col-6 text-right mt-2">
-
+    <button type="submit" id="tramitar" class="btn btn-primary">Tramitar Matérias</button>
    </div>
  </div>
    <div class="row">
