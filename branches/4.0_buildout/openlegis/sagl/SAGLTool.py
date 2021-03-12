@@ -1606,33 +1606,42 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                outros = " e outro"
             elif len(qtde_assinaturas) > 2:
                outros = " e outros"
-          for tipo_proposicao in self.zsql.tipo_proposicao_obter_zsql(tip_proposicao=proposicao.tip_proposicao):
-            if tipo_proposicao.ind_mat_ou_doc == "M":
+
+          if proposicao.ind_mat_ou_doc == "M":
+            for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
+              texto = str(materia.des_tipo_materia.decode('utf-8').upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+              storage_path = self.sapl_documentos.materia
+              nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
+          elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao!='Emenda' and proposicao.des_tipo_proposicao!='Mensagem Aditiva' and proposicao.des_tipo_proposicao!='Substitutivo' and proposicao.des_tipo_proposicao!='Parecer' and proposicao.des_tipo_proposicao!='Parecer de Comissão'):
+            for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=proposicao.cod_mat_ou_doc):
+              for materia in self.zsql.materia_obter_zsql(cod_materia=documento.cod_materia):
+                  materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+              texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' AO ' + str(materia)
+              storage_path = self.sapl_documentos.materia
+              nom_pdf_saida = str(documento.cod_documento) + ".pdf"
+          elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao=='Emenda' or proposicao.des_tipo_proposicao=='Mensagem Aditiva'):
+            for emenda in self.zsql.emenda_obter_zsql(cod_emenda=proposicao.cod_emenda):
+              for materia in self.zsql.materia_obter_zsql(cod_materia=emenda.cod_materia):
+                  materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+              texto = 'EMENDA ' + str(emenda.des_tipo_emenda.decode('utf-8').upper())+' Nº '+ str(emenda.num_emenda) + ' AO ' + str(materia)
+              storage_path = self.sapl_documentos.emenda
+              nom_pdf_saida = str(emenda.cod_emenda) + "_emenda.pdf"
+          elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao=='Substitutivo'):
+            for substitutivo in self.zsql.substitutivo_obter_zsql(cod_substitutivo=proposicao.cod_substitutivo):
+              for materia in self.zsql.materia_obter_zsql(cod_materia=substitutivo.cod_materia):
+                  materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+              texto = 'SUBSTITUTIVO' + ' Nº '+ str(substitutivo.num_substitutivo) + ' AO ' + str(materia)
+              storage_path = self.sapl_documentos.substitutivo
+              nom_pdf_saida = str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
+          elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao=='Parecer' or proposicao.des_tipo_proposicao=='Parecer de Comissão'):
+            for relatoria in self.zsql.relatoria_obter_zsql(cod_relatoria=proposicao.cod_parecer, ind_excluido=0): 
+              for comissao in self.zsql.comissao_obter_zsql(cod_comissao=relatoria.cod_comissao):
+                  sgl_comissao = comissao.sgl_comissao
               for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
-                texto = str(materia.des_tipo_materia.decode('utf-8').upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-                storage_path = self.sapl_documentos.materia
-                nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
-            elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao!='Emenda' and tipo_proposicao.des_tipo_proposicao!='Mensagem Aditiva' and tipo_proposicao.des_tipo_proposicao!='Substitutivo'):
-              for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=proposicao.cod_mat_ou_doc):
-                for materia in self.zsql.materia_obter_zsql(cod_materia=documento.cod_materia):
-                    materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-                texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' - ' + str(materia)
-                storage_path = self.sapl_documentos.materia
-                nom_pdf_saida = str(documento.cod_documento) + ".pdf"
-            elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao=='Emenda' or tipo_proposicao.des_tipo_proposicao=='Mensagem Aditiva'):
-              for emenda in self.zsql.emenda_obter_zsql(cod_emenda=proposicao.cod_emenda):
-                for materia in self.zsql.materia_obter_zsql(cod_materia=emenda.cod_materia):
-                    materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-                texto = 'EMENDA ' + str(emenda.des_tipo_emenda.decode('utf-8').upper())+' Nº '+ str(emenda.num_emenda) + ' - ' + str(materia)
-                storage_path = self.sapl_documentos.emenda
-                nom_pdf_saida = str(emenda.cod_emenda) + "_emenda.pdf"
-            elif tipo_proposicao.ind_mat_ou_doc=='D' and (tipo_proposicao.des_tipo_proposicao=='Substitutivo'):
-              for substitutivo in self.zsql.substitutivo_obter_zsql(cod_substitutivo=proposicao.cod_substitutivo):
-                for materia in self.zsql.materia_obter_zsql(cod_materia=substitutivo.cod_materia):
-                    materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-                texto = 'SUBSTITUTIVO' + ' Nº '+ str(substitutivo.num_substitutivo) + ' - ' + str(materia)
-                storage_path = self.sapl_documentos.substitutivo
-                nom_pdf_saida = str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
+                  materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+              texto = 'PARECER ' + sgl_comissao + ' Nº '+ str(relatoria.num_parecer) + '/' +str(relatoria.ano_parecer) + ' AO ' + str(materia)
+              storage_path = self.sapl_documentos.parecer_comissao   
+              nom_pdf_saida = str(relatoria.cod_relatoria) + "_parecer.pdf"                      
 
         mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros
         mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
@@ -1728,8 +1737,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         return restpki_client
 
     def pades_signature(self, codigo, tipo_doc, cod_usuario):
-        for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
+#        qtde_assinaturas = []
+#        for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc):
+#            qtde_assinaturas.append(item.cod_usuario)     
 
+        for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
             if tipo_doc == 'proposicao':
                pdf_location = storage.pdf_location
                pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
@@ -1785,6 +1797,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
         signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
         if tipo_doc == 'peticao' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm' or tipo_doc == 'norma':
+#        if len(qtde_assinaturas) <= 3:
            signature_starter.visual_representation = ({
                'text': {
                    # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
@@ -1812,6 +1825,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                'position': self.get_visual_representation_position(2)
            })
         else:
+#        elif len(qtde_assinaturas) >= 3:
            signature_starter.visual_representation = ({
                'text': {
                    # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's

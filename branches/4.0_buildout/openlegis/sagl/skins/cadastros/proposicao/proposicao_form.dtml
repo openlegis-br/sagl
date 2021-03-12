@@ -638,7 +638,13 @@ $(document).ready(function(){
       <dtml-unless dat_devolucao>
          <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
          <dtml-if expr="_.hasattr(sapl_documentos.proposicao,id_documento_assinado)">
-           <input class="btn btn-primary" type="button" value="Incorporar" onClick="proposicao_incorporar(document.proposicao_form)" />
+            <dtml-if expr="ind_mat_ou_doc=='D' and (des_tipo_proposicao=='Parecer' or des_tipo_proposicao=='Parecer de Comissão')"> 
+               <dtml-let cod_doc="pysc.proposicao_calcular_checksum_pysc(cod_proposicao)">            
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#iFrameModal" data-title="Parecer de Comissão" data-src="<dtml-var portal_url>/cadastros/recebimento_proposicao/proposicao_buscar_proc?txtCodDoc=<dtml-var cod_doc missing>&modal=1">Incorporar Parecer</button>
+               </dtml-let>
+            <dtml-else>
+               <input class="btn btn-primary" type="button" value="Incorporar" onClick="proposicao_incorporar(document.proposicao_form)" />
+            </dtml-if>
          </dtml-if>
          <input class="btn btn-danger" type="button" value="Devolver" onClick="proposicao_devolver(document.proposicao_form)" />
       </dtml-unless> 
