@@ -1607,6 +1607,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             elif len(qtde_assinaturas) > 2:
                outros = " e outros"
 
+          tipo_proposicao = proposicao.des_tipo_proposicao
           if proposicao.ind_mat_ou_doc == "M":
             for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
               texto = str(materia.des_tipo_materia.decode('utf-8').upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
@@ -1709,7 +1710,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for page in range(existing_pdf.getNumPages()):
             pdf_page = existing_pdf.getPage(page)
             # numeração documento na primeira pagina
-            if page == 0:
+            if tipo_proposicao != 'Parecer' and tipo_proposicao != 'Parecer de Comissão' and page == 0:
                pdf_page.mergePage(new_pdf2.getPage(0))
             # qrcode e margem direita em todas as páginas
             for wm in range(new_pdf.getNumPages()):
