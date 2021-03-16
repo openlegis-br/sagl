@@ -17,13 +17,14 @@ REQUEST = context.REQUEST
 RESPONSE = REQUEST.RESPONSE
 session = REQUEST.SESSION
 
+
 for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao, ind_mat_ou_doc='M'):
     cod_proposicao = proposicao.cod_proposicao
     des_tipo_proposicao = proposicao.des_tipo_proposicao    
     tip_materia = proposicao.tip_mat_ou_doc
     ano_materia = DateTime().strftime("%Y")
     dat_apresentacao = DateTime().strftime("%Y-%m-%d")
-    txt_ementa = proposicao.txt_descricao
+    txt_ementa = proposicao.txt_descricao.encode('utf-8')
     txt_observacao = proposicao.txt_observacao
     cod_autor = proposicao.cod_autor
     if proposicao.tip_mat_ou_doc == 'Projeto de Lei Complementar':
@@ -38,9 +39,27 @@ ano_ident_basica = ano_materia, ind_excluido = 0):
         num_ident_basica = numero.novo_numero
 
 
-def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao):
+def criar_protocolo(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao):
 
-    context.zsql.materia_incluir_zsql(tip_id_basica = tip_materia, num_ident_basica = num_ident_basica, ano_ident_basica = ano_materia, dat_apresentacao = dat_apresentacao, tip_apresentacao = 'E', tip_quorum = tip_quorum, ind_tramitacao = 1, ind_complementar = ind_complementar, cod_regime_tramitacao = 1, txt_ementa = txt_ementa, txt_observacao = txt_observacao)
+    if context.sapl_documentos.props_sagl.numero_protocolo_anual == 1:
+        for numero in context.zsql.protocolo_numero_obter_zsql(ano_protocolo = DateTime().strftime('%Y')):
+            hdn_num_protocolo = int(numero.novo_numero)
+    else:
+        for numero in context.zsql.protocolo_codigo_obter_zsql():
+            hdn_num_protocolo =  int(numero.novo_codigo)
+    txt_user = REQUEST['AUTHENTICATED_USER'].getUserName()
+    context.zsql.protocolo_legislativo_incluir_zsql(num_protocolo = hdn_num_protocolo, tip_protocolo = 0, tip_processo = 1, tip_materia=tip_materia, tip_natureza_materia = 1, txt_assunto_ementa = txt_ementa, cod_autor = cod_autor, txt_user_protocolo = txt_user)
+    for codigo in context.zsql.protocolo_incluido_codigo_obter_zsql():
+        cod_prot = int(codigo.cod_protocolo)
+        id_documento = str(cod_prot)+'_protocolo.pdf'
+
+    return criar_materia(hdn_num_protocolo, tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao)
+
+
+
+def criar_materia(hdn_num_protocolo, tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao):
+
+    context.zsql.materia_incluir_zsql(tip_id_basica = tip_materia, num_ident_basica = num_ident_basica, ano_ident_basica = ano_materia, dat_apresentacao = dat_apresentacao, num_protocolo = hdn_num_protocolo, tip_apresentacao = 'E', tip_quorum = tip_quorum, ind_tramitacao = 1, ind_complementar = ind_complementar, cod_regime_tramitacao = 1, txt_ementa = txt_ementa, txt_observacao = txt_observacao)
     
     for codigo in context.zsql.materia_incluida_codigo_obter_zsql():
         cod_materia = int(codigo.cod_materia)
@@ -54,7 +73,8 @@ def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, 
        context.sapl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_materia]))
        
     return inserir_autoria(cod_materia, cod_autor, cod_proposicao)
-    
+
+
 
 def inserir_autoria(cod_materia, cod_autor, cod_proposicao):
 
@@ -67,6 +87,8 @@ def inserir_autoria(cod_materia, cod_autor, cod_proposicao):
                    context.zsql.autoria_incluir_zsql(cod_autor = autor.cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 0)
     
     return tramitar_materia(cod_materia, cod_proposicao)
+
+
 
 def tramitar_materia(cod_materia, cod_proposicao):
 
@@ -90,8 +112,8 @@ def tramitar_materia(cod_materia, cod_proposicao):
            cod_usuario_corrente = 0
            
     hr_tramitacao = DateTime().strftime('%d/%m/%Y às %H:%M')
-    txt_tramitacao = 'Matéria incorporada em ' + hr_tramitacao
-#    hdn_url = context.portal_url() + '/cadastros/materia/materia_mostrar_proc?cod_materia=' + str(cod_materia)    
+    txt_tramitacao = 'Matéria protocolada em ' + hr_tramitacao
+#    hdn_url = context.portal_url() + '/cadastros/materia/materia_mostrar_proc?cod_materia=' + str(cod_materia)+ '&modal=1'   
     hdn_url = context.portal_url() + '/cadastros/recebimento_proposicao/recebimento_proposicao_index_html#protocolo'
     
     if cod_unid_tram_local != None and cod_unid_tram_dest != None and cod_status != None:
@@ -110,7 +132,7 @@ def tramitar_materia(cod_materia, cod_proposicao):
     return context.relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=cod_tramitacao, hdn_url=hdn_url)
 
 
-return criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao)
+return criar_protocolo(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao)
 
 
     

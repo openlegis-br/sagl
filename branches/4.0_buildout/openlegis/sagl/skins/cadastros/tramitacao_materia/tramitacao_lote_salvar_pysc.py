@@ -42,7 +42,7 @@ if txt_dat_fim_prazo==None or txt_dat_fim_prazo=='':
        else:
           txt_dat_fim_prazo = ''
 elif txt_dat_fim_prazo != '':
-   txt_dat_fim_prazo = DateTime(txt_dat_fim_prazo).strftime('%Y/%m/%d')
+   txt_dat_fim_prazo = context.pysc.data_converter_pysc(data=txt_dat_fim_prazo)
 
 for item in cod_materia:
     context.zsql.tramitacao_incluir_zsql(cod_materia = item, dat_tramitacao = context.pysc.data_converter_pysc(data=txt_dat_tramitacao), cod_unid_tram_local = unidade_local, cod_usuario_local = hdn_cod_usuario_local, cod_unid_tram_dest = lst_cod_unid_tram_dest, cod_usuario_dest = lst_cod_usuario_dest, dat_encaminha = hdn_dat_encaminha, cod_status = lst_cod_status, ind_urgencia = rad_ind_urgencia, txt_tramitacao = txa_txt_tramitacao, dat_fim_prazo = txt_dat_fim_prazo, ind_ult_tramitacao = 1)

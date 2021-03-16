@@ -1606,11 +1606,14 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                outros = " e outro"
             elif len(qtde_assinaturas) > 2:
                outros = " e outros"
-
+          info_protocolo = ' - '
           tipo_proposicao = proposicao.des_tipo_proposicao
           if proposicao.ind_mat_ou_doc == "M":
             for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
-              texto = str(materia.des_tipo_materia.decode('utf-8').upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+              if materia.num_protocolo != None and materia.num_protocolo != '':
+                 for protocolo in self.zsql.protocolo_obter_zsql(num_protocolo=materia.num_protocolo, ano_protocolo=materia.ano_ident_basica):
+                     info_protocolo = ' - Protocolo nº ' + str(protocolo.num_protocolo) + '/' + str(protocolo.ano_protocolo) + ' recebido em ' + self.pysc.iso_to_port_pysc(protocolo.dat_protocolo) + ' às ' + protocolo.hor_protocolo[0:2] + ':' + protocolo.hor_protocolo[3:5] + ' - '
+              texto = str(materia.sgl_tipo_materia.decode('utf-8').upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
               storage_path = self.sapl_documentos.materia
               nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
           elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao!='Emenda' and proposicao.des_tipo_proposicao!='Mensagem Aditiva' and proposicao.des_tipo_proposicao!='Substitutivo' and proposicao.des_tipo_proposicao!='Parecer' and proposicao.des_tipo_proposicao!='Parecer de Comissão'):
@@ -1644,7 +1647,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
               storage_path = self.sapl_documentos.parecer_comissao   
               nom_pdf_saida = str(relatoria.cod_relatoria) + "_parecer.pdf"                      
 
-        mensagem1 = texto + ' - Este documento é cópia do original assinado digitalmente por ' + nom_autor + outros
+        mensagem1 = texto + info_protocolo + 'Esta é uma cópia do documento assinado por ' + nom_autor + outros
         mensagem2 = 'Para conferir o original, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
