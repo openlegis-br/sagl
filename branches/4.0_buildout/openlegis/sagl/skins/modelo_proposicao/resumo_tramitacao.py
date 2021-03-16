@@ -46,7 +46,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
   
  dat_vencimento = " "
  if materia.dat_fim_prazo != None:
-   dat_vencimento = context.pysc.iso_to_port_pysc(materia.dat_fim_prazo)
+   dat_vencimento = materia.dat_fim_prazo
  num_proposicao = str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica)
  des_tipo_materia = materia.des_tipo_materia
  txt_ementa = materia.txt_ementa
