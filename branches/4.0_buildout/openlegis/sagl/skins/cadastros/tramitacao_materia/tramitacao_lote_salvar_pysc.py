@@ -18,6 +18,12 @@ if v.isdigit():
 else:
    cod_materia = check_tram
 
+cod_materia = [
+   e
+   for i, e in enumerate(cod_materia)
+   if cod_materia.index(e) == i
+]
+
 lst_ultimas=[]
 for item in cod_materia:
     dic_ultimas = {}
