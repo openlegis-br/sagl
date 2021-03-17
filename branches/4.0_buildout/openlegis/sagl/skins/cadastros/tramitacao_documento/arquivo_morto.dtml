@@ -1,12 +1,16 @@
 <dtml-var standard_html_header>
 
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
 <script>
 
 $(document).ready(function() {
-
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm' );    //Formatação com Hora    
     $('#inbox').DataTable( {
         "responsive": true,
-        "bStateSave": true,        
+        "bStateSave": true,    
+        "order": [[2, "desc"]],                                      
         "fnStateSave": function (oSettings, oData) {
             localStorage.setItem('raDataTable', JSON.stringify(oData));
         },
@@ -70,8 +74,17 @@ $(document).ready(function() {
   <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
 </dtml-in>
 
-<h1 class="firstHeading">Processos Arquivados</h1>
+<h1 class="firstHeading">Tramitações de Processos Administrativos</h1>
 
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+   <a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/primeira_tramitacao_lote_form">Primeira Tramitação</a>
+</dtml-if>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/tramitacao_lote_form">Caixa de Entrada</a>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/rascunhos_html">Rascunhos</a>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/itens_enviados_html">Enviadas</a>
+<a class="btn btn-sm btn-primary mb-3 disabled" href="<dtml-var portal_url>/cadastros/tramitacao_documento/arquivo_morto">Arquivo</a>
+
+<p class="text-muted font-weight-bold">Processos arquivados</p>
 
            <table class="table" id="inbox">
              <thead class="table-secondary">
