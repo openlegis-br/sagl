@@ -61,7 +61,7 @@ def tramitar_materia(cod_materia):
     for unidade in context.zsql.unidade_tramitacao_obter_zsql(ind_excluido=0):
         if 'Protocolo' in unidade.nom_unidade_join:
             cod_unid_tram_local =  int(unidade.cod_unid_tramitacao)
-        if 'Assessoria Legislativa' in unidade.nom_unidade_join:
+        if 'Departamento Legislativo' in unidade.nom_unidade_join:
             cod_unid_tram_dest = int(unidade.cod_unid_tramitacao)
             
     for status in context.zsql.status_tramitacao_obter_zsql(sgl_status='PRT'):
