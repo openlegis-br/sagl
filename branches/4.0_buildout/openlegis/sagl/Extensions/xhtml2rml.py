@@ -34,6 +34,7 @@ def xhtml2rml(self,chaineHtml,chaineStyle):
  "igrave":"ì", "Igrave":"Ì", "iacute":"í", "Iacute":"Í", "icirc":"î", "Icirc":"Î", "iuml":"ï", "Iuml":"Ï",\
  "ograve":"ò", "Ograve":"Ò", "oacute":"ó", "Oacute":"Ó", "ocirc":"ô", "Ocirc":"Ô", "ouml":"ö", "Ouml":"Ö",\
  "Otilde":"Õ", "otilde":"õ", "ugrave":"ù", "Ugrave":"Ù", "uacute":"ú",\
+ "ordm":"º", "ordf":"ª",\ 
  "Uacute":"Ú", "ucirc":"û", "Ucirc":"Û", "uuml":"ü", "Uuml":"Ü", "ntilde":"ñ", "Ntilde":"Ñ", "ccedil":"ç",\
  "Ccedil":"Ç", "yacute":"ý", "Yacute":"Ý", "szlig":"ß", "laquo":"«", "raqo":"»", "para":"§", "copy":"©",\
  "nbsp":" ", "quot": "\"", "amp":"&", "lt":"<", "gt":">" }
