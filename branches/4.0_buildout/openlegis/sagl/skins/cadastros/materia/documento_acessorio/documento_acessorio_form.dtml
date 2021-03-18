@@ -33,6 +33,13 @@
           form.txt_nom_documento.focus();
           return false;
       }
+      var field = form.txt_nom_documento.value; 
+      var mxlen = 50;
+      if(field.length > mxlen) { 
+         alert("A descrição deve conter no máximo 50 caracteres!");
+         form.txt_nom_documento.focus();         
+         return false;
+      }
       if (form.txt_nom_autor_documento.value==""){
          $('#txt_nom_autor_documento').addClass('is-invalid');
          alert("A nome do autor do documento deve ser informado!");
@@ -53,7 +60,7 @@
   function texto_integral_excluir(){
 
        if (confirm("Deseja realmente excluir o PDF do texto original?")) {
-          location.href="texto_documento_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>&modal=1";
+          location.href='texto_documento_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>&modal=1';
        }
        return;
   }
@@ -104,7 +111,7 @@
   function documento_acessorio_excluir(){
        
        if (confirm("Deseja realmente excluir o documento acessório?")) {          
-          location.href="documento_acessorio_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>&nom_documento=<dtml-var nom_documento missing>&modal=1";
+          location.href='documento_acessorio_excluir_proc?cod_documento=<dtml-var cod_documento missing>&cod_materia=<dtml-var cod_materia missing>&modal=1';
        }
   } 
 
@@ -128,6 +135,16 @@ $(document).ready(function () {
     <dtml-call expr="REQUEST.set('nom_autor_documento',nom_autor)">
   </dtml-in>
 </dtml-if>
+
+<dtml-if expr="not _.has_key('cod_documento') and _.has_key('num_protocolo')">
+  <dtml-call expr="REQUEST.set('ano', _.DateTime.year(_.DateTime()))">          
+  <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=num_protocolo, ano_protocolo=ano)">
+     <dtml-if cod_protocolo>
+        <dtml-call expr="REQUEST.set('nom_documento', txt_assunto_ementa)">
+        <dtml-call expr="REQUEST.set('txt_ementa', txt_assunto_ementa)">                   
+     </dtml-if>
+  </dtml-in>             
+</dtml-if> 
 
 <form id="documento_acessorio_form" name="documento_acessorio_form" method="post" action="documento_acessorio_salvar_proc" enctype="multipart/form-data">
 
@@ -164,8 +181,11 @@ $(document).ready(function () {
            </div> 
      </div>
      <div class="col-12 col-sm-6 mb-3">
-          <label for="txt_nom_documento" class="required">Descrição</label>
-          <input class="form-control" type="text" id="txt_nom_documento" name="txt_nom_documento" value="<dtml-var nom_documento missing null="">" maxlength="50" required />
+          <label for="txt_nom_documento" class="required">Descrição</label>        
+          <input class="form-control" type="text" id="txt_nom_documento" name="txt_nom_documento" value="<dtml-var nom_documento html_quote missing null="">" maxlength="50" required />
+          <small id="passwordHelpInline" class="text-muted">
+            Máximo 50 caracteres.
+          </small>          
           <div class="invalid-feedback">
              Este campo é obrigatório!
           </div> 
