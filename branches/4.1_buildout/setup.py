@@ -24,7 +24,7 @@ setup(name='openlegis.sagl',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'Pillow == 6.2.2',
+          'Pillow == 8.1.1',
           'Products.CMFCore',
           'Products.CMFDefault',
           'Products.CMFFormController',
