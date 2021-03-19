@@ -11,7 +11,7 @@ $(document).ready(function() {
     $('table.display').DataTable( {
         "bFilter": true,
         "responsive": true,
-        "order": [[4, "asc"]],
+        "order": [[1, "asc"]],
         "columnDefs": [
            {
               'targets': 0,
@@ -48,7 +48,7 @@ $(document).ready(function() {
  
     $('#lst_cod_unid_tram_local').on('change', function(){
         var text = $("#lst_cod_unid_tram_local option:selected").text();       
-        table.column([3]).search(text).draw();  
+        table.column([4]).search(text).draw();  
     });
     
    $('#tramitacao_form').on('submit', function(e){
@@ -73,7 +73,7 @@ $(document).ready(function() {
       })
 
       if (checkinputs.length == empty.length) {
-          $.showAlert({title: "Mensagem do Sistema", body: "Nenhum processo foi selecionado para tramitação. Informe os processos que deseja tramitar e tente novamente."});
+          $.showAlert({title: "Mensagem do Sistema", body: "Nenhum processo foi selecionado para tramitação. Marque os processos que deseja tramitar e tente novamente."});
           return false;
       }
 
@@ -154,15 +154,124 @@ $(document).ready(function(){
 <a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/itens_enviados_html">Enviadas</a>
 <a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/arquivo_morto">Arquivo</a>
 
-<p class="text-muted font-weight-bold">Caixa de Entrada (tramitação em lote e individual)</p>
+<p class="text-muted font-weight-bold">Caixa de Entrada</p>
 
 <dtml-call expr="REQUEST.set('contador', 0)">
 
 <dtml-in expr="caixa_entrada_pysc(cod_usuario=cod_usuario_corrente)">
 <dtml-if sequence-start>
- <label class="d-block font-weight-bold">1. Preencha os dados da nova tramitação</label>  
- <form name="tramitacao_form" id="tramitacao_form" method="post" action="tramitacao_lote_salvar_proc" class="was-validated">
-   <div class="form-row">
+
+ <form name="tramitacao_form" id="tramitacao_form" method="post" action="tramitacao_lote_salvar_pysc" class="was-validated">
+   <div class="form-row mb-3">
+    <div class="col-12 col-md-3 mb-3">
+      <label for="txt_nom_usuario"class="d-block">Usuário Local</label>
+      <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">      
+         <input class="form-control" type="text" id="txt_nom_usuario" value="<dtml-var nom_completo>" disabled> 
+          <input type="hidden" name="hdn_cod_usuario_local" id="hdn_cod_usuario_local" value="<dtml-var cod_usuario_corrente>">     
+     </dtml-in>
+    </div>     
+    <div class="col-12 col-md-9 mb-3">
+      <label for="lst_cod_unid_tram_local" class="required">Unidade Atual</label>
+          <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
+             <option value="">Selecione</option>
+              <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
+                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tramitacao, ind_adm=1)">
+                  <dtml-if expr="not dat_extincao">
+                    <option value="<dtml-var cod_unid_tramitacao>"><dtml-var nom_unidade_join></option>
+                  </dtml-if>
+                </dtml-in>
+               </dtml-in>
+          </select> 
+       <div class="invalid-feedback">
+          Este campo é obrigatório!
+       </div>
+    </div>    
+  </div> 
+ 
+  <input type="hidden" name="txt_tamanho" value="<dtml-var sequence-length>">
+  <input type="hidden" name="txt_check" value="">
+
+  <div class="table-responsive">
+  <table class="table display" width="100%" id="tramitacao">
+    <thead class="table-secondary">
+      <tr>
+          <th width="5%"></th>
+          <th>Envio</th>                    
+          <th>Identificação do Processo</th>
+          <th width="15%">Origem</th>
+          <th width="15%">Destino</th>          
+          <th>Status</th>
+          <th data-col="0"></th>          
+     </tr>
+    </thead>
+    <tbody>
+ </dtml-if sequence-start>
+
+ <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_tramitacao=_['sequence-item'], ind_excluido=0)">
+  <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+       <tr>
+          <td>
+              <dtml-var cod_documento>
+          <td>
+            <dtml-var dat_tramitacao>
+          </td>                
+          </td>
+          <td>
+            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">        
+              <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+            <dtml-else>
+              <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+            </dtml-if>
+              <b><dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></b></a> - 
+              <b><dtml-var txt_interessado></b>
+              - <dtml-var txt_assunto>
+          </td>
+          <td>
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local, ind_adm=1)">
+              <dtml-var nom_unidade_join>
+          </dtml-in>          
+          </td>
+          <td>
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest, ind_adm=1)">
+              <dtml-var nom_unidade_join>
+          </dtml-in>          
+          </td>              
+          <td>
+            <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+            <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
+              <dtml-let arquivo_pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
+                 <a href="<dtml-var arquivo_pdf>" target="_blank"><dtml-var expr="des_status"></a>
+              </dtml-let>
+            <dtml-else>
+               <dtml-var expr="des_status">
+            </dtml-if>
+          </td>      
+          <td>
+            <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Tramitação Individual" data-src="tramitacao_form?hdn_cod_documento=<dtml-var cod_documento>&modal=1" class="btn btn-sm btn-link"><i class="fas fa-external-link-alt"></i><span>Tramitar</span></a>             
+          </td>          
+       </tr>
+  </dtml-in>
+ </dtml-in>
+ <dtml-if sequence-end>
+   </tbody> 
+ </table>
+ </div>
+
+<div id="accordion" class="tram_lote mt-4">
+    <div class="card mb-4">
+      <div class="card-header" id="headingOne">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseTram" aria-expanded="false" aria-controls="collapseTram"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Tramitação em Lote</span>
+          </a>
+        </p>
+       </div>
+
+ <div id="collapseTram" class="collapse" aria-labelledby="headingOne" data-parent=".tram_lote">
+ <div class="card-body"> 
+
+  <div class="form-row">
     <div class="col-12 col-md-3 mb-3">
        <label for="txt_dat_tramitacao" class="required">Data da Tramitação</label>
        <dtml-unless dat_tramitacao>
@@ -184,33 +293,7 @@ $(document).ready(function(){
       <div class="invalid-feedback">
         Este campo é obrigatório!
       </div>        
-    </div>
-    <div class="col-12 col-md-6 mb-3">
-      <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>
-          <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
-             <option value="">Selecione</option>
-              <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
-                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tramitacao, ind_adm=1)">
-                  <dtml-if expr="not dat_extincao">
-                    <option value="<dtml-var cod_unid_tramitacao>"><dtml-var nom_unidade_join></option>
-                  </dtml-if>
-                </dtml-in>
-               </dtml-in>
-          </select> 
-       <div class="invalid-feedback">
-          Este campo é obrigatório!
-       </div>
-    </div>    
-    <div class="col-12 col-md-3 mb-3">
-      <label for="txt_nom_usuario"class="d-block">Usuário de Origem</label>
-      <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">      
-         <input class="form-control" type="text" id="txt_nom_usuario" value="<dtml-var nom_completo>" disabled> 
-          <input type="hidden" name="hdn_cod_usuario_local" id="hdn_cod_usuario_local" value="<dtml-var cod_usuario_corrente>">     
-     </dtml-in>
-    </div>     
-  </div> 
- 
-  <div class="form-row">
+    </div>  
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
           <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
@@ -225,7 +308,10 @@ $(document).ready(function(){
       <select class="custom-select" name="lst_cod_usuario_dest" id="lst_cod_usuario_dest">
          <option></option>
       </select>    
-    </div>
+    </div>   
+  </div> 
+
+  <div class="form-row">
     <div class="col-12 col-md-3 mb-3">
       <label for="txt_dat_fim_prazo">Data de Fim de Prazo</label>
       <input class="form-control date" type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" value="" autocomplete="off" />
@@ -238,16 +324,13 @@ $(document).ready(function(){
             iconsLibrary: 'fontawesome'
         });
         </script>       
-    </div>    
-  </div> 
-
-  <div class="form-row">
+    </div>
     <div class="col-12 col-md-9 mb-3"> 
       <label for="lst_cod_status" class="required">Status</label>
       <select class="custom-select" title="Selecione" data-live-search="true" id="lst_cod_status" name="lst_cod_status" data-size="6" required>
          <option value=""></option>
       </select>     
-    </div>    
+    </div> 
   </div> 
 
   <div class="form-row">
@@ -256,73 +339,7 @@ $(document).ready(function(){
       <textarea class="form-control" name="txa_txt_tramitacao" id="txa_txt_tramitacao" rows="1"><dtml-var txt_tramitacao missing></textarea>
     </div>
   </div>
-
-  <input type="hidden" name="txt_tamanho" value="<dtml-var sequence-length>">
-  <input type="hidden" name="txt_check" value="">
-
-  <label class="d-block font-weight-bold required">2. Selecione os processos a tramitar</label>
-
-  <div class="table-responsive">
-  <table class="table display" width="100%" id="tramitacao">
-    <thead class="table-secondary">
-      <tr>
-          <th width="5%"></th>
-          <th>Identificação do Processo</th>
-          <th width="15%">Origem</th>
-          <th width="15%">Destino</th>                                                                
-          <th width="20%">Status</th>
-     </tr>
-    </thead>
-    <tbody>
- </dtml-if sequence-start>
-
- <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_tramitacao=_['sequence-item'], ind_excluido=0)">
-  <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
-       <tr>
-          <td>
-              <dtml-var cod_documento>
-          </td>
-          <td>
-
-            <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Tramitação Individual" data-src="tramitacao_form?hdn_cod_documento=<dtml-var cod_documento>&modal=1" class="btn btn-primary btn-sm"><i class="fas fa-external-link-alt"></i><span class="d-none">Link</span></a>
-
-            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">        
-              <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
-            <dtml-else>
-              <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
-            </dtml-if>
-              <b><dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></b></a> - 
-              <b><dtml-var txt_interessado></b>
-              - <dtml-var txt_assunto>
-          </td>
-          <td>
-            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local, ind_adm=1)">
-              <dtml-var nom_unidade_join>
-          </dtml-in>          
-          </td>          
-          <td>
-            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest, ind_adm=1)">
-              <dtml-var nom_unidade_join>
-          </dtml-in>          
-          </td>
-          <td>
-            <dtml-var dat_tramitacao missing><br />
-            <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
-            <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
-              <dtml-let arquivo_pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
-                 <a href="<dtml-var arquivo_pdf>" target="_blank"><dtml-var expr="des_status"></a>
-              </dtml-let>
-            <dtml-else>
-               <dtml-var expr="des_status">
-            </dtml-if>
-          </td>
-       </tr>
-  </dtml-in>
- </dtml-in>
- <dtml-if sequence-end>
-   </tbody> 
- </table>
- </div>
+ 
  <div class="row"> 
    <div class="text-left mt-2">
       <button type="submit" id="tramitar" class="btn btn-primary">Tramitar Processos</button>   
@@ -334,9 +351,12 @@ $(document).ready(function(){
       </div>
   </div>   
   </form>
+ </div>
+</div>
+  
   </dtml-if sequence-end>
   <dtml-else>
-  <p>Não há processos para tramitação nesta unidade.</p>
+  <p>Não há processos em sua caixa de entrada.</p>
 </dtml-in>
 
 <script>
