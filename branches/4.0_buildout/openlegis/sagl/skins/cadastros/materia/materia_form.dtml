@@ -568,12 +568,17 @@ $(document).ready(() => {
                 <a class="btn btn-secondary" target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
                   <i class="fa fa-fw fa-file-pdf"></i>Visualizar
                 </a>
-                <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/materia/texto_materia_excluir_proc?cod_materia=<dtml-var cod_materia missing>" data-confirm="Deseja realmente excluir o arquivo PDF do Texto Original?"><i class="fas fa-trash"></i> Excluir</a>
+                <dtml-if expr="not zsql.proposicao_obter_zsql(ind_mat_ou_doc='M', cod_mat_ou_doc=cod_materia)">
+                 <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                   <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_materia>&tipo_doc=materia&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
+                 </dtml-if>
+                </dtml-if>                 
+                <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/materia/texto_materia_excluir_proc?cod_materia=<dtml-var cod_materia missing>" data-confirm="Deseja realmente excluir o arquivo PDF do Texto Original?"><i class="fas fa-trash"></i> Excluir</a>           
              </dtml-let>
           <dtml-elif "_.hasattr(sapl_documentos.materia,id_documento_assinado)">
              <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento_assinado).absolute_url">
                 <a class="btn btn-secondary" target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
-                   <i class="fas fa-certificate"></i> Documento Assinado
+                   <i class="fas fa-certificate"></i> PDF Assinado
                 </a>
                 <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/materia/texto_materia_excluir_proc?cod_materia=<dtml-var cod_materia missing>" data-confirm="Deseja realmente excluir o arquivo PDF do Texto Original?"><i class="fas fa-trash"></i> Excluir</a>
              </dtml-let>
