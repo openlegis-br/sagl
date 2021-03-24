@@ -13,6 +13,18 @@
   $(document).ready(function () {
     bsCustomFileInput.init()
   })
+
+$(function () {
+    $('[data-toggle="popover"]').popover({
+    container: 'body',
+    html: true,
+    placement: 'right',
+    sanitize: false,
+    content: function() {
+        return $('#PopoverContent').html()
+    }
+    })
+}); 
 </script>
 
  <div class="row mb-2">
@@ -147,25 +159,34 @@
     <div class="col-12 mb-3">
       <b>Registro Derivado: </b>    
       	<dtml-if expr="tip_processo==0">
-           <dtml-in expr="zsql.documento_administrativo_obter_zsql(num_protocolo=num_protocolo, ano_documento=ano_protocolo)">
-              <dtml-if sequence-start>
-                    <dtml-call "REQUEST.set('vinculo_documento', 1)">
-                    <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
-                    <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></a>
-              </dtml-if>
-           <dtml-else>
-              <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
-                <form class="d-inline-block" method="post" action="<dtml-var portal_url>/cadastros/documento_administrativo/numero_buscar_proc">
-                  <input type="hidden" name="tip_documento"   value="<dtml-var tip_documento missing>" />
-                  <input type="hidden" name="ano_documento"   value="<dtml-var ano_protocolo>" />
-                  <input type="hidden" name="dat_documento"   value="<dtml-var "pysc.iso_to_port_pysc(dat_protocolo)">" />
-                  <input type="hidden" name="num_protocolo"   value="<dtml-var num_protocolo>" />
-                  <input type="hidden" name="txt_assunto"     value='<dtml-var txt_assunto_ementa html_quote>' />
-                  <input type="hidden" name="txt_interessado" value="<dtml-var txt_interessado missing null="">" />
-                  <input class="btn btn-sm btn-secondary" type="submit" name="cmdCriarDoc" value="Criar Documento" />
-                </form>
-              </dtml-if>
-           </dtml-in>
+              <dtml-in expr="zsql.documento_administrativo_pesquisar_zsql(num_protocolo=num_protocolo, ano_documento=ano_protocolo)">
+                 <dtml-if sequence-start>
+                    <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">              
+                       <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>"><dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></a>
+                    <dtml-else>
+                       <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+                    </dtml-if>
+                 </dtml-if>
+             <dtml-else>     
+                 <button type="button" class="btn btn-sm btn-secondary" data-toggle="popover" title="Unidade de Destino"><i class="fas fa-plus-circle"></i> Criar Processo</button>
+                 <div id="PopoverContent" class="d-none">
+                   <form id="myform" class="form-inline" role="form" method="post" action="criar_documento_pysc" onSubmit="return confirm('Confirma a criação do processo administrativo?');" class="was-validated">
+                    <input type="hidden" name="cod_protocolo"   value="<dtml-var cod_protocolo>" />                   
+                    <div class="input-group">
+                     <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
+                       <option></option>
+                       <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
+                         <option value="<dtml-var cod_unid_tramitacao>"><dtml-var nom_unidade_join></option>
+                       </dtml-in>             
+                     </select>                    
+                     <div class="input-group-append" id="button-addon1">
+                        <button class="btn btn-sm btn-primary" type="submit" data-toggle="popover" data-placement="bottom" data-html="true" data-title="OK">OK</button>                     
+                     </div>
+                    </div>     
+                   </form>  
+                 </div>
+              </dtml-in>                 
+
       	<dtml-elif expr="tip_processo==0 and ind_publico==1">
            <dtml-in expr="zsql.documento_administrativo_obter_zsql(num_protocolo=num_protocolo,ano_documento=ano_protocolo)">
               <dtml-if sequence-start>
@@ -185,7 +206,7 @@
                   <input class="btn btn-sm btn-secondary" type="submit" name="cmdCriarDoc" value="Criar Documento" />
                 </form>
               </dtml-if>
-           </dtml-in>
+           </dtml-in>           
       	<dtml-elif expr="tip_processo==1">
           <dtml-if expr="tip_natureza_materia==1">
             <dtml-in expr="zsql.materia_obter_zsql(num_protocolo=num_protocolo,ano_ident_basica=ano_protocolo)">
