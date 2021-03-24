@@ -81,12 +81,23 @@
        <div class="col-12 col-md-7">
          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria'])">
             <a href="<dtml-var portal_url>/cadastros/sessao_plenaria/sessao_plenaria_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
-         <dtml-else>
-            <a href="<dtml-var portal_url>/consultas/sessao_plenaria/agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
-         </dtml-if>
          <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
              <b><i class="fas fa-caret-right"></i> <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> - <dtml-var dat_inicio_sessao></b></a>
-         </dtml-in>  
+         </dtml-in>             ]
+         <dtml-else>
+            <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">
+               <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">              
+                  <a href="<dtml-var portal_url>/consultas/sessao_plenaria/agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
+                   <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+                      <b><i class="fas fa-caret-right"></i> <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> - <dtml-var dat_inicio_sessao></b></a>
+                  </dtml-in>                   
+               <dtml-else>
+                   <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+                      <b><i class="fas fa-caret-right"></i> <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> - <dtml-var dat_inicio_sessao></b></a>
+                  </dtml-in>  
+               </dtml-if>
+            </dtml-let>
+         </dtml-if>
        </div>
        <div class="col-12 col-md-5 mt-1 mb-sm-0 text-left text-md-right">
         <div class="btn-group d-print-none">
