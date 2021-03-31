@@ -25,7 +25,7 @@ if caixa == 'revisao' or caixa == 'assinatura' or caixa == 'protocolo':
        id_documento = str(proposicao.cod_proposicao) +'.pdf'
        id_documento_assinado = str(proposicao.cod_proposicao) +'_signed.pdf'
 
-       if proposicao.dat_recebimento==None and hasattr(context.sapl_documentos.proposicao,id_odt) and not hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
+       if proposicao.dat_recebimento==None and hasattr(context.sapl_documentos.proposicao,id_odt) and not hasattr(context.sapl_documentos.proposicao,id_documento) and not hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
           revisao.append(proposicao.cod_proposicao)
 
        if proposicao.dat_recebimento==None and hasattr(context.sapl_documentos.proposicao,id_documento) and not hasattr(context.sapl_documentos.proposicao,id_documento_assinado):

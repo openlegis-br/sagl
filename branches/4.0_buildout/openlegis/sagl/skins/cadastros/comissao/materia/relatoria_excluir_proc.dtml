@@ -9,23 +9,33 @@
 </dtml-if>
 
 <dtml-if expr="zsql.proposicao_obter_zsql(cod_parecer=cod_relatoria,ind_mat_ou_doc='D')">
-    <dtml-call expr="zsql.proposicao_desincorporar_zsql(cod_parecer=cod_relatoria)">
+  <dtml-call expr="zsql.proposicao_desincorporar_zsql(cod_parecer=cod_relatoria)">
 </dtml-if>
 
 <dtml-unless erro>
   <dtml-try>
-  <dtml-call expr="zsql.relatoria_excluir_zsql(cod_relatoria=cod_relatoria)">
-<dtml-except>  
-  <dtml-call expr="REQUEST.set('erro', 1)"> 
-<dtml-else>
-  <dtml-let mensagem="'Relatoria excluída com sucesso!'">
-     <dtml-var mensagem_emitir>
-  </dtml-let>
+    <dtml-call expr="zsql.relatoria_excluir_zsql(cod_relatoria=cod_relatoria)">
+    <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_relatoria,tipo_doc='parecer_comissao')">
+      <dtml-try>
+         <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                      cod_assinatura_doc  = cod_assinatura_doc,
+                      codigo              = codigo,
+                      tipo_doc            = tipo_doc)">
+      <dtml-except>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+      </dtml-try>
+    </dtml-in>   
+  <dtml-except>  
+    <dtml-call expr="REQUEST.set('erro', 1)"> 
+  <dtml-else>
+    <dtml-let mensagem="'Relatoria excluída com sucesso!'">
+       <dtml-var mensagem_emitir>
+    </dtml-let>
   </dtml-try>
 </dtml-unless>
 
 <dtml-if erro>
-  <dtml-let mensagem="'Ocorreu um erro ao tentar excluir a Relatoria!'" tipo_mensagem="'danger'">
+  <dtml-let mensagem="'Ocorreu um erro ao excluir a Relatoria!'" tipo_mensagem="'danger'">
      <dtml-var mensagem_emitir>
   </dtml-let>
 </dtml-if>

@@ -15,6 +15,22 @@
     <dtml-call expr="zsql.proposicao_registrar_envio_zsql(
           cod_proposicao            = hdn_cod_proposicao,
           dat_envio                 = pysc.data_atual_iso_pysc() )">
+    <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=hdn_cod_proposicao, tipo_doc='proposicao', ind_assinado=0)">
+      <dtml-try>
+         <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                      cod_assinatura_doc  = cod_assinatura_doc,
+                      codigo              = codigo,
+                      tipo_doc            = tipo_doc,
+                      cod_usuario         = cod_usuario)">                      
+      <dtml-except>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+      </dtml-try>
+    </dtml-in> 
+    <dtml-in expr="pysc.anexo_proposicao_pysc(hdn_cod_proposicao, listar=True)" prefix="file">
+       <dtml-if expr="_.hasattr(sapl_documentos.proposicao, file_item)">
+            <dtml-call "sapl_documentos.proposicao.manage_delObjects(file_item)">       
+       </dtml-if>
+    </dtml-in>  
   <dtml-except>
     <dtml-let mensagem="'Não foi possível enviar a proposicao. Tente novamente!'" tipo_mensagem="'danger'">
       <dtml-var mensagem_emitir>
