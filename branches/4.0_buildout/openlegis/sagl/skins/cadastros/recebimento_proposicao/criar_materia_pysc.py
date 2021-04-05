@@ -59,7 +59,7 @@ def criar_protocolo(tip_materia, num_ident_basica, ano_materia, dat_apresentacao
 
 def criar_materia(hdn_num_protocolo, tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao):
 
-    context.zsql.materia_incluir_zsql(tip_id_basica = tip_materia, num_ident_basica = num_ident_basica, ano_ident_basica = ano_materia, dat_apresentacao = dat_apresentacao, num_protocolo = hdn_num_protocolo, tip_apresentacao = 'E', tip_quorum = tip_quorum, ind_tramitacao = 1, ind_complementar = ind_complementar, cod_regime_tramitacao = 1, txt_ementa = txt_ementa, txt_observacao = txt_observacao)
+    context.zsql.materia_incluir_zsql(tip_id_basica = tip_materia, num_ident_basica = num_ident_basica, ano_ident_basica = ano_materia, dat_apresentacao = dat_apresentacao, num_protocolo = hdn_num_protocolo, tip_apresentacao = 'E', tip_quorum = tip_quorum, ind_tramitacao = 1, ind_complementar = ind_complementar, cod_regime_tramitacao = 1, txt_ementa = txt_ementa)
     
     for codigo in context.zsql.materia_incluida_codigo_obter_zsql():
         cod_materia = int(codigo.cod_materia)
