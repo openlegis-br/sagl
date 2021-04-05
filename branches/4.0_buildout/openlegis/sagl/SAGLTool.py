@@ -1595,17 +1595,18 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
           num_proposicao = proposicao.cod_proposicao
           nom_autor = proposicao.nom_autor
           cod_validacao_doc = ''
-          outros = ''
           qtde_assinaturas = []        
           for validacao in self.zsql.assinatura_documento_obter_zsql(codigo=cod_proposicao,tipo_doc='proposicao',ind_assinado=1):
             qtde_assinaturas.append(validacao.cod_usuario)          
             if validacao.ind_prim_assinatura == 1:
                cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
                break
-            if len(qtde_assinaturas) == 2:
-               outros = " e outro"
-            elif len(qtde_assinaturas) > 2:
-               outros = " e outros"
+          if len(qtde_assinaturas) == 2:
+             outros = " e outro"
+          elif len(qtde_assinaturas) > 2:
+             outros = " e outros"
+          else:
+               outros = '' 
           info_protocolo = ' - '
           tipo_proposicao = proposicao.des_tipo_proposicao
           if proposicao.ind_mat_ou_doc == "M":
@@ -1613,7 +1614,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
               if materia.num_protocolo != None and materia.num_protocolo != '':
                  for protocolo in self.zsql.protocolo_obter_zsql(num_protocolo=materia.num_protocolo, ano_protocolo=materia.ano_ident_basica):
                      info_protocolo = ' - Protocolo nº ' + str(protocolo.num_protocolo) + '/' + str(protocolo.ano_protocolo) + ' recebido em ' + self.pysc.iso_to_port_pysc(protocolo.dat_protocolo) + ' às ' + protocolo.hor_protocolo[0:2] + ':' + protocolo.hor_protocolo[3:5] + ' - '
-              texto = str(materia.sgl_tipo_materia.decode('utf-8').upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+              texto = str(materia.des_tipo_materia.decode('utf-8').upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
               storage_path = self.sapl_documentos.materia
               nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
           elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao!='Emenda' and proposicao.des_tipo_proposicao!='Mensagem Aditiva' and proposicao.des_tipo_proposicao!='Substitutivo' and proposicao.des_tipo_proposicao!='Parecer' and proposicao.des_tipo_proposicao!='Parecer de Comissão'):
@@ -1688,7 +1689,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             lab.boxAnchor = 'n'
             lab.setText(mensagem)
             d.add(lab)
-            renderPDF.draw(d, can, pwidth-28, 120)
+            renderPDF.draw(d, can, pwidth-28, 170)
             # Numero de pagina
             footer_text = "Pag. %s/%s" % (page_num, numPages)
             can.saveState()
@@ -1704,7 +1705,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         d = canvas.Canvas(packet2, pagesize=A4)
         d.setFillColorRGB(0,0,0)
         d.setFont("Arial_Bold", 13)
-        d.drawString(90, 700, texto)
+        d.drawString(85, 700, texto)
         d.save()
         packet2.seek(0)
         new_pdf2 = PdfFileReader(packet2)
