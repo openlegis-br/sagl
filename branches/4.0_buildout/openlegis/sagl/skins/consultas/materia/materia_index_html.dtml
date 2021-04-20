@@ -15,6 +15,52 @@
   });
 }(jQuery));
 
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+
+ <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
+ 
+ var vcc = function(g_recaptcha_response) {
+ var $captcha = $( '#recaptcha' );
+ 
+ $( '.msg-error' ).text('');
+    $captcha.removeClass( "error" );
+ };
+ 
+ $(document).ready(function(){
+    $('#search-btn').click(function(){
+		$("#pesq_basica_form").submit(function(){
+
+    if($(this).serializeArray()[0].value != "")	
+		{
+		   alert('Successo');
+		   return true;
+		}
+ 		else
+		{
+		   return false;
+		}
+    });
+    $captcha = $( '#recaptcha' );
+    response = grecaptcha.getResponse();
+
+  if (response.length === 0) {
+    $( '.msg-error').text( "Este campo é obrigatório" );
+    if( !$captcha.hasClass( "error" ) ){
+      $captcha.addClass( "error" );
+    }
+  } else {
+    $( '.msg-error' ).text('');
+    $captcha.removeClass( "error" );
+    // form submit return true
+   	 return true;
+  }
+	});
+ });
+ 
+ </dtml-if>
+ 
+</dtml-let>
+
 function pesquisam_criticar(form){  
 
   var form = document.pesq_basica_form;
@@ -218,7 +264,8 @@ function pesquisam_criticar(form){
     <div class="col-12 col-md-12 mt-2 text-left"> 
         <dtml-let isAnon="portal_membership.isAnonymousUser()">
             <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
-                <div class="g-recaptcha mb-3" data-sitekey="<dtml-var "sapl_documentos.props_sagl.recaptcha_key">"></div>
+                <div class="g-recaptcha mb-3" data-sitekey="<dtml-var "sapl_documentos.props_sagl.recaptcha_key">" data-callback="vcc"></div>
+                <span class="msg-error"></span>               
             </dtml-if>
          </dtml-let>
           <button type="button" id="search-btn" class="btn btn-primary" onClick="return pesquisam_criticar()"><i class="fa fa-fw fa-search"></i> Pesquisar</button>
