@@ -19,42 +19,77 @@
 
  <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
  
- var vcc = function(g_recaptcha_response) {
- var $captcha = $( '#recaptcha' );
- 
- $( '.msg-error' ).text('');
-    $captcha.removeClass( "error" );
- };
- 
- $(document).ready(function(){
-    $('#search-btn').click(function(){
-	$("#pesq_basica_form").submit(function(){
+     var onloadCallback = function() {
+        grecaptcha.render('google_recaptcha', {
+          'sitekey' : '<dtml-var "sapl_documentos.props_sagl.recaptcha_key">'
+        });
+      };
+      
+      $(function () {
+        //Check if required fields are filled
+        function checkifreqfld() {
+                var isFormFilled = true;
+                $("#pesq_basica_form").find(".form-checkfield:visible").each(function () {
+                    var value = $.trim($(this).val());
+                    if ($(this).prop('required')) {
+                        if (value.length < 1) {
+                          $(this).closest(".field-wrapper").addClass("field-error");
+                          isFormFilled = false;
+                        } else {
+                          $(this).closest(".field-wrapper").removeClass("field-error");
+                        }
+                    } else {
+                        $(this).closest(".field-wrapper").removeClass("field-error");
+                    }
+                });
+                return isFormFilled;
+          }
 
-    if($(this).serializeArray()[0].value != "")	
-	{
-	   return true;
-	}
- 	else
-	{
-	   return false;
-	}
-    });
-    $captcha = $( '#recaptcha' );
-    response = grecaptcha.getResponse();
+        //Form Submit Event
+        $("#search-btn").click(function () {
+            if (checkifreqfld()) {
+              event.preventDefault();
+              var rcres = grecaptcha.getResponse();
+              if(rcres.length){
+                grecaptcha.reset();
+                showHideMsg("Form Submitted!","success");
+              }else{
+                showHideMsg("Please verify reCAPTCHA","error");
+              }
+            } else {
+                showHideMsg("Fill required fields!","error");
+            }
+        });
 
-  if (response.length === 0) {
-    $( '.msg-error').text( "Este campo é obrigatório" );
-    if( !$captcha.hasClass( "error" ) ){
-      $captcha.addClass( "error" );
-    }
-  } else {
-    $( '.msg-error' ).text('');
-    $captcha.removeClass( "error" );
-    // form submit return true
-   	 return true;
-  }
-	});
- });
+        //Show/Hide Message
+        function showHideMsg(message,type){
+          if(type == "success"){
+            $("#message-wrap").addClass("success-msg").removeClass("error-msg");
+          }else if(type == "error"){
+            $("#message-wrap").removeClass("success-msg").addClass("error-msg");
+          }
+
+          $("#message-wrap").stop()
+          .slideDown()
+          .html(message)
+          .delay(1500)
+          .slideUp();
+        }
+
+
+        //Google Style InputFields
+        $(".field-wrapper .field-placeholder").on("click", function () {
+          $(this).closest(".field-wrapper").find("input").focus();
+        });
+        $(".field-wrapper input").on("keyup", function () {
+          var value = $.trim($(this).val());
+            if (value) {
+              $(this).closest(".field-wrapper").addClass("hasValue");
+            } else {
+              $(this).closest(".field-wrapper").removeClass("hasValue");
+            }
+        });
+      });
  
  </dtml-if>
  
