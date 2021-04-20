@@ -15,85 +15,22 @@
   });
 }(jQuery));
 
-<dtml-let isAnon="portal_membership.isAnonymousUser()">
+function pesquisam_criticar(form){  
 
- <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
- 
-     var onloadCallback = function() {
-        grecaptcha.render('google_recaptcha', {
-          'sitekey' : '<dtml-var "sapl_documentos.props_sagl.recaptcha_key">'
-        });
-      };
-      
-      $(function () {
-        //Check if required fields are filled
-        function checkifreqfld() {
-                var isFormFilled = true;
-                $("#pesq_basica_form").find(".form-checkfield:visible").each(function () {
-                    var value = $.trim($(this).val());
-                    if ($(this).prop('required')) {
-                        if (value.length < 1) {
-                          $(this).closest(".field-wrapper").addClass("field-error");
-                          isFormFilled = false;
-                        } else {
-                          $(this).closest(".field-wrapper").removeClass("field-error");
-                        }
-                    } else {
-                        $(this).closest(".field-wrapper").removeClass("field-error");
-                    }
-                });
-                return isFormFilled;
-          }
+  var form = document.pesq_basica_form;
 
-        //Form Submit Event
-        $("#search-btn").click(function () {
-            if (checkifreqfld()) {
-              event.preventDefault();
-              var rcres = grecaptcha.getResponse();
-              if(rcres.length){
-                grecaptcha.reset();
-                showHideMsg("Form Submitted!","success");
-              }else{
-                showHideMsg("Please verify reCAPTCHA","error");
-              }
-            } else {
-                showHideMsg("Fill required fields!","error");
-            }
-        });
+  if (form.dt_apres.value != "" && !IsValidDate(form.dt_apres.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data inicial válida!"});
+    return false;
+  } 
 
-        //Show/Hide Message
-        function showHideMsg(message,type){
-          if(type == "success"){
-            $("#message-wrap").addClass("success-msg").removeClass("error-msg");
-          }else if(type == "error"){
-            $("#message-wrap").removeClass("success-msg").addClass("error-msg");
-          }
-
-          $("#message-wrap").stop()
-          .slideDown()
-          .html(message)
-          .delay(1500)
-          .slideUp();
-        }
-
-
-        //Google Style InputFields
-        $(".field-wrapper .field-placeholder").on("click", function () {
-          $(this).closest(".field-wrapper").find("input").focus();
-        });
-        $(".field-wrapper input").on("keyup", function () {
-          var value = $.trim($(this).val());
-            if (value) {
-              $(this).closest(".field-wrapper").addClass("hasValue");
-            } else {
-              $(this).closest(".field-wrapper").removeClass("hasValue");
-            }
-        });
-      });
- 
- </dtml-if>
- 
-</dtml-let>
+  if (form.dt_apres2.value != "" && !IsValidDate(form.dt_apres2.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data final válida!"});
+    return false;
+  } 
+  
+  form.submit();
+}
 
   $(document).ready(function(){
     $('[data-toggle="popover"]').popover({
@@ -141,7 +78,7 @@
 <div class="tab-content bg-white">
   <div class="tab-pane p-3 border fade show active" id="principais">
 
-<form name="pesq_basica_form" id="pesq_basica_form" action="materia_pesquisar_proc" novalidate>
+<form name="pesq_basica_form" id="pesq_basica_form" action="materia_pesquisar_proc">
   <div class="form-row">
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_tip_materia">Tipo de Matéria</label>
@@ -281,15 +218,10 @@
     <div class="col-12 col-md-12 mt-2 text-left"> 
         <dtml-let isAnon="portal_membership.isAnonymousUser()">
             <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
-                <div id="recaptcha" class="g-recaptcha mb-3" data-sitekey="<dtml-var "sapl_documentos.props_sagl.recaptcha_key">"></div>
+                <div class="g-recaptcha mb-3" data-sitekey="<dtml-var "sapl_documentos.props_sagl.recaptcha_key">"></div>
             </dtml-if>
-            <div class="field-wrapper">
-             <div id="message-wrap">
-               <span></span>
-             </div>
-           </div>            
          </dtml-let>
-          <button type="submit" id="search-btn" class="btn btn-primary"><i class="fa fa-fw fa-search"></i> Pesquisar</button>
+          <button type="button" id="search-btn" class="btn btn-primary" onClick="return pesquisam_criticar()"><i class="fa fa-fw fa-search"></i> Pesquisar</button>
          <input class="btn btn-secondary" type="reset" value="Limpar" />
     </div>
   </div>
