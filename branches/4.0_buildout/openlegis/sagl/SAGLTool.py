@@ -509,6 +509,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         writer = PdfWriter()
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         for pauta in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen):
+          nom_arquivo_pdf = "%s"%cod_sessao_plen+'_pauta_completa.pdf'        
           nom_pdf_amigavel = str(pauta.num_sessao_plen)+'-sessao-'+ str(pauta.dat_inicio)+'-pauta_completa.pdf'
           nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
           if hasattr(self.sapl_documentos.pauta_sessao, str(cod_sessao_plen) + '_pauta_sessao.pdf'):
@@ -588,14 +589,18 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                      pdf_page.mergePage(watermark_page)
               output.addPage(pdf_page)
           outputStream = cStringIO.StringIO()
-          self.temp_folder.manage_addFile(nom_pdf_amigavel)
+          self.temp_folder.manage_addFile(nom_arquivo_pdf)
           output.write(outputStream)
-          arq=self.temp_folder[nom_pdf_amigavel]
+          arq=self.temp_folder[nom_arquivo_pdf]
           arq.manage_edit(title=nom_pdf_amigavel,filedata=outputStream.getvalue(),content_type='application/pdf')
-          arq = getattr(self.temp_folder,nom_pdf_amigavel)
+          tmp_copy = self.temp_folder.manage_copyObjects(ids=nom_arquivo_pdf)          
+          if nom_arquivo_pdf in self.sapl_documentos.pauta_sessao:
+             self.sapl_documentos.pauta_sessao.manage_delObjects(nom_arquivo_pdf)
+          tmp_id = self.sapl_documentos.pauta_sessao.manage_pasteObjects(tmp_copy)[0]['new_id']
+          arq = getattr(self.temp_folder,nom_arquivo_pdf)
           self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
           self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
-          self.temp_folder.manage_delObjects(ids=nom_pdf_amigavel)
+          self.temp_folder.manage_delObjects(ids=nom_arquivo_pdf)
           return arq
 
     def pdf_expediente_completo(self, cod_sessao_plen):

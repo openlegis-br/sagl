@@ -70,7 +70,7 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
 
 def tramitar_documento(cod_documento):
     for unidade in context.zsql.unidade_tramitacao_obter_zsql(ind_excluido=0):
-        if 'Protocolo' in unidade.nom_unidade_join:
+        if 'Protocolo' == unidade.nom_unidade_join:
             cod_unid_tram_local =  int(unidade.cod_unid_tramitacao)
 #        if REQUEST.form['lst_assunto'] == 'Adiantamento de 13º salário' or REQUEST.form['lst_assunto'] == 'Licença-prêmio' or REQUEST.form['lst_assunto'] == 'Férias':
 #           if 'Recursos Humanos' == unidade.nom_unidade_join:
