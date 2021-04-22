@@ -23,6 +23,7 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
     des_tipo_proposicao = proposicao.des_tipo_proposicao    
     tip_materia = proposicao.tip_mat_ou_doc
     ano_materia = DateTime().strftime("%Y")
+    cod_mat = proposicao.cod_mat_ou_doc
     dat_apresentacao = DateTime().strftime("%Y-%m-%d")
     txt_ementa = proposicao.txt_descricao.encode('utf-8')
     txt_observacao = proposicao.txt_observacao
@@ -131,9 +132,11 @@ def tramitar_materia(cod_materia, cod_proposicao):
 
     return context.relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=cod_tramitacao, hdn_url=hdn_url)
 
-
-return criar_protocolo(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao)
-
-
-    
+if cod_mat == None:
+   return criar_protocolo(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao)
+else:
+   mensagem = 'Proposição já foi convertida em matéria legislativa!'
+   mensagem_obs = 'Verifique a listagem de proposições incorporadas.'   
+   redirect_url=context.portal_url()+'/mensagem_emitir?tipo_mensagem=danger&mensagem=' + mensagem + '&mensagem_obs=' + mensagem_obs
+   RESPONSE.redirect(redirect_url)
     
