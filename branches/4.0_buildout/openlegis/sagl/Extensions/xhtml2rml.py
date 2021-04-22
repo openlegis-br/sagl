@@ -72,7 +72,7 @@ def xhtml2rml(self,chaineHtml,chaineStyle):
        if debutTag.lower()=='p':
           contentTag = reEntites.sub(replace_entites, contentTag)
           debutTag='para' + ' style="' + chaineStyle + '"'
-          finTag='</para>'
+          finTag='</para><para style="P5"><font color="white">-</font></para>'
           return '\r\n' + finTag + '\r\n' + '<'+ debutTag + attrTag +'>\r\n'+ contentTag + '\r\n'
 
        if debutTag.lower() in ('pre','code'):

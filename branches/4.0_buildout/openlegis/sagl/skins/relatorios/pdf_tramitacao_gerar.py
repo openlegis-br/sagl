@@ -82,9 +82,9 @@ def paraStyle():
     tmp+='\t\t</initialize>\n'
     tmp+='\t\t<paraStyle name="style.Title" fontName="Helvetica" fontSize="11" leading="13" spaceAfter="2" alignment="RIGHT"/>\n'
     tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="12.0" textColor="gray" leading="14" spaceAfter="2" spaceBefore="8" alignment="LEFT"/>\n'
-    tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="10.0" leading="12" spaceAfter="2" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="10.0" leading="14" spaceAfter="1" alignment="JUSTIFY"/>\n'
     tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="10.0" leading="12" spaceAfter="2" alignment="CENTER"/>\n'
-    tmp+='\t\t<paraStyle name="P5" fontName="Helvetica-Bold" fontSize="9" leading="15" spaceAfter="3" alignment="CENTER" valign="middle" white-space="nowrap" />\n'
+    tmp+='\t\t<paraStyle name="P5" fontName="Helvetica" fontSize="9" leading="9" spaceAfter="3" alignment="CENTER" valign="middle" white-space="nowrap" />\n'
     tmp+='\t</stylesheet>\n'
 
     return tmp
@@ -139,7 +139,6 @@ def tramitacao(tramitacao_dic):
       tmp+='<tr><td>TEXTO DA AÇÃO</td></tr>\n'
       tmp+='\t\t</blockTable>\n'
       tmp+='\t\t<para style="P2">\n'
-      tmp+='\t\t\t<font color="white">-</font>\n'
       tmp+='\t\t</para>\n'
 
       tmp+='\t\t<para style="P2">' + str(tramitacao_dic['txt_tramitacao']) + '</para>\n\n'
