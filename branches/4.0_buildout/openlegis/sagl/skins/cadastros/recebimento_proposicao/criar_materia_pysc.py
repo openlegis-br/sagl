@@ -135,7 +135,7 @@ def tramitar_materia(cod_materia, cod_proposicao):
 if cod_mat == None:
    return criar_protocolo(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao)
 else:
-   mensagem = 'Proposição já foi convertida em matéria legislativa!'
+   mensagem = 'Proposição já convertida em matéria legislativa!'
    mensagem_obs = 'Verifique a listagem de proposições incorporadas.'   
    redirect_url=context.portal_url()+'/mensagem_emitir?tipo_mensagem=danger&mensagem=' + mensagem + '&mensagem_obs=' + mensagem_obs
    RESPONSE.redirect(redirect_url)
