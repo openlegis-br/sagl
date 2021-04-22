@@ -8,8 +8,8 @@
   <div class="table-responsive">
     <table class="table">
       <tr>
-        <th width="25%"><b>Entrada</b></th>
-        <td><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> - <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td>
+        <th width="25%"><b>Recebido em: </b></th>
+        <td><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td>
       </tr>
       <tr>
         <th><b>Assunto</b></th>
@@ -23,7 +23,20 @@
         <th><b>Processo Administrativo</b></th>
         <td>
          <dtml-if cod_documento>
-           <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento>
+   <dtml-let isAnon="portal_membership.isAnonymousUser()">
+     <dtml-if expr="not isAnon">   
+      <div class="btn-group mb-3" role="group">
+        <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_texto_integral.pdf')">
+          <dtml-if expr="_.hasattr(sapl_documentos.administrativo,id_documento) and ind_tramitacao==1 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Arquivo'])">       
+            <a  href="<dtml-var portal_url>/modelo_proposicao/processo_adm_eletronico?cod_documento=<dtml-var cod_documento>" target="_blank"><i class="far fa-file-pdf"></i> <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento> (processo integral)</a>
+          <dtml-else>
+             <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento>
+          </dtml-if>
+      </div>
+     <dtml-else>
+        <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento>
+     </dtml-if>
+   </dtml-let>           
          <dtml-else>
            <i>Aguardando autuação</i>
          </dtml-if>
@@ -39,34 +52,43 @@
       <table class="table tablep-bordered">
        <thead>
         <tr>
-          <th width="25%">
+          <th>
             Data
           </th>
           <th>
-            Movimento
+            Origem
           </th>
+          <th>
+            Destino
+          </th>
+          <th width="40%">
+            Status
+          </th>                   
         </tr>
        </thead>
      </dtml-if sequence-start>
         <tr>
           <td><dtml-var dat_tramitacao></td>
+          </td>
           <td>
-       <b>Origem:</b>
        <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
           <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
           <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
-       </dtml-in> 
-       <b>/ Destino:</b> 
+       </dtml-in>           
+          </td>
+          <td>
        <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
           <dtml-if cod_orgao><dtml-var nom_orgao missing null="">
           <dtml-elif cod_comissao><dtml-var nom_comissao missing null="">
           <dtml-else><dtml-var nom_parlamentar missing null="">
           </dtml-if> 
-       </dtml-in> 
-       <br/><b>Situação:</b> <dtml-var expr="des_status" missing null=""> <dtml-if expr="txt_tramitacao!=''"> - <dtml-var expr="txt_tramitacao" missing null></dtml-if>
+       </dtml-in>           
           </td>
+          <td>
+<dtml-var expr="des_status" missing null=""> <dtml-if expr="txt_tramitacao!=''"> - <dtml-var expr="txt_tramitacao" missing null></dtml-if>          
+          </td>                    
         </tr>
      <dtml-if sequence-end>
       </table>
@@ -87,10 +109,10 @@
 </dtml-in>
 </div>
 
-  <div class="text-center">
-    <button class="btn btn-primary d-print-none" onClick="history.back()"><i class="fas fa-fw fa-undo"></i> Nova Consulta</button>
+  <p class="text-center">
+    <button class="btn btn-primary d-print-none" onClick="history.back()"><i class="fas fa-fw fa-undo"></i> Voltar</button>
     <button class="btn btn-secondary d-print-none" onClick="window.print();return false;"><i class="fas fa-fw fa-print"></i> Imprimir</button>
-  </div>
-  
+  </p>
+
 <dtml-var standard_html_footer>
 
