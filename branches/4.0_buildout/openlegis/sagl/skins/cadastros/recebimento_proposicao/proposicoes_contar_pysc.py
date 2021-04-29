@@ -31,7 +31,7 @@ if caixa == 'revisao' or caixa == 'assinatura' or caixa == 'protocolo':
        if proposicao.dat_recebimento==None and hasattr(context.sapl_documentos.proposicao,id_documento) and not hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
           assinatura.append(proposicao.cod_proposicao)
 
-       if hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
+       if proposicao.dat_envio!=None and proposicao.dat_recebimento==None and  hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
           protocolo.append(proposicao.cod_proposicao)
 
    if caixa == 'revisao':
