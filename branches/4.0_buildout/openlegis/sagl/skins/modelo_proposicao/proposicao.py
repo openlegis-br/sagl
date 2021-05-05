@@ -54,13 +54,14 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
            for autoria in context.zsql.autoria_obter_zsql(cod_materia = materia_vinculada.cod_materia, ind_excluido=0):      
                nom_autor_materia = autoria.nom_autor_join
                break
-           materia_vinculada = materia_vinculada.des_tipo_materia.decode('utf-8').upper() + ' Nº ' + str(materia_vinculada.num_ident_basica) + '/' + str(materia_vinculada.ano_ident_basica)
+           materia_vinculada_par =  materia_vinculada.des_tipo_materia.decode('utf-8').upper() + ' Nº ' + str(materia_vinculada.num_ident_basica) + '/' + str(materia_vinculada.ano_ident_basica)  
+           materia_vinculada = ' - ' + materia_vinculada.des_tipo_materia.decode('utf-8') + ' nº ' + str(materia_vinculada.num_ident_basica) + '/' + str(materia_vinculada.ano_ident_basica)        
     else:
        materia_vinculada = None
        
     if proposicao.des_tipo_proposicao == 'Parecer' or proposicao.des_tipo_proposicao == 'Parecer de Comissão':
        inf_basicas_dic['nom_comissao'] = 'COMISSÃO DE XXXXXXX'
-       inf_basicas_dic['id_materia'] = materia_vinculada + ' - ' + nom_autor_materia + ' - ' + ementa_materia
+       inf_basicas_dic['id_materia'] = materia_vinculada_par + ' - ' + nom_autor_materia + ' - ' + ementa_materia
        inf_basicas_dic['data_parecer'] = context.pysc.data_converter_por_extenso_pysc(data=DateTime().strftime("%d/%m/%Y"))
        for relator in context.zsql.autor_obter_zsql(cod_autor = proposicao.cod_autor):
            inf_basicas_dic['nom_relator'] = relator.nom_autor_join
