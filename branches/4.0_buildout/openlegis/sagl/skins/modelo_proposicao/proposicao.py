@@ -34,13 +34,15 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
 
 inf_basicas_dic['url_validacao'] = "" + context.generico.absolute_url()+"/conferir_assinatura"
 
-inf_basicas_dic['id_materia']= ''
+inf_basicas_dic['id_materia'] = ''
+
+inf_basicas_dic['des_tipo_proposicao'] = ''
 
 for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao):
+    inf_basicas_dic['des_tipo_proposicao']= proposicao.des_tipo_proposicao
     num_proposicao = 'PN ' + str(cod_proposicao)
     nom_arquivo = str(proposicao.cod_proposicao)+'.odt'
-    for tipo_proposicao in context.zsql.tipo_proposicao_obter_zsql(tip_proposicao = proposicao.tip_proposicao):
-        des_tipo_materia = tipo_proposicao.des_tipo_proposicao.decode('utf-8').upper()
+    des_tipo_materia = proposicao.des_tipo_proposicao.decode('utf-8').upper()
     num_ident_basica = ''
     ano_ident_basica = DateTime().strftime("%Y")
     txt_ementa = proposicao.txt_descricao
@@ -48,9 +50,21 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
 
     if proposicao.cod_materia != None:
        for materia_vinculada in context.zsql.materia_obter_zsql(cod_materia = proposicao.cod_materia):
-           materia_vinculada = ' - ' +materia_vinculada.des_tipo_materia + '  ' + str(materia_vinculada.num_ident_basica) + '/' + str(materia_vinculada.ano_ident_basica)
+           ementa_materia = materia_vinculada.txt_ementa.decode('utf-8')
+           for autoria in context.zsql.autoria_obter_zsql(cod_materia = materia_vinculada.cod_materia, ind_excluido=0):      
+               nom_autor_materia = autoria.nom_autor_join
+               break
+           materia_vinculada = materia_vinculada.des_tipo_materia.decode('utf-8').upper() + ' Nº ' + str(materia_vinculada.num_ident_basica) + '/' + str(materia_vinculada.ano_ident_basica)
     else:
        materia_vinculada = None
+       
+    if proposicao.des_tipo_proposicao == 'Parecer' or proposicao.des_tipo_proposicao == 'Parecer de Comissão':
+       inf_basicas_dic['nom_comissao'] = 'COMISSÃO DE XXXXXXX'
+       inf_basicas_dic['id_materia'] = materia_vinculada + ' - ' + nom_autor_materia + ' - ' + ementa_materia
+       inf_basicas_dic['data_parecer'] = context.pysc.data_converter_por_extenso_pysc(data=DateTime().strftime("%d/%m/%Y"))
+       for relator in context.zsql.autor_obter_zsql(cod_autor = proposicao.cod_autor):
+           inf_basicas_dic['nom_relator'] = relator.nom_autor_join
+       inf_basicas_dic['nom_presidente_comissao'] = 'XXXXXXXX'
 
     apelido_autor = ''
     nom_autor = []
@@ -83,3 +97,5 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
         nom_autor.append(autor_dic)
 
 return st.proposicao_gerar_odt(inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao, modelo_path)
+
+#return inf_basicas_dic['id_materia']

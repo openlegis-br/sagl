@@ -1183,6 +1183,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def proposicao_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao, modelo_path):
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()    
+        if inf_basicas_dic['des_tipo_proposicao'] == 'Parecer' or inf_basicas_dic['des_tipo_proposicao'] == 'Parecer de Comissão':
+           materia = inf_basicas_dic['id_materia'] 
+           nom_comissao = inf_basicas_dic['nom_comissao']
+           data_parecer = inf_basicas_dic['data_parecer']
+           nom_relator = inf_basicas_dic['nom_relator']
+           lst_composicao = []
         modelo = portal.unrestrictedTraverse(modelo_path)    
         template_file = cStringIO.StringIO(str(modelo.data))        
         brasao_file = self.get_brasao()
