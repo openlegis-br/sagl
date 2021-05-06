@@ -113,7 +113,7 @@ def tramitar_materia(cod_materia, cod_proposicao):
            cod_usuario_corrente = 0
            
     hr_tramitacao = DateTime().strftime('%d/%m/%Y às %H:%M')
-    txt_tramitacao = 'Matéria protocolada em ' + hr_tramitacao
+    txt_tramitacao = '<p>Matéria protocolada em ' + hr_tramitacao + '</p>'
 #    hdn_url = context.portal_url() + '/cadastros/materia/materia_mostrar_proc?cod_materia=' + str(cod_materia)+ '&modal=1'   
     hdn_url = context.portal_url() + '/cadastros/recebimento_proposicao/recebimento_proposicao_index_html#incorporada'
     

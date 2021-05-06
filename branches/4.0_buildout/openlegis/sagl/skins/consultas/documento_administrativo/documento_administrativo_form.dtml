@@ -1,5 +1,19 @@
 <dtml-var standard_html_header>
 
+<script type="text/javascript">
+$(function () {
+    $('[data-toggle="popover"]').popover({
+    container: 'body',
+    html: true,
+    placement: 'right',
+    sanitize: false,
+    content: function() {
+        return $('#PopoverContent').html()
+    }
+    })
+}); 
+</script>
+
 <div class="row">
   <div class="col-12 col-lg-8">
       <h1 class="firstHeading"><dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></h1>
@@ -88,6 +102,7 @@
  <dtml-if temTramitacao>
    <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
      <dtml-if sequence-start>
+      <dtml-call expr="REQUEST.set('cod_ult_unidade', int(cod_unid_tram_dest))">     
       <div class="card mb-4">
        <div class="card-body">
            <p class="card-text"><b>Último Local:</b> <dtml-var dat_tramitacao>
@@ -122,7 +137,21 @@
  </dtml-in>
  </dtml-if> 
 
-<dtml-if expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
+ <dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
+    <dtml-call expr="REQUEST.set('temDocAC', 1)">
+ </dtml-in>
+
+ <dtml-let isAnon="portal_membership.isAnonymousUser()">
+    <dtml-if expr="not isAnon">
+      <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
+         <dtml-if expr="_.has_key('cod_ult_unidade') and int(cod_ult_unidade) == int(cod_unid_tramitacao)">
+            <dtml-call expr="REQUEST.set('add_doc', 1)">
+         </dtml-if>
+      </dtml-in>
+     </dtml-if>
+ </dtml-let>
+
+<dtml-if expr="_.has_key('temDocAC') or _.has_key('add_doc')">
   <div id="accordion" class="docAC">
     <div class="card mb-4">
       <div class="card-header" id="headingOne">
@@ -135,6 +164,56 @@
       </div>
       <div id="collapsedoc" class="collapse" aria-labelledby="headingOne" data-parent=".docAC">
         <div class="card-body">
+
+         <dtml-let isAnon="portal_membership.isAnonymousUser()">
+             <dtml-if expr="not isAnon and _.has_key('add_doc')">      
+                 <button type="button" class="btn btn-sm btn-secondary mb-2" data-toggle="popover" title="Documento Acessório"><i class="fas fa-plus-circle"></i> Incluir</button>
+                 <div id="PopoverContent" class="d-none">
+                   <form name="myform" id="myform" class="needs-validation" validate role="form" enctype="multipart/form-data" method="post" action="documento_acessorio_salvar_proc" onSubmit="return confirm('Confirma a inclusão do documento acessório?');">
+                    <input type="hidden" name="cod_documento" value="<dtml-var cod_documento>" />
+                    <input type="hidden" name="cod_usuario" value="<dtml-var cod_usuario_corrente missing>" />
+                    <input type="hidden" name="cod_unid_tram_local" value="<dtml-var cod_ult_unidade missing>" />
+                    <div class="row">
+                      <div class="col-12 mb-3">
+                       <label for="lst_tip_documento" class="required">Tipo</label>
+                         <select class="custom-select" id="lst_tip_documento" name="lst_tip_documento" required>
+                             <option></option> 
+                             <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">           
+                                <option value="<dtml-var tip_documento>"> <dtml-var des_tipo_documento></option>
+                             </dtml-in>                   
+                          </select>
+                          <div class="invalid-feedback">
+                            Este campo é obrigatório!
+                          </div>
+                      </div>
+                      <div class="col-12 mb-2">
+                        <label for="txt_nom_documento" class="required">Descrição</label>        
+                        <input class="form-control" type="text" id="txt_nom_documento" name="txt_nom_documento" value="" maxlength="50" required />
+                          <small id="passwordHelpInline" class="text-muted">
+                             Máximo 50 caracteres.
+                          </small>          
+                         <div class="invalid-feedback">
+                           Este campo é obrigatório!
+                         </div> 
+                     </div>                    
+                     <div class="col-12">                      
+                      <div class="form-group">
+                         <label for="file_nom_arquivo" class="required">Arquivo</label>
+                         <input type="file" class="form-control-file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" required />
+                      </div>
+                     </div>
+                     <div class="col-12">                      
+                        <button class="btn btn-primary btn-block" type="submit" data-toggle="popover" data-placement="bottom" data-html="true" data-title="OK"><i class="fa fa-fw fa-check"></i> Incluir Documento</button>                     
+                     </div>
+                     <div class="col-md-12 mt-2">
+                       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+                     </div>
+                   </div>
+                </form> 
+              </div>   
+            </dtml-if>
+          </dtml-let>
+        
           <dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
             <dtml-if sequence-start>
               <div class="table-responsive">            
@@ -152,10 +231,10 @@
                     <dtml-if expr="_.hasattr(sapl_documentos.administrativo,id_documento)">
                       <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
                         <a target="_blank" href="<dtml-var documento>" target="_blank">
-                          <dtml-var des_tipo_documento missing null="">
+                          <dtml-var nom_documento>
                       </dtml-let>
                     <dtml-else>
-                          <dtml-var des_tipo_documento missing null="">
+                          <dtml-var nom_documento>
                     </dtml-if>
                     <dtml-if expr="nom_autor_documento!=None">
                        - <dtml-var nom_autor_documento>
@@ -276,21 +355,21 @@
                          <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
                          <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
                            <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo.tramitacao,pdf_assinado).absolute_url">
-                             <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i><dtml-var expr="des_status"></a>
+                             <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i> <dtml-var expr="des_status"></a>
                            </dtml-let>
                          <dtml-elif expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao,tipo_doc='tramitacao_adm', ind_assinado=1)">
                             <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao,tipo_doc='tramitacao_adm', ind_assinado=1, ind_prim_assinatura=1)"> 
                               <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
                                  <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
-                                    <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i><dtml-var expr="des_status"></a>
+                                    <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i> <dtml-var expr="des_status"></a>
                                 </dtml-let>
                               <dtml-else>             
-                                 <a href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i><dtml-var expr="des_status"></a>
+                                 <a href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i>  <dtml-var expr="des_status"></a>
                               </dtml-if>
                             </dtml-in>        
                          <dtml-elif "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
                            <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
-                               <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i><dtml-var expr="des_status"></a>
+                               <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i> <dtml-var expr="des_status"></a>
                            </dtml-let>
                          <dtml-else>
                              <dtml-var expr="des_status">                 
