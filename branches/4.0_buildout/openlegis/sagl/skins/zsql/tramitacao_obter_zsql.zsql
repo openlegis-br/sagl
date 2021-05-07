@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_tramitacao="" cod_materia="" ind_ult_tramitacao="" cod_unid_tram_origem="" cod_usuario_local="" cod_unid_tram_destino="" cod_usuario_dest cod_status="" ind_tramitacao="" ind_pendente="" ind_encaminha="" ind_recebido="" ind_rascunho="" ind_retorno_tramitacao="" ind_fim_tramitacao="" rd_ordem="" ind_excluido=0
+arguments : cod_tramitacao="" cod_materia="" ind_ult_tramitacao="" cod_unid_tram_origem="" cod_usuario_local="" cod_unid_tram_destino="" cod_usuario_dest cod_status="" ind_tramitacao="" ind_pendente="" ind_encaminha="" ind_recebido="" ind_rascunho="" ind_retorno_tramitacao="" ind_fim_tramitacao="" rd_ordem="" dat_tramitacao="" dat_encaminha="" ind_excluido=0
 max_rows : 2000
 max_cache : 1000
 </dtml-comment>
@@ -37,8 +37,8 @@ FROM
        LEFT JOIN tipo_materia_legislativa ON materia_legislativa.tip_id_basica = tipo_materia_legislativa.tip_materia
        
   <dtml-sqlgroup where>
-    <dtml-sqltest cod_tramitacao        op="="                                 type="int" optional> <dtml-and>
-    <dtml-sqltest cod_materia           op="=" column="tramitacao.cod_materia" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_tramitacao        op="="                                         type="int" optional> <dtml-and>
+    <dtml-sqltest cod_materia           op="=" column="tramitacao.cod_materia"         type="int" optional> <dtml-and>
     <dtml-sqltest ind_ult_tramitacao    op="=" column="tramitacao.ind_ult_tramitacao"  type="int" optional> <dtml-and>
     <dtml-sqltest cod_unid_tram_origem  op="=" column="tramitacao.cod_unid_tram_local" type="int" optional> <dtml-and>
     <dtml-sqltest cod_usuario_local     op="=" column="tramitacao.cod_usuario_local"   type="int" optional> <dtml-and>
@@ -93,6 +93,14 @@ FROM
   <dtml-if expr="ind_fim_tramitacao==1">
     AND <dtml-sqltest ind_fim_tramitacao   op="=" column="status.ind_fim_tramitacao"   type="int" optional>
   </dtml-if>
+  
+  <dtml-if dat_tramitacao>
+    AND <dtml-sqlvar dat_tramitacao type="string"> = tramitacao.dat_tramitacao
+  </dtml-if>
+
+  <dtml-if dat_encaminha>
+    AND <dtml-sqlvar dat_encaminha type="string"> = tramitacao.dat_encaminha
+  </dtml-if>   
 
   <dtml-if expr="rd_ordem == '1'">
     ORDER BY 
