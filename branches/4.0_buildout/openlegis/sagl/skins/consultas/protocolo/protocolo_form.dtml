@@ -157,7 +157,7 @@ $(function () {
 
  <div class="row">
     <div class="col-12 mb-3">
-      <b>Registro Derivado: </b>    
+      <b>Processo Derivado: </b>    
       	<dtml-if expr="tip_processo==0">
               <dtml-in expr="zsql.documento_administrativo_pesquisar_zsql(num_protocolo=num_protocolo, ano_documento=ano_protocolo)">
                  <dtml-if sequence-start>
@@ -167,7 +167,9 @@ $(function () {
                        <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
                     </dtml-if>
                  </dtml-if>
-             <dtml-else>     
+             <dtml-else> 
+              <dtml-call expr="REQUEST.set('id_documento', _.str(cod_protocolo)+'_protocolo.pdf')">
+                <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">             
                  <button type="button" class="btn btn-sm btn-secondary" data-toggle="popover" title="Unidade de Destino"><i class="fas fa-plus-circle"></i> Criar Processo</button>
                  <div id="PopoverContent" class="d-none">
                    <form id="myform" class="form-inline" role="form" method="post" action="criar_documento_pysc" onSubmit="return confirm('Confirma a criação do processo administrativo?');" class="was-validated">
@@ -185,7 +187,10 @@ $(function () {
                     </div>     
                    </form>  
                  </div>
-              </dtml-in>                 
+                <dtml-else>
+                   <span class="text-danger"> <i class="fas fa-exclamation-triangle"></i> Carregue o arquivo digitalizado para habilitar a criação do processo.</span>
+                </dtml-if>                  
+              </dtml-in>
 
       	<dtml-elif expr="tip_processo==0 and ind_publico==1">
            <dtml-in expr="zsql.documento_administrativo_obter_zsql(num_protocolo=num_protocolo,ano_documento=ano_protocolo)">
