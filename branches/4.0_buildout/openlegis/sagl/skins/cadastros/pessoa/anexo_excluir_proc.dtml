@@ -1,0 +1,22 @@
+<dtml-call expr="REQUEST.set('erro', 0)">
+
+<dtml-call expr="REQUEST.set('id_anexo', _.str(hdn_cod_pessoa)+'_anexo.pdf')">
+<dtml-if expr="_.hasattr(sapl_documentos.pessoa,id_anexo)">
+ <dtml-let arquivo="_.getattr(sapl_documentos.pessoa,id_anexo) ">
+  <dtml-try>
+    <dtml-call "sapl_documentos.pessoa.manage_delObjects(id_anexo)">
+  <dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-try>
+ </dtml-let>
+</dtml-if>
+
+  <dtml-if erro>
+    <dtml-let mensagem="'Ocorreu um erro ao tentar excluir o anexo PDF!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-let mensagem="'Anexo PDF excluído com sucesso!'" url="'pessoa_mostrar_proc?cod_pessoa='+hdn_cod_pessoa+ '#anexo'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-if>
