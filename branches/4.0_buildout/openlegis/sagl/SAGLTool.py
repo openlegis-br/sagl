@@ -30,6 +30,7 @@ from Products.CMFCore.utils import getToolByName
 from PIL import Image
 
 #imports para a geracao dos documentos
+import uuid
 import urllib
 import urllib2
 import cStringIO
@@ -1754,10 +1755,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         return restpki_client
 
     def pades_signature(self, codigo, tipo_doc, cod_usuario):
-#        qtde_assinaturas = []
-#        for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc):
-#            qtde_assinaturas.append(item.cod_usuario)     
-
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
             if tipo_doc == 'proposicao':
                pdf_location = storage.pdf_location
@@ -1787,13 +1784,20 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arquivo = self.restrictedTraverse(pdf_file)
            pdf_tosign = nom_arquivo
 
-        # Read the PDF path
+        # Verifica se existe arquivo
         utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()
-        url = self.url() + '/' + pdf_location + pdf_tosign
-        opener = urllib.urlopen(url)
-        f = open('/tmp/' + pdf_tosign, 'wb').write(opener.read())
-        tmp_path = '/tmp'
+        portal = utool.getPortalObject()        
+        tmp_path = '/tmp'        
+        if os.path.exists(os.path.join(tmp_path, pdf_tosign)):
+           os.unlink(os.path.join(tmp_path, pdf_tosign))           
+           msg = 'O documento está em processo de assinatura! Tente novamente em instantes...'
+           raise ValueError(msg)
+        else:
+           # Read the PDF path
+           url = self.url() + '/' + pdf_location + pdf_tosign
+           opener = urllib.urlopen(url)
+           f = open('/tmp/' + pdf_tosign, 'wb').write(opener.read())
+        
         pdf_tmp = pdf_tosign
         pdf_path = '%s/%s' % (tmp_path, pdf_tosign)
 
@@ -1918,24 +1922,30 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                filename = str(cod_assinatura_doc) + '.pdf'
                old_filename = str(codigo) + str(storage.pdf_file)
 
-        signature_finisher.write_signed_pdf(os.path.join(tmp_path, filename))
+        file_hash = str(uuid.uuid4().hex) + '.pdf'
 
-        data = open('/tmp/' + filename, "rb").read()
+        signature_finisher.write_signed_pdf(os.path.join(tmp_path, file_hash))
 
-        for file in [filename]:
+        data = open('/tmp/' + file_hash, "rb").read()
+
+        for file in [file_hash]:
             if tipo_doc != 'proposicao':  
-               self.margem_direita(codigo, tipo_doc, cod_assinatura_doc, cod_usuario)
+               self.margem_direita(codigo, tipo_doc, cod_assinatura_doc, cod_usuario, file_hash)
             if hasattr(storage_path,filename):
                documento = getattr(storage_path,filename)
                documento.manage_upload(file=data)
+               if os.path.exists(os.path.join(tmp_path, file_hash)):
+                  os.unlink(os.path.join(tmp_path, file_hash))
                if os.path.exists(os.path.join(tmp_path, filename)):
-                  os.unlink(os.path.join(tmp_path, filename))
+                  os.unlink(os.path.join(tmp_path, filename))                  
                if os.path.exists(os.path.join(tmp_path, old_filename)):
                   os.unlink(os.path.join(tmp_path, old_filename))
             else:
                storage_path.manage_addFile(id=filename,file=data)
+               if os.path.exists(os.path.join(tmp_path, file_hash)):
+                  os.unlink(os.path.join(tmp_path, file_hash))
                if os.path.exists(os.path.join(tmp_path, filename)):
-                  os.unlink(os.path.join(tmp_path, filename))
+                  os.unlink(os.path.join(tmp_path, filename))                    
                if os.path.exists(os.path.join(tmp_path, old_filename)):
                   os.unlink(os.path.join(tmp_path, old_filename))
 
@@ -2019,7 +2029,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         else:
             return None
 
-    def margem_direita(self, codigo, tipo_doc, cod_assinatura_doc, cod_usuario):
+    def margem_direita(self, codigo, tipo_doc, cod_assinatura_doc, cod_usuario, file_hash):
 
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
             nom_pdf_assinado = str(cod_assinatura_doc) + '.pdf'
@@ -2154,7 +2164,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         #arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_assinado)
-        arq = open('/tmp/' + nom_pdf_assinado, "rb")
+        arq = open('/tmp/' + file_hash, "rb")
         #arquivo = cStringIO.StringIO(arq)
         existing_pdf = PdfFileReader(arq, strict=False)
         numPages = existing_pdf.getNumPages()
