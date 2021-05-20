@@ -6,6 +6,7 @@
 ##bind subpath=traverse_subpath
 ##parameters=cod_materia
 ##title=
+from Products.PythonScripts.standard import url_unquote
 request=context.REQUEST
 response=request.RESPONSE
 session= request.SESSION
@@ -64,7 +65,7 @@ for dic in destinatarios:
   mMsg = mMsg + "Link: " + linkMat + "\n\n"
   mMsg = mMsg + "Data da Ação: " + str(data) + "\n"
   mMsg = mMsg + "Status: " + str(status) + "\n"
-  mMsg = mMsg + "Texto da Ação: " + str(texto_acao) + "\n\n"
+  mMsg = mMsg + "Texto da Ação: " + url_unquote(texto_acao) + "\n\n"
   mMsg = mMsg + "Cordialmente,\n\n"
   mMsg = mMsg + "" + str(casa_legislativa) +"\n"
   mMsg = mMsg + "Processo Legislativo Eletrônico\n\n\n"

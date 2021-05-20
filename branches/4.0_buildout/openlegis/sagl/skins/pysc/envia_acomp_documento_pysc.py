@@ -6,6 +6,7 @@
 ##bind subpath=traverse_subpath
 ##parameters=cod_documento
 ##title=
+from Products.PythonScripts.standard import url_unquote
 request=context.REQUEST
 response=request.RESPONSE
 session= request.SESSION
@@ -67,7 +68,7 @@ if txt_nome != '' and end_email != '':
  mMsg = mMsg + "DESTINO: " + txt_nome + "\n\n"
  mMsg = mMsg + "Status: " + str(status) + "\n"
  if texto_acao != '':
-    mMsg = mMsg + "Texto do Despacho: " + str(texto_acao) + "\n"
+    mMsg = mMsg + "Texto do Despacho: " + url_unquote(texto_acao) + "\n"
  mMsg = mMsg + "Encaminhado em: " + str(data_registro) + "\n"
  if prazo != None:
     mMsg = mMsg + "Prazo: " + str(prazo) + "\n"
