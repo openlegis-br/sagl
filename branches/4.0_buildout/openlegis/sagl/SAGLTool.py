@@ -1660,9 +1660,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
               texto = 'PARECER ' + sgl_comissao + ' Nº '+ str(relatoria.num_parecer) + '/' +str(relatoria.ano_parecer) + ' AO ' + str(materia)
               storage_path = self.sapl_documentos.parecer_comissao   
               nom_pdf_saida = str(relatoria.cod_relatoria) + "_parecer.pdf"                      
-
-        mensagem1 = texto + info_protocolo + 'Esta é uma cópia do original assinado digitalmente por ' + nom_autor + outros
-        mensagem2 = 'Para validar o documento, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
+    
+        if self.sapl_documentos.props_sagl.restpki_access_token!='':                                        
+           mensagem1 = texto + info_protocolo + 'Esta é uma cópia do original assinado digitalmente por ' + nom_autor + outros
+           mensagem2 = 'Para validar o documento, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
+        else:
+           mensagem1 = ''
+           mensagem2 = '' 
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
@@ -1730,10 +1734,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if tipo_proposicao != 'Parecer' and tipo_proposicao != 'Parecer de Comissão' and page == 0:
                pdf_page.mergePage(new_pdf2.getPage(0))
             # qrcode e margem direita em todas as páginas
-            for wm in range(new_pdf.getNumPages()):
-                watermark_page = new_pdf.getPage(wm)
-                if page == wm:
-                   pdf_page.mergePage(watermark_page)
+            if self.sapl_documentos.props_sagl.restpki_access_token!='':
+               for wm in range(new_pdf.getNumPages()):
+                   watermark_page = new_pdf.getPage(wm)
+                   if page == wm:
+                      pdf_page.mergePage(watermark_page)
             output.addPage(pdf_page)
         outputStream = file('/tmp/' + nom_pdf_saida, "wb")
         output.write(outputStream)
@@ -2231,6 +2236,98 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arq.manage_edit(title=nom_pdf_documento,filedata=outputStream.getvalue(),content_type='application/pdf')
 
         return 'ok'
+
+
+    def assinar_proposicao(self, cod_proposicao):
+
+        storage_path = self.sapl_documentos.proposicao
+        for proposicao in self.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao):
+            string = self.pysc.proposicao_calcular_checksum_pysc(proposicao.cod_proposicao, senha=1)
+            nom_autor = proposicao.nom_autor
+            pdf_proposicao = str(proposicao.cod_proposicao) + '.pdf'
+            pdf_assinado = str(proposicao.cod_proposicao) + '_signed.pdf'   
+            texto = 'Proposição eletrônica ' + string            
+        mensagem1 = 'Documento assinado digitalmente com usuário e senha por ' + nom_autor + '.'
+        mensagem2 = texto + ', Para verificação de autenticidade utilize o QR Code exibido no rodapé.'
+        mensagem = mensagem1 + '\n' + mensagem2
+        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
+        pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
+        url = self.url() + '/sapl_documentos/proposicao/' + pdf_proposicao
+        opener = urllib.urlopen(url)
+        f = open('/tmp/' + pdf_proposicao, 'wb').write(opener.read())
+        arq = open('/tmp/' + pdf_proposicao, "rb")
+        existing_pdf = PdfFileReader(arq, strict=False)
+        numPages = existing_pdf.getNumPages()
+        # cria novo PDF
+        packet = StringIO.StringIO()
+        can = canvas.Canvas(packet)
+        for page_num, i in enumerate(range(numPages), start=1):
+            page = existing_pdf.getPage(i)
+            pwidth = self.getPageSizeW(page)
+            pheight = self.getPageSizeH(page)
+            can.setPageSize((pwidth, pheight))
+            can.setFillColorRGB(0,0,0) 
+            # QRCode
+            qr_code = qr.QrCodeWidget(self.url() + '/sapl_documentos/proposicao/' + cod_proposicao + '_signed.pdf')
+            bounds = qr_code.getBounds()
+            width = bounds[2] - bounds[0]
+            height = bounds[3] - bounds[1]
+            d = Drawing(55, 55, transform=[55./width,0,0,55./height,0,0])
+            d.add(qr_code)
+            x = 59
+            renderPDF.draw(d, can,  pwidth-59, 13)
+            # Margem direita
+            d = Drawing(10, 5)
+            lab = Label()
+            lab.setOrigin(0,250)
+            lab.angle = 90
+            lab.fontName = 'Arial'
+            lab.fontSize = 7
+            lab.textAnchor = 'start'
+            lab.boxAnchor = 'n'
+            lab.setText(mensagem)
+            d.add(lab)
+            renderPDF.draw(d, can, pwidth-24, 160)
+            # Numero de pagina
+            footer_text = "Pag. %s/%s" % (page_num, numPages)
+            can.saveState()
+            can.setFont('Arial', 8)
+            can.drawCentredString(pwidth-30, 10, footer_text)
+            can.restoreState()
+            can.showPage()
+        can.save()
+        packet.seek(0)
+        new_pdf = PdfFileReader(packet)
+        # Mescla arquivos
+        output = PdfFileWriter()
+        for page in range(existing_pdf.getNumPages()):
+            pdf_page = existing_pdf.getPage(page)
+            # qrcode e margem direita em todas as páginas
+            for wm in range(new_pdf.getNumPages()):
+                watermark_page = new_pdf.getPage(wm)
+                if page == wm:
+                   pdf_page.mergePage(watermark_page)
+            output.addPage(pdf_page)
+        outputStream = cStringIO.StringIO()
+        output.write(outputStream)
+
+        if hasattr(storage_path,pdf_assinado):
+           documento = getattr(storage_path,pdf_assinado)
+           documento.manage_upload(file=outputStream.getvalue())
+        else:
+           storage_path.manage_addFile(pdf_assinado)
+           output.write(outputStream)
+           arq=storage_path[pdf_assinado]
+           arq.manage_edit(title=pdf_assinado,filedata=outputStream.getvalue(),content_type='application/pdf')
+
+        if os.path.exists(os.path.join('/tmp/', pdf_proposicao)):
+           os.unlink(os.path.join('/tmp/', pdf_proposicao))
+
+        redirect_url = self.portal_url()+'/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=' + cod_proposicao
+        REQUEST = self.REQUEST
+        RESPONSE = REQUEST.RESPONSE
+        RESPONSE.redirect(redirect_url)
+        
 
     def _getValidEmailAddress(self, member):
         email = None
