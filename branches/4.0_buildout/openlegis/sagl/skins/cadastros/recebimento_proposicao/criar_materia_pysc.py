@@ -34,6 +34,9 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
     else:
        tip_quorum = 1
        ind_complementar = 0
+       
+    for autor in context.zsql.autor_obter_zsql(cod_autor=proposicao.cod_autor):
+        des_tipo_autor = autor.des_tipo_autor
 
     for numero in context.zsql.numero_materia_legislativa_obter_zsql(tip_id_basica_sel = proposicao.tip_mat_ou_doc,
 ano_ident_basica = ano_materia, ind_excluido = 0):
@@ -43,11 +46,11 @@ ano_ident_basica = ano_materia, ind_excluido = 0):
 def criar_protocolo(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao):
 
     if context.sapl_documentos.props_sagl.numero_protocolo_anual == 1:
-        for numero in context.zsql.protocolo_numero_obter_zsql(ano_protocolo = DateTime().strftime('%Y')):
-            hdn_num_protocolo = int(numero.novo_numero)
+       for numero in context.zsql.protocolo_numero_obter_zsql(ano_protocolo = DateTime().strftime('%Y')):
+           hdn_num_protocolo = int(numero.novo_numero)
     else:
-        for numero in context.zsql.protocolo_codigo_obter_zsql():
-            hdn_num_protocolo =  int(numero.novo_codigo)
+       for numero in context.zsql.protocolo_codigo_obter_zsql():
+           hdn_num_protocolo =  int(numero.novo_codigo)
     txt_user = REQUEST['AUTHENTICATED_USER'].getUserName()
     context.zsql.protocolo_legislativo_incluir_zsql(num_protocolo = hdn_num_protocolo, tip_protocolo = 0, tip_processo = 1, tip_materia=tip_materia, tip_natureza_materia = 1, txt_assunto_ementa = txt_ementa, cod_autor = cod_autor, txt_user_protocolo = txt_user)
     for codigo in context.zsql.protocolo_incluido_codigo_obter_zsql():
@@ -79,7 +82,7 @@ def criar_materia(hdn_num_protocolo, tip_materia, num_ident_basica, ano_materia,
 
 def inserir_autoria(cod_materia, cod_autor, cod_proposicao):
 
-    if context.sapl_documentos.props_sagl.restpki_access_token!='':                                        
+    if context.sapl_documentos.props_sagl.restpki_access_token != '' and des_tipo_autor == 'Parlamentar':
        for assinatura in context.zsql.assinatura_documento_obter_zsql(codigo=cod_proposicao, tipo_doc='proposicao', ind_assinado=1):
            for usuario in context.zsql.usuario_obter_zsql(cod_usuario=assinatura.cod_usuario, ind_excluido=0): 
                for autor in context.zsql.autor_obter_zsql(col_username=usuario.col_username, ind_excluido=0):
