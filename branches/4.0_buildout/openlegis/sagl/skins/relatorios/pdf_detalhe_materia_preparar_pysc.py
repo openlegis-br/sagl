@@ -142,8 +142,11 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
    dic_tramitacoes['turno']= tramitacao.sgl_turno
    dic_tramitacoes['status']= tramitacao.des_status
    dic_tramitacoes['urgente']= tramitacao.ind_urgencia
-   dic_tramitacoes['data_fim']= tramitacao.dat_fim_prazo 
-   dic_tramitacoes['texto_acao']= tramitacao.txt_tramitacao  
+   dic_tramitacoes['data_fim']= tramitacao.dat_fim_prazo
+   if tramitacao.txt_tramitacao != None and tramitacao.txt_tramitacao!='':
+      dic_tramitacoes['texto_acao'] = context.extensions.xhtml2rml(tramitacao.txt_tramitacao,'P2')
+   else:
+      dic_tramitacoes['texto_acao'] = ''   
    for unidade in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = tramitacao.cod_unid_tram_local):
      if unidade.cod_orgao==None:
        for comissao in context.zsql.comissao_obter_zsql(cod_comissao = unidade.cod_comissao):
