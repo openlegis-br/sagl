@@ -56,7 +56,6 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  inf_basicas_dic['apresentada']= materia.dat_apresentacao
  inf_basicas_dic['formato']= materia.tip_apresentacao
  inf_basicas_dic['publicada']= materia.dat_publicacao
- inf_basicas_dic['objeto']= materia.des_objeto
  inf_basicas_dic['tramitacao']= materia.ind_tramitacao
  inf_basicas_dic['cod_projeto']= materia.des_tipo_materia.decode('utf-8').upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)
 

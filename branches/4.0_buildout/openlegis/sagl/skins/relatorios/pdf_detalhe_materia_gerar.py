@@ -98,9 +98,6 @@ def inf_basicas(dic_inf_basicas):
     else:
         tmp+='\t\t<para style="P2"><b>Forma de Apresentação: </b> Oral</para>\n'
 
-    if str(dic_inf_basicas['objeto']) != "" and str(dic_inf_basicas['objeto']) != None:
-        tmp+='\t\t<para style="P2"><b>Objeto: </b> ' + str(dic_inf_basicas['objeto']) + '</para>\n'
-
     if dic_inf_basicas['tramitacao']==0:
         tmp+='\t\t<para style="P2"><b>Tramitando:</b> Não</para>\n'
     else:
@@ -115,7 +112,7 @@ def inf_basicas(dic_inf_basicas):
 
     fim_prazo = (dic_inf_basicas['fim_prazo'])
     if fim_prazo != "" and fim_prazo != None:
-        tmp+='\t\t<para style="P2"><b>Data do fim do prazo: </b> ' + str(dic_inf_basicas['fim_prazo']) + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Data de fim do prazo: </b> ' + str(dic_inf_basicas['fim_prazo']) + '</para>\n'
 
     apelido = dic_inf_basicas['apelido']
     if apelido != "" and apelido != None:
