@@ -1726,7 +1726,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # alinhamento a esquerda
         d.drawString(85, 700, texto)
         # alinhamento centralizado
-        d.drawCentredString(pwidth/2, 700, texto)
+        #d.drawCentredString(pwidth/2, 700, texto)
         d.save()
         packet2.seek(0)
         new_pdf2 = PdfFileReader(packet2)
