@@ -50,6 +50,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.graphics.barcode import createBarcodeDrawing
 from reportlab.graphics import renderPDF
 from reportlab.graphics.charts.textlabels import Label
+from reportlab.lib.utils import ImageReader
 
 #imports para assinatura digital
 import sys
@@ -1721,8 +1722,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         packet2 = StringIO.StringIO()
         d = canvas.Canvas(packet2, pagesize=A4)
         d.setFillColorRGB(0,0,0)
-        d.setFont("Arial_Bold", 13)
+        d.setFont("Arial_Bold", 12)
+        # alinhamento a esquerda
         d.drawString(85, 700, texto)
+        # alinhamento centralizado
+        d.drawCentredString(pwidth/2, 700, texto)
         d.save()
         packet2.seek(0)
         new_pdf2 = PdfFileReader(packet2)
@@ -2327,8 +2331,86 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         REQUEST = self.REQUEST
         RESPONSE = REQUEST.RESPONSE
         RESPONSE.redirect(redirect_url)
-        
 
+    def requerimento_aprovar(self, cod_sessao_plen, nom_resultado, cod_materia):
+
+        if hasattr(self.sapl_documentos.props_sagl, 'logo_carimbo.png'):
+           logo = ImageReader(self.portal_url() + '/sapl_documentos/props_sagl/logo_carimbo.png')
+        elif hasattr(self.sapl_documentos.props_sagl, 'logo_casa.gif'):        
+           logo = ImageReader(self.portal_url() + '/sapl_documentos/props_sagl/logo_casa.gif')           
+        else:
+           logo = ImageReader(self.portal_url() + '/imagens/brasao.gif')        
+
+        # obtem dados da sessao
+        for item in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen):
+            for tipo in self.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=item.tip_sessao):
+                id_sessao = str(item.num_sessao_plen) + 'ª Sessão ' + tipo.nom_sessao
+            data = item.dat_inicio_sessao
+            num_legislatura = item.num_legislatura
+            data1 = self.pysc.data_converter_pysc(item.dat_inicio_sessao)            
+
+        # obtem presidente da sessao
+        nom_presidente = ''       
+        for composicao in self.zsql.composicao_mesa_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_cargo=1, ind_excluido=0):
+            for parlamentar in self.zsql.parlamentar_obter_zsql(cod_parlamentar=composicao.cod_parlamentar):
+                nom_presidente = str(parlamentar.nom_parlamentar.decode('utf-8').upper())
+
+        # se for vazio, obter presidente da Casa                
+        if nom_presidente == '':
+           data1 = self.pysc.data_converter_pysc(data) 
+           for sleg in self.zsql.periodo_comp_mesa_obter_zsql(num_legislatura=num_legislatura, data=data1):
+               for cod_presidente in self.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp, cod_cargo=1):
+                   for presidencia in self.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
+                       nom_presidente = str(presidencia.nom_parlamentar.decode('utf-8').upper())
+ 
+        # prepara carimbo
+        packet = StringIO.StringIO()
+        can = canvas.Canvas(packet)
+        can.drawImage(logo, 490, 695,  width=50, height=50, mask='auto')
+        texto = "%s" % (str(nom_resultado.decode('utf-8').upper()))
+        sessao = "%s - %s" % (id_sessao, data)
+        presidente = "%s " % (nom_presidente)
+        cargo = "Presidente"
+        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))   
+        pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))             
+        can.setFont('Arial_Bold', 10)
+        can.drawString(400, 730, texto)
+        can.setFont('Arial', 9)
+        can.drawString(400, 720, sessao)
+        can.drawString(400, 710, presidente)
+        can.drawString(400, 700, cargo)          
+        can.showPage()              
+        can.save()     
+        new_pdf = PdfFileReader(packet)         
+        output = PdfFileWriter()     
+        # adiciona carimbo aos documentos               
+        for item in self.zsql.ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_materia=cod_materia):
+            data = item.dat_ordem
+            for materia in self.zsql.materia_obter_zsql(cod_materia=item.cod_materia):
+                if materia.des_tipo_materia == 'Requerimento':
+                   storage_path = self.sapl_documentos.materia
+                   nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"                
+                   if hasattr(storage_path, nom_pdf_saida):
+                      url = self.url() + '/sapl_documentos/materia/' + nom_pdf_saida
+                      opener = urllib.urlopen(url)
+                      f = open('/tmp/' + nom_pdf_saida, 'wb').write(opener.read())
+                      existing_pdf = PdfFileReader('/tmp/'+ nom_pdf_saida, strict=False)
+                      numPages = existing_pdf.getNumPages()
+                      # Mescla canvas
+                      for page in range(existing_pdf.getNumPages()):
+                          page_pdf = existing_pdf.getPage(page)
+                          # carimbo na primeira pagina
+                          if page == 0:
+                             page_pdf.mergePage(new_pdf.getPage(0))
+                          output.addPage(page_pdf)
+                      outputStream = file('/tmp/' + nom_pdf_saida, "wb")                          
+                      output.write(outputStream)
+                      outputStream.close()
+                      data = open('/tmp/' + nom_pdf_saida, 'rb').read()
+                      documento = getattr(storage_path,nom_pdf_saida)
+                      documento.manage_upload(file=data)
+                      os.unlink('/tmp/'+nom_pdf_saida) 
+        
     def _getValidEmailAddress(self, member):
         email = None
         for usuario in self.zsql.usuario_obter_zsql(col_username=member):
