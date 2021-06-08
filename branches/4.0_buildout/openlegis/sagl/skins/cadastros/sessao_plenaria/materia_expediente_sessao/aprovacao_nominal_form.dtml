@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-<dtml-var standard_css_slot>
+<dtml-var standard_html_header>
 
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/geral.js"></script>
-
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/data_validar.js" "></script>
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/data_validar.js"></script>
 
 <script type="text/javascript">
     function campos_criticar(){
@@ -15,7 +10,7 @@
         var tipo_votacao = 2;
 
         if (form.lst_tip_resultado.selectedIndex == 0){
-            alert("Selecione o Resultado da Votação!");
+            alert("Selecione o resultado da votação!");
             form.lst_tip_resultado.focus();
             return false;
         }
@@ -33,25 +28,18 @@
             return;
      }
 
-     function reloadParentAndClose(){
-         parent.jQuery.fancybox.close();
-     }
-
 </script>
-</head>
-<body class="">
 
-<h1 class="firstHeading">Aprovação de Matérias do Expediente em Lote</h1>
+<h1 class="firstHeading">Aprovação de Matérias em Lote</h1>
 
 <h3 align="center"><dtml-var sessao_plenaria_header></h3>
 
 <form action="aprovacao_nominal_salvar_proc" name="votacao_form">
-        <input type="hidden" name="hdn_url" value="javascript:parent.jQuery.fancybox.close();" />
         <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+        <input type="hidden" name="modal" value="1"/>        
 
-<fieldset>
         <legend>Votação Nominal</legend>
-        <table class="table">
+        <table class="table table-borderless">
             <dtml-call expr="REQUEST.set('temVotacao', '0')">
             <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
              <dtml-if cod_votacao>
@@ -73,7 +61,7 @@
                 <td>
                   <select class="custom-select"  name="lst_voto_parlamentar" size="1">
                    <option value="-1">Selecione </option>
-                   <dtml-in expr="[('Sim','Sim'), ('Nao', 'Não'), ('Abstencao', 'Abstenção'), ('Ausente','Ausente')]">                 
+                   <dtml-in expr="[('Sim','Sim'), ('Nao', 'Não'), ('Abstencao', 'Abstenção'), ('Ausente','Ausente'), ('Na Presid.','Na Presidência')]">                 
                       <option
                            <dtml-if expr="_.has_key('cod_votacao') and (vot_parlamentar==_['sequence-key'] or vot_parlamentar==_['sequence-item'])">
                                 selected
@@ -96,8 +84,8 @@
                 <td>
                     <select class="custom-select"  name="lst_voto_parlamentar" size="1">
                         <option value="-1">Selecione </option> 
-                        <dtml-in expr="[('Sim','Sim'),('Nao','Não'),('Abstencao','Abstenção'),('Ausente','Ausente')]">
-                           <option value="<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></option>
+                        <dtml-in expr="[('Sim','Sim'),('Nao','Não'),('Abstencao','Abstenção'),('Ausente','Ausente'),('Na Presid.','Na Presidência')]">
+                           <option value="<dtml-var expr="_['sequence-key']">"<dtml-if expr="_['sequence-item']=='Sim'"> selected </dtml-if>><dtml-var expr="_['sequence-item']"></option>
                         </dtml-in>
                     </select>
                 </td>
@@ -129,10 +117,8 @@
             <tr>
         </table>
                 <p align="center" >
-                    <input class="form-control" type="button" name="button" value="Salvar" onClick="campos_criticar()" />
-                    <input class="btn btn-primary" type="button" name="btn_fechar" value="Fechar" OnClick="reloadParentAndClose();" />
+                    <input class="btn btn-primary" type="button" name="button" value="Salvar" onClick="campos_criticar()" />
                 </p>
-</fieldset>
 </form>
-</body>
-</html>
+<dtml-var standard_html_footer>
+

@@ -33,7 +33,7 @@ for item in context.zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen,
 
 presentes = context.pysc.quantidade_presentes_ordem_dia_pysc(cod_sessao_plen=cod_sessao_plen, dat_ordem=dat_sessao)
 
-if int(presentes) != None:
+if int(presentes) != 0:
    votos_sim = int(presentes) - 1
 else:
    votos_sim = 0
