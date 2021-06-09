@@ -145,9 +145,15 @@
      <div class="btn-group btn-group-sm">
       <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_original)">
           <a class="btn btn-primary" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1" target="_blank"><i class="far fa-file-pdf"></i> Texto Original</a>
-      </dtml-if> 
-      <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
-          <a class="btn btn-primary" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_consolidado=1" target="_blank"><i class="fas fa-file-pdf"></i> Texto Compilado</a>
+      </dtml-if>
+         <dtml-call expr="REQUEST.set('texto_consolidado', _.str(cod_norma)+'_texto_consolidado.pdf')">
+         <dtml-call expr="REQUEST.set('texto_odt', _.str(cod_norma)+'_texto_integral.odt')">        
+      <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_odt) and _.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
+           <dtml-let documento_odt="_.getattr(sapl_documentos.norma_juridica,texto_odt).absolute_url">         
+               <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var portal_url>/generico/viewerJS/?cod_norma=<dtml-var cod_norma>#<dtml-var documento_odt>?<dtml-var expr="ZopeTime().timeTime()"> "> <i class="fa fa-fw fa-file-code"></i> Texto Compilado</a>     
+           </dtml-let>
+      <dtml-elif "not _.hasattr(sapl_documentos.norma_juridica,texto_odt) and _.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
+         <a class="btn btn-primary" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_consolidado=1" target="_blank"> <i class="fa fa-fw fa-file-code"></i> Texto Compilado</a>
       </dtml-if>    
      </div>
     </div>
