@@ -57,7 +57,7 @@ if tipo_materia != None:
              dic['id_arquivo'] = modelo.getId() 
              dic['path_arquivo'] = modelo.virtual_url_path() 
              modelos.append(dic)       
-      elif tipo_materia =='Parecer':
+      elif tipo_materia =='Parecer' or tipo_materia =='Parecer de Comissão':
          for modelo in context.sapl_documentos.modelo.materia.parecer.objectValues('File'):
              dic ={}
              dic['titulo_arquivo'] = str(modelo.title)
