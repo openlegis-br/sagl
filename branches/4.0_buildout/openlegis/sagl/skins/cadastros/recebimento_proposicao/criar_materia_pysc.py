@@ -76,11 +76,11 @@ def criar_materia(hdn_num_protocolo, tip_materia, num_ident_basica, ano_materia,
        tmp_id = context.sapl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
        context.sapl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_materia]))
        
-    return inserir_autoria(cod_materia, cod_autor, cod_proposicao)
+    return inserir_autoria(cod_materia, cod_autor, cod_proposicao, hdn_num_protocolo)
 
 
 
-def inserir_autoria(cod_materia, cod_autor, cod_proposicao):
+def inserir_autoria(cod_materia, cod_autor, cod_proposicao, hdn_num_protocolo):
 
     if context.sapl_documentos.props_sagl.restpki_access_token != '' and des_tipo_autor == 'Parlamentar':
        for assinatura in context.zsql.assinatura_documento_obter_zsql(codigo=cod_proposicao, tipo_doc='proposicao', ind_assinado=1):
@@ -93,11 +93,11 @@ def inserir_autoria(cod_materia, cod_autor, cod_proposicao):
     else:
        context.zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 1)    
     
-    return tramitar_materia(cod_materia, cod_proposicao)
+    return tramitar_materia(cod_materia, cod_proposicao, hdn_num_protocolo)
 
 
 
-def tramitar_materia(cod_materia, cod_proposicao):
+def tramitar_materia(cod_materia, cod_proposicao, hdn_num_protocolo):
 
     for unidade in context.zsql.unidade_tramitacao_obter_zsql(ind_excluido=0):
         if 'Protocolo Eletrônico' == unidade.nom_unidade_join:
@@ -119,7 +119,7 @@ def tramitar_materia(cod_materia, cod_proposicao):
            cod_usuario_corrente = 0
            
     hr_tramitacao = DateTime().strftime('%d/%m/%Y às %H:%M')
-    txt_tramitacao = '<p>Matéria protocolada em ' + hr_tramitacao + '</p>'
+    txt_tramitacao = '<p>Matéria incorporada em ' + hr_tramitacao + ' - proveniente do Protocolo nº ' + str(hdn_num_protocolo) + '/' + DateTime().strftime("%Y") +' (proposição enviada por meio eletrônico)</p>'    
 #    hdn_url = context.portal_url() + '/cadastros/materia/materia_mostrar_proc?cod_materia=' + str(cod_materia)+ '&modal=1'   
     hdn_url = context.portal_url() + '/cadastros/recebimento_proposicao/recebimento_proposicao_index_html#incorporada'
     
