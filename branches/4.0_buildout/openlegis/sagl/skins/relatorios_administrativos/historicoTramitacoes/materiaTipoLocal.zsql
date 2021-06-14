@@ -4,7 +4,7 @@ arguments : dat_inicio=" " dat_fim=" " tipo="0" local="0" status="0"
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
-select DATE_FORMAT(tr.dat_tramitacao, '%d/%m/%Y') as dat_tramitacao_tr, tr.dat_tramitacao, t.sgl_tipo_materia, m.num_ident_basica, t.des_tipo_materia,  m.ano_ident_basica, m.txt_ementa, m.cod_materia, DATE_FORMAT(m.dat_fim_prazo, '%d/%m/%Y') as dat_fim_prazo_m, DATE_FORMAT(tr.dat_fim_prazo, '%d/%m/%Y') as dat_fim_prazo_t,  s.sgl_status, s.des_status, u.cod_unid_tramitacao, a.cod_autor, 
+SELECT DISTINCT DATE_FORMAT(tr.dat_tramitacao, '%d/%m/%Y') as dat_tramitacao_tr, tr.dat_tramitacao, t.sgl_tipo_materia, m.num_ident_basica, t.des_tipo_materia,  m.ano_ident_basica, m.txt_ementa, m.cod_materia, DATE_FORMAT(m.dat_fim_prazo, '%d/%m/%Y') as dat_fim_prazo_m, DATE_FORMAT(tr.dat_fim_prazo, '%d/%m/%Y') as dat_fim_prazo_t,  s.sgl_status, s.des_status, u.cod_unid_tramitacao, a.cod_autor, 
 <dtml-if u.cod_comissao> c.nom_comissao <dtml-elif u.cod_orgao> o.nom_orgao <dtml-else> p.nom_parlamentar </dtml-if>
 
 from unidade_tramitacao u left join tramitacao tr on (u.cod_unid_tramitacao=tr.cod_unid_tram_dest)
@@ -13,7 +13,7 @@ from unidade_tramitacao u left join tramitacao tr on (u.cod_unid_tramitacao=tr.c
                           left join parlamentar p on (u.cod_parlamentar=p.cod_parlamentar)
                           left join materia_legislativa m on (tr.cod_materia=m.cod_materia)
                           left join tipo_materia_legislativa t on (m.tip_id_basica = t.tip_materia)
-                          left join autoria a ON m.cod_materia = a.cod_materia,
+                          left join autoria a ON m.cod_materia = a.cod_materia and a.ind_primeiro_autor=1,
                           status_tramitacao s 
 
 where tr.dat_tramitacao >= <dtml-sqlvar dat_inicio type="string"> and
