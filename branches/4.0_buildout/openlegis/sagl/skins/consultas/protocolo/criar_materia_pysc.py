@@ -73,8 +73,8 @@ def tramitar_materia(cod_materia):
         else:
            cod_usuario_corrente = 0
            
-    hr_tramitacao = DateTime().strftime('%d/%m/%Y às %H:%M')
-    txt_tramitacao = 'Matéria incorporada em ' + hr_tramitacao
+    hr_tramitacao = DateTime().strftime('%d/%m/%Y às %Hh%M')
+    txt_tramitacao = '<p>Matéria incorporada em ' + hr_tramitacao + ' - proveniente do Protocolo nº ' + str(num_protocolo) + '/' + str(ano_materia) +'</p>'
     hdn_url = 'protocolo_mostrar_proc?cod_protocolo=' + cod_protocolo
     
     if cod_unid_tram_local != None and cod_unid_tram_dest != None and cod_status != None:
