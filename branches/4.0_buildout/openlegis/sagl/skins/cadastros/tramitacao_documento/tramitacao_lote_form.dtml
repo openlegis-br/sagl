@@ -2,7 +2,7 @@
 
 <link type="text/css" href="<dtml-var portal_url>/css/dataTables.checkboxes.css" rel="stylesheet" />
 <script type="text/javascript" src="<dtml-var portal_url>/js/dataTables.checkboxes.min.js"></script>
-<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js"></script>
 <script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
 
 <script>
@@ -192,7 +192,7 @@ $(document).ready(function(){
   <input type="hidden" name="txt_check" value="">
 
   <div class="table-responsive">
-  <table class="table display" width="100%" id="tramitacao">
+  <table class="table table-striped display" width="100%" id="tramitacao">
     <thead class="table-secondary">
       <tr>
           <th width="5%"></th>
@@ -201,6 +201,7 @@ $(document).ready(function(){
           <th width="15%">Origem</th>
           <th width="15%">Destino</th>          
           <th>Status</th>
+	  <th>Prazo</th>                    
           <th data-col="0"></th>          
      </tr>
     </thead>
@@ -208,6 +209,8 @@ $(document).ready(function(){
  </dtml-if sequence-start>
 
  <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_tramitacao=_['sequence-item'], ind_excluido=0)">
+  <dtml-call expr="REQUEST.set('prazo_a_vencer', _.DateTime()+3)">
+  <dtml-call expr="REQUEST.set('prazo_tramitacao', dat_fim_prazo)"> 
   <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
        <tr>
           <td>
@@ -224,7 +227,7 @@ $(document).ready(function(){
             </dtml-if>
               <b><dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></b></a> - 
               <b><dtml-var txt_interessado></b>
-              - <dtml-var txt_assunto>
+              <br /><dtml-var txt_assunto>
           </td>
           <td>
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local, ind_adm=1)">
@@ -245,7 +248,15 @@ $(document).ready(function(){
             <dtml-else>
                <dtml-var expr="des_status">
             </dtml-if>
-          </td>      
+          </td>
+          <td>
+            <dtml-var prazo_tramitacao missing null>
+             <dtml-if prazo_tramitacao>                     
+              <dtml-if expr="(_.DateTime().strftime('%Y/%m/%d') > _.DateTime(prazo_tramitacao).strftime('%Y/%m/%d'))">
+                <p class="text-danger small"><i class="fas fa-exclamation-triangle"></i> Vencido</p>
+              </dtml-if>
+             </dtml-if>              
+          </td>           
           <td>
             <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Tramitação Individual" data-src="tramitacao_form?hdn_cod_documento=<dtml-var cod_documento>&modal=1" class="btn btn-sm btn-link"><i class="fas fa-external-link-alt"></i><span>Tramitar</span></a>             
           </td>          
