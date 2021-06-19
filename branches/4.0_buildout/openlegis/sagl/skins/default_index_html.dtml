@@ -20,7 +20,7 @@
 <dtml-if expr="(str(REQUEST['AUTHENTICATED_USER']).strip()=='Anonymous User')">
 
   <div class="row">
-    
+     
       <div class="col-12 col-md-6 col-lg-4 mt-3 mb-3 text-center homeBlock">
         <a href="<dtml-var portal_url>/consultas/parlamentar">      
         <div class="homeContent rounded py-3 px-4">
@@ -351,6 +351,34 @@ liberacao" class="alert-link"> <dtml-var expr="_.len(materias)"> matéria<dtml-i
     </dtml-if>
 
 </dtml-if>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
+  <dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+          <dtml-call expr="REQUEST.set('col_username', col_username)">
+      </dtml-in>
+    </dtml-in>
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('col_username',AUTHENTICATED_USER.getUserName())">
+  </dtml-if>
+  <dtml-with expr="_.namespace(devolvidas=zsql.proposicao_obter_zsql(ind_excluido=0, ind_devolvido='1', col_username=col_username))">
+    <dtml-if expr="_.len(devolvidas) > 0">
+   <div class="row">    
+   <div class="col-12">
+     <div class="bs-component">
+       <div class="alert alert-dismissible alert-warning">
+         <button type="button" class="close" data-dismiss="alert">×</button>
+         <h5 class="alert-heading"><i class="fas fa-exclamation-circle"></i> Aviso de Proposição Devolvida</h5>
+         <p class="mb-0"><a href="<dtml-var portal_url>/cadastros/proposicao?ind_devolvido=1" class="alert-link"><dtml-var expr="_.len(devolvidas)"> <dtml-if expr="_.len(devolvidas) > 1">Proposições Eletrônicas<dtml-else>Proposição Eletrônica</dtml-if></a> de sua autoria <dtml-if expr="_.len(devolvidas) > 1">foram devolvidas<dtml-else>foi devolvida</dtml-if> pelo setor competente. Para eventual reaproveitamento, providencie a regularização, conforme orientações fornecidas na justificativa da devolução, ou proceda a sua exclusão.
+       </div>
+     </div>
+    </div>
+    </div>    
+    </dtml-if>
+  </dtml-with>
+</dtml-if>
+
 </dtml-if>
 
 <div class="form-row">

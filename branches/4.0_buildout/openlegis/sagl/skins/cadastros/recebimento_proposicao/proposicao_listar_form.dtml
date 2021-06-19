@@ -18,7 +18,7 @@ function refreshPage() {
 <dtml-if expr="envrec=='E'">
     <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido=0)">  
        <dtml-if sequence-start>
-         <p class="text-muted font-weight-bold">Proposições em elaboração ou revisão</p>
+         <p class="text-muted font-weight-bold">Proposições em elaboração ou revisão textual</p>
 	  <table class="table table-striped display" id="pendentes">
               <thead>
 	        <tr>  
@@ -57,7 +57,7 @@ function refreshPage() {
          </table>
        </dtml-if sequence-end>
         <dtml-else>
-           <p class="text-muted">Não há proposições para revisão.</p>        
+           <p class="text-muted">Não há proposições para revisão textual.</p>        
     </dtml-in>
 
 <dtml-elif expr="envrec=='P'">
@@ -100,7 +100,7 @@ function refreshPage() {
     </dtml-in>
 
 <dtml-elif expr="envrec=='A'">
-    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido=0)">  
+    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido='0')">  
        <dtml-if sequence-start>
          <p class="text-muted font-weight-bold">Proposições assinadas e prontas para incorporação</p>
 		    <table class="table table-striped display" id="pendentes">
@@ -116,8 +116,7 @@ function refreshPage() {
        </dtml-if sequence-start>
        <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">          
        <dtml-if expr="(dat_envio!='')">
-         <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">                                        
-           <dtml-if expr="zsql.assinatura_documento_obter_zsql(tipo_doc='proposicao',codigo=cod_proposicao, ind_assinado=1)">       
+
              <dtml-if expr="(dat_recebimento==None and _.hasattr(sapl_documentos.proposicao,id_documento_assinado))">
                <dtml-if sequence-even>
                  <tr>
@@ -134,25 +133,7 @@ function refreshPage() {
                <td><dtml-var nom_autor></td>
                </tr>
              </dtml-if>
-           </dtml-if>
-         <dtml-else>
-             <dtml-if expr="(dat_recebimento==None and _.hasattr(sapl_documentos.proposicao,id_documento_assinado))">
-               <dtml-if sequence-even>
-                 <tr>
-               <dtml-else>
-                 <tr class="even">
-               </dtml-if> 
-               <td>
-                  <a href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>&ind_pendente=1">
-                      <b><dtml-var dat_envio></b>
-                  </a>
-               </td>
-               <td><dtml-var des_tipo_proposicao></td>
-               <td><dtml-var txt_descricao></td>
-               <td><dtml-var nom_autor></td>
-               </tr>
-             </dtml-if>
-         </dtml-if>         
+
        </dtml-if>
        <dtml-if sequence-end>
           </tbody>
@@ -165,6 +146,7 @@ function refreshPage() {
    <dtml-elif expr="envrec=='I'">
         <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_incorporado=1)" size=300>
         <dtml-if sequence-start>
+            <p class="text-muted font-weight-bold">Histórico das últimas proposições incorporadas</p>        
             <table id="incorporadas" class="table table-striped display">
               <thead>
                 <tr>  
@@ -221,8 +203,9 @@ function refreshPage() {
         </dtml-in>
 
   <dtml-elif expr="envrec=='R'">
-        <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_devolvido=1)" size=50>
+        <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_devolvido='1')" size=50>
         <dtml-if sequence-start>
+            <p class="text-muted font-weight-bold">Proposições devolvidas ao autor</p>
             <table id="devolvidas" class="table table-striped display">
               <thead>
                 <tr>  

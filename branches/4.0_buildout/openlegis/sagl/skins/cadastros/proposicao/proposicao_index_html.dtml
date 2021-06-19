@@ -11,7 +11,12 @@ $(document).ready(function() {
 
     $('table.display').DataTable( {
         "responsive": true,
+        <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='0'">
+        <dtml-elif expr="_.has_key('ind_devolvido') and ind_devolvido=='1'">
+        "order": [[ 3, "desc" ]],                      
+        <dtml-else>
         "order": [[ 2, "desc" ]],
+        </dtml-if>
         "bStateSave": true,        
         "fnStateSave": function (oSettings, oData) {
             localStorage.setItem('displayDataTable', JSON.stringify(oData));
@@ -123,7 +128,7 @@ $(document).ready(() => {
 
 
 <a
- <dtml-if expr="not _.has_key('ind_enviado') or ind_enviado=='0'">
+ <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='0'">
     class="btn btn-sm btn-primary mb-3 disabled" 
   <dtml-else>
     class="btn btn-sm btn-primary mb-3"   
@@ -137,9 +142,20 @@ href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_envia
   </dtml-if>
   href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_enviado=1">Enviadas
 </a>
+<a
+  <dtml-if expr="_.has_key('ind_devolvido') and ind_devolvido=='1'">
+     class="btn btn-sm btn-primary mb-3 disabled"
+  <dtml-else> 
+     class="btn btn-sm btn-primary mb-3"      
+  </dtml-if>
+  href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_devolvido=1">Devolvidas
+</a>
 
 <dtml-unless ind_enviado>
   <dtml-call expr="REQUEST.set('ind_enviado', '0')">
+</dtml-unless>
+<dtml-unless ind_devolvido>
+  <dtml-call expr="REQUEST.set('ind_devolvido', 0)">
 </dtml-unless>
 
   <dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
@@ -152,8 +168,8 @@ href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_envia
     <dtml-call expr="REQUEST.set('col_username',AUTHENTICATED_USER.getUserName())">
   </dtml-if>
 
-<dtml-if expr="ind_enviado=='0'">
-<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, col_username=col_username)">
+<dtml-if expr="ind_enviado=='0' and ind_devolvido==0">
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, ind_devolvido=ind_devolvido, col_username=col_username)">
     <dtml-if sequence-start>    
             <table class="table display" id="enviadas">    
              <thead class="table-secondary">
@@ -180,7 +196,7 @@ href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_envia
 </dtml-if>
 
 <dtml-if expr="ind_enviado=='1'">
-<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, col_username=col_username)">
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, ind_devolvido='0', col_username=col_username)">
     <dtml-if sequence-start>    
         <fieldset>
             <table class="table display" id="enviadas">    
@@ -217,4 +233,42 @@ href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_envia
     </fieldset>
 </dtml-in>
 </dtml-if>
+
+<dtml-if expr="_.has_key('ind_devolvido') and ind_devolvido=='1'">
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado='1', ind_devolvido=ind_devolvido, col_username=col_username)">
+    <dtml-if sequence-start>    
+        <fieldset>
+            <table class="table display" id="devolvidas">    
+             <thead class="table-secondary">
+                <tr>  
+                    <th width="20%">Tipo de Proposição</th>
+                    <th>Ementa</th>
+                    <th width="18%">Envio</th>
+                    <th>Devolução</th>
+                </tr>
+             </thead>
+    </dtml-if sequence-start>
+               <tr>
+                    <td>
+                        <a href="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">
+                            <dtml-var des_tipo_proposicao>
+                        </a>                    
+                     </td>
+                    <td><dtml-var txt_descricao></td>
+                    <td>
+                        <dtml-if expr="dat_envio==None">Em elaboração<dtml-else><dtml-var dat_envio></dtml-if>
+                    </td>
+                    <td>
+	                <dtml-var dat_devolucao missing>
+                    </td>
+                </tr>
+    <dtml-if sequence-end>
+            </table>
+    </dtml-if sequence-end>
+<dtml-else>
+    <p>Nenhuma proposição foi devolvida.</p>
+    </fieldset>
+</dtml-in>
+</dtml-if>
+
 <dtml-var standard_html_footer>
