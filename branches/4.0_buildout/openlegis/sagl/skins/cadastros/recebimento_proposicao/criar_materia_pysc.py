@@ -67,14 +67,6 @@ def criar_materia(hdn_num_protocolo, tip_materia, num_ident_basica, ano_materia,
     
     for codigo in context.zsql.materia_incluida_codigo_obter_zsql():
         cod_materia = int(codigo.cod_materia)
-        id_materia = str(cod_materia)+'_texto_integral.pdf'
-        
-    id_proposicao_odt = str(cod_proposicao)+'.odt'
-    
-    if hasattr(context.sapl_documentos.proposicao,id_proposicao_odt):
-       tmp_copy = context.sapl_documentos.proposicao.manage_copyObjects(ids=id_proposicao_odt)
-       tmp_id = context.sapl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
-       context.sapl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_materia]))
        
     return inserir_autoria(cod_materia, cod_autor, cod_proposicao, hdn_num_protocolo)
 
@@ -128,6 +120,10 @@ def tramitar_materia(cod_materia, cod_proposicao, hdn_num_protocolo):
         
     for tramitacao in context.zsql.tramitacao_incluida_codigo_obter_zsql():
         cod_tramitacao = tramitacao.cod_tramitacao
+
+    odt_proposicao = str(cod_proposicao) + '.odt'
+    if hasattr(context.sapl_documentos.proposicao,odt_proposicao):
+       context.pysc.proposicao_salvar_como_texto_integral_materia_pysc(cod_proposicao,cod_materia,0)
         
     context.zsql.proposicao_registrar_recebimento_zsql(cod_proposicao = cod_proposicao, dat_recebimento = context.pysc.data_atual_iso_pysc(),cod_mat_ou_doc = int(cod_materia))
 
@@ -137,6 +133,7 @@ def tramitar_materia(cod_materia, cod_proposicao, hdn_num_protocolo):
           context.modelo_proposicao.proposicao_autuar(cod_proposicao=cod_proposicao)
 
     return context.relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=cod_tramitacao, hdn_url=hdn_url)
+
 
 if cod_mat == None:
    return criar_protocolo(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, txt_ementa, txt_observacao, cod_autor, tip_quorum, ind_complementar, cod_proposicao)

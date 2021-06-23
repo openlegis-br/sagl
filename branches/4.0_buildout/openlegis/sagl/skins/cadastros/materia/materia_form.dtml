@@ -138,12 +138,32 @@
   function texto_original_materia_obter(){
 
       if (confirm("Copiar conteúdo do texto original em ODT?")) {
-         location.href="pysc/texto_original_materia_obter_pysc?cod_materia=<dtml-var cod_materia missing>";
+         location.href="<dtml-var portal_url>/pysc/texto_original_materia_obter_pysc?cod_materia=<dtml-var cod_materia missing>";
          setTimeout(function(){window.location.reload(true)},1500);
          return true;
        }
          return;
   }
+  
+  function odt_proposicao_obter(cod_proposicao){
+
+      if (confirm("Copiar arquivo ODT da proposição?")) {
+         location.href="<dtml-var portal_url>/pysc/proposicao_salvar_como_texto_integral_materia_pysc?cod_proposicao="+cod_proposicao+"&cod_materia=<dtml-var cod_materia missing>";
+         setTimeout(function(){window.location.reload(true)},1500);
+         return true;
+       }
+         return;
+  }
+
+  function pdf_proposicao_obter(cod_proposicao){
+
+      if (confirm("Copiar e autuar o arquivo PDF da proposição?")) {
+         location.href="<dtml-var portal_url>/modelo_proposicao/proposicao_autuar?cod_proposicao="+cod_proposicao;
+         setTimeout(function(){window.location.reload(true)},1500);
+         return true;
+       }
+         return;
+  }  
 
   function numero_materia_buscar(form){
      if ((form.lst_tip_id_basica.selectedIndex != 0) &&
@@ -565,6 +585,7 @@ $(document).ready(() => {
           <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_materia)+'_texto_integral_signed.pdf')">
           <dtml-if "_.hasattr(sapl_documentos.materia,id_documento) and not _.hasattr(sapl_documentos.materia,id_documento_assinado)">
              <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
+                <dtml-call expr="REQUEST.set('temPDF', 1)">             
                 <a class="btn btn-secondary" target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
                   <i class="fa fa-fw fa-file-pdf"></i>Visualizar
                 </a>
@@ -812,15 +833,25 @@ $(document).ready(() => {
          <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
              <legend>Processo Eletrônico</legend>
              <div class="card mb-3">
-               <div class="card-body">          
+               <div class="row card-body">
+                   <div class="col-12 col-md-8">
                        <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
                           <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
                           <a class="btn btn-secondary" target="_blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
                               <i class="fas fa-certificate"></i> Proposição <dtml-var cod_documento>
                           </a>                          
-                          <a class="btn btn-secondary" target="_blank" href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">Mais Informações</a>
+                          <a class="btn btn-secondary" target="_blank" href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>"><i class="fas fa-info-circle"></i> Mais Informações</a>
                           <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_proposicao>&tipo_doc=proposicao&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
                        </dtml-let>
+                   </div>
+                   <div class="col-12 col-md-4 text-right">                   
+                      <dtml-if expr="not _.has_key('temODT')">                 
+                        <input class="btn btn-primary" type="button" value="ODT" onClick="odt_proposicao_obter(<dtml-var cod_proposicao>)" />
+                      </dtml-if>
+                      <dtml-if expr="not _.has_key('temPDF')">
+                        <input class="btn btn-primary" type="button" value="PDF" onClick="pdf_proposicao_obter(<dtml-var cod_proposicao>)" />                      
+                      </dtml-if>                      
+                   </div>                                 
                </div>
              </div>
          </dtml-if>
