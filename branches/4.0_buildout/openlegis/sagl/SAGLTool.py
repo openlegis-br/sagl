@@ -1766,42 +1766,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def pades_signature(self, codigo, tipo_doc, cod_usuario):
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
-            # local de armazenamento
             tipo_doc = storage.tip_documento
-            if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio' or tipo_doc == 'redacao_final':
-               storage_path = self.sapl_documentos.materia
-            elif tipo_doc == 'emenda':
-               storage_path = self.sapl_documentos.emenda
-            elif tipo_doc == 'substitutivo':
-               storage_path = self.sapl_documentos.substitutivo
-            elif tipo_doc == 'tramitacao':
-               storage_path = self.sapl_documentos.materia.tramitacao
-            elif tipo_doc == 'parecer_comissao':
-               storage_path = self.sapl_documentos.parecer_comissao
-            elif tipo_doc == 'pauta':
-               storage_path = self.sapl_documentos.pauta_sessao
-            elif tipo_doc == 'ata':
-               storage_path = self.sapl_documentos.ata_sessao
-            elif tipo_doc == 'norma':
-               storage_path = self.sapl_documentos.norma_juridica
-            elif tipo_doc == 'documento' or tipo_doc == 'doc_acessorio_adm':
-               storage_path = self.sapl_documentos.administrativo
-            elif tipo_doc == 'tramitacao_adm':
-               storage_path = self.sapl_documentos.administrativo.tramitacao
-            elif tipo_doc == 'proposicao':
-               storage_path = self.sapl_documentos.proposicao
-            elif tipo_doc == 'protocolo':
-               storage_path = self.sapl_documentos.protocolo
-            elif tipo_doc == 'peticao':
-               storage_path = self.sapl_documentos.administrativo
-            elif tipo_doc == 'pauta_comissao':
-               storage_path = self.sapl_documentos.reuniao_comissao
-            elif tipo_doc == 'ata_comissao':
-               storage_path = self.sapl_documentos.reuniao_comissao
-            elif tipo_doc == 'documento_comissao':
-               storage_path = self.sapl_documentos.documento_comissao  
-   
             if tipo_doc == 'proposicao':
+               storage_path = self.sapl_documentos.proposicao            
                pdf_location = storage.pdf_location
                pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
                nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
@@ -1810,6 +1777,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             else:
                for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, ind_assinado=1):
                    if len([item]) >= 1:
+                      storage_path = self.sapl_documentos.documentos_assinados                               
                       pdf_location = 'sapl_documentos/documentos_assinados/'
                       pdf_signed = str(pdf_location) + str(item.cod_assinatura_doc) + '.pdf'
                       nom_arquivo_assinado = str(item.cod_assinatura_doc) + '.pdf'
@@ -1822,6 +1790,37 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
                    pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
                    nom_arquivo = str(codigo) + str(storage.pdf_file)
+                   # local de armazenamento
+                   if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio' or tipo_doc == 'redacao_final':
+                      storage_path = self.sapl_documentos.materia
+                   elif tipo_doc == 'emenda':
+                      storage_path = self.sapl_documentos.emenda
+                   elif tipo_doc == 'substitutivo':
+                      storage_path = self.sapl_documentos.substitutivo
+                   elif tipo_doc == 'tramitacao':
+                      storage_path = self.sapl_documentos.materia.tramitacao
+                   elif tipo_doc == 'parecer_comissao':
+                      storage_path = self.sapl_documentos.parecer_comissao
+                   elif tipo_doc == 'pauta':
+                      storage_path = self.sapl_documentos.pauta_sessao
+                   elif tipo_doc == 'ata':
+                      storage_path = self.sapl_documentos.ata_sessao
+                   elif tipo_doc == 'norma':
+                      storage_path = self.sapl_documentos.norma_juridica
+                   elif tipo_doc == 'documento' or tipo_doc == 'doc_acessorio_adm':
+                      storage_path = self.sapl_documentos.administrativo
+                   elif tipo_doc == 'tramitacao_adm':
+                      storage_path = self.sapl_documentos.administrativo.tramitacao
+                   elif tipo_doc == 'protocolo':
+                      storage_path = self.sapl_documentos.protocolo
+                   elif tipo_doc == 'peticao':
+                      storage_path = self.sapl_documentos.administrativo
+                   elif tipo_doc == 'pauta_comissao':
+                      storage_path = self.sapl_documentos.reuniao_comissao
+                   elif tipo_doc == 'ata_comissao':
+                      storage_path = self.sapl_documentos.reuniao_comissao
+                   elif tipo_doc == 'documento_comissao':
+                      storage_path = self.sapl_documentos.documento_comissao                    
         try:
            arquivo = self.restrictedTraverse(pdf_signed)
            pdf_tosign = nom_arquivo_assinado
