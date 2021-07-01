@@ -81,6 +81,7 @@ security2.declarePublic('mailPassword')
 mailPassword = 'Mail forgotten password'
 addPermission(mailPassword, ('Anonymous', 'Manager',))
 
+
 from Acquisition import aq_base
 
 
@@ -1765,6 +1766,41 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def pades_signature(self, codigo, tipo_doc, cod_usuario):
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
+            # local de armazenamento
+            tipo_doc = storage.tip_documento
+            if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio' or tipo_doc == 'redacao_final':
+               storage_path = self.sapl_documentos.materia
+            elif tipo_doc == 'emenda':
+               storage_path = self.sapl_documentos.emenda
+            elif tipo_doc == 'substitutivo':
+               storage_path = self.sapl_documentos.substitutivo
+            elif tipo_doc == 'tramitacao':
+               storage_path = self.sapl_documentos.materia.tramitacao
+            elif tipo_doc == 'parecer_comissao':
+               storage_path = self.sapl_documentos.parecer_comissao
+            elif tipo_doc == 'pauta':
+               storage_path = self.sapl_documentos.pauta_sessao
+            elif tipo_doc == 'ata':
+               storage_path = self.sapl_documentos.ata_sessao
+            elif tipo_doc == 'norma':
+               storage_path = self.sapl_documentos.norma_juridica
+            elif tipo_doc == 'documento' or tipo_doc == 'doc_acessorio_adm':
+               storage_path = self.sapl_documentos.administrativo
+            elif tipo_doc == 'tramitacao_adm':
+               storage_path = self.sapl_documentos.administrativo.tramitacao
+            elif tipo_doc == 'proposicao':
+               storage_path = self.sapl_documentos.proposicao
+            elif tipo_doc == 'protocolo':
+               storage_path = self.sapl_documentos.protocolo
+            elif tipo_doc == 'peticao':
+               storage_path = self.sapl_documentos.administrativo
+            elif tipo_doc == 'pauta_comissao':
+               storage_path = self.sapl_documentos.reuniao_comissao
+            elif tipo_doc == 'ata_comissao':
+               storage_path = self.sapl_documentos.reuniao_comissao
+            elif tipo_doc == 'documento_comissao':
+               storage_path = self.sapl_documentos.documento_comissao  
+   
             if tipo_doc == 'proposicao':
                pdf_location = storage.pdf_location
                pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
@@ -1793,9 +1829,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arquivo = self.restrictedTraverse(pdf_file)
            pdf_tosign = nom_arquivo
 
-        # Verifica se existe arquivo
-        utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()        
+        # Verifica se existe arquivo    
         tmp_path = '/tmp'        
         if os.path.exists(os.path.join(tmp_path, pdf_tosign)):
            os.unlink(os.path.join(tmp_path, pdf_tosign))           
@@ -1803,14 +1837,17 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            raise ValueError(msg)
         else:
            # Read the PDF path
-           url = self.url() + '/' + pdf_location + pdf_tosign
-           opener = urllib.urlopen(url)
-           f = open('/tmp/' + pdf_tosign, 'wb').write(opener.read())
+           arq = getattr(storage_path, nom_arquivo)
+           arquivo = cStringIO.StringIO(str(arq.data))           
+           arquivo.seek(0)
+           f = open('/tmp/' + pdf_tosign, 'wb').write(arquivo.read())
         
         pdf_tmp = pdf_tosign
         pdf_path = '%s/%s' % (tmp_path, pdf_tosign)
 
         # Read the PDF stamp image
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()  
         id_logo = portal.sapl_documentos.props_sagl.id_logo
         if hasattr(self.sapl_documentos.props_sagl, id_logo):
            url = self.url() + '/sapl_documentos/props_sagl/' + id_logo
