@@ -1773,10 +1773,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)             
                nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
                pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
-               if hasattr(storage_path, nom_arquivo_assinado):
-                  nom_arquivo = nom_arquivo_assinado
-               else:
-                  nom_arquivo = str(codigo) + str(storage.pdf_file)
+               nom_arquivo = str(codigo) + str(storage.pdf_file)               
             else:
                for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, ind_assinado=1):
                    if len([item]) >= 1:
@@ -1788,11 +1785,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                       nom_arquivo = str(item.cod_assinatura_doc) + '.pdf'
                       break
                else:
-                   pdf_location = storage.pdf_location
-                   pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
-                   nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
-                   pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
-                   nom_arquivo = str(codigo) + str(storage.pdf_file)
                    # local de armazenamento
                    if tipo_doc == 'materia' or tipo_doc == 'doc_acessorio' or tipo_doc == 'redacao_final':
                       storage_path = self.sapl_documentos.materia
@@ -1823,7 +1815,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    elif tipo_doc == 'ata_comissao':
                       storage_path = self.sapl_documentos.reuniao_comissao
                    elif tipo_doc == 'documento_comissao':
-                      storage_path = self.sapl_documentos.documento_comissao                    
+                      storage_path = self.sapl_documentos.documento_comissao
+                   pdf_location = storage.pdf_location
+                   pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
+                   nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
+                   pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
+                   nom_arquivo = str(codigo) + str(storage.pdf_file)                                  
         try:
            arquivo = self.restrictedTraverse(pdf_signed)
            pdf_tosign = nom_arquivo_assinado
@@ -1839,7 +1836,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            raise ValueError(msg)
         else:
            # Read the PDF path
-           arq = getattr(storage_path, nom_arquivo)
+           arq = getattr(storage_path, pdf_tosign)
            arquivo = cStringIO.StringIO(str(arq.data))           
            arquivo.seek(0)
            f = open('/tmp/' + pdf_tosign, 'wb').write(arquivo.read())
