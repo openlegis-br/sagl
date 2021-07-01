@@ -1770,10 +1770,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if tipo_doc == 'proposicao':
                storage_path = self.sapl_documentos.proposicao            
                pdf_location = storage.pdf_location
-               pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
+               pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)             
                nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
                pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
-               nom_arquivo = str(codigo) + str(storage.pdf_file)
+               if hasattr(storage_path, nom_arquivo_assinado):
+                  nom_arquivo = nom_arquivo_assinado
+               else:
+                  nom_arquivo = str(codigo) + str(storage.pdf_file)
             else:
                for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, ind_assinado=1):
                    if len([item]) >= 1:
