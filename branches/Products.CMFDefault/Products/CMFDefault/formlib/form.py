@@ -18,7 +18,7 @@ from datetime import datetime
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from AccessControl.class_init import InitializeClass
-from Products.Five.browser.decode import processInputs
+#from Products.Five.browser.decode import processInputs
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.component import getUtility
