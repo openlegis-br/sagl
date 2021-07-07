@@ -20,7 +20,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import sys
-import StringIO
+from io import StringIO
+from io import BytesIO
 import xml.dom.minidom
 import copy
 
@@ -28,13 +29,12 @@ import reportlab
 from reportlab.pdfgen import canvas
 from reportlab import platypus
 
-from trml2pdf import utils
-from trml2pdf import color
-from trml2pdf.barcode import BarCode
+from . import utils, color
+
+from .barcode import BarCode
 
 class ParserError(Exception):
     pass
-
 
 def _child_get(node, childs):
     clds = []
@@ -343,7 +343,7 @@ class Canvas(object):
         import urllib
         from reportlab.lib.utils import ImageReader
         u = urllib.urlopen(str(node.getAttribute('file')))
-        s = StringIO.StringIO()
+        s = BytesIO()
         s.write(u.read())
         s.seek(0)
         img = ImageReader(s)
@@ -638,10 +638,10 @@ class Template(object):
         if not node.hasAttribute('pageSize'):
             page_size = (utils.unit_get('21cm'), utils.unit_get('29.7cm'))
         else:
-            ps = map(lambda x: x.strip(), node.getAttribute('pageSize') \
+            ps = list(map(lambda x: x.strip(), node.getAttribute('pageSize') \
                                              .replace(')', '') \
                                              .replace('(', '') \
-                                             .split(', '))
+                                             .split(', ')))
             page_size = (utils.unit_get(ps[0]), utils.unit_get(ps[1]))
         cm = reportlab.lib.units.cm
         self.doc_tmpl = platypus.BaseDocTemplate(out, pagesize=page_size,
@@ -676,7 +676,7 @@ class Template(object):
         self.doc_tmpl.build(fis)
 
 
-def parse_string(data, fout=None, encoding="UTF-8"):
+def parse_string(data, fout=None, encoding="utf-8"):
     doc = Document(data, encoding)
     if fout:
         fp = file(fout, 'wb')
@@ -684,7 +684,7 @@ def parse_string(data, fout=None, encoding="UTF-8"):
         fp.close()
         return fout
     else:
-        fp = StringIO.StringIO()
+        fp = BytesIO()
         doc.render(fp)
         return fp.getvalue()
 

@@ -21,7 +21,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import sys
-import StringIO
+from io import StringIO
+from io import BytesIO
 import xml.dom.minidom
 import copy
 
@@ -35,12 +36,12 @@ try:
     from reportlab.graphics.barcode.code39 import Standard39, Extended39
     from reportlab.graphics.barcode.code93 import Standard93, Extended93
     from reportlab.graphics.barcode.usps import FIM, POSTNET
-    #from reportlab.graphics.barcode.eanbc import EAN8, EAN13
+    from reportlab.graphics.barcode.eanbc import EAN8, EAN13
     barcode_codes = dict(codabar=Codabar, code11=Code11, code128=Code128,
                  standard39=Standard39, extended39=Extended39, 
                  standard93=Standard93, extended93=Extended93,
                  i2of5=I2of5, msi=MSI, fim=FIM, postnet=POSTNET,
-        #        ean8=EAN8, ean13=EAN13
+                 ean8=EAN8, ean13=EAN13
                  )
     #sys.stderr.write('Barcodes:')
     #for i in reportlab.graphics.barcode.getCodeNames():
@@ -50,15 +51,14 @@ except ImportError:
     #sys.stderr.write('No Barcodes')
     pass
 
-import utils
-import color
+from . import utils, color
 
-#
+
 # Change this to UTF-8 if you plan tu use Reportlab's UTF-8 support
 #
 # encoding = 'latin1'
 # use utf8 for default
-encoding = 'UTF-8'
+encoding = 'utf-8'
 
 def _child_get(node, childs):
     clds = []
@@ -295,10 +295,10 @@ class _rml_canvas(object):
             self.canvas.setDash(node.getAttribute('dash').split(','))
 
     def _image(self, node):
-        import urllib
-        from reportlab.lib.utils import ImageReader
-        u = urllib.urlopen(str(node.getAttribute('file')))
-        s = StringIO.StringIO()
+        import urllib.request    
+        from reportlab.lib.utils import ImageReader     
+        u = urllib.request.urlopen(str(node.getAttribute('file')))
+        s = BytesIO()
         s.write(u.read())
         s.seek(0)
         img = ImageReader(s)
@@ -531,7 +531,7 @@ class _rml_template(object):
         if not node.hasAttribute('pageSize'):
             pageSize = (utils.unit_get('21cm'), utils.unit_get('29.7cm'))
         else:
-            ps = map(lambda x:x.strip(), node.getAttribute('pageSize').replace(')', '').replace('(', '').split(','))
+            ps = list(map(lambda x:x.strip(), node.getAttribute('pageSize').replace(')', '').replace('(', '').split(',')))
             pageSize = ( utils.unit_get(ps[0]),utils.unit_get(ps[1]) )
         cm = reportlab.lib.units.cm
         self.doc_tmpl = platypus.BaseDocTemplate(out, pagesize=pageSize, **utils.attr_get(node, ['leftMargin','rightMargin','topMargin','bottomMargin'], {'allowSplitting':'int','showBoundary':'bool','title':'str','author':'str'}))
@@ -565,7 +565,7 @@ def parseString(data, fout=None):
         fp.close()
         return fout
     else:
-        fp = StringIO.StringIO()
+        fp = BytesIO()
         r.render(fp)
         return fp.getvalue()
 

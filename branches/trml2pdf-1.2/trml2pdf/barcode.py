@@ -6,7 +6,7 @@ from reportlab.platypus.flowables import Flowable
 from reportlab.graphics import renderPDF
 from reportlab.graphics.barcode import createBarcodeDrawing, getCodes
 # trml
-from trml2pdf import utils, color
+from . import utils, color
 
 
 class BarCode(Flowable):
