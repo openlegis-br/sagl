@@ -221,6 +221,7 @@ $(function () {
                  <thead">
                    <tr>
                      <th>Identificação do Documento</th>
+                     <th>Autor</th>                     
                      <th>Data</th>
                    </tr>
                  </thead>
@@ -231,15 +232,28 @@ $(function () {
                     <dtml-if expr="_.hasattr(sapl_documentos.administrativo,id_documento)">
                       <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
                         <a target="_blank" href="<dtml-var documento>" target="_blank">
-                          <dtml-var nom_documento>
+                          <i class="fas fa-file-pdf"></i> <dtml-var nom_documento>
+                        </a>
+                        <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                           <dtml-if expr="_.has_key('add_doc') and REQUEST['AUTHENTICATED_USER'].getUserName()==nom_autor_documento">
+                             <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='doc_acessorio_adm', codigo=cod_documento_acessorio)">
+                               <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+                             </dtml-in>
+                             <dtml-if expr="not _.has_key('cod_assinatura_doc')">
+                                <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinatura Digita" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_documento_acessorio>&tipo_doc=doc_acessorio_adm&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
+                             </dtml-if>             
+                           </dtml-if>
+                        </dtml-if>
                       </dtml-let>
                     <dtml-else>
                           <dtml-var nom_documento>
                     </dtml-if>
-                    <dtml-if expr="nom_autor_documento!=None">
-                       - <dtml-var nom_autor_documento>
-                    </dtml-if>                                   
                    </td>
+                   <td>
+                    <dtml-if expr="nom_autor_documento!=None">
+                       <dtml-var nom_autor_documento>
+                    </dtml-if>
+                   </td>                   
                    <td>
                      <dtml-var dat_documento missing null="">                   
                    </td>                   
