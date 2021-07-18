@@ -1,0 +1,39 @@
+<dtml-comment>
+connection_id : dbcon_logs
+arguments : usuario dat_inicial dat_final modulo metodo cod_registro IP
+max_rows : 10000
+max_cache : 100
+</dtml-comment>
+SELECT
+    cod_log,
+    usuario,
+    data,
+    DATE_FORMAT(data, '%d/%m/%y %H:%i:%s') as data_hora,
+    modulo,
+    metodo,
+    cod_registro,
+    IP, 
+    dados
+FROM
+   logs
+<dtml-sqlgroup where>
+   <dtml-sqltest usuario          op="="     type="nb"    optional> <dtml-and>
+   <dtml-sqltest IP               op="="     type="nb"    optional> <dtml-and>   
+   <dtml-sqltest modulo           op="="     type="nb"    optional> <dtml-and>
+   <dtml-sqltest metodo           op="="     type="nb"    optional> <dtml-and>
+   <dtml-sqltest cod_registro     op="="     type="int"   optional> <dtml-and>   
+    <dtml-if dat_inicial>
+      <dtml-if dat_final>
+         DATE(data) >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_inicial)" type="nb"> AND
+         DATE(data) <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_final)" type="nb">
+      <dtml-else>
+         DATE(data) = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_inicial)" type="nb">
+      </dtml-if>
+    <dtml-else>
+      <dtml-if dat_final>
+         DATE(data) = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_final)" type="nb">
+      </dtml-if>
+    </dtml-if>
+</dtml-sqlgroup>
+ORDER BY
+  data DESC

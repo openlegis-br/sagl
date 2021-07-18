@@ -53,15 +53,11 @@
     <dtml-call expr="zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao=cod_ult_tramitacao, cod_usuario_corrente=hdn_cod_usuario_corrente)">       
   </dtml-if>
   
-  <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=hdn_cod_materia, cod_status=lst_cod_status)">
-  
-  <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=hdn_cod_materia)">
-  <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=hdn_cod_materia)">
+  <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=hdn_cod_materia, cod_status=lst_cod_status)"> 
   <dtml-call expr="zsql.trans_commit_zsql()">
 
 <dtml-except>
     <dtml-call expr="zsql.trans_rollback_zsql()">
-    <dtml-var REQUEST>
     <dtml-let mensagem="'Houve um erro no banco de dados.'" tipo_mensagem="'danger'">
         <dtml-var mensagem_emitir>
     </dtml-let>
@@ -71,6 +67,8 @@
      <dtml-in expr="zsql.tramitacao_incluida_codigo_obter_zsql()">
          <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
      </dtml-in>
+     <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=hdn_cod_materia)">
+     <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=hdn_cod_materia)">
   </dtml-if>
 
   <dtml-call expr="REQUEST.set('erro', 0)">  
@@ -141,3 +139,17 @@
     <dtml-call expr="cadastros.tramitacao_materia.tramitacao_juntar_pdf(cod_tramitacao=hdn_cod_tramitacao)">
   </dtml-if>
  </dtml-if>
+ 
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = 'tramitacao_materia',
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_tramitacao)"> 
+</dtml-if>

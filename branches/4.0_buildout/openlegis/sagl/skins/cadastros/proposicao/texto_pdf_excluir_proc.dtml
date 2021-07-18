@@ -20,7 +20,7 @@
 </dtml-in>
 
   <dtml-if erro>
-    <dtml-let mensagem="'Ocorreu um erro ao tentar excluir o texto PDF da Proposição!'" tipo_mensagem="'danger'">
+    <dtml-let mensagem="'Ocorreu um erro ao excluir o PDF da proposição!'" tipo_mensagem="'danger'">
       <dtml-var mensagem_emitir>
     </dtml-let>
   <dtml-else>
@@ -28,3 +28,14 @@
       <dtml-var mensagem_emitir>
     </dtml-let>
   </dtml-if>
+  
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'pdf_excluir',
+            IP           = pysc.get_ip(),
+            cod_registro = cod_proposicao)"> 
+</dtml-if>

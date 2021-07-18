@@ -67,7 +67,10 @@ def criar_materia(hdn_num_protocolo, tip_materia, num_ident_basica, ano_materia,
     
     for codigo in context.zsql.materia_incluida_codigo_obter_zsql():
         cod_materia = int(codigo.cod_materia)
-       
+
+    if context.dbcon_logs:
+       context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'materia', metodo = 'materia_incluir_zsql', cod_registro = cod_materia, IP = context.pysc.get_ip())
+
     return inserir_autoria(cod_materia, cod_autor, cod_proposicao, hdn_num_protocolo)
 
 

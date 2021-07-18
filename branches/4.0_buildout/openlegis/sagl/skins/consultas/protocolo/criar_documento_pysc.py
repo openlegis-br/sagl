@@ -46,6 +46,9 @@ def criar_documento(tip_documento, num_documento, ano_documento, dat_documento, 
        tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
        context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
 
+    if context.dbcon_logs:
+       context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'documento_administrativo', metodo = 'documento_administrativo_incluir_zsql', cod_registro = cod_documento, IP = context.pysc.get_ip()) 
+
     return tramitar_documento(cod_documento, num_protocolo, ano_documento)
    
 

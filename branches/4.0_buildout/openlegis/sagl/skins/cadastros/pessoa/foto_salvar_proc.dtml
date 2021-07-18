@@ -12,7 +12,7 @@
                   <dtml-var mensagem>
                </dtml-let>
            <dtml-except>
-               <dtml-let mensagem="'Ocorreu erro ao salvar a fotografia'">
+               <dtml-let mensagem="'Ocorreu erro ao salvar a fotografia'" tipo_mensagem="'danger'">
                   <dtml-var mensagem_emitir>
                </dtml-let>
            </dtml-try>
@@ -30,5 +30,14 @@
          </dtml-try>
        </dtml-if>
 
-
-
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'pessoa_fotografia_salvar',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_pessoa)"> 
+</dtml-if>

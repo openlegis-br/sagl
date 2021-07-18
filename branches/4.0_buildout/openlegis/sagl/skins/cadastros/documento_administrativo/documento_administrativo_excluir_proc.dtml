@@ -35,7 +35,8 @@
       </dtml-let>
    </dtml-in>
 
-   <dtml-call expr="zsql.documento_administrativo_excluir_zsql(cod_documento = cod_documento)">
+   <dtml-call expr="REQUEST.set('metodo', zsql.documento_administrativo_excluir_zsql)">
+   <dtml-call expr="metodo(cod_documento = cod_documento)">
 
    <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_documento)+'_texto_integral.pdf')">
    <dtml-if "_.hasattr(sapl_documentos.administrativo,id_pdf)">
@@ -64,11 +65,25 @@
       </dtml-in>
 
 <dtml-except>
-   <dtml-let mensagem="'Houve um erro! Não foi possível excluir o Documento Administrativo!'">
+   <dtml-let mensagem="'Houve um erro! Não foi possível excluir o Documento!'" tipo_mensagem="'danger'">
       <dtml-var mensagem_emitir>
    </dtml-let>
 <dtml-else>
-   <dtml-let mensagem="'Documento Administrativo excluído com sucesso!'" url="url">
+   <dtml-let mensagem="'Documento excluído com sucesso!'" url="url">
       <dtml-var mensagem_emitir>
    </dtml-let>
 </dtml-try>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            cod_registro = cod_documento)"> 
+</dtml-if>

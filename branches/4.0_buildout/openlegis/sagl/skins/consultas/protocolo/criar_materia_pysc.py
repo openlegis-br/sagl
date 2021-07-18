@@ -46,6 +46,9 @@ def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, 
        tmp_id = context.sapl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
        context.sapl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_materia]))
 
+    if context.dbcon_logs:
+       context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'materia', metodo = 'materia_incluir_zsql', cod_registro = cod_materia, IP = context.pysc.get_ip())
+
     return inserir_autoria(cod_materia, cod_autor)
     
 

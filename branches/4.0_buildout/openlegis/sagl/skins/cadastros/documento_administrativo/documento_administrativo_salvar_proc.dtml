@@ -3,7 +3,7 @@
                                        num_documento = hdn_num_documento,
                                        ano_documento = txt_ano_documento)">
   <dtml-call expr="REQUEST.set('erro', 1)">
-  <dtml-let mensagem="'Já existe um documento administrativo idêntico.'">
+  <dtml-let mensagem="'Já existe um documento administrativo idêntico.'" tipo_mensagem="'danger'">
     <dtml-var mensagem_emitir>
   </dtml-let>
 </dtml-in>
@@ -175,7 +175,6 @@
        <dtml-if expr="zsql.tipo_documento_administrativo_obter_zsql(tip_documento=lst_tip_documento,ind_publico=1,ind_excluido=0)">
          <dtml-call "documento_assinado.manage_permission('View', roles=['Anonymous','Manager','Operador','Operador Modulo Administrativo'], acquire=0)">
          <dtml-call "documento_assinado.manage_permission('Delete objects', roles=['Manager','Operador','Operador Materia','Operador Modulo Administrativo'], acquire=0)">
-
        <dtml-else>
          <dtml-call "documento_assinado.manage_permission('View', roles=['Authenticated', 'Manager','Operador','Operador Modulo Administrativo'], acquire=1)">
        </dtml-if>
@@ -184,3 +183,18 @@
  </dtml-if>
 
 </dtml-unless>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_documento)"> 
+</dtml-if>

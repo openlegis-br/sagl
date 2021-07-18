@@ -8,7 +8,7 @@
                <dtml-call "arquivo.manage_upload(file=file_nom_arquivo)">
            <dtml-except>
                <dtml-call expr="REQUEST.set('erro', 1)">
-               <dtml-let mensagem="'Ocorreu erro ao tentar incluir o anexo PDF'">
+               <dtml-let mensagem="'Ocorreu erro ao incluir o anexo PDF'" tipo_mensagem="'danger'">
                   <dtml-var mensagem_emitir>
                </dtml-let>
            </dtml-try>
@@ -24,3 +24,15 @@
          </dtml-try>
        </dtml-if>
     </dtml-if>
+    
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'pessoa_anexo_salvar',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_pessoa)"> 
+</dtml-if>

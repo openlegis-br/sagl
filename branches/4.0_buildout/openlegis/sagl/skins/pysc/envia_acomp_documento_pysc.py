@@ -74,7 +74,7 @@ if txt_nome != '' and end_email != '':
     mMsg = mMsg + "Prazo: " + str(prazo) + "\n"
  mMsg = mMsg + "\nAutentique-se no sistema pelo endereço " + linkDoc + " e verifique sua Caixa de Entrada - módulo Tramitação de  Documentos - para maiores detalhes.\n\n"
  mMsg = mMsg + "" + str(casa_legislativa) +"\n"
- mMsg = mMsg + "Processo Administrativo Eletrônico\n\n\n"
+ mMsg = mMsg + "Processo Eletrônico\n"
  mTo = end_email
  mSubj = "Processo Administrativo - " + proc_adm +" - Notificação de Despacho em " + data_registro
  mailhost.send(mMsg, mTo, remetente, subject=mSubj, encode='base64')

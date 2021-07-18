@@ -1,0 +1,64 @@
+<dtml-var standard_html_header>
+
+<div class="row mb-3">
+ <div class="col-12">
+   <div class="card">
+      <div class="card-header">
+        <i class="fa fa-database" aria-hidden="true"></i> Estatisticas de Armazenamento
+      </div>
+      <div class="card-body">   
+        <div class="row">
+           <div class="col-6">
+             <dtml-in expr="zsql.logs_database_info_zsql()">              
+                <b>Banco de Dados:</b> <dtml-var table_schema><br />
+                <b>Tamanho (MB):</b> <dtml-var SIZE><br />
+                <b>Conexão:</b> dbconn_logs
+             </dtml-in>               
+           </div> 
+           <div class="col-6">
+             <dtml-in expr="zsql.logs_estatisticas_zsql()">              
+               <b>Primeiro Registro:</b> <dtml-var data_inicial><br />
+               <b>Último Registro:</b> <dtml-var data_final><br />
+               <b>Total de Registros:</b> <dtml-var registros>
+             </dtml-in>               
+           </div>         
+        </div>
+      </div>
+   </div>
+ </div>
+</div>
+
+
+<div class="row mb-3">
+ <div class="col-12">
+   <div class="card">
+      <div class="card-header">
+        <i class="fa fa-fw fa-wrench"></i> Limpeza de Registros
+      </div>
+      <div class="card-body">         
+       <form class="form-inline" method="post" id="logs_limpar" name="logs_limpar" action="logs_limpar_proc">
+        <div class="form-row">
+          <div class="col-12">
+            Eliminar registros mais antigos que 
+            <select id="lst_interlavo" name="lst_interlavo" class="custom-select" required>
+               <option></option>
+               <option value="1">1 mês</option>
+               <option value="3">3 meses</option>
+               <option value="6">6 meses</option>
+               <option value="12">1 ano</option>
+            </select>
+            <input type="hidden" name="modal" value="1">
+            <input type="hidden" name="hdn_url" value=gerenciar_logs?modal=1" />
+            <button class="btn btn-danger" name="btnEliminar" type="submit"><i class="fas fa-trash"></i> Limpar</button>
+          </div>
+          <div class="col-md-12 mt-3">
+             <span class="text-muted small"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+ AVISO: Esta é uma operação irreversível.</span>
+          </div>          
+        </div>  
+       </form>
+   </div>
+ </div>
+</div>
+
+<dtml-var standard_html_footer>

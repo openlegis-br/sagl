@@ -67,7 +67,6 @@
     <dtml-let mensagem="'Houve um erro no banco de dados.'" tipo_mensagem="'danger'">
         <dtml-var mensagem_emitir>
     </dtml-let>
-    <dtml-var REQUEST>
 
 <dtml-else>
   <dtml-if expr="metodo==zsql.tramitacao_administrativo_incluir_zsql">
@@ -152,3 +151,17 @@
 </dtml-if>
 
 </dtml-unless>
+
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = 'tramitacao_documento',
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_tramitacao)"> 
+</dtml-if>

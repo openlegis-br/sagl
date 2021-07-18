@@ -53,6 +53,9 @@ elif txt_dat_fim_prazo != '':
 for item in cod_documento:
     context.zsql.tramitacao_administrativo_incluir_zsql(cod_documento = item, dat_tramitacao = context.pysc.data_converter_pysc(data=txt_dat_tramitacao), cod_unid_tram_local = lst_cod_unid_tram_local, cod_usuario_local = hdn_cod_usuario_local, cod_unid_tram_dest = lst_cod_unid_tram_dest, cod_usuario_dest = lst_cod_usuario_dest, dat_encaminha = hdn_dat_encaminha, cod_status = lst_cod_status, txt_tramitacao = txa_txt_tramitacao, dat_fim_prazo = txt_dat_fim_prazo, ind_ult_tramitacao = 1)
 
+    if context.dbcon_logs:
+       context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'tramitacao_documento', metodo = 'tramitacao_lote_salvar_pysc', cod_registro = item, IP = context.pysc.get_ip())
+
 lst_novas = []
 for item in cod_documento:
     dic_novas = {}

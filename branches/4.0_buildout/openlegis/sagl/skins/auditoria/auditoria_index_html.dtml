@@ -1,0 +1,270 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js"></script>
+<script src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
+<script type="text/javascript">
+
+  function campos_criticar(form){
+
+      var form = document.auditoria_form;
+
+      if (form.dat_inicial.value == "") {
+         $.showAlert({title: "Mensagem do Sistema", body: "A data inicial deve ser preenchida!"});
+         form.dat_inicial.focus();
+         return false;
+      }
+
+      if (form.dat_final.value == "") {
+         $.showAlert({title: "Mensagem do Sistema", body: "A data final deve ser preenchida!"});
+         form.dat_final.focus();
+         return false;
+      }
+
+      if (form.dat_inicial.value!="" && !IsValidDate(form.dat_inicial.value)){
+         $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data inicial válida!"});      
+         form.dat_inicial.focus();
+         return false;
+      }
+
+      if (form.dat_final.value!="" && !IsValidDate(form.dat_final.value)){
+         $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data final válida!"});      
+         form.dat_final.focus();
+         return false;
+      }
+
+      var dat_inicial = form.dat_inicial.value.substring(6,10) + form.dat_inicial.value.substring(3,5) + form.dat_inicial.value.substring(0,2);
+      var dat_final = form.dat_final.value.substring(6,10) + form.dat_final.value.substring(3,5) + form.dat_final.value.substring(0,2);
+
+      if (dat_final < dat_inicial) {
+         $.showAlert({title: "Mensagem do Sistema", body: "A data final deve ser igual ou posterior à data inicial!"});            
+           form.dat_final.focus();
+           return false;
+      }
+
+      form.submit();
+    }
+
+</script>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    var table = $('#jdTable').DataTable( {
+        "responsive": true,
+         "order": [[ 0, "desc" ]],
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'Excel'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão',
+                             exportOptions: {
+                               columns: [ 0, 1, 2, 3, 4, 5 ]
+                             }
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
+});
+</script>
+
+<style>
+.display {
+    font-size: 90%;
+}
+</style>
+
+<div class="row mb-2">
+  <div class="col-12 col-lg-8">
+    <h1 class="firstHeading">Logs de Auditoria</h1>
+  </div>
+  <div class="col-12 col-lg-4 text-lg-right">
+    <button type="button" class="btn btn-sm btn-white d-print-none" data-toggle="modal" data-target="#iFrameModal" data-title="Manutenção de Logs" data-src="gerenciar_logs?modal=1"><i class="fa fa-fw fa-wrench"></i> Manutenção</button>    
+  </div>
+</div>
+
+<dtml-if expr="not _.has_key('impressao') or (_.has_key('impressao') and not _.has_key('dat_inicial') and not _.has_key('dat_final'))">
+
+<form class="d-print-none mb-4" method="post" id="auditoria_form" name="auditoria_form" action="auditoria_index_html">
+
+   <div class="form-row">
+     <div class="col-6 col-md-3 mb-3">
+            <label for="dat_inicial" class="required">Data Inicial</label>
+            <input class="form-control date" type="text" name="dat_inicial" id="dat_inicial" value="<dtml-var dat_inicial missing>" required />
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+           <label for="dat_final" class="required">Data Final</label>
+           <input class="form-control date" type="text" name="dat_final" id="dat_final" value="<dtml-var dat_final missing>" required />
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+           <label for="usuario">Usuário</label>
+           <input class="form-control" type="text" name="usuario" id="usuario" value="<dtml-var usuario missing>" />
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+           <label for="IP">Endereço IP</label>
+           <input class="form-control" type="text" name="IP" id="IP" value="<dtml-var IP missing>" />
+     </div>          
+    <script>
+        $('#dat_inicial').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#dat_final').val();
+            }
+        });
+        $('#dat_final').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#dat_inicial').val();
+            }
+        });
+    </script>
+  </div>
+  <div class="form-row">
+     <div class="col-6 col-md-3 mb-3">
+         <label for="cod_registro">ID do Registro</label>
+         <input class="form-control" type="text" name="cod_registro" id="cod_registro" value="<dtml-var cod_registro missing>" />
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+         <label for="modulo">Módulo</label>
+         <input class="form-control" type="text" name="modulo" id="modulo" value="<dtml-var modulo missing>" />
+     </div>
+     <div class="col-12 col-md-6 mb-3">
+         <label for="metodo">Método</label>
+         <input class="form-control" type="text" name="metodo" id="metodo" value="<dtml-var metodo missing>" />
+     </div>          
+  </div>  
+
+  <div class="text-left">
+    <input class="btn btn-primary" type="button" name="button" value="Pesquisar" onClick="return campos_criticar(form)" />
+  </div>
+
+</form>
+</dtml-if>
+
+<dtml-if expr="_.has_key('dat_inicial') and _.has_key('dat_final')">
+ <dtml-in expr="zsql.logs_pesquisar_zsql(dat_inicial=dat_inicial, dat_final=dat_final, cod_registro=cod_registro, modulo=modulo, metodo=metodo, usuario=usuario, IP=IP)">
+
+   <dtml-if sequence-start>
+    <div class="table-responsive">
+    <table id="jdTable" class="table table-striped display mt-4">
+      <thead class="table-secondary"> 
+        <tr>
+          <th width="20%">
+              Data
+          </th>
+          <th>
+              Registro
+          </th>
+          <th>
+              Módulo
+          </th>
+          <th>
+              Método
+          </th>            
+          <th>
+              Usuário
+          </th>     
+          <th>
+              IP
+          </th>
+          <th data-col="0">Info</th>
+        </tr>
+      </thead>
+      <tbody>
+   </dtml-if sequence-start>
+     <tr>
+      <td>
+         <dtml-var data_hora>
+      </td>
+      <td>
+         <dtml-var cod_registro>
+      </td>
+      <td>
+         <dtml-var modulo>
+      </td>
+      <td>
+         <dtml-var metodo missing>
+      </td>           
+      <td>
+         <dtml-var usuario>
+      </td>
+      <td>
+         <dtml-var IP>
+      </td>
+      <td>
+         <dtml-if dados>
+            <i class="fas fa-info-circle d-print-none"  data-toggle="tooltip" data-placement="left" title="<dtml-var dados html_quote>"></i>
+         </dtml-if> 
+      </td>               
+    </tr>   
+   <dtml-if sequence-end>
+      </tbody>
+     </table>
+    </div>
+   </dtml-if sequence-end>
+ <dtml-else>
+   <p>Nenhum registro encontrado.</p>
+ </dtml-in>
+
+ <div id="panelBtn" class="d-print-none" style="margin-bottom: 20px;">
+    <div class="row">
+       <div class="col-sm-12 mt-2"></div>
+    </div>
+ </div>
+ 
+</dtml-if>
+
+<dtml-var standard_html_footer>
