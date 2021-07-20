@@ -20,9 +20,9 @@
   </div>
 </div>
 
- <dtml-if expr="not _.has_key('cod_comissao_sel')">
-    <dtml-call "REQUEST.set('cod_comissao_sel', '-1')">
- </dtml-if>
+<dtml-if expr="not _.has_key('cod_comissao_sel')">
+   <dtml-call "REQUEST.set('cod_comissao_sel', '')">
+</dtml-if>
 
 <form name="reuniao_index_form" action="reuniao_comissao_form">
 
@@ -38,12 +38,22 @@
 <dtml-else>
   <dtml-call "REQUEST.set('step', 16)">
 </dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
 
- <dtml-in expr="zsql.reuniao_comissao_obter_zsql(cod_comissao=cod_comissao_sel)" size="step" start="start" orphan=0>
+  <dtml-if cod_comissao_sel>
+     <dtml-call "REQUEST.set('metodo', zsql.reuniao_comissao_obter_zsql(cod_comissao=cod_comissao_sel))">  
+  <dtml-else>
+     <dtml-call "REQUEST.set('metodo', zsql.reuniao_comissao_obter_zsql())">    
+  </dtml-if>
+
+ <dtml-in expr="metodo" size="step" start="start" orphan=0>
     <dtml-if sequence-start>
-     <dtml-if previous-sequence>
-        <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
-     </dtml-if previous-sequence>
+    <dtml-if next-sequence>
+       <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+    </dtml-if>
+    <dtml-if previous-sequence>
+       <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+    </dtml-if>
      <div class="card mb-3">
        <div class="card-header">
         <div class="row">
