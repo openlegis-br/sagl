@@ -52,6 +52,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
      texto_acao = tramitacao.txt_tramitacao
    else:
      texto_acao = ''
+   unidade_local = ''     
    for unid_local in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tramitacao.cod_unid_tram_local):
        unidade_local = unid_local.nom_unidade_join
    if tramitacao.cod_usuario_dest != None:
