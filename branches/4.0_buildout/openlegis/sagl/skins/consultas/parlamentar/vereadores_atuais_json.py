@@ -9,6 +9,7 @@
 ##
 import simplejson as json
 
+context.REQUEST.RESPONSE.setHeader("Access-Control-Allow-Origin", "*")
 request=context.REQUEST
 
 for item in context.zsql.legislatura_atual_obter_zsql():
@@ -25,10 +26,10 @@ for item in context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_atual):
     dic['nom_completo'] = item.nom_completo
     foto = str(item.cod_parlamentar) + "_foto_parlamentar"
     if hasattr(context.sapl_documentos.parlamentar.fotos, foto):    
-       dic['foto'] = request.BASE2 + '/sapl_documentos/parlamentar/fotos' + foto
+       dic['foto'] = request.SERVER_URL + '/sapl_documentos/parlamentar/fotos/' + foto
     else:
-       dic['foto'] = request.BASE2 + '/imagens/avatar.png'   
-    dic['link'] = request.BASE2 + '/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=' + item.cod_parlamentar     
+       dic['foto'] = request.SERVER_URL + '/imagens/avatar.png'   
+    dic['link'] = request.SERVER_URL + '/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=' + item.cod_parlamentar     
     dic['partido'] = ''
     for filiacao in context.zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=num_legislatura, cod_parlamentar=item.cod_parlamentar):    
         if filiacao.dat_filiacao != '0' and filiacao.dat_filiacao != None:
