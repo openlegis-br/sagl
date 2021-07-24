@@ -9,18 +9,12 @@
 ##
 import simplejson as json
 
+request=context.REQUEST
+
 for item in context.zsql.legislatura_atual_obter_zsql():
     num_legislatura = item.num_legislatura
 
 data_atual = DateTime().strftime("%d/%m/%Y")
-
-titulares = []
-suplentes = []
-for item in context.zsql.parlamentar_obter_zsql(num_legislatura = num_legislatura):
-    if item.ind_titular == 1:     
-       titulares.append(int(item.cod_parlamentar))
-    if item.ind_titular == 0:     
-       suplentes.append(int(item.cod_parlamentar))
 
 lista_exercicio = []
 exercicio = []
@@ -28,9 +22,19 @@ for item in context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_atual):
     dic = {}
     dic['cod_parlamentar'] = item.cod_parlamentar
     dic['nom_parlamentar'] = item.nom_parlamentar
-    dic['nom_completo'] = item.nom_completo           
+    dic['nom_completo'] = item.nom_completo
+    foto = str(item.cod_parlamentar) + "_foto_parlamentar"
+    if hasattr(context.sapl_documentos.parlamentar.fotos, foto):    
+       dic['foto'] = request.BASE2 + '/sapl_documentos/parlamentar/fotos' + foto
+    else:
+       dic['foto'] = request.BASE2 + '/imagens/avatar.png'   
+    dic['link'] = request.BASE2 + '/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=' + item.cod_parlamentar     
+    dic['partido'] = ''
+    for filiacao in context.zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=num_legislatura, cod_parlamentar=item.cod_parlamentar):    
+        if filiacao.dat_filiacao != '0' and filiacao.dat_filiacao != None:
+            for partido in context.zsql.parlamentar_partido_obter_zsql(dat_filiacao=filiacao.dat_filiacao, cod_parlamentar=item.cod_parlamentar):
+                dic['partido'] = partido.sgl_partido               
     lista_exercicio.append(dic)
-    exercicio.append(int(item.cod_parlamentar))
 
 lista_exercicio.sort(key=lambda dic: dic['nom_completo'])
 
