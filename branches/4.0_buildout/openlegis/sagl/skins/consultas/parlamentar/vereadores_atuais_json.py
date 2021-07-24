@@ -29,7 +29,7 @@ for item in context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_atual):
        dic['foto'] = request.SERVER_URL + '/sapl_documentos/parlamentar/fotos/' + foto
     else:
        dic['foto'] = request.SERVER_URL + '/imagens/avatar.png'   
-    dic['link'] = request.SERVER_URL + '/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=' + item.cod_parlamentar     
+    dic['link'] = request.SERVER_URL + '/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=' + item.cod_parlamentar + '&iframe=0'
     dic['partido'] = ''
     for filiacao in context.zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=num_legislatura, cod_parlamentar=item.cod_parlamentar):    
         if filiacao.dat_filiacao != '0' and filiacao.dat_filiacao != None:
@@ -39,4 +39,8 @@ for item in context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_atual):
 
 lista_exercicio.sort(key=lambda dic: dic['nom_completo'])
 
-return json.dumps(lista_exercicio)
+listaVereador={}  
+
+listaVereador.update({'vereadores': lista_exercicio})
+
+return json.dumps(listaVereador)
