@@ -7,6 +7,8 @@
 ##parameters=check_tram, txt_dat_tramitacao, unidade_local, hdn_cod_usuario_local, lst_cod_unid_tram_dest, lst_cod_usuario_dest, lst_cod_status, rad_ind_urgencia, txa_txt_tramitacao, txt_dat_fim_prazo
 ##title=
 ##
+from Products.CMFCore.utils import getToolByName
+st = getToolByName(context, 'portal_sagl')
 
 REQUEST = context.REQUEST
 RESPONSE = REQUEST.RESPONSE
@@ -60,11 +62,19 @@ lst_novas = []
 for item in cod_materia:
     dic_novas = {}
     for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=item, ind_ult_tramitacao=1, ind_excluido=0):
-        dic_novas['cod_materia'] = tramitacao.cod_materia
-        dic_novas['cod_tramitacao'] = tramitacao.cod_tramitacao
+        dic_novas['cod_materia'] = int(tramitacao.cod_materia)
+        dic_novas['cod_tramitacao'] = int(tramitacao.cod_tramitacao)
+        dic_novas['cod_destino'] = int(tramitacao.cod_unid_tram_dest)
         lst_novas.append(dic_novas)
 
+
 for dic in lst_novas:
+    # protocolo executivo
+    #for unidade in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=dic['cod_destino'], ind_leg=1, ind_excluido=0):
+    #    if 'Prefeitura' in unidade.nom_unidade_join or 'Executivo' in unidade.nom_unidade_join:
+    #        resultado_protocolo = st.protocolo_prefeitura(dic['cod_materia']) 
+    #        context.zsql.tramitacao_prefeitura_registrar_zsql(cod_tramitacao = dic['cod_tramitacao'], texto_protocolo=resultado_protocolo)           
+    # fim protocolo executivo
     context.pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia = dic['cod_materia'], cod_status = lst_cod_status)
     context.pysc.envia_tramitacao_autor_pysc(cod_materia = dic['cod_materia'])
     context.pysc.envia_acomp_materia_pysc(cod_materia = dic['cod_materia'])         

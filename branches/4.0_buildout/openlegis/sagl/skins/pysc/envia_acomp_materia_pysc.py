@@ -52,7 +52,8 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
      texto_acao = url_unquote(tramitacao.txt_tramitacao)
    else:
      texto_acao = ''
-   unidade_local = ''     
+   unidade_local = ''
+   txt_nome = ''   
    for unid_local in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tramitacao.cod_unid_tram_local):
        unidade_local = unid_local.nom_unidade_join
    if tramitacao.cod_usuario_dest != None:
@@ -62,7 +63,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
              dic_usuario['end_email'] = usuario_destino.end_email
              dic_usuario['txt_hash']= ''
              destinatarios.append(dic_usuario)
-             txt_nome=usuario_destino.nom_completo             
+             txt_nome = usuario_destino.nom_completo             
    else:
       for unid_destino in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = tramitacao.cod_unid_tram_dest):
           unidade_destino = unid_destino.nom_unidade_join
@@ -71,7 +72,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
              dic_unidade['end_email'] = unid_destino.end_email_join
              dic_unidade['txt_hash']= ''
              destinatarios.append(dic_unidade)     
-             txt_nome=unidade_destino                         
+             txt_nome = unidade_destino                         
 
 remetente = email_casa
 

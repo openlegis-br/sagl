@@ -15,6 +15,7 @@ from lxml.builder import ElementMaker
 from lxml import etree
 
 from datetime import datetime
+from DateTime import DateTime
 
 from Globals import DTMLFile
 from Globals import InitializeClass
@@ -2482,6 +2483,55 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         host.send( mail_text )
 
         return self.generico.mail_password_response( self, REQUEST )
+
+    def create_payload(self, cod_materia):
+
+        data = {}
+        for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0):    
+            data['codmateria'] = materia.cod_materia
+            data['tipo'] = materia.des_tipo_materia
+            data['numero'] = materia.num_ident_basica
+            data['ano'] = materia.ano_ident_basica
+            data['ementa'] = materia.txt_ementa
+            data['autoria'] = ''
+            autores = self.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia, ind_excluido=0)
+            fields = autores.data_dictionary().keys()
+            lista_autor = []
+            for autor in autores:
+                for field in fields:
+                    nome_autor = autor['nom_autor_join']
+                lista_autor.append(nome_autor)
+            data['autoria'] = ', '.join(['%s' % (value) for (value) in lista_autor])       
+            data['linkarquivo'] = ''
+            if hasattr(self.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf'):       
+               data['linkarquivo'] = self.portal_url() + '/sapl_documentos/materia/' + str(materia.cod_materia) + '_texto_integral.pdf'
+            data['casalegislativa'] = self.sapl_documentos.props_sagl.nom_casa
+        
+        serialized = json.dumps(data, sort_keys=True, indent=3)
+
+        return json.loads(serialized)
+
+
+    def protocolo_prefeitura(self, cod_materia):
+
+        API_ENDPOINT = ''
+        API_USER = ''
+        API_PASSWORD = ''
+        session = requests.Session()
+        session.auth = (API_USER, API_PASSWORD)
+        auth = session.post(API_ENDPOINT)
+        response = session.post(API_ENDPOINT, data=self.create_payload(cod_materia))
+
+        if (response.status_code == 200):
+            r = response.json()
+            protocolo = r[0]['numero_protocolo']
+            data = DateTime(r[0]['criado_em']).strftime('%d/%m/%Y às %H:%M:%S')
+            return 'Protocolado na Prefeitura Municipal sob nº ' + str(protocolo) + ' em ' + str(data)
+        else:
+            r = response.json()
+            msg = r[0]['Detail'] + 'Houve um erro ao enviar a matéria para a Prefeitura. Código da matéria: ' + cod_materia
+            raise ValueError(msg)
+
 
 InitializeClass(SAGLTool)
 
