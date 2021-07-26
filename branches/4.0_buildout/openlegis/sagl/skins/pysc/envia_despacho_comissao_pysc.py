@@ -42,7 +42,7 @@ remetente = email_casa
 
 cod_materia_base64 = context.pysc.b64encode_pysc(codigo=str(cod_materia))
 
-linkMat = "" + context.consultas.absolute_url()+"/materia/materia_mostrar_proc?cod_materia=" + cod_materia_base64
+linkMat = "" + request.SERVER_URL+"/materia/materia_mostrar_proc?cod_materia=" + cod_materia_base64
 
 for comissao in context.zsql.comissao_obter_zsql(cod_comissao=cod_comissao):
  cod_comissao = comissao.cod_comissao
@@ -62,14 +62,14 @@ for composicao_comissao in context.zsql.composicao_comissao_obter_zsql(cod_comis
 
 for dic in destinatarios:
   mMsg = "Senhor(a) Vereador(a),\n\n"
-  mMsg = mMsg + "Informamos que a matéria abaixo foi despachada para parecer da " + nom_comissao +  " em " + data_registro + ".\n\n"
+  mMsg = mMsg + "Informamos que a seguinte matéria foi despachada para parecer da " + nom_comissao +  " em " + data_registro + ".\n\n"
   mMsg = mMsg + "" + projeto + "\n"
   mMsg = mMsg + "" + str(ementa) + "\n"
-  mMsg = mMsg + "Autoria: " + str(nom_autor) + "\n\n"
+  mMsg = mMsg + "Autoria: " + str(nom_autor) + "\n"
   mMsg = mMsg + "Link: " + linkMat + "\n\n"
   mMsg = mMsg + "Cordialmente,\n\n"
   mMsg = mMsg + "" + str(casa_legislativa) +"\n"
-  mMsg = mMsg + "Processo Legislativo Eletrônico\n"
+  mMsg = mMsg + "Processo Eletrônico\n"
 
   mTo = dic['end_email']
 

@@ -49,7 +49,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
    status = tramitacao.des_status
    prazo = tramitacao.dat_fim_prazo   
    if tramitacao.txt_tramitacao != None:
-     texto_acao = tramitacao.txt_tramitacao
+     texto_acao = url_unquote(tramitacao.txt_tramitacao)
    else:
      texto_acao = ''
    unidade_local = ''     
@@ -85,18 +85,16 @@ for dic in destinatarios:
   mMsg = mMsg + "Autoria: " + str(nom_autor) + "\n"
   mMsg = mMsg + "Link: " + linkMat + "\n\n"
   mMsg = mMsg + "Data da Ação: " + str(data) + "\n"
-  mMsg = mMsg + "ORIGEM: " + unidade_local + "\n"
-  mMsg = mMsg + "DESTINO: " + txt_nome + "\n"  
+  mMsg = mMsg + "Origem: " + unidade_local + "\n"
+  mMsg = mMsg + "Destino: " + txt_nome + "\n"  
   mMsg = mMsg + "Status: " + str(status) + "\n"
-  if texto_acao != None:    
-     mMsg = mMsg + "Texto da Ação: " + url_unquote(texto_acao) + "\n"
   if prazo != None:
      mMsg = mMsg + "Prazo: " + str(prazo) + "\n\n"  
   mMsg = mMsg + "" + str(casa_legislativa) +"\n"
   mMsg = mMsg + "Processo Eletrônico\n\n"
   if dic['txt_hash'] != None:  
      mMsg = mMsg + "Clique no link abaixo para excluir seu e-mail da lista de envio:\n" 
-     mMsg = mMsg + "" + context.consultas.absolute_url() + "/materia/acompanhamento/acomp_materia_excluir_proc?txt_hash=" + str(dic['txt_hash']) +"\n"
+     mMsg = mMsg + "" + request.SERVER_URL + "/materia/acompanhamento/acomp_materia_excluir_proc?txt_hash=" + str(dic['txt_hash']) +"\n"
 
   mTo = dic['end_email']
 

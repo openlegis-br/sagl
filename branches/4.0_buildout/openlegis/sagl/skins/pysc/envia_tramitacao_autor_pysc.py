@@ -46,7 +46,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
    data = tramitacao.dat_tramitacao
    status = tramitacao.des_status
    if tramitacao.txt_tramitacao != None:
-     texto_acao = tramitacao.txt_tramitacao
+     texto_acao = url_unquote(tramitacao.txt_tramitacao)
    else:
      texto_acao = " "
 
@@ -54,7 +54,7 @@ remetente = email_casa
 
 cod_materia_base64 = context.pysc.b64encode_pysc(codigo=str(cod_materia))
 
-linkMat = "" + context.consultas.absolute_url()+"/materia/materia_mostrar_proc?cod_materia=" + cod_materia_base64
+linkMat = "" + request.SERVER_URL+"/materia/materia_mostrar_proc?cod_materia=" + cod_materia_base64
 
 destinatarios=[]
 for item in lista_codigo:
@@ -73,10 +73,9 @@ for dic in destinatarios:
   mMsg = mMsg + "Link: " + linkMat + "\n\n"
   mMsg = mMsg + "Data da Ação: " + str(data) + "\n"
   mMsg = mMsg + "Status: " + str(status) + "\n"
-  mMsg = mMsg + "Texto da Ação: " + url_unquote(texto_acao) + "\n\n"
   mMsg = mMsg + "Cordialmente,\n\n"
   mMsg = mMsg + "" + str(casa_legislativa) +"\n"
-  mMsg = mMsg + "Processo Legislativo Eletrônico\n"
+  mMsg = mMsg + "Processo Eletrônico\n"
 
   mTo = dic['end_email']
 

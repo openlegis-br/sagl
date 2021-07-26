@@ -53,26 +53,24 @@ for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=
              end_email=unid_destino.end_email_join
              txt_nome=unidade_destino
 
-#   destinatarios.append(dic)
-
    prazo = tramitacao.dat_fim_prazo
 
-   linkDoc = "" + context.absolute_url()+"/default_index_html"
+   linkDoc = "" + request.SERVER_URL
+   
+   despacho = url_unquote(texto_acao)
 
 if txt_nome != '' and end_email != '':
  mMsg = "O seguinte processo administrativo foi despachado aos seus cuidados, para as providências cabíveis.\n\n"
  mMsg = mMsg + "" + proc_adm + "\n"
  mMsg = mMsg + "Assunto: " + str(ementa) + "\n"
- mMsg = mMsg + "Interessado: " + str(nom_autor) + "\n\n"
- mMsg = mMsg + "ORIGEM: " + unidade_local + "\n"
- mMsg = mMsg + "DESTINO: " + txt_nome + "\n\n"
+ mMsg = mMsg + "Interessado: " + str(nom_autor) + "\n"
+ mMsg = mMsg + "Origem: " + unidade_local + "\n"
+ mMsg = mMsg + "Destino: " + txt_nome + "\n"
  mMsg = mMsg + "Status: " + str(status) + "\n"
- if texto_acao != '':
-    mMsg = mMsg + "Texto do Despacho: " + url_unquote(texto_acao) + "\n"
  mMsg = mMsg + "Encaminhado em: " + str(data_registro) + "\n"
  if prazo != None:
     mMsg = mMsg + "Prazo: " + str(prazo) + "\n"
- mMsg = mMsg + "\nAutentique-se no sistema pelo endereço " + linkDoc + " e verifique sua Caixa de Entrada - módulo Tramitação de  Documentos - para maiores detalhes.\n\n"
+ mMsg = mMsg + "\nAutentique-se em " + linkDoc + " e verifique sua caixa de entrada (módulo de tramitação de documentos) para maiores informações.\n\n"
  mMsg = mMsg + "" + str(casa_legislativa) +"\n"
  mMsg = mMsg + "Processo Eletrônico\n"
  mTo = end_email
