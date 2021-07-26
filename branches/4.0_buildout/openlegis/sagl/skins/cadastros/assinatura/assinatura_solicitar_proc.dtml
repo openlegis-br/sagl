@@ -1,28 +1,30 @@
 <dtml-call expr="REQUEST.set('metodo', zsql.assinatura_documento_incluir_zsql)">
 
-<dtml-if expr="zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=hdn_cod_assinatura_doc)">
-   <dtml-call expr="REQUEST.set('ind_prim_assinatura', '0')">
-<dtml-else>
-   <dtml-call expr="REQUEST.set('ind_prim_assinatura', '1')">
-</dtml-if>
-
-<dtml-if expr="zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=hdn_cod_assinatura_doc,cod_usuario=lst_cod_usuario)">
-   <dtml-call expr="REQUEST.set('erro', 1)">
-   <dtml-let mensagem="'Já existe solicitação de assinatura para esse usuário!'" tipo_mensagem="'warning'" codigo=hdn_codigo tipo_doc=hdn_tipo_doc>
-       <dtml-var assinatura_solicitar_form>
-   </dtml-let>
-<dtml-else>
- <dtml-try>
+<dtml-in lst_cod_usuario>
+  <dtml-call expr="REQUEST.set('codigo_usuario', int(_['sequence-item']))">   
+  <dtml-if expr="zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=hdn_cod_assinatura_doc)">
+    <dtml-call expr="REQUEST.set('ind_prim_assinatura', '0')">
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('ind_prim_assinatura', '1')">
+  </dtml-if>
+  <dtml-unless expr="zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=hdn_cod_assinatura_doc, cod_usuario=codigo_usuario)">
+    <dtml-try>
       <dtml-call expr="metodo(cod_assinatura_doc  = hdn_cod_assinatura_doc,
                               codigo              = hdn_codigo,
                               tipo_doc            = hdn_tipo_doc,
-                              cod_usuario         = lst_cod_usuario,
+                              cod_usuario         = codigo_usuario,
                               ind_prim_assinatura = ind_prim_assinatura)">
 
+    </dtml-try>
+  </dtml-unless>
+</dtml-in>
 
-        <dtml-let mensagem="'Solicitação de assinatura incluída!'" sucesso="'1'" codigo=hdn_codigo tipo_doc=hdn_tipo_doc url="'assinatura_solicitar_form?codigo='+hdn_codigo + '&tipo_doc=' + hdn_tipo_doc">
-            <dtml-var assinatura_solicitar_form>
-        </dtml-let> 
-
-  </dtml-try>
+<dtml-if erro>
+     <dtml-let mensagem="'Já existe solicitação de assinatura para esse usuário!'" tipo_mensagem="'warning'" codigo=hdn_codigo tipo_doc=hdn_tipo_doc>
+        <dtml-var assinatura_solicitar_form>
+     </dtml-let>
+<dtml-else>
+      <dtml-let mensagem="'Incluída com sucesso!'" sucesso="'1'" codigo=hdn_codigo tipo_doc=hdn_tipo_doc url="'assinatura_solicitar_form?codigo='+hdn_codigo + '&tipo_doc=' + hdn_tipo_doc">
+         <dtml-var assinatura_solicitar_form>
+      </dtml-let> 
 </dtml-if>
