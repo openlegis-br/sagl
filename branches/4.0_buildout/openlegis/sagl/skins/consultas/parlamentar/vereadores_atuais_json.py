@@ -29,7 +29,7 @@ for item in context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_atual):
        dic['foto'] = request.SERVER_URL + '/sapl_documentos/parlamentar/fotos/' + foto
     else:
        dic['foto'] = request.SERVER_URL + '/imagens/avatar.png'   
-    dic['link'] = request.SERVER_URL + '/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=' + item.cod_parlamentar + '&iframe=1'
+    dic['link'] = request.SERVER_URL + '/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=' + item.cod_parlamentar + '%26iframe=1'
     dic['partido'] = ''
     for filiacao in context.zsql.parlamentar_data_filiacao_obter_zsql(num_legislatura=num_legislatura, cod_parlamentar=item.cod_parlamentar):    
         if filiacao.dat_filiacao != '0' and filiacao.dat_filiacao != None:
