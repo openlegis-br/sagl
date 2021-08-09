@@ -42,7 +42,7 @@ remetente = email_casa
 
 cod_materia_base64 = context.pysc.b64encode_pysc(codigo=str(cod_materia))
 
-linkMat = "" + request.SERVER_URL+"/materia/materia_mostrar_proc?cod_materia=" + cod_materia_base64
+linkMat = "" + request.SERVER_URL+"/consultas/materia/materia_mostrar_proc?cod_materia=" + cod_materia_base64
 
 for comissao in context.zsql.comissao_obter_zsql(cod_comissao=cod_comissao):
  cod_comissao = comissao.cod_comissao

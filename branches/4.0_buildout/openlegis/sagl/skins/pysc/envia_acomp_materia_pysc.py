@@ -76,7 +76,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
 
 remetente = email_casa
 
-linkMat = "" + context.consultas.absolute_url()+"/materia/materia_mostrar_proc?cod_materia=" + str(cod_materia)
+linkMat = "" + context.consultas.absolute_url()+"/consultas/materia/materia_mostrar_proc?cod_materia=" + str(cod_materia)
 
 for dic in destinatarios:
   mMsg = "Prezado(a) Senhor(a),\n\n"
@@ -95,7 +95,7 @@ for dic in destinatarios:
   mMsg = mMsg + "Processo Eletrônico\n\n"
   if dic['txt_hash'] != None:  
      mMsg = mMsg + "Clique no link abaixo para excluir seu e-mail da lista de envio:\n" 
-     mMsg = mMsg + "" + request.SERVER_URL + "/materia/acompanhamento/acomp_materia_excluir_proc?txt_hash=" + str(dic['txt_hash']) +"\n"
+     mMsg = mMsg + "" + request.SERVER_URL + "/consultas/materia/acompanhamento/acomp_materia_excluir_proc?txt_hash=" + str(dic['txt_hash']) +"\n"
 
   mTo = dic['end_email']
 
