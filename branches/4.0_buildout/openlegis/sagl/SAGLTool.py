@@ -58,6 +58,7 @@ import sys
 import six
 import base64
 from base64 import b64encode
+from zlib import crc32
 import simplejson as json
 
 from restpki import *
@@ -1765,7 +1766,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         restpki_client = RestPkiClient(restpki_url, restpki_access_token)
         return restpki_client
 
-    def pades_signature(self, codigo, tipo_doc, cod_usuario):
+    def get_file_tosign(self, codigo, tipo_doc):
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
             tipo_doc = storage.tip_documento
             if tipo_doc == 'proposicao':
@@ -1829,19 +1830,23 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arquivo = self.restrictedTraverse(pdf_file)
            pdf_tosign = nom_arquivo
 
-        # Verifica se existe arquivo    
-        tmp_path = '/tmp'        
-        if os.path.exists(os.path.join(tmp_path, pdf_tosign)):
-           os.unlink(os.path.join(tmp_path, pdf_tosign))           
-           msg = 'O documento está em processo de assinatura! Tente novamente em instantes...'
-           raise ValueError(msg)
-        else:
-           # Read the PDF path
-           arq = getattr(storage_path, pdf_tosign)
-           arquivo = cStringIO.StringIO(str(arq.data))           
-           arquivo.seek(0)
-           f = open('/tmp/' + pdf_tosign, 'wb').write(arquivo.read())
+        x = crc32(str(arquivo))
         
+        if (x>=0):
+           crc_arquivo= str(x)
+        else:
+           crc_arquivo= str(-1 * x)              
+        
+        return pdf_tosign, storage_path, crc_arquivo
+
+    def pades_signature(self, codigo, tipo_doc, cod_usuario):
+        # get file to sign
+        pdf_tosign, storage_path, crc_arquivo = self.get_file_tosign(codigo, tipo_doc)     
+        tmp_path = '/tmp'        
+        arq = getattr(storage_path, pdf_tosign)
+        arquivo = cStringIO.StringIO(str(arq.data))           
+        arquivo.seek(0)
+        f = open('/tmp/' + pdf_tosign, 'wb').write(arquivo.read())
         pdf_tmp = pdf_tosign
         pdf_path = '%s/%s' % (tmp_path, pdf_tosign)
 
@@ -1921,9 +1926,15 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            })
         token = signature_starter.start_with_webpki()
  
-        return token, pdf_path, codigo, tipo_doc, cod_usuario
+        return token, pdf_path, crc_arquivo, codigo, tipo_doc, cod_usuario
 
-    def pades_signature_action(self, token, codigo, tipo_doc, cod_usuario):
+    def pades_signature_action(self, token, codigo, tipo_doc, cod_usuario, crc_arquivo_original):
+        # checking if file was changed
+        pdf_tosign, storage_path, crc_arquivo = self.get_file_tosign(codigo, tipo_doc)
+        if str(crc_arquivo_original) != str(crc_arquivo):
+           msg = 'O arquivo foi modificado durante o procedimento de para assinatura! Tente novamente.'
+           raise ValueError(msg)        
+    
         # Get the token for this signature (rendered in a hidden input field)
         token = token
         codigo = codigo
@@ -1973,6 +1984,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signature_finisher.write_signed_pdf(os.path.join(tmp_path, file_hash))
 
         data = open('/tmp/' + file_hash, "rb").read()
+
 
         for file in [file_hash]:
             if tipo_doc != 'proposicao':  
