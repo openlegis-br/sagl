@@ -1,7 +1,7 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
 arguments : tip_id_basica="" txt_busca="" ind_excluido=0
-max_rows : 5000
+max_rows : 2000
 max_cache : 100
 </dtml-comment>
 
@@ -19,29 +19,30 @@ SELECT
    tipo_materia.des_tipo_materia
 
 FROM
-   materia_legislativa AS materia LEFT JOIN tipo_materia_legislativa as tipo_materia ON materia.tip_id_basica = tipo_materia.tip_materia
+   materia_legislativa AS materia 
+   LEFT JOIN tipo_materia_legislativa as tipo_materia ON materia.tip_id_basica = tipo_materia.tip_materia
 
 WHERE
  <dtml-if tip_id_basica>
-   materia.tip_id_basica = '<dtml-var tip_id_basica>' AND
+   materia.tip_id_basica = '<dtml-var tip_id_basica sql_quote>' AND
  </dtml-if>
    materia.ind_excluido = 0 AND
    (
-   concat_ws('/',materia.num_ident_basica,materia.ano_ident_basica) like '%<dtml-var txt_busca>%' OR
-   num_ident_basica = '<dtml-var txt_busca>' OR
-   txt_ementa LIKE '%<dtml-var txt_busca>%' OR
-   txt_ementa LIKE '<dtml-var txt_busca>%' OR
-   txt_ementa LIKE '%<dtml-var txt_busca>' OR
-   txt_indexacao LIKE '%<dtml-var txt_busca>%')
+   concat_ws('/',materia.num_ident_basica,materia.ano_ident_basica) like '%<dtml-var txt_busca sql_quote>%' OR
+   num_ident_basica = '<dtml-var txt_busca sql_quote>' OR
+   txt_ementa LIKE '%<dtml-var txt_busca sql_quote>%' OR
+   txt_ementa LIKE '<dtml-var txt_busca sql_quote>%' OR
+   txt_ementa LIKE '%<dtml-var txt_busca sql_quote>' OR
+   txt_indexacao LIKE '%<dtml-var txt_busca sql_quote>%')
 
 ORDER BY
    CASE
-     WHEN concat_ws('/',materia.num_ident_basica,materia.ano_ident_basica) like '%<dtml-var txt_busca>%' THEN 1
-     WHEN num_ident_basica =  '<dtml-var txt_busca>' THEN 2
-     WHEN txt_ementa LIKE '%<dtml-var txt_busca>%' THEN 3
-     WHEN txt_ementa LIKE '<dtml-var txt_busca>%' THEN 4
-     WHEN txt_ementa LIKE '%<dtml-var txt_busca>' THEN 5
-     WHEN txt_indexacao LIKE '%<dtml-var txt_busca>%' THEN 6
+     WHEN concat_ws('/',materia.num_ident_basica,materia.ano_ident_basica) like '%<dtml-var txt_busca sql_quote>%' THEN 1
+     WHEN num_ident_basica =  '<dtml-var txt_busca sql_quote>' THEN 2
+     WHEN txt_ementa LIKE '%<dtml-var txt_busca sql_quote>%' THEN 3
+     WHEN txt_ementa LIKE '<dtml-var txt_busca sql_quote>%' THEN 4
+     WHEN txt_ementa LIKE '%<dtml-var txt_busca sql_quote>' THEN 5
+     WHEN txt_indexacao LIKE '%<dtml-var txt_busca sql_quote>%' THEN 6
    ELSE 7 
    END,
    materia.ano_ident_basica ASC

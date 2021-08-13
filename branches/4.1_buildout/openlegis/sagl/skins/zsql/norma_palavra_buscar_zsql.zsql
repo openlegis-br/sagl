@@ -1,7 +1,7 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
 arguments : tip_norma="" des_assunto="" ind_excluido=0
-max_rows : 20000
+max_rows : 2000
 max_cache : 100
 </dtml-comment>
 
@@ -18,29 +18,30 @@ SELECT
 
 
 FROM
-   norma_juridica AS norma LEFT JOIN tipo_norma_juridica as tipo_norma ON norma.tip_norma = tipo_norma.tip_norma
+   norma_juridica AS norma 
+   LEFT JOIN tipo_norma_juridica as tipo_norma ON norma.tip_norma = tipo_norma.tip_norma
 
 WHERE
  <dtml-if tip_norma>
-   norma.tip_norma = '<dtml-var tip_norma>' AND
+   norma.tip_norma = '<dtml-var tip_norma sql_quote>' AND
  </dtml-if>
    norma.ind_excluido = 0 AND
    (
-   concat_ws('/',norma.num_norma,norma.ano_norma) like '%<dtml-var des_assunto>%' OR
-   num_norma = '<dtml-var des_assunto>' OR
-   txt_ementa LIKE '%<dtml-var des_assunto>%' OR
-   txt_ementa LIKE '<dtml-var des_assunto>%' OR
-   txt_ementa LIKE '%<dtml-var des_assunto>' OR
-   txt_indexacao LIKE '%<dtml-var des_assunto>%')
+   concat_ws('/',norma.num_norma,norma.ano_norma) like '%<dtml-var des_assunto sql_quote>%' OR
+   num_norma = '<dtml-var des_assunto sql_quote>' OR
+   txt_ementa LIKE '%<dtml-var des_assunto sql_quote>%' OR
+   txt_ementa LIKE '<dtml-var des_assunto sql_quote>%' OR
+   txt_ementa LIKE '%<dtml-var des_assunto sql_quote>' OR
+   txt_indexacao LIKE '%<dtml-var des_assunto sql_quote>%')
 
 ORDER BY
    CASE
-     WHEN concat_ws('/',norma.num_norma,norma.ano_norma) like '%<dtml-var des_assunto>%' THEN 1
-     WHEN num_norma =  '<dtml-var des_assunto>' THEN 2
-     WHEN txt_ementa LIKE '%<dtml-var des_assunto>%' THEN 3
-     WHEN txt_ementa LIKE '<dtml-var des_assunto>%' THEN 4
-     WHEN txt_ementa LIKE '%<dtml-var des_assunto>' THEN 5
-     WHEN txt_indexacao LIKE '%<dtml-var des_assunto>%' THEN 6
+     WHEN concat_ws('/',norma.num_norma,norma.ano_norma) like '%<dtml-var des_assunto sql_quote>%' THEN 1
+     WHEN num_norma =  '<dtml-var des_assunto sql_quote>' THEN 2
+     WHEN txt_ementa LIKE '%<dtml-var des_assunto sql_quote>%' THEN 3
+     WHEN txt_ementa LIKE '<dtml-var des_assunto sql_quote>%' THEN 4
+     WHEN txt_ementa LIKE '%<dtml-var des_assunto sql_quote>' THEN 5
+     WHEN txt_indexacao LIKE '%<dtml-var des_assunto sql_quote>%' THEN 6
    ELSE 7 
    END,
    norma.ano_norma ASC

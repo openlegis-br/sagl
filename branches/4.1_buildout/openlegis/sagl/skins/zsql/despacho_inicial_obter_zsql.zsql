@@ -5,8 +5,6 @@ max_rows : 1000
 max_cache : 100
 </dtml-comment>
 
-<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
-
 SELECT 
        REPLACE(despacho_inicial.cod_materia,  'L', '') as cod_materia,
        REPLACE(despacho_inicial.num_ordem,    'L', '') as num_ordem,
@@ -16,7 +14,7 @@ SELECT
        comissao.sgl_comissao as sgl_comissao_index
 
 FROM   
-       despacho_inicial, comissao
+       despacho_inicial LEFT JOIN comissao ON despacho_inicial.cod_comissao = comissao.cod_comissao
 
   <dtml-sqlgroup where>
     <dtml-sqltest num_ordem    column="despacho_inicial.num_ordem"    op="=" type="int" optional><dtml-and>
@@ -25,29 +23,7 @@ FROM
     <dtml-sqltest ind_excluido column="despacho_inicial.ind_excluido" op="=" type="int" optional><dtml-and>
     despacho_inicial.cod_comissao=comissao.cod_comissao
   </dtml-sqlgroup>
-ORDER BY despacho_inicial.cod_materia DESC
+  
+ORDER BY 
+    despacho_inicial.cod_materia DESC
 
-<dtml-else>
-
-SELECT 
-       despacho_inicial.cod_materia as cod_materia,
-       despacho_inicial.num_ordem as num_ordem,
-       despacho_inicial.cod_comissao as cod_comissao_sel,
-       despacho_inicial.ind_excluido,
-       comissao.nom_comissao as nom_comissao_index,
-       comissao.sgl_comissao as sgl_comissao_index
-
-FROM   
-       despacho_inicial, comissao
-
-  <dtml-sqlgroup where>
-    <dtml-sqltest num_ordem    column="despacho_inicial.num_ordem"    op="=" type="int" optional><dtml-and>
-    <dtml-sqltest cod_materia  column="despacho_inicial.cod_materia"  op="=" type="int" optional><dtml-and>
-    <dtml-sqltest cod_comissao column="despacho_inicial.cod_comissao" op="=" type="int" optional><dtml-and>
-    <dtml-sqltest ind_excluido column="despacho_inicial.ind_excluido" op="=" type="int" optional><dtml-and>
-    despacho_inicial.cod_comissao=comissao.cod_comissao
-  </dtml-sqlgroup>
-ORDER BY despacho_inicial.cod_materia DESC
-
-
-</dtml-if>
