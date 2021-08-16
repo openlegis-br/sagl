@@ -10,6 +10,11 @@
        form.txt_num_reuniao.focus();
        return false;
     }
+    if (form.lst_tip_reuniao.selectedIndex == 0){
+       $('#lst_tip_reuniao').addClass('is-invalid');
+       form.lst_tip_reuniao.focus();
+       return false;
+    }    
     if (form.txt_dat_inicio_reuniao.value == "") {
        $('#txt_dat_inicio_reuniao').addClass('is-invalid');
        form.txt_dat_inicio_reuniao.focus();
@@ -111,6 +116,17 @@ $(document).ready(() => {
           Este campo é obrigatório !
         </div>
      </div>
+     <div class="col-6 col-md-3 mb-3">
+        <label for="lst_tip_reuniao" class="required">Tipo de Reunião</label>
+        <select class="custom-select" id="lst_tip_reuniao" name="lst_tip_reuniao" required>
+           <option value="0">Selecione </option>
+           <option value="Ordinária" <dtml-if expr="_.has_key('cod_reuniao') and str(des_tipo_reuniao)=='Ordinária'"> selected</dtml-if>>Ordinária</option>   
+           <option value="Extraordinária" <dtml-if expr="_.has_key('cod_reuniao') and str(des_tipo_reuniao)=='Extraordinária'"> selected</dtml-if>>Extraordinária</option>  
+        </select>  
+        <div class="invalid-feedback">
+          Este campo é obrigatório!
+        </div>           
+     </div>   
      <div class="col-6 col-sm-6 col-md-3 mb-3">
         <label for="txt_dat_inicio_reuniao" class="form-label required">Data</label>
         <input class="form-control date" type="text" name="txt_dat_inicio_reuniao" id="txt_dat_inicio_reuniao"  value="<dtml-var dat_inicio_reuniao missing null>" required />
@@ -134,13 +150,26 @@ $(document).ready(() => {
           Este campo é obrigatório !
         </div>
      </div>
+   </div>
+   <div class="form-row">     
      <div class="col-6 col-sm-6 col-md-3 mb-3">
         <label for="txt_hr_fim_reuniao" class="form-label">Horário de Fim</label>
         <input class="form-control time" type="text" name="txt_hr_fim_reuniao" id="txt_hr_fim_reuniao"  value="<dtml-var hr_fim_reuniao missing null>" />
         <div class="invalid-feedback">
           Este campo é obrigatório !
         </div>
-     </div>     
+     </div>
+     <div class="col-6 col-sm-6 col-md-9 mb-3">  
+         <label for="txt_url_video">Player de Vídeo</label>
+         <div class="input-group">
+           <input class="form-control" type="text" id="txt_url_video" name="txt_url_video" maxlength="150" value="<dtml-var url_video missing null>" placeholder="Exemplo: https://www.youtube.com/embed/XXXXX" autocomplete="off" />
+           <dtml-if expr="_.has_key('cod_reuniao') and url_video">
+              <div class="input-group-append">                            
+                <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Reprodução de Vídeo" data-src="<dtml-var url_video missing null=''>"><i class="fa fa-fw fa-play"></i><span class="d-none">Video</span></button>
+              </div>
+           </dtml-if>
+         </div>
+     </div>         
    </div>
    <div class="form-row">
      <div class="col-6 mb-3">
@@ -171,9 +200,9 @@ $(document).ready(() => {
              <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_pauta)">
                 <dtml-let pauta="_.getattr(sapl_documentos.reuniao_comissao,id_pauta).absolute_url">
                    <p>
-                   <a class="btn btn-primary" href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i> Visualizar</a>
+                   <a class="btn btn-sm btn-primary" href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i> Visualizar</a>
                    <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
-                     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_reuniao>&tipo_doc=pauta_comissao&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+                     <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_reuniao>&tipo_doc=pauta_comissao&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
                   </dtml-if>
                   </p>
                 </dtml-let>
@@ -237,20 +266,6 @@ $(document).ready(() => {
      </div>
    </div>
 
-  <div class="form-row">
-     <div class="col-12 mb-3">  
-         <label for="txt_url_video">Player de Vídeo</label>
-         <div class="input-group">
-           <input class="form-control" type="text" id="txt_url_video" name="txt_url_video" maxlength="150" value="<dtml-var url_video missing null>" placeholder="Exemplo: https://www.youtube.com/embed/XXXXX" autocomplete="off" />
-           <dtml-if expr="_.has_key('cod_reuniao') and url_video">
-              <div class="input-group-append">                            
-                <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Reprodução de Vídeo" data-src="<dtml-var url_video missing null=''>"><i class="fa fa-fw fa-play"></i><span class="d-none">Video</span></button>
-              </div>
-           </dtml-if>
-         </div>
-     </div>
-  </div>
-   
    <input type="hidden" name="hdn_cod_reuniao"  value="<dtml-var cod_reuniao missing>">
    <input type="hidden" name="hdn_cod_comissao" value="<dtml-var cod_comissao>">
    <dtml-if cod_reuniao>
@@ -258,7 +273,7 @@ $(document).ready(() => {
    </dtml-if>
    <input type="hidden" name="modal" value="1">
 
-  <div class="text-left">
+  <div class="text-center">
      <button class="btn btn-primary" onClick="return reuniao_criticar()">Salvar</button>
      <dtml-if cod_reuniao>
          <a class="btn btn-danger" href="reuniao_comissao_excluir_proc?cod_reuniao=<dtml-var cod_reuniao>&cod_comissao=<dtml-var cod_comissao>&modal=1" data-confirm="Deseja realmente excluir a reunião?">Excluir</a>
@@ -355,7 +370,7 @@ $(document).ready(function() {
         <dtml-if sequence-end>
            </table>
            </div>
-            <div clas="text-left">
+            <div clas="text-center">
                 <input class="btn btn-primary" type="submit" name="button" value="Salvar" />
             </div>           
         </dtml-if>

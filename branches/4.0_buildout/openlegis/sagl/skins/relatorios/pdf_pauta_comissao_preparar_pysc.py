@@ -14,7 +14,7 @@ if context.REQUEST['cod_reuniao']!='':
         dicrc = {}
         for comissao in context.zsql.comissao_obter_zsql(cod_comissao=rc.cod_comissao, ind_excluido=0):     
             dicrc["nom_comissao"] = comissao.nom_comissao.decode('utf-8').upper()
-        dicrc["reuniao"] = 'PAUTA DA ' + str(rc.num_reuniao)+"ª REUNIÃO ORDINÁRIA"
+        dicrc["reuniao"] = 'PAUTA DA ' + str(rc.num_reuniao)+"ª REUNIÃO " + str(rc.des_tipo_reuniao).decode('utf-8').upper()
         dicrc["tema"] =  rc.txt_tema
         dia = context.pysc.data_converter_por_extenso_pysc(data=rc.dat_inicio_reuniao)
         dicrc["horareuniao"] = context.pysc.hora_formatar_pysc(hora=rc.hr_inicio_reuniao)

@@ -18,6 +18,7 @@ ALTER TABLE `reuniao_comissao` ADD `hr_fim_reuniao` VARCHAR(5) NULL DEFAULT NULL
 
 ALTER TABLE `reuniao_comissao` ADD `url_video` VARCHAR(150) NULL DEFAULT NULL AFTER `txt_observacao`;
 
+ALTER TABLE `reuniao_comissao` ADD `des_tipo_reuniao` VARCHAR(15) NOT NULL DEFAULT 'Ordinária' AFTER `num_reuniao`;
 
 -- tabela reuniao_comissao_presenca
 
