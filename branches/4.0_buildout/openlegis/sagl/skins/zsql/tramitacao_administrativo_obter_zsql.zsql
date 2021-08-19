@@ -17,6 +17,7 @@ SELECT
        REPLACE(tramitacao_administrativo.cod_status, 'L', '') as cod_status,
        tramitacao_administrativo.txt_tramitacao,       
        DATE_FORMAT(tramitacao_administrativo.dat_fim_prazo, '%d/%m/%Y') as dat_fim_prazo,
+       DATE_FORMAT(tramitacao_administrativo.dat_fim_prazo, '%Y/%m/%d') as prazo_tramitacao,       
        tramitacao_administrativo.ind_ult_tramitacao, 
        status.sgl_status,
        status.des_status,
@@ -96,10 +97,13 @@ FROM
     AND <dtml-sqltest ind_fim_tramitacao   op="=" column="status.ind_fim_tramitacao"   type="int" optional>
   </dtml-if>
 
-  <dtml-if expr="rd_ordem == '1'">
+  <dtml-if expr="rd_ordem == '1' or rd_ordem == 1">
     ORDER BY 
      tramitacao_administrativo.dat_tramitacao,
      tramitacao_administrativo.cod_tramitacao
+  <dtml-elif expr="rd_ordem == '2' or rd_ordem == 2">
+    ORDER BY 
+     tramitacao_administrativo.dat_tramitacao DESC
   <dtml-else>
     ORDER BY 
      tipo_documento_administrativo.sgl_tipo_documento, 
