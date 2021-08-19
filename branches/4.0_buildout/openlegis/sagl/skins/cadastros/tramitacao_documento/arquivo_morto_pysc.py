@@ -17,10 +17,10 @@ for unidade in context.zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario
 tramitacoes = []
 for dic_unid in unidades:
   if dic_unid['ind_responsavel']==1:
-    for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_unid_tram_destino=dic_unid['cod_unid_tramitacao'],ind_ult_tramitacao=1,ind_encaminha=1,ind_recebido=0,ind_retorno_tramitacao=0,ind_tramitacao=0):
+    for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_unid_tram_destino=dic_unid['cod_unid_tramitacao'],ind_ult_tramitacao=1,ind_encaminha=1,ind_recebido=0,ind_retorno_tramitacao=0,ind_tramitacao=0,rd_ordem=2):
         tramitacoes.append(int(tramitacao.cod_tramitacao))
   elif dic_unid['ind_responsavel']==0:
-    for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_unid_tram_destino=dic_unid['cod_unid_tramitacao'],cod_usuario_dest=cod_usuario,ind_ult_tramitacao=1,ind_encaminha=1,ind_recebido=0,ind_retorno_tramitacao=0,ind_tramitacao=0):
+    for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_unid_tram_destino=dic_unid['cod_unid_tramitacao'],cod_usuario_dest=cod_usuario,ind_ult_tramitacao=1,ind_encaminha=1,ind_recebido=0,ind_retorno_tramitacao=0,ind_tramitacao=0,rd_ordem=2):
         tramitacoes.append(int(tramitacao.cod_tramitacao))
 
 tramitacoes.sort()
