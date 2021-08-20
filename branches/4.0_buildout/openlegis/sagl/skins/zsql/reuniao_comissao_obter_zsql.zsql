@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_reuniao="" cod_comissao="" num_reuniao="" dat_inicio_reuniao="" ind_excluido=0
+arguments : cod_reuniao="" cod_comissao="" num_reuniao="" dat_inicio_reuniao="" ano_reuniao="" status="" ind_excluido=0
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
@@ -28,7 +28,19 @@ FROM
     reuniao_comissao.ind_excluido = 0 
   </dtml-sqlgroup>
 
-  <dtml-if expr="cod_comissao and cod_comissao != '-1'">
+  <dtml-if expr="ano_reuniao and ano_reuniao!=''">
+     AND YEAR(dat_inicio_reuniao) = <dtml-sqlvar ano_reuniao type="nb" optional>
+  </dtml-if>
+
+  <dtml-if expr="status">  
+     <dtml-if expr="status=='Agendadas'">
+        AND DATE(dat_inicio_reuniao) >= DATE(NOW())
+     <dtml-elif expr="status and status=='Encerradas'">
+        AND DATE(dat_inicio_reuniao) < DATE(NOW())
+     </dtml-if>
+  </dtml-if>  
+
+  <dtml-if expr="cod_comissao and cod_comissao != ''">
      AND reuniao_comissao.cod_comissao = <dtml-sqlvar cod_comissao type="int" optional>
   </dtml-if>
 
