@@ -752,65 +752,57 @@ $(function () {
       <div id="collapseTram" class="collapse" aria-labelledby="headingOne" data-parent=".tramitacao">
         <div class="card-body">
           <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia)">
-            <dtml-if sequence-start>             
-              <div class="table-responsive">
-                <table class="table table-sm mb-0">
-                  <thead>
-                    <tr>
-                      <th>Data</th>
-                      <th>Origem</th>
-                      <th>Destino</th>
-                      <th width="30%">Status</th>                      
-                    </tr>
-                  </thead>
+            <dtml-if sequence-start>
+              <div class="col-md-10 offset-md-1">                       
+		<ul class="timeline">
             </dtml-if>
-                    <tr>
-                      <td><dtml-var dat_tramitacao></td>
-                      <td>
-                       <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
-                         <dtml-var nom_unidade_join>
-                       </dtml-in>                       
-                      </td>
-                      <td>
-                         <dtml-if cod_unid_tram_dest>                      
-                          <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
-                            <dtml-var nom_unidade_join>
-                          </dtml-in>
-                         <dtml-else>
-                         </dtml-if>
-                      </td>
-                      <td>
-                        <dtml-if expr="dat_encaminha!=None">
-                         <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
-                         <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">                        
-                         <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
-                           <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
-                             <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i> <dtml-var expr="des_status"></a>
-                           </dtml-let>                         
-                         <dtml-elif expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao,tipo_doc='tramitacao', ind_assinado=1)">
-                           <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao,tipo_doc='tramitacao', ind_assinado=1, ind_prim_assinatura=1)">
-                            <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+		<li <dtml-if sequence-start>class="ultima"</dtml-if>>
+                  <dtml-if expr="dat_encaminha!=None">
+                     <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+                     <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">                        
+                     <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+                       <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
+                         <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><dtml-var expr="des_status"></a>
+                       </dtml-let>                         
+                     <dtml-elif expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao,tipo_doc='tramitacao', ind_assinado=1)">
+                        <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao, tipo_doc='tramitacao', ind_assinado=1, ind_prim_assinatura=1)">
+                           <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
                               <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
-                                 <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i> <dtml-var expr="des_status"></a>
-                              </dtml-let> 
-                            <dtml-else>                              
-                                <a href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate"></i> <dtml-var expr="des_status"></a>
-                            </dtml-if>
-                           </dtml-in>
-                         <dtml-elif "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
-                           <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
-                              <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i> <dtml-var expr="des_status"></a>
-                           </dtml-let>                                      
-                         <dtml-else>
-                            <dtml-var expr="des_status"><dtml-if txt_tramitacao><br /><span class="text-muted small"><dtml-var txt_tramitacao></span></dtml-if>
-                         </dtml-if> 
+                                <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"></i> <dtml-var expr="des_status"></a>
+                              </dtml-let>
+                              <div class="text-muted small float-right"><dtml-var dat_tramitacao></div>
+                           <dtml-else>                              
+                              <a href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><dtml-var expr="des_status"></a>
+                              <div class="text-muted small float-right"><dtml-var dat_tramitacao></div>
+                           </dtml-if>
+                        </dtml-in>
+                     <dtml-elif "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+                        <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+                           <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><dtml-var expr="des_status"></a>
+                        </dtml-let>
+                        <div class="text-muted small float-right"><dtml-var dat_tramitacao></div>
+                     <dtml-else>
+                        <div class="text-muted small float-right"><dtml-var dat_tramitacao></div>
+                        <dtml-var expr="des_status">
+                        <dtml-if txt_tramitacao><div class="text-muted small"><dtml-var txt_tramitacao></div></dtml-if>
+                     </dtml-if> 
                        <dtml-else>
-                         <dtml-var expr="des_status"><dtml-if txt_tramitacao><br /><span class="text-muted small"><dtml-var txt_tramitacao></span></dtml-if>
-                       </dtml-if>
-                      </td>  
-                    </tr>                                          
+                         <div class="text-muted small float-right"><dtml-var dat_tramitacao></div>
+                         <dtml-var expr="des_status">
+                         <dtml-if txt_tramitacao><div class="text-muted small"><dtml-var txt_tramitacao></div></dtml-if>
+                  </dtml-if>
+                  <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_local))">
+                     <div class="text-muted small"><b>Origem:</b> <dtml-var nom_unidade_join></div>
+                  </dtml-in>
+                  <dtml-if cod_unid_tram_dest>                      
+                     <dtml-in expr="unidade_tramitacao_obter_zsql(cod_unid_tramitacao=_.int(cod_unid_tram_dest))">
+                            <div class="text-muted small"><b>Destino</b>: <dtml-var nom_unidade_join></div>
+                     </dtml-in>
+                  </dtml-if>
+	      </li>                                       
             <dtml-if sequence-end>
-                 </table>
+                 </ul>
+               </div>
               </div>
             </dtml-if>            
           </dtml-in>
