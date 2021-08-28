@@ -84,7 +84,7 @@ for documento in context.zsql.documento_acessorio_obter_zsql(cod_documento=cod_d
         materia_vinculada['id_materia'] = materia.des_tipo_materia + ' nº ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica)
         materia_vinculada['txt_ementa'] = materia.txt_ementa
         materia_vinculada['autoria'] = ''
-        autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
+        autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia, ind_primeiro_autor=1)
         fields = autores.data_dictionary().keys()
         lista_autor = []
         for autor in autores:
