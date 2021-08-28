@@ -32,7 +32,6 @@ for local in context.zsql.localidade_obter_zsql(cod_localidade = casa['cod_local
     inf_basicas_dic['sgl_uf']= local.sgl_uf
 
 for documento in context.zsql.documento_acessorio_obter_zsql(cod_documento=cod_documento, cod_materia=cod_materia, ind_excluido=0):
-    inf_basicas_dic['nome_autor'] = documento.nom_autor_documento
     nom_arquivo = str(documento.cod_documento)+ '.odt'
     nom_documento = documento.nom_documento
     if documento.txt_ementa != None:
@@ -74,6 +73,7 @@ for documento in context.zsql.documento_acessorio_obter_zsql(cod_documento=cod_d
                nom_autor.append(autor_dic)
         else:
            autor_dic['nome_autor'] = documento.nom_autor_documento
+           inf_basicas_dic['nome_autor'] = documento.nom_autor_documento           
            nom_autor.append(autor_dic)
  
     for tipo_documento in context.zsql.tipo_documento_obter_zsql(tip_documento=documento.tip_documento):
@@ -90,7 +90,8 @@ for documento in context.zsql.documento_acessorio_obter_zsql(cod_documento=cod_d
         for autor in autores:
             for field in fields:
                 nome_autor = autor['nom_autor_join']
+                inf_basicas_dic['nome_autor'] = autor['nom_autor_join']       
             lista_autor.append(nome_autor)
-        materia_vinculada['autoria'] = ', '.join(['%s' % (value) for (value) in lista_autor])         
+        materia_vinculada['autoria'] = ', '.join(['%s' % (value) for (value) in lista_autor])
 
 return st.doc_acessorio_gerar_odt(inf_basicas_dic, nom_arquivo, des_tipo_documento, nom_documento, txt_ementa, dat_documento, data_documento, nom_autor, materia_vinculada, modelo_proposicao)

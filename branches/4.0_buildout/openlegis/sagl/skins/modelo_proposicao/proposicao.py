@@ -60,6 +60,7 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
                for field in fields:
                    nome_autor = autor['nom_autor_join']
                lista_autor.append(nome_autor)
+           inf_basicas_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper()               
            materia_vinculada['autoria'] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
        
     if proposicao.des_tipo_proposicao == 'Parecer' or proposicao.des_tipo_proposicao == 'Parecer de Comissão':
@@ -94,12 +95,10 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
                       partido_autor = nom_cargo
                    autor_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper() + '\n' + partido_autor
                    autor_dic['apelido_autor'] = partido_autor
-                   inf_basicas_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper()                   
             else:
                autor_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper()
                autor_dic['apelido_autor'] = ''
                autor_dic['cod_autor'] = autor['cod_autor']
-               inf_basicas_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper()
         nom_autor.append(autor_dic)
 
 return st.proposicao_gerar_odt(inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao, modelo_path)
