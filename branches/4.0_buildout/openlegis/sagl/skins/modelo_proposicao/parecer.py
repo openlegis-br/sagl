@@ -36,6 +36,7 @@ for relatoria in context.zsql.relatoria_obter_zsql(cod_relatoria=cod_relatoria, 
     nom_arquivo = str(relatoria.cod_relatoria)+ '_parecer.odt'
     tip_apresentacao = ""
     data_designacao = relatoria.dat_desig_relator
+    inf_basicas_dic['data_parecer'] = context.pysc.data_converter_por_extenso_pysc(data=relatoria.dat_destit_relator)     
     data_parecer = context.pysc.data_converter_por_extenso_pysc(data=relatoria.dat_destit_relator) 
 
     if relatoria.tip_apresentacao == 'O':
