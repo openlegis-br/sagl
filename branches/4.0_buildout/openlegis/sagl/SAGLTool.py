@@ -1159,8 +1159,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         w = int(p.mediaBox.getWidth())
         return w
 
-    def parecer_gerar_odt(self, inf_basicas_dic, nom_arquivo, nom_comissao, materia_vinculada, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao):
-        url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/parecer.odt"
+    def parecer_gerar_odt(self, inf_basicas_dic, nom_arquivo, nom_comissao, materia_vinculada, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao, modelo_proposicao):
+        url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/%s" % modelo_proposicao    
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
         exec 'brasao = brasao_file'

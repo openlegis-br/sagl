@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_relatoria, cod_materia, cod_comissao
+##parameters=cod_relatoria, cod_materia, cod_comissao, modelo_proposicao
 ##title=
 ##
 from Products.CMFCore.utils import getToolByName
@@ -98,4 +98,4 @@ for relatoria in context.zsql.relatoria_obter_zsql(cod_relatoria=cod_relatoria, 
         nom_autor = materia_vinculada['autoria']        
         txt_ementa = materia_vinculada['txt_ementa']
 
-return st.parecer_gerar_odt(inf_basicas_dic, nom_arquivo, nom_comissao, materia_vinculada, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao)
+return st.parecer_gerar_odt(inf_basicas_dic, nom_arquivo, nom_comissao, materia_vinculada, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao, modelo_proposicao)
