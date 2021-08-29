@@ -1159,7 +1159,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         w = int(p.mediaBox.getWidth())
         return w
 
-    def parecer_gerar_odt(self, inf_basicas_dic, nom_arquivo, nom_comissao, materia, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao):
+    def parecer_gerar_odt(self, inf_basicas_dic, nom_arquivo, nom_comissao, materia_vinculada, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao):
         url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/parecer.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
@@ -1637,7 +1637,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
               for materia in self.zsql.materia_obter_zsql(cod_materia=documento.cod_materia):
                   materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
               info_protocolo = '- Recebido em ' + proposicao.dat_recebimento + ' - '                  
-              texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' AO ' + str(materia)
+              texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' - ' + str(materia)
               storage_path = self.sapl_documentos.materia
               nom_pdf_saida = str(documento.cod_documento) + ".pdf"
           elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao=='Emenda' or proposicao.des_tipo_proposicao=='Mensagem Aditiva'):
@@ -1725,11 +1725,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         packet2 = StringIO.StringIO()
         d = canvas.Canvas(packet2, pagesize=A4)
         d.setFillColorRGB(0,0,0)
-        d.setFont("Arial_Bold", 12)
+        d.setFont("Arial_Bold", 13)
         # alinhamento a esquerda
-        d.drawString(85, 700, texto)
+        #d.drawString(85, 700, texto)
         # alinhamento centralizado
-        #d.drawCentredString(pwidth/2, 700, texto)
+        d.drawCentredString(pwidth/2, 700, texto)
         d.save()
         packet2.seek(0)
         new_pdf2 = PdfFileReader(packet2)

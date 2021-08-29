@@ -39,7 +39,7 @@ for documento in context.zsql.documento_acessorio_obter_zsql(cod_documento=cod_d
     else:
        txt_ementa = " "
     dat_documento = documento.dat_documento
-    data_documento = context.pysc.data_converter_por_extenso_pysc(data=documento.dat_documento)
+    data_documento = context.pysc.data_converter_por_extenso_pysc(data=documento.dat_documento)    
     apelido_autor = ''
     nom_autor = []
     for proposicao in context.zsql.proposicao_obter_zsql(ind_mat_ou_doc='D', cod_mat_ou_doc=cod_documento):
@@ -64,6 +64,7 @@ for documento in context.zsql.documento_acessorio_obter_zsql(cod_documento=cod_d
                              partido_autor = nom_cargo + ' - ' + parlamentar.sgl_partido
                           else:
                              partido_autor = nom_cargo
+                          inf_basicas_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper()                             
                           autor_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper() + '\n' + partido_autor
                           autor_dic['apelido_autor'] = partido_autor
                    else:
@@ -73,7 +74,7 @@ for documento in context.zsql.documento_acessorio_obter_zsql(cod_documento=cod_d
                nom_autor.append(autor_dic)
         else:
            autor_dic['nome_autor'] = documento.nom_autor_documento
-           inf_basicas_dic['nome_autor'] = documento.nom_autor_documento           
+           inf_basicas_dic['nome_autor'] = documento.nom_autor_documento
            nom_autor.append(autor_dic)
  
     for tipo_documento in context.zsql.tipo_documento_obter_zsql(tip_documento=documento.tip_documento):
@@ -84,7 +85,7 @@ for documento in context.zsql.documento_acessorio_obter_zsql(cod_documento=cod_d
         materia_vinculada['id_materia'] = materia.des_tipo_materia + ' nº ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica)
         materia_vinculada['txt_ementa'] = materia.txt_ementa
         materia_vinculada['autoria'] = ''
-        autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia, ind_primeiro_autor=1)
+        autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia,)
         fields = autores.data_dictionary().keys()
         lista_autor = []
         for autor in autores:
