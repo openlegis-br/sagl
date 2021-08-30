@@ -47,8 +47,8 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
     txt_ementa = proposicao.txt_descricao
     dat_apresentacao = context.pysc.data_converter_por_extenso_pysc(data=DateTime().strftime("%d/%m/%Y"))
 
+    materia_vinculada = {}
     if proposicao.cod_materia != None:
-       materia_vinculada = {}
        for materia in context.zsql.materia_obter_zsql(cod_materia = proposicao.cod_materia):
            materia_vinculada['id_materia'] = materia.des_tipo_materia + ' nº ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica)
            materia_vinculada['txt_ementa'] = materia.txt_ementa.decode('utf-8')
@@ -63,13 +63,13 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
            inf_basicas_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper()               
            materia_vinculada['autoria'] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
        
-    if proposicao.des_tipo_proposicao == 'Parecer' or proposicao.des_tipo_proposicao == 'Parecer de Comissão':
-       inf_basicas_dic['nom_comissao'] = 'COMISSÃO DE XXXXXXX'
-       inf_basicas_dic['id_materia'] = materia_vinculada['id_materia']
-       inf_basicas_dic['data_parecer'] = context.pysc.data_converter_por_extenso_pysc(data=DateTime().strftime("%d/%m/%Y"))
-       for relator in context.zsql.autor_obter_zsql(cod_autor = proposicao.cod_autor):
-           inf_basicas_dic['nom_relator'] = relator.nom_autor_join
-       inf_basicas_dic['nom_presidente_comissao'] = 'XXXXXXXX'
+       if proposicao.des_tipo_proposicao == 'Parecer' or proposicao.des_tipo_proposicao == 'Parecer de Comissão':
+          inf_basicas_dic['nom_comissao'] = 'COMISSÃO DE XXXXXXX'
+          inf_basicas_dic['id_materia'] = materia_vinculada['id_materia']
+          inf_basicas_dic['data_parecer'] = context.pysc.data_converter_por_extenso_pysc(data=DateTime().strftime("%d/%m/%Y"))
+          for relator in context.zsql.autor_obter_zsql(cod_autor = proposicao.cod_autor):
+              inf_basicas_dic['nom_relator'] = relator.nom_autor_join
+          inf_basicas_dic['nom_presidente_comissao'] = 'XXXXXXXX'
 
     apelido_autor = ''
     nom_autor = []
