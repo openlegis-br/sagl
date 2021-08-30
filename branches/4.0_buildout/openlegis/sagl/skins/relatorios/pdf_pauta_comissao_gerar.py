@@ -114,7 +114,12 @@ def pauta(lst_reuniao, lst_pauta):
             tmp+='\t\t<para style="P2" spaceAfter="1">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
-        if dic['nom_autor']!=None:
+        if dic['nom_relator']!=None and dic['nom_relator']!='':
+            tmp+='\t\t<para style="P3">Relatoria: ' + dic['nom_relator'].replace('&','&amp;') + '</para>\n'
+            tmp+='\t\t<para style="P2" spaceAfter="2">\n'
+            tmp+='\t\t\t<font color="white"> </font>\n'
+            tmp+='\t\t</para>\n'            
+        if dic['nom_autor']!=None and dic['nom_autor']!='':
             tmp+='\t\t<para style="P3">Autoria: ' + dic['nom_autor'].replace('&','&amp;') + '</para>\n'
             tmp+='\t\t<para style="P2" spaceAfter="2">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'

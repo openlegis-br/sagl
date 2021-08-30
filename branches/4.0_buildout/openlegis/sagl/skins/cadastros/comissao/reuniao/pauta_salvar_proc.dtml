@@ -73,5 +73,57 @@
       </dtml-if>
     </dtml-if>
   </dtml-if>
-
 </dtml-if cod_materia>
+
+<dtml-if cod_parecer>
+  <dtml-unless contador>
+    <dtml-in  expr="zsql.relatoria_obter_zsql(cod_relatoria=cod_parecer, ind_excluido=0)">
+      <dtml-call expr="REQUEST.set('cod_parecer', cod_relatoria)">
+      <dtml-call expr="REQUEST.set('marcador', cod_relatoria)">
+    <dtml-else>
+      <dtml-let mensagem="'Esse parecer não existe no cadastro do sistema.'" tipo_mensagem="'danger'">
+        <dtml-var mensagem_emitir>
+      </dtml-let>  
+    </dtml-in>
+  </dtml-unless>
+
+  <dtml-in expr="zsql.reuniao_comissao_pauta_obter_zsql(cod_parecer = cod_parecer, cod_reuniao = cod_reuniao, ind_excluido=0)">
+   <dtml-if hdn_cod_item>
+     <dtml-if expr="int(cod_item) == int(hdn_cod_item)">
+       <dtml-call expr="REQUEST.set('cod_item_atualizar1', cod_item)">   
+     </dtml-if>
+   </dtml-if> 
+   <dtml-unless cod_item_atualizar1>
+     <dtml-unless contador>
+       <dtml-let mensagem="'Esse parecer já consta da pauta da reunião!'" tipo_mensagem="'danger'">
+         <dtml-var mensagem_emitir>
+        </dtml-let>  
+        <dtml-call expr="REQUEST.set('contador',1)">
+        <dtml-call expr="REQUEST.set('marcador',1)">
+     </dtml-unless>
+   </dtml-unless>
+  </dtml-in>
+
+  <dtml-if marcador>
+    <dtml-if cod_parecer>
+      <dtml-if expr="marcador == cod_parecer">
+       <dtml-try>
+          <dtml-call expr="metodo(cod_item = cod_item,
+                                  cod_reuniao = cod_reuniao,
+                                  cod_parecer = cod_parecer,
+                                  num_ordem = txt_num_ordem,
+                                  tip_resultado_votacao = lst_tip_resultado,
+                                  cod_relator = lst_relator,
+                                  txt_observacao = txa_txt_observacao)">
+       <dtml-except>
+          <dtml-let mensagem="'Não foi possível incluir o parecer na pauta da reunião! Tente novamente.'" tipo_mensagem="'danger'">
+          </dtml-let>
+      <dtml-else>       
+         <dtml-let mensagem="'Item salvo com sucesso!'">
+           <dtml-var mensagem_emitir>
+         </dtml-let>
+       </dtml-try>
+      </dtml-if>
+    </dtml-if>
+  </dtml-if>
+</dtml-if>

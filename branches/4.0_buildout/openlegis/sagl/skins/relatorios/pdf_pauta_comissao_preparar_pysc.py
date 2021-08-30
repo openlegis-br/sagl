@@ -27,67 +27,88 @@ if context.REQUEST['cod_reuniao']!='':
         reuniao.append(dicrc) 
         # seleciona as matérias que compõem a pauta da reuniao
     for item in context.zsql.reuniao_comissao_pauta_obter_zsql(cod_reuniao=cod_reuniao, ind_excluido=0):
-        # seleciona os detalhes das matérias
-        materia = context.zsql.materia_obter_zsql(cod_materia=item.cod_materia)[0]
+        # seleciona os detalhes dos itens da pauta
         dic = {} 
         dic["num_ordem"] = item.num_ordem
-        dic["cod_materia"] = item.cod_materia
-        dic["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+str(item.cod_materia)+'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
-        dic["id_materia"] = materia.des_tipo_materia.decode('utf-8').upper()+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica) 
         dic["txt_ementa"] = item.txt_observacao
-        dic["nom_autor"] = ""
-        autores = context.zsql.autoria_obter_zsql(cod_materia=item.cod_materia)
-        fields = autores.data_dictionary().keys()
-        lista_autor = []
-        for autor in autores:
-            for field in fields:
-                nome_autor = autor['nom_autor_join']
-            lista_autor.append(nome_autor)
-        dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+        if item.cod_parecer != None: 
+           parecer = context.zsql.relatoria_obter_zsql(cod_relatoria=item.cod_parecer)[0]
+           dic["cod_materia"] = item.cod_parecer
+           for materia in context.zsql.materia_obter_zsql(cod_materia=parecer.cod_materia, ind_excluido=0):     
+               sgl_tipo_materia = materia.sgl_tipo_materia
+               num_ident_basica = materia.num_ident_basica
+               ano_ident_basica = materia.ano_ident_basica               
+           for comissao in context.zsql.comissao_obter_zsql(cod_comissao=parecer.cod_comissao, ind_excluido=0):
+               sgl_comissao = comissao.sgl_comissao
+           for relator in context.zsql.parlamentar_obter_zsql(cod_parlamentar=parecer.cod_parlamentar):
+                dic["nom_relator"] = relator.nom_parlamentar
+           dic["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/parecer_comissao/' + str(item.cod_parecer) + '_parecer.pdf' + '">' + 'PARECER ' + sgl_comissao+ ' Nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer) + '</link>'
+           dic["id_materia"] = 'PARECER ' + sgl_comissao+ ' Nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer) + " - " +  sgl_tipo_materia +' ' + str(num_ident_basica) + '/' + str(ano_ident_basica)
+           dic["nom_autor"] = ""
+           dic["substitutivo"] = ''
+           dic["substitutivos"] = ''           
+           dic["emenda"] = ''
+           dic["emendas"] = ''
+           
+        if item.cod_materia != None:        
+           materia = context.zsql.materia_obter_zsql(cod_materia=item.cod_materia)[0]        
+           dic["cod_materia"] = item.cod_materia
+           dic["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+str(item.cod_materia)+'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+           dic["id_materia"] = materia.des_tipo_materia.decode('utf-8').upper()+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+           dic["nom_relator"] = ''          
+           dic["nom_autor"] = ''
+           autores = context.zsql.autoria_obter_zsql(cod_materia=item.cod_materia)
+           fields = autores.data_dictionary().keys()
+           lista_autor = []
+           for autor in autores:
+               for field in fields:
+                   nome_autor = autor['nom_autor_join']
+               lista_autor.append(nome_autor)
+           dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
 
-        dic["substitutivo"] = ''
-        lst_qtde_substitutivos=[]
-        lst_substitutivos=[]
-        for substitutivo in context.zsql.substitutivo_obter_zsql(cod_materia=item.cod_materia,ind_excluido=0):
-            autores = context.zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=substitutivo.cod_substitutivo, ind_excluido=0)
-            dic_substitutivo = {}
-            fields = autores.data_dictionary().keys()
-            lista_autor = []
-            for autor in autores:
-                for field in fields:
-                    nome_autor = autor['nom_autor_join']
-                lista_autor.append(nome_autor)
-            autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
-            dic_substitutivo["id_substitutivo"] = '<link href="' + context.sapl_documentos.absolute_url() + '/substitutivo/' + str(substitutivo.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'Substitutivo nº ' + str(substitutivo.num_substitutivo) + '</link>'
-            dic_substitutivo["txt_ementa"] = substitutivo.txt_ementa
-            dic_substitutivo["autoria"] = autoria
-            lst_substitutivos.append(dic_substitutivo)
-            cod_substitutivo = substitutivo.cod_substitutivo
-            lst_qtde_substitutivos.append(cod_substitutivo)
-        dic["substitutivos"] = lst_substitutivos
-        dic["substitutivo"] = len(lst_qtde_substitutivos)
+           dic["substitutivo"] = ''
+           lst_qtde_substitutivos=[]
+           lst_substitutivos=[]
+           for substitutivo in context.zsql.substitutivo_obter_zsql(cod_materia=item.cod_materia,ind_excluido=0):
+               autores = context.zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=substitutivo.cod_substitutivo, ind_excluido=0)
+               dic_substitutivo = {}
+               fields = autores.data_dictionary().keys()
+               lista_autor = []
+               for autor in autores:
+                   for field in fields:
+                       nome_autor = autor['nom_autor_join']
+                   lista_autor.append(nome_autor)
+               autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
+               dic_substitutivo["id_substitutivo"] = '<link href="' + context.sapl_documentos.absolute_url() + '/substitutivo/' + str(substitutivo.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'Substitutivo nº ' + str(substitutivo.num_substitutivo) + '</link>'
+               dic_substitutivo["txt_ementa"] = substitutivo.txt_ementa
+               dic_substitutivo["autoria"] = autoria
+               lst_substitutivos.append(dic_substitutivo)
+               cod_substitutivo = substitutivo.cod_substitutivo
+               lst_qtde_substitutivos.append(cod_substitutivo)
+           dic["substitutivos"] = lst_substitutivos
+           dic["substitutivo"] = len(lst_qtde_substitutivos)
 
-        dic["emenda"] = ''
-        lst_qtde_emendas=[]
-        lst_emendas=[]
-        for emenda in context.zsql.emenda_obter_zsql(cod_materia=item.cod_materia,ind_excluido=0):
-            autores = context.zsql.autoria_emenda_obter_zsql(cod_emenda=emenda.cod_emenda,ind_excluido=0)
-            dic_emenda = {}
-            fields = autores.data_dictionary().keys()
-            lista_autor = []
-            for autor in autores:
-                for field in fields:
-                    nome_autor = autor['nom_autor_join']
-                lista_autor.append(nome_autor)
-            autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
-            dic_emenda["id_emenda"] = '<link href="' + context.sapl_documentos.absolute_url() + '/emenda/' + str(emenda.cod_emenda) + '_emenda.pdf' + '">' + 'Emenda nº ' + str(emenda.num_emenda) + ' (' + emenda.des_tipo_emenda.decode('utf-8') + ')</link>'
-            dic_emenda["txt_ementa"] = emenda.txt_ementa
-            dic_emenda["autoria"] = autoria
-            lst_emendas.append(dic_emenda)
-            cod_emenda = emenda.cod_emenda
-            lst_qtde_emendas.append(cod_emenda)
-        dic["emendas"] = lst_emendas
-        dic["emenda"] = len(lst_qtde_emendas)
+           dic["emenda"] = ''
+           lst_qtde_emendas=[]
+           lst_emendas=[]
+           for emenda in context.zsql.emenda_obter_zsql(cod_materia=item.cod_materia,ind_excluido=0):
+               autores = context.zsql.autoria_emenda_obter_zsql(cod_emenda=emenda.cod_emenda,ind_excluido=0)
+               dic_emenda = {}
+               fields = autores.data_dictionary().keys()
+               lista_autor = []
+               for autor in autores:
+                   for field in fields:
+                       nome_autor = autor['nom_autor_join']
+                   lista_autor.append(nome_autor)
+               autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
+               dic_emenda["id_emenda"] = '<link href="' + context.sapl_documentos.absolute_url() + '/emenda/' + str(emenda.cod_emenda) + '_emenda.pdf' + '">' + 'Emenda nº ' + str(emenda.num_emenda) + ' (' + emenda.des_tipo_emenda.decode('utf-8') + ')</link>'
+               dic_emenda["txt_ementa"] = emenda.txt_ementa
+               dic_emenda["autoria"] = autoria
+               lst_emendas.append(dic_emenda)
+               cod_emenda = emenda.cod_emenda
+               lst_qtde_emendas.append(cod_emenda)
+           dic["emendas"] = lst_emendas
+           dic["emenda"] = len(lst_qtde_emendas)
 
         # adiciona o dicionário na pauta
         pauta.append(dic) 
