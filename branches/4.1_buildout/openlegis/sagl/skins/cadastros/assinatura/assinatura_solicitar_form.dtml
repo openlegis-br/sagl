@@ -3,26 +3,37 @@
   <script type="text/javascript">
     function campos_criticar(){
        var form = document.assinatura_solicitar;
-       if (form.lst_cod_usuario.selectedIndex==0){
-           $.showAlert({title: "Mensagem do Sistema", body: "Selecione um usuário !"});
-           form.lst_cod_usuario.focus();
-           return false;
-        }
+      if ($('.selectpicker').val().length < 1) {
+          $.showAlert({title: "Mensagem do Sistema", body: "Selecione um usuário !"});
+          $('.selectpicker').addClass('is-invalid');
+          $('.selectpicker').selectpicker('refresh');
+          $('.selectpicker').selectpicker('setStyle', 'btn-outline-warning');
+         return false;
+      }       
         form.submit();
     }
+
+$(document).ready(function() {
+    // show the alert
+    setTimeout(function() {
+        $(".alert").alert('close');
+    }, 2000);
+});
+
+    
   </script>
   
-  <h1 class="firstHeading">Solicitação de Assinatura</h1> 
+  <h1 class="firstHeading">Solicitações de Assinatura</h1> 
    <dtml-if expr="_.has_key('mensagem')">
      <dtml-if expr="_.has_key('sucesso')">
-       <div class="alert alert-success alert-dismissible fade show" role="alert">
+       <div class="alert alert-success alert-dismissible" id="success-alert" role="alert">
           <h5><dtml-var mensagem></h5>
           <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
             <span aria-hidden="true">&times;</span>
           </button>
        </div>
      <dtml-else>
-       <div class="alert alert-danger alert-dismissible fade show" role="alert">
+       <div class="alert alert-danger alert-dismissible" role="alert">
           <h5><dtml-var mensagem></h5>
           <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
             <span aria-hidden="true">&times;</span>
@@ -37,7 +48,57 @@
        <dtml-call expr="REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
        <dtml-call expr="REQUEST.set('formatted_code', format_verification_code(cod_assinatura_doc))">
     </dtml-if>
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('cod_assinatura_doc', generate_verification_code())">       
   </dtml-in>
+
+  <dtml-if expr="tipo_doc == 'proposicao'">
+    <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=codigo, ind_excluido=0)">
+       <dtml-call expr="REQUEST.set('prop_recebida',(dat_recebimento!=None))">
+    </dtml-in>
+  </dtml-if>
+   <dtml-unless prop_recebida>
+      <form id="assinatura_solicitar" name="assinatura_solicitar" method="post" action="assinatura_solicitar_proc">
+          <input type="hidden" name="hdn_cod_assinatura_doc" value="<dtml-var cod_assinatura_doc>" />
+          <input type="hidden" name="hdn_codigo" value="<dtml-var codigo>" />
+          <input type="hidden" name="hdn_tipo_doc" value="<dtml-var tipo_doc>" />
+          <input type="hidden" name="modal" value="1" />
+          <div class="row">
+             <div class="col-12 mb-3">
+             <label for="lst_cod_usuario" class="required">Selecione o Usuário</label>
+               <div class="input-group">
+                <select class="form-control selectpicker" name="lst_cod_usuario:list:int" id="lst_cod_usuario" multiple="multiple" data-selected-text-format="count > 3" data-size="6" data-actions-box="true" required>
+                    <dtml-if expr="tipo_doc=='proposicao' or tipo_doc=='pauta_comissao' or tipo_doc=='ata_comissao'">
+                     <dtml-call expr="REQUEST.set('data_atual', _.DateTime().strftime('%d/%m/%Y'))">
+                     <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor'])">
+                        <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+                          <dtml-call expr="REQUEST.set('cod_usuario_atual',cod_usuario)">
+                        </dtml-in>
+                     </dtml-if>
+                       <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=data_atual)">
+                        <dtml-in expr="zsql.usuario_obter_zsql(col_username=col_username_autor)">
+                           <dtml-if expr="_.has_key('cod_usuario_atual') and cod_usuario_atual != cod_usuario">
+                             <option value="<dtml-var cod_usuario>"><dtml-var nom_completo></option>
+                           <dtml-else>
+                             <option value="<dtml-var cod_usuario>"><dtml-var nom_completo></option>
+                           </dtml-if>
+                        </dtml-in>
+                      </dtml-in>
+                    <dtml-else>
+                      <dtml-in expr="zsql.usuario_obter_zsql()">
+                        <option value="<dtml-var cod_usuario>"><dtml-var nom_completo></option>
+                      </dtml-in>
+                    </dtml-if>
+                  </option>
+                </select>
+                <div class="input-group-append">
+                  <input class="btn btn-primary" type="button"  value="Incluir" onClick="campos_criticar(document.assinatura_solicitar)" />
+                </div>
+              </div>
+             </div>
+          </div>      
+      </form>
+   </dtml-unless>
 
   <dtml-if temCodigo>
       <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=codigo,tipo_doc=tipo_doc)">
@@ -56,9 +117,9 @@
                   <td><dtml-var dat_solicitacao></td>
                   <td>
                       <dtml-if expr="ind_assinado==1 and dat_assinatura">
-                        <dtml-var dat_assinatura>
+                        <dtml-var dat_assinatura> <span style="color: #096e62"><i class="fas fa-check"></i></span>
                       <dtml-else>
-                          <span class="anulado">Não assinou</span> | <a class="btn btn-sm btn-danger" href="assinatura_excluir_proc?hdn_cod_assinatura_doc=<dtml-var cod_assinatura_doc>&hdn_cod_usuario=<dtml-var cod_usuario>&hdn_codigo=<dtml-var codigo>&hdn_tipo_doc=<dtml-var tipo_doc>&modal=1">Excluir</a>
+                          <span class="anulado">Não assinou</span> <span style="color: #5d2b31"><i class="fas fa-times"></i> | <a class="btn btn-sm btn-danger" href="assinatura_excluir_proc?hdn_cod_assinatura_doc=<dtml-var cod_assinatura_doc>&hdn_cod_usuario=<dtml-var cod_usuario>&hdn_codigo=<dtml-var codigo>&hdn_tipo_doc=<dtml-var tipo_doc>&modal=1">Excluir</a>
                       </dtml-if>
                   </td>
                </tr>
@@ -66,86 +127,6 @@
             </table>
          </dtml-if>
       </dtml-in>
-      <form id="assinatura_solicitar" name="assinatura_solicitar" method="post" action="assinatura_solicitar_proc">
-          <input type="hidden" name="hdn_cod_assinatura_doc" value="<dtml-var cod_assinatura_doc>" />
-          <input type="hidden" name="hdn_codigo" value="<dtml-var codigo>" />
-          <input type="hidden" name="hdn_tipo_doc" value="<dtml-var tipo_doc>" />
-          <input type="hidden" name="modal" value="1" />
-          <div class="row">
-             <div class="col-12 mb-3">
-             <label for="lst_cod_usuario" class="required">Selecione o Usuário</label>
-               <div class="input-group">
-                <select class="custom-select" name="lst_cod_usuario" id="lst_cod_usuario">
-                  <option value="Selecione">
-                    <dtml-if expr="tipo_doc=='proposicao'">
-                     <dtml-call expr="REQUEST.set('data_atual', _.DateTime().strftime('%d/%m/%Y'))">
-                     <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor'])">
-                        <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
-                          <dtml-call expr="REQUEST.set('cod_usuario_atual',cod_usuario)">
-                        </dtml-in>
-                     </dtml-if>
-                       <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=data_atual)">
-                        <dtml-in expr="zsql.usuario_obter_zsql(col_username=col_username_autor)">
-                           <dtml-if expr="_.has_key('cod_usuario_atual') and cod_usuario_atual != cod_usuario">
-                             <option value="<dtml-var cod_usuario>"><dtml-var nom_completo></option>
-                           </dtml-if>
-                        </dtml-in>
-                      </dtml-in>
-                    <dtml-else>
-                      <dtml-in expr="zsql.usuario_obter_zsql()">
-                        <option value="<dtml-var cod_usuario>"><dtml-var nom_completo></option>
-                      </dtml-in>
-                    </dtml-if>
-                  </option>
-                </select>
-                <div class="input-group-append">
-                  <input class="btn btn-primary" type="button"  value="Incluir Solicitação" onClick="campos_criticar(document.assinatura_solicitar)" />
-                </div>
-              </div>
-             </div>
-          </div>      
-      </form>
-  <dtml-else>
-      <form name="assinatura_solicitar" method="post" action="assinatura_solicitar_proc">
-          <dtml-call expr="REQUEST.set('cod_assinatura_doc', generate_verification_code())">
-          <input type="hidden" name="hdn_cod_assinatura_doc" value="<dtml-var cod_assinatura_doc>" />
-          <input type="hidden" name="hdn_codigo" value="<dtml-var codigo>" />
-          <input type="hidden" name="hdn_tipo_doc" value="<dtml-var tipo_doc>" />
-          <input type="hidden" name="modal" value="1" />
-          <div class="row">
-             <div class="col-12 mb-3">
-             <label for="lst_cod_usuario" class="required">Selecione o Usuário</label>
-               <div class="input-group">
-                <select class="custom-select" name="lst_cod_usuario" id="lst_cod_usuario">
-                  <option value="Selecione">
-                    <dtml-if expr="tipo_doc=='proposicao'">
-                     <dtml-call expr="REQUEST.set('data_atual', _.DateTime().strftime('%d/%m/%Y'))">
-                     <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor'])">
-                        <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
-                          <dtml-call expr="REQUEST.set('cod_usuario_atual',cod_usuario)">
-                        </dtml-in>
-                     </dtml-if>
-                       <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=data_atual)">
-                        <dtml-in expr="zsql.usuario_obter_zsql(col_username=col_username_autor)">
-                           <dtml-if expr="_.has_key('cod_usuario_atual') and cod_usuario_atual != cod_usuario">
-                             <option value="<dtml-var cod_usuario>"><dtml-var nom_completo></option>
-                           </dtml-if>
-                        </dtml-in>
-                      </dtml-in>
-                    <dtml-else>
-                      <dtml-in expr="zsql.usuario_obter_zsql()">
-                        <option value="<dtml-var cod_usuario>"><dtml-var nom_completo></option>
-                      </dtml-in>
-                    </dtml-if>
-                  </option>
-                </select>
-                <div class="input-group-append">
-                  <input class="btn btn-primary" type="button"  value="Incluir Solicitação" onClick="campos_criticar()" />
-                </div>
-              </div>
-             </div>
-          </div> 
-      </form>
   </dtml-if>
 
 <dtml-var standard_html_footer>

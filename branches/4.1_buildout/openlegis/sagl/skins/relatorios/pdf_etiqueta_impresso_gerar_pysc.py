@@ -1,4 +1,4 @@
-##parameters=lst_destinatarios
+##parameters=sessao,lst_destinatarios
 
 """pdf_etiqueta_impresso_gerar.py
    Autor: Luciano De Fazio
@@ -63,7 +63,7 @@ def destinatarios(lst_destinatarios):
     tmp_data+='\t</story>\n'
     return tmp_data
 
-def principal(lst_destinatarios):
+def principal(sessao,lst_destinatarios):
     """Funcao pricipal que gera a estrutura global do arquivo rml"""
 
     arquivoPdf=str(int(time.time()*100))+".pdf"
@@ -92,5 +92,5 @@ def principal(lst_destinatarios):
 
     return "/temp_folder/"+arquivoPdf
 
-return principal(lst_destinatarios)
+return principal(sessao,lst_destinatarios)
 

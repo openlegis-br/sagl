@@ -101,11 +101,20 @@ $(document).ready(function() {
          <td>
         <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
         <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
-
         <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf_assinado)">
            <dtml-let pdf_assinado="_.getattr(sapl_documentos.administrativo.tramitacao,pdf_assinado).absolute_url">
               <a href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate" style="font-size: 21px;"></i><span class="d-none">PDF</span>
            </dtml-let>
+        <dtml-elif expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao,tipo_doc='tramitacao_adm', ind_assinado=1)">
+           <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao,tipo_doc='tramitacao_adm', ind_assinado=1, ind_prim_assinatura=1)"> 
+             <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
+               <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
+                  <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>
+               </dtml-let>
+             <dtml-else>             
+                <a href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-certificate" style="font-size: 21px;"></i><span class="d-none">PDF</span>
+             </dtml-if>
+           </dtml-in>        
         <dtml-elif "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
            <dtml-let pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
               <a href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf" style="font-size: 21px;"></i><span class="d-none">PDF</span></a>
@@ -113,7 +122,6 @@ $(document).ready(function() {
         <dtml-else>
            <i class="fa fa-file-pdf" style="font-size: 21px; color: #e9e9e9"></i>                   
         </dtml-if> 
-
          </td>
       </tr>
     <dtml-if sequence-end>   

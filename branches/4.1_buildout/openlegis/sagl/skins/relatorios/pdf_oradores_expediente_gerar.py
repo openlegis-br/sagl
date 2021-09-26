@@ -1,4 +1,4 @@
-##parameters=rodape_dic, imagem, inf_basicas_dic, lst_expedientes, lst_oradores_expediente,lst_presidente
+##parameters=rodape_dic, sessao='', imagem, inf_basicas_dic, lst_expedientes, lst_oradores_expediente,lst_presidente
 
 """Script para geração do PDF dos oradores do expediente
    Luciano De Fázio - 27/10/2014
@@ -166,7 +166,7 @@ def presidente(lst_presidente):
     tmp+='\t</story>\n'
     return tmp
 
-def principal(cabecalho, rodape, imagem, inf_basicas_dic,lst_presidente):
+def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic,lst_presidente):
     """
     """
 
@@ -199,4 +199,4 @@ def principal(cabecalho, rodape, imagem, inf_basicas_dic,lst_presidente):
 
     return "/temp_folder/"+arquivoPdf
 
-return principal(cabecalho, rodape, imagem, inf_basicas_dic, lst_presidente)
+return principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic, lst_presidente)

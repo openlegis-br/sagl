@@ -1,28 +1,5 @@
-<dtml-if expr="hdn_num_ordem!=''">
-<dtml-if expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia,cod_comissao=hdn_cod_comissao,ind_excluido=0)">
-   <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao, num_ordem=hdn_num_ordem, ind_excluido=0)">
-     <dtml-if cod_relatoria>
-       <dtml-if expr="cod_relatoria==hdn_cod_relatoria and num_ordem==hdn_num_ordem">
-          <dtml-call expr="REQUEST.set('hdn_num_ordem', num_ordem)">
-       <dtml-else>
-          <dtml-call expr="REQUEST.set('hdn_num_ordem', int(num_ordem)+1)">
-       </dtml-if>
-     </dtml-if>
-   </dtml-in>
-<dtml-elif expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia,ind_excluido=0)">
-   <dtml-call expr="REQUEST.set('hdn_num_ordem', int(num_ordem)+1)">
-   <dtml-call expr="zsql.despacho_inicial_incluir_zsql(num_ordem=hdn_num_ordem, cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao)">
-</dtml-if>
-<dtml-else>
-   <dtml-if expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia,ind_excluido=0)">
-      <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia, ind_excluido=0)">   
-         <dtml-call expr="REQUEST.set('hdn_num_ordem', int(num_ordem)+1)">
-      </dtml-in>
-      <dtml-call expr="zsql.despacho_inicial_incluir_zsql(num_ordem=hdn_num_ordem, cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao)">
-   <dtml-else>
-      <dtml-call expr="REQUEST.set('hdn_num_ordem', '1')">
-      <dtml-call expr="zsql.despacho_inicial_incluir_zsql(num_ordem=hdn_num_ordem, cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao)">
-   </dtml-if>
+<dtml-if hdn_cod_proposicao>
+   <dtml-call expr="REQUEST.set('temProposicao',hdn_cod_proposicao!='')">
 </dtml-if>
 
 <dtml-if hdn_cod_relatoria>
@@ -30,6 +7,30 @@
 <dtml-else>
   <dtml-call expr="REQUEST.set('metodo', zsql.relatoria_incluir_zsql)">
 </dtml-if>
+
+<dtml-if expr="hdn_num_ordem!=''">
+   <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia, num_ordem=hdn_num_ordem, ind_excluido=0)">
+     <dtml-call expr="REQUEST.set('num_ordem', int(num_ordem))">
+     <dtml-if expr="zsql.relatoria_obter_zsql(cod_materia=hdn_cod_materia, num_ordem=num_ordem, ind_excluido=0)">
+          <dtml-call expr="REQUEST.set('num_ordem', int(num_ordem))">
+     <dtml-else>
+        <dtml-call expr="REQUEST.set('num_ordem', int(num_ordem))">
+     </dtml-if>
+   <dtml-else>
+     <dtml-call expr="REQUEST.set('num_ordem', 1)">     
+   </dtml-in>
+<dtml-else>
+   <dtml-call expr="REQUEST.set('num_ordem', cadastros.comissao.materia.num_ordem_obter(hdn_cod_materia, hdn_cod_comissao))">
+   <dtml-unless expr="zsql.despacho_inicial_obter_zsql(cod_materia=hdn_cod_materia, num_ordem=num_ordem, ind_excluido=0)">
+      <dtml-call expr="REQUEST.set('incluirDespacho', 1)">           
+   </dtml-unless>
+</dtml-if>
+
+<dtml-if incluirDespacho>
+      <dtml-call expr="zsql.despacho_inicial_incluir_zsql(num_ordem=num_ordem, cod_materia=hdn_cod_materia, cod_comissao=hdn_cod_comissao)">
+</dtml-if>
+
+<dtml-call expr="REQUEST.set('hdn_num_ordem', num_ordem)">
 
 <dtml-unless erro>
   <dtml-unless rad_tip_apresentacao>
@@ -67,6 +68,11 @@
    </dtml-unless>
 
    <dtml-if expr="metodo==zsql.relatoria_incluir_zsql">
+     <dtml-if expr="(_.has_key('hdn_cod_proposicao') and hdn_cod_proposicao!='') or (_.has_key('temProposicao'))">
+         <dtml-call expr="REQUEST.set('dat_recebimento', pysc.data_atual_iso_pysc())">    
+         <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao=hdn_cod_proposicao, dat_recebimento=dat_recebimento, cod_mat_ou_doc=hdn_cod_materia, cod_parecer=ult_relatoria_incluida)">
+         <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">
+     </dtml-if>
      <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
         <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=txt_ano_parecer)">
            <dtml-if sequence-start>
@@ -91,6 +97,10 @@
                <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tram_dest)">
                <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
           </dtml-in>
+          <dtml-if cod_ult_tramitacao>
+            <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao=cod_ult_tramitacao, cod_materia = hdn_cod_materia, ind_ult_tramitacao = 0)">
+            <dtml-call expr="zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao=cod_ult_tramitacao, cod_usuario_corrente=cod_usuario_corrente)"> 
+          </dtml-if>          
           <dtml-unless cod_ult_tramitacao>
               <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
               <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_destino)">
@@ -101,7 +111,7 @@
                 <dtml-call expr="REQUEST.set('sgl_comissao', sgl_comissao)">
           </dtml-in>
           <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y as %H:%M'))">
-          <dtml-call expr="REQUEST.set('txt_tramitacao', 'Parecer ' + sgl_comissao + ' ' + txt_num_parecer +'/' + txt_ano_parecer + ' incorporado em ' + hdn_hor_tramitacao)">
+          <dtml-call expr="REQUEST.set('txt_tramitacao', '<p>Parecer ' + sgl_comissao + ' ' + txt_num_parecer +'/' + txt_ano_parecer + ' incorporado em ' + hdn_hor_tramitacao + '</p>')">
           <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
           <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
           <dtml-call expr="REQUEST.set('sgl_status', 'PAR')">
@@ -118,18 +128,17 @@
                                                    ind_urgencia = 0,
                                                    txt_tramitacao = txt_tramitacao,
                                                    ind_ult_tramitacao = 1)">
-          <dtml-if cod_ult_tramitacao>
-            <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao  = cod_ult_tramitacao,
-                                                               cod_materia = hdn_cod_materia,  
-                                                               ind_ult_tramitacao = 0)">
-          </dtml-if>
           <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=hdn_cod_materia, cod_status=cod_status)">
           <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=hdn_cod_materia)">
           <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=hdn_cod_materia)">
           <dtml-in expr="zsql.tramitacao_incluida_codigo_obter_zsql()">
              <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
           </dtml-in>
-          <dtml-call expr="REQUEST.set('hdn_url', 'relatoria_mostrar_proc?cod_relatoria=' + str(ult_relatoria_incluida) + '&cod_materia=' + str(hdn_cod_materia) + '&cod_comissao=' + str(hdn_cod_comissao) + '&num_ordem=' + str(hdn_num_ordem)+'&modal=1')">   
+          <dtml-if modal>
+             <dtml-call expr="REQUEST.set('hdn_url', 'relatoria_mostrar_proc?cod_relatoria=' + str(ult_relatoria_incluida) + '&cod_materia=' + str(hdn_cod_materia) + '&cod_comissao=' + str(hdn_cod_comissao) + '&num_ordem=' + str(hdn_num_ordem)+'&modal=1')">   
+          <dtml-else>
+             <dtml-call expr="REQUEST.set('hdn_url', 'relatoria_mostrar_proc?cod_relatoria=' + str(ult_relatoria_incluida) + '&cod_materia=' + str(hdn_cod_materia) + '&cod_comissao=' + str(hdn_cod_comissao) + '&num_ordem=' + str(hdn_num_ordem))">             
+          </dtml-if>
           <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=hdn_cod_tramitacao,hdn_url=hdn_url)">
         </dtml-if>
      </dtml-if>
@@ -180,7 +189,11 @@
     <dtml-unless hdn_cod_relatoria>
       <dtml-in expr="zsql.relatoria_incluida_codigo_obter_zsql()">
         <dtml-call "REQUEST.set('hdn_cod_relatoria',cod_relatoria)">
-         <dtml-call expr="REQUEST.set('hdn_url', 'relatoria_mostrar_proc?cod_relatoria=' + str(ult_relatoria_incluida) + '&cod_materia=' + str(hdn_cod_materia) + '&cod_comissao=' + str(hdn_cod_comissao) + '&num_ordem=' + str(hdn_num_ordem)+'&modal=1')">               
+        <dtml-if modal>
+           <dtml-call expr="REQUEST.set('hdn_url', 'relatoria_mostrar_proc?cod_relatoria=' + str(ult_relatoria_incluida) + '&cod_materia=' + str(hdn_cod_materia) + '&cod_comissao=' + str(hdn_cod_comissao) + '&num_ordem=' + str(hdn_num_ordem)+'&modal=1')">   
+        <dtml-else>
+           <dtml-call expr="REQUEST.set('hdn_url', 'relatoria_mostrar_proc?cod_relatoria=' + str(ult_relatoria_incluida) + '&cod_materia=' + str(hdn_cod_materia) + '&cod_comissao=' + str(hdn_cod_comissao) + '&num_ordem=' + str(hdn_num_ordem))">             
+        </dtml-if>            
       </dtml-in>
     </dtml-unless>
 
@@ -196,3 +209,18 @@
 
 </dtml-try>
 </dtml-unless>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_relatoria)"> 
+</dtml-if>

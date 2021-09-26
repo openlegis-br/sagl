@@ -98,8 +98,8 @@ if REQUEST.lst_tip_situacao_norma!='':
     for situacao in context.zsql.tipo_situacao_norma_obter_zsql(ind_exluido=0,tip_situacao_norma=REQUEST.lst_tip_situacao_norma):
         filtro['situacao_norma']=situacao.des_tipo_situacao
 
-#sessao=session.id
-caminho = context.pdf_norma_gerar(imagem,data,normas,cabecalho,rodape,filtro)
+sessao=session.id
+caminho = context.pdf_norma_gerar(sessao,imagem,data,normas,cabecalho,rodape,filtro)
 if caminho=='aviso':
  return response.redirect('mensagem_emitir_proc')
 else:

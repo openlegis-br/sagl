@@ -8,6 +8,7 @@
 ##title=
 ##
 import os
+from xml.sax.saxutils import escape
 
 request=context.REQUEST
 response=request.RESPONSE
@@ -69,12 +70,13 @@ for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_tramitac
 
   # dados do documento
   for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=tramitacao.cod_documento):
-   tramitacao_dic['id_documento'] = str(documento.des_tipo_documento)+" N° "+ str(documento.num_documento)+"/"+ str(documento.ano_documento)+" - "+ str(documento.txt_interessado)+" - "+str(documento.txt_assunto)
+   txt_assunto = escape(documento.txt_assunto)  
+   tramitacao_dic['id_documento'] = documento.des_tipo_documento.decode('utf-8').upper() +" N° "+ str(documento.num_documento)+"/"+ str(documento.ano_documento)+" - "+ str(documento.txt_interessado)+" - "+ txt_assunto
 
   # unidade de origem
   for unid_origem in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tramitacao.cod_unid_tram_local):
    tramitacao_dic['unidade_origem'] = unid_origem.nom_unidade_join 
-   if unid_origem.nom_orgao == "Poder Executivo" or unid_origem.nom_orgao == "Poder Executivo - Protocolo" or unid_origem.nom_orgao == "Poder Executivo - Gabinete":
+   if unid_origem.nom_orgao == "Poder Executivo" or unid_origem.nom_orgao == "Poder Executivo - Protocolo" or unid_origem.nom_orgao == "Poder Executivo - Administração" or unid_origem.nom_orgao == "Poder Executivo - Gabinete" or unid_origem.nom_orgao == "Poder Executivo - " or unid_origem.nom_orgao == "Externo - Executivo":
      inf_basicas_dic['nom_camara']= 'Prefeitura Municipal de ' + local.nom_localidade
 
   # usuario de origem
@@ -94,7 +96,7 @@ for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_tramitac
      tramitacao_dic['nom_usuario_destino'] = usu_destino.nom_completo
      tramitacao_dic['nom_cargo_usuario_destino'] = usu_destino.nom_cargo
 
-caminho=context.pdf_tramitacao_administrativo_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url)
+caminho=context.pdf_tramitacao_administrativo_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url,sessao=session.id)
 if caminho=='aviso':
  return response.redirect('mensagem_emitir_proc')
 else:

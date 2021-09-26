@@ -1,4 +1,4 @@
-##parameters=imagem,dat_ordem,cod_sessao_plen,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente
+##parameters=sessao,imagem,dat_ordem,cod_sessao_plen,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente
 
 """Ordem do Dia
 """
@@ -143,7 +143,7 @@ def presidente(lst_presidente):
     tmp+='\t</story>\n'
     return tmp
 
-def principal(imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente):
+def principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente):
     """Funcao principal que gera a estrutura global do arquivo rml contendo o relatorio de uma ordem do dia.
     ordem_dia_[data da ordem do dia do relatório].pdf
     Retorna:
@@ -186,4 +186,4 @@ def principal(imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_
    
     return "sapl_documentos/pauta_sessao/"+arquivoPdf
 
-return principal(imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente)
+return principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_rodape,lst_presidente)

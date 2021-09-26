@@ -18,11 +18,11 @@
 
 <dtml-except>
       <dtml-if expr="metodo==zsql.afastamento_incluir_zsql">
-              <dtml-let mensagem="'Ocorreu um erro ao tentar incluir o afastamento.'" tipo_mensagem="'danger'" modal="1">
+              <dtml-let mensagem="'Ocorreu um erro ao incluir o afastamento.'" tipo_mensagem="'danger'" modal="1">
               <dtml-var mensagem_emitir>
               </dtml-let>
       <dtml-else>             
-              <dtml-let mensagem="'Ocorreu um erro ao tentar atualizar o afastamento.'" tipo_mensagem="'danger'" modal="1">
+              <dtml-let mensagem="'Ocorreu um erro ao atualizar o afastamento.'" tipo_mensagem="'danger'" modal="1">
               <dtml-var mensagem_emitir>
               </dtml-let>
       </dtml-if>
@@ -32,3 +32,18 @@
       <dtml-var mensagem_emitir>
       </dtml-let>
 </dtml-try> 
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_parlamentar)"> 
+</dtml-if>

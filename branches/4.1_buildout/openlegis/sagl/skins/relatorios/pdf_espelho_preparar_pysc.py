@@ -192,8 +192,8 @@ filtro={} # Dicionário que conterá os dados do filtro
 #    for status in context.zsql.status_tramitacao_obter_zsql(ind_exluido=0,cod_status=REQUEST.lst_status):
 #        filtro['situacao_atual']=status.sgl_status + ' - ' + status.des_status
 
-#sessao=session.id
-caminho = context.pdf_espelho_gerar(imagem,data,materias,cabecalho,rodape,filtro)
+sessao=session.id
+caminho = context.pdf_espelho_gerar(sessao,imagem,data,materias,cabecalho,rodape,filtro)
 if caminho=='aviso':
  return response.redirect('mensagem_emitir_proc')
 else:

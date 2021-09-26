@@ -161,8 +161,8 @@ if REQUEST.lst_localizacao!='':
         else:
            filtro['localizacao']=unidade_tramitacao.nom_comissao
 
-#sessao = session.id
-caminho = context.pdf_materia_gerar(imagem,data,materias,cabecalho,rodape,filtro)
+sessao = session.id
+caminho = context.pdf_materia_gerar(sessao,imagem,data,materias,cabecalho,rodape,filtro)
 if caminho=='aviso':
    return response.redirect('mensagem_emitir_proc')
 else:

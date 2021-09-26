@@ -4,10 +4,13 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_proposicao
+##parameters=cod_proposicao, senha=""
 ##title=
 ##
-txtint_path = 'sapl_documentos/proposicao/' + str(cod_proposicao) + '_signed.pdf'
+if senha==1:
+   txtint_path = 'sapl_documentos/proposicao/' + str(cod_proposicao) + '.pdf'
+else:
+   txtint_path = 'sapl_documentos/proposicao/' + str(cod_proposicao) + '_signed.pdf'
 try:
   txtint = context.restrictedTraverse (txtint_path)
 

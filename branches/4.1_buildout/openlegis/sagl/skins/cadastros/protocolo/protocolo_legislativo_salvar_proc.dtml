@@ -26,7 +26,7 @@
                 +'&txt_observacao='+txa_txt_observacao
                 +'&tip_id_basica_sel='+lst_tip_id_basica
                 +'&num_ident_basica_sel='+txt_num_ident_basica
-                +'&ano_ident_basica_sel='+txt_ano_ident_basica">
+                +'&ano_ident_basica_sel='+txt_ano_ident_basica" tipo_mensagem="'danger'">
             <dtml-var mensagem_emitir>
         </dtml-let>
     </dtml-in>
@@ -42,17 +42,17 @@
 
 <dtml-try>
     <dtml-call expr="metodo(
-        num_protocolo            = hdn_num_protocolo,
-        tip_protocolo		 = hdn_tip_protocolo,
-        tip_processo		 = hdn_tip_processo,
-        tip_materia              = lst_tip_materia,
-        tip_natureza_materia     = lst_tip_natureza,
-        cod_materia_principal    = cod_materia,
-        num_paginas              = txt_num_paginas,
-        txt_assunto_ementa       = txa_txt_ementa,
-        cod_autor                = lst_cod_autor,
-        txt_observacao           = txa_txt_observacao,
-        txt_user_protocolo       = txt_user)">
+        num_protocolo           = hdn_num_protocolo,
+        tip_protocolo           = hdn_tip_protocolo,
+        tip_processo            = hdn_tip_processo,
+        tip_materia             = lst_tip_materia,
+        tip_natureza_materia    = lst_tip_natureza,
+        cod_materia_principal   = cod_materia,
+        num_paginas             = txt_num_paginas,
+        txt_assunto_ementa      = txa_txt_ementa,
+        cod_autor               = lst_cod_autor,
+        txt_observacao          = txa_txt_observacao,
+        txt_user_protocolo      = txt_user)">
 
   <dtml-in expr="zsql.protocolo_incluido_codigo_obter_zsql()">
     <dtml-call expr="REQUEST.set('codigo', cod_protocolo)">
@@ -63,7 +63,7 @@
         <dtml-call expr="sapl_documentos.protocolo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
         <dtml-call expr="REQUEST.set('temPDF', 1)">
       <dtml-except>
-            <dtml-let mensagem="'Ocorreu erro ao tentar salvar o documento digitalizado'+codigo">
+            <dtml-let mensagem="'Ocorreu erro ao salvar o documento digitalizado'+codigo" tipo_mensagem="'danger'">
                <dtml-var mensagem_emitir>
                <dtml-call expr="REQUEST.set('save_ok', '0')">
             </dtml-let>
@@ -77,4 +77,19 @@
 
 </dtml-try>
 
+</dtml-if>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = codigo)"> 
 </dtml-if>

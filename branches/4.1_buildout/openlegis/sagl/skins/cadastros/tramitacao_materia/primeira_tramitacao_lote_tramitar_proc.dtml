@@ -181,10 +181,12 @@ $(document).ready(function(){
 });
 </script>
 
-<h1 class="firstHeading">Primeira Tramitação - Matérias</h1>
+<h1 class="firstHeading">Tramitação de Matérias Legislativas</h1>
 
-   <a class="btn btn-sm btn-primary mb-3 disabled" href="<dtml-var portal_url>/cadastros/tramitacao_materia/primeira_tramitacao_lote_form">Primeira Tramitação</a>
-   <a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_materia/cadastros/tramitacao_materia/tramitacao_lote_form">Tramitação em Lote</a>
+<a class="btn btn-sm btn-primary mb-3 disabled" href="<dtml-var portal_url>/cadastros/tramitacao_materia/primeira_tramitacao_lote_form">Primeira Tramitação</a>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_materia/tramitacao_lote_form">Caixa de Entrada <dtml-if expr="pysc.caixa_entrada_contar_pysc(cod_usuario=cod_usuario_corrente) > 0">(<dtml-var expr="pysc.caixa_entrada_contar_pysc(cod_usuario=cod_usuario_corrente)">)</dtml-if></a>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_materia/rascunhos_html">Rascunhos <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_local=cod_usuario_corrente, ind_ult_tramitacao=1, ind_rascunho=1, ind_tramitacao=1)" size="1"><dtml-call expr="REQUEST.set('qtde', _['sequence-length'])">(<dtml-var qtde>)</dtml-in></a>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_materia/itens_enviados_html">Enviadas</a>  
 
 <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
    <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_local',cod_unid_tramitacao)">
@@ -210,7 +212,7 @@ $(document).ready(function(){
       <dtml-call expr="REQUEST.set('primeira_vez', '')">
 
       <label class="d-block font-weight-bold">1. Preencha os dados da primeira tramitação</label>       
-      <form id="primeira_tramitacao_lote_tramitar_proc" name="primeira_tramitacao_lote_tramitar_proc" method="post" action="tramitacao_lote_salvar_proc">
+      <form id="primeira_tramitacao_lote_tramitar_proc" name="primeira_tramitacao_lote_tramitar_proc" method="post" action="tramitacao_lote_salvar_pysc">
 
   <div class="form-row">
     <div class="col-12 col-md-3 mb-3">
@@ -235,7 +237,7 @@ $(document).ready(function(){
     </div>
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>
-          <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
+          <select class="custom-select" id="lst_cod_unid_tram_local" name="unidade_local" required>
              <option value="0">Selecione</option>
               <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tramitacao, ind_leg=1)">

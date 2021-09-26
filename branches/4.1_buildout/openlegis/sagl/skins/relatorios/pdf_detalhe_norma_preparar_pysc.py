@@ -92,7 +92,7 @@ for norma in context.zsql.norma_juridica_obter_zsql(cod_norma=REQUEST['cod_norma
         vinculos_passivos_dic['norma']= str(aux[0].des_vinculo_passivo) + ' ' + str(norma_vinculada.des_tipo_norma) +" n° "+ str(norma_vinculada.num_norma)+ " de " + norma_vinculada.dat_norma
         lst_vinculos_passivos.append(vinculos_passivos_dic)
  
-caminho=context.pdf_detalhe_norma_gerar(imagem,rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativos,lst_vinculos_passivos)
+caminho=context.pdf_detalhe_norma_gerar(imagem,rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativos,lst_vinculos_passivos,sessao=session.id)
 
 if caminho == 'aviso':
    return response.redirect('mensagem_emitir_proc')

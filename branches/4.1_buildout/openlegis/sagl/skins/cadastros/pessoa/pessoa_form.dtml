@@ -75,6 +75,15 @@
       form.submit();
     }
 
+  function arquivo_validar(form){
+    if (document.getElementById("file_nom_arquivo").value == "") {
+       $.showAlert({title: "Mensagem do Sistema", body: "É necessário selecionar um arquivo!"});    
+       form.file_nom_arquivo.focus();
+       return false;
+    }
+      form.submit();
+  }
+
   function pessoa_excluir(){
 
        if (confirm("Deseja realmente excluir?")) {
@@ -113,9 +122,12 @@ $(document).ready(() => {
     }
     newUrl += "";
     history.replaceState(null, null, newUrl);
-  });
+  }); 
 });
 
+  $(document).ready(function () {
+    bsCustomFileInput.init()
+  })
 
 </script>
 
@@ -140,6 +152,9 @@ $(document).ready(() => {
   <li class="nav-item">
     <a class="nav-link <dtml-unless cod_pessoa>disabled</dtml-unless>" id="visitas-tab" data-toggle="tab" href="#visitas" role="tab" aria-controls="visitas" aria-selected="false">Histórico de Visitas</a>
   </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_pessoa>disabled</dtml-unless>" id="anexo-tab" data-toggle="tab" href="#anexo" role="tab" aria-controls="anexo" aria-selected="false">Anexo PDF</a>
+  </li>  
 </ul>
 
 
@@ -218,7 +233,7 @@ $(document).ready(() => {
   <div class="form-row">
     <div class="col-6 col-lg-3 mb-3">
         <label for="txt_num_celular">Telefone Celular</label>
-        <input class="form-control phone" type="text" id="txt_num_celular" name="txt_num_celular" maxlength="50" value="<dtml-var num_celular missing null>" />    
+        <input class="form-control mobile" type="text" id="txt_num_celular" name="txt_num_celular" maxlength="50" value="<dtml-var num_celular missing null>" />    
     </div>
     <div class="col-6 col-lg-3 mb-3">
         <label for="txt_num_telefone">Telefone Fixo</label>
@@ -347,6 +362,38 @@ $(document).ready(() => {
      <a class="btn btn-primary" href="" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Visita" data-src="<dtml-var portal_url>/cadastros/pessoa/visita_form?cod_pessoa=<dtml-var cod_pessoa>&modal=1">Incluir Visita</a>     
 </dtml-if>
 </div>
+
+<div class="tab-pane p-3 border fade" id="anexo">
+ <dtml-if cod_pessoa>
+   <dtml-call expr="REQUEST.set('id_arquivo', _.str(cod_pessoa)+'_anexo.pdf')">
+   <dtml-if "_.hasattr(sapl_documentos.pessoa, id_arquivo)">   
+     <dtml-let arquivo="_.getattr(sapl_documentos.pessoa,id_arquivo).absolute_url">
+         <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var arquivo>?<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-file-pdf"></i> Visualizar Anexo</a>
+         <a class="btn btn-sm btn-danger d-print-none " href="anexo_excluir_proc?hdn_cod_pessoa=<dtml-var cod_pessoa>" data-confirm="Deseja realmente excluir a anexo PDF?"><i class="fa fa-trash"></i> Excluir</a>         
+     </dtml-let>
+   <dtml-else>
+     <form action="anexo_salvar_proc" id="anexo_form" name="arquivo_form" method="post" enctype="multipart/form-data"> 
+      <input type="hidden" name="hdn_cod_pessoa" value="<dtml-var cod_pessoa missing>" /> 
+      <div class="row">
+         <div class="col-12 col-md-6">
+           <div class="input-group">     
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
+                <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+              </div>
+              <div class="input-group-append">
+                <input class="btn btn-primary" type="button" value="Anexar" onClick="arquivo_validar(document.arquivo_form)" />
+              </div>          
+           </div>
+         </div>
+      </div>
+     </form>
+   </dtml-if>
+ 
+
+ </dtml-if>
+</div>
+
 </div>
 
 <dtml-var standard_html_footer>

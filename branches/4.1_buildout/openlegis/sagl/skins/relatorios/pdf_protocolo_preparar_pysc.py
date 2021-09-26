@@ -117,8 +117,8 @@ filtro['assunto']=REQUEST.txt_assunto
 filtro['autor']=REQUEST.hdn_cod_autor
 filtro['interessado']=REQUEST.txa_txt_interessado
 
-#sessao=session.id
-caminho = context.pdf_protocolo_gerar(imagem,data,protocolos,cabecalho,rodape,filtro)
+sessao=session.id
+caminho = context.pdf_protocolo_gerar(sessao,imagem,data,protocolos,cabecalho,rodape,filtro)
 if caminho=='aviso':
  return response.redirect('mensagem_emitir_proc')
 else:

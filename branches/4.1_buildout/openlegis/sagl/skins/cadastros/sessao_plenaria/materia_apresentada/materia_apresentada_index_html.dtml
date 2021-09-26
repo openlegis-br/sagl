@@ -1,5 +1,8 @@
 <dtml-var standard_html_header>
 
+<script src="<dtml-var portal_url>/js/dataTables.rowReorder.min.js"></script>
+<link rel="stylesheet" href="<dtml-var portal_url>/css/rowReorder.bootstrap4.min.css" />
+
 <script type="text/javascript">
     function lista_apresentada_excluir(){
         if (confirm("Deseja realmente excluir a lista de matérias apresentadas?")) {
@@ -10,9 +13,15 @@
 
 $(document).ready(function() {
 
-    $('#apresentada').DataTable( {
+    var table = $('#apresentada').DataTable( {
+         "order": [[ 0, 'asc' ]],
+         "rowReorder": {
+             selector: 'td:nth-child(1)',       
+             //selector: 'tr',
+             //   update: true,
+         },         
         "responsive": true,
-        "bStateSave": true,        
+        "bStateSave": true,
         "fnStateSave": function (oSettings, oData) {
             localStorage.setItem('apresDataTable', JSON.stringify(oData));
         },
@@ -67,8 +76,23 @@ $(document).ready(function() {
             last:       "Último"
           },
         }
+    }); 
+    table.on('row-reorder.dt', function (dragEvent, data, nodes) {
+        for (var i = 0, ien = data.length ; i < ien ; i++) {
+            var rowData = table.row(data[i].node).data();
+            var codigo = table.row(data[i].node).id();
+            $.ajax({
+                type: "GET",
+                cache: false,
+                contentType: "application/json; charset=utf-8",
+                url: 'materia_apresentada_atualizar_proc',
+                data: {cod_sessao_plen: <dtml-var cod_sessao_plen>,  Id: codigo, fromPosition: data[i].oldData, toPosition: data[i].newData },
+                dataType: "json"
+            });
+            }
     });
 });
+
 </script>
 
 <dtml-var sessao_plenaria_menu>
@@ -92,10 +116,10 @@ $(document).ready(function() {
              </tr>
            </thead>
       </dtml-if sequence-start>
-        <tr>
-           <td>
+        <tr id="<dtml-var cod_ordem>">
+           <td style="cursor: move">
               <dtml-var num_ordem>
-           </td>
+           </td>        
            <td>
               <dtml-if cod_materia>
                  <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
@@ -115,7 +139,7 @@ $(document).ready(function() {
                           </dtml-in>
                         </a>
                     <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
-                        - <b><dtml-var nom_autor_join></b><dtml-unless sequence-end>,</dtml-unless>
+                        - <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
                     </dtml-in>
                  </dtml-in>
 
@@ -128,7 +152,7 @@ $(document).ready(function() {
                       </dtml-in>
                    </a>
                    <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
-                      - <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                      - <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
                     </dtml-in>
                  </dtml-in>
 
@@ -155,7 +179,7 @@ $(document).ready(function() {
                  </dtml-in>
               </dtml-if>
                - <dtml-var txt_observacao>
-            </td>
+            </td>         
         </tr>
    <dtml-if sequence-end>
     </table>

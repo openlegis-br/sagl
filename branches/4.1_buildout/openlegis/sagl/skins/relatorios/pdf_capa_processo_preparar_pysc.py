@@ -1,4 +1,5 @@
 import os
+from xml.sax.saxutils import escape
 
 request=context.REQUEST
 response=request.RESPONSE
@@ -74,8 +75,8 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
 
         dic['data']='Data: '+context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' - Horário: '+protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
 
-        dic['txt_assunto']=protocolo.txt_assunto_ementa
-
+        dic['txt_assunto'] = escape(protocolo.txt_assunto_ementa) 
+        
         dic['txt_interessado']=protocolo.txt_interessado
 
         dic['nom_autor'] = " " 
@@ -180,8 +181,8 @@ filtro['assunto']=REQUEST.txt_assunto
 filtro['autor']=REQUEST.hdn_cod_autor
 filtro['interessado']=REQUEST.txa_txt_interessado
 
-#sessao=session.id
-caminho = context.pdf_capa_processo_gerar(imagem,data,protocolos,cabecalho,rodape,filtro)
+sessao=session.id
+caminho = context.pdf_capa_processo_gerar(sessao,imagem,data,protocolos,cabecalho,rodape,filtro)
 if caminho=='aviso':
  return response.redirect('mensagem_emitir_proc')
 else:

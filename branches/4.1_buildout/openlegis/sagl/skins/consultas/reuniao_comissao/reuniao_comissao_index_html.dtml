@@ -1,14 +1,37 @@
 <dtml-var standard_html_header>
 
+<script type="text/javascript">
+
+    function atualiza_ano_reuniao(ano_reuniao,cod_comissao,situacao){  
+        location.href = "<dtml-var portal_url>/consultas/reuniao_comissao/index_html?ano_reuniao_sel="+ano_reuniao+"&cod_comissao_sel="+cod_comissao+"&status_sel="+situacao;
+    }   
+
+
+    function atualiza_situacao_reuniao(ano_reuniao,cod_comissao,situacao){    
+        location.href = "<dtml-var portal_url>/consultas/reuniao_comissao/index_html?ano_reuniao_sel="+ano_reuniao+"&cod_comissao_sel="+cod_comissao+"&status_sel="+situacao;
+    }
+    
+    function atualiza_comissao(ano_reuniao,cod_comissao,situacao){    
+        location.href = "<dtml-var portal_url>/consultas/reuniao_comissao/index_html?ano_reuniao_sel="+ano_reuniao+"&cod_comissao_sel="+cod_comissao+"&status_sel="+situacao;
+    }
+
+
+</script>
+
 <h1 class="firstHeading">Reuniões das Comissões</h1> 
 
-<div class="row">
-  <div class="col-12 mt-1 mb-4">
-     <label for="lst_comissao">Selecione a Comissão:</label>
-     <select class="form-control selectpicker show-tick jumpmenu" id="lst_comissao" name="lst_comissao" data-size="6">
-         <option value="<dtml-var ACTUAL_URL>?cod_comissao_sel=-1">Todas</option>
+
+<dtml-if expr="not _.has_key('ano_reuniao_sel')">
+   <dtml-call expr="REQUEST.set('ano_reuniao_sel', DateTime().year())">
+</dtml-if>
+
+<div class="form-row">
+  <div class="col-12 col-sm-6 mt-1 mb-4">
+     <label for="lst_comissao">Selecione a Comissão</label>
+     <select class="custom-select" id="lst_comissao" name="lst_comissao" onChange="atualiza_comissao(lst_ano_reuniao[lst_ano_reuniao.selectedIndex].value, lst_comissao[lst_comissao.selectedIndex].value, lst_situacao[lst_situacao.selectedIndex].value)">
+         <option value=""></option>
          <dtml-in expr="zsql.comissao_obter_zsql()">
-             <option value="<dtml-var ACTUAL_URL>?cod_comissao_sel=<dtml-var cod_comissao missing>" 
+             <option value="<dtml-var cod_comissao missing>" 
                <dtml-if expr="_.has_key('cod_comissao_sel') and cod_comissao == cod_comissao_sel">
                  selected
                  <dtml-call expr="REQUEST.set('cod_comissao_sel', cod_comissao)">
@@ -17,12 +40,46 @@
              </option>
          </dtml-in>
      </select>
-  </div>
+  </div> 
+   <div class="col-6 col-sm-3 mt-1 mb-4">
+    <label for="lst_ano_reuniao">Selecione o Ano</label>
+    <select class="custom-select" id="lst_ano_reuniao" name="lst_ano_reuniao"  onChange="atualiza_ano_reuniao(lst_ano_reuniao[lst_ano_reuniao.selectedIndex].value, lst_comissao[lst_comissao.selectedIndex].value, lst_situacao[lst_situacao.selectedIndex].value)">
+      <option value=""></option>    
+      <dtml-in expr="zsql.ano_reuniao_comissao_obter_zsql()">
+        <option value="<dtml-var ano_reuniao missing>" 
+          <dtml-if expr="((not _.has_key('ano_reuniao_sel') and (_.DateTime().year() == ano_reuniao)))
+                           or (not _.has_key('ano_reuniao_sel') and (_.DateTime().year() > ano_reuniao))
+                           or (_.has_key('ano_reuniao_sel') and str(ano_reuniao) == str(ano_reuniao_sel))">
+                            selected
+                          <dtml-call expr="REQUEST.set('ano_reuniao_sel', ano_reuniao)">
+          </dtml-if>>
+          <dtml-var ano_reuniao missing>
+        </option>
+      </dtml-in>
+    </select>
+   </div>
+   <div class="col-6 col-sm-3 mt-1 mb-4">
+   <dtml-if expr="not _.has_key('status_sel')">
+      <dtml-call expr="REQUEST.set('status_sel', 'Agendadas')">
+   </dtml-if>   
+    <label for="lst_situacao">Situação</label>
+    <select class="custom-select" id="lst_situacao" name="lst_situacao"  onChange="atualiza_situacao_reuniao(lst_ano_reuniao[lst_ano_reuniao.selectedIndex].value, lst_comissao[lst_comissao.selectedIndex].value, lst_situacao[lst_situacao.selectedIndex].value)">
+      <option value=""></option> 
+      <option value="Agendadas"
+          <dtml-if expr="(_.has_key('status_sel') and str(status_sel)=='Agendadas')">
+             selected
+          </dtml-if>>Agendadas</option>
+      <option value="Encerradas"
+          <dtml-if expr="(_.has_key('status_sel') and str(status_sel)=='Encerradas')">
+             selected
+          </dtml-if>>Encerradas</option>          
+    </select>
+   </div>   
 </div>
 
- <dtml-if expr="not _.has_key('cod_comissao_sel')">
-    <dtml-call "REQUEST.set('cod_comissao_sel', '-1')">
- </dtml-if>
+<dtml-if expr="not _.has_key('cod_comissao_sel')">
+   <dtml-call "REQUEST.set('cod_comissao_sel', '')">
+</dtml-if>
 
 <form name="reuniao_index_form" action="reuniao_comissao_form">
 
@@ -36,19 +93,25 @@
 <dtml-if step>
   <dtml-call "REQUEST.set('step', _.int(step))">
 <dtml-else>
-  <dtml-call "REQUEST.set('step', 16)">
+  <dtml-call "REQUEST.set('step', 10)">
 </dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
 
- <dtml-in expr="zsql.reuniao_comissao_obter_zsql(cod_comissao=cod_comissao_sel)" size="step" start="start" orphan=0>
+<dtml-call "REQUEST.set('metodo', zsql.reuniao_comissao_obter_zsql(ano_reuniao=ano_reuniao_sel, cod_comissao=cod_comissao_sel, status=status_sel))">  
+
+ <dtml-in expr="metodo" size="step" start="start" orphan=0>
     <dtml-if sequence-start>
-     <dtml-if previous-sequence>
-        <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
-     </dtml-if previous-sequence>
+    <dtml-if next-sequence>
+       <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+    </dtml-if>
+    <dtml-if previous-sequence>
+       <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+    </dtml-if>
      <div class="card mb-3">
        <div class="card-header">
         <div class="row">
           <div class="col-12">
-            <i class="far fa-list-alt"></i> Reuniões: <dtml-var sequence-length>
+            <i class="far fa-list-alt"></i> Número de Reuniões: <dtml-var sequence-length>
           </div>
         </div>
        </div>
@@ -57,32 +120,36 @@
     
    <li class="list-group-item">
      <div class="row">
-       <div class="col-12 col-md-7">
+       <div class="col-12">
          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
              <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Reunião" data-src="<dtml-var portal_url>/cadastros/comissao/reuniao/reuniao_comissao_mostrar_proc?cod_reuniao=<dtml-var cod_reuniao>&modal=1"">
-                <b><i class="fas fa-caret-right"></i> Nº <dtml-var num_reuniao> - <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)"><dtml-var nom_comissao></dtml-in>, em <dtml-var dat_inicio_reuniao> <dtml-if hr_inicio_reuniao> às <dtml-var hr_inicio_reuniao missing null=""></dtml-if>
-             </a></b>
+                <p class="h5 card-title "><dtml-var num_reuniao>ª Reunião <dtml-var des_tipo_reuniao> </p></a>
+                <p><dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)"><dtml-var nom_comissao></dtml-in></p>             
+                <p class=""><i class="fa fa-calendar-alt"></i> <dtml-var dat_inicio_reuniao><dtml-if hr_inicio_reuniao>, às <dtml-var hr_inicio_reuniao missing null=""></p></dtml-if>
          <dtml-else>
-             <i class="fas fa-caret-right"></i> Reunião nº <dtml-var num_reuniao> - <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)"><dtml-var nom_comissao></dtml-in> - <dtml-var dat_inicio_reuniao> <dtml-if hr_inicio_reuniao> às <dtml-var hr_inicio_reuniao missing null=""></dtml-if>
+                <p class="card-title h5"><dtml-var num_reuniao>ª Reunião <dtml-var des_tipo_reuniao></p></a>
+                <p><dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)"><dtml-var nom_comissao></dtml-in></p>                                           
+                <p class=""><i class="fa fa-calendar-alt"></i> <dtml-var dat_inicio_reuniao><dtml-if hr_inicio_reuniao>, às <dtml-var hr_inicio_reuniao missing null=""></p></dtml-if>
          </dtml-if>
-       </div>
-       <div class="col-12 col-md-5 mt-1 mb-sm-0 text-left text-md-right">
-        <div class="btn-group d-print-none">
+  <p>
                 <dtml-let id_pauta="_.str(cod_reuniao)+'_pauta.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_pauta)">
                     <dtml-let pauta="_.getattr(sapl_documentos.reuniao_comissao,id_pauta).absolute_url">
-                      <a class="btn btn-sm btn-link" href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Pauta</span></a>
+                      <a class="btn btn-sm btn-secondary" href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Pauta</span></a>
                     </dtml-let>
                   </dtml-if>
                 </dtml-let>
                 <dtml-let id_ata="_.str(cod_reuniao)+'_ata.pdf'">
                   <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_ata)">
                     <dtml-let ata="_.getattr(sapl_documentos.reuniao_comissao,id_ata).absolute_url">
-                      <a class="btn btn-sm btn-link" href="<dtml-var ata>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Ata</span></a>
+                      <a class="btn btn-sm btn-secondary" href="<dtml-var ata>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Ata</span></a>
                     </dtml-let>
                   </dtml-if>
-                </dtml-let>   
-        </div>     
+                </dtml-let>
+                 <dtml-if url_video>
+                    <a target="_blank" href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Reprodução de Vídeo" data-src="<dtml-var url_video>" class="btn btn-sm btn-secondary"><i class="fab fa-fw fa-youtube"></i> Vídeo</a>       
+                 </dtml-if>                
+   </p>
        </div>
      </div>
  <dtml-if sequence-end>
@@ -94,7 +161,7 @@
   <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
       <nav aria-label="Paginação">
         <ul class="pagination justify-content-center mb-0">
-   <dtml-var "pysc.PageListOutput_pysc('reuniao_comissao_index_html', page, step, _['sequence-length'], cod_comissao_sel=cod_comissao_sel)">
+   <dtml-var "pysc.PageListOutput_pysc('reuniao_comissao_index_html', page, step, _['sequence-length'], ano_reuniao_sel=ano_reuniao_sel, cod_comissao_sel=cod_comissao_sel, status_sel=status_sel)">
         </ul>
       </nav>
    </dtml-if>
@@ -102,32 +169,10 @@
 <dtml-else>
  <div class="row">
     <div class="col-12">
-       Nehnuma reunião cadastrada.
+       Nehnuma reunião encontrada.
     </div>
  </div>
 </dtml-in>
 </form>
-
-<script type="text/javascript">
-    function initJumpMenus() {
-        // Turns all <select> elements with the 'jumpmenu' class into jump menus
-        var selectElements = document.getElementsByTagName("select");
-        for( i = 0; i < selectElements.length; i++ ) {
-            // Check for the class and make sure the element has an ID
-            if( selectElements[i].className == "form-control selectpicker show-tick jumpmenu" && document.getElementById(selectElements[i].id) != "" ) {
-                jumpmenu = document.getElementById(selectElements[i].id);
-                jumpmenu.onchange = function() {
-                    if( this.options[this.selectedIndex].value != '' ) {
-                        // Redirect
-                        location.href=this.options[this.selectedIndex].value;
-                    }
-                }
-            }
-        }
-    }
-    window.onload = function() {
-        initJumpMenus();
-    }
-</script>
 
 <dtml-var standard_html_footer>

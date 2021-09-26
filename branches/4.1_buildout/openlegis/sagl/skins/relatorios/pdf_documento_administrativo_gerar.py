@@ -1,4 +1,4 @@
-##parameters=imagem,data,lst_documentos,dic_cabecalho,lst_rodape,dic_filtro
+##parameters=sessao,imagem,data,lst_documentos,dic_cabecalho,lst_rodape,dic_filtro
 
 """relatorio_documento.py
    External method para gerar o arquivo rml do resultado de uma pesquisa de documentos administrativos
@@ -91,7 +91,7 @@ def documentos(lst_documentos):
     tmp_data+='\t</story>\n'
     return tmp_data
 
-def principal(imagem,data,lst_documentos,dic_cabecalho,lst_rodape,dic_filtro={}):
+def principal(sessao,imagem,data,lst_documentos,dic_cabecalho,lst_rodape,dic_filtro={}):
     """Funcao pricipal que gera a estrutura global do arquivo rml"""
 
     arquivoPdf=str(int(time.time()*100))+".pdf"
@@ -122,4 +122,4 @@ def principal(imagem,data,lst_documentos,dic_cabecalho,lst_rodape,dic_filtro={})
 
     return "/temp_folder/"+arquivoPdf
 
-return principal(imagem,data,lst_documentos,dic_cabecalho,lst_rodape,dic_filtro)
+return principal(sessao,imagem,data,lst_documentos,dic_cabecalho,lst_rodape,dic_filtro)

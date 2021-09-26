@@ -167,8 +167,8 @@ if context.REQUEST['cod_sessao_plen']!='':
     dat_emissao = DateTime().strftime("%d/%m/%Y")
     rodape = [linha1, linha2, dat_emissao]
     
-#    sessao=session.id
-    caminho = context.pdf_ordem_dia_gerar(imagem, dat_ordem, cod_sessao_plen, splen, pauta, cabecalho, rodape, lst_presidente)
+    sessao=session.id
+    caminho = context.pdf_ordem_dia_gerar(sessao, imagem, dat_ordem, cod_sessao_plen, splen, pauta, cabecalho, rodape, lst_presidente)
     if caminho=='aviso':
         return response.redirect('mensagem_emitir_proc')
     else:

@@ -393,8 +393,8 @@ if context.REQUEST['data']!='':
         rodape['sgl_uf']= local.sgl_uf
 
 #   return lst_votacao
-#    sessao=session.id
-    caminho = context.pdf_sessao_plenaria_gerar(rodape, imagem, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_expedientes, lst_expediente_materia, lst_oradores_expediente, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente)
+    sessao=session.id
+    caminho = context.pdf_sessao_plenaria_gerar(rodape, imagem, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_expedientes, lst_expediente_materia, lst_oradores_expediente, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, sessao)
     if caminho=='aviso':
         return response.redirect('mensagem_emitir_proc')
     else:

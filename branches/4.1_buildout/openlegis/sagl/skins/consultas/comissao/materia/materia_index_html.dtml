@@ -5,36 +5,47 @@
   <dtml-call expr="REQUEST.set('sgl_comissao', sgl_comissao)">
 </dtml-in>
 
-<h1 class="firstHeading"><dtml-var nom_comissao> - <dtml-var sgl_comissao></h1> 
+<div class="row mb-2">
+ <div class="col-12 col-md-10 align-self-center"> 
+    <h1 class="firstHeading"><dtml-var nom_comissao></h1>
+ </div>
+ <div class="col-12 col-md-2 text-left text-md-right">
+   <a class="btn btn-sm btn-primary btn-sm" href="<dtml-var portal_url>/consultas/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><i class="fas fa-undo"></i> Voltar</a>  
+ </div>
+</div>
 
-<legend>Matérias em Análise</legend>
+<dtml-in expr="materias_comissao_pysc(cod_comissao=cod_comissao)" prefix="materia">
+  <dtml-if sequence-start>
+   <p class="text-muted font-weight-bold">Matérias pendentes de parecer: [<dtml-var sequence-length> ocorrência<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>]</p>
+ <table class="table">
+   <thead class="table-secondary">
+    <tr>            
+       <th>Identificação da Matéria</th>
+    </tr>
+   </thead>
+</dtml-if sequence-start>
+  <tr>
+     <td class="texto">
+      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=materia_item)">
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+	      <a href="&dtml-portal_url;/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+           <dtml-else>
+	      <a href="&dtml-portal_url;/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
+           </dtml-if>
+           <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
+           - <dtml-var txt_ementa> <br /> 
+           <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+               Autoria: <dtml-var nom_autor_join>
+           </dtml-in>
+     </td>
+ </dtml-in>
+  </tr>
+<dtml-if sequence-end>
+ </table>
 
-<dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
-  <dtml-call expr="REQUEST.set('cod_unidade', cod_unid_tramitacao)">
+  </dtml-if sequence-end>
 <dtml-else>
-  <p>Comissão não cadastrada como unidade de tramitação!</p>
+  <p>Não há matérias pendentes de parecer nesta Comissão.</p>
 </dtml-in>
-
-<dtml-if cod_unidade>
-   <dtml-in expr="zsql.tramitacao_obter_zsql(cod_unid_tram_destino=cod_unidade,ind_ult_tramitacao=1,ind_tramitacao=1)">
-      <p><dtml-var sequence-number>)   
-      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
-        <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
-           <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
-        <dtml-else>
-           <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" >
-        </dtml-if>
-          <b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></a><br />
-          <dtml-var txt_ementa missing><br />
-          <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
-             <b>Autoria:</b> <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
-          </dtml-in></p>
-       </dtml-in>
-   <dtml-else>
-      <p>Não há nenhuma matéria em análise da Comissão.</p>
-   </dtml-in>
-</dtml-if>
-
-<button type="button" class="btn btn-secondary d-print-none mt-3" onClick="history.go(-1)">Voltar</button>
 
 <dtml-var standard_html_footer>

@@ -1,5 +1,45 @@
 <dtml-var standard_html_header>
 
+  <script src="<dtml-var portal_url>/js/moment.min.js""></script>
+  <script src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+    var table = $('.table').DataTable( {
+        "responsive": true,
+        "order": [[ 0, "asc" ]],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+});
+</script>
+
   <h1 class="firstHeading">Assinatura Digital de Documentos</h1> 
 
   <dtml-in expr="zsql.assinatura_documento_obter_zsql(cod_usuario=cod_usuario_corrente, ind_assinado=0)">
@@ -101,9 +141,27 @@
                <dtml-elif expr="tipo_doc == 'tramitacao_adm'">
                   <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_tramitacao=codigo, ind_excluido=0)">
                     <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
-                       Tramitação em Proc. Administrativo - <dtml-var num_documento> nº <dtml-var num_documento>/<dtml-var ano_documento>
+                       Tramitação em Proc. Administrativo nº <dtml-var num_documento>/<dtml-var ano_documento>
                     </dtml-in> 
-                  </dtml-in>                
+                  </dtml-in>
+               <dtml-elif expr="tipo_doc == 'pauta_comissao'">
+                  <dtml-in expr="zsql.reuniao_comissao_obter_zsql(cod_reuniao=codigo)">
+                    <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                       Pauta da <dtml-var num_reuniao>ª Reunião da <dtml-var sgl_comissao> de <dtml-var dat_inicio_reuniao>
+                    </dtml-in> 
+                  </dtml-in>  
+               <dtml-elif expr="tipo_doc == 'ata_comissao'">
+                  <dtml-in expr="zsql.reuniao_comissao_obter_zsql(cod_reuniao=codigo)">
+                    <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                       Ata da <dtml-var num_reuniao>ª Reunião da <dtml-var sgl_comissao> de <dtml-var dat_inicio_reuniao>
+                    </dtml-in> 
+                  </dtml-in>        
+               <dtml-elif expr="tipo_doc == 'documento_comissao'">
+                  <dtml-in expr="zsql.documento_comissao_obter_zsql(cod_documento=codigo)">
+                    <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                       <dtml-var txt_descricao> - <dtml-var sgl_comissao>
+                    </dtml-in> 
+                  </dtml-in>                                            
                </dtml-if>
            </td>
            <td><dtml-var formatted_code></td>           

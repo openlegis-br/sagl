@@ -1,4 +1,4 @@
-##parameters=imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexadas,lst_autoria,lst_des_iniciais,lst_tramitacoes,lst_relatorias,lst_numeracoes,lst_leg_citadas,lst_acessorios
+##parameters=imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexadas,lst_autoria,lst_des_iniciais,lst_tramitacoes,lst_relatorias,lst_numeracoes,lst_leg_citadas,lst_acessorios,sessao=''
 
 """relatorio_detalhe_materia.py
    External method para gerar o arquivo rml do resultado da pesquisa de uma matéria
@@ -98,9 +98,6 @@ def inf_basicas(dic_inf_basicas):
     else:
         tmp+='\t\t<para style="P2"><b>Forma de Apresentação: </b> Oral</para>\n'
 
-    if str(dic_inf_basicas['objeto']) != "" and str(dic_inf_basicas['objeto']) != None:
-        tmp+='\t\t<para style="P2"><b>Objeto: </b> ' + str(dic_inf_basicas['objeto']) + '</para>\n'
-
     if dic_inf_basicas['tramitacao']==0:
         tmp+='\t\t<para style="P2"><b>Tramitando:</b> Não</para>\n'
     else:
@@ -115,7 +112,7 @@ def inf_basicas(dic_inf_basicas):
 
     fim_prazo = (dic_inf_basicas['fim_prazo'])
     if fim_prazo != "" and fim_prazo != None:
-        tmp+='\t\t<para style="P2"><b>Data do fim do prazo: </b> ' + str(dic_inf_basicas['fim_prazo']) + '</para>\n'
+        tmp+='\t\t<para style="P2"><b>Data de fim do prazo: </b> ' + str(dic_inf_basicas['fim_prazo']) + '</para>\n'
 
     apelido = dic_inf_basicas['apelido']
     if apelido != "" and apelido != None:
@@ -270,7 +267,7 @@ def documentos_acessorios(lst_acessorios):
     return tmp
 
 def principal(imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexadas,lst_autoria,lst_des_iniciais,
-              dic_tramitacoes,lst_relatorias,lst_numeracoes,lst_leg_citadas,lst_acessorios):
+              dic_tramitacoes,lst_relatorias,lst_numeracoes,lst_leg_citadas,lst_acessorios,sessao=''):
     """
     Função principal responsável por chamar as funções que irão gerar o código rml apropriado
     """
@@ -312,4 +309,4 @@ def principal(imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexad
     return "/temp_folder/"+arquivoPdf
 
 return principal(imagem, dic_rodape,dic_inf_basicas,dic_orig_externa,lst_mat_anexadas,lst_autoria,lst_des_iniciais,
-                 lst_tramitacoes,lst_relatorias,lst_numeracoes,lst_leg_citadas,lst_acessorios)
+                 lst_tramitacoes,lst_relatorias,lst_numeracoes,lst_leg_citadas,lst_acessorios,sessao)

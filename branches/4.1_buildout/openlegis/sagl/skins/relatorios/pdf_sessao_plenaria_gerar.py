@@ -1,4 +1,4 @@
-##parameters=rodape_dic, imagem, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_expedientes, lst_expediente_materia, lst_oradores_expediente, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente
+##parameters=rodape_dic, imagem, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_expedientes, lst_expediente_materia, lst_oradores_expediente, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, sessao=''
 """Script para geração do PDF das sessoes plenarias
    Autor: Gustavo Lepri
    Atualizado por Luciano De Fázio - 22/03/2012
@@ -306,7 +306,7 @@ def presidente(lst_presidente):
     tmp+='\t\t<para style="P5">Presidente </para>\n'
     return tmp
 
-def principal(cabecalho, rodape, imagem, inf_basicas_dic):
+def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     """
     """
 
@@ -352,4 +352,4 @@ def principal(cabecalho, rodape, imagem, inf_basicas_dic):
 
     return "/temp_folder/"+arquivoPdf
 
-return principal(cabecalho, rodape, imagem, inf_basicas_dic)
+return principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic)

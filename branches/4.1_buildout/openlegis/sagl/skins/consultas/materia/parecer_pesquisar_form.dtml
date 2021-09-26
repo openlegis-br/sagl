@@ -1,0 +1,169 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js"></script>
+
+<script type="text/javascript">
+
+(function ($) {
+  $(function () {
+    document.onkeypress = function (event) {
+      var form = parecer_form;
+      if (event.keyCode === 13) {
+        pesquisa_criticar();
+      }
+    };
+  });
+}(jQuery));
+
+function pesquisa_criticar(form){  
+
+  var form = document.parecer_form;
+
+  if (form.dt_parecer.value != "" && !IsValidDate(form.dt_parecer.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data inicial válida!"});
+    return false;
+  } 
+
+  if (form.dt_parecer2.value != "" && !IsValidDate(form.dt_parecer2.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data final válida!"});
+    return false;
+  } 
+
+  var materia_principal = form.lst_tip_materia[form.lst_tip_materia.selectedIndex].value;
+
+  if (materia_principal!=''){
+     if ((form.lst_tip_materia[form.lst_tip_materia.selectedIndex].value == "") ||
+        (form.txt_num_materia.value == "") || (form.txt_ano_materia.value == ""))  {
+         $.showAlert({title: "Mensagem do Sistema", body: "Informe tipo, número e ano da matéria relatada!"});
+         form.txt_num_materia.focus(); 
+         return false;
+     }
+  }
+  form.submit();
+}
+</script>
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+  <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
+     <script src='https://www.google.com/recaptcha/api.js?hl=pt-BR' async defer></script>
+  </dtml-if>
+</dtml-let>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Pesquisa de Matérias</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">      
+             <a class="btn btn-primary btn-sm d-print-none" href="<dtml-var portal_url>/cadastros/materia/materia_form_resumido"><i class="fa fa-fw fa-plus"></i> Incluir Matéria</a>
+         </dtml-if>
+      </div>
+ </div>
+
+<dtml-var materia_menu>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
+
+<form novalidate name="parecer_form" action="parecer_pesquisar_proc">
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_comissao" class="form-label">Comissão</label>
+      <select class="custom-select" id="lst_comissao" name="lst_comissao">
+          <option value=""></option>
+         <dtml-in expr="zsql.comissao_obter_zsql()">
+             <option value="<dtml-var cod_comissao>">
+                <dtml-var nom_comissao>
+             </option>
+         </dtml-in>
+      </select>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_num_parecer">Número do Parecer</label>
+      <input name="txt_num_parecer" id="txt_num_parecer" type="number" class="form-control number" autocomplete="off">
+    </div>
+    <div class="col-6 col-md-3 mb-3 controls">
+      <label for="txt_ano_parecer">Ano do Parecer</label>
+      <input name="txt_ano_parecer" id="txt_ano_parecer" type="number" min="1900" maxlength="4" class="form-control year" autocomplete="off">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="hdn_cod_autor_ac">Relatoria</label>
+        <select id="lst_parlamentar" name="lst_parlamentar" class="form-control selectpicker show-tick" data-size="6" data-live-search="true" title="Todas" data-header="Pesquisar Relator">
+              <dtml-in expr="zsql.parlamentar_obter_zsql(ind_excluido=0)">
+                <option value="<dtml-var cod_parlamentar>"><dtml-var nom_completo> <dtml-if expr="nom_completo != nom_parlamentar">(<i><dtml-var nom_parlamentar></i>)</dtml-if></option>
+              </dtml-in>
+       </select>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="dt_parecer">Data Inicial</label>
+        <input type="text" class="form-control date" id="dt_parecer" name="dt_parecer" autocomplete="off">
+    </div>
+   <div class="col-6 col-md-3 mb-3">
+      <label for="dt_parecer2">Data Final</label>
+      <input type="text" class="form-control date" id="dt_parecer2" name="dt_parecer2" autocomplete="off">
+    </div>
+    <script>
+
+        $('#dt_parecer').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#dt_parecer2').val();
+            }
+        });
+        $('#dt_parecer2').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#dt_parecer').val();
+            }
+        });
+    </script>  
+  </div>
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_tip_materia_ac">Matéria Relatada</label>
+      <select class="custom-select" id="lst_tip_materiac" name="lst_tip_materia">
+          <option value=""></option>
+          <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)">
+                <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia></option>
+          </dtml-in>
+      </select>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_num_materia">Número</label>
+      <input name="txt_num_materia" id="txt_num_materia" type="number" min="1" maxlength="6" class="form-control number"  autocomplete="off">
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_ano_materia">Ano</label>
+      <input name="txt_ano_materia" id="txt_ano_materia" type="number" min="1900" maxlength="4" class="form-control year" autocomplete="off">
+    </div>
+  </div>
+  <div class="form-row">
+       <div class="col-12 col-md-12 mt-2 text-left"> 
+        <dtml-let isAnon="portal_membership.isAnonymousUser()">
+            <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
+                <div class="g-recaptcha mb-3" data-sitekey="<dtml-var "sapl_documentos.props_sagl.recaptcha_key">"></div>
+            </dtml-if>
+         </dtml-let>
+          <button type="button" id="search-btn2" class="btn btn-primary" onClick="return pesquisa_criticar()"><i class="fa fa-fw fa-search"></i> Pesquisar</button>
+          <input class="btn btn-secondary" type="reset" name="btn_materia_limpar" value="Limpar" />
+     </div>
+  </div>
+</form>
+
+</div>
+</div>
+
+<dtml-var standard_html_footer>

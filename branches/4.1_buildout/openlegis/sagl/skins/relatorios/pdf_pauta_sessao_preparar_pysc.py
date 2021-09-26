@@ -140,8 +140,8 @@ if context.REQUEST['data']!='':
         rodape['sgl_uf']= local.sgl_uf
 
 #    return lst_votacao
-#    sessao=session.id
-    caminho = context.pdf_pauta_sessao_gerar(rodape, imagem, inf_basicas_dic, lst_votacao, lst_expediente_materia)
+    sessao=session.id
+    caminho = context.pdf_pauta_sessao_gerar(rodape, sessao, imagem, inf_basicas_dic, lst_votacao, lst_expediente_materia)
     if caminho=='aviso':
         return response.redirect('mensagem_emitir_proc')
     else:

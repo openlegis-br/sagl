@@ -2,10 +2,19 @@
 
 <dtml-call expr="REQUEST.set('id_texto', _.str(cod_sessao_plen)+'_pauta_sessao.pdf')">
 <dtml-call expr="REQUEST.set('id_texto_assinado', _.str(cod_sessao_plen)+'_pauta_sessao_signed.pdf')">
+<dtml-call expr="REQUEST.set('id_completo', _.str(cod_sessao_plen)+'_pauta_completa.pdf')">
 
 <dtml-if expr="_.hasattr(sapl_documentos.pauta_sessao,id_texto)">
   <dtml-try>
     <dtml-call "sapl_documentos.pauta_sessao.manage_delObjects(id_texto)">
+  <dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-try>
+</dtml-if>
+
+<dtml-if expr="_.hasattr(sapl_documentos.pauta_sessao,id_completo)">
+  <dtml-try>
+    <dtml-call "sapl_documentos.pauta_sessao.manage_delObjects(id_completo)">
   <dtml-except>
     <dtml-call expr="REQUEST.set('erro', 1)">
   </dtml-try>
@@ -31,7 +40,7 @@
 </dtml-in>
 
   <dtml-if erro>
-    <dtml-let mensagem="'Ocorreu um erro ao tentar excluir o arquivo PDF da pauta!'">
+    <dtml-let mensagem="'Ocorreu um erro ao tentar excluir o arquivo PDF da pauta!'" tipo_mensagem="'danger'">
       <dtml-var mensagem_emitir>
     </dtml-let>
   <dtml-else>

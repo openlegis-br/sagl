@@ -9,7 +9,7 @@
         <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
     <dtml-else>
         <dtml-call expr="REQUEST.set('erro', 1)">
-        <dtml-let mensagem="'A matéria legislativa informada não existe no sistema!'">
+        <dtml-let mensagem="'A matéria legislativa originária não existe no sistema!'" tipo_mensagem="'danger'">
             <dtml-var mensagem_emitir>
         </dtml-let>         
     </dtml-in>
@@ -62,7 +62,7 @@
 
         <dtml-else>      
             <dtml-call expr="REQUEST.set('erro', 0)">                  
-            <dtml-if file_nom_arquivo>>
+            <dtml-if file_nom_arquivo>
                <dtml-if hdn_cod_norma>
                   <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_norma)+'_texto_integral.pdf')">
                 </dtml-if>
@@ -72,12 +72,37 @@
                    <dtml-call expr="REQUEST.set('erro', 1)">              
                 </dtml-try>      
             </dtml-if>
-
+            
             <dtml-call expr="sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(cod_norma=hdn_cod_norma)">
-
+            
+            <dtml-if file_nom_arquivo_compilado>
+               <dtml-if hdn_cod_norma>
+                  <dtml-call expr="REQUEST.set('id_compilado', _.str(hdn_cod_norma)+'_texto_consolidado.pdf')">
+                </dtml-if>
+                <dtml-try>            
+                   <dtml-call expr="sapl_documentos.norma_juridica.manage_addFile(id=id_compilado,file=file_nom_arquivo_compilado)">
+                <dtml-except> 
+                   <dtml-call expr="REQUEST.set('erro', 1)">              
+                </dtml-try>      
+            </dtml-if>
            <dtml-let mensagem="'Norma jurídica salva com sucesso!'" cod_norma="hdn_cod_norma" url="'norma_juridica_mostrar_proc?cod_norma='+hdn_cod_norma">
                <dtml-var mensagem_emitir>
            </dtml-let>
         </dtml-try>
     </dtml-if> 
 </dtml-unless>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_norma)"> 
+</dtml-if>

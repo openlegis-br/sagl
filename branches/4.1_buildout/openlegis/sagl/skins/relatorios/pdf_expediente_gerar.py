@@ -1,4 +1,4 @@
-##parameters=rodape_dic, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_pareceres, lst_presidente
+##parameters=rodape_dic, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_pareceres, lst_presidente, sessao=''
 """Script para geração da pauta das matérias do expediente em PDF
    Autor: Luciano De Fázio - OpenLegis
    versão: 1.0
@@ -237,7 +237,7 @@ def presidente(lst_presidente):
     tmp+='\t\t<para style="P4">Presidente </para>\n'
     return tmp
 
-def principal(cabecalho, rodape, imagem, inf_basicas_dic):
+def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     """
     """
 
@@ -287,4 +287,4 @@ def principal(cabecalho, rodape, imagem, inf_basicas_dic):
    
     return "sapl_documentos/pauta_sessao/"+arquivoPdf
 
-return principal(cabecalho, rodape, imagem, inf_basicas_dic)
+return principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic)

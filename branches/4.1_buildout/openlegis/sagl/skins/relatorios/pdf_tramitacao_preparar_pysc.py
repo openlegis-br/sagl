@@ -8,6 +8,7 @@
 ##title=
 ##
 import os
+from xml.sax.saxutils import escape
 
 request=context.REQUEST
 response=request.RESPONSE
@@ -71,6 +72,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
   # dados da materia
   autoria = ""
   for materia in context.zsql.materia_obter_zsql(cod_materia=tramitacao.cod_materia):
+   txt_ementa = escape(materia.txt_ementa)
    autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
    fields = autores.data_dictionary().keys()
    lista_autor = []
@@ -79,12 +81,12 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
        nome_autor = autor['nom_autor_join']
      lista_autor.append(nome_autor)
      autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
-   tramitacao_dic['id_materia'] = materia.des_tipo_materia.decode('utf-8').upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)+" - "+ str(autoria)+" - "+materia.txt_ementa
+   tramitacao_dic['id_materia'] = materia.des_tipo_materia.decode('utf-8').upper()+" N° "+ str(materia.num_ident_basica)+"/"+ str(materia.ano_ident_basica)+" - "+ str(autoria)+" - "+ txt_ementa
 
   # unidade de origem
   for unid_origem in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=tramitacao.cod_unid_tram_local):
    tramitacao_dic['unidade_origem'] = unid_origem.nom_unidade_join 
-   if unid_origem.nom_orgao == "Poder Executivo" or unid_origem.nom_orgao == "Poder Executivo - Protocolo" or unid_origem.nom_orgao == "Poder Executivo - Gabinete":
+   if unid_origem.nom_orgao == "Poder Executivo" or unid_origem.nom_orgao == "Poder Executivo - Protocolo" or unid_origem.nom_orgao == "Poder Executivo - Administração" or unid_origem.nom_orgao == "Poder Executivo - Gabinete" or unid_origem.nom_orgao == "Poder Executivo - " or unid_origem.nom_orgao == "Externo - Executivo":
      inf_basicas_dic['nom_camara']= 'Prefeitura Municipal de ' + local.nom_localidade
 
   # usuario de origem
@@ -104,7 +106,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
      tramitacao_dic['nom_usuario_destino'] = usu_destino.nom_completo
      tramitacao_dic['nom_cargo_usuario_destino'] = usu_destino.nom_cargo
 
-caminho=context.pdf_tramitacao_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url)
+caminho=context.pdf_tramitacao_gerar(imagem,rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url,sessao=session.id)
 if caminho=='aviso':
  return response.redirect('mensagem_emitir_proc')
 else:

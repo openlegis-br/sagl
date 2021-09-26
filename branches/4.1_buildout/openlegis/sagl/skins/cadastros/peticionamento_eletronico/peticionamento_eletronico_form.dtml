@@ -43,8 +43,9 @@
       }
   }
 
-  function arquivo_carregar(){
+  function arquivo_carregar(codigo){
     var form1 = document.peticionamento_form;
+    var codigo = codigo;
     document.arquivo_form.hdn_lst_assunto.value = form1.lst_assunto[form1.lst_assunto.selectedIndex].value;
     document.arquivo_form.hdn_lst_cod_unid_tram_dest.value = form1.lst_cod_unid_tram_dest[form1.lst_cod_unid_tram_dest.selectedIndex].value;    
     document.arquivo_form.hdn_txt_assunto.value = form1.txa_txt_assunto.value;
@@ -105,9 +106,14 @@
       <dtml-call "REQUEST.set('nom_completo', AUTHENTICATED_USER)">
    </dtml-in>
 
-   <form enctype="multipart/form-data" name="peticionamento_form" method="post" action="protocolo_pysc">
+   <form enctype="multipart/form-data" id="peticionamento_form" name="peticionamento_form" method="post" action="protocolo_pysc">
 
-     <input type="hidden" name="hdn_codigo" value="<dtml-var codigo missing>" />
+<dtml-unless codigo>
+  <dtml-call expr="REQUEST.set('codigo', _.DateTime().strftime('%s'))">
+</dtml-unless>
+
+
+     <input type="hidden" id="codigo" name="codigo" value="<dtml-var codigo missing>" />
 
      <div class="form-row">
         <div class="col-12 mb-3">
@@ -135,33 +141,31 @@
                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
                    <option 
                      value="<dtml-var cod_unid_tramitacao>"
-                     <dtml-if expr="_.has_key('hdn_lst_cod_unid_tram_dest') and hdn_lst_cod_unid_tram_dest==cod_unid_tramitacao">selected</dtml-if> >  
+                     <dtml-if expr="_.has_key('hdn_lst_cod_unid_tram_dest') and hdn_lst_cod_unid_tram_dest==_.str(cod_unid_tramitacao)">selected</dtml-if> >  
                       <dtml-var nom_unidade_join>
                    </option>
                </dtml-in>
          </select>        
        </div>
      </div>
-
      <div class="form-row">
         <div class="col-12 mb-3">
 	  <label for="txa_txt_assunto" class="required">Resumo da Solicitação</label>
 	  <textarea class="form-control auto-resize" id="txa_txt_assunto" name="txa_txt_assunto" rows="1"><dtml-var txa_txt_assunto missing></textarea>
         </div>
      </div>
-
   </form>
 
      <div class="form-row">
         <div class="col-12 mb-3">    
  	   <label class="d-block">Anexo PDF</label>
-           <dtml-if codigo>
+           <dtml-if expr="_.has_key('codigo')">
               <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao',codigo=codigo)">
                  <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
               </dtml-in>
            </dtml-if>
            <dtml-if expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados,cod_assinatura_doc+'.pdf')">
-             <a class="btn btn-sm btn-secondary" href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf" target="_blank">
+             <a class="btn btn-secondary" href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf" target="_blank">
                 <i class="fas fa-certificate"></i> <dtml-var cod_assinatura_doc>.pdf
              </a>
              <input class="btn btn-primary" type="button" id="excluir" name="excluir" value="Excluir"  onClick="arquivo_excluir(<dtml-var codigo>)"/>
@@ -180,7 +184,7 @@
                      <input class="custom-file-input" type="file" id="anexo" name="anexo" accept="application/pdf" />
                      <label class="custom-file-label" for="file_redacao">Arquivo digitalizado</label>  
                   </div>                 
-                  <input class="btn btn-secondary" type="button" id="upload" value="Carregar"  onClick="arquivo_carregar()"/>
+                  <input class="btn btn-secondary" type="button" id="upload" value="Carregar"  onClick="arquivo_carregar(<dtml-var codigo>)"/>
                 </div>
                <input type="hidden" name="modal" value="1" />                
                <input type="hidden" name="hdn_lst_assunto" value="" />

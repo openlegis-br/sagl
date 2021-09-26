@@ -1,4 +1,4 @@
-##parameters=imagem,dic_rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url
+##parameters=imagem,dic_rodape,inf_basicas_dic,cod_tramitacao,tramitacao_dic,hdn_url,sessao=''
 
 """pdf_tramitacao_gerar.py
    Script python para gerar o PDF da tramitação
@@ -81,10 +81,10 @@ def paraStyle():
     tmp+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp+='\t\t</initialize>\n'
     tmp+='\t\t<paraStyle name="style.Title" fontName="Helvetica" fontSize="11" leading="13" spaceAfter="2" alignment="RIGHT"/>\n'
-    tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="12.0" textColor="gray" leading="14" spaceAfter="2" spaceBefore="8" alignment="LEFT"/>\n'
-    tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="10.0" leading="12" spaceAfter="2" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="12.0" textColor="gray" leading="13" spaceAfter="2" spaceBefore="8" alignment="LEFT"/>\n'
+    tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="10.0" leading="14" spaceAfter="1" alignment="JUSTIFY"/>\n'
     tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="10.0" leading="12" spaceAfter="2" alignment="CENTER"/>\n'
-    tmp+='\t\t<paraStyle name="P5" fontName="Helvetica-Bold" fontSize="9" leading="15" spaceAfter="3" alignment="CENTER" valign="middle" white-space="nowrap" />\n'
+    tmp+='\t\t<paraStyle name="P5" fontName="Helvetica" fontSize="9" leading="9" spaceAfter="3" alignment="CENTER" valign="middle" white-space="nowrap" />\n'
     tmp+='\t</stylesheet>\n'
 
     return tmp
@@ -139,7 +139,6 @@ def tramitacao(tramitacao_dic):
       tmp+='<tr><td>TEXTO DO DESPACHO</td></tr>\n'
       tmp+='\t\t</blockTable>\n'
       tmp+='\t\t<para style="P2">\n'
-      tmp+='\t\t\t<font color="white">-</font>\n'
       tmp+='\t\t</para>\n'
 
       tmp+='\t\t<para style="P2">' + str(tramitacao_dic['txt_tramitacao']) + '</para>\n\n'
@@ -160,7 +159,7 @@ def tramitacao(tramitacao_dic):
 
     return tmp
 
-def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url):
+def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url,sessao=''):
     """
     Função principal responsável por chamar as funções que irão gerar o código rml apropriado
     """
@@ -199,4 +198,4 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url):
     return hdn_url
     #return "tramitacao_mostrar_proc?cod_tramitacao="+str(cod_tramitacao)
 
-return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url)
+return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url,sessao)

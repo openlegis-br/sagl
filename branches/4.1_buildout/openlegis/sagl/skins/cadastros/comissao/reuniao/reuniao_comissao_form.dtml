@@ -10,6 +10,11 @@
        form.txt_num_reuniao.focus();
        return false;
     }
+    if (form.lst_tip_reuniao.selectedIndex == 0){
+       $('#lst_tip_reuniao').addClass('is-invalid');
+       form.lst_tip_reuniao.focus();
+       return false;
+    }    
     if (form.txt_dat_inicio_reuniao.value == "") {
        $('#txt_dat_inicio_reuniao').addClass('is-invalid');
        form.txt_dat_inicio_reuniao.focus();
@@ -81,6 +86,9 @@ $(document).ready(() => {
  
 </script>
 
+<dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao, ind_excluido=0)">
+   <dtml-call expr="REQUEST.set('sgl_comissao', sgl_comissao)">
+</dtml-in>
 
 <ul class="nav nav-tabs border-0 mt-2" id="nav_materia" role="tablist">
   <li class="nav-item">
@@ -111,6 +119,17 @@ $(document).ready(() => {
           Este campo é obrigatório !
         </div>
      </div>
+     <div class="col-6 col-md-3 mb-3">
+        <label for="lst_tip_reuniao" class="required">Tipo de Reunião</label>
+        <select class="custom-select" id="lst_tip_reuniao" name="lst_tip_reuniao" required>
+           <option value="0">Selecione </option>
+           <option value="Ordinária" <dtml-if expr="_.has_key('cod_reuniao') and str(des_tipo_reuniao)=='Ordinária'"> selected</dtml-if>>Ordinária</option>   
+           <option value="Extraordinária" <dtml-if expr="_.has_key('cod_reuniao') and str(des_tipo_reuniao)=='Extraordinária'"> selected</dtml-if>>Extraordinária</option>  
+        </select>  
+        <div class="invalid-feedback">
+          Este campo é obrigatório!
+        </div>           
+     </div>   
      <div class="col-6 col-sm-6 col-md-3 mb-3">
         <label for="txt_dat_inicio_reuniao" class="form-label required">Data</label>
         <input class="form-control date" type="text" name="txt_dat_inicio_reuniao" id="txt_dat_inicio_reuniao"  value="<dtml-var dat_inicio_reuniao missing null>" required />
@@ -134,13 +153,26 @@ $(document).ready(() => {
           Este campo é obrigatório !
         </div>
      </div>
+   </div>
+   <div class="form-row">     
      <div class="col-6 col-sm-6 col-md-3 mb-3">
         <label for="txt_hr_fim_reuniao" class="form-label">Horário de Fim</label>
         <input class="form-control time" type="text" name="txt_hr_fim_reuniao" id="txt_hr_fim_reuniao"  value="<dtml-var hr_fim_reuniao missing null>" />
         <div class="invalid-feedback">
           Este campo é obrigatório !
         </div>
-     </div>     
+     </div>
+     <div class="col-6 col-sm-6 col-md-9 mb-3">  
+         <label for="txt_url_video">Player de Vídeo</label>
+         <div class="input-group">
+           <input class="form-control" type="text" id="txt_url_video" name="txt_url_video" maxlength="150" value="<dtml-var url_video missing null>" placeholder="Exemplo: https://www.youtube.com/embed/XXXXX" autocomplete="off" />
+           <dtml-if expr="_.has_key('cod_reuniao') and url_video">
+              <div class="input-group-append">                            
+                <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Reprodução de Vídeo" data-src="<dtml-var url_video missing null=''>"><i class="fa fa-fw fa-play"></i><span class="d-none">Video</span></button>
+              </div>
+           </dtml-if>
+         </div>
+     </div>         
    </div>
    <div class="form-row">
      <div class="col-6 mb-3">
@@ -171,9 +203,9 @@ $(document).ready(() => {
              <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_pauta)">
                 <dtml-let pauta="_.getattr(sapl_documentos.reuniao_comissao,id_pauta).absolute_url">
                    <p>
-                   <a class="btn btn-primary" href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i> Visualizar</a>
+                   <a class="btn btn-sm btn-primary" href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i> Visualizar</a>
                    <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
-                     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_reuniao>&tipo_doc=pauta_comissao&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+                     <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_reuniao>&tipo_doc=pauta_comissao&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
                   </dtml-if>
                   </p>
                 </dtml-let>
@@ -207,9 +239,9 @@ $(document).ready(() => {
                <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_ata)">
                   <dtml-let ata="_.getattr(sapl_documentos.reuniao_comissao,id_ata).absolute_url">
                     <p>
-                    <a class="btn btn-primary" href="<dtml-var ata>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i> Visualizar</a>
+                    <a class="btn btn-sm btn-primary" href="<dtml-var ata>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i> Visualizar</a>
                     <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
-                      <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_reuniao missing>&tipo_doc=ata_comissao&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+                      <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_reuniao missing>&tipo_doc=ata_comissao&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
                     </dtml-if>
                     </p>
                   </dtml-let>
@@ -237,20 +269,6 @@ $(document).ready(() => {
      </div>
    </div>
 
-  <div class="form-row">
-     <div class="col-12 mb-3">  
-         <label for="txt_url_video">Player de Vídeo</label>
-         <div class="input-group">
-           <input class="form-control" type="text" id="txt_url_video" name="txt_url_video" maxlength="150" value="<dtml-var url_video missing null>" placeholder="Exemplo: https://www.youtube.com/embed/XXXXX" autocomplete="off" />
-           <dtml-if expr="_.has_key('cod_reuniao') and url_video">
-              <div class="input-group-append">                            
-                <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Reprodução de Vídeo" data-src="<dtml-var url_video missing null=''>"><i class="fa fa-fw fa-play"></i><span class="d-none">Video</span></button>
-              </div>
-           </dtml-if>
-         </div>
-     </div>
-  </div>
-   
    <input type="hidden" name="hdn_cod_reuniao"  value="<dtml-var cod_reuniao missing>">
    <input type="hidden" name="hdn_cod_comissao" value="<dtml-var cod_comissao>">
    <dtml-if cod_reuniao>
@@ -258,7 +276,7 @@ $(document).ready(() => {
    </dtml-if>
    <input type="hidden" name="modal" value="1">
 
-  <div class="text-left">
+  <div class="text-center">
      <button class="btn btn-primary" onClick="return reuniao_criticar()">Salvar</button>
      <dtml-if cod_reuniao>
          <a class="btn btn-danger" href="reuniao_comissao_excluir_proc?cod_reuniao=<dtml-var cod_reuniao>&cod_comissao=<dtml-var cod_comissao>&modal=1" data-confirm="Deseja realmente excluir a reunião?">Excluir</a>
@@ -355,7 +373,7 @@ $(document).ready(function() {
         <dtml-if sequence-end>
            </table>
            </div>
-            <div clas="text-left">
+            <div clas="text-center">
                 <input class="btn btn-primary" type="submit" name="button" value="Salvar" />
             </div>           
         </dtml-if>
@@ -386,23 +404,38 @@ $(document).ready(function() {
            <td style="cursor: move">
               <dtml-var num_ordem>
            </td>
-           <dtml-if cod_materia>
-              <td>
+           <td>
+             <dtml-if cod_materia>
                  <dtml-in expr="zsql.materia_obter_zsql(cod_materia=_.getitem('cod_materia'), ind_excluido=0)">
-                    <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Item da Pauta" data-src="pauta_mostrar_proc?cod_item=<dtml-var cod_item>&modal=1">
+                    <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Item da Pauta" data-src="pauta_mostrar_proc?cod_item=<dtml-var cod_item>&cod_materia=<dtml-var cod_materia>&modal=1">
                       <b><dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a>
-                 </dtml-in>
-                 <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
-                    - <b><dtml-var nom_autor_join></b>
                  </dtml-in>
                  - <dtml-var txt_observacao>
                  <dtml-if expr="_.has_key('cod_relator') and cod_relator!=None">
                    <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_relator)">
-                      <br /><b>Relator Designado:</b> <dtml-var nom_parlamentar>
+                      <br /><b>Relatoria Designada:</b> <dtml-var nom_parlamentar>
                    </dtml-in>
                  </dtml-if>                         
-              </td>
-           </dtml-if>
+             </dtml-if>              
+             <dtml-if cod_parecer>
+                <dtml-in expr="zsql.relatoria_obter_zsql(cod_relatoria=cod_parecer, cod_comissao=cod_comissao)">
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+                   <dtml-call expr="REQUEST.set('id_materia', sgl_tipo_materia + ' nº ' + str(num_ident_basica)+'/'+str(ano_ident_basica))">
+                </dtml-in>
+                <dtml-if expr="tip_conclusao=='F'">
+                   <dtml-call expr="REQUEST.set('enunciado', 'FAVORÁVEL')">
+                <dtml-elif expr="tip_conclusao=='C'">
+                   <dtml-call expr="REQUEST.set('enunciado', 'CONTRÁRIO')">
+                </dtml-if>              
+                  <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Item da Pauta" data-src="pauta_mostrar_proc?cod_item=<dtml-var cod_item>&cod_parecer=<dtml-var cod_parecer>&modal=1">                
+                    <b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> - <dtml-var enunciado> ao <dtml-var id_materia> </b>          
+                  </a>
+                 <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                    <br /><b>Relatoria:</b> <dtml-var nom_parlamentar>
+                 </dtml-in>                  
+                </dtml-in>
+             </dtml-if>
+           </td>
            <td>
                <dtml-if expr="_.has_key('tip_resultado_votacao') and tip_resultado_votacao!=None">	           
                  <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao)">
@@ -424,6 +457,7 @@ $(document).ready(function() {
 <div class="form-row">
   <div class="col-12 text-left">
   <a class="btn btn-sm btn-secondary mb-3" data-toggle="modal" data-target="#iFrameModal" data-title="Adicionar Matéria na Pauta" data-src="pauta_reuniao_form?cod_reuniao=<dtml-var cod_reuniao missing>&modal=1" ><i class="fa fa-plus"></i> Matéria</a>
+  <a class="btn btn-sm btn-secondary mb-3" data-toggle="modal" data-target="#iFrameModal" data-title="Adicionar Parecer na Pauta" data-src="pauta_reuniao_parecer_form?cod_reuniao=<dtml-var cod_reuniao missing>&cod_comissao=<dtml-var cod_comissao>&modal=1" ><i class="fa fa-plus"></i> Parecer</a>  
 </div>
 </dtml-if>
 </div

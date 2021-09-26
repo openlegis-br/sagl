@@ -7,7 +7,7 @@
 <nav class="navbar navbar-expand navbar-dark bg-dark topbar fixed-top d-print-none">
   <div class="container">
      <div class="collapse navbar-collapse" id="navbarTop">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav" id="portal-siteactions">
             <li class="nav-item d-none d-md-inline">
                 <a href="<dtml-var portal_url>/generico/acessibilidade" class="nav-link"><i class="fa fa-fw fa-wheelchair"></i><span class="d-none d-lg-inline"> Acessibilidade</span></a>
             </li>
@@ -66,6 +66,9 @@
 	            <li><a href="<dtml-var portal_url>/cadastros/auxiliares" class="dropdown-item">Tabelas Auxiliares</a></li>
                     <dtml-if expr="AUTHENTICATED_USER.has_role(['Administrador'])">
                       <li><a href="<dtml-var portal_url>/cadastros/usuario" class="dropdown-item">Gerenciamento de Usuários</a></li>
+                      <dtml-if dbcon_logs>
+                        <li><a href="<dtml-var portal_url>/auditoria" class="dropdown-item">Logs de Auditoria</a></li>                      
+                      </dtml-if>
                     </dtml-if>
                     <li class="dropdown-divider"></li>
                   </dtml-if>
@@ -77,6 +80,10 @@
                     <li><a href="https://www.libreoffice.org/download/" target="_blank" class="dropdown-item">LibreOffice</a></li>
                     <li><a href="<dtml-var portal_url>/generico/zopeedit-win32-1.0.0.exe" class="dropdown-item">ZopeEdit</a></li>
                   </dtml-if>
+                  <li class="dropdown-divider"></li>
+                  <li class="dropdown-header">Suporte ao Usuário</li>
+                  <li><a href="https://suporte.openlegis.com.br" target="_blank" class="dropdown-item"><i class="fas fa-headset"></i> Criar Tíquete</a></li>                               
+                  <li><a href="https://wa.me/message/YA2E2WVF6XFSI1" target="_blank" class="dropdown-item"><i class="fab fa-whatsapp"></i> Whatsapp</a></li>                               
                 </ul>
             </li>
             <li class="nav-item dropdown">
@@ -84,14 +91,12 @@
                 <ul class="dropdown-menu dropdown-menu-right">
                       <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar', 'Operador', 'Operador Materia'])">
                          <li class="dropdown-header">Processo Legislativo</li>
-                         <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
                             <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
-                                <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao">Proposições Eletrônicas</a></li>
+                                <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao?ind_enviado=0">Proposições Eletrônicas</a></li>
                             </dtml-if>
                             <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
                                 <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/recebimento_proposicao">Recebimento de Proposições</a></li>
                             </dtml-if>
-                         </dtml-if>
                          <dtml-if cod_usuario_corrente>
                              <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/tramitacao_lote_form">Tramitação de Matérias</a></li>
                          </dtml-if> 
@@ -159,14 +164,12 @@
                     </li>
                     <li class="dropdown-divider"></li>
                  <dtml-if cod_parlamentar_corrente>
-                    <li class="nav-item d-flex">
-                        <div class="col-12">
+                    <li class="nav-item">
                            <ul class="list-group">
                               <li class="dropdown-header">Gabinete Parlamentar</li>
                               <li><a href="<dtml-var portal_url>/cadastros/gabinete_parlamentar/eleitor" class="dropdown-item">Cadastro de Eleitores</a></li>
                               <li><a href="<dtml-var portal_url>/cadastros/gabinete_parlamentar/atendimento" class="dropdown-item">Registro de Atendimentos</a></li>
                            </ul>
-                         </div>
                      </li>
                      <li class="dropdown-divider"></li>
                  </dtml-if>
@@ -228,7 +231,7 @@
 
 <div class="col d-none d-lg-block col-lg-4 col-xl-3 align-self-center text-right"> 
   <div class="mr-2">
-       <form class="px-0 py-2" action='<dtml-var portal_url>/generico/palavra_chave_buscar_proc' name='search_header' id='search_header'>
+       <form class="px-0 py-2" action='<dtml-var portal_url>/generico/palavra_chave_buscar_proc' name='search_header' id='search_header' method="POST">
            <div class="input-group">
               <label class="d-none" for="txt_pesquisa">Palavra-chave</label>
               <input type="text" id="txt_pesquisa" name="txt_palavra_chave" class="form-control" placeholder="Pequisar..." required>
@@ -274,21 +277,22 @@
                        <li class="dropdown-submenu">
                           <a class="dropdown-item dropdown-toggle" href="#">Tramitação de Matérias</a>
                            <ul class="dropdown-menu">
-                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/tramitacao_lote_form">Tramitações em Lote</a></li>
+                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/tramitacao_lote_form">Caixa de Entrada</a></li>
                              <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/rascunhos_html">Tramitações em Rascunho</a></li>
                              <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_materia/itens_enviados_html">Tramitações Enviadas</a></li>
                            </ul>
                        </li>
                     </dtml-if>
-                  <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+
                     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Autor', 'Assessor Parlamentar'])">
                       <li class="dropdown-submenu">
                           <a class="dropdown-item dropdown-toggle" href="#">Proposições Eletrônicas</a>
                           <ul class="dropdown-menu">
                             <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor','Assessor Parlamentar'])">
                               <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao/proposicao_form">Criar Proposição</a></li>
-                              <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao">Proposições em Elaboração</a></li>
+                              <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao?ind_enviado=0">Proposições em Elaboração</a></li>
                               <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao?ind_enviado=1">Proposições Enviadas</a></li>
+                              <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao?ind_devolvido=1">Proposições Devolvidas</a></li>                              
                             </dtml-if>
                             <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
                               <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/recebimento_proposicao">Recebimento de Proposições</a></li>
@@ -296,7 +300,7 @@
                           </ul>
                       </li>
                     </dtml-if>
-                  </dtml-if>
+
                     <li class="dropdown-submenu">
                         <a class="dropdown-item dropdown-toggle" href="#">Sessões Plenárias</a>
                         <ul class="dropdown-menu">
@@ -329,7 +333,7 @@
                      <li class="dropdown-submenu">
                         <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">Tramitação de Processos</a>
                         <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
-                            <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/tramitacao_lote_form">Tramitações em Lote</a></li>
+                            <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/tramitacao_lote_form">Caixa de Entrada</a></li>
                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/rascunhos_html">Tramitações em Rascunho</a></li>
                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/itens_enviados_html">Tramitações Enviadas</a></li>
                             <dtml-if expr="pysc.arquivo_morto_adm_contar_pysc(cod_usuario=cod_usuario_corrente) > 0">
@@ -375,10 +379,10 @@
                     <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_administrativo_form">Protocolo Administrativo</a></li>
                     <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_anular_form">Anular Protocolo</a></li>
                   </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
+                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
                     <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_legislativo_pendente_form">Incorporar Matérias</a></li>
                   </dtml-if>
-                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador Modulo Administrativo'])">
+                  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador',  'Operador Modulo Administrativo'])">
                     <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_administrativo_pendente_form">Incorporar Documentos</a></li>
                   </dtml-if>
                 </ul>

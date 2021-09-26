@@ -1,7 +1,23 @@
 <dtml-var standard_html_header>
 
+<script src="<dtml-var portal_url>/js/jquery.jeditable.js"></script>
+
+<script>
+ $(document).ready(function() {
+     $('.edit').editable('titulo_salvar_pysc', { 
+         id   : 'id',
+         name : 'title',
+         tipo : 'tipo',
+         submit  : 'Salvar',
+         submitcssclass : 'btn btn-sm btn-success ml-1',
+         tooltip : "Clique para editar nome do modelo",                   
+         maxlength : 100,
+         width : 400
+     });
+ });
+</script>
+
 <script type="text/javascript">
-<!--
 
 function campos_criticar(form){  
 
@@ -48,7 +64,6 @@ $(document).ready(function () {
   bsCustomFileInput.init()
 })
 
-//-->
 </script>
 
 
@@ -111,7 +126,8 @@ $(document).ready(function () {
        <thead class="table-secondary">     
           <tr>
              <th>Nome do Modelo</th>
-             <th width="25%">Ações</th>
+             <th width="20%">Última Alteração</th>
+             <th width="20%">Ações</th>
           </tr>
        </thead>
        
@@ -119,10 +135,14 @@ $(document).ready(function () {
        <dtml-in expr="objectValues('File')" sort="title_or_id">
         <dtml-if expr="id.startswith(prefixo_arquivo)">
           <tr>
-            <td><a href="&dtml-absolute_url;"><dtml-var title_or_id></a></td>
+            <td class="edit" style="cursor: pointer" id="<dtml-var id>" title="<dtml-var title>"><dtml-var title_or_id></td>
+            <td><dtml-var bobobase_modification_time fmt="%d/%m/%Y - %H:%M"></td>
             <td>
-              <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var portal_url>/sapl_documentos/modelo/norma/externalEdit_/<dtml-var id>.zem">Editor Externo</a>
-              <a class="btn btn-sm btn-danger" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=tipo_norma_juridica_mostrar_proc?tip_norma=<dtml-var tip_norma>" data-confirm="Deseja realmente excluir o modelo?"> Excluir</a>
+              <div class="btn-group">
+              <a class="btn btn-sm btn-primary" target="_blank" href="&dtml-absolute_url;" title="Download"><i class="fas fa-fw fa-download"></i></a>  
+              <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var portal_url>/sapl_documentos/modelo/norma/externalEdit_/<dtml-var id>.zem" title="Editor Externo"><i class="fa fa-fw fa-edit"></i></a>
+              <a class="btn btn-sm btn-danger" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=tipo_norma_juridica_mostrar_proc?tip_norma=<dtml-var tip_norma>" data-confirm="Deseja realmente excluir o modelo?" title="Excluir"><i class="fa fa-fw fa-trash"></i></a>
+              </div>
             </td>
           </tr>
          </dtml-if>
@@ -134,7 +154,7 @@ $(document).ready(function () {
  <div class="form-row">
    <div class="col-6 mb-3"> 
      <label for="txt_title" class="required">Nome do Modelo</label>   
-     <input class="form-control" type="text" id="txt_title" name="txt_title" maxlength="35"/>
+     <input class="form-control" type="text" id="txt_title" name="txt_title" maxlength="100"/>
    </div>
    <div class="col-6 mb-3">
       <label for="file_nom_arquivo">Arquivo ODT</label> 

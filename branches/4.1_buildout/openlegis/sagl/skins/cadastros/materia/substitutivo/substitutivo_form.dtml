@@ -1,8 +1,8 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/data_validar.js" "></script>
+<script src="<dtml-var portal_url>/javascript/data_validar.js"></script>
 
-<script type="text/javascript">
+<script>
 
    function substitutivo_criticar(form){
 
@@ -147,6 +147,15 @@ $(document).ready(function () {
     <dtml-call expr="REQUEST.set('num_legislatura_sel', num_legislatura)">
   </dtml-if>
 </dtml-in>
+
+<dtml-if expr="not _.has_key('cod_substitutivo') and _.has_key('num_protocolo')">
+  <dtml-call expr="REQUEST.set('ano', _.DateTime.year(_.DateTime()))">          
+  <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=num_protocolo, ano_protocolo=ano)">
+     <dtml-if cod_protocolo>
+        <dtml-call expr="REQUEST.set('txt_ementa', txt_assunto_ementa)">                   
+     </dtml-if>
+  </dtml-in>             
+</dtml-if> 
 
 <form name="substitutivo_form" method="post" action="substitutivo_salvar_proc" method="post" enctype="multipart/form-data">
   <input type="hidden" name="hdn_cod_substitutivo" value="<dtml-var cod_substitutivo missing>">
@@ -401,10 +410,9 @@ $(document).ready(function () {
       <textarea class="form-control auto-resize" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null></textarea>   
    </div>
  </div>
- 
- 
-   <dtml-if expr="_.has_key('cod_substitutivo')">       
-     <dtml-in expr="zsql.proposicao_obter_zsql(cod_substitutivo=cod_substitutivo)">
+  
+   <dtml-if cod_substitutivo>
+     <dtml-in expr="zsql.proposicao_obter_zsql(cod_materia=cod_materia, cod_substitutivo=cod_substitutivo)">
        <dtml-let id_proposicao="_.str(cod_proposicao)+'_signed.pdf'">
          <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
              <legend>Processo Eletrônico</legend>

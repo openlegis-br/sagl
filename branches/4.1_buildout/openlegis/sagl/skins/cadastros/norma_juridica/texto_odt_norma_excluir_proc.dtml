@@ -8,7 +8,7 @@
   </dtml-try>
   
   <dtml-if erro>
-    <dtml-let mensagem="'Ocorreu um erro ao tentar excluir o arquivo ODT dessa norma!'">
+    <dtml-let mensagem="'Ocorreu um erro ao excluir o arquivo ODT da norma!'" tipo_mensagem="'danger'">
       <dtml-var mensagem_emitir>
     </dtml-let>
   <dtml-else>
@@ -17,3 +17,15 @@
     </dtml-let>
   </dtml-if>
 </dtml-if>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'odt_excluir',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),            
+            cod_registro = cod_norma)"> 
+</dtml-if> 

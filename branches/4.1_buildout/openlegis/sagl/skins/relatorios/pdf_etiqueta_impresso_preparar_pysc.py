@@ -25,8 +25,8 @@ for destinatario in context.zsql.destinatario_oficio_obter_zsql(cod_documento=RE
                dic['localidade']=localidade.nom_localidade_pesq+' '+localidade.sgl_uf
         destinatarios.append(dic)
 
-#sessao=session.id
-caminho = context.pdf_etiqueta_impresso_gerar_pysc(destinatarios)
+sessao=session.id
+caminho = context.pdf_etiqueta_impresso_gerar_pysc(sessao,destinatarios)
 if caminho=='aviso':
  return response.redirect('mensagem_emitir_proc')
 else:

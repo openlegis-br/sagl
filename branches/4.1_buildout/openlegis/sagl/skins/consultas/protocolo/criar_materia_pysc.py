@@ -17,7 +17,7 @@ for protocolo in context.zsql.protocolo_obter_zsql(cod_protocolo=cod_protocolo):
     ano_materia = protocolo.ano_protocolo
     dat_apresentacao = DateTime().strftime("%Y-%m-%d")
     num_protocolo = protocolo.num_protocolo
-    txt_ementa = protocolo.txt_assunto_ementa
+    txt_ementa = protocolo.txt_assunto_ementa.encode('utf-8')
     txt_observacao = protocolo.txt_observacao
     cod_autor = protocolo.cod_autor
 
@@ -46,6 +46,9 @@ def criar_materia(tip_materia, num_ident_basica, ano_materia, dat_apresentacao, 
        tmp_id = context.sapl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
        context.sapl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_materia]))
 
+    if context.dbcon_logs:
+       context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'materia', metodo = 'materia_incluir_zsql', cod_registro = cod_materia, IP = context.pysc.get_ip())
+
     return inserir_autoria(cod_materia, cod_autor)
     
 
@@ -73,8 +76,8 @@ def tramitar_materia(cod_materia):
         else:
            cod_usuario_corrente = 0
            
-    hr_tramitacao = DateTime().strftime('%d/%m/%Y às %H:%M')
-    txt_tramitacao = 'Matéria incorporada em ' + hr_tramitacao
+    hr_tramitacao = DateTime().strftime('%d/%m/%Y às %Hh%M')
+    txt_tramitacao = '<p>Matéria incorporada em ' + hr_tramitacao + ' - proveniente do Protocolo nº ' + str(num_protocolo) + '/' + str(ano_materia)+'</p>'
     hdn_url = 'protocolo_mostrar_proc?cod_protocolo=' + cod_protocolo
     
     if cod_unid_tram_local != None and cod_unid_tram_dest != None and cod_status != None:

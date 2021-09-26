@@ -1,4 +1,4 @@
-##parameters=rodape_dic, imagem, inf_basicas_dic, lst_votacao, lst_expediente_materia
+##parameters=rodape_dic, sessao='', imagem, inf_basicas_dic, lst_votacao, lst_expediente_materia
 """Script para geração do PDF das pautas das sessoes plenarias
    Autor Luciano De Fázio - 06/11/2012
    versão: 1.0
@@ -155,7 +155,7 @@ def votacao(lst_votacao):
     tmp+='\t\t</blockTable>\n'
     return tmp
 
-def principal(cabecalho, rodape, imagem, inf_basicas_dic):
+def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     """
     """
 
@@ -191,4 +191,4 @@ def principal(cabecalho, rodape, imagem, inf_basicas_dic):
 
     return "/temp_folder/"+arquivoPdf
 
-return principal(cabecalho, rodape, imagem, inf_basicas_dic)
+return principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic)

@@ -7,13 +7,14 @@
 </dtml-in>
 
 <dtml-try>
+<dtml-call expr="REQUEST.set('metodo', zsql.composicao_estado_alterar_zsql)">   
 <dtml-call expr="zsql.composicao_estado_alterar_zsql(cod_parlamentar=cod_parlamentar,
                                                      cod_sessao_leg=cod_sessao_leg,
                                                      cod_periodo_comp=hdn_cod_periodo_comp,
                                                      cod_cargo=cod_cargo,
                                                      ind_excluido = 1)">
 <dtml-except>
-  <dtml-let tipo_mensagem="'danger'" mensagem="'Não foi possível excluir o parlamentar da composição da Mesa!'">
+  <dtml-let tipo_mensagem="'danger'" mensagem="'Não foi possível excluir o parlamentar da composição da Mesa!'" tipo_mensagem="'danger'">
      <dtml-var mensagem_emitir>
   </dtml-let>   
 <dtml-else>   
@@ -22,3 +23,18 @@
   </dtml-let>
    
 </dtml-try>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_periodo_comp)"> 
+</dtml-if>

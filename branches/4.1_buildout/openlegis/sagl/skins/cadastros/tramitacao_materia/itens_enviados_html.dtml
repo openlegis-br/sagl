@@ -5,7 +5,7 @@
 
 <script>
 $(document).ready(function() {
-    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm' );    //Formatação com Hora
     $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
     $('#enviadas').DataTable( {
         "responsive": true,
@@ -73,7 +73,17 @@ $(document).ready(function() {
   <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
 </dtml-in>
 
-<h1 class="firstHeading">Tramitações Enviadas - Matérias Legislativas</h1>
+<h1 class="firstHeading">Tramitação de Matérias Legislativas</h1>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+  <a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_materia/primeira_tramitacao_lote_form">Primeira Tramitação</a>
+</dtml-if>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_materia/tramitacao_lote_form">Caixa de Entrada <dtml-if expr="pysc.caixa_entrada_contar_pysc(cod_usuario=cod_usuario_corrente) > 0">(<dtml-var expr="pysc.caixa_entrada_contar_pysc(cod_usuario=cod_usuario_corrente)">)</dtml-if></a>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_materia/rascunhos_html">Rascunhos <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_local=cod_usuario_corrente, ind_ult_tramitacao=1, ind_rascunho=1, ind_tramitacao=1)" size="1"><dtml-call expr="REQUEST.set('qtde', _['sequence-length'])">(<dtml-var qtde>)</dtml-in></a>
+<a class="btn btn-sm btn-primary mb-3 disabled" href="<dtml-var portal_url>/cadastros/tramitacao_materia/itens_enviados_html">Enviadas</a>
+
+<p class="text-muted font-weight-bold">Tramitações enviadas</p>
+
      <dtml-in expr="zsql.tramitacao_obter_zsql(cod_usuario_local=cod_usuario_corrente, ind_ult_tramitacao=1, ind_encaminha=1, ind_recebido=0)">
       <dtml-if sequence-start>
         <div class="table-responsive">
@@ -94,7 +104,7 @@ $(document).ready(function() {
                    <tr>
                      <td>
                        <dtml-if dat_tramitacao>
-                         <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Formulário de Tramitação" data-src="tramitacao_mostrar_proc?hdn_cod_materia=<dtml-var cod_materia>&hdn_cod_tramitacao=<dtml-var cod_tramitacao>&modal=1" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i><span class="d-none">Link</span> <dtml-var dat_encaminha></a>
+                         <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Formulário de Tramitação" data-src="tramitacao_mostrar_proc?hdn_cod_materia=<dtml-var cod_materia>&hdn_cod_tramitacao=<dtml-var cod_tramitacao>&modal=1" class="btn btn-primary btn-sm"><dtml-var dat_encaminha></a>
                        </dtml-if>
                      </td> 
                      <td>

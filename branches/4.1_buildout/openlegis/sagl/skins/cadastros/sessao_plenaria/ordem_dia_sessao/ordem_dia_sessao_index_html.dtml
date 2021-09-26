@@ -2,12 +2,14 @@
 
 <script src="<dtml-var portal_url>/js/jquery.jeditable.js"></script>
 
-<script charset="utf-8">
+<script>
  $(document).ready(function() {
      $('.edit').editable('<dtml-var portal_url>/cadastros/sessao_plenaria/ordem_dia_sessao/ordem_dia_atualizar_proc', { 
          id   : 'cod_ordem',
          name : 'num_ordem',
-         width: '2',
+         tooltip : "Clique para editar número do item",                   
+         maxlength : 2,         
+         width: 35
      });
  });
 </script>
@@ -16,6 +18,13 @@
 $(document).ready(function(){
   $('[data-toggle="popover"]').popover();
 });
+
+function aprovacao_lote(){
+    if (confirm("Confirma a aprovação em lote dos Requerimentos?")) {
+        location.href="aprovacao_lote_salvar_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">";
+    }
+   return;
+}
 </script>
 
 <dtml-var sessao_plenaria_menu>
@@ -59,7 +68,7 @@ $(document).ready(function(){
         </dtml-if sequence-start>
           <tr>
             <td>
-               <div class="edit" style="cursor: pointer" id="<dtml-var cod_ordem>"><dtml-var num_ordem></div>
+               <span class="edit" style="cursor: pointer" id="<dtml-var cod_ordem>"><dtml-var num_ordem></span>
             </td>
             <td>
                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
@@ -209,6 +218,9 @@ $(document).ready(function(){
 
 <div class="text-left">
   <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Matéria da Ordem do Dia" data-src="ordem_dia_form?cod_sessao_plen=<dtml-var cod_sessao_plen>&modal=1" ><i class="fa fa-plus"></i> Matéria</a>
+<dtml-comment>
+    <input class="btn btn-primary" type="button" name="btn_lote" value="Aprovação em Lote" onClick="aprovacao_lote()" />  
+</dtml-comment>
   <input class="btn btn-primary" type="button" value="Atualizar" onClick="window.location.reload()">
 </div>
 

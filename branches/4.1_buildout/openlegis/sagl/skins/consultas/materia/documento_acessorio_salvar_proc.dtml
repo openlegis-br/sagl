@@ -1,0 +1,91 @@
+<dtml-call expr="REQUEST.set('metodo', zsql.documento_acessorio_incluir_zsql)"> 
+<dtml-call expr="REQUEST.set('dat_documento', pysc.data_atual_port_pysc())">
+<dtml-call expr="REQUEST.set('nom_usuario', REQUEST['AUTHENTICATED_USER'].getUserName())">
+
+<dtml-try>
+  <dtml-call expr="metodo(tip_documento = lst_tip_documento,
+                          nom_documento = txt_nom_documento,
+                          nom_autor_documento = nom_usuario,
+                          cod_materia = cod_materia,
+                          dat_documento = pysc.data_converter_pysc(data=dat_documento),
+                          ind_excluido = 0)">
+
+ <dtml-except>
+    <dtml-let mensagem="'Não foi possível incluir o documento acessório. Tente novamente!'" tipo_mensagem="'danger'">
+       <dtml-var mensagem_emitir>
+    </dtml-let>
+
+ <dtml-else>
+    <dtml-try>
+      <dtml-in expr="zsql.documento_acessorio_incluido_codigo_obter_zsql()">
+        <dtml-call expr="REQUEST.set('hdn_cod_documento', cod_documento)">
+      </dtml-in>
+    <dtml-except>
+      <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-try>
+
+    <dtml-if expr="metodo==zsql.documento_acessorio_incluir_zsql">
+      <dtml-if file_nom_arquivo>
+         <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+'.pdf')">
+         <dtml-call expr="sapl_documentos.materia.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+      </dtml-if>
+      <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia,ind_ult_tramitacao=1)">
+           <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tram_dest)">
+           <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
+           <dtml-call expr="REQUEST.set('dat_fim_prazo', dat_fim_prazo)">
+      </dtml-in>
+      <dtml-if cod_ult_tramitacao>
+        <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao=cod_ult_tramitacao, cod_materia = cod_materia, ind_ult_tramitacao = 0)">
+        <dtml-call expr="zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao=cod_ult_tramitacao, cod_usuario_corrente=cod_usuario)">            
+      </dtml-if>
+      <dtml-unless cod_ult_tramitacao>
+          <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Protocolo')">
+          <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_destino)">
+            <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tramitacao)">
+          </dtml-in>
+      </dtml-unless>
+      <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y às %H:%M'))">
+      <dtml-call expr="REQUEST.set('txt_tramitacao', '<p>' + txt_nom_documento + ' anexado em ' + hdn_hor_tramitacao + '</p>')">
+      <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
+      <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
+      <dtml-call expr="REQUEST.set('sgl_status', 'DOC')">
+      <dtml-in expr="zsql.status_tramitacao_obter_zsql(sgl_status=sgl_status)">
+        <dtml-call expr="REQUEST.set('cod_status', cod_status)">
+      </dtml-in>
+      <dtml-call expr="zsql.tramitacao_incluir_zsql(cod_materia = cod_materia,
+                                                   dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
+                                                   cod_unid_tram_local = cod_unid_tram_local,
+                                                   cod_usuario_local = cod_usuario,
+                                                   dat_encaminha = hdn_dat_encaminha,
+                                                   cod_unid_tram_dest = cod_unid_tram_dest,
+                                                   cod_status = cod_status,
+                                                   ind_urgencia = 0,
+                                                   txt_tramitacao = txt_tramitacao,
+                                                   ind_ult_tramitacao = 1)">
+      <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=cod_materia, cod_status=cod_status)">
+      <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=cod_materia)">
+      <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=cod_materia)">
+      <dtml-in expr="zsql.tramitacao_incluida_codigo_obter_zsql()">
+         <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
+      </dtml-in>
+      <dtml-call expr="REQUEST.set('hdn_url', 'materia_mostrar_proc?cod_materia=' + str(cod_materia))">           
+      <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=hdn_cod_tramitacao,hdn_url=hdn_url)">
+    </dtml-if>
+
+    <dtml-if erro>
+       <dtml-let mensagem="'Não foi possível incluir o documento acessório. Tente novamente!'" tipo_mensagem="'danger'">
+          <dtml-var mensagem_emitir>
+        </dtml-let>
+    <dtml-else>
+       <dtml-if hdn_url>
+         <dtml-let mensagem="'Documento acessório incluído com sucesso!'" url=hdn_url tipo_mensagem="'success'">
+            <dtml-var mensagem_emitir>
+         </dtml-let>
+       <dtml-else>   
+         <dtml-let mensagem="'Documento acessório incluído com sucesso!'" tipo_mensagem="'success'">
+            <dtml-var mensagem_emitir>
+         </dtml-let>       
+       </dtml-if>
+    </dtml-if>
+
+ </dtml-try>

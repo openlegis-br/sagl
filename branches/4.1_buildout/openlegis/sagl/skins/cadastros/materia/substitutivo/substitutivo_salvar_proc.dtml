@@ -18,7 +18,7 @@
                             txt_observacao         = txa_txt_observacao)">
 
 <dtml-except>
-  <dtml-let mensagem="'Não foi possível salvar o substitutivo. Tente novamente!'" tipo_mensagem="'danger'">
+  <dtml-let mensagem="'Não foi possível salvar o substitutivo! Tente novamente.'" tipo_mensagem="'danger'">
     <dtml-var mensagem_emitir>
   </dtml-let>
 <dtml-else>     
@@ -63,6 +63,10 @@
                <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
                <dtml-call expr="REQUEST.set('dat_fim_prazo', dat_fim_prazo)">                              
           </dtml-in>
+          <dtml-if cod_ult_tramitacao>
+            <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao=cod_ult_tramitacao, cod_materia = cod_materia, ind_ult_tramitacao = 0)">
+            <dtml-call expr="zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao=cod_ult_tramitacao, cod_usuario_corrente=cod_usuario_corrente)"> 
+          </dtml-if>           
           <dtml-unless cod_ult_tramitacao>
               <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
               <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(nom_orgao=nom_unidade_destino)">
@@ -70,7 +74,7 @@
               </dtml-in>
           </dtml-unless>
           <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y às %H:%M'))">
-          <dtml-call expr="REQUEST.set('txt_tramitacao', 'Substitutivo nº ' + txt_num_substitutivo + ' incorporado em ' + hdn_hor_tramitacao)">
+          <dtml-call expr="REQUEST.set('txt_tramitacao', '<p>Substitutivo nº ' + txt_num_substitutivo + ' incorporado em ' + hdn_hor_tramitacao + '</p>')">
           <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
           <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
           <dtml-call expr="REQUEST.set('sgl_status', 'SUB')">
@@ -87,11 +91,6 @@
                                                    ind_urgencia = 0,
                                                    txt_tramitacao = txt_tramitacao,
                                                    ind_ult_tramitacao = 1)">
-          <dtml-if cod_ult_tramitacao>
-            <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao  = cod_ult_tramitacao,
-                                                               cod_materia = cod_materia,  
-                                                               ind_ult_tramitacao = 0)">
-          </dtml-if>
           <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=cod_materia, cod_status=cod_status)">
           <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=cod_materia)">
           <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=cod_materia)">
@@ -128,3 +127,18 @@
     </dtml-if>
     
 </dtml-try>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_substitutivo)"> 
+</dtml-if>

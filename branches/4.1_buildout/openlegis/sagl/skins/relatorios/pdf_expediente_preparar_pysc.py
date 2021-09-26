@@ -86,8 +86,8 @@ if context.REQUEST['cod_sessao_plen']!='':
                    materia = context.zsql.materia_obter_zsql(cod_materia=substitutivo.cod_materia)[0]
                    dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
                    dic_materia_apresentada["txt_ementa"] = substitutivo.txt_ementa
-                   dic_materia_apresentada["id_materia"] = 'Substitutivo ' + ' nº ' + str(substitutivo.num_substitutivo) + " ao " + materia.sgl_tipo_materia + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
-                   dic_materia_apresentada["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/substitutivo/' + str(materia_apresentada.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'SUBSTITUTIVO Nº ' + str(substitutivo.num_substitutivo) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+                   dic_materia_apresentada["id_materia"] = 'Substitutivo ' + ' nº ' + str(substitutivo.num_substitutivo) + " ao " + materia.sgl_tipo_materia + ' ' + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
+                   dic_materia_apresentada["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/substitutivo/' + str(materia_apresentada.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'SUBSTITUTIVO Nº ' + str(substitutivo.num_substitutivo) + " - " +  materia.sgl_tipo_materia + ' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
                    dic_materia_apresentada["nom_autor"] = ""
                    autores = context.zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=substitutivo.cod_substitutivo)
                    fields = autores.data_dictionary().keys()
@@ -280,8 +280,8 @@ if context.REQUEST['cod_sessao_plen']!='':
         rodape['nom_localidade']= local.nom_localidade
         rodape['sgl_uf']= local.sgl_uf
 
-#    sessao=session.getBrowserIdManager()
-    caminho = context.pdf_expediente_gerar(rodape, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_pareceres, lst_presidente)
+    sessao=session.id
+    caminho = context.pdf_expediente_gerar(rodape, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_pareceres, lst_presidente, sessao)
     if caminho=='aviso':
         return response.redirect('mensagem_emitir_proc')
     else:

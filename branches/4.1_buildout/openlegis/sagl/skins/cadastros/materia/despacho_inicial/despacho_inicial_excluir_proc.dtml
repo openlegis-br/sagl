@@ -9,10 +9,10 @@
 
 <dtml-unless erro>
 <dtml-try>
-  <dtml-call expr="zsql.despacho_inicial_excluir_zsql(num_ordem = num_ordem, cod_materia = cod_materia)">
-
+  <dtml-call expr="REQUEST.set('metodo', zsql.despacho_inicial_excluir_zsql)">
+  <dtml-call expr="metodo(num_ordem = num_ordem, cod_materia = cod_materia)">
 <dtml-except>
-  <dtml-let mensagem="'Ocorreu um erro ao tentar excluir a designação!'" tipo_mensagem="'danger'">
+  <dtml-let mensagem="'Ocorreu um erro ao excluir a designação de comissão!'" tipo_mensagem="'danger'">
      <dtml-var mensagem_emitir>
   </dtml-let>
 <dtml-else>
@@ -21,3 +21,18 @@
   </dtml-let>
 </dtml-try>
 </dtml-unless>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_materia)"> 
+</dtml-if>

@@ -9,7 +9,6 @@
 <h2 align="center"><dtml-var sessao_plenaria_header></h2>
 </dtml-in>
 
-<div id="accordion">
 
 <dtml-if expr="(_.has_key('cod_sessao_plen'))">
  <div class="row mb-3">
@@ -40,81 +39,87 @@
 </dtml-in>
 
 <dtml-if temMesa>
- <legend>Mesa Diretora</legend>
-  <div class="content1">
-   <table class="table table-striped">
+  <div id="accordion" class="mesa">
+    <div class="card mb-4">
+      <div class="card-header" id="headingOne">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseMesa" aria-expanded="false" aria-controls="collapseMesa"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Mesa Diretora</span>
+          </a>
+        </p>
+      </div>
+      <div id="collapseMesa" class="collapse" aria-labelledby="headingOne" data-parent=".mesa">
+        <div class="card-body">
         <dtml-in expr="zsql.composicao_mesa_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0)">
-         <dtml-if sequence-start>
-       <thead class="d-none">
-        <tr>
-           <th>Cargo: Vereador / Partido</th>
-        </tr>
-       </thead>
-         </dtml-if sequence-start>
-         <dtml-if sequence-even>
-       <tr>
-         <dtml-else>
-       <tr class="even">
-         </dtml-if>
-        <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
-        <dtml-in expr="zsql.cargo_mesa_obter_zsql(cod_cargo=cod_cargo, ind_excluido=0)">
-        <dtml-if cod_sessao_leg>
-           <td>
-                <b><dtml-var des_cargo>: </b><dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null="">
-            </td>
-        </tr>
-        </dtml-if>
+         <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+          <dtml-in expr="zsql.cargo_mesa_obter_zsql(cod_cargo=cod_cargo, ind_excluido=0)">
+            <dtml-if cod_sessao_leg>
+              <p><b><dtml-var des_cargo>: </b><dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null=""></p>
+            </dtml-if>
+          </dtml-in>
+         </dtml-in>
         </dtml-in>
-        </dtml-in>
-        </dtml-in>
-   </table>
- </div>
+        </div>
+      </div>
+    </div>
 </dtml-if>
 
-
-<dtml-in expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen, tip_frequencia='P', ind_excluido=0)">
+<dtml-in expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
   <dtml-if cod_sessao_plen>
     <dtml-call expr="REQUEST.set('temPresencaAbertura', 1)">
   </dtml-if>
 </dtml-in>
-
+      
 <dtml-if temPresencaAbertura>
-  <legend>Presença na Abertura</legend>
-  <div class="content2">
-   <table class="table table-striped">
-    <thead class="d-none">   
-      <tr>
-           <th>Vereador</th>
-      </tr>
-    </thead>
-      <tr>
-        <td>
+  <div id="accordion" class="presenca">
+    <div class="card mb-4">
+      <div class="card-header" id="headingOne">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapsePres" aria-expanded="false" aria-controls="collapsePres"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Chamada da Abertura</span>
+          </a>
+        </p>
+      </div>
+      <div id="collapsePres" class="collapse" aria-labelledby="headingOne" data-parent=".presenca">
+        <div class="card-body">
          <dtml-in expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen, tip_frequencia='P', ind_excluido=0)">
             <dtml-if sequence-start>
-              <b>Vereadores Presentes [<dtml-var sequence-length>]</b>:
+              <p><b>Vereadores Presentes [<dtml-var sequence-length>]</b>:
             </dtml-if>
             <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
-              <dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null=""></dtml-in><dtml-unless sequence-end>,</dtml-unless>
+              <dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null=""></dtml-in><dtml-unless sequence-end>,</dtml-unless>     
+            <dtml-if sequence-end>
+              </p>
+            </dtml-if>                 
          </dtml-in>
-        </td>
-      </tr>
-  <dtml-if expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen, tip_frequencia='F', ind_excluido=0)">         
-      <tr>      
-        <td>
+      
          <dtml-in expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen, tip_frequencia='F', ind_excluido=0)">
             <dtml-if sequence-start>
-              <b>Vereadores Ausentes [<dtml-var sequence-length>]</b>:
+              <p><b>Faltas [<dtml-var sequence-length>]</b>:
             </dtml-if>
             <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
               <dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null=""></dtml-in><dtml-unless sequence-end>,</dtml-unless>
+            <dtml-if sequence-end>
+              </p>
+            </dtml-if>               
          </dtml-in>
-        </td>        
-      </tr>
- </dtml-if>
-   </table>
-  </div>
-</dtml-if>
 
+         <dtml-in expr="zsql.presenca_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen, tip_frequencia='A', ind_excluido=0)">
+            <dtml-if sequence-start>
+               <p><b>Ausências Justificadas [<dtml-var sequence-length>]</b>:
+            </dtml-if>
+            <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+              <dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null=""></dtml-in><dtml-unless sequence-end>,</dtml-unless>
+            <dtml-if sequence-end>
+              </p>
+            </dtml-if>               
+         </dtml-in>
+        </div>
+      </div>
+    </div>
+</dtml-if>
 
 <dtml-in expr="zsql.expediente_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
   <dtml-if cod_sessao_plen>
@@ -123,17 +128,27 @@
 </dtml-in>
 
 <dtml-if temExpedienteDiverso>
-  <legend>Expedientes Diversos</legend>
-  <div class="content6">
-    <table class="table">
-        <dtml-in expr="zsql.tipo_expediente_obter_zsql(ind_excluido=0)">
-         <thead>
-          <tr>
-            <th><dtml-var nom_expediente></th>
-          </tr>
-         </thead>
-        <tr>
-            <td>
+  <div id="accordion" class="diversos">
+    <div class="card mb-4">
+      <div class="card-header" id="headingOne">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseDiv" aria-expanded="false" aria-controls="collapseDiv"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Expedientes Diversos</span>
+          </a>
+        </p>
+      </div>
+      <div id="collapseDiv" class="collapse" aria-labelledby="headingOne" data-parent=".diversos">
+        <div class="card-body">      
+         <table class="table">
+           <dtml-in expr="zsql.tipo_expediente_obter_zsql(ind_excluido=0)">
+            <thead>
+             <tr>
+               <th><dtml-var nom_expediente></th>
+             </tr>
+            </thead>
+            <tr>
+              <td>
                 <dtml-in expr="zsql.expediente_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_expediente=cod_expediente, ind_excluido=0)">
                 <dtml-if txt_expediente>
                    <dtml-var txt_expediente missing>
@@ -141,11 +156,13 @@
                    Nada consta
                 </dtml-if>
                 </dtml-in>
-            </td>
-        </tr>
+              </td>
+            </tr>
         </dtml-in>
     </table>
-</div>
+        </div>
+      </div>
+    </div>
 </dtml-if>
 
 
@@ -156,15 +173,25 @@
 </dtml-in>
 
 <dtml-if temMateriaApresentada>
-  <legend>Leitura de Matérias e Documentos</legend>
-  <div class="content3">
+  <div id="accordion" class="leitura">
+    <div class="card mb-4">
+      <div class="card-header" id="headingOne">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseLeit" aria-expanded="false" aria-controls="collapseLeit"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Leitura de Matérias Apresentadas</span>
+          </a>
+        </p>
+      </div>
+      <div id="collapseLeit" class="collapse" aria-labelledby="headingOne" data-parent=".leitura">
+        <div class="card-body"> 
     <table class="table table-striped">
         <dtml-in expr="zsql.materia_apresentada_sessao_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
      <dtml-if sequence-start>
        <thead>
         <tr>
             <th width="5%">Item</th>
-            <th width="95%">Identificação</th>
+            <th width="95%">Identificação da Matéria</th>
         </tr>
        </thead>        
      </dtml-if sequence-start>
@@ -194,7 +221,7 @@
                       </dtml-in> - 
                      </a></b>
                   <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
-                    <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                    <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
                   </dtml-in>
                 </dtml-in>
               <dtml-elif cod_substitutivo>
@@ -206,7 +233,7 @@
                       </dtml-in> - 
                      </a></b> 
                   <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
-                    <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+                    <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
                   </dtml-in>
                 </dtml-in>
               <dtml-elif cod_parecer>
@@ -238,7 +265,9 @@
         </tr>
         </dtml-in> 
     </table>
-  </div>
+        </div>
+      </div>
+    </div>
 </dtml-if>
 
 <dtml-in expr="zsql.expediente_materia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
@@ -248,15 +277,26 @@
 </dtml-in>
 
 <dtml-if temMateriaExpediente>
-  <legend>Matérias do Expediente</legend>
-  <div class="content4">
+  <div id="accordion" class="expediente">
+    <div class="card mb-4">
+      <div class="card-header" id="headingOne">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseExp" aria-expanded="false" aria-controls="collapseExp"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Matérias do Expediente</span>
+          </a>
+        </p>
+      </div>
+      <div id="collapseExp" class="collapse" aria-labelledby="headingOne" data-parent=".expediente">
+        <div class="card-body">
+    <div class="table-responsive">
     <table class="table table-striped">
         <dtml-in expr="zsql.expediente_materia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
      <dtml-if sequence-start>
         <thead>
           <tr>
             <th width="5%">Item</th>
-            <th width="80%">Matéria</th>
+            <th width="80%">Identificação da Matéria</th>
             <th width="15%">Resultado</th>
           </tr>
         </thead>          
@@ -332,7 +372,10 @@
         </tr>
         </dtml-in>
     </table>
- </div>
+      </div>
+        </div>
+      </div>
+    </div>
 </dtml-if>
 
 <dtml-in expr="zsql.oradores_expediente_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
@@ -342,8 +385,19 @@
 </dtml-in>
 
 <dtml-if temOradorExpediente>
-  <legend>Oradores do Pequeno Expediente</legend>
-  <div class="content5">
+  <div id="accordion" class="oradores">
+    <div class="card mb-4">
+      <div class="card-header" id="headingOne">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseOra" aria-expanded="false" aria-controls="collapseOra"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Oradores</span>
+          </a>
+        </p>
+      </div>
+      <div id="collapseOra" class="collapse" aria-labelledby="headingOne" data-parent=".expediente">
+        <div class="card-body">
+    <div class="table-responsive">        
     <table class="table table-striped">
         <dtml-in expr="zsql.oradores_expediente_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
          <dtml-if sequence-start>
@@ -387,7 +441,10 @@
         </dtml-in>
         </dtml-in>
     </table>
-</div>
+       </div>
+        </div>
+      </div>
+    </div>
 </dtml-if>
 
 <dtml-in expr="zsql.presenca_ordem_dia_obter_zsql(dat_sessao=dat_sessao, cod_sessao_plen=cod_sessao_plen, tip_frequencia='P', ind_excluido=0)">
@@ -397,40 +454,54 @@
 </dtml-in>
 
 <dtml-if temPresencaOrdemDia>
-  <legend>Presença na Ordem do Dia</legend>
-  <div class="content7">
-   <table class="table table-striped">
-     <thead class="d-none">
-      <tr>
-           <th>Vereador</th>
-      </tr>
-     </thead>
-      <tr>
-        <td>
+  <div id="accordion" class="pres1">
+    <div class="card mb-4">
+      <div class="card-header" id="headingOne">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapsePres1" aria-expanded="false" aria-controls="collapsePres1"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Chamada da Ordem do Dia</span>
+          </a>
+        </p>
+      </div>
+      <div id="collapsePres1" class="collapse" aria-labelledby="headingOne" data-parent=".pres1">
+        <div class="card-body"> 
          <dtml-in expr="zsql.presenca_ordem_dia_obter_zsql(dat_sessao=dat_sessao, cod_sessao_plen=cod_sessao_plen, tip_frequencia='P', ind_excluido=0)">
             <dtml-if sequence-start>
-              <b>Vereadores Presentes [<dtml-var sequence-length>]</b>:
+              <p><b>Vereadores Presentes [<dtml-var sequence-length>]</b>:
             </dtml-if>         
             <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
               <dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null=""></dtml-in><dtml-unless sequence-end>,</dtml-unless>
+            <dtml-if sequence-end>
+              </p>
+            </dtml-if>              
          </dtml-in>
-        </td>
-      </tr>
-  <dtml-if expr="zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen, tip_frequencia='F', ind_excluido=0)">      
-      <tr>      
-        <td>
+
          <dtml-in expr="zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen, tip_frequencia='F', ind_excluido=0)">
             <dtml-if sequence-start>
-              <b>Vereadores Ausentes [<dtml-var sequence-length>]</b>:
+              <p><b>Faltas [<dtml-var sequence-length>]</b>:
             </dtml-if>
             <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
               <dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null=""></dtml-in><dtml-unless sequence-end>,</dtml-unless>
+            <dtml-if sequence-end>
+              </p>
+            </dtml-if>               
          </dtml-in>
-        </td>        
-      </tr>
-  </dtml-if>           
-   </table>
-  </div>
+
+         <dtml-in expr="zsql.presenca_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen, tip_frequencia='A', ind_excluido=0)">
+            <dtml-if sequence-start>
+              <p><b>Ausências Justificadas [<dtml-var sequence-length>]</b>:
+            </dtml-if>
+            <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+              <dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null=""></dtml-in><dtml-unless sequence-end>,</dtml-unless>
+            <dtml-if sequence-end>
+              </p>
+            </dtml-if>               
+         </dtml-in>         
+         
+        </div>
+      </div>
+    </div>
 </dtml-if>
 
 <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
@@ -440,8 +511,19 @@
 </dtml-in>
 
 <dtml-if temMateriaOrdemDia>
-  <legend>Matérias da Ordem do Dia</legend>
-  <div class="content8">
+  <div id="accordion" class="ord">
+    <div class="card mb-4">
+      <div class="card-header" id="headingOne">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseOrd" aria-expanded="false" aria-controls="collapseOrd"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Matérias da Ordem do Dia</span>
+          </a>
+        </p>
+      </div>
+      <div id="collapseOrd" class="collapse" aria-labelledby="headingOne" data-parent=".ord">
+        <div class="card-body"> 
+    <div class="table-responsive">  
     <table class="table table-striped">
     <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
       <dtml-if sequence-even>
@@ -569,37 +651,10 @@
    </dtml-in>
        </dtml-in>
     </table>
-</div>
-</dtml-if>
-
-<dtml-in expr="zsql.presenca_expediente_obter_zsql(dat_sessao=dat_sessao, cod_sessao_plen=cod_sessao_plen, tip_frequencia='P', ind_excluido=0)">
-  <dtml-if cod_sessao_plen>
-    <dtml-call expr="REQUEST.set('temPresencaGrandeExpediente', 1)">
-  </dtml-if>
-</dtml-in>
-
-<dtml-if temPresencaGrandeExpediente>
-  <legend>Presença no Grande Expediente</legend>
-  <div class="content9">
-   <table class="table">
-     <thead class="d-none">
-      <tr>
-           <th>Vereador</th>
-      </tr>
-     </thead>
-      <tr>
-        <td>
-         <dtml-in expr="zsql.presenca_expediente_obter_zsql(dat_sessao=dat_sessao, cod_sessao_plen=cod_sessao_plen, tip_frequencia='P', ind_excluido=0)">
-            <dtml-if sequence-start>
-              <b>Vereadores Presentes [<dtml-var sequence-length>]</b>:
-            </dtml-if>          
-            <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
-              <dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null=""></dtml-in><dtml-unless sequence-end>,</dtml-unless>
-         </dtml-in>
-        </td>
-      </tr>
-   </table>
-  </div>
+   </div>
+        </div>
+      </div>
+    </div>
 </dtml-if>
 
 <dtml-in expr="zsql.oradores_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
@@ -609,8 +664,19 @@
 </dtml-in>
 
 <dtml-if temOradorGrandeExpediente>
-  <legend>Oradores do Grande Expediente</legend>
-  <div class="content10">
+  <div id="accordion" class="pess">
+    <div class="card mb-4">
+      <div class="card-header" id="headingOne">
+        <p class="h5 mb-0">
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapsePess" aria-expanded="false" aria-controls="collapsePess"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h6 font-weight-bold">Explicações Pessoais</span>
+          </a>
+        </p>
+      </div>
+      <div id="collapsePess" class="collapse" aria-labelledby="headingOne" data-parent=".pess">
+        <div class="card-body"> 
+    <div class="table-responsive">
     <table class="table">
         <dtml-in expr="zsql.oradores_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
          <dtml-if sequence-start>
@@ -651,44 +717,16 @@
         </dtml-in>
     </table>
   </div>
+        </div>
+      </div>
+    </div>
 </dtml-if>
-
-<dtml-in expr="zsql.presenca_encerramento_obter_zsql(dat_sessao=dat_sessao, cod_sessao_plen=cod_sessao_plen, tip_frequencia='P', ind_excluido=0)">
-  <dtml-if cod_sessao_plen>
-    <dtml-call expr="REQUEST.set('temPresencaEncerramento', 1)">
-  </dtml-if>
-</dtml-in>
-
-<dtml-if temPresencaEncerramento>
-  <legend>Presença no Encerramento</legend>
-  <div class="content11">
-   <table class="table striped">
-     <thead class="d-none">
-      <tr>
-         <th>Vereador</th>
-      </tr>
-     </thead>
-      <tr>
-        <td>
-            <dtml-in expr="zsql.presenca_encerramento_obter_zsql(dat_sessao=dat_sessao, cod_sessao_plen=cod_sessao_plen, tip_frequencia='P', ind_excluido=0)">
-            <dtml-if sequence-start>
-              <b>Vereadores Presentes [<dtml-var sequence-length>]</b>:
-            </dtml-if>             
-            <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
-              <dtml-var nom_parlamentar> / <dtml-var sgl_partido missing null=""></dtml-in><dtml-unless sequence-end>,</dtml-unless>
-         </dtml-in>
-        </td>
-      </tr>
-   </table>
-  </div>
-</dtml-if>
-</div>
 
 <dtml-if hr_fim_sessao>
   <div class="row mb-3">
     <div class="col-12 mb-3">
       <b>Encerramento:</b> 
-         às <dtml-var hr_fim_sessao null="">
+         às <dtml-var hr_fim_sessao null=""> hs
     </div>
   </div>
 </dtml-if>

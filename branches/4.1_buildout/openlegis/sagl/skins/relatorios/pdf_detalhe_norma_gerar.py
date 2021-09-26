@@ -1,4 +1,4 @@
-##parameters=imagem, dic_rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativos,lst_vinculos_passivos
+##parameters=imagem, dic_rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativos,lst_vinculos_passivos,sessao=''
 
 """relatorio_detalhe_norma.py
    External method para gerar o arquivo rml do resultado da pesquisa de uma norma
@@ -150,7 +150,7 @@ def vinculos_passivos(lst_vinculos_passivos):
 
     return tmp
 
-def principal(imagem, dic_rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativos,lst_vinculos_passivos):
+def principal(imagem, dic_rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativos,lst_vinculos_passivos,sessao=''):
     """
     Função principal responsável por chamar as funções que irão gerar o código rml apropriado
     """
@@ -188,4 +188,4 @@ def principal(imagem, dic_rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativo
 
     return "/temp_folder/"+arquivoPdf
 
-return principal(imagem, dic_rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativos,lst_vinculos_passivos)
+return principal(imagem, dic_rodape,inf_basicas_dic,lst_assuntos,lst_vinculos_ativos,lst_vinculos_passivos,sessao)

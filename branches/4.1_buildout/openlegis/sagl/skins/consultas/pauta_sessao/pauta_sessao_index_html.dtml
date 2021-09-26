@@ -81,12 +81,23 @@
        <div class="col-12 col-md-7">
          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Sessao Plenaria'])">
             <a href="<dtml-var portal_url>/cadastros/sessao_plenaria/sessao_plenaria_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
-         <dtml-else>
-            <a href="<dtml-var portal_url>/consultas/sessao_plenaria/agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
-         </dtml-if>
          <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
              <b><i class="fas fa-caret-right"></i> <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> - <dtml-var dat_inicio_sessao></b></a>
-         </dtml-in>  
+         </dtml-in>
+         <dtml-else>
+            <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">
+               <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">              
+                  <a href="<dtml-var portal_url>/consultas/sessao_plenaria/agenda_sessao_plen_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&dat_sessao=<dtml-var dat_inicio_sessao>">
+                   <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+                      <b><i class="fas fa-caret-right"></i> <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> - <dtml-var dat_inicio_sessao></b></a>
+                  </dtml-in>                   
+               <dtml-else>
+                   <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+                      <b><i class="fas fa-caret-right"></i> <dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao> - <dtml-var dat_inicio_sessao></b></a>
+                  </dtml-in>  
+               </dtml-if>
+            </dtml-let>
+         </dtml-if>
        </div>
        <div class="col-12 col-md-5 mt-1 mb-sm-0 text-left text-md-right">
         <div class="btn-group d-print-none">
@@ -94,7 +105,12 @@
              <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/relatorios/pdf_expediente_preparar_pysc?data=<dtml-var dat_inicio_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Expediente</span></a>
          </dtml-if> 
          <dtml-let id_pauta="_.str(cod_sessao_plen)+'_pauta_sessao.pdf'">
-           <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
+         <dtml-let id_pauta_completa="_.str(cod_sessao_plen)+'_pauta_completa.pdf'">   
+           <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_pauta_completa)">
+              <dtml-let pauta_completa="_.getattr(sapl_documentos.pauta_sessao,id_pauta_completa).absolute_url">
+                <a class="btn btn-sm btn-link" href="<dtml-var pauta_completa>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Ordem do Dia</span></a>
+              </dtml-let>               
+           <dtml-elif "_.hasattr(sapl_documentos.pauta_sessao,id_pauta)">
               <dtml-let pauta="_.getattr(sapl_documentos.pauta_sessao,id_pauta).absolute_url">
                 <a class="btn btn-sm btn-link" href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fas fa-file-pdf"></i> <span class="">Ordem do Dia</span></a>
               </dtml-let>
@@ -105,6 +121,7 @@ target="_blank"><i class="fas fa-arrow-circle-right"></i> Gerar Ordem do Dia</a>
               </dtml-if>
            </dtml-if>
          </dtml-let>  
+         </dtml-let>
         </div>     
        </div>
      </div>
