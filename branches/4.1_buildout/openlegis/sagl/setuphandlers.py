@@ -52,12 +52,20 @@ def setupAdicionarUsuarios(portal):
     portal.acl_users._addUser(name='openlegis', password='openlegis', confirm='openlegis', roles=['Operador','Administrador'], domains=[])
     
 
-def setupAdicionaAcomp(portal):
+def setupAdicionaProps(portal):
     props = portal.sapl_documentos.props_sagl
     try:
-        props.manage_addProperty('acompanhamento_materia', '1', 'int')
+        props.manage_addProperty('acompanhamento_materia', '0', 'int')
     except:
         pass
+    try:
+        props.manage_addProperty('restpki_access_token', '', 'string')
+    except:
+        pass        
+    try:
+        props.manage_addProperty('recaptcha_key', '', 'string')
+    except:
+        pass  
 
 
 def importar_estrutura(context):
@@ -66,5 +74,5 @@ def importar_estrutura(context):
     site = context.getSite()
     setupMountPoint(site)
     setupConteudo(site)
-#    setupAdicionarUsuarios(site)
-    setupAdicionaAcomp(site)
+    setupAdicionarUsuarios(site)
+    setupAdicionaProps(site)
