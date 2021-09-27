@@ -18,17 +18,17 @@
 #
 ###############################################################################
 
-from . import Portal
-from .lexml import SAGLOAIServer
+import Portal
+from lexml import SAGLOAIServer
 
-from .config import PROJECTNAME
+from config import PROJECTNAME
 
 from AccessControl import ModuleSecurityInfo
 from Products.PythonScripts.Utility import allow_module
 
 from Products.CMFCore.utils import ToolInit
 
-from . import SAGLTool
+import SAGLTool
 
 def initialize(context):
     # inicializa a instalacao e estrutura do SAGL-OpenLegis
@@ -38,14 +38,7 @@ def initialize(context):
 
     allow_module('zlib')
     allow_module('urllib')
-    allow_module('urllib.request')    
     allow_module('urllib2')
-    allow_module('urllib3')
-    allow_module('StringIO')    
-    allow_module('io')
-    allow_module('io.StringIO')
-    allow_module('io.BytesIO')
-    allow_module('cStringIO.StringIO')     
     allow_module('sys')
     allow_module('os')
     allow_module('restpki_client')
@@ -53,6 +46,7 @@ def initialize(context):
     allow_module('ExtensionClass')
     allow_module('App.FindHomes')
     allow_module('trml2pdf')
+    allow_module('cStringIO.StringIO')
     allow_module('time')
     allow_module('_strptime')
     allow_module('csv')
@@ -69,10 +63,15 @@ def initialize(context):
     allow_module('datetime.datetime.timetuple')
     allow_module('PyPDF2')
     allow_module('pdfrw')
+    allow_module('StringIO')
     allow_module('PIL')
     allow_module('uuid')
     allow_module('binascii')
     allow_module('re')
+    allow_module('collections')
+    allow_module('xml')
+    allow_module('xml.sax')
+    allow_module('xml.sax.saxutils') 
 
     tools = (SAGLTool.SAGLTool,)
     ToolInit('SAGL Tool',
