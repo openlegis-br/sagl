@@ -1940,7 +1940,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         # checking if file was changed
         pdf_tosign, storage_path, crc_arquivo = self.get_file_tosign(codigo, tipo_doc)
         if str(crc_arquivo_original) != str(crc_arquivo):
-           msg = 'O arquivo foi modificado durante o procedimento de para assinatura! Tente novamente.'
+           msg = 'O arquivo foi modificado durante o procedimento de assinatura! Tente novamente.'
            raise ValueError(msg)        
     
         # Get the token for this signature (rendered in a hidden input field)
