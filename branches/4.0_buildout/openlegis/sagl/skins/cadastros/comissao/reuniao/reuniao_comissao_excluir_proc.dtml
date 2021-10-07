@@ -2,18 +2,38 @@
 <dtml-call expr="REQUEST.set('status','D')">
 <dtml-if expr="_.hasattr(sapl_documentos.reuniao_comissao,id_pauta)">
     <dtml-try>
-	  <dtml-call expr="sapl_documentos.reuniao_comissao.manage_delObjects(id_pauta)">
-	  <dtml-except>
+        <dtml-call expr="sapl_documentos.reuniao_comissao.manage_delObjects(id_pauta)">
+    <dtml-except>
         <dtml-call expr="REQUEST.set('erro', 1)">
     </dtml-try>
+    <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_reuniao,tipo_doc='pauta_comissao')">
+        <dtml-try>
+           <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                 cod_assinatura_doc  = cod_assinatura_doc,
+                 codigo              = codigo,
+                 tipo_doc            = tipo_doc)">
+        <dtml-except>
+           <dtml-call expr="REQUEST.set('erro', 1)">
+        </dtml-try>
+    </dtml-in> 
 </dtml-if>
 <dtml-call expr="REQUEST.set('id_ata', _.str(cod_reuniao)+'_ata.pdf')">
 <dtml-if expr="_.hasattr(sapl_documentos.reuniao_comissao,id_ata)">
     <dtml-try>
-	  <dtml-call expr="sapl_documentos.reuniao_comissao.manage_delObjects(id_ata)">
-	  <dtml-except>
-        <dtml-call expr="REQUEST.set('erro', 1)">
+       <dtml-call expr="sapl_documentos.reuniao_comissao.manage_delObjects(id_ata)">
+    <dtml-except>
+       <dtml-call expr="REQUEST.set('erro', 1)">
     </dtml-try>
+    <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_reuniao,tipo_doc='ata_comissao')">
+        <dtml-try>
+           <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                 cod_assinatura_doc  = cod_assinatura_doc,
+                 codigo              = codigo,
+                 tipo_doc            = tipo_doc)">
+        <dtml-except>
+           <dtml-call expr="REQUEST.set('erro', 1)">
+        </dtml-try>
+    </dtml-in> 
 </dtml-if>
 
 <dtml-unless erro>
