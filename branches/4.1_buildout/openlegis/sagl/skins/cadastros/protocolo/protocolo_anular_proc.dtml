@@ -23,23 +23,21 @@
 <dtml-else>
   <dtml-let mensagem="'Número de protocolo anulado com sucesso!'" url="hdn_url">
     <dtml-var mensagem_emitir>
-   </dtml-let>
+  </dtml-let>
 
+  <dtml-comment>LOG DE AUDITORIA</dtml-comment>
+  <dtml-if dbcon_logs>
+    <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'protocolo_anular_proc',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_protocolo)"> 
+  </dtml-if>
+  
 </dtml-try>
 
 </dtml-if>
 
-<dtml-comment>LOG DE AUDITORIA</dtml-comment>
-<dtml-if dbcon_logs>
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
-  <dtml-call expr="zsql.logs_registrar_zsql(
-            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
-            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
-            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
-            metodo       = metodo1,
-            IP           = pysc.get_ip(),
-            dados        = REQUEST.form.items(),
-            cod_registro = cod_protocolo)"> 
-</dtml-if>
