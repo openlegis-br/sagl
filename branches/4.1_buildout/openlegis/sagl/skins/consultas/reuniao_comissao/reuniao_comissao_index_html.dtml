@@ -18,8 +18,21 @@
 
 </script>
 
-<h1 class="firstHeading">Reuniões das Comissões</h1> 
-
+<div class="row mb-2">
+  <div class="col-12 col-md-8 align-self-center">
+     <h1 class="firstHeading">Reuniões das Comissões</h1> 
+  </div>
+  <div class="col-12 col-md-4 text-left text-md-right">
+     <dtml-if cod_comissao_sel>
+       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao']) or pysc.permissao_comissao_pysc(cod_comissao=cod_comissao_sel)=='1'">
+         <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao_sel,ind_excluido=0)">
+            <dtml-call expr="REQUEST.set('nom_comissao_sel', nom_comissao)">
+         </dtml-in>
+         <button type="button" class="btn btn-sm btn-primary d-print-none mt-3" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Reunião - <dtml-var nom_comissao_sel>" data-src="<dtml-var portal_url>/cadastros/comissao/reuniao/reuniao_comissao_form?cod_comissao=<dtml-var cod_comissao_sel>&modal=1">Incluir Reunião</button>
+       </dtml-if>
+    </dtml-if>  
+  </div>
+</div>
 
 <dtml-if expr="not _.has_key('ano_reuniao_sel')">
    <dtml-call expr="REQUEST.set('ano_reuniao_sel', DateTime().year())">
@@ -121,8 +134,8 @@
    <li class="list-group-item">
      <div class="row">
        <div class="col-12">
-         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
-             <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Reunião" data-src="<dtml-var portal_url>/cadastros/comissao/reuniao/reuniao_comissao_mostrar_proc?cod_reuniao=<dtml-var cod_reuniao>&modal=1"">
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao']) or pysc.permissao_comissao_pysc(cod_comissao=cod_comissao)=='1'">
+             <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Reunião - <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)"><dtml-var nom_comissao></dtml-in>" data-src="<dtml-var portal_url>/cadastros/comissao/reuniao/reuniao_comissao_mostrar_proc?cod_reuniao=<dtml-var cod_reuniao>&modal=1"">
                 <p class="h5 card-title "><dtml-var num_reuniao>ª Reunião <dtml-var des_tipo_reuniao> </p></a>
                 <p><dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)"><dtml-var nom_comissao></dtml-in></p>             
                 <p class=""><i class="fa fa-calendar-alt"></i> <dtml-var dat_inicio_reuniao><dtml-if hr_inicio_reuniao>, às <dtml-var hr_inicio_reuniao missing null=""></p></dtml-if>

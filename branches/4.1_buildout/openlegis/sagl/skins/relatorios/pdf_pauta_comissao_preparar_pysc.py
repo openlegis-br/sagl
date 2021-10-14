@@ -21,7 +21,7 @@ if context.REQUEST['cod_reuniao']!='':
         dicrc["datareuniao"] = str(dia).decode('utf-8')
         # obtém o nome do Presidente da Comissão
         dicrc["presidente"] = ''
-        for periodo in context.zsql.periodo_comp_comissao_obter_zsql(data=DateTime(rc.dat_inicio_reuniao), ind_excluido=0):
+        for periodo in context.zsql.periodo_comp_comissao_obter_zsql(data=DateTime(rc.dat_inicio_reuniao_ord), ind_excluido=0):
             for cargo in context.zsql.composicao_comissao_obter_zsql(cod_comissao=rc.cod_comissao, cod_periodo_comp=periodo.cod_periodo_comp, cod_cargo=1, ind_excluido=0):
                 dicrc["presidente"] = cargo.nom_completo.decode('utf-8').upper()                 
         reuniao.append(dicrc) 
