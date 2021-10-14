@@ -2451,22 +2451,25 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                       url = self.url() + '/sapl_documentos/materia/' + nom_pdf_saida
                       opener = urllib.urlopen(url)
                       f = open('/tmp/' + nom_pdf_saida, 'wb').write(opener.read())
-                      existing_pdf = PdfFileReader('/tmp/'+ nom_pdf_saida, strict=False)
-                      numPages = existing_pdf.getNumPages()
-                      # Mescla canvas
-                      for page in range(existing_pdf.getNumPages()):
-                          page_pdf = existing_pdf.getPage(page)
-                          # carimbo na primeira pagina
-                          if page == 0:
-                             page_pdf.mergePage(new_pdf.getPage(0))
-                          output.addPage(page_pdf)
-                      outputStream = file('/tmp/' + nom_pdf_saida, "wb")                          
-                      output.write(outputStream)
-                      outputStream.close()
-                      data = open('/tmp/' + nom_pdf_saida, 'rb').read()
-                      documento = getattr(storage_path,nom_pdf_saida)
-                      documento.manage_upload(file=data)
-                      os.unlink('/tmp/'+nom_pdf_saida) 
+                      try:
+                         existing_pdf = PdfFileReader('/tmp/'+ nom_pdf_saida, strict=False)
+                         numPages = existing_pdf.getNumPages()
+                         # Mescla canvas
+                         for page in range(existing_pdf.getNumPages()):
+                             page_pdf = existing_pdf.getPage(page)
+                             # carimbo na primeira pagina
+                             if page == 0:
+                                page_pdf.mergePage(new_pdf.getPage(0))
+                             output.addPage(page_pdf)
+                         outputStream = file('/tmp/' + nom_pdf_saida, "wb")                          
+                         output.write(outputStream)
+                         outputStream.close()
+                         data = open('/tmp/' + nom_pdf_saida, 'rb').read()
+                         documento = getattr(storage_path,nom_pdf_saida)
+                         documento.manage_upload(file=data)
+                         os.unlink('/tmp/'+nom_pdf_saida)
+                      except PdfReadError:
+                         os.unlink('/tmp/'+nom_pdf_saida)
         
     def _getValidEmailAddress(self, member):
         email = None
