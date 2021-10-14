@@ -2459,7 +2459,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                          documento = getattr(storage_path,nom_pdf_saida)
                          documento.manage_upload(file=data)
                          os.unlink('/tmp/'+nom_pdf_saida)
-                      except PdfReadError:
+                      except:
                          os.unlink('/tmp/'+nom_pdf_saida)
         
     def _getValidEmailAddress(self, member):
