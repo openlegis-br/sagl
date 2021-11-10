@@ -72,8 +72,14 @@
        <dtml-call expr="REQUEST.set('nom_unidade', nom_unidade_join)">
      </dtml-in>
      <dtml-if expr="'Prefeitura' in nom_unidade or 'Executivo' in nom_unidade">
-        <dtml-call "REQUEST.set('info_protocolo', cadastros.tramitacao_materia.protocolo_prefeitura_pysc(cod_materia=hdn_cod_materia))">         
-        <dtml-call expr="zsql.tramitacao_prefeitura_registrar_zsql(cod_tramitacao=hdn_cod_tramitacao, texto_protocolo=info_protocolo)">
+        <dtml-call "REQUEST.set('info_protocolo', cadastros.tramitacao_materia.protocolo_prefeitura_pysc(cod_materia=hdn_cod_materia))">
+        <dtml-try>
+           <dtml-call expr="zsql.trans_begin_zsql()">
+           <dtml-call expr="zsql.tramitacao_prefeitura_registrar_zsql(cod_tramitacao=hdn_cod_tramitacao, texto_protocolo=info_protocolo)">
+           <dtml-call expr="zsql.trans_commit_zsql()">
+        <dtml-except>
+           <dtml-call expr="zsql.trans_rollback_zsql()">
+        </dtml-try>
      </dtml-if>
      </dtml-comment>
      <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=hdn_cod_materia)">
@@ -150,14 +156,11 @@
  </dtml-if>
  
 <dtml-if dbcon_logs>
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
   <dtml-call expr="zsql.logs_registrar_zsql(
             usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
             data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
             modulo       = 'tramitacao_materia',
-            metodo       = metodo1,
+            metodo       = 'tramitacao_salvar_proc',
             IP           = pysc.get_ip(),
             dados        = REQUEST.form.items(),
             cod_registro = hdn_cod_tramitacao)"> 

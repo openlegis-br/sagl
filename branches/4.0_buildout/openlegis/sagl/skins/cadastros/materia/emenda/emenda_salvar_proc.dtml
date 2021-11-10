@@ -38,9 +38,15 @@
   </dtml-unless>
 
   <dtml-if expr="(_.has_key('hdn_cod_proposicao') and hdn_cod_proposicao!='') or (_.has_key('temProposicao'))">
-      <dtml-call expr="REQUEST.set('dat_recebimento', pysc.data_atual_iso_pysc())">    
-      <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao=hdn_cod_proposicao,dat_recebimento=dat_recebimento,cod_mat_ou_doc=cod_materia,cod_emenda=hdn_cod_emenda)">
-      <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">
+      <dtml-call expr="REQUEST.set('dat_recebimento', pysc.data_atual_iso_pysc())">
+      <dtml-try>
+         <dtml-call expr="zsql.trans_begin_zsql()">        
+         <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao=hdn_cod_proposicao, dat_recebimento=dat_recebimento, cod_mat_ou_doc=cod_materia, cod_emenda=hdn_cod_emenda)">  
+         <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">
+         <dtml-call expr="zsql.trans_commit_zsql()">
+      <dtml-except>
+         <dtml-call expr="zsql.trans_rollback_zsql()">
+      </dtml-try>
   </dtml-if>
 
    <dtml-if expr="metodo==zsql.emenda_incluir_zsql">
@@ -72,8 +78,14 @@
                <dtml-call expr="REQUEST.set('dat_fim_prazo', dat_fim_prazo)">                              
           </dtml-in>
           <dtml-if cod_ult_tramitacao>
-            <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao=cod_ult_tramitacao, cod_materia = cod_materia, ind_ult_tramitacao = 0)">
-            <dtml-call expr="zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao=cod_ult_tramitacao, cod_usuario_corrente=cod_usuario_corrente)"> 
+            <dtml-try>
+               <dtml-call expr="zsql.trans_begin_zsql()">                
+               <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao=cod_ult_tramitacao, cod_materia = hdn_cod_materia, ind_ult_tramitacao = 0)">
+               <dtml-call expr="zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao=cod_ult_tramitacao, cod_usuario_corrente=cod_usuario_corrente)">
+               <dtml-call expr="zsql.trans_commit_zsql()">
+            <dtml-except>
+               <dtml-call expr="zsql.trans_rollback_zsql()">                
+            </dtml-try>
           </dtml-if>          
           <dtml-unless cod_ult_tramitacao>
               <dtml-call expr="REQUEST.set('nom_unidade_destino', 'Departamento Legislativo')">
@@ -89,7 +101,9 @@
           <dtml-in expr="zsql.status_tramitacao_obter_zsql(sgl_status=sgl_status)">
             <dtml-call expr="REQUEST.set('cod_status', cod_status)">
           </dtml-in>
-          <dtml-call expr="zsql.tramitacao_incluir_zsql(cod_materia = cod_materia,
+          <dtml-try>
+              <dtml-call expr="zsql.trans_begin_zsql()">     
+              <dtml-call expr="zsql.tramitacao_incluir_zsql(cod_materia = cod_materia,
                                                    dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
                                                    cod_unid_tram_local = cod_unid_tram_local,
                                                    cod_usuario_local = cod_usuario_corrente,
@@ -99,14 +113,18 @@
                                                    ind_urgencia = 0,
                                                    txt_tramitacao = txt_tramitacao,
                                                    ind_ult_tramitacao = 1)">
-          <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=cod_materia, cod_status=cod_status)">
-          <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=cod_materia)">
-          <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=cod_materia)">
-          <dtml-in expr="zsql.tramitacao_incluida_codigo_obter_zsql()">
-             <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
-          </dtml-in>
-          <dtml-call expr="REQUEST.set('hdn_url', 'emenda_mostrar_proc?cod_emenda=' + str(hdn_cod_emenda) + '&cod_materia=' + str(cod_materia) + '&modal=1')">           
-          <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=hdn_cod_tramitacao,hdn_url=hdn_url)">
+              <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=cod_materia, cod_status=cod_status)">
+              <dtml-call expr="zsql.trans_commit_zsql()">                   
+              <dtml-call expr="pysc.envia_tramitacao_autor_pysc(cod_materia=cod_materia)">
+              <dtml-call expr="pysc.envia_acomp_materia_pysc(cod_materia=cod_materia)">
+              <dtml-in expr="zsql.tramitacao_incluida_codigo_obter_zsql()">
+                 <dtml-call expr="REQUEST.set('hdn_cod_tramitacao', int(cod_tramitacao))">
+              </dtml-in>
+              <dtml-call expr="REQUEST.set('hdn_url', 'emenda_mostrar_proc?cod_emenda=' + str(hdn_cod_emenda) + '&cod_materia=' + str(cod_materia) + '&modal=1')">           
+              <dtml-call expr="relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=hdn_cod_tramitacao, hdn_url=hdn_url)">
+          <dtml-except>
+             <dtml-call expr="zsql.trans_rollback_zsql()">          
+          </dtml-try>
         </dtml-if>
      </dtml-if>
    </dtml-if>
@@ -138,14 +156,11 @@
 
 <dtml-comment>LOG DE AUDITORIA</dtml-comment>
 <dtml-if dbcon_logs>
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
   <dtml-call expr="zsql.logs_registrar_zsql(
             usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
             data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
             modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
-            metodo       = metodo1,
+            metodo       = 'emenda_salvar_proc',
             IP           = pysc.get_ip(),
             dados        = REQUEST.form.items(),
             cod_registro = hdn_cod_emenda)"> 

@@ -29,10 +29,20 @@ for tramitacao in lista:
    cod_tramitacao.append(str(tramitacao.cod_tramitacao))
 
 for t in cod_tramitacao:
-   context.zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao=t, ind_ult_tramitacao=0)
+   try:
+      context.zsql.trans_begin_zsql()
+      context.zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao=t, ind_ult_tramitacao=0)
+      context.zsql.trans_commit_zsql()
+   except:
+      context.zsql.trans_rollback_zsql()
 
 for m in cod_materia:
-   context.zsql.tramitacao_incluir_zsql(cod_materia=m, dat_tramitacao=dat_tramitacao, cod_unid_tram_local=cod_unid_tram_local, cod_unid_tram_dest=cod_unid_tram_dest, cod_status=cod_status, ind_urgencia=0, txt_tramitacao=txt_tramitacao, ind_ult_tramitacao=1)
+   try:
+      context.zsql.trans_begin_zsql()
+      context.zsql.tramitacao_incluir_zsql(cod_materia=m, dat_tramitacao=dat_tramitacao, cod_unid_tram_local=cod_unid_tram_local, cod_unid_tram_dest=cod_unid_tram_dest, cod_status=cod_status, ind_urgencia=0, txt_tramitacao=txt_tramitacao, ind_ult_tramitacao=1)
+      context.zsql.trans_commit_zsql()
+   except:
+      context.zsql.trans_rollback_zsql()
 
 for m in cod_materia:
    context.pysc.envia_tramitacao_autor_pysc(cod_materia=m)
