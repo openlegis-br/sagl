@@ -1,13 +1,16 @@
 <dtml-try>
+    <dtml-call expr="zsql.trans_begin_zsql()">      
     <dtml-call expr="REQUEST.set('data_de_devolucao',pysc.data_atual_iso_pysc())">
     <dtml-call expr="REQUEST.set('metodo', zsql.proposicao_atualizar_devolucao_zsql)">        	
     <dtml-call expr="metodo(cod_proposicao       = cod_proposicao,
                             txt_justif_devolucao = txt_justif_devolucao,
                             dat_devolucao        = data_de_devolucao)">
+    <dtml-call expr="zsql.trans_commit_zsql()">
     <dtml-let mensagem="'Proposição devolvida com sucesso!'" url="'cadastros/recebimento_proposicao'">
        <dtml-var mensagem_emitir>
-    </dtml-let>		
+    </dtml-let>
 <dtml-except>
+    <dtml-call expr="zsql.trans_rollback_zsql()">          
     <dtml-let mensagem="'Não foi possível devolver a proposição. Tente novamente!'" tipo_mensagem="'danger'">
        <dtml-var mensagem_emitir>
     </dtml-let>
@@ -15,14 +18,11 @@
 
 <dtml-comment>LOG DE AUDITORIA</dtml-comment>
 <dtml-if dbcon_logs>
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
   <dtml-call expr="zsql.logs_registrar_zsql(
             usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
             data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
             modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
-            metodo       = metodo1,
+            metodo       = 'proposicao_salvar_devolucao',
             IP           = pysc.get_ip(),
             dados        = REQUEST.form.items(),
             cod_registro = cod_proposicao)"> 

@@ -37,9 +37,15 @@ for item in cod_materia:
 hdn_dat_encaminha = DateTime().strftime('%Y-%m-%d %H:%M:%S')
 
 if lst_ultimas != []:
+   context.zsql.trans_begin_zsql()
    for dic in lst_ultimas:
-       context.zsql.tramitacao_ind_ultima_atualizar_zsql(cod_materia = dic['cod_materia'], cod_tramitacao = dic['cod_tramitacao'], ind_ult_tramitacao = 0)
-       context.zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao = dic['cod_tramitacao'], cod_usuario_corrente = hdn_cod_usuario_local)    
+       try:
+           context.zsql.tramitacao_ind_ultima_atualizar_zsql(cod_materia = dic['cod_materia'], cod_tramitacao = dic['cod_tramitacao'], ind_ult_tramitacao = 0)    
+           context.zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao = dic['cod_tramitacao'], cod_usuario_corrente = hdn_cod_usuario_local)
+           context.pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia = dic['cod_materia'], cod_status = lst_cod_status)
+           context.zsql.trans_commit_zsql()           
+       except:
+           context.zsql.trans_rollback_zsql()
 
 if txt_dat_fim_prazo==None or txt_dat_fim_prazo=='':
    data_atual = DateTime()
@@ -75,7 +81,6 @@ for dic in lst_novas:
     #        resultado_protocolo = st.protocolo_prefeitura(dic['cod_materia']) 
     #        context.zsql.tramitacao_prefeitura_registrar_zsql(cod_tramitacao = dic['cod_tramitacao'], texto_protocolo=resultado_protocolo)           
     # fim protocolo executivo
-    context.pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia = dic['cod_materia'], cod_status = lst_cod_status)
     context.pysc.envia_tramitacao_autor_pysc(cod_materia = dic['cod_materia'])
     context.pysc.envia_acomp_materia_pysc(cod_materia = dic['cod_materia'])         
     hdn_url = 'tramitacao_mostrar_proc?hdn_cod_tramitacao=' + str(dic['cod_tramitacao'])+ '&hdn_cod_materia=' + str(dic['cod_materia'])+'&lote=1'

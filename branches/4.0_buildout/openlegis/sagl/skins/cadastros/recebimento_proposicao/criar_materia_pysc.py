@@ -84,9 +84,19 @@ def inserir_autoria(cod_materia, cod_autor, cod_proposicao, hdn_num_protocolo):
                    if int(cod_autor) == int(autor.cod_autor):
                       context.zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 1)
                    else:
-                      context.zsql.autoria_incluir_zsql(cod_autor = autor.cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 0)
+                      try:
+                         context.zsql.trans_begin_zsql()
+                         context.zsql.autoria_incluir_zsql(cod_autor = autor.cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 0)
+                         context.zsql.trans_commit_zsql()
+                      except:
+                         context.zsql.trans_rollback_zsql()                         
     else:
-       context.zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 1)    
+       try:
+          context.zsql.trans_begin_zsql()       
+          context.zsql.autoria_incluir_zsql(cod_autor = cod_autor, cod_materia = cod_materia, ind_primeiro_autor = 1)
+          context.zsql.trans_commit_zsql()          
+       except:
+          context.zsql.trans_rollback_zsql() 
     
     return tramitar_materia(cod_materia, cod_proposicao, hdn_num_protocolo)
 
@@ -119,7 +129,12 @@ def tramitar_materia(cod_materia, cod_proposicao, hdn_num_protocolo):
     hdn_url = context.portal_url() + '/cadastros/recebimento_proposicao/recebimento_proposicao_index_html#incorporada'
     
     if cod_unid_tram_local != None and cod_unid_tram_dest != None and cod_status != None:
+    try:        
+       context.zsql.trans_begin_zsql()    
        context.zsql.tramitacao_incluir_zsql(cod_materia=cod_materia, dat_tramitacao=DateTime().strftime('%Y-%m-%d'), cod_unid_tram_local=cod_unid_tram_local, cod_usuario_local=cod_usuario_corrente, cod_unid_tram_dest=cod_unid_tram_dest, dat_encaminha=DateTime().strftime('%Y-%m-%d %H:%M:%S'), cod_status=cod_status, ind_urgencia=0, txt_tramitacao = txt_tramitacao, ind_ult_tramitacao=1)
+       context.zsql.trans_commit_zsql()                  
+    except:
+       context.zsql.trans_rollback_zsql()  
         
     for tramitacao in context.zsql.tramitacao_incluida_codigo_obter_zsql():
         cod_tramitacao = tramitacao.cod_tramitacao
@@ -127,8 +142,13 @@ def tramitar_materia(cod_materia, cod_proposicao, hdn_num_protocolo):
     odt_proposicao = str(cod_proposicao) + '.odt'
     if hasattr(context.sapl_documentos.proposicao,odt_proposicao):
        context.pysc.proposicao_salvar_como_texto_integral_materia_pysc(cod_proposicao,cod_materia,0)
-        
-    context.zsql.proposicao_registrar_recebimento_zsql(cod_proposicao = cod_proposicao, dat_recebimento = context.pysc.data_atual_iso_pysc(),cod_mat_ou_doc = int(cod_materia))
+
+    try:        
+       context.zsql.trans_begin_zsql()
+       context.zsql.proposicao_registrar_recebimento_zsql(cod_proposicao = cod_proposicao, dat_recebimento = context.pysc.data_atual_iso_pysc(),cod_mat_ou_doc = int(cod_materia))
+       context.zsql.trans_commit_zsql()           
+    except:
+       context.zsql.trans_rollback_zsql()       
 
     id_proposicao_signed = str(cod_proposicao)+'_signed.pdf'
     if cod_materia != None:
