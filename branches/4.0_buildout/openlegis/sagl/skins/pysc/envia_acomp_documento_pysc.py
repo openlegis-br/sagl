@@ -9,7 +9,6 @@
 from Products.PythonScripts.standard import url_unquote
 request=context.REQUEST
 response=request.RESPONSE
-session= request.SESSION
 
 mailhost = context.MailHost
 

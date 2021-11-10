@@ -8,7 +8,6 @@
 ##title=
 request=context.REQUEST
 response=request.RESPONSE
-session= request.SESSION
 
 mailhost = context.MailHost
 
