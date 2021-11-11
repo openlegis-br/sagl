@@ -10,7 +10,6 @@
 
 REQUEST = context.REQUEST
 RESPONSE = REQUEST.RESPONSE
-session = REQUEST.SESSION
 
 votadas=[]
 nao_votadas=[]
@@ -43,12 +42,22 @@ for resultado in context.zsql.tipo_resultado_votacao_obter_zsql(nom_resultado='A
     nom_resultado = resultado.nom_resultado
 
 for dic in nao_votadas:
-    context.zsql.votacao_incluir_zsql(num_votos_sim=votos_sim, num_votos_nao='0', num_abstencao='0', cod_ordem=dic.get('cod_ordem',dic), cod_materia=dic.get('cod_materia',dic), tip_resultado_votacao=lst_tip_resultado)
-    context.modelo_proposicao.requerimento_aprovar(cod_sessao_plen=cod_sessao_plen, nom_resultado=nom_resultado, cod_materia=dic.get('cod_materia',dic))
+    try:
+       context.zsql.trans_begin_zsql()
+       context.zsql.votacao_incluir_zsql(num_votos_sim=votos_sim, num_votos_nao='0', num_abstencao='0', cod_ordem=dic.get('cod_ordem',dic), cod_materia=dic.get('cod_materia',dic), tip_resultado_votacao=lst_tip_resultado)
+       context.modelo_proposicao.requerimento_aprovar(cod_sessao_plen=cod_sessao_plen, nom_resultado=nom_resultado, cod_materia=dic.get('cod_materia',dic))
+       context.zsql.trans_commit_zsql()       
+    except:
+       context.zsql.trans_rollback_zsql()
     
 for dic in anuladas:
-    context.zsql.votacao_atualizar_zsql(cod_votacao=dic.get('cod_votacao',dic), num_votos_sim=votos_sim, num_votos_nao='0', num_abstencao='0', cod_ordem=dic.get('cod_ordem',dic), cod_materia=dic.get('cod_materia',dic), tip_resultado_votacao=lst_tip_resultado)
-    context.modelo_proposicao.requerimento_aprovar(cod_sessao_plen=cod_sessao_plen, nom_resultado=nom_resultado, cod_materia=dic.get('cod_materia',dic))
+    try:
+       context.zsql.trans_begin_zsql()
+       context.zsql.votacao_atualizar_zsql(cod_votacao=dic.get('cod_votacao',dic), num_votos_sim=votos_sim, num_votos_nao='0', num_abstencao='0', cod_ordem=dic.get('cod_ordem',dic), cod_materia=dic.get('cod_materia',dic), tip_resultado_votacao=lst_tip_resultado)
+       context.modelo_proposicao.requerimento_aprovar(cod_sessao_plen=cod_sessao_plen, nom_resultado=nom_resultado, cod_materia=dic.get('cod_materia',dic))
+       context.zsql.trans_commit_zsql()       
+    except:
+       context.zsql.trans_rollback_zsql()
 
 redirect_url = 'index_html?cod_sessao_plen=' + cod_sessao_plen + '&cod_sessao_leg=' + cod_sessao_leg + '&num_legislatura=' + num_legislatura + '&dat_sessao=' + dat_sessao + '&tip_sessao=' + tip_sessao
 
