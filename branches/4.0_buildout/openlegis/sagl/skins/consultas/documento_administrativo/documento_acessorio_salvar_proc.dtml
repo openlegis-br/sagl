@@ -1,14 +1,23 @@
 <dtml-call expr="REQUEST.set('metodo', zsql.documento_acessorio_administrativo_incluir_zsql)"> 
 <dtml-call expr="REQUEST.set('dat_documento', pysc.data_atual_port_pysc())">
-<dtml-call expr="REQUEST.set('nom_usuario', REQUEST['AUTHENTICATED_USER'].getUserName())">
+
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=REQUEST['AUTHENTICATED_USER'].getUserName())">
+  <dtml-if expr="nom_cargo != '' and nom_cargo != None">
+     <dtml-call expr="REQUEST.set('nom_usuario', nom_cargo)">
+  <dtml-else>
+     <dtml-call expr="REQUEST.set('nom_usuario', nom_completo)">
+  </dtml-if>
+<dtml-else>
+  <dtml-call expr="REQUEST.set('nom_usuario', REQUEST['AUTHENTICATED_USER'].getUserName())">
+</dtml-in>
 
 <dtml-try>
    <dtml-call expr="metodo(tip_documento = lst_tip_documento,
-                         nom_documento = txt_nom_documento,
-                         nom_autor_documento = nom_usuario,
-                         cod_documento = cod_documento,
-                         dat_documento =pysc.data_converter_pysc(data=dat_documento),
-                         ind_excluido = 0)">
+                           nom_documento = txt_nom_documento,
+                           nom_autor_documento = nom_usuario,
+                           cod_documento = cod_documento,
+                           dat_documento = pysc.data_converter_pysc(data=dat_documento),
+                           ind_excluido = 0)">
 <dtml-except>
     <dtml-let mensagem="'Não foi possível incluir o documento acessório. Tente novamente!'" tipo_mensagem="'danger'">
        <dtml-var mensagem_emitir>
