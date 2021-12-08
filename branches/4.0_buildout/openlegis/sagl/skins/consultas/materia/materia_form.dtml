@@ -665,7 +665,13 @@ $(function () {
                                <i class="fas fa-file-pdf"></i> <dtml-var des_tipo_documento> - <dtml-var nom_documento missing>
                              </a>
                            <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
-                              <dtml-if expr="_.has_key('add_doc') and REQUEST['AUTHENTICATED_USER'].getUserName()==nom_autor_documento">
+                              <dtml-in expr="zsql.logs_pesquisar_zsql(cod_registro=cod_documento, modulo='documento_acessorio_materia', ordem=1)">
+                                 <dtml-call expr="REQUEST.set('usuario_doc', usuario)">
+                              </dtml-in>
+                              <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+                                 <dtml-call expr="REQUEST.set('usuario_logado', col_username)">
+                              </dtml-in>
+                              <dtml-if expr="_.has_key('add_doc') and usuario_doc==usuario_logado">
                                 <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='doc_acessorio', codigo=cod_documento)">
                                   <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
                                 </dtml-in>
