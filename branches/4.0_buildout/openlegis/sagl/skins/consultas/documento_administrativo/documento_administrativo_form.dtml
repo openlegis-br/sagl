@@ -234,14 +234,19 @@ $(function () {
                         <a target="_blank" href="<dtml-var documento>" target="_blank">
                           <i class="fas fa-file-pdf"></i> <dtml-var nom_documento>
                         </a>
-                        <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
-                           <dtml-in expr="zsql.logs_pesquisar_zsql(cod_registro=cod_documento_acessorio, modulo='documento_acessorio_adm', ordem=1)">
-                              <dtml-call expr="REQUEST.set('usuario_doc', usuario)">
-                           </dtml-in>
-                           <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
-                              <dtml-call expr="REQUEST.set('usuario_logado', col_username)">
-                           </dtml-in>                        
-                           <dtml-if expr="_.has_key('add_doc') and usuario_doc==usuario_logado">
+                        <dtml-if "sapl_documentos.props_sagl.restpki_access_token!='' and dbcon_logs">
+                             <dtml-let isAnon="portal_membership.isAnonymousUser()">                      
+                                <dtml-if expr="not isAnon">
+                                  <dtml-in expr="zsql.logs_pesquisar_zsql(cod_registro=cod_documento_acessorio, modulo='documento_acessorio_materia', ordem=1)">
+                                    <dtml-call expr="REQUEST.set('usuario_doc', usuario)">
+                                  </dtml-in>
+                                 <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+                                    <dtml-call expr="REQUEST.set('usuario_logado', col_username)">
+                                 </dtml-in>
+                                </dtml-if>
+                              </dtml-let>
+                     
+                           <dtml-if expr="_.has_key('add_doc') and _.has_key('usuario_doc') and _.has_key('usuario_logado') and usuario_doc==usuario_logado">
                              <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='doc_acessorio_adm', codigo=cod_documento_acessorio)">
                                <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
                              </dtml-in>
