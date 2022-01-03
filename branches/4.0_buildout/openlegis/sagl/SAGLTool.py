@@ -1740,7 +1740,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if tipo_proposicao != 'Parecer' and tipo_proposicao != 'Parecer de Comissão' and page == 0:
                pdf_page.mergePage(new_pdf2.getPage(0))
             # qrcode e margem direita em todas as páginas
-            if self.sapl_documentos.props_sagl.restpki_access_token!='':
+            if self.sapl_documentos.props_sagl.restpki_access_token!='' and cod_validacao_doc != '':
                for wm in range(new_pdf.getNumPages()):
                    watermark_page = new_pdf.getPage(wm)
                    if page == wm:
