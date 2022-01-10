@@ -86,6 +86,8 @@ def tramitar_materia(cod_materia):
     for tramitacao in context.zsql.tramitacao_incluida_codigo_obter_zsql():
         cod_tramitacao = tramitacao.cod_tramitacao
 
+    context.pysc.envia_tramitacao_autor_pysc(cod_materia = cod_materia)
+    
     return context.relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao=cod_tramitacao, hdn_url=hdn_url)
   
 
