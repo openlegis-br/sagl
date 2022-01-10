@@ -15,7 +15,6 @@ portal = utool.getPortalObject()
 
 REQUEST = context.REQUEST
 RESPONSE = REQUEST.RESPONSE
-session = REQUEST.SESSION
 
 
 for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao, ind_mat_ou_doc='M'):

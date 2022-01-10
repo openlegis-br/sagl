@@ -2,7 +2,11 @@
 <dtml-call expr="REQUEST.set('dat_documento', pysc.data_atual_port_pysc())">
 
 <dtml-in expr="zsql.usuario_obter_zsql(col_username=REQUEST['AUTHENTICATED_USER'].getUserName())">
-  <dtml-call expr="REQUEST.set('nom_usuario', nom_completo)">
+  <dtml-if expr="nom_cargo != '' and nom_cargo != None">
+     <dtml-call expr="REQUEST.set('nom_usuario', nom_cargo)">
+  <dtml-else>
+     <dtml-call expr="REQUEST.set('nom_usuario', nom_completo)">
+  </dtml-if>
 <dtml-else>
   <dtml-call expr="REQUEST.set('nom_usuario', REQUEST['AUTHENTICATED_USER'].getUserName())">
 </dtml-in>
@@ -94,3 +98,14 @@
     </dtml-if>
 
  </dtml-try>
+ 
+<dtml-if expr="dbcon_logs and hdn_cod_documento">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = 'documento_acessorio_materia',
+            metodo       = 'documento_acessorio_salvar_proc',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_documento)"> 
+</dtml-if>
