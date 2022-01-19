@@ -84,10 +84,10 @@ for dic in destinatarios:
    </html>
    """.format(data_registro=data_registro, projeto=projeto, linkMat=linkMat, ementa=ementa, nom_autor=nom_autor, data=data, status=status, casa_legislativa=casa_legislativa)
 
-  mMsg = MIMEText(html, 'html', "utf-8")
+   mMsg = MIMEText(html, 'html', "utf-8")
 
-  mTo = dic['end_email']
+   mTo = dic['end_email']
 
-  mSubj = projeto +" - Aviso de tramitação em " + data_registro
+   mSubj = projeto +" - Aviso de tramitação em " + data_registro
 
-  mailhost.send(mMsg, mTo, remetente, subject=mSubj)
+   mailhost.send(mMsg, mTo, remetente, subject=mSubj)
