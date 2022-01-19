@@ -74,7 +74,7 @@ if txt_nome != '' and end_email != '':
           Encaminhado em: {data_registro}
        </p>
        <p>
-          <a href="{linkDoc}" target="_blank">Autentique-se no sistema}</a> e verifique sua caixa de entrada (módulo de tramitação de documentos) para maiores informações.
+          <a href="{linkDoc}" target="_blank">Autentique-se no sistema</a> e verifique sua caixa de entrada (módulo de tramitação de documentos) para maiores informações.
        </p>
        <p>
           <strong>{casa_legislativa}</strong><br>
@@ -84,10 +84,10 @@ if txt_nome != '' and end_email != '':
    </html>
    """.format(proc_adm=proc_adm, ementa=ementa, nom_autor=nom_autor, unidade_local=unidade_local, txt_nome=txt_nome, status=status, data_registro=data_registro, linkDoc=linkDoc, casa_legislativa=casa_legislativa)
 
- mMsg = MIMEText(html, 'html', "utf-8")
+   mMsg = MIMEText(html, 'html', "utf-8")
  
- mTo = end_email
+   mTo = end_email
 
- mSubj = "Processo Administrativo - " + proc_adm +" - Notificação de Despacho em " + data_registro
+   mSubj = "Processo Administrativo - " + proc_adm +" - Notificação de Despacho em " + data_registro
 
- mailhost.send(mMsg, mTo, remetente, subject=mSubj)
+   mailhost.send(mMsg, mTo, remetente, subject=mSubj)
