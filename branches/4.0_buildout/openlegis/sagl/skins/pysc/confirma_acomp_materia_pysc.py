@@ -6,6 +6,7 @@
 ##bind subpath=traverse_subpath
 ##parameters=end_email, txt_hash, cod_materia
 ##title=
+from email.mime.text import MIMEText
 request=context.REQUEST
 response=request.RESPONSE
 session= request.SESSION
@@ -37,16 +38,28 @@ remetente = email_casa
 
 destinatario = str(end_email)
 
-link = "" + request.SERVER_URL + "/materia/acompanhamento/acomp_materia_confirmar_proc?txt_hash=" + str(txt_hash)
+link = request.SERVER_URL + "/materia/acompanhamento/acomp_materia_confirmar_proc?txt_hash=" + str(txt_hash)
 
-mMsg = "Prezado(a) Senhor(a),\n\n"
-mMsg = mMsg + "Para acompanhar por e-mail o andamento da matéria acima identificada, solicitamos que confirme o recebimento de futuras mensagens eletrônicas, clicando no link:\n"
-mMsg = mMsg + link + "\n\n"
-mMsg = mMsg + "Caso não tenha solicitado o acompanhamento dessa matéria, favor ignorar a presente mensagem.\n\n"
-mMsg = mMsg + "Cordialmente,\n\n"
-mMsg = mMsg + ""+ str(casa_legislativa) +"\n"
-mMsg = mMsg + "Processo Legislativo Eletrônico\n"
+html = """\
+<html>
+  <head></head>
+  <body>
+    <p>
+       Para acompanhar por e-mail o andamento da matéria legislativa identificada como {projeto}, solicitamos que confirme o recebimento de futuras mensagens eletrônicas, <a href="{link}" target="blank">clicando aqui</a>.
+    </p>
+    <p>
+       Caso não tenha solicitado o acompanhamento dessa matéria, favor ignorar a presente mensagem.          
+    </p>
+    <p>
+       <strong>{casa_legislativa}</strong><br>
+       Processo Eletrônico
+    </p>
+  </body>
+</html>
+""".format(link=link, projeto=projeto, casa_legislativa=casa_legislativa)
+
+mMsg = MIMEText(html, 'html', "utf-8")
 
 mSubj = projeto +" - Acompanhamento por e-mail"
 
-mailhost.send(mMsg, destinatario, remetente, subject=mSubj, encode='base64')
+mailhost.send(mMsg, destinatario, remetente, subject=mSubj)

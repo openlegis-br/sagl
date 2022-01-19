@@ -7,9 +7,9 @@
 ##parameters=cod_materia
 ##title=
 from Products.PythonScripts.standard import url_unquote
+from email.mime.text import MIMEText
 request=context.REQUEST
 response=request.RESPONSE
-session= request.SESSION
 
 mailhost = context.MailHost
 
@@ -76,26 +76,35 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
 
 remetente = email_casa
 
-linkMat = "" + context.consultas.absolute_url()+"/consultas/materia/materia_mostrar_proc?cod_materia=" + str(cod_materia)
+linkMat = context.consultas.absolute_url()+"/consultas/materia/materia_mostrar_proc?cod_materia=" + str(cod_materia)
 
 for dic in destinatarios:
-  mMsg = "Prezado(a) Senhor(a),\n\n"
-  mMsg = mMsg + "A seguinte matéria legislativa sofreu tramitação registrada em " + data_registro + ":\n\n"
-  mMsg = mMsg + "" + projeto + "\n"
-  mMsg = mMsg + "" + str(ementa) + "\n"
-  mMsg = mMsg + "Autoria: " + str(nom_autor) + "\n"
-  mMsg = mMsg + "Link: " + linkMat + "\n\n"
-  mMsg = mMsg + "Data da Ação: " + str(data) + "\n"
-  mMsg = mMsg + "Origem: " + unidade_local + "\n"
-  mMsg = mMsg + "Destino: " + txt_nome + "\n"  
-  mMsg = mMsg + "Status: " + str(status) + "\n"
-  if prazo != None:
-     mMsg = mMsg + "Prazo: " + str(prazo) + "\n\n"  
-  mMsg = mMsg + "" + str(casa_legislativa) +"\n"
-  mMsg = mMsg + "Processo Eletrônico\n\n"
-  if dic['txt_hash'] != None:  
-     mMsg = mMsg + "Clique no link abaixo para excluir seu e-mail da lista de envio:\n" 
-     mMsg = mMsg + "" + request.SERVER_URL + "/consultas/materia/acompanhamento/acomp_materia_excluir_proc?txt_hash=" + str(dic['txt_hash']) +"\n"
+  link_remocao = request.SERVER_URL + "/consultas/materia/acompanhamento/acomp_materia_excluir_proc?txt_hash=" + str(dic['txt_hash'])
+  html = """\
+   <html>
+     <head></head>
+     <body>
+       <p>A seguinte matéria legislativa sofreu tramitação registrada em {data_registro}:</p>
+       <p><a href="{linkMat}" target="blank">{projeto}</a><br>
+          {ementa}<br>
+          Autoria: {nom_autor}<br>  
+          Data da Ação: {data}<br>
+          Origem: {unidade_local}<br>
+          Destino: {txt_nome}<br>
+          Status: {status}
+       </p>
+       <p>
+          <strong>{casa_legislativa}</strong><br>
+          Processo Eletrônico
+       </p>
+       <p>
+          <small><a href="{link_remocao}" target="_blank">Clique aqui</a> para excluir seu e-mail da lista de envios.</small>
+       </p>
+     </body>
+   </html>
+  """.format(data_registro=data_registro, data=data, projeto=projeto, linkMat=linkMat, ementa=ementa, nom_autor=nom_autor, unidade_local=unidade_local, txt_nome=txt_nome, status=status, casa_legislativa=casa_legislativa, link_remocao=link_remocao)
+
+  mMsg = MIMEText(html, 'html', "utf-8")
 
   mTo = dic['end_email']
 

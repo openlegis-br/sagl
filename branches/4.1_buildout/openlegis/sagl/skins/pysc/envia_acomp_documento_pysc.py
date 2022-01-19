@@ -7,9 +7,9 @@
 ##parameters=cod_documento
 ##title=
 from Products.PythonScripts.standard import url_unquote
+from email.mime.text import MIMEText
 request=context.REQUEST
 response=request.RESPONSE
-session= request.SESSION
 
 mailhost = context.MailHost
 
@@ -55,24 +55,39 @@ for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=
 
    prazo = tramitacao.dat_fim_prazo
 
-   linkDoc = "" + request.SERVER_URL
+   linkDoc = request.SERVER_URL
    
    despacho = url_unquote(texto_acao)
 
 if txt_nome != '' and end_email != '':
- mMsg = "O seguinte processo administrativo foi despachado aos seus cuidados, para as providências cabíveis.\n\n"
- mMsg = mMsg + "" + proc_adm + "\n"
- mMsg = mMsg + "Assunto: " + str(ementa) + "\n"
- mMsg = mMsg + "Interessado: " + str(nom_autor) + "\n"
- mMsg = mMsg + "Origem: " + unidade_local + "\n"
- mMsg = mMsg + "Destino: " + txt_nome + "\n"
- mMsg = mMsg + "Status: " + str(status) + "\n"
- mMsg = mMsg + "Encaminhado em: " + str(data_registro) + "\n"
- if prazo != None:
-    mMsg = mMsg + "Prazo: " + str(prazo) + "\n"
- mMsg = mMsg + "\nAutentique-se em " + linkDoc + " e verifique sua caixa de entrada (módulo de tramitação de documentos) para maiores informações.\n\n"
- mMsg = mMsg + "" + str(casa_legislativa) +"\n"
- mMsg = mMsg + "Processo Eletrônico\n"
+   html = """\
+   <html>
+     <head></head>
+     <body>
+       <p>O seguinte processo administrativo foi despachado aos seus cuidados, para as providências cabíveis:</p>
+       <p><b>{proc_adm}</b><br>
+          Assunto: {ementa}<br>
+          Interessado: {nom_autor}<br>
+          Origem: {unidade_local}<br>
+          Destino: {txt_nome}<br>
+          Status: {status}<br>
+          Encaminhado em: {data_registro}
+       </p>
+       <p>
+          <a href="{linkDoc}" target="_blank">Autentique-se no sistema}</a> e verifique sua caixa de entrada (módulo de tramitação de documentos) para maiores informações.
+       </p>
+       <p>
+          <strong>{casa_legislativa}</strong><br>
+          Processo Eletrônico
+       </p>
+     </body>
+   </html>
+   """.format(proc_adm=proc_adm, ementa=ementa, nom_autor=nom_autor, unidade_local=unidade_local, txt_nome=txt_nome, status=status, data_registro=data_registro, linkDoc=linkDoc, casa_legislativa=casa_legislativa)
+
+ mMsg = MIMEText(html, 'html', "utf-8")
+ 
  mTo = end_email
+
  mSubj = "Processo Administrativo - " + proc_adm +" - Notificação de Despacho em " + data_registro
- mailhost.send(mMsg, mTo, remetente, subject=mSubj, encode='base64')
+
+ mailhost.send(mMsg, mTo, remetente, subject=mSubj)

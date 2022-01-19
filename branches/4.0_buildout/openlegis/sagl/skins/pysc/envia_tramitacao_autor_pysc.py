@@ -7,6 +7,7 @@
 ##parameters=cod_materia
 ##title=
 from Products.PythonScripts.standard import url_unquote
+from email.mime.text import MIMEText
 request=context.REQUEST
 response=request.RESPONSE
 
@@ -53,7 +54,7 @@ remetente = email_casa
 
 cod_materia_base64 = context.pysc.b64encode_pysc(codigo=str(cod_materia))
 
-linkMat = "" + request.SERVER_URL+"/consultas/materia/materia_mostrar_proc?cod_materia=" + cod_materia_base64
+linkMat = request.SERVER_URL+"/consultas/materia/materia_mostrar_proc?cod_materia=" + cod_materia_base64
 
 destinatarios=[]
 for item in lista_codigo:
@@ -64,20 +65,29 @@ for item in lista_codigo:
    destinatarios.append(dic)
 
 for dic in destinatarios:
-  mMsg = "Prezado(a) Senhor(a),\n\n"
-  mMsg = mMsg + "Informamos que a seguinte matéria de sua autoria sofreu tramitação registrada em " + data_registro + ":\n\n"
-  mMsg = mMsg + "" + projeto + "\n"
-  mMsg = mMsg + "" + str(ementa) + "\n"
-  mMsg = mMsg + "Autoria: " + str(nom_autor) + "\n\n"
-  mMsg = mMsg + "Link: " + linkMat + "\n\n"
-  mMsg = mMsg + "Data da Ação: " + str(data) + "\n"
-  mMsg = mMsg + "Status: " + str(status) + "\n"
-  mMsg = mMsg + "Cordialmente,\n\n"
-  mMsg = mMsg + "" + str(casa_legislativa) +"\n"
-  mMsg = mMsg + "Processo Eletrônico\n"
+   html = """\
+   <html>
+     <head></head>
+     <body>
+       <p>A seguinte matéria de sua autoria sofreu tramitação registrada em {data_registro}:</p>
+       <p><a href="{linkMat}" target="blank">{projeto}</a><br>
+          {ementa}<br>
+          Autoria: {nom_autor}<br>    
+          Data da Ação: {data}<br>
+          Status: {status}
+       </p>
+       <p>
+          <strong>{casa_legislativa}</strong><br>
+          Processo Eletrônico
+       </p>
+     </body>
+   </html>
+   """.format(data_registro=data_registro, projeto=projeto, linkMat=linkMat, ementa=ementa, nom_autor=nom_autor, data=data, status=status, casa_legislativa=casa_legislativa)
+
+  mMsg = MIMEText(html, 'html', "utf-8")
 
   mTo = dic['end_email']
 
   mSubj = projeto +" - Aviso de tramitação em " + data_registro
 
-  mailhost.send(mMsg, mTo, remetente, subject=mSubj, encode='base64')
+  mailhost.send(mMsg, mTo, remetente, subject=mSubj)
