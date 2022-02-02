@@ -110,4 +110,4 @@ for dic in destinatarios:
 
   mSubj = projeto +" - Aviso de tramitação registrada em " + data_registro
 
-  mailhost.send(mMsg, mTo, remetente, subject=mSubj, encode='base64')
+  mailhost.send(mMsg, mTo, remetente, subject=mSubj)

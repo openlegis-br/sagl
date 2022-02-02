@@ -84,4 +84,4 @@ for dic in destinatarios:
 
   mSubj = projeto +" - Despacho para " + nom_comissao
 
-  mailhost.send(mMsg, mTo, remetente, subject=mSubj, encode='base64')
+  mailhost.send(mMsg, mTo, remetente, subject=mSubj')
