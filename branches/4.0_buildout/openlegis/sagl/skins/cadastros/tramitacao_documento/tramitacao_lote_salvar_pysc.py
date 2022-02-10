@@ -80,7 +80,8 @@ for item in cod_documento:
 for dic in lst_novas:
     context.pysc.envia_acomp_documento_pysc(cod_documento = dic['cod_documento'])         
     #hdn_url = 'tramitacao_mostrar_proc?hdn_cod_tramitacao=' + str(dic['cod_tramitacao'])+ '&cod_documento=' + str(dic['cod_documento'])+'&lote=1'
-    #context.relatorios.pdf_tramitacao_administrativo_preparar_pysc(hdn_cod_tramitacao = dic['cod_tramitacao'], hdn_url = hdn_url)
+    hdn_url = context.portal_url() + '/cadastros/tramitacao_documento/itens_enviados_html'    
+    context.relatorios.pdf_tramitacao_administrativo_preparar_pysc(hdn_cod_tramitacao = dic['cod_tramitacao'], hdn_url = hdn_url)
 
 mensagem = 'Tramitação em lote realizada com sucesso!'
 mensagem_obs = ''
