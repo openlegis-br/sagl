@@ -1,14 +1,15 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_ordem="" ind_excluido=0 cod_materia="" num_ordem="" dat_ordem="" cod_sessao_plen="" tip_turno tip_quorum tip_votacao ind_agrupamento=""
+arguments : cod_ordem="" ind_excluido=0 cod_materia=""  cod_parecer="" num_ordem="" dat_ordem="" cod_sessao_plen="" tip_turno tip_quorum tip_votacao ind_agrupamento=""
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
 
 SELECT 
-       REPLACE(ordem_dia.cod_ordem,  'L', '') as cod_ordem,
-       REPLACE(ordem_dia.cod_sessao_plen,  'L', '') as cod_sessao_plen,
-       REPLACE(ordem_dia.cod_materia,    'L', '') as cod_materia,
+       REPLACE(ordem_dia.cod_ordem, 'L', '') as cod_ordem,
+       REPLACE(ordem_dia.cod_sessao_plen, 'L', '') as cod_sessao_plen,
+       REPLACE(ordem_dia.cod_materia, 'L', '') as cod_materia,
+       REPLACE(ordem_dia.cod_parecer, 'L', '') as cod_parecer,
        DATE_FORMAT(ordem_dia.dat_ordem, '%d/%m/%Y') as dat_ordem,
        ordem_dia.num_ordem,
        ordem_dia.txt_observacao,
@@ -26,10 +27,11 @@ FROM
    ON sessao_plenaria.cod_sessao_plen = ordem_dia.cod_sessao_plen
   
   <dtml-sqlgroup where>
-    <dtml-sqltest cod_materia     column="ordem_dia.cod_materia"     op="=" type="int" optional><dtml-and> 
+    <dtml-sqltest cod_materia     column="ordem_dia.cod_materia"     op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_parecer     column="ordem_dia.cod_parecer"     op="=" type="int" optional><dtml-and> 
     <dtml-sqltest cod_sessao_plen column="ordem_dia.cod_sessao_plen" op="=" type="int" optional ><dtml-and>  
     <dtml-sqltest cod_ordem       column="ordem_dia.cod_ordem"       op="=" type="int" optional ><dtml-and>
-    <dtml-sqltest ind_excluido 	  column="ordem_dia.ind_excluido"    op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ind_excluido    column="ordem_dia.ind_excluido"    op="=" type="int" optional><dtml-and>
     <dtml-sqltest num_ordem                                          op="=" type="int" optional><dtml-and>
     <dtml-sqltest dat_ordem                                          op="=" type="nb"  optional><dtml-and>
     <dtml-sqltest tip_turno                                          op="=" type="int" optional><dtml-and>

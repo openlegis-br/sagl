@@ -523,8 +523,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
              writer.addpages(texto_pauta)
           lst_materia = []
           for materia in self.zsql.ordem_dia_obter_zsql(cod_sessao_plen=pauta.cod_sessao_plen,ind_excluido=0):
-              cod_materia = int(materia.cod_materia)
-              lst_materia.append(cod_materia)
+              if materia.cod_materia != None and materia.cod_materia != '':
+                 cod_materia = int(materia.cod_materia)
+                 lst_materia.append(cod_materia)
           lst_materia = [i for n, i in enumerate(lst_materia) if i not in lst_materia[n + 1:]]
           for cod_materia in lst_materia:
               if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_redacao_final.pdf'):
@@ -1740,7 +1741,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if tipo_proposicao != 'Parecer' and tipo_proposicao != 'Parecer de Comissão' and page == 0:
                pdf_page.mergePage(new_pdf2.getPage(0))
             # qrcode e margem direita em todas as páginas
-            if self.sapl_documentos.props_sagl.restpki_access_token!='' and cod_validacao_doc != '':
+            if self.sapl_documentos.props_sagl.restpki_access_token != '' and cod_validacao_doc != '':
                for wm in range(new_pdf.getNumPages()):
                    watermark_page = new_pdf.getPage(wm)
                    if page == wm:

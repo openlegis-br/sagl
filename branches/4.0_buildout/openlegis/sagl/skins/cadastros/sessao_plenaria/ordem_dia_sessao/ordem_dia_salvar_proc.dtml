@@ -42,7 +42,7 @@
   </dtml-in>
 </dtml-unless>
 
-<dtml-if cod_materia>  
+<dtml-if expr="cod_materia and not _.has_key('cod_parecer')">  
  <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, cod_materia = cod_materia, tip_turno = lst_tip_turno, ind_excluido=0)">
       <dtml-if hdn_cod_ordem>
         <dtml-if expr="cod_ordem == hdn_cod_ordem">
@@ -53,6 +53,7 @@
          <dtml-unless contador>
            <dtml-let mensagem="'A matéria, no turno informado, já faz parte da Ordem do Dia desta Sessão Plenária.'" tipo_mensagem="'danger'">
              <dtml-var mensagem_emitir>
+             <dtml-var REQUEST>
            </dtml-let>  
            <dtml-call expr="REQUEST.set('contador',1)">
            <dtml-call expr="REQUEST.set('marcador',1)">
@@ -62,10 +63,10 @@
 </dtml-if>
 
 <dtml-if marcador>
-  <dtml-if cod_materia>
+  <dtml-if expr="cod_materia and not _.has_key('cod_parecer')">
     <dtml-if expr="marcador == cod_materia">
      <dtml-try>
-        <dtml-call expr="metodo(cod_ordem = cod_ordem,
+        <dtml-call expr="metodo(cod_ordem = hdn_cod_ordem,
                                 cod_sessao_plen = cod_sessao_plen,
                                 cod_materia = cod_materia,
                                 dat_ordem = pysc.data_converter_pysc(data=txt_dat_ordem),
@@ -97,5 +98,38 @@
            </dtml-let>
      </dtml-try>
     </dtml-if>
+<dtml-elif cod_parecer>
+   <dtml-try>
+      <dtml-call expr="metodo(cod_ordem = cod_ordem,
+                              cod_sessao_plen = cod_sessao_plen,
+                              cod_parecer = cod_parecer,
+                              dat_ordem = pysc.data_converter_pysc(data = txt_dat_ordem),
+                              num_ordem = txt_num_ordem,
+                              tip_votacao = rad_tip_votacao,
+                              tip_quorum =  lst_tip_quorum,
+                              tip_turno   = lst_tip_turno,
+                              txt_observacao = txa_txt_observacao)">
+   <dtml-except>
+         <dtml-let mensagem="'Não foi possível incluir o parecer de comissão. Tente novamente.'" tipo_mensagem="'danger'">
+           <dtml-var REQUEST>
+         </dtml-let>
+   <dtml-else>
+         <dtml-if hdn_cod_ordem>
+             <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_ordem = hdn_cod_ordem)">
+                 <dtml-call expr="REQUEST.set('dat_ordem', dat_ordem)">
+             </dtml-in>
+         <dtml-else>
+             <dtml-in expr="zsql.ordem_dia_obter_zsql(cod_parecer = cod_parecer,
+                                       cod_sessao_plen = cod_sessao_plen,
+                                       ind_excluido=0)">
+                 <dtml-call expr="REQUEST.set('dat_ordem', dat_ordem)">
+              </dtml-in>
+         </dtml-if>          
+         <dtml-let mensagem="'Parecer de comissão salvo com sucesso!'">
+            <dtml-var mensagem_emitir>
+         </dtml-let>
+   </dtml-try>    
   </dtml-if>
 </dtml-if>
+
+

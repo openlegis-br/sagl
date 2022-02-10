@@ -50,7 +50,7 @@ def paraStyle():
     tmp+='\t\t<paraStyle name="P1" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="10" alignment="LEFT"/>\n'
     tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="10" leading="12" alignment="JUSTIFY"/>\n'
-    tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
+    tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10.0" leading="13" alignment="CENTER"/>\n'
     tmp+='\t</stylesheet>\n'
     return tmp
 
@@ -95,7 +95,10 @@ def pauta(lst_splen, lst_pauta):
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
         if dic['id_materia']!=None:
-            tmp+='\t\t<para style="P4"><b><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</b></para>\n'
+            if dic['cod_materia']!='':
+               tmp+='\t\t<para style="P4"><b><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</b></para>\n'
+            if dic['cod_parecer']!='':               
+               tmp+='\t\t<para style="P4"><b><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + ', que '+ dic['txt_materia'] + '</b></para>\n'
             tmp+='\t\t<para style="P3" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'

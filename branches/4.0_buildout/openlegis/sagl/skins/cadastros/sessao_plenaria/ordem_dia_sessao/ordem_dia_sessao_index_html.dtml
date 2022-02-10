@@ -66,6 +66,8 @@ function aprovacao_lote(){
           <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
         </dtml-if previous-sequence>
         </dtml-if sequence-start>
+
+  <dtml-if cod_materia>            
           <tr>
             <td>
                <span class="edit" style="cursor: pointer" id="<dtml-var cod_ordem>"><dtml-var num_ordem></span>
@@ -197,6 +199,52 @@ function aprovacao_lote(){
         </tr>
      </dtml-if>
    </dtml-in>
+
+ <dtml-elif cod_parecer>
+        <tr>
+            <td>
+               <span class="edit" style="cursor: pointer" id="<dtml-var cod_ordem>"><dtml-var num_ordem></span>
+            </td>        
+               <td>
+                 <dtml-in expr="zsql.relatoria_obter_zsql(cod_relatoria=cod_parecer,ind_excluido=0)">
+                    <dtml-call "REQUEST.set('cod_materia_sel', cod_materia)">
+                    <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                       <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_sel)">
+                          <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Item" data-src="ordem_dia_parecer_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&modal=1">
+                             <b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> ao <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b>
+                          </a>
+                       </dtml-in>
+                       - <b><dtml-var nom_comissao></b>
+                    </dtml-in>
+                   <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+                 </dtml-in>
+                  - <dtml-var txt_observacao>
+               </td>
+               <td>
+             <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_ordem=cod_ordem, cod_parecer=cod_parecer, ind_excluido=0)">
+                <dtml-if expr="(_.has_key(cod_votacao) or cod_parecer==cod_parecer) and tip_resultado_votacao!=0">
+                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)" prefix="votacao_parecer">
+                    <a href="#" class="btn btn-block btn-sm btn-primary mb-0" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Votação" data-src="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_parecer=<dtml-var cod_parecer>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>&modal=1">
+                    <i class="fas fa-arrow-circle-right"></i> 
+                    <dtml-var nom_resultado></a>
+                    <dtml-if votacao_observacao>
+                        <btn class="btn btn-block btn-sm btn-link" data-toggle="popover" title="Observações da Votação" data-trigger="hover" data-placement="bottom" data-content="<dtml-var votacao_observacao>"><i class="fas fa-info-circle"></i> Observações</btn>  
+                    </dtml-if>
+                </dtml-in>
+                <dtml-elif expr="(_.has_key(cod_votacao) and cod_parecer==cod_parecer) or tip_resultado_votacao==0">
+                    <a href="#" class="btn btn-block btn-sm btn-primary mb-0" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Votação" data-src="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_parecer=<dtml-var cod_parecer>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>&modal=1"><i class="fas fa-edit"></i> Votação</a>
+                </dtml-if>
+                <dtml-else>
+                    <a href="#" class="btn btn-block btn-sm btn-primary mb-0" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Votação" data-src="votacao/votacao_form?cod_ordem=<dtml-var cod_ordem>&cod_parecer=<dtml-var cod_parecer>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>&modal=1"><i class="fas fa-edit"></i> Votação</a>                
+              <dtml-if next-sequence>
+              </dtml-if>
+              </dtml-in>
+               </td>
+        </tr>
+ </dtml-if>
+
+
+
     <dtml-if sequence-end>
          <tbody>
      </table>
@@ -218,6 +266,7 @@ function aprovacao_lote(){
 
 <div class="text-left">
   <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Matéria da Ordem do Dia" data-src="ordem_dia_form?cod_sessao_plen=<dtml-var cod_sessao_plen>&modal=1" ><i class="fa fa-plus"></i> Matéria</a>
+  <a class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Matéria da Ordem do Dia" data-src="ordem_dia_parecer_form?cod_sessao_plen=<dtml-var cod_sessao_plen>&modal=1" ><i class="fa fa-plus"></i> Parecer</a>
 <dtml-comment>
     <input class="btn btn-primary" type="button" name="btn_lote" value="Aprovação em Lote" onClick="aprovacao_lote()" />  
 </dtml-comment>

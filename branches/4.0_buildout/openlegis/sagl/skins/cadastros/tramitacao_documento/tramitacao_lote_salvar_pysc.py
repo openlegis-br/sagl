@@ -40,8 +40,8 @@ if lst_ultimas != []:
            context.zsql.trans_begin_zsql()
            context.zsql.tramitacao_administrativo_ind_ultima_atualizar_zsql(cod_documento = dic['cod_documento'], cod_tramitacao = dic['cod_tramitacao'], ind_ult_tramitacao = 0)
            context.zsql.tramitacao_adm_registrar_recebimento_zsql(cod_tramitacao = dic['cod_tramitacao'], cod_usuario_corrente = hdn_cod_usuario_local)    
-           context.pysc.atualiza_indicador_tramitacao_documento_pysc(cod_documento = dic['cod_documento'], cod_status = lst_cod_status) 
            context.zsql.trans_commit_zsql()           
+           context.pysc.atualiza_indicador_tramitacao_documento_pysc(cod_documento = dic['cod_documento'], cod_status = lst_cod_status) 
        except:
            context.zsql.trans_rollback_zsql()
 
@@ -66,12 +66,7 @@ for item in cod_documento:
        context.zsql.trans_rollback_zsql() 
 
     if context.dbcon_logs:
-       try:
-          context.zsql.trans_begin_zsql() 
-          context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'tramitacao_documento', metodo = 'tramitacao_lote_salvar_pysc', cod_registro = item, IP = context.pysc.get_ip())
-          context.zsql.trans_commit_zsql()          
-       except:
-          context.zsql.trans_rollback_zsql()   
+       context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'tramitacao_documento', metodo = 'tramitacao_lote_salvar_pysc', cod_registro = item, IP = context.pysc.get_ip())
 
 
 lst_novas = []
@@ -84,6 +79,11 @@ for item in cod_documento:
 
 for dic in lst_novas:
     context.pysc.envia_acomp_documento_pysc(cod_documento = dic['cod_documento'])         
-    hdn_url = 'tramitacao_mostrar_proc?hdn_cod_tramitacao=' + str(dic['cod_tramitacao'])+ '&cod_documento=' + str(dic['cod_documento'])+'&lote=1'
-    context.relatorios.pdf_tramitacao_administrativo_preparar_pysc(hdn_cod_tramitacao = dic['cod_tramitacao'], hdn_url = hdn_url)
+    #hdn_url = 'tramitacao_mostrar_proc?hdn_cod_tramitacao=' + str(dic['cod_tramitacao'])+ '&cod_documento=' + str(dic['cod_documento'])+'&lote=1'
+    #context.relatorios.pdf_tramitacao_administrativo_preparar_pysc(hdn_cod_tramitacao = dic['cod_tramitacao'], hdn_url = hdn_url)
 
+mensagem = 'Tramitação em lote realizada com sucesso!'
+mensagem_obs = ''
+url = context.portal_url() + '/cadastros/tramitacao_documento/itens_enviados_html'
+redirect_url=context.portal_url()+'/mensagem_emitir?tipo_mensagem=success&mensagem=' + mensagem + '&mensagem_obs=' + mensagem_obs + '&url=' + url
+REQUEST.RESPONSE.redirect(redirect_url)
