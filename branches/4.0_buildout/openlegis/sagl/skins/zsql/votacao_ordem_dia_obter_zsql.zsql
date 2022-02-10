@@ -1,55 +1,56 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_ordem="" cod_materia="" cod_parecer="" cod_emenda="" cod_subemenda="" cod_substitutivo="" num_ordem="" dat_ordem="" cod_sessao_plen="" tip_turno ind_excluido=0
+arguments : cod_ordem="" cod_materia="" cod_parecer="" cod_emenda="" cod_subemenda="" cod_substitutivo="" num_ordem="" dat_ordem="" cod_sessao_plen="" ind_excluido=0 
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
-SELECT 
-   REPLACE(ordem_dia.cod_ordem,  'L', '') as cod_ordem,
-   REPLACE(ordem_dia.cod_materia,    'L', '') as cod_materia,
-   REPLACE(registro_votacao.cod_votacao,    'L', '') as cod_votacao,
-   REPLACE(registro_votacao.cod_parecer,    'L', '') as cod_parecer,
-   REPLACE(registro_votacao.cod_emenda,    'L', '') as cod_emenda,
-   REPLACE(registro_votacao.cod_subemenda,    'L', '') as cod_subemenda,
-   REPLACE(registro_votacao.cod_substitutivo,    'L', '') as cod_substitutivo,
-   DATE_FORMAT(ordem_dia.dat_ordem, '%d/%m/%Y') as dat_ordem,
-   ordem_dia.num_ordem,
-   ordem_dia.tip_turno,
-   ordem_dia.tip_votacao,
-   ordem_dia.txt_observacao as ordem_observacao,
-   registro_votacao.tip_resultado_votacao,
-   registro_votacao.txt_observacao as votacao_observacao,
-   registro_votacao.num_votos_nao as num_votos_nao,
-   registro_votacao.num_votos_sim as num_votos_sim,
-   registro_votacao.num_abstencao as num_abstencao,
-   sessao_plenaria.cod_sessao_plen
+SELECT DISTINCT
+    REPLACE(ordem_dia.cod_ordem,  'L', '') as cod_ordem,
+    REPLACE(ordem_dia.cod_materia,    'L', '') as cod_materia,
+    REPLACE(registro_votacao.cod_votacao,    'L', '') as cod_votacao,
+    REPLACE(registro_votacao.cod_emenda,    'L', '') as cod_emenda,
+    REPLACE(registro_votacao.cod_subemenda,    'L', '') as cod_subemenda,
+    REPLACE(registro_votacao.cod_substitutivo,    'L', '') as cod_substitutivo,
+    DATE_FORMAT(ordem_dia.dat_ordem, '%d/%m/%Y') as dat_ordem,
+    ordem_dia.num_ordem,
+    ordem_dia.tip_votacao,
+    ordem_dia.txt_observacao as ordem_observacao,
+    registro_votacao.tip_resultado_votacao,
+    registro_votacao.txt_observacao as votacao_observacao,
+    registro_votacao.num_votos_nao as num_votos_nao,
+    registro_votacao.num_votos_sim as num_votos_sim,
+    registro_votacao.num_abstencao as num_abstencao
 
 FROM
    ordem_dia
-   LEFT JOIN sessao_plenaria ON
-     sessao_plenaria.cod_sessao_plen = ordem_dia.cod_sessao_plen
    LEFT JOIN registro_votacao ON
-     registro_votacao.cod_ordem = ordem_dia.cod_ordem 
-
+    registro_votacao.cod_ordem = ordem_dia.cod_ordem
+    <dtml-if cod_materia>
+       AND registro_votacao.cod_materia = ordem_dia.cod_materia
+    </dtml-if>
+    <dtml-if cod_parecer>
+       AND registro_votacao.cod_parecer = ordem_dia.cod_parecer
+    </dtml-if>
 
 <dtml-sqlgroup where>
-   <dtml-sqltest cod_materia  column="ordem_dia.cod_materia"   op="=" type="int" optional><dtml-and>
-   <dtml-sqltest cod_ordem    column="ordem_dia.cod_ordem"     op="=" type="int" optional ><dtml-and>
-   <dtml-sqltest cod_parecer  column="ordem_dia.cod_parecer"   op="=" type="int" optional ><dtml-and>
-   <dtml-sqltest cod_votacao  column="registro_votacao.cod_votacao"   op="=" type="int" optional><dtml-and>
-   <dtml-sqltest ordem_dia.ind_excluido op="=" type="int" optional><dtml-and>
-   <dtml-sqltest num_ordem    op="=" type="int" optional><dtml-and>
-   <dtml-sqltest dat_ordem    op="=" type="nb" optional><dtml-and>
-   <dtml-sqltest tip_turno    op="=" type="int" optional><dtml-and>
-   <dtml-sqltest cod_sessao_plen column="ordem_dia.cod_sessao_plen"   op="=" type="int" optional><dtml-and>
-   <dtml-sqltest ind_excluido column="registro_votacao.ind_excluido" op="=" type="int">
-
+    <dtml-sqltest cod_materia  column="ordem_dia.cod_materia"   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest cod_ordem    column="ordem_dia.cod_ordem"    op="=" type="int" optional ><dtml-and>
+    <dtml-sqltest cod_votacao  column="registro_votacao.cod_votacao"   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest num_ordem op="=" type="int" optional><dtml-and>
+    <dtml-sqltest dat_ordem op="=" type="nb" optional><dtml-and>
+    <dtml-sqltest cod_sessao_plen column="ordem_dia.cod_sessao_plen"   op="=" type="int" optional><dtml-and>
+    <dtml-sqltest ind_excluido column="registro_votacao.ind_excluido" op="=" type="int"><dtml-and>
+    <dtml-sqltest ind_excluido column="ordem_dia.ind_excluido" op="=" type="int">
+    <dtml-if cod_parecer>
+      and ordem_dia.cod_parecer = <dtml-sqlvar cod_parecer type="int">
+    <dtml-else>
+      and ordem_dia.cod_parecer is null 
+    </dtml-if>
     <dtml-if expr="cod_emenda">
       and cod_emenda = <dtml-sqlvar cod_emenda type="int">
     <dtml-else>
       and cod_emenda is null 
     </dtml-if>
-    
     <dtml-if cod_subemenda>
       and cod_subemenda = <dtml-sqlvar cod_subemenda type="int">
     <dtml-else>
@@ -60,7 +61,6 @@ FROM
     <dtml-else>
       and cod_substitutivo is null 
     </dtml-if>
-    and registro_votacao.cod_votacao IS NOT NULL
 </dtml-sqlgroup>
 
 GROUP BY 
@@ -68,4 +68,3 @@ GROUP BY
 
 ORDER BY 
     dat_ordem, num_ordem
-
