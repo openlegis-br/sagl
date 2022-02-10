@@ -57,14 +57,14 @@ if context.REQUEST['cod_sessao_plen']!='':
               lista_autor.append(nome_autor)
           dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])   
 
-          lst_relator = [] # lista contendo os relatores da matéria  
-          for relatoria in context.zsql.relatoria_obter_zsql(cod_materia=ordem.cod_materia):
-              parlamentar = context.zsql.parlamentar_obter_zsql(cod_parlamentar=relatoria.cod_parlamentar)[0]
-              comissao = context.zsql.comissao_obter_zsql(cod_comissao=relatoria.cod_comissao)[0]
-              lst_relator.append(parlamentar.nom_parlamentar+" - "+comissao.nom_comissao)
-          if not len(lst_relator):
-              lst_relator = ['']            
-          dic["lst_relator"] = lst_relator
+#          lst_relator = [] # lista contendo os relatores da matéria  
+#          for relatoria in context.zsql.relatoria_obter_zsql(cod_materia=ordem.cod_materia):
+#              parlamentar = context.zsql.parlamentar_obter_zsql(cod_parlamentar=relatoria.cod_parlamentar)[0]
+#              comissao = context.zsql.comissao_obter_zsql(cod_comissao=relatoria.cod_comissao)[0]
+#              lst_relator.append(parlamentar.nom_parlamentar+" - "+comissao.nom_comissao)
+#          if not len(lst_relator):
+#              lst_relator = ['']            
+#          dic["lst_relator"] = lst_relator
 
           dic["substitutivo"] = ''
           lst_qtde_substitutivos=[]
