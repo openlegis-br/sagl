@@ -120,10 +120,54 @@ function aprovacao_lote(){
               </dtml-in>
             </td>
         </tr>
+
+   <dtml-call "REQUEST.set('num_ordem_materia', num_ordem)">
+   <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+        <dtml-call "REQUEST.set('contador_sub', int(_['sequence-number']))">
+        <tr>
+            <td><dtml-var num_ordem_materia>.<dtml-var contador_sub></td>
+            <td>
+               <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Relatoria" data-src="<dtml-var portal_url>/cadastros/comissao/materia/relatoria_mostrar_proc?cod_relatoria=<dtml-var cod_relatoria>&cod_materia=<dtml-var cod_materia missing>&cod_comissao=<dtml-var cod_comissao_sel missing>&num_ordem=<dtml-var num_ordem missing>&modal=1"> 
+                <b>Parecer da <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)"><dtml-var nom_comissao></dtml-in> nº <dtml-var num_parecer>/<dtml-var ano_parecer></b>
+              </a> -
+              <dtml-in expr="zsql.tipo_fim_relatoria_obter_zsql(tip_fim_relatoria=tip_fim_relatoria)">
+                 <dtml-if expr="tip_conclusao == 'F'">
+                    <b>Favorável à aprovação da matéria.</b>
+                 <dtml-elif expr="tip_conclusao == 'C'">
+                    <b>Contrário à aprovação da matéria.</b>                 
+                 </dtml-if>
+              </dtml-in>
+              <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                 Relatoria: <dtml-var nom_parlamentar>
+              </dtml-in>
+            </td>
+            <td>
+             <dtml-in expr="zsql.votacao_ordem_dia_obter_zsql(cod_sessao_plen=cod_sessao_plen,cod_materia=cod_materia, cod_parecer=cod_parecer, cod_ordem=cod_ordem, ind_excluido=0)">
+                <dtml-if expr="(_.has_key(cod_votacao) and cod_parecer==cod_parecer) or tip_resultado_votacao!=0">
+                <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao, ind_excluido=0)">
+                    <a href="#" class="btn btn-block btn-sm btn-primary mb-0" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Votação" data-src="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_parecer=<dtml-var cod_relatoria>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>&modal=1">
+                    <i class="fas fa-arrow-circle-right"></i> 
+                    <dtml-var nom_resultado></a>
+                    <dtml-if votacao_observacao>
+                      <btn class="btn btn-block btn-sm btn-link" data-toggle="popover" title="Observações da Votação" data-trigger="hover" data-placement="bottom" data-content="<dtml-var votacao_observacao>"><i class="fas fa-info-circle"></i> Observações</btn>  
+                    </dtml-if>
+                </dtml-in>
+                <dtml-elif expr="(_.has_key(cod_votacao) and cod_parecer==cod_parecer) or tip_resultado_votacao==0">
+                    <a href="#" class="btn btn-block btn-sm btn-primary mb-0" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Votação" data-src="votacao/votacao_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_parecer=<dtml-var cod_relatoria>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&cod_votacao=<dtml-var cod_votacao>&tip_sessao=<dtml-var tip_sessao>&modal=1"><i class="fas fa-edit"></i> Votação</a>
+                </dtml-if>
+                <dtml-else>
+                    <a href="#" class="btn btn-block btn-sm btn-primary mb-0" data-toggle="modal" data-target="#iFrameModal" data-title="Registro de Votação" data-src="votacao/votacao_form?cod_ordem=<dtml-var cod_ordem>&cod_materia=<dtml-var cod_materia>&cod_parecer=<dtml-var cod_relatoria>&tip_votacao=<dtml-var tip_votacao>&dat_sessao=<dtml-var dat_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>&num_legislatura=<dtml-var num_legislatura>&cod_sessao_leg=<dtml-var cod_sessao_leg>&tip_sessao=<dtml-var tip_sessao>&modal=1"><i class="fas fa-edit"></i> Votação</a> 
+              </dtml-in>
+            </td>
+        </tr>
+   </dtml-in>
+
    <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
-        <dtml-if sequence-start>
-           <dtml-call "REQUEST.set('contador_sub', int(_['sequence-number']))">
-        </dtml-if>
+           <dtml-if contador_sub>
+             <dtml-call "REQUEST.set('contador', int(contador_sub) + int(_['sequence-number']))">
+           <dtml-else>
+             <dtml-call "REQUEST.set('contador', int(_['sequence-number']))">
+           </dtml-if>
         <tr>
             <td><dtml-var num_ordem>.<dtml-var contador_sub></td>
             <td>
@@ -156,13 +200,11 @@ function aprovacao_lote(){
         </tr>
    </dtml-in>
    <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia, exc_pauta=0, ind_excluido=0)">
-
            <dtml-if contador_sub>
              <dtml-call "REQUEST.set('contador', int(contador_sub) + int(_['sequence-number']))">
            <dtml-else>
              <dtml-call "REQUEST.set('contador', int(_['sequence-number']))">
            </dtml-if>
-
     <dtml-if expr="exc_pauta!=1">
         <tr>
             <td><dtml-var num_ordem>.<dtml-var contador></td>
