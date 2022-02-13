@@ -57,14 +57,27 @@ if context.REQUEST['cod_sessao_plen']!='':
               lista_autor.append(nome_autor)
           dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])   
 
-#          lst_relator = [] # lista contendo os relatores da matéria  
-#          for relatoria in context.zsql.relatoria_obter_zsql(cod_materia=ordem.cod_materia):
-#              parlamentar = context.zsql.parlamentar_obter_zsql(cod_parlamentar=relatoria.cod_parlamentar)[0]
-#              comissao = context.zsql.comissao_obter_zsql(cod_comissao=relatoria.cod_comissao)[0]
-#              lst_relator.append(parlamentar.nom_parlamentar+" - "+comissao.nom_comissao)
-#          if not len(lst_relator):
-#              lst_relator = ['']            
-#          dic["lst_relator"] = lst_relator
+          dic["parecer"] = ''
+          lst_qtde_pareceres = []
+          lst_pareceres = []
+          for relatoria in context.zsql.relatoria_obter_zsql(cod_materia=ordem.cod_materia):
+              dic_parecer = {}
+              comissao = context.zsql.comissao_obter_zsql(cod_comissao=relatoria.cod_comissao)[0]
+              relator = context.zsql.parlamentar_obter_zsql(cod_parlamentar=relatoria.cod_parlamentar)[0]
+              resultado = context.zsql.tipo_fim_relatoria_obter_zsql(tip_fim_relatoria=relatoria.tip_fim_relatoria)[0]
+              dic_parecer['relatoria'] = 'Relatoria: ' + relator.nom_parlamentar
+              dic_parecer['comissao'] = comissao.nom_comissao
+              if relatoria.tip_conclusao == 'F':
+                 dic_parecer['conclusao'] = 'Favorável à aprovação da matéria.'
+              elif relatoria.tip_conclusao == 'C':
+                 dic_parecer['conclusao'] = 'Contrário à aprovação da matéria.'
+              dic_parecer['resultado'] = resultado.des_fim_relatoria
+              dic_parecer["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/parecer_comissao/' + str(relatoria.cod_relatoria) + '_parecer.pdf' + '">' + 'Parecer da ' + comissao.nom_comissao + ' nº ' + str(relatoria.num_parecer) + '/' + str(relatoria.ano_parecer) + '</link>'
+              if resultado.des_fim_relatoria != 'Rejeitado':
+                 lst_pareceres.append(dic_parecer)
+                 lst_qtde_pareceres.append(relatoria.cod_relatoria)
+          dic["pareceres"] = lst_pareceres
+          dic["parecer"] = len(lst_qtde_pareceres)
 
           dic["substitutivo"] = ''
           lst_qtde_substitutivos=[]
@@ -101,7 +114,7 @@ if context.REQUEST['cod_sessao_plen']!='':
                       nome_autor = autor['nom_autor_join']
                   lista_autor.append(nome_autor)
               autoria = ', '.join(['%s' % (value) for (value) in lista_autor])
-              dic_emenda["id_emenda"] = '<link href="' + context.sapl_documentos.absolute_url() + '/emenda/' + str(emenda.cod_emenda) + '_emenda.pdf' + '">' + 'EMENDA Nº ' + str(emenda.num_emenda) + ' (' + emenda.des_tipo_emenda.decode('utf-8').upper() + ')</link>'
+              dic_emenda["id_emenda"] = '<link href="' + context.sapl_documentos.absolute_url() + '/emenda/' + str(emenda.cod_emenda) + '_emenda.pdf' + '">' + 'Emenda nº ' + str(emenda.num_emenda) + ' (' + emenda.des_tipo_emenda + ')</link>'
               dic_emenda["txt_ementa"] = emenda.txt_ementa
               dic_emenda["autoria"] = autoria
               lst_emendas.append(dic_emenda)
@@ -110,7 +123,7 @@ if context.REQUEST['cod_sessao_plen']!='':
           dic["emendas"] = lst_emendas
           dic["emenda"] = len(lst_qtde_emendas)
 
-        if ordem.cod_parecer != None:
+        elif ordem.cod_parecer != None:
             for parecer in context.zsql.relatoria_obter_zsql(cod_relatoria=ordem.cod_parecer):
                 materia = context.zsql.materia_obter_zsql(cod_materia=parecer.cod_materia)[0]
                 dic["cod_materia"] = ''
@@ -140,7 +153,9 @@ if context.REQUEST['cod_sessao_plen']!='':
                     for field in fields:
                         nome_autor = autor['nom_autor_join']
                     lista_autor.append(nome_autor)
-                dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])             
+                dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])  
+                dic["pareceres"] = ''
+                dic["parecer"] = ''                        
                 dic["substitutivo"] = ''
                 dic["substitutivos"] = ''
                 dic["emenda"] = ''
