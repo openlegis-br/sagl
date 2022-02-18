@@ -60,7 +60,7 @@
     <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao  = cod_ult_tramitacao, cod_materia = hdn_cod_materia, ind_ult_tramitacao = 0)">
     <dtml-call expr="zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao=cod_ult_tramitacao, cod_usuario_corrente=hdn_cod_usuario_local)">      
   </dtml-if>
-
+  
   <dtml-call expr="zsql.trans_commit_zsql()">
 
   <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=hdn_cod_materia, cod_status=lst_cod_status)">
@@ -153,6 +153,14 @@
     <dtml-call expr="cadastros.tramitacao_materia.tramitacao_juntar_pdf(cod_tramitacao=hdn_cod_tramitacao)">
   </dtml-if>
 </dtml-if>
+
+<dtml-comment>
+<dtml-in expr="zsql.status_tramitacao_obter_zsql(cod_status=lst_cod_status, ind_excluido=0)">
+  <dtml-if expr="des_status =='Deferido'">
+     <dtml-call expr="modelo_proposicao.requerimento_aprovar(cod_sessao_plen=0, nom_resultado=des_status, cod_materia=hdn_cod_materia)">
+  </dtml-if>
+</dtml-in>
+</dtml-comment>
 
 <dtml-if dbcon_logs>
   <dtml-call expr="zsql.logs_registrar_zsql(

@@ -66,16 +66,22 @@ for item in cod_materia:
         dic_novas['cod_materia'] = int(tramitacao.cod_materia)
         dic_novas['cod_tramitacao'] = int(tramitacao.cod_tramitacao)
         dic_novas['cod_destino'] = int(tramitacao.cod_unid_tram_dest)
+        dic_novas['des_status'] = int(tramitacao.des_status)
         lst_novas.append(dic_novas)
 
 
 for dic in lst_novas:
+    #carimbo deferimento
+    #if dic['des_status'] == 'Deferido':
+    #   context.modelo_proposicao.requerimento_aprovar(cod_sessao_plen=0, nom_resultado=dic['des_status'], cod_materia=dic['cod_materia'])
+
     # protocolo executivo
     #for unidade in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=dic['cod_destino'], ind_leg=1, ind_excluido=0):
     #    if 'Prefeitura' in unidade.nom_unidade_join or 'Executivo' in unidade.nom_unidade_join:
     #        resultado_protocolo = st.protocolo_prefeitura(dic['cod_materia']) 
     #        context.zsql.tramitacao_prefeitura_registrar_zsql(cod_tramitacao = dic['cod_tramitacao'], texto_protocolo=resultado_protocolo)           
     # fim protocolo executivo
+
     context.pysc.envia_tramitacao_autor_pysc(cod_materia = dic['cod_materia'])
     context.pysc.envia_acomp_materia_pysc(cod_materia = dic['cod_materia'])         
     #hdn_url = '/tramitacao_mostrar_proc?hdn_cod_tramitacao=' + str(dic['cod_tramitacao'])+ '&hdn_cod_materia=' + str(dic['cod_materia'])+'&lote=1'
