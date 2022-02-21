@@ -66,7 +66,7 @@ for item in cod_materia:
         dic_novas['cod_materia'] = int(tramitacao.cod_materia)
         dic_novas['cod_tramitacao'] = int(tramitacao.cod_tramitacao)
         dic_novas['cod_destino'] = int(tramitacao.cod_unid_tram_dest)
-        dic_novas['des_status'] = int(tramitacao.des_status)
+        dic_novas['des_status'] = tramitacao.des_status
         lst_novas.append(dic_novas)
 
 
