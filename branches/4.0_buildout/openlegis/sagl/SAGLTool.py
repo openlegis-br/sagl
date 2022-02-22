@@ -2403,6 +2403,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                for parlamentar in self.zsql.parlamentar_obter_zsql(cod_parlamentar=composicao.cod_parlamentar):
                    nom_presidente = str(parlamentar.nom_parlamentar.decode('utf-8').upper())  
            if nom_presidente == '':
+              data = DateTime().strftime('%d/%m/%Y')
+              data1 = context.pysc.data_converter_pysc(data)
               for sleg in self.zsql.periodo_comp_mesa_obter_zsql(data=data1):
                   for cod_presidente in self.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp, cod_cargo=1):
                       for presidencia in self.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
