@@ -16,7 +16,7 @@ nao_votadas=[]
 anuladas = []
 
 for item in context.zsql.ordem_dia_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0):
-    if item.cod_materia !='' or item.cod_materia !=None:
+    if item.cod_materia !='' and item.cod_materia !=None:
        for materia in context.zsql.materia_obter_zsql(cod_materia=item.cod_materia, des_tipo_materia='Requerimento', ind_excluido=0):
            dic_materias = {}
            for votacao in context.zsql.votacao_ordem_dia_obter_zsql(cod_ordem=item.cod_ordem, cod_materia=item.cod_materia):
