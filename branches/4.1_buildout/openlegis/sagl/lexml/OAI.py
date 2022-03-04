@@ -7,7 +7,7 @@ import oaipmh.metadata
 import oaipmh.server
 import oaipmh.error
 
-from .metadata import OAILEXML
+from metadata import OAILEXML
 
 
 def get_writer(prefix, config={}):
@@ -64,8 +64,7 @@ class OAIServer(object):
             result.append((prefix, schema, ns))
         return result
     
-    def listRecords(self, metadataPrefix, set=None, from_=None, until=None,
-                    cursor=0, batch_size=10):
+    def listRecords(self, metadataPrefix=None, set=None, from_=None, until=None, cursor=0, batch_size=10):
 
         self._checkMetadataPrefix(metadataPrefix)
         for record in self._listQuery(set, from_, until, cursor, batch_size):
@@ -99,11 +98,11 @@ class OAIServer(object):
         sets = []
         deleted = record['record']['deleted']
 
-        return oaipmh.common.Header(oai_id, datestamp, sets, deleted)
+        return oaipmh.common.Header(None, oai_id, datestamp, sets, deleted)
 
     def _createHeaderAndMetadata(self, record):
         header = self._createHeader(record)
-        metadata = oaipmh.common.Metadata(record['metadata'])
+        metadata = oaipmh.common.Metadata(None, record['metadata'])
         metadata.record = record
         return header, metadata
     
