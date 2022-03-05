@@ -30,19 +30,18 @@ max_cache : 100
        tipo_norma_juridica.voc_lexml
 
   FROM
-       norma_juridica, tipo_norma_juridica
+       norma_juridica
+       LEFT JOIN tipo_norma_juridica ON norma_juridica.tip_norma = tipo_norma_juridica.tip_norma
 
 <dtml-sqlgroup where>      
-  norma_juridica.tip_norma = tipo_norma_juridica.tip_norma and tipo_norma_juridica.ind_excluido = 0 and
-  norma_juridica.dat_norma is not null and
-  tipo_norma_juridica.voc_lexml != '' and
-  norma_juridica.tip_esfera_federacao is not null and
-  norma_juridica.timestamp != '0000-00-00' <dtml-and>
+  norma_juridica.dat_norma IS NOT NULL AND
+  tipo_norma_juridica.voc_lexml != '' AND
+  norma_juridica.tip_esfera_federacao is not null AND
+  norma_juridica.timestamp IS NOT NULL <dtml-and>
   <dtml-sqltest cod_norma column="norma_juridica.cod_norma" op="=" type="int" optional> <dtml-and>
   <dtml-sqltest num_norma column="norma_juridica.num_norma" op="=" type="int" optional> <dtml-and>
-  <dtml-sqltest tip_esfera_federacao column="norma_juridica.tip_esfera_federacao" op="=" type="string" optional> <dtml-and>
-  <dtml-sqltest from_date op=">=" type="string" column="norma_juridica.timestamp" optional> <dtml-and>
-  <dtml-sqltest until_date op="<=" type="string" column="norma_juridica.timestamp" optional>
+  <dtml-sqltest from_date op=">=" type="nb" column="norma_juridica.timestamp" optional> <dtml-and>
+  <dtml-sqltest until_date op="<=" type="nb" column="norma_juridica.timestamp" optional>
 </dtml-sqlgroup>
 
 LIMIT <dtml-var offset>,<dtml-var batch_size>
