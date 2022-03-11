@@ -1422,27 +1422,29 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arquivo = cStringIO.StringIO(str(arq.data))
            texto_documento = PdfReader(arquivo, decompress=False).pages
            writer.addpages(texto_documento)
-        for docadm in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0):
-           cod_documento_acessorio = docadm.cod_documento_acessorio
-           if hasattr(self.sapl_documentos.administrativo, str(cod_documento_acessorio) + '.pdf'):
-              doc = getattr(self.sapl_documentos.administrativo, str(cod_documento_acessorio) + '.pdf')
-              arquivo_doc = cStringIO.StringIO(str(doc.data))
-              texto_doc = PdfReader(arquivo_doc, decompress=False).pages
-              writer.addpages(texto_doc)
-        for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento,rd_ordem='1',ind_excluido=0):
-            tramitacao = tram.cod_tramitacao
-            if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf'):
-               tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram.pdf')
-               existe_arquivo = 1
-            elif hasattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf'):
-               tram = getattr(self.sapl_documentos.administrativo.tramitacao, str(tramitacao) + '_tram_signed.pdf')
-               existe_arquivo = 1
-            else:
-               existe_arquivo = 0
-            if existe_arquivo == 1:
-               arquivo_tram = cStringIO.StringIO(str(tram.data))
-               texto_tramitacao = PdfReader(arquivo_tram).pages
-               writer.addpages(texto_tramitacao)
+        anexos = []
+        for docadm in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=documento.cod_documento, ind_excluido=0):
+           if hasattr(self.sapl_documentos.administrativo, str(docadm.cod_documento_acessorio) + '.pdf'):
+              dic_anexo = {}
+              dic_anexo["data"] = self.pysc.data_converter_pysc(docadm.dat_documento)
+              dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(docadm.cod_documento_acessorio) + '.pdf')
+              anexos.append(dic_anexo)
+        for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=documento.cod_documento, rd_ordem='1', ind_excluido=0):
+            if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = self.pysc.data_converter_pysc(tram.dat_tramitacao)
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
+               anexos.append(dic_anexo)
+            elif hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = self.pysc.data_converter_pysc(tram.dat_tramitacao)
+               dic_anexo["arquivo"] = getattr(selg.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf')
+               anexos.append(dic_anexo)
+        anexos.sort(key=lambda dic: dic['data'])
+        for dic in anexos:
+            arquivo_doc = cStringIO.StringIO(str(dic['arquivo'].data))
+            texto_anexo = PdfReader(arquivo_doc).pages
+            writer.addpages(texto_anexo)
         output_file_pdf = cStringIO.StringIO()
         writer.write(output_file_pdf)
         output_file_pdf.seek(0)
@@ -1507,64 +1509,53 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arquivo = cStringIO.StringIO(str(arq.data))
            texto_materia = PdfReader(arquivo, decompress=False).pages
            writer.addpages(texto_materia)
+        anexos = []
         for substitutivo in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-            subst = substitutivo.cod_substitutivo
-            if hasattr(self.sapl_documentos.substitutivo, str(subst) + '_substitutivo.pdf'):
-               subst = getattr(self.sapl_documentos.substitutivo, str(subst) + '_substitutivo.pdf')
-               arquivo_subst = cStringIO.StringIO(str(subst.data))
-               texto_subst = PdfReader(arquivo_subst).pages
-               writer.addpages(texto_subst)
+            if hasattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = self.pysc.data_converter_pysc(substitutivo.dat_apresentacao)
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf')
+               anexos.append(dic_anexo)
         for eme in self.zsql.emenda_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-            emenda = eme.cod_emenda
-            if hasattr(self.sapl_documentos.emenda, str(emenda) + '_emenda.pdf'):
-               pdf_emenda = getattr(self.sapl_documentos.emenda, str(emenda) + '_emenda.pdf')
-               arquivo_emenda = cStringIO.StringIO(str(pdf_emenda.data))
-               texto_emenda = PdfReader(arquivo_emenda).pages
-               writer.addpages(texto_emenda)
+            if hasattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = self.pysc.data_converter_pysc(eme.dat_apresentacao)
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf')
+               anexos.append(dic_anexo)
         for relat in self.zsql.relatoria_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-            relatoria = relat.cod_relatoria
-            if hasattr(self.sapl_documentos.parecer_comissao, str(relatoria) + '_parecer.pdf'):
-               pdf_relatoria = getattr(self.sapl_documentos.parecer_comissao, str(relatoria) + '_parecer.pdf')
-               arquivo_relatoria = cStringIO.StringIO(str(pdf_relatoria.data))
-               texto_relatoria = PdfReader(arquivo_relatoria).pages
-               writer.addpages(texto_relatoria)
+            if hasattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = self.pysc.data_converter_pysc(relat.dat_apresentacao)
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf')
+               anexos.append(dic_anexo)
         for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
-            anexada = anexada.cod_materia_anexada
-            if hasattr(self.sapl_documentos.materia, str(anexada) + '_texto_integral.pdf'):
-               pdf_anexada = getattr(self.sapl_documentos.materia, str(anexada) + '_texto_integral.pdf')
-               arquivo_anexada = cStringIO.StringIO(str(pdf_anexada.data))
-               texto_anexada = PdfReader(arquivo_anexada).pages
-               writer.addpages(texto_anexada)
-        for documento in self.zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia,ind_excluido=0):
-           cod_documento = documento.cod_documento
-           proposicao = self.zsql.proposicao_obter_zsql(ind_mat_ou_doc='D',cod_mat_ou_doc=cod_documento,ind_excluido=0)
-           if proposicao:
-              cod_proposicao = proposicao[0].cod_proposicao
-              if hasattr(self.sapl_documentos.proposicao, str(cod_proposicao) + '_signed.pdf'):
-                 pdf_proposicao = getattr(self.sapl_documentos.proposicao, str(cod_proposicao) + '_signed.pdf')
-                 arquivo_proposicao = cStringIO.StringIO(str(pdf_proposicao.data))
-                 texto_proposicao = PdfReader(arquivo_proposicao).pages
-                 writer.addpages(texto_proposicao)
-           else:
-              if hasattr(self.sapl_documentos.materia, str(cod_documento) + '.pdf'):
-                 pdf_documento = getattr(self.sapl_documentos.materia, str(cod_documento) + '.pdf')
-                 arquivo_documento = cStringIO.StringIO(str(pdf_documento.data))
-                 texto_documento = PdfReader(arquivo_documento).pages
-                 writer.addpages(texto_documento)
-        for tram in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia,rd_ordem='1',ind_excluido=0):
-            tramitacao = tram.cod_tramitacao
-            if hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao) + '_tram.pdf'):
-               tram = getattr(self.sapl_documentos.materia.tramitacao, str(tramitacao) + '_tram.pdf')
-               existe_arquivo = 1
-            elif hasattr(self.sapl_documentos.materia.tramitacao, str(tramitacao) + '_tram_signed.pdf'):
-               tram = getattr(self.sapl_documentos.materia.tramitacao, str(tramitacao) + '_tram_signed.pdf')
-               existe_arquivo = 1
-            else:
-               existe_arquivo = 0
-            if existe_arquivo == 1:
-               arquivo_tram = cStringIO.StringIO(str(tram.data))
-               texto_tramitacao = PdfReader(arquivo_tram).pages
-               writer.addpages(texto_tramitacao)
+            if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = self.pysc.data_converter_pysc(anexada.dat_anexacao)
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf')
+               anexos.append(dic_anexo)
+        for documento in self.zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia, ind_excluido=0):
+            if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = self.pysc.data_converter_pysc(documento.dat_documento)
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, documento.cod_documento + '.pdf')
+               anexos.append(dic_anexo)
+        for tram in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia, rd_ordem='1', ind_excluido=0):
+            if hasattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = self.pysc.data_converter_pysc(tram.dat_tramitacao)
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
+               anexos.append(dic_anexo)
+            elif hasattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = self.pysc.data_converter_pysc(tram.dat_tramitacao)
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf')
+               anexos.append(dic_anexo)
+        anexos.sort(key=lambda dic: dic['data'])
+        for dic in anexos:
+            arquivo_doc = cStringIO.StringIO(str(dic['arquivo'].data))
+            texto_anexo = PdfReader(arquivo_doc).pages
+            writer.addpages(texto_anexo)
         output_file_pdf = cStringIO.StringIO()
         writer.write(output_file_pdf)
         output_file_pdf.seek(0)
