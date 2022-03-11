@@ -1525,7 +1525,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for relat in self.zsql.relatoria_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
             if hasattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf'):
                dic_anexo = {}
-               dic_anexo["data"] = self.pysc.data_converter_pysc(relat.dat_apresentacao)
+               dic_anexo["data"] = self.pysc.data_converter_pysc(relat.dat_destit_relator)
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf')
                anexos.append(dic_anexo)
         for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
