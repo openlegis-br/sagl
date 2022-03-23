@@ -1,4 +1,5 @@
 import os
+from xml.sax.saxutils import escape
 
 request=context.REQUEST
 response=request.RESPONSE
@@ -68,9 +69,9 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
 
         dic['data']=context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' - <b>Horário:</b>'+protocolo.hor_protocolo
 
-        dic['txt_assunto']=protocolo.txt_assunto_ementa
+        dic['txt_assunto'] = escape(protocolo.txt_assunto_ementa)
 
-        dic['txt_interessado']=protocolo.txt_interessado
+        dic['txt_interessado'] = escape(protocolo.txt_interessado)
 
         dic['nom_autor'] = " " 
         if protocolo.cod_autor!=None:

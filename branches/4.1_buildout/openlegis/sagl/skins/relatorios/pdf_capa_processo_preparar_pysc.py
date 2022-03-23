@@ -77,7 +77,7 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
 
         dic['txt_assunto'] = escape(protocolo.txt_assunto_ementa) 
         
-        dic['txt_interessado']=protocolo.txt_interessado
+        dic['txt_interessado'] = escape(protocolo.txt_interessado)
 
         dic['nom_autor'] = " " 
         if protocolo.cod_autor!=None:
@@ -94,7 +94,7 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
                 else:
                     dic['nom_autor']=autor.nom_autor
         else:
-            dic['nom_autor']=protocolo.txt_interessado
+            dic['nom_autor'] = escape(protocolo.txt_interessado)
         
         dic['tipo_autor'] = " "
         if protocolo.tip_processo==0:
