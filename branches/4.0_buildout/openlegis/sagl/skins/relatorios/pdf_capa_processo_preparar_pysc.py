@@ -76,8 +76,11 @@ for protocolo in context.zsql.protocolo_pesquisar_zsql(tip_protocolo=REQUEST['ra
         dic['data']='Data: '+context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)+' - Horário: '+protocolo.hor_protocolo[0:2]+':'+protocolo.hor_protocolo[3:5]
 
         dic['txt_assunto'] = escape(protocolo.txt_assunto_ementa) 
-        
-        dic['txt_interessado'] = escape(protocolo.txt_interessado)
+
+        if protocolo.txt_interessado != '' and protocolo.txt_interessado != None: 
+           dic['txt_interessado'] = escape(protocolo.txt_interessado)
+        else:
+           dic['txt_interessado'] = ''
 
         dic['nom_autor'] = " " 
         if protocolo.cod_autor!=None:
