@@ -1834,7 +1834,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         
         return pdf_tosign, storage_path, crc_arquivo
 
-    def pades_signature(self, codigo, tipo_doc, cod_usuario):
+    def pades_signature(self, codigo, tipo_doc, cod_usuario, qtde_assinaturas):
         # get file to sign
         pdf_tosign, storage_path, crc_arquivo = self.get_file_tosign(codigo, tipo_doc)     
         tmp_path = '/tmp'        
@@ -1863,8 +1863,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signature_starter.set_pdf_path(pdf_path)
         signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
         signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
-        if tipo_doc == 'peticao' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm' or tipo_doc == 'norma':
-#        if len(qtde_assinaturas) <= 3:
+#        if tipo_doc == 'peticao' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm' or tipo_doc == 'norma':
+        if int(qtde_assinaturas) <= 3:
            signature_starter.visual_representation = ({
                'text': {
                    # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
@@ -1891,8 +1891,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                },
                'position': self.get_visual_representation_position(2)
            })
-        else:
-#        elif len(qtde_assinaturas) >= 3:
+#        else:
+        elif int(qtde_assinaturas) > 3:
            signature_starter.visual_representation = ({
                'text': {
                    # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
@@ -2088,28 +2088,21 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             nom_pdf_assinado = str(cod_assinatura_doc) + '.pdf'
             nom_pdf_documento = str(codigo) + str(storage.pdf_file)
 
+        outros = ''
         qtde_assinaturas = []
-        for item in self.zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=cod_assinatura_doc):
-            qtde_assinaturas.append(item.cod_usuario)        
-            if item.ind_assinado == 1:
-               if item.ind_prim_assinatura == 1:
-                  for usuario in self.zsql.usuario_obter_zsql(cod_usuario=item.cod_usuario):
-                      nom_autor = usuario.nom_completo
-                      break
-               else:
-                  for usuario in self.zsql.usuario_obter_zsql(cod_usuario=cod_usuario): 
-                      nom_autor = usuario.nom_completo
-                      break 
-            else:
-                  for usuario in self.zsql.usuario_obter_zsql(cod_usuario=cod_usuario): 
-                      nom_autor = usuario.nom_completo
-                      break             
-            if len(qtde_assinaturas) == 2:
-               outros = " e outro"
-            elif len(qtde_assinaturas) > 2:
-               outros = " e outros"
-            else:
-               outros = ''                                 
+        for validacao in self.zsql.assinatura_documento_obter_zsql(cod_assinatura_doc=cod_assinatura_doc, ind_assinado=1):
+            qtde_assinaturas.append(validacao.cod_usuario)
+            if validacao.ind_prim_assinatura == 1:
+               nom_autor = validacao.nom_completo
+               cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
+        else:
+            for usuario in self.zsql.usuario_obter_zsql(cod_usuario=cod_usuario):
+                nom_autor = usuario.nom_completo
+                break
+        if len(qtde_assinaturas) == 2:
+           outros = " e outro"
+        elif len(qtde_assinaturas) > 2:
+           outros = " e outros"
 
         string = str(self.cadastros.assinatura.format_verification_code(cod_assinatura_doc))
 
