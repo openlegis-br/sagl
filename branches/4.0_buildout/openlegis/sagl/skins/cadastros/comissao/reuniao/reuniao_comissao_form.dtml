@@ -50,7 +50,31 @@
  function ativa_desativa_file_field_ata(form) {
     form.file_nom_arquivo_ata.disabled = !(form.radTI2[2].checked);
  }
- 
+
+ function gerar_odt(){
+      if (confirm("Confirma a geração do arquivo ODT?")) {
+         location.href="<dtml-var portal_url>/modelo_proposicao/ata_comissao_gerar?cod_reuniao=<dtml-var cod_reuniao missing>&modal=1";
+         setTimeout(function(){window.location.reload(true)},3000);
+       }
+         return;
+  }
+
+ function gerar_pdf(){
+      if (confirm("Confirma a geração do arquivo PDF?")) {
+         location.href="<dtml-var portal_url>/modelo_proposicao/ata_comissao_gerar_pdf?cod_reuniao=<dtml-var cod_reuniao missing>&modal=1";
+         setTimeout(function(){window.location.reload(true)},3000);
+       }
+         return;
+  }
+
+ function excluir_odt(){
+      if (confirm("Confirma a exclusão do arquivo ODT da Ata?")) {
+         location.href="ata_odt_excluir?cod_reuniao=<dtml-var cod_reuniao missing>&modal=1";
+         setTimeout(function(){window.location.reload(true)},3000);
+       }
+         return;
+  }
+
  window.onload = function(){  
     var url = document.location.toString();
     if (url.match('#')) {
@@ -232,7 +256,19 @@ $(document).ready(() => {
           </dtml-if>
      </div>
      <div class="col-6 mb-3">
-          <label for="file_nom_arquivo_ata" class="form-label d-block">Ata da Reunião</label>
+          <label for="file_nom_arquivo_ata" class="form-label d-block">Ata da Reunião
+          <dtml-if cod_reuniao>
+            <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_reuniao)+'_ata.pdf')">                   
+            <dtml-call expr="REQUEST.set('id_odt', _.str(cod_reuniao)+'_ata.odt')">                   
+              <dtml-if expr="not _.hasattr(sapl_documentos.reuniao_comissao,id_pdf) and not _.hasattr(sapl_documentos.reuniao_comissao,id_odt)">
+                  <a class="btn btn-sm btn-secondary" href="javascript:void(0)" onclick="javascript:gerar_odt()">Gerar ODT</a> 
+              <dtml-elif expr="not _.hasattr(sapl_documentos.reuniao_comissao,id_pdf) and _.hasattr(sapl_documentos.reuniao_comissao,id_odt)"> 
+                  <a class="btn btn-sm btn-secondary" target="_blank" href="&dtml-URL1;/sapl_documentos/reuniao_comissao/externalEdit_/<dtml-var id_odt>.zem">LibreOffice</a>
+                  <a class="btn btn-sm btn-secondary" href="javascript:void(0)" onclick="javascript:gerar_pdf()">Gerar PDF</a>      
+                  <a class="btn btn-sm btn-danger" href="javascript:void(0)" onclick="javascript:excluir_odt()">Excluir ODT</a>
+              </dtml-if>
+          </dtml-if>
+          </label>
             <input type="hidden" name="hdn_file_ata" value="0"/>
             <dtml-if cod_reuniao>
                <dtml-call expr="REQUEST.set('id_ata', _.str(cod_reuniao)+'_ata.pdf')">

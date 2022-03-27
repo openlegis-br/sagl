@@ -434,6 +434,32 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.ata_sessao.manage_addFile(id=nom_arquivo_pdf,file=data)
 
+    def ata_comissao_gerar_odt(self, ata_dic, nom_arquivo):
+        url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/ata_comissao.odt"
+        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        brasao_file = self.get_brasao()
+        exec 'brasao = brasao_file'
+        output_file_odt = "%s"%nom_arquivo
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_odt, "rb").read()
+        for file in [output_file_odt]:
+            os.unlink(file)
+            self.sapl_documentos.reuniao_comissao.manage_addFile(id=output_file_odt,file=data)
+
+    def ata_comissao_gerar_pdf(self, cod_reuniao):
+        nom_arquivo_odt = "%s"%cod_reuniao+'_ata.odt'
+        nom_arquivo_pdf = "%s"%cod_reuniao+'_ata.pdf'
+        url = self.sapl_documentos.reuniao_comissao.absolute_url() + "/%s"%nom_arquivo_odt
+        odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.reuniao_comissao.manage_addFile(id=nom_arquivo_pdf,file=data)
+
     def iom_gerar_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, lst_psecretario, lst_ssecretario):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/iom.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
