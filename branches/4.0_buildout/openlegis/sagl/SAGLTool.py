@@ -1638,7 +1638,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             qtde_assinaturas.append(validacao.cod_usuario)          
             if validacao.ind_prim_assinatura == 1:
                nom_autor = validacao.nom_completo            
-               cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
+            cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
           if len(qtde_assinaturas) == 2:
              outros = " e outro"
           elif len(qtde_assinaturas) > 2:
