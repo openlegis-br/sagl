@@ -1,4 +1,4 @@
-##parameters=sessao,imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtro
+##parameters=imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtro
 
 """relatorio_materia.py
    External method para gerar o arquivo rml do resultado de uma pesquisa de matérias
@@ -18,7 +18,7 @@ def cabecalho(dic_cabecalho,imagem):
     tmp_data+='\t\t\t\t<drawString x="6.7cm" y="28.1cm">' + dic_cabecalho['nom_casa'] + '</drawString>\n'
     tmp_data+='\t\t\t\t<setFont name="Helvetica" size="11"/>\n'
     tmp_data+='\t\t\t\t<drawString x="6.7cm" y="27.6cm">' + dic_cabecalho['nom_estado'] + '</drawString>\n'
-    tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="12"/>\n'
+    tmp_data+='\t\t\t\t<setFont name="Helvetica-Bold" size="13"/>\n'
     tmp_data+='\t\t\t\t<drawCentredString x="11.5cm" y="25.2cm">Relatório de Matérias</drawCentredString>\n'
 
     return tmp_data
@@ -48,8 +48,8 @@ def paraStyle():
     tmp_data+='\t\t<initialize>\n'
     tmp_data+='\t\t\t<paraStyle name="all" alignment="justify"/>\n'
     tmp_data+='\t\t</initialize>\n'
-    tmp_data+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10.0" leading="12" spaceAfter="2" alignment="left"/>\n'
-    tmp_data+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="12" spaceAfter="2" alignment="justify"/>\n'
+    tmp_data+='\t\t<paraStyle name="P1" fontName="Helvetica-Bold" fontSize="10" leading="11" spaceAfter="2" alignment="left"/>\n'
+    tmp_data+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9" leading="11" spaceAfter="1" alignment="justify"/>\n'
     tmp_data+='\t</stylesheet>\n'
 
     return tmp_data
@@ -69,25 +69,29 @@ def materias(lst_materias):
         tmp_data+='\t\t</para>\n'
 
         #condicao para a quebra de pagina
-        tmp_data+='\t\t<condPageBreak height="2.5cm"/>\n'
+        tmp_data+='\t\t<condPageBreak height="2.4cm"/>\n'
 
-        #materias   
-        tmp_data+='\t\t<para style="P1"> <b>'+ dic['titulo'] +'</b> - ' + dic['nom_autor'] + ' </para>\n'
+        #materias
+        tmp_data+='\t\t<para style="P1"><b>'+ dic['titulo'] +'</b>' + ' </para>\n'
         if dic['txt_ementa']!=None:
             txt_ementa = dic['txt_ementa'].replace('&','&amp;')
             tmp_data+='\t\t<para style="P2"> '+ txt_ementa +' </para>\n'
+            tmp_data+='\t\t<para style="P2"><b>Autoria: </b>' + str(dic['nom_autor']) + '</para>'
+            tmp_data+='\t\t<para style="P2"><b>Data de Apresentação: </b>' + str(dic['dat_apresentacao']) + '</para>'
+        if dic['localizacao_atual'] !=None and dic['localizacao_atual'] !="":
+            tmp_data+='\t\t<para style="P2"><b>Localização Atual: </b>' + dic['localizacao_atual'] + '</para>'
         if dic['des_situacao'] !=None and dic['des_situacao'] !=" ":
-            tmp_data+='\t\t<para style="P2"><b>Situação: </b>' + dic['des_situacao'] + '</para>'
-        if dic['norma_vinculada'] != None and dic['norma_vinculada'] != " ":
+            tmp_data+='\t\t<para style="P2"><b>Situação em ' + dic['dat_tramitacao'] + ': </b>' + dic['des_situacao'] + '</para>'
+        if dic['norma_vinculada'] != None and dic['norma_vinculada'] != '':
             tmp_data+='\t\t<para style="P2"><b>Norma derivada: </b>'+ dic['norma_vinculada'] + '</para>\n'
-        tmp_data+='\t\t<para style="P2" spaceAfter="8">\n'
+        tmp_data+='\t\t<para style="P2" spaceAfter="10">\n'
         tmp_data+='\t\t\t<font color="white"> </font>\n'
         tmp_data+='\t\t</para>\n'
 
     tmp_data+='\t</story>\n'
     return tmp_data
 
-def principal(sessao,imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtro={}):
+def principal(imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtro={}):
     """Funcao pricipal que gera a estrutura global do arquivo rml"""
 
     arquivoPdf=str(int(time.time()*100))+".pdf"
@@ -102,7 +106,7 @@ def principal(sessao,imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtr
     tmp_data+=cabecalho(dic_cabecalho,imagem)
     tmp_data+=rodape(lst_rodape)
     tmp_data+='\t\t\t</pageGraphics>\n'
-    tmp_data+='\t\t\t<frame id="first" x1="3cm" y1="2cm" width="16cm" height="23cm"/>\n'
+    tmp_data+='\t\t\t<frame id="first" x1="3cm" y1="3cm" width="16cm" height="22cm"/>\n'
     tmp_data+='\t\t</pageTemplate>\n'
     tmp_data+='\t</template>\n'
     tmp_data+=paraStyle()
@@ -118,4 +122,4 @@ def principal(sessao,imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtr
 
     return "/temp_folder/"+arquivoPdf
 
-return principal(sessao,imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtro)
+return principal(imagem,data,lst_materias,dic_cabecalho,lst_rodape,dic_filtro)
