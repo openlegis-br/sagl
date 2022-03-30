@@ -17,7 +17,7 @@
       if (! (form.password.value=="password" && form.confirm.value=="pconfirm"))
         if ((form.password.value=="") || ((form.password.value=="password") && (form.confirm.value!="password")) || 
             ((form.password.value!="pconfirm") && (form.confirm.value=="pconfirm")) || (form.password.value!=form.confirm.value)){
-           alert("A senha e confirmação não coincidem!");
+           alert("A nova senha e confirmação não coincidem!");
            form.password.value="";
            form.confirm.value="";
            form.password.focus();
@@ -34,7 +34,7 @@
       }
 
       if (form.txt_nom_completo.value == "") {
-         alert("O nome do usuário deve ser preenchido!");
+         alert("O nome completo do usuário deve ser preenchido!");
          form.txt_nom_completo.focus();
          return false;
       }
@@ -51,6 +51,13 @@
          form.txt_num_cpf.select();
          return false;       
       }
+
+      if (form.txt_num_tel_celular.value == "") {
+         alert("O número de telefone celular deve ser preenchido!");
+         form.txt_num_tel_celular.focus();
+         return false;
+      }
+
 
       if (form.txt_municipio.value == "" && form.lst_sgl_uf.selectedIndex != 0) {
          alert("O campo Município deve ser preenchido uma vez que UF está preenchido!");
@@ -75,6 +82,12 @@
          alert("Digite um endereço de e-mail válido!");
          form.txt_end_email.focus();
          form.txt_end_email.select();
+         return false;
+      }
+
+      if (form.txt_nom_cargo.value == "") {
+         alert("O cargo ou função deve ser preenchido!");
+         form.txt_nom_cargo.focus();
          return false;
       }
 
@@ -130,12 +143,36 @@ jQuery(function($){
 });
 </script>
 
+<dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">
+<style>
+select#perfis, select#lst_unidade {
+  background: #EEE; 
+  pointer-events: none;
+  touch-action: none;
+}
+</style>
+</dtml-unless>
+
+<dtml-if expr="_.has_key('senha') and senha=='1'">
+  <div class="alert alert-warning">
+    <div class="row">
+        <div class="col-auto align-self-center">
+          <i class="fas fa-fw fa-2x fa-user-lock"></i>
+        </div>
+        <div class="col">
+          <h5 class="mb-1">Primeiro acesso identificado.</h5>
+          <p class="mb-0">Para iniciar uso do sistema, personalize sua senha e complete seus dados pessoais.</p>
+        </div>
+    </div>
+  </div>
+</dtml-if>
+
  <div class="row mb-2">
       <div class="col-12 col-md-8 align-self-center">
-        <h1 class="firstHeading">Cadastro de Usuário</h1>
+        <h1 class="firstHeading">Cadastro do Usuário</h1>
       </div>
       <div class="col-12 col-md-4 text-left text-md-right">
-         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">      
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Administrador'])">      
              <a class="btn btn-primary btn-sm d-print-none" href="<dtml-var portal_url>/cadastros/usuario"><i class="fa fa-fw fa-undo"></i> Lista de Usuários</a>
          </dtml-if>
       </div>
@@ -156,10 +193,10 @@ jQuery(function($){
     <div class="form-row">
        <div class="col-12 col-md-6 mb-3">
          <label for="txt_nome" class="required">Login</label>
-         <input class="form-control" id="txt_nome" name="txt_nome" type="text" maxlength="25" value="<dtml-var username missing>"  <dtml-if username>readonly</dtml-if> />         
+         <input class="form-control" id="txt_nome" name="txt_nome" type="text" maxlength="25" value="<dtml-var username missing>" <dtml-if username>readonly</dtml-if> />         
        </div>
        <div class="col-6 col-md-3 mb-3">
-         <label for="password" class="required">Senha</label> 
+         <label for="password" class="required">Nova Senha</label> 
          <input class="form-control" type="password" id="password" name="password" maxlength="12" <dtml-if username> value="password" </dtml-if> />               
        </div>       
        <div class="col-6 col-md-3 mb-3">
@@ -174,7 +211,7 @@ jQuery(function($){
     <div class="form-row">
        <div class="col-12 col-md-6 mb-3">
          <label for="perfis">Perfil do Usuário</label>
-          <select class="custom-select" id="perfis" name="roles:list" size="6" multiple>
+          <select class="custom-select" id="perfis" name="roles:list" size="6" multiple <dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">tabindex="-1" aria-disabled="true"</dtml-unless>>
            <dtml-in valid_roles>
 	       <dtml-if expr="_['sequence-item'] != 'Anonymous'"> 
 	         <dtml-if expr="_['sequence-item'] != 'Manager'">
@@ -221,7 +258,7 @@ jQuery(function($){
     <p class="h5">Informações Pessoais</p>
     <div class="form-row">
        <div class="col-12 col-md-6 mb-3">
-          <label for="txt_nom_completo" class="required">Nome</label> 
+          <label for="txt_nom_completo" class="required">Nome Completo</label> 
           <input class="form-control" type="text" id="txt_nom_completo" name="txt_nom_completo" value="<dtml-var nom_completo missing>" maxlength="50" />
        </div>
        <div class="col-6 col-md-3 mb-3">
@@ -248,7 +285,7 @@ jQuery(function($){
           <input class="form-control" type="text" name="txt_num_tel_resid" id="txt_num_tel_resid" value="<dtml-var num_tel_resid missing>" maxlength="50" />
        </div>
        <div class="col-6 col-md-3 mb-3">
-          <label for="txt_num_tel_celular">Celular</label>  
+          <label for="txt_num_tel_celular" class="required">Telefone Celular</label>  
            <input class="form-control" type="text" name="txt_num_tel_celular" id="txt_num_tel_celular" value="<dtml-var num_tel_celular missing>" maxlength="50" />
        </div>
         </tr>            
@@ -305,7 +342,7 @@ jQuery(function($){
        </div> 
        <div class="col-12 col-md-6 mb-3"> 
           <label for="lst_unidade">Unidade de Tramitação Vinculada</label>
-          <select class="custom-select" id="lst_unidade" name="lst_cod_unid_tramitacao:list" size="5" multiple>
+          <select class="custom-select" id="lst_unidade" name="lst_cod_unid_tramitacao:list" size="5" multiple <dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">tabindex="-1" aria-disabled="true"</dtml-unless>>
              <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
                <option value="<dtml-var cod_unid_tramitacao>"
                 <dtml-if cod_usuario>
@@ -320,8 +357,8 @@ jQuery(function($){
          </select>
        </div>
        <div class="col-12 col-md-6 mb-3"> 
-          <label for="txt_nom_cargo">Cargo ou Função</label>
-          <input class="form-control" type="text" id="txt_nom_cargo" name="txt_nom_cargo" value="<dtml-var nom_cargo missing>" maxlength="50" />
+          <label for="txt_nom_cargo" class="required">Cargo ou Função</label>
+          <input class="form-control" type="text" id="txt_nom_cargo" name="txt_nom_cargo" value="<dtml-var nom_cargo missing>" maxlength="50" <dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">readonly</dtml-unless> />
           <dtml-if cod_usuario>
              <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario)">
                 <dtml-call expr="REQUEST.set('ind_responsavel', ind_responsavel)">
@@ -332,7 +369,7 @@ jQuery(function($){
              <dtml-call expr="REQUEST.set('ind_responsavel', 0)">
           </dtml-if>
           <div class="form-check form-check-inline mt-2">
-            <input class="form-check-input" type="checkbox" name="chk_id_responsavel" id="chk_id_responsavel" value="1" <dtml-if expr="ind_responsavel==1">checked</dtml-if> />
+            <input class="form-check-input" type="checkbox" name="chk_id_responsavel" id="chk_id_responsavel" value="1" <dtml-if expr="ind_responsavel==1">checked</dtml-if> <dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">onclick="return false;" onkeydown="return false;"</dtml-unless> />
             <label class="form-check-label" for="chk_id_responsavel">Responsável pela Unidade</label>
           </div>          
        </div>                 
@@ -341,7 +378,7 @@ jQuery(function($){
     <div class="form-row">
        <div class="col-12 mb-3"> 
           <label for="txa_txt_observacao">Observações</label>
-          <textarea class="form-control" name="txa_txt_observacao" id="txa_txt_observacao"><dtml-var txt_observacao missing null=""></textarea>                 
+          <textarea class="form-control" name="txa_txt_observacao" id="txa_txt_observacao" <dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">readonly</dtml-unless>><dtml-var txt_observacao missing null=""></textarea>                 
        </div>
     </div>    
 
