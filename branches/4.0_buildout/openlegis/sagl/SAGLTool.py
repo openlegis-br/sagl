@@ -1443,6 +1443,17 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            texto_documento = PdfReader(arquivo, decompress=False).pages
            writer.addpages(texto_documento)
         anexos = []
+        for docvinculado in self.zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante=documento.cod_documento, ind_excluido=0):
+           if hasattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral_signed.pdf'):
+              dic_anexo = {}
+              dic_anexo["data"] = self.pysc.data_converter_pysc(docvinculado.dat_documento_vinculado)
+              dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral_signed.pdf')
+              anexos.append(dic_anexo)
+           elif hasattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral.pdf'):
+              dic_anexo = {}
+              dic_anexo["data"] = self.pysc.data_converter_pysc(docvinculado.dat_documento_vinculado)
+              dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral.pdf')
+              anexos.append(dic_anexo)
         for docadm in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=documento.cod_documento, ind_excluido=0):
            if hasattr(self.sapl_documentos.administrativo, str(docadm.cod_documento_acessorio) + '.pdf'):
               dic_anexo = {}
@@ -1632,12 +1643,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
           num_proposicao = proposicao.cod_proposicao
           nom_autor = proposicao.nom_autor
           cod_validacao_doc = ''
-          outros = ''          
-          qtde_assinaturas = []        
+          outros = ''
+          qtde_assinaturas = []
           for validacao in self.zsql.assinatura_documento_obter_zsql(codigo=cod_proposicao,tipo_doc='proposicao',ind_assinado=1):
-            qtde_assinaturas.append(validacao.cod_usuario)          
+            qtde_assinaturas.append(validacao.cod_usuario)
             if validacao.ind_prim_assinatura == 1:
-               nom_autor = validacao.nom_completo            
+               nom_autor = validacao.nom_completo
             cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
           if len(qtde_assinaturas) == 2:
              outros = " e outro"
