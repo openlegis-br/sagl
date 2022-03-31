@@ -11,7 +11,18 @@ $(function () {
         return $('#PopoverContent').html()
     }
     })
-}); 
+});
+
+ <dtml-let isAnon="portal_membership.isAnonymousUser()">
+    <dtml-if expr="not isAnon">
+  function documento_acessorio_excluir(cod_documento_acessorio){ 
+       if (confirm("Deseja realmente excluir o documento acessório?")) {          
+          location.href="documento_acessorio_excluir_proc?cod_documento_acessorio="+cod_documento_acessorio+"&cod_documento=<dtml-var cod_documento missing>";
+       }
+  } 
+    </dtml-if> 
+ </dtml-let>
+
 </script>
 
 <div class="row">
@@ -234,10 +245,10 @@ $(function () {
                         <a target="_blank" href="<dtml-var documento>" target="_blank">
                           <i class="fas fa-file-pdf"></i> <dtml-var nom_documento>
                         </a>
-                        <dtml-if "sapl_documentos.props_sagl.restpki_access_token!='' and dbcon_logs">
+                        <dtml-if expr="sapl_documentos.props_sagl.restpki_access_token!='' and dbcon_logs">
                              <dtml-let isAnon="portal_membership.isAnonymousUser()">                      
                                 <dtml-if expr="not isAnon">
-                                  <dtml-in expr="zsql.logs_pesquisar_zsql(cod_registro=cod_documento_acessorio, modulo='documento_acessorio_materia', ordem=1)">
+                                  <dtml-in expr="zsql.logs_pesquisar_zsql(cod_registro=cod_documento_acessorio, modulo='documento_acessorio_adm', ordem=1)">
                                     <dtml-call expr="REQUEST.set('usuario_doc', usuario)">
                                   </dtml-in>
                                  <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
@@ -245,14 +256,14 @@ $(function () {
                                  </dtml-in>
                                 </dtml-if>
                               </dtml-let>
-                     
                            <dtml-if expr="_.has_key('add_doc') and _.has_key('usuario_doc') and _.has_key('usuario_logado') and usuario_doc==usuario_logado">
                              <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='doc_acessorio_adm', codigo=cod_documento_acessorio)">
                                <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
                              </dtml-in>
                              <dtml-if expr="not _.has_key('cod_assinatura_doc')">
                                 <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinatura Digital" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_documento_acessorio>&tipo_doc=doc_acessorio_adm&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
-                             </dtml-if>             
+                             </dtml-if>
+                             <button type="button" class="btn btn-sm btn-danger" onClick="documento_acessorio_excluir(<dtml-var cod_documento_acessorio missing>)"><i class="fas fa-trash"></i> Excluir</button>
                            </dtml-if>
                         </dtml-if>
                       </dtml-let>
