@@ -103,6 +103,26 @@
     location.href='setar_data_desig_proc?dat_desig_relator='+data_desig+"&cod_materia=<dtml-var cod_materia missing>&cod_comissao=<dtml-var cod_comissao missing>&num_ordem=<dtml-var num_ordem missing>&modal=1";
   }
 
+  function odt_proposicao_obter(cod_proposicao){
+
+      if (confirm("Copiar arquivo ODT da proposição?")) {
+         location.href="<dtml-var portal_url>/pysc/proposicao_salvar_como_texto_integral_materia_pysc?cod_proposicao="+cod_proposicao+"&cod_materia=<dtml-var cod_materia missing>";
+         setTimeout(function(){window.location.reload(true)},1500);
+         return true;
+       }
+         return;
+  }
+
+  function pdf_proposicao_obter(cod_proposicao){
+
+      if (confirm("Copiar e autuar o arquivo PDF da proposição?")) {
+         location.href="<dtml-var portal_url>/modelo_proposicao/proposicao_autuar?cod_proposicao="+cod_proposicao;
+         setTimeout(function(){window.location.reload(true)},1500);
+         return true;
+       }
+         return;
+  }  
+
 $(document).ready(function () {
   bsCustomFileInput.init()
 });
@@ -271,6 +291,7 @@ $(document).ready(function () {
           <dtml-call expr="REQUEST.set('id_parecer', _.str(cod_relatoria)+'_parecer.pdf')">
              <dtml-if "_.hasattr(sapl_documentos.parecer_comissao,id_parecer)">
                 <dtml-let parecer="_.getattr(sapl_documentos.parecer_comissao,id_parecer).absolute_url">
+                   <dtml-call expr="REQUEST.set('temPDF', 1)">                             
                    <a class="btn btn-secondary" target="_blank" href="<dtml-var parecer>?<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-fw fa-file-pdf"></i> Visualizar</a>
                  <dtml-unless expr="zsql.proposicao_obter_zsql(cod_materia=cod_materia, cod_parecer=cod_relatoria)">                      
                    <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">               
@@ -362,7 +383,8 @@ $(document).ready(function () {
          <dtml-if "_.hasattr(sapl_documentos.proposicao,id_proposicao)">
              <legend>Processo Eletrônico</legend>
              <div class="card mb-3">
-               <div class="card-body">          
+               <div class="row card-body">
+                   <div class="col-12 col-md-8">        
                        <dtml-let proposicao="_.getattr(sapl_documentos.proposicao,id_proposicao).absolute_url">
                           <dtml-call expr="REQUEST.set('cod_documento',pysc.proposicao_calcular_checksum_pysc(cod_proposicao))">
                           <a class="btn btn-secondary" target="_blank" href="<dtml-var proposicao>?<dtml-var expr="ZopeTime().timeTime()">">
@@ -370,6 +392,15 @@ $(document).ready(function () {
                           </a>                          
                           <a class="btn btn-secondary" target="_blank" href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">Mais Informações</a>
                        </dtml-let>
+                   </div>
+                   <div class="col-12 col-md-4 text-right">                   
+                      <dtml-if expr="not _.has_key('temODT')">                 
+                        <input class="btn btn-primary" type="button" value="ODT" onClick="odt_proposicao_obter(<dtml-var cod_proposicao>)" />
+                      </dtml-if>
+                      <dtml-if expr="not _.has_key('temPDF')">
+                        <input class="btn btn-primary" type="button" value="PDF" onClick="pdf_proposicao_obter(<dtml-var cod_proposicao>)" />                      
+                      </dtml-if>                      
+                   </div>
                </div>
              </div>
          </dtml-if>
