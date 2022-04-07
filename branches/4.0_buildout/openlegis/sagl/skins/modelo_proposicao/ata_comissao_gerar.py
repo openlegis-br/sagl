@@ -22,6 +22,7 @@ for rc in context.zsql.reuniao_comissao_obter_zsql(cod_reuniao=cod_reuniao,ind_e
     dat_reuniao = context.pysc.data_converter_pysc(rc.dat_inicio_reuniao)
     for comissao in context.zsql.comissao_obter_zsql(cod_comissao=rc.cod_comissao, ind_excluido=0):     
         ata_dic["nom_comissao"] = comissao.nom_comissao
+        ata_dic["sgl_comissao"] = comissao.sgl_comissao
     ata_dic["reuniao"] = str(rc.num_reuniao)+"ª Reunião " + str(rc.des_tipo_reuniao)
     ata_dic["tema"] =  rc.txt_tema
     dia = context.pysc.data_converter_por_extenso_pysc(data=rc.dat_inicio_reuniao)
@@ -87,8 +88,8 @@ for rc in context.zsql.reuniao_comissao_obter_zsql(cod_reuniao=cod_reuniao,ind_e
            dic_votacao["resultado"] = ''
            if item.tip_resultado_votacao != None:
               for resultado in context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=item.tip_resultado_votacao, ind_excluido=0):
-                  dic_votacao["resultado"] = 'Resultado: ' + resultado.nom_resultado
-           materia = dic_votacao["materia"] + dic_votacao["nom_relator"] + '. ' + dic_votacao["resultado"]
+                  dic_votacao["resultado"] = '. Resultado: ' + resultado.nom_resultado
+           materia = dic_votacao["materia"] + ' ' + dic_votacao["nom_relator"] + dic_votacao["resultado"]
            dic_votacao["nom_autor"] = ""
            dic_votacao["substitutivo"] = ''
            dic_votacao["substitutivos"] = ''           
@@ -112,12 +113,17 @@ for rc in context.zsql.reuniao_comissao_obter_zsql(cod_reuniao=cod_reuniao,ind_e
            if item.cod_relator != '' and item.cod_relator != None:
               for relator in context.zsql.parlamentar_obter_zsql(cod_parlamentar=item.cod_relator):
                   dic_votacao["nom_relator"] = 'Relatoria: ' + relator.nom_parlamentar
+           dic_votacao["parecer"] = ''
+           for parecer in context.zsql.relatoria_obter_zsql(cod_materia=item.cod_materia, cod_comissao=rc.cod_comissao, ind_excluido=0):
+               dic_votacao["parecer"] = '. Parecer ' + ata_dic["sgl_comissao"] + ' nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer)
+               for parlamentar in context.zsql.parlamentar_obter_zsql(cod_parlamentar=parecer.cod_parlamentar):
+                   dic_votacao["nom_relator"] = 'Relatoria: ' + parlamentar.nom_parlamentar
            dic_votacao["resultado"] = ''
            if item.tip_resultado_votacao != None:
               for resultado in context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=item.tip_resultado_votacao, ind_excluido=0):
-                  dic_votacao["resultado"] = 'Resultado: ' + resultado.nom_resultado          
+                  dic_votacao["resultado"] = '. Resultado: ' + resultado.nom_resultado
 
-           materia = dic_votacao["materia"] + dic_votacao["nom_relator"] + '. ' + dic_votacao["resultado"]
+           materia = dic_votacao["materia"] + ' ' + dic_votacao["nom_relator"] + dic_votacao["resultado"] + dic_votacao["parecer"]
 
            dic_votacao["substitutivo"] = ''
            lst_qtde_substitutivos=[]
