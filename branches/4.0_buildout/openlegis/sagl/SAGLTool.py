@@ -1571,7 +1571,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = self.pysc.data_converter_pysc(documento.dat_documento)
-               dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, documento.cod_documento + '.pdf')
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf')
                anexos.append(dic_anexo)
         for tram in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia, rd_ordem='1', ind_excluido=0):
             if hasattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
@@ -1583,6 +1583,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                dic_anexo = {}
                dic_anexo["data"] = self.pysc.data_converter_pysc(tram.dat_tramitacao)
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf')
+               anexos.append(dic_anexo)
+        for norma in self.zsql.materia_buscar_norma_juridica_zsql(cod_materia = cod_materia):
+            if hasattr(self.sapl_documentos.norma_juridica, str(norma.cod_norma) + '_texto_integral.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = self.pysc.data_converter_pysc(norma.dat_norma)
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.norma_juridica, str(norma.cod_norma) + '_texto_integral.pdf')
                anexos.append(dic_anexo)
         anexos.sort(key=lambda dic: dic['data'])
         for dic in anexos:
