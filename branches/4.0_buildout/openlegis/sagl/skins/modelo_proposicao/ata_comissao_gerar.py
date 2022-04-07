@@ -26,12 +26,17 @@ for rc in context.zsql.reuniao_comissao_obter_zsql(cod_reuniao=cod_reuniao,ind_e
     ata_dic["tema"] =  rc.txt_tema
     dia = context.pysc.data_converter_por_extenso_pysc(data=rc.dat_inicio_reuniao)
     ata_dic["horareuniao"] = context.pysc.hora_formatar_pysc(hora=rc.hr_inicio_reuniao)
+    ata_dic["horafimreuniao"] = ''
+    if rc.hr_fim_reuniao != '' and  rc.hr_fim_reuniao != None:
+       ata_dic["horafimreuniao"] = context.pysc.hora_formatar_pysc(hora=rc.hr_fim_reuniao)
     ata_dic["data"]= rc.dat_inicio_reuniao
     ata_dic["datareuniao"] = str(dia).decode('utf-8')
 
     # obtém os membros da Comissão
     ata_dic["presidente"] = ''
     lst_membros = []
+    lst_presenca = []
+    lst_ausencia = []
     for periodo in context.zsql.periodo_comp_comissao_obter_zsql(data=DateTime(rc.dat_inicio_reuniao_ord), ind_excluido=0):
         for membro in context.zsql.composicao_comissao_obter_zsql(cod_comissao=rc.cod_comissao, cod_periodo_comp=periodo.cod_periodo_comp, ind_excluido=0):
             dic_composicao = {}
@@ -39,19 +44,22 @@ for rc in context.zsql.reuniao_comissao_obter_zsql(cod_reuniao=cod_reuniao,ind_e
             dic_composicao["cargo"] = membro.des_cargo
             if membro.des_cargo == 'Presidente':
                ata_dic["presidente"] = membro.nom_completo
-            lst_membros.append(dic_composicao) 
+            lst_membros.append(dic_composicao)
+            if context.zsql.reuniao_comissao_presenca_obter_zsql(cod_reuniao=rc.cod_reuniao, cod_parlamentar=membro.cod_parlamentar, ind_excluido=0):
+               for presenca in context.zsql.reuniao_comissao_presenca_obter_zsql(cod_reuniao=rc.cod_reuniao, cod_parlamentar=membro.cod_parlamentar, ind_excluido=0):
+                   lst_presenca.append(presenca.nom_completo)
+            else:
+               lst_ausencia.append(membro.nom_completo)
 
     ata_dic["membros"] = lst_membros
-
-    lst_presenca=[]
-    for presenca in context.zsql.reuniao_comissao_presenca_obter_zsql(cod_reuniao=rc.cod_reuniao, ind_excluido=0):
-        lst_presenca.append(presenca.nom_parlamentar)
-
     ata_dic["qtde_presenca"] = len(lst_presenca)
     ata_dic["presenca"] = ', '.join(['%s' % (value) for (value) in lst_presenca])
+    ata_dic["qtde_ausencia"] = len(lst_ausencia)
+    ata_dic["ausencia"] = ', '.join(['%s' % (value) for (value) in lst_ausencia])
 
     # seleciona as matérias que compõem a pauta da reuniao
-    lst_votacao=[]
+    lst_pauta = []
+    lst_votacao = []
     for item in context.zsql.reuniao_comissao_pauta_obter_zsql(cod_reuniao=rc.cod_reuniao, ind_excluido=0):
         # seleciona os detalhes dos itens da pauta
         dic_votacao = {} 
@@ -75,11 +83,12 @@ for rc in context.zsql.reuniao_comissao_obter_zsql(cod_reuniao=cod_reuniao,ind_e
               dic_votacao['conclusao'] = 'Favorável'
            elif parecer.tip_conclusao == 'C':
               dic_votacao['conclusao'] = 'Contrário'
-           dic_votacao["materia"] = '<p>' + str(item.num_ordem) + ') <a href="' +context.consultas.absolute_url() + '/parecer_comissao/' + str(item.cod_parecer) + '_parecer.pdf"><b>Parecer ' +  sgl_comissao + ' nº ' + str(parecer.num_parecer)+ '/' +str(parecer.ano_parecer) + '</b></a> - ' + dic_votacao['conclusao'] + ' ao ' + sgl_tipo_materia + ' nº ' + str(num_ident_basica) + '/' + str(ano_ident_basica) + ' - ' + ementa_materia + '</p>'
+           dic_votacao["materia"] = '<span><b>' + str(item.num_ordem) + '</b>) <a href="' +context.consultas.absolute_url() + '/parecer_comissao/' + str(item.cod_parecer) + '_parecer.pdf"><b>Parecer ' +  sgl_comissao + ' nº ' + str(parecer.num_parecer)+ '/' +str(parecer.ano_parecer) + '</b></a> - ' + dic_votacao['conclusao'] + ' ao ' + sgl_tipo_materia + ' nº ' + str(num_ident_basica) + '/' + str(ano_ident_basica) + ' - ' + ementa_materia + '</span>'
            dic_votacao["resultado"] = ''
            if item.tip_resultado_votacao != None:
               for resultado in context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=item.tip_resultado_votacao, ind_excluido=0):
                   dic_votacao["resultado"] = 'Resultado: ' + resultado.nom_resultado
+           materia = dic_votacao["materia"] + dic_votacao["nom_relator"] + '. ' + dic_votacao["resultado"]
            dic_votacao["nom_autor"] = ""
            dic_votacao["substitutivo"] = ''
            dic_votacao["substitutivos"] = ''           
@@ -99,7 +108,7 @@ for rc in context.zsql.reuniao_comissao_obter_zsql(cod_reuniao=cod_reuniao,ind_e
                    nome_autor = autor['nom_autor_join']
                lista_autor.append(nome_autor)
            dic_votacao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
-           dic_votacao["materia"] = '<p>' + str(item.num_ordem) + ') <a href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+str(item.cod_materia)+'"><b>'+materia.des_tipo_materia+' nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</b></a> - Autoria: ' + dic_votacao["nom_autor"] + ' - ' + item.txt_observacao + '</p>'
+           dic_votacao["materia"] = '<span><b>' + str(item.num_ordem) + '</b>) <a href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+str(item.cod_materia)+'"><b>'+materia.des_tipo_materia+' nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</b></a> - Autoria: ' + dic_votacao["nom_autor"] + ' - ' + item.txt_observacao + '</span>'
            if item.cod_relator != '' and item.cod_relator != None:
               for relator in context.zsql.parlamentar_obter_zsql(cod_parlamentar=item.cod_relator):
                   dic_votacao["nom_relator"] = 'Relatoria: ' + relator.nom_parlamentar
@@ -107,6 +116,8 @@ for rc in context.zsql.reuniao_comissao_obter_zsql(cod_reuniao=cod_reuniao,ind_e
            if item.tip_resultado_votacao != None:
               for resultado in context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=item.tip_resultado_votacao, ind_excluido=0):
                   dic_votacao["resultado"] = 'Resultado: ' + resultado.nom_resultado          
+
+           materia = dic_votacao["materia"] + dic_votacao["nom_relator"] + '. ' + dic_votacao["resultado"]
 
            dic_votacao["substitutivo"] = ''
            lst_qtde_substitutivos=[]
@@ -153,8 +164,10 @@ for rc in context.zsql.reuniao_comissao_obter_zsql(cod_reuniao=cod_reuniao,ind_e
            dic_votacao["emenda"] = len(lst_qtde_emendas)
 
         # adiciona o dicionário na lista de votações
+        lst_pauta.append(materia)
         lst_votacao.append(dic_votacao)
-        
+
+    ata_dic["lst_pauta"] = '; '.join(['%s' % (value) for (value) in lst_pauta])
     ata_dic["lst_votacao"] = lst_votacao
 
     casa={}
