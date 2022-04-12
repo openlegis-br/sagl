@@ -82,7 +82,7 @@ def tramitar_documento(cod_documento, num_protocolo, ano_documento):
            cod_usuario_corrente = 0
            
     hr_tramitacao = DateTime().strftime('%d/%m/%Y às %H:%M')
-    txt_tramitacao = 'Protocolo nº ' + str(num_protocolo) + '/' + str(ano_documento) + ' autuado em ' + hr_tramitacao 
+    txt_tramitacao = '<p>Protocolo nº ' + str(num_protocolo) + '/' + str(ano_documento) + ' autuado em ' + hr_tramitacao +'</p>'
     hdn_url = 'protocolo_mostrar_proc?cod_protocolo=' + cod_protocolo
     
     if cod_unid_tram_local != None and cod_unid_tram_dest != None and cod_status != None:
