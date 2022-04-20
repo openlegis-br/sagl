@@ -97,7 +97,7 @@ def tramitar_documento(cod_documento):
     for tramitacao in context.zsql.tramitacao_administrativo_incluida_codigo_obter_zsql():
         cod_tramitacao = tramitacao.cod_tramitacao
 
-    mensagem = 'Petição eletrônica protocolada com sucesso!'
+    mensagem = 'Peticionamento protocolado com sucesso!'
     mensagem_obs = ''   
     redirect_url=context.portal_url()+'/mensagem_emitir?modal=1&tipo_mensagem=success&mensagem=' + mensagem + '&mensagem_obs=' + mensagem_obs
 
