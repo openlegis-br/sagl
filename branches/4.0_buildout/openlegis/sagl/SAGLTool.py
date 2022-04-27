@@ -631,7 +631,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
           arq = getattr(self.temp_folder,nom_arquivo_pdf)
           self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
           self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
-          self.temp_folder.manage_delObjects(ids=nom_arquivo_pdf)
+          self.temp_folder.manage_delObjects(nom_arquivo_pdf)
           return arq
 
     def pdf_expediente_completo(self, cod_sessao_plen):
@@ -731,7 +731,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
           arq = getattr(self.temp_folder,nom_pdf_amigavel)
           self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
           self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
-          self.temp_folder.manage_delObjects(ids=nom_pdf_amigavel)
+          self.temp_folder.manage_delObjects(nom_pdf_amigavel)
           return arq
 
     def oradores_gerar_odt(self, inf_basicas_dic, lst_oradores, lst_presidente, nom_arquivo):
@@ -1054,7 +1054,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arquivo = cStringIO.StringIO(str(arq.data))
            texto_anexo = PdfReader(arquivo, decompress=False).pages
            merger.addpages(texto_anexo)
-           self.sapl_documentos.administrativo.tramitacao.manage_delObjects(ids=arquivoPdfAnexo)
+           self.sapl_documentos.administrativo.tramitacao.manage_delObjects(arquivoPdfAnexo)
         outputStream = cStringIO.StringIO()
         self.temp_folder.manage_addFile(arquivoPdf)
         merger.write(outputStream)
@@ -1065,7 +1065,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            self.sapl_documentos.administrativo.tramitacao.manage_delObjects(arquivoPdf)
            tmp_id = self.sapl_documentos.administrativo.tramitacao.manage_pasteObjects(tmp_copy)[0]['new_id']
            self.sapl_documentos.administrativo.tramitacao.manage_renameObjects(ids=list([tmp_id]), new_ids=list([arquivoPdf]))
-        self.temp_folder.manage_delObjects(ids=arquivoPdf)
+        self.temp_folder.manage_delObjects(arquivoPdf)
 
     def tramitacao_materia_juntar(self,cod_tramitacao):
         merger = PdfWriter()
@@ -1082,7 +1082,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arquivo = cStringIO.StringIO(str(arq.data))
            texto_anexo = PdfReader(arquivo, decompress=False).pages
            merger.addpages(texto_anexo)
-           self.sapl_documentos.materia.tramitacao.manage_delObjects(ids=arquivoPdfAnexo)
+           self.sapl_documentos.materia.tramitacao.manage_delObjects(arquivoPdfAnexo)
         outputStream = cStringIO.StringIO()
         self.temp_folder.manage_addFile(arquivoPdf)
         merger.write(outputStream)
@@ -1093,7 +1093,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            self.sapl_documentos.materia.tramitacao.manage_delObjects(arquivoPdf)
            tmp_id = self.sapl_documentos.materia.tramitacao.manage_pasteObjects(tmp_copy)[0]['new_id']
            self.sapl_documentos.materia.tramitacao.manage_renameObjects(ids=list([tmp_id]),new_ids=list([arquivoPdf]))
-        self.temp_folder.manage_delObjects(ids=arquivoPdf)
+        self.temp_folder.manage_delObjects(arquivoPdf)
 
     def documento_assinado_imprimir(self,cod_documento):
         nom_pdf_documento = str(cod_documento) + "_texto_integral_signed.pdf"
@@ -1172,7 +1172,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         arq = getattr(self.temp_folder,nom_pdf_amigavel)
         self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
         self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
-        self.temp_folder.manage_delObjects(ids=nom_pdf_amigavel)
+        self.temp_folder.manage_delObjects(nom_pdf_amigavel)
         return arq
 
     # obter altura da pagina
@@ -1520,7 +1520,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         arq = getattr(self.temp_folder,nom_pdf_amigavel)
         self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
         self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
-        self.temp_folder.manage_delObjects(ids=nom_pdf_amigavel)
+        self.temp_folder.manage_delObjects(nom_pdf_amigavel)
         return arq
 
     def processo_eletronico_gerar_pdf(self, cod_materia):
@@ -1639,7 +1639,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         arq = getattr(self.temp_folder,nom_pdf_amigavel)
         self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
         self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
-        self.temp_folder.manage_delObjects(ids=nom_pdf_amigavel)
+        self.temp_folder.manage_delObjects(nom_pdf_amigavel)
         return arq
 
     def proposicao_autuar(self,cod_proposicao):
@@ -1713,10 +1713,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
 
-        url = self.url() + '/sapl_documentos/proposicao/' + nom_pdf_proposicao
-        opener = urllib.urlopen(url)
-        f = open('/tmp/' + nom_pdf_proposicao, 'wb').write(opener.read())
-        existing_pdf = PdfFileReader('/tmp/'+ nom_pdf_proposicao, strict=False)
+        arq = getattr(self.sapl_documentos.proposicao, nom_pdf_proposicao)
+        arquivo = cStringIO.StringIO(str(arq.data))
+        existing_pdf = PdfFileReader(arquivo, strict=False)
         numPages = existing_pdf.getNumPages()
 
         # cria novo PDF
@@ -1785,17 +1784,17 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    if page == wm:
                       pdf_page.mergePage(watermark_page)
             output.addPage(pdf_page)
-        outputStream = file('/tmp/' + nom_pdf_saida, "wb")
+        outputStream = cStringIO.StringIO()
         output.write(outputStream)
-        outputStream.close()
-        data = open('/tmp/' + nom_pdf_saida, 'rb').read()              
         if nom_pdf_saida in storage_path:
-           documento = getattr(storage_path,nom_pdf_saida)
-           documento.manage_upload(file=data)
+           storage_path.manage_delObjects(nom_pdf_saida)
+           storage_path.manage_addFile(nom_pdf_saida)
+           arq=storage_path[nom_pdf_saida]
+           arq.manage_edit(title=nom_pdf_saida,filedata=outputStream.getvalue(),content_type='application/pdf')
         else:
-           storage_path.manage_addFile(id=nom_pdf_saida,file=data)
-        os.unlink('/tmp/'+nom_pdf_saida)
-        os.unlink('/tmp/'+nom_pdf_proposicao)
+           storage_path.manage_addFile(nom_pdf_saida)
+           arq=storage_path[nom_pdf_saida]
+           arq.manage_edit(title=nom_pdf_saida,filedata=outputStream.getvalue(),content_type='application/pdf')
 
     def restpki_client(self):
         restpki_url = 'https://restpkiol.azurewebsites.net/'
@@ -1880,13 +1879,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def pades_signature(self, codigo, tipo_doc, cod_usuario, qtde_assinaturas):
         # get file to sign
         pdf_tosign, storage_path, crc_arquivo = self.get_file_tosign(codigo, tipo_doc)     
-        tmp_path = '/tmp'        
         arq = getattr(storage_path, pdf_tosign)
         arquivo = cStringIO.StringIO(str(arq.data))           
         arquivo.seek(0)
-        f = open('/tmp/' + pdf_tosign, 'wb').write(arquivo.read())
-        pdf_tmp = pdf_tosign
-        pdf_path = '%s/%s' % (tmp_path, pdf_tosign)
+        pdf_path = ''
+        pdf_stream = str(arq.data)
 
         # Read the PDF stamp image
         utool = getToolByName(self, 'portal_url')
@@ -1896,75 +1893,53 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            url = self.url() + '/sapl_documentos/props_sagl/' + id_logo
         else:
            url = self.url() + '/imagens/brasao.gif'
-        opener = urllib.urlopen(url)
-        open('/tmp/' + id_logo, 'wb').write(opener.read())
-        f = open('/tmp/' + id_logo, 'rb')
-        pdf_stamp = f.read()
-        f.close()
+        pdf_stamp = urllib.urlopen(url).read()
 
         signature_starter = PadesSignatureStarter(self.restpki_client())
-        signature_starter.set_pdf_path(pdf_path)
+        signature_starter.set_pdf_stream(pdf_stream)
+
         signature_starter.signature_policy_id = StandardSignaturePolicies.PADES_BASIC
         signature_starter.security_context_id = StandardSecurityContexts.PKI_BRAZIL
-#        if tipo_doc == 'peticao' or tipo_doc == 'tramitacao' or tipo_doc == 'tramitacao_adm' or tipo_doc == 'norma':
         if int(qtde_assinaturas) <= 3:
            signature_starter.visual_representation = ({
                'text': {
-                   # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
-                   # certificate
-                   # signerName -> full name of the signer
-                   # br_cpf_formatted -> if the certificate is ICP-Brasil, contains the signer's CPF
                    'text': 'Assinado digitalmente por {{signerName}} {{br_cpf_formatted}}',
-                   # Specify that the signing time should also be rendered
                    'includeSigningTime': True,
-                   # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
-                   # Left
                    'horizontalAlign': 'Left'
                },
                'image': {
-                   # We'll use as background the image that we've read above
                    'resource': {
                        'content': base64.b64encode(pdf_stamp),
                        'mimeType': 'image/png'
                    },
-                   # Opacity is an integer from 0 to 100 (0 is completely transparent, 100 is completely opaque).
                    'opacity': 40,
-                   # Align the image to the right
                    'horizontalAlign': 'Right'
                },
                'position': self.get_visual_representation_position(2)
            })
-#        else:
         elif int(qtde_assinaturas) > 3:
            signature_starter.visual_representation = ({
                'text': {
-                   # The tags {{signerName}} and {{signerNationalId}} will be substituted according to the user's
-                   # certificate
-                   # signerName -> full name of the signer
-                   # br_cpf_formatted -> if the certificate is ICP-Brasil, contains the signer's CPF
                    'text': 'Assinado digitalmente por {{signerName}} {{br_cpf_formatted}}',
-                   # Specify that the signing time should also be rendered
                    'includeSigningTime': True,
-                   # Optionally set the horizontal alignment of the text ('Left' or 'Right'), if not set the default is
-                   # Left
                    'horizontalAlign': 'Left'
                },
                'image': {
-                   # We'll use as background the image that we've read above
                    'resource': {
                        'content': base64.b64encode(pdf_stamp),
                        'mimeType': 'image/png'
                    },
-                   # Opacity is an integer from 0 to 100 (0 is completely transparent, 100 is completely opaque).
                    'opacity': 40,
-                   # Align the image to the right
                    'horizontalAlign': 'Right'
                },
                'position': self.get_visual_representation_position(4)
            })
+
         token = signature_starter.start_with_webpki()
+
+        tokenjs = json.dumps(token)
  
-        return token, pdf_path, crc_arquivo, codigo, tipo_doc, cod_usuario
+        return token, pdf_path, crc_arquivo, codigo, tipo_doc, cod_usuario, tokenjs
 
     def pades_signature_action(self, token, codigo, tipo_doc, cod_usuario, crc_arquivo_original):
         # checking if file was changed
@@ -1993,9 +1968,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         signer_cert = signature_finisher.certificate
 
         # At this point, you'd typically store the signed PDF on your database.
-
-        tmp_path = "/tmp"
-
         cod_assinatura_doc = ''
         for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc):
             cod_assinatura_doc = str(item.cod_assinatura_doc)
@@ -2019,31 +1991,25 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         file_hash = str(uuid.uuid4().hex) + '.pdf'
 
-        signature_finisher.write_signed_pdf(os.path.join(tmp_path, file_hash))
+        self.temp_folder.manage_addFile(file_hash)
+        arq=self.temp_folder[file_hash]
+        f = signature_finisher.stream_signed_pdf()
+        arq.manage_edit(title=file_hash,filedata=f.getvalue(),content_type='application/pdf')
 
-        data = open('/tmp/' + file_hash, "rb").read()
+        if tipo_doc != 'proposicao':
+           self.margem_direita(codigo, tipo_doc, cod_assinatura_doc, cod_usuario, file_hash)
 
-
-        for file in [file_hash]:
-            if tipo_doc != 'proposicao':  
-               self.margem_direita(codigo, tipo_doc, cod_assinatura_doc, cod_usuario, file_hash)
-            if hasattr(storage_path,filename):
-               documento = getattr(storage_path,filename)
-               documento.manage_upload(file=data)
-               if os.path.exists(os.path.join(tmp_path, file_hash)):
-                  os.unlink(os.path.join(tmp_path, file_hash))
-               if os.path.exists(os.path.join(tmp_path, filename)):
-                  os.unlink(os.path.join(tmp_path, filename))                  
-               if os.path.exists(os.path.join(tmp_path, old_filename)):
-                  os.unlink(os.path.join(tmp_path, old_filename))
-            else:
-               storage_path.manage_addFile(id=filename,file=data)
-               if os.path.exists(os.path.join(tmp_path, file_hash)):
-                  os.unlink(os.path.join(tmp_path, file_hash))
-               if os.path.exists(os.path.join(tmp_path, filename)):
-                  os.unlink(os.path.join(tmp_path, filename))                    
-               if os.path.exists(os.path.join(tmp_path, old_filename)):
-                  os.unlink(os.path.join(tmp_path, old_filename))
+        if hasattr(storage_path,filename):
+           storage_path.manage_delObjects(filename)
+           tmp_copy = self.temp_folder.manage_copyObjects(ids=file_hash)
+           tmp_id = storage_path.manage_pasteObjects(tmp_copy)[0]['new_id']
+           storage_path.manage_renameObjects(ids=list([tmp_id]),new_ids=list([filename]))
+           self.temp_folder.manage_delObjects(file_hash)
+        else:
+           tmp_copy = self.temp_folder.manage_copyObjects(ids=file_hash)
+           tmp_id = storage_path.manage_pasteObjects(tmp_copy)[0]['new_id']
+           storage_path.manage_renameObjects(ids=list([tmp_id]),new_ids=list([filename]))
+           self.temp_folder.manage_delObjects(file_hash)
 
         for item in signer_cert:
            subjectName = signer_cert['subjectName']
@@ -2054,7 +2020,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            cpf = pkiBrazil['cpf']
            responsavel = pkiBrazil['responsavel']
 
-        return signer_cert, commonName, email, certificateType, cpf, responsavel, filename
+        filenamejs = json.dumps(filename)
+
+        return signer_cert, commonName, email, certificateType, cpf, responsavel, file_hash, filenamejs
 
     def get_visual_representation_position(self, sample_number):
         if sample_number == 1:
@@ -2252,10 +2220,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
-        #arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_assinado)
-        arq = open('/tmp/' + file_hash, "rb")
-        #arquivo = cStringIO.StringIO(arq)
-        existing_pdf = PdfFileReader(arq, strict=False)
+        arq = getattr(self.temp_folder, file_hash)
+        arquivo = cStringIO.StringIO(str(arq.data))
+        existing_pdf = PdfFileReader(arquivo, strict=False)
         numPages = existing_pdf.getNumPages()
         # cria novo PDF
         packet = StringIO.StringIO()
@@ -2311,11 +2278,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output.write(outputStream)
 
         if hasattr(storage_path,nom_pdf_documento):
-           documento = getattr(storage_path,nom_pdf_documento)
-           documento.manage_upload(file=outputStream.getvalue())
+           storage_path.manage_delObjects(nom_pdf_documento)
+           storage_path.manage_addFile(nom_pdf_documento)
+           arq=storage_path[nom_pdf_documento]
+           arq.manage_edit(title=nom_pdf_documento,filedata=outputStream.getvalue(),content_type='application/pdf')
         else:
            storage_path.manage_addFile(nom_pdf_documento)
-           output.write(outputStream)
            arq=storage_path[nom_pdf_documento]
            arq.manage_edit(title=nom_pdf_documento,filedata=outputStream.getvalue(),content_type='application/pdf')
 
@@ -2323,7 +2291,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
 
     def assinar_proposicao(self, cod_proposicao):
-
         storage_path = self.sapl_documentos.proposicao
         for proposicao in self.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao):
             string = self.pysc.proposicao_calcular_checksum_pysc(proposicao.cod_proposicao, senha=1)
@@ -2336,11 +2303,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
-        url = self.url() + '/sapl_documentos/proposicao/' + pdf_proposicao
-        opener = urllib.urlopen(url)
-        f = open('/tmp/' + pdf_proposicao, 'wb').write(opener.read())
-        arq = open('/tmp/' + pdf_proposicao, "rb")
-        existing_pdf = PdfFileReader(arq, strict=False)
+        arq = getattr(storage_path, pdf_proposicao)
+        arquivo = cStringIO.StringIO(str(arq.data))
+        existing_pdf = PdfFileReader(arquivo, strict=False)
         numPages = existing_pdf.getNumPages()
         # cria novo PDF
         packet = StringIO.StringIO()
@@ -2394,19 +2359,17 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             output.addPage(pdf_page)
         outputStream = cStringIO.StringIO()
         output.write(outputStream)
-
         if hasattr(storage_path,pdf_assinado):
-           documento = getattr(storage_path,pdf_assinado)
-           documento.manage_upload(file=outputStream.getvalue())
+           storage_path.manage_delObjects(pdf_assinado)
+           storage_path.manage_addFile(pdf_assinado)
+           output.write(outputStream)
+           arq=storage_path[pdf_assinado]
+           arq.manage_edit(title=pdf_assinado,filedata=outputStream.getvalue(),content_type='application/pdf')
         else:
            storage_path.manage_addFile(pdf_assinado)
            output.write(outputStream)
            arq=storage_path[pdf_assinado]
            arq.manage_edit(title=pdf_assinado,filedata=outputStream.getvalue(),content_type='application/pdf')
-
-        if os.path.exists(os.path.join('/tmp/', pdf_proposicao)):
-           os.unlink(os.path.join('/tmp/', pdf_proposicao))
-
         redirect_url = self.portal_url()+'/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=' + cod_proposicao
         REQUEST = self.REQUEST
         RESPONSE = REQUEST.RESPONSE
@@ -2475,11 +2438,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                storage_path = self.sapl_documentos.materia
                nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"                
                if hasattr(storage_path, nom_pdf_saida):
-                  url = self.url() + '/sapl_documentos/materia/' + nom_pdf_saida
-                  opener = urllib.urlopen(url)
-                  f = open('/tmp/' + nom_pdf_saida, 'wb').write(opener.read())
+                  arq = getattr(storage_path, nom_pdf_saida)
+                  arquivo = cStringIO.StringIO(str(arq.data))
+                  existing_pdf = PdfFileReader(arquivo, strict=False)
                   try:
-                     existing_pdf = PdfFileReader('/tmp/'+ nom_pdf_saida, strict=False)
+                     existing_pdf = PdfFileReader(arquivo, strict=False)
                      numPages = existing_pdf.getNumPages()
                      # Mescla canvas
                      for page in range(existing_pdf.getNumPages()):
@@ -2488,15 +2451,19 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                          if page == 0:
                             page_pdf.mergePage(new_pdf.getPage(0))
                          output.addPage(page_pdf)
-                     outputStream = file('/tmp/' + nom_pdf_saida, "wb")                          
+                     outputStream = cStringIO.StringIO()
                      output.write(outputStream)
-                     outputStream.close()
-                     data = open('/tmp/' + nom_pdf_saida, 'rb').read()
-                     documento = getattr(storage_path,nom_pdf_saida)
-                     documento.manage_upload(file=data)
-                     os.unlink('/tmp/'+nom_pdf_saida)
+                     if hasattr(storage_path, nom_pdf_saida):
+                        storage_path.manage_delObjects(nom_pdf_saida)
+                        storage_path.manage_addFile(nom_pdf_saida)
+                        arq=storage_path[nom_pdf_saida]
+                        arq.manage_edit(title=nom_pdf_saida, filedata=outputStream.getvalue(), content_type='application/pdf')
+                     else:
+                        storage_path.manage_addFile(nom_pdf_saida)
+                        arq=storage_path[nom_pdf_saida]
+                        arq.manage_edit(title=nom_pdf_saida, filedata=outputStream.getvalue(), content_type='application/pdf')
                   except:
-                     os.unlink('/tmp/'+nom_pdf_saida)
+                     pass
         
     def _getValidEmailAddress(self, member):
         email = None
