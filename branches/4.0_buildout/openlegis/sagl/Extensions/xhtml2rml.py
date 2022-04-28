@@ -36,7 +36,7 @@ def xhtml2rml(self,chaineHtml,chaineStyle):
  "Otilde":"Õ", "otilde":"õ", "ugrave":"ù", "Ugrave":"Ù", "uacute":"ú", "ordm":"º",  "ordf":"ª", \
  "Uacute":"Ú", "ucirc":"û", "Ucirc":"Û", "uuml":"ü", "Uuml":"Ü", "ntilde":"ñ", "Ntilde":"Ñ", "ccedil":"ç",\
  "Ccedil":"Ç", "yacute":"ý", "Yacute":"Ý", "szlig":"ß", "laquo":"«", "raqo":"»", "para":"§", "copy":"©",\
- "nbsp":" ", "quot": "\"", "amp":"&", "lt":"<", "gt":">" }
+ "nbsp":" ", "quot": "'" }
        if dEnt.has_key(entite):
          return dEnt[entite]
        else:
@@ -82,7 +82,7 @@ def xhtml2rml(self,chaineHtml,chaineStyle):
           entete ='\r\n</para>\r\n'
           fin='\r\n<para' + ' style="' + chaineStyle + '">\r\n'
           return entete + '<'+ debutTag + attrTag +'>\r\n <![CDATA[ \r\n'+ contentTag + '\r\n ]]'\
- + '> \r\n' + finTag + '\r\n' + fin    
+ + '> \r\n' + finTag + '\r\n' + fin
 
        elif match.group('hNumber') is not None:
           contentTag = reEntites.sub(replace_entites, contentTag)
