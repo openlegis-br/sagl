@@ -550,10 +550,12 @@ $(function () {
   <dtml-if expr="(not prop_recebida)">
     <div class="form-row mb-2">
        <div class="col-12 mb-3">
-         <label class="form-label d-block">Anexos em PDF</label>          
-         <small id="link_add_file">
-           <a class="btn btn-sm btn-light mb-3" onclick="addFileField(); return false;" href="#"><i class="fa fa-fw fa-plus"></i>Anexar Arquivo</a>
-         </small>
+         <label class="form-label d-block">Anexos em PDF</label>       
+          <dtml-if expr="not cod_mat_ou_doc and not prop_devolvida">   
+           <small id="link_add_file">
+             <a class="btn btn-sm btn-light mb-3" onclick="addFileField(); return false;" href="#"><i class="fa fa-fw fa-plus"></i>Anexar Arquivo</a>
+           </small>
+          </dtml-if>
          <dtml-in expr="pysc.anexo_proposicao_pysc(cod_proposicao, listar=True)" prefix="file">
             <dtml-if expr="_.hasattr(sapl_documentos.proposicao, file_item)">
                <dtml-let documento="_.getattr(sapl_documentos.proposicao,file_item).absolute_url">
@@ -584,8 +586,6 @@ $(function () {
                       <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Visualização de Arquivo" data-src="<dtml-var portal_url>/generico/view_odt?arquivo_odt=<dtml-var documento>&<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-fw fa-file-alt"></i>Visualizar</button>                   
                    </dtml-if>
                  </dtml-let>
-              <dtml-else>
-                <i>(inexistente)</i>
               </dtml-if>
            </dtml-let>
         </div>
@@ -620,7 +620,8 @@ $(function () {
                                           
             </dtml-let>              
            <dtml-else>
-              <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">           
+              <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">   
+              <dtml-if expr="not cod_mat_ou_doc and not prop_devolvida">         
                <div class="input-group">
                 <div class="custom-file">
                   <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
@@ -637,6 +638,7 @@ $(function () {
                    </div>
                 </dtml-if>
               </div>    
+             </dtml-if>
              </dtml-if>
            </dtml-if>
         </div>
@@ -692,7 +694,7 @@ $(function () {
 </dtml-if>
 </form>
 
-<dtml-if expr="_.has_key('cod_proposicao') and not prop_devolvida">
+<dtml-if expr="_.has_key('cod_proposicao')">
   <form name="observacao_form" method="post" action="proposicao_salvar_observacao_proc">
     <div class="form-row mt-3">
        <div class="col-12 mb-3">
@@ -701,14 +703,14 @@ $(function () {
          <dtml-else>
             <legend>Observações</legend>                               
             <label for="txa_txt_observacao" class="d-none required">Observações</label>                      
-            <textarea class="form-control" name="txa_txt_observacao" id="txa_txt_observacao" rows="2" <dtml-if cod_mat_ou_doc>readonly</dtml-if>><dtml-if txt_observacao><dtml-var txt_observacao missing></dtml-if></textarea>
+            <textarea class="form-control" name="txa_txt_observacao" id="txa_txt_observacao" rows="2" <dtml-if expr=" cod_mat_ou_doc or prop_devolvida">readonly</dtml-if>><dtml-if txt_observacao><dtml-var txt_observacao missing></dtml-if></textarea>
          </dtml-if cod_mat_ou_doc>	
        </div>
     </div>
     <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var cod_proposicao missing>" />
-    <dtml-unless cod_mat_ou_doc>
+    <dtml-if expr="not cod_mat_ou_doc and not prop_devolvida">
        <input class="btn btn-primary" type="button" value="Salvar Observações" onClick="observacao_salvar(document.observacao_form)" />
-    </dtml-unless>
+    </dtml-if>
   </form>
 </dtml-if>
 
