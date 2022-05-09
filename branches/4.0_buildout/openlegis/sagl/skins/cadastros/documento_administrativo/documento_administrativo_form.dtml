@@ -193,19 +193,59 @@ $(document).ready(() => {
     <a class="nav-link active" id="index-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dados Básicos</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="acessorios-tab" data-toggle="tab" href="#acessorios" role="tab" aria-controls="acessorios" aria-selected="false">Documentos Acessórios</a>
+    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="acessorios-tab" data-toggle="tab" href="#acessorios" role="tab" aria-controls="acessorios" aria-selected="false">Documentos Acessórios
+           <dtml-if cod_documento>
+         <dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+           <dtml-if sequence-start>
+            [<dtml-var sequence-length>]
+           </dtml-if sequence-start>
+         </dtml-in>
+       </dtml-if>
+    </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="vinculados-tab" data-toggle="tab" href="#vinculados" role="tab" aria-controls="vinculados" aria-selected="false">Documentos Vinculados</a>
+    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="vinculados-tab" data-toggle="tab" href="#vinculados" role="tab" aria-controls="vinculados" aria-selected="false">Documentos Vinculados
+       <dtml-if cod_documento>
+         <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante=cod_documento, ind_excluido=0)">
+           <dtml-if sequence-start>
+            [<dtml-var sequence-length>]
+           </dtml-if sequence-start>
+         </dtml-in>
+       </dtml-if>
+    </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="materias-tab" data-toggle="tab" href="#materias" role="tab" aria-controls="materias" aria-selected="false">Matérias Vinculadas</a>
+    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="materias-tab" data-toggle="tab" href="#materias" role="tab" aria-controls="materias" aria-selected="false">Matérias Vinculadas
+       <dtml-if cod_documento>
+         <dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+           <dtml-if sequence-start>
+            [<dtml-var sequence-length>]
+           </dtml-if sequence-start>
+         </dtml-in>
+       </dtml-if>
+    </a>
   </li> 
   <li class="nav-item">
-    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="tramitacao-tab" data-toggle="tab" href="#tramitacao" role="tab" aria-controls="tramitacao" aria-selected="false">Tramitações</a>
+    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="tramitacao-tab" data-toggle="tab" href="#tramitacao" role="tab" aria-controls="tramitacao" aria-selected="false">Tramitações
+       <dtml-if cod_documento>
+         <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+           <dtml-if sequence-start>
+            [<dtml-var sequence-length>]
+           </dtml-if sequence-start>
+         </dtml-in>
+       </dtml-if>
+    </a>
   </li>   
   <li class="nav-item">
-    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="destinatarios-tab" data-toggle="tab" href="#destinatarios" role="tab" aria-controls="destinatarios" aria-selected="false">Destinatários</a>
+    <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="destinatarios-tab" data-toggle="tab" href="#destinatarios" role="tab" aria-controls="destinatarios" aria-selected="false">Destinatários
+       <dtml-if cod_documento>
+         <dtml-in expr="zsql.destinatario_oficio_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+           <dtml-if sequence-start>
+            [<dtml-var sequence-length>]
+           </dtml-if sequence-start>
+         </dtml-in>
+       </dtml-if>
+    </a>
   </li>  
 </ul>
 
@@ -328,7 +368,23 @@ $(document).ready(() => {
   </div> 
 
   <div class="form-row">
-    <div class="col-6 col-lg-2 mb-3">
+    <div class="col-12 col-lg-4 mb-3">
+      <label for="lst_assunto">Classificação</label>
+        <select id="lst_assunto" name="lst_assunto" class="custom-select"">
+            <option value=""></option>
+            <dtml-in expr="zsql.tipo_peticionamento_obter_zsql(ind_doc_adm=1, ind_excluido=0)">
+              <option value="<dtml-var tip_peticionamento>"
+                 <dtml-if cod_assunto>
+                    <dtml-if expr="int(tip_peticionamento) == int(cod_assunto)">
+                       selected
+                    </dtml-if>
+                 </dtml-if>>
+                <dtml-var des_tipo_peticionamento>
+              </option>
+            </dtml-in>
+       </select>   
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
       <label for="txt_num_dias_prazo">Dias de Prazo</label>
       <input class="form-control" type="number" id="txt_num_dias_prazo" name="txt_num_dias_prazo" maxlength="2" value="<dtml-var num_dias_prazo missing null="">" />    
     </div>
@@ -345,7 +401,7 @@ $(document).ready(() => {
         });
         </script>        
     </div>
-    <div class="col-6 col-lg-2 mb-3">
+    <div class="col-12 col-lg-2 mb-3">
       <label class="required d-block">Em Tramitação?</label>
       <dtml-in expr="[(0,'Não'), (1,'Sim')]">
         <div class="form-check form-check-inline">            
@@ -356,16 +412,12 @@ $(document).ready(() => {
         </div>
       </dtml-in>    
     </div>    
-    <div class="col-12 col-lg-5 mb-3">
-      <label for="txa_txt_observacao">Observações</label> 
-      <textarea class="form-control" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null=""></textarea>
-    </div>
   </div>
 
   <dtml-if cod_documento>
     <legend>Textos Integrais</legend>
   </dtml-if>
-  <div class="form-row">
+  <div class="form-row mb-1">
     <div class="col-12 col-lg-6 mb-3">
       <label class="d-block">PDF Texto Original</label>
       <dtml-if expr="_.has_key('cod_documento')">
@@ -442,7 +494,14 @@ $(document).ready(() => {
        </dtml-if>
     </div>    
   </div>
-  
+
+  <div class="form-row">
+    <div class="col-12 col-lg-12 mb-3">
+      <label for="txa_txt_observacao">Observações</label> 
+      <textarea class="form-control" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null=""></textarea>
+    </div>
+  </div>
+
  <dtml-if cod_documento>
     <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_documento=cod_documento)">
        <dtml-call expr="REQUEST.set('temArquivo', 1)">

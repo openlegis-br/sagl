@@ -1,0 +1,76 @@
+<dtml-var standard_html_header>
+
+<script>
+$(function () {
+    $('[data-toggle="popover"]').popover({
+    container: 'body',
+    html: true,
+    placement: 'bottom',
+    sanitize: false,
+    content: function() {
+        return $('#PopoverContent').html()
+    }
+    })
+}); 
+</script>
+
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Recebimento de Normas</h1>
+      </div>
+ </div>
+
+<dtml-in expr="zsql.peticao_obter_zsql(ind_norma=1, ind_enviado='1', ind_recebido='0', ind_excluido=0)">
+   <dtml-if sequence-start>
+            <table class="table display" id="enviadas">    
+             <thead class="table-secondary">
+                <tr>  
+                    <th width="20%">Norma</th>
+                    <th>Ementa</th>
+                    <th width="20%">Envio</th>
+                    <th width="15%">Ações</th>
+                </tr>
+             </thead>
+   </dtml-if sequence-start>
+             <tr>
+                <td>
+                  <a href="<dtml-var portal_url>/sapl_documentos/peticao/<dtml-var cod_peticao>.pdf" target="_blank">
+                    <dtml-var des_tipo_peticionamento> nº <dtml-var num_norma>/<dtml-var ano_norma>
+                  </a>
+                </td>
+                <td>
+                  <dtml-var txt_descricao>
+                </td>
+                <td>
+                  Em <dtml-var dat_envio>, por 
+                  <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario)">
+                      <dtml-var nom_completo>
+                  </dtml-in>
+                </td>
+                <td>
+                  <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/cadastros/norma_juridica/incorporar_norma?cod_peticao=<dtml-var cod_peticao>" data-confirm="Confirma a incorporação da norma?"><i class="fas fa-copy"></i> Incorporar</a>
+
+                  <a type="button" class="btn btn-sm btn-link text-danger" data-toggle="popover" title="Motivo da Devolução"><i class="fas fa-times"></i> Devolver</a>
+                  <div id="PopoverContent" class="d-none">
+                    <form id="myform" class="form-inline" role="form" method="post" action="devolver_norma_proc" onSubmit="return confirm('Confirma a devolução da norma?');">
+                      <input type="hidden" name="cod_peticao" value="<dtml-var cod_peticao missing>" />
+                      <div class="input-group">
+                        <textarea class="form-control" name="txt_observacao" rows="1" required></textarea>
+                        <div class="input-group-append" id="button-addon1">
+                           <button class="btn btn-sm btn-primary" type="submit" data-toggle="popover" data-placement="bottom" data-html="true" data-title="OK" formaction="devolver_norma_proc">OK</button>                     
+                        </div>
+                      </div>     
+                    </form>  
+                  </div> 
+                </td>
+             </tr>
+   <dtml-if sequence-end>
+            </table>   
+   </dtml-if sequence-end>
+<dtml-else>
+    <p>Não há normas pendentes de recebimento.</p>
+</dtml-in>
+
+
+<dtml-var standard_html_footer>

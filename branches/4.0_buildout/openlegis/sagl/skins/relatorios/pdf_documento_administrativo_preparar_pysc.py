@@ -60,12 +60,7 @@ if REQUEST[str('tipo_documento')] != 'None':
   tipo_documento= REQUEST[str('tipo_documento')]
 else: 
   tipo_documento = '' 
-for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_documento=tipo_documento, 
-                                                    num_documento=REQUEST['txt_num_documento'], ano_documento=REQUEST['txt_ano_documento'], 
-                                                    num_protocolo=REQUEST['txt_num_protocolo'], ind_tramitacao=REQUEST['rad_tramitando'], 
-                                                    des_assunto=REQUEST['txa_txt_assunto'], cod_status=REQUEST['lst_status'], 
-                                                    txt_interessado=REQUEST['txa_txt_interessado'], dat_apres1=REQUEST['dt_apres1'], 
-                                                    dat_apres2=REQUEST['dt_apres2'], rd_ordem=REQUEST['rd_ordenacao']):
+for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_documento=tipo_documento, num_documento=REQUEST['txt_num_documento'], ano_documento=REQUEST['txt_ano_documento'], num_protocolo=REQUEST['txt_num_protocolo'], ind_tramitacao=REQUEST['rad_tramitando'], des_assunto=REQUEST['txa_txt_assunto'], cod_status=REQUEST['lst_status'], lst_assunto=REQUEST['lst_assunto'], txt_interessado=REQUEST['txa_txt_interessado'], dat_apres1=REQUEST['dt_apres1'], dat_apres2=REQUEST['dt_apres2'], rd_ordem=REQUEST['rd_ordenacao']):
         dic={}
 
         dic['titulo']=documento.des_tipo_documento.decode('utf-8').upper()+" N° "+str(documento.num_documento)+"/"+str(documento.ano_documento)
@@ -97,7 +92,7 @@ for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_docume
         dic['protocolo']= " "
         if documento.num_protocolo !=None:
           for protocolo in context.zsql.protocolo_obter_zsql(num_protocolo=documento.num_protocolo,ano_protocolo=documento.ano_documento):
-            dic['protocolo']= "Protocolo: " + str(protocolo.num_protocolo) + "/" + str(documento.ano_documento) + " - Data de Entrada: " + context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)
+            dic['protocolo']= "<b>Protocolo</b>: " + str(protocolo.num_protocolo) + "/" + str(documento.ano_documento) + " - Data de Entrada: " + context.pysc.iso_to_port_pysc(protocolo.dat_protocolo)
         else:
           dic['protocolo']= " "
 
@@ -110,6 +105,7 @@ filtro['numero']=REQUEST.txt_num_documento
 filtro['ano']=REQUEST.txt_ano_documento
 filtro['interessado']=REQUEST.txa_txt_interessado
 filtro['assunto']=REQUEST.txa_txt_assunto
+filtro['lst_assunto']=REQUEST.lst_assunto
 
 filtro['tipo_documento']=''
 

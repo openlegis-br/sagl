@@ -1,0 +1,365 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+  function campos_criticar(){
+  var form = document.peticionamento_form;
+      if (form.lst_tip_peticionamento.selectedIndex==''){
+          $.showAlert({title: "Mensagem do Sistema", body: "O tipo de petição deve ser selecionado !"});
+          form.lst_tip_peticionamento.focus();
+          return false;
+      }
+
+      if (form.lst_cod_unid_tram_dest.selectedIndex==''){
+          $.showAlert({title: "Mensagem do Sistema", body: "A unidade de destino deve ser selecionada !"});
+          form.lst_cod_unid_tram_dest.focus();
+          return false;
+      }
+
+      if (form.txa_txt_descricao.value == "") {
+         $.showAlert({title: "Mensagem do Sistema", body: "O resumo do pedido deve ser preenchido !"});
+         form.txa_txt_descricao.focus();
+         return false;
+      }
+
+  var processo_principal = form.lst_tip_documento[form.lst_tip_documento.selectedIndex].value;
+
+
+  if (processo_principal != ""){
+     if ((form.lst_tip_documento[form.lst_tip_documento.selectedIndex].value == "") ||
+        (form.txt_num_documento.value == "") || (form.txt_ano_documento.value == "")) {
+         $.showAlert({title: "Mensagem do Sistema", body: "Informe tipo, número e ano do processo administrativo !"});       
+         form.txt_num_documento.focus(); 
+         return false;
+     }
+  }
+
+  form.submit();
+}
+
+  function texto_odt_gerar(){
+      var lst_modelo = document.getElementById("lst_modelo");
+      var value = lst_modelo.options[lst_modelo.selectedIndex].value;
+      var selected = lst_modelo.options[lst_modelo.selectedIndex];
+      var path = selected.getAttribute('data-path');
+  
+      if (lst_modelo.selectedIndex == 0) {
+         $.showAlert({title: "Mensagem do Sistema", body: "É necessário selecionar um modelo!"});        
+         return false;
+      }
+
+      if ((lst_modelo.selectedIndex != 0) && confirm("Confirma a geração do arquivo ODT?")) {
+         location.href="<dtml-var portal_url>/modelo_proposicao/peticao?cod_peticao=<dtml-var cod_peticao missing>&modelo_path="+path;
+         setTimeout(function(){window.location.reload(true)},3000);
+       }
+         return;
+  }
+
+ function texto_pdf_gerar(){
+      if (confirm("Confirma a geração do arquivo PDF?")) {
+         location.href="<dtml-var portal_url>/modelo_proposicao/peticao_gerar_pdf?cod_peticao=<dtml-var cod_peticao missing>";
+         setTimeout(function(){window.location.reload(true)},3000);
+       }
+         return;
+  }
+
+  $(document).ready(function () {
+    bsCustomFileInput.init()
+    $('#lst_tip_documento').change(function() {
+      // Set the input's value to the current value of the list
+      $('#hdn_cod_documento_vinculado').val("");
+      $('#txt_num_documento').val("");
+      $('#txt_ano_documento').val("");  
+      $('#txa_txt_assunto').val("");
+    });
+  })
+
+$(document).ready(function() {
+
+$('#chk_consulta_externa').click(function() {
+
+  if (!$(this).is(':checked')) {
+    $("#anexar").hide();
+    $('#hdn_cod_documento_vinculado').val("");
+  }
+  else {
+    $("#anexar").show();
+  }
+});
+
+});
+
+
+</script>
+
+<script>
+$(document).ready(function(){
+
+    var assunto = $("#lst_tip_peticionamento").val();
+    $.ajax({
+        url: 'modelos_carregar_pysc',
+        type: 'post',
+        data: {svalue:assunto},
+        dataType: 'json',
+        success:function(response){
+            var len = response.length;
+            $("#lst_modelo").empty();
+            for( var i = 0; i<len; i++){
+                var id = response[i]['id_arquivo'];
+                var name = response[i]['titulo_arquivo'];
+                var path = response[i]['path_arquivo'];                
+                $("#lst_modelo").append("<option data-path='"+path+"' value='"+id+"'>"+name+"</option>");
+            }
+        }
+    });
+
+<dtml-unless cod_peticao>
+        var assunto = 0;
+        $.ajax({
+            url: 'unidades_carregar_pysc',
+            type: 'post',
+            data: {svalue:assunto},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"' selected>"+name+"</option>");
+                }
+            }
+        });
+</dtml-unless>
+    $("#lst_tip_peticionamento").change(function(){
+        var assunto = $(this).val();
+        $.ajax({
+            url: 'modelos_carregar_pysc',
+            type: 'post',
+            data: {svalue:assunto},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_modelo").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id_arquivo'];
+                    var name = response[i]['titulo_arquivo'];
+                    var path = response[i]['path_arquivo'];                                    
+                    $("#lst_modelo").append("<option data-path='"+path+"' value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+        $.ajax({
+            url: 'unidades_carregar_pysc',
+            type: 'post',
+            data: {svalue:assunto},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_unid_tram_dest").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"' selected>"+name+"</option>");
+                }
+            }
+        });       
+    });     
+});
+</script>
+
+   <dtml-call "REQUEST.set('username', AUTHENTICATED_USER)">
+
+   <dtml-in expr="zsql.usuario_obter_zsql(col_username=username)">
+      <dtml-call "REQUEST.set('nom_completo', nom_completo)">
+      <dtml-call "REQUEST.set('nom_cargo', nom_cargo)">
+      <dtml-call "REQUEST.set('cod_usuario_corrente', cod_usuario)">
+   <dtml-else>
+      <dtml-call "REQUEST.set('nom_completo', AUTHENTICATED_USER)">
+   </dtml-in>
+
+<form enctype="multipart/form-data" id="peticionamento_form" name="peticionamento_form" method="post" action="peticao_administrativo_salvar_proc">
+     <input type="hidden" name="modal" value="1" />              
+     <input type="hidden" name="hdn_cod_peticao" value="<dtml-var cod_peticao missing>" />
+     <input type="hidden" name="cod_usuario_corrente" value="<dtml-var cod_usuario_corrente>" />
+     <input type="hidden" name="hdn_url" value="peticao_mostrar_proc?modal=1&cod_peticao=<dtml-var cod_peticao missing>" />
+
+     <div class="form-row">         
+        <div class="col-6 mb-3">
+	 <label for="lst_tip_peticionamento" class="required">Tipo de Petição</label>
+         <select class="custom-select" id="lst_tip_peticionamento" name="lst_tip_peticionamento">
+	      <option></option>
+               <dtml-in expr="zsql.tipo_peticionamento_obter_zsql(ind_doc_adm=1, ind_excluido=0)">
+                   <option 
+                     value="<dtml-var tip_peticionamento>"
+                     <dtml-if expr="REQUEST.has_key('tip_peticionamento_sel')">
+                       <dtml-if expr="_.str(tip_peticionamento_sel) ==_.str(tip_peticionamento)">selected</dtml-if>
+                     </dtml-if> >
+                      <dtml-var des_tipo_peticionamento>
+                   </option>
+               </dtml-in>
+	 </select>     
+        </div>
+        <div class="col-6 mb-3">
+         <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
+         <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
+            <option value=''></option>
+            <dtml-if expr="_.has_key('cod_peticao') and cod_unid_tram_dest">
+               <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest,ind_adm=1)">
+                   <option 
+                     value="<dtml-var cod_unid_tramitacao>"
+                     <dtml-if expr="_.has_key('cod_unid_tram_dest') and _.str(cod_unid_tram_dest)==_.str(cod_unid_tramitacao)">selected</dtml-if> >  
+                      <dtml-var nom_unidade_join>
+                   </option>
+               </dtml-in>
+            </dtml-if>
+         </select>        
+       </div>
+     </div>
+     <div class="form-row">
+        <div class="col-12 mb-3">
+	  <label for="txa_txt_descricao" class="required">Resumo do Pedido</label>
+	  <textarea class="form-control auto-resize" id="txa_txt_descricao" name="txa_txt_descricao" rows="1"><dtml-var txt_descricao missing></textarea>
+        </div>
+     </div>
+
+<dtml-if cod_peticao>
+   <div class="form-row">  
+     <div class="col-12 col-md-6 mb-3">
+       <label for="lst_modelo" class="form-label d-block">Texto Editável</label>     
+         <dtml-let id_documento="_.str(cod_peticao)+'.odt'">
+            <dtml-if "_.hasattr(sapl_documentos.peticao,id_documento)">
+               <dtml-let documento="_.getattr(sapl_documentos.peticao,id_documento).absolute_url">
+                  <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_peticao)+'.odt')">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/peticao/externalEdit_/<dtml-var nome_arquivo>.zem'" data-toggle="tooltip" data-placement="bottom" title="Editar no LibreOffice"><i class="fas fa-fw fa-external-link-alt"></i>LibreOffice</button>
+                    <a class="btn btn-sm btn-danger" href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/texto_peticao_excluir_proc?modal=1&cod_peticao=<dtml-var cod_peticao missing>" data-confirm="Deseja realmente excluir o arquivo ODT?"><i class="fas fa-trash"></i> Excluir ODT</a>                    
+               </dtml-let>
+             <dtml-else>
+               <dtml-if expr="dat_envio!=''">
+                 <div class="input-group">
+                   <select class="custom-select" id="lst_modelo" name="lst_modelo">
+                      <option value="0">Selecione um modelo</option>
+                   </select>
+                   <div class="input-group-append">
+                     <input type="button" class="btn btn-sm btn-secondary" value="Gerar" onclick="javascript:texto_odt_gerar();" />
+                   </div>
+                 </div>
+               </dtml-if>             
+             </dtml-if>         
+         </dtml-let>
+     </div>
+
+     <div class="col-12 col-md-6 mb-3">
+       <label for="file_nom_arquivo" class="form-label d-block">Texto PDF</label>
+       <dtml-call expr="REQUEST.set('id_documento', _.str(cod_peticao)+'.pdf')">
+       <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao',codigo=cod_peticao)">
+          <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+       </dtml-in>
+       <dtml-if expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados,cod_assinatura_doc+'.pdf')">
+         <dtml-call expr="REQUEST.set('temPDFAssinado', 1)">
+         <dtml-let filename="_.getattr(sapl_documentos.peticao,id_documento).absolute_url">
+          <a class="btn btn-sm btn-secondary" href="<dtml-var filename>" target="_blank">
+             <i class="fa fa-certificate"></i> Arquivo Assinado
+          </a>
+         </dtml-let>
+          <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_peticao missing>&tipo_doc=peticao&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+           <a class="btn btn-sm btn-danger" href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/texto_pdf_excluir_proc?cod_peticao=<dtml-var cod_peticao>&modal=1" data-confirm="Deseja realmente excluir o texto PDF?"><i class="fas fa-trash"></i> Excluir PDF</a> 
+
+       <dtml-elif expr="_.hasattr(sapl_documentos.peticao,id_documento)">
+         <dtml-call expr="REQUEST.set('temPDF', 1)">
+         <dtml-let filename="_.getattr(sapl_documentos.peticao,id_documento).absolute_url">
+          <a class="btn btn-sm btn-secondary" href="<dtml-var filename>" target="_blank">
+             <i class="fa fa-file-pdf"></i> Visualizar
+          </a>
+         </dtml-let>
+          <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+             <button type="button" class="btn btn-sm btn-primary d-print-none " data-toggle="modal" data-target="#iFrameModal" data-title="Assinatura Digital" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_peticao>&tipo_doc=peticao&modal=1"><i class="fas fa-file-signature"></i>Assinar</button>              
+          </dtml-if>
+          <a class="btn btn-sm btn-danger" href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/texto_pdf_excluir_proc?cod_peticao=<dtml-var cod_peticao>&modal=1" data-confirm="Deseja realmente excluir o texto PDF?"><i class="fas fa-trash"></i> Excluir PDF</a> 
+       <dtml-else>
+          <div class="input-group">
+            <div class="custom-file">
+              <input type="file" class="custom-file-input form-control-sm" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
+              <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+            </div>
+            <dtml-let id_documento_odt="_.str(cod_peticao)+'.odt'">
+               <dtml-if "_.hasattr(sapl_documentos.peticao,id_documento_odt)">
+                  <dtml-call expr="REQUEST.set('temODT', 1)">
+               </dtml-if>
+            </dtml-let>
+            <dtml-if expr="_.has_key('temODT')">
+               <div class="input-group-append">
+                <input type="button" class="btn btn-sm btn-secondary" value="Gerar" onclick="javascript:texto_pdf_gerar()" />
+               </div>
+            </dtml-if>
+          </div>                
+      </dtml-if>
+   </div> 
+  </div>
+</dtml-if>
+
+
+
+  <div class="form-row">
+    <div class="col-12 mb-3">
+      <div class="form-check">
+       <input class="form-check-input" type="checkbox" id="chk_consulta_externa" name="chk_consulta_externa" <dtml-if cod_documento_vinculado>checked</dtml-if>>
+       <label class="form-check-label" for="chk_consulta_externa">
+         Anexar a processo existente?
+       </label>
+     </div>
+    </div>
+  </div>
+
+<div id="anexar" class="form-row" <dtml-unless cod_documento_vinculado>style="display:none;"</dtml-unless>>        
+   <div class="col-8 col-sm-6 mb-3">          
+    <label for="lst_tip_documento">Tipo de Processo</label>
+      <select class="custom-select" id="lst_tip_documento" name="lst_tip_documento">
+       <option value=""></option>
+         <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
+            <option
+               <dtml-if expr="_.has_key('tip_documento_sel') and _.int(tip_documento_sel) == _.int(tip_documento)">selected</dtml-if> value="<dtml-var tip_documento>">
+                <dtml-var des_tipo_documento missing>
+            </option>
+         </dtml-in>
+      </select>
+  </div>
+  <div class="col-6 col-sm-3 mb-3">
+      <label for="txt_num_documento">Número</label>
+      <input class="form-control numero" type="number" id="txt_num_documento" name="txt_num_documento" value="<dtml-var num_documento missing>" />
+  </div>
+  <div class="col-6 col-sm-3 mb-3">
+    <label for="txt_ano_documento">Ano</label>
+    <input class="form-control year" type="number" id="txt_ano_documento" name="txt_ano_documento" value="<dtml-var ano_documento missing>" />
+   </div>
+ <dtml-if cod_documento_vinculado>
+   <div class="col-12 mb-3">          
+     <label for="txa_txt_assunto">Identificação</label>
+     <textarea class="form-control auto-resize" id="txa_txt_assunto" name="txa_txt_assunto" rows="1" readonly><dtml-var txt_assunto missing></textarea>
+   </div>
+ </dtml-if>
+</div>
+</form>
+
+<dtml-if cod_peticao>
+  <div class="mt-3 text-left">
+      <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar()" />
+      <dtml-if expr="_.has_key('temPDFAssinado')">
+         <a class="btn btn-secondary" href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/protocolo_pysc?cod_peticao=<dtml-var cod_peticao missing>&modal=1" data-confirm="Confirma o protocolo desta petição?">Protocolar</a> 
+      </dtml-if>
+      <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/peticao_excluir_proc?cod_peticao=<dtml-var cod_peticao missing>&modal=1" data-confirm="Deseja realmente excluir esta petição?">Excluir Petição</a> 
+<dtml-else>
+  <div class="text-left">
+      <input class="btn btn-primary" type="button" value="Cadastrar Petição" onClick="campos_criticar()" />
+  </div>
+</dtml-if>
+
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+</div>
+
+<script>
+  autosize(document.querySelectorAll('textarea'));
+</script>
+
+<dtml-var standard_html_footer>

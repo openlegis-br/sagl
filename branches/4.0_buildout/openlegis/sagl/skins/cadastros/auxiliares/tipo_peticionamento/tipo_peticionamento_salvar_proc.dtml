@@ -1,0 +1,40 @@
+<dtml-if expr="tip_peticionamento and tip_peticionamento!=''">
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_peticionamento_atualizar_zsql)">
+<dtml-else>  
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_peticionamento_incluir_zsql)">
+</dtml-if>
+
+<dtml-call expr="REQUEST.set('ind_norma', '0')">
+<dtml-call expr="REQUEST.set('ind_doc_adm', '0')">
+<dtml-call expr="REQUEST.set('ind_doc_materia', '0')">
+
+<dtml-if expr="ind_mat_ou_doc=='A'">
+  <dtml-call expr="REQUEST.set('ind_doc_adm', '1')">
+<dtml-elif expr="ind_mat_ou_doc=='D'">
+  <dtml-call expr="REQUEST.set('ind_doc_materia', '1')">
+<dtml-elif expr="ind_mat_ou_doc=='M'">
+  <dtml-call expr="REQUEST.set('ind_norma', '1')">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(tip_peticionamento           = tip_peticionamento,
+                          des_tipo_peticionamento      = des_tipo_peticionamento,
+                          ind_norma                    = ind_norma,
+                          ind_doc_adm                  = ind_doc_adm,
+                          ind_doc_materia              = ind_doc_materia,
+                          tip_derivado                 = tip_derivado,
+                          cod_unid_tram_dest           = lst_cod_tram_dest
+                          )">
+
+<dtml-except>
+<dtml-var REQUEST>
+  <dtml-let mensagem="'Não foi possível salvar o tipo de peticionamento. Tente novamente!'" tipo_mensagem="'danger'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+
+<dtml-else>
+  <dtml-let mensagem="'Tipo de peticionamento eletrônico salvo com sucesso!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+
+</dtml-try>

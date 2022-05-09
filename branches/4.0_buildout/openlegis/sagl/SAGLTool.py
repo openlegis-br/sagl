@@ -37,7 +37,7 @@ import urllib2
 import cStringIO
 import StringIO
 from appy.pod.renderer import Renderer
-from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
+from PyPDF4 import PdfFileWriter, PdfFileReader, PdfFileMerger
 from pdfrw import PdfReader, PdfWriter, PageMerge
 from pdfrw.toreportlab import makerl
 from pdfrw.buildxobj import pagexobj
@@ -1211,6 +1211,39 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.parecer_comissao.manage_addFile(id=nom_arquivo_pdf1, file=data)
 
+    def peticao_gerar_odt(self, inf_basicas_dic, nom_arquivo, modelo_path):
+        utool = getToolByName(self, 'portal_url')
+        portal = utool.getPortalObject()    
+        modelo = portal.unrestrictedTraverse(modelo_path)    
+        template_file = cStringIO.StringIO(str(modelo.data))        
+        brasao_file = self.get_brasao()
+        exec 'brasao = brasao_file'
+        output_file_odt = "%s"%nom_arquivo
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_odt, "rb").read()
+        for file in [output_file_odt]:
+            os.unlink(file)
+            self.sapl_documentos.peticao.manage_addFile(id=nom_arquivo,file=data)
+        odt = getattr(self.sapl_documentos.peticao, nom_arquivo)
+        odt.manage_permission('View', roles=['Manager','Owner'], acquire=0)            
+
+    def peticao_gerar_pdf(self, cod_peticao):
+        nom_arquivo_odt = "%s"%cod_peticao+'.odt'
+        nom_arquivo_pdf1 = "%s"%cod_peticao+'.pdf'
+        arquivo = getattr(self.sapl_documentos.peticao, nom_arquivo_odt)
+        odtFile = cStringIO.StringIO(str(arquivo.data))   
+        output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()
+        for file in [output_file_pdf]:
+            os.unlink(file)
+            self.sapl_documentos.peticao.manage_addFile(id=nom_arquivo_pdf1, file=data)
+        pdf = getattr(self.sapl_documentos.peticao, nom_arquivo_pdf1)
+        pdf.manage_permission('View', roles=['Manager','Owner'], acquire=0)
+            
+
     def proposicao_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao, modelo_path):
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()    
@@ -1425,7 +1458,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def processo_adm_gerar_pdf(self, cod_documento):
         utool = getToolByName(self, 'portal_url')
         portal = utool.getPortalObject()
-        writer = PdfWriter()
+        writer = PdfFileWriter()
+        merger = PdfFileMerger(strict=False)
         for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
            nom_pdf_amigavel = documento.sgl_tipo_documento+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+'.pdf'
            id_processo = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
@@ -1435,13 +1469,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         if hasattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral_signed.pdf'):
            arq = getattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral_signed.pdf')
            arquivo = cStringIO.StringIO(str(arq.data))
-           texto_documento = PdfReader(arquivo, decompress=False).pages
-           writer.addpages(texto_documento)
+           texto_documento = PdfFileReader(arquivo)
+           merger.append(texto_documento)
         elif hasattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral.pdf'):
            arq = getattr(self.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral.pdf')
            arquivo = cStringIO.StringIO(str(arq.data))
-           texto_documento = PdfReader(arquivo, decompress=False).pages
-           writer.addpages(texto_documento)
+           texto_documento = PdfFileReader(arquivo)
+           merger.append(texto_documento)
         anexos = []
         for docvinculado in self.zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante=documento.cod_documento, ind_excluido=0):
            if hasattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral_signed.pdf'):
@@ -1474,10 +1508,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         anexos.sort(key=lambda dic: dic['data'])
         for dic in anexos:
             arquivo_doc = cStringIO.StringIO(str(dic['arquivo'].data))
-            texto_anexo = PdfReader(arquivo_doc).pages
-            writer.addpages(texto_anexo)
+            texto_anexo = PdfFileReader(arquivo_doc)
+            merger.append(texto_anexo)
         output_file_pdf = cStringIO.StringIO()
-        writer.write(output_file_pdf)
+        merger.write(output_file_pdf)
+        merger.close()
+
         output_file_pdf.seek(0)
         existing_pdf = PdfFileReader(output_file_pdf, strict=False)
         numPages = existing_pdf.getNumPages()
@@ -1525,6 +1561,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def processo_eletronico_gerar_pdf(self, cod_materia):
         utool = getToolByName(self, 'portal_url')
+        writer = PdfFileWriter()
+        merger = PdfFileMerger(strict=False)
         portal = utool.getPortalObject()
         if cod_materia.isdigit():
            cod_materia = cod_materia
@@ -1534,14 +1572,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            nom_pdf_amigavel = materia.sgl_tipo_materia+'-'+str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)+'.pdf'
            nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
            id_processo = materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-        writer = PdfWriter()
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
            arq = getattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf')
            arquivo = cStringIO.StringIO(str(arq.data))
-           texto_materia = PdfReader(arquivo, decompress=False).pages
-           writer.addpages(texto_materia)
+           texto_materia = PdfFileReader(arquivo)
+           merger.append(texto_materia)
         anexos = []
         for substitutivo in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
             if hasattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf'):
@@ -1593,10 +1630,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         anexos.sort(key=lambda dic: dic['data'])
         for dic in anexos:
             arquivo_doc = cStringIO.StringIO(str(dic['arquivo'].data))
-            texto_anexo = PdfReader(arquivo_doc).pages
-            writer.addpages(texto_anexo)
+            texto_anexo = PdfFileReader(arquivo_doc)
+            merger.append(texto_anexo)
         output_file_pdf = cStringIO.StringIO()
-        writer.write(output_file_pdf)
+        merger.write(output_file_pdf)
+        merger.close()
+
         output_file_pdf.seek(0)
         existing_pdf = PdfFileReader(output_file_pdf, strict=False)
         numPages = existing_pdf.getNumPages()
@@ -1848,7 +1887,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    elif tipo_doc == 'protocolo':
                       storage_path = self.sapl_documentos.protocolo
                    elif tipo_doc == 'peticao':
-                      storage_path = self.sapl_documentos.administrativo
+                      storage_path = self.sapl_documentos.peticao
                    elif tipo_doc == 'pauta_comissao':
                       storage_path = self.sapl_documentos.reuniao_comissao
                    elif tipo_doc == 'ata_comissao':
@@ -2197,7 +2236,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            for metodo in self.zsql.protocolo_obter_zsql(cod_protocolo=codigo):
                texto = 'PROTOCOLO Nº '+ str(metodo.num_protocolo)+'/'+ str(metodo.ano_protocolo)
         elif tipo_doc == 'peticao':
-           storage_path = self.sapl_documentos.administrativo
+           storage_path = self.sapl_documentos.peticao
            texto = 'PETIÇÃO ELETRÔNICA'
         elif tipo_doc == 'pauta_comissao':
            storage_path = self.sapl_documentos.reuniao_comissao
