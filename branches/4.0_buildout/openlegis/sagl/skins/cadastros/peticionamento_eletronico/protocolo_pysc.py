@@ -62,10 +62,10 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
     for numero_doc in context.zsql.numero_documento_administrativo_obter_zsql(tip_documento=tip_documento, ano_documento=ano):
         numero = numero_doc.novo_numero
 
-    if cod_documento_vinculado != None:
-       ind_tramitacao = 0
-    else:
+    if cod_documento_vinculado == 'Nulo':
        ind_tramitacao = 1
+    else:
+       ind_tramitacao = 0
 
     context.zsql.documento_administrativo_incluir_zsql(num_documento=numero, ano_documento=ano, dat_documento=data, tip_documento=tip_documento, num_protocolo=hdn_num_protocolo, txt_interessado=txt_interessado, ind_tramitacao=ind_tramitacao, txt_assunto=txt_assunto_ementa, cod_assunto=tip_peticionamento)
     
