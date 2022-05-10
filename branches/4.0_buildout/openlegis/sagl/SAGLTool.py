@@ -45,7 +45,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.graphics.barcode import code128, qr
-from reportlab.graphics.shapes import Drawing 
+from reportlab.graphics.shapes import Drawing
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.graphics.barcode import createBarcodeDrawing
@@ -389,7 +389,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         img.save(modified_path)
         data = open(modified_path, "rb").read()
-        foto = getattr(self.sapl_documentos.parlamentar.fotos,image_file) 
+        foto = getattr(self.sapl_documentos.parlamentar.fotos,image_file)
         foto.manage_upload(file=data)
         os.unlink('/tmp/'+image_file)
         os.unlink('/tmp/'+foto_parlamentar)
@@ -494,11 +494,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/materia_apresentada.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        exec 'brasao = brasao_file'        
+        exec 'brasao = brasao_file'
         output_file_odt = "materia_apresentada.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-        renderer.run()                                                                              
-        data = open(output_file_odt, "rb").read()                 
+        renderer.run()
+        data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
             os.unlink(file)
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
@@ -539,7 +539,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         writer = PdfWriter()
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         for pauta in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen):
-          nom_arquivo_pdf = "%s"%cod_sessao_plen+'_pauta_completa.pdf'        
+          nom_arquivo_pdf = "%s"%cod_sessao_plen+'_pauta_completa.pdf'
           nom_pdf_amigavel = str(pauta.num_sessao_plen)+'-sessao-'+ str(pauta.dat_inicio)+'-pauta_completa.pdf'
           nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
           if hasattr(self.sapl_documentos.pauta_sessao, str(cod_sessao_plen) + '_pauta_sessao.pdf'):
@@ -572,7 +572,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                           texto_anexada = PdfReader(arquivo, decompress=False).pages
                           writer.addpages(texto_anexada)
                    for subst in self.zsql.substitutivo_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
-                       substitutivo = subst.cod_substitutivo 
+                       substitutivo = subst.cod_substitutivo
                        if hasattr(self.sapl_documentos.substitutivo, str(substitutivo) + '_substitutivo.pdf'):
                           arq = getattr(self.sapl_documentos.substitutivo, str(substitutivo) + '_substitutivo.pdf')
                           arquivo = cStringIO.StringIO(str(arq.data))
@@ -624,7 +624,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
           output.write(outputStream)
           arq=self.temp_folder[nom_arquivo_pdf]
           arq.manage_edit(title=nom_pdf_amigavel,filedata=outputStream.getvalue(),content_type='application/pdf')
-          tmp_copy = self.temp_folder.manage_copyObjects(ids=nom_arquivo_pdf)          
+          tmp_copy = self.temp_folder.manage_copyObjects(ids=nom_arquivo_pdf)
           if nom_arquivo_pdf in self.sapl_documentos.pauta_sessao:
              self.sapl_documentos.pauta_sessao.manage_delObjects(nom_arquivo_pdf)
           tmp_id = self.sapl_documentos.pauta_sessao.manage_pasteObjects(tmp_copy)[0]['new_id']
@@ -688,7 +688,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                       arq = getattr(self.sapl_documentos.parecer_comissao, str(item.cod_parecer) + '_parecer.pdf')
                       arquivo = cStringIO.StringIO(str(arq.data))
                       texto_parecer = PdfReader(arquivo, decompress=False).pages
-                      writer.addpages(texto_parecer)  
+                      writer.addpages(texto_parecer)
           output_file_pdf = cStringIO.StringIO()
           writer.write(output_file_pdf)
           output_file_pdf.seek(0)
@@ -769,8 +769,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-        renderer.run()                                                                            
-        data = open(output_file_odt, "rb").read()                 
+        renderer.run()
+        data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
             os.unlink(file)
             self.sapl_documentos.pauta_sessao.manage_addFile(id=output_file_odt,file=data)
@@ -839,7 +839,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output_file_pdf = os.path.normpath(nom_arquivo_pdf)
         renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
-        data = open(output_file_pdf, "rb").read()                 
+        data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
             os.unlink(file)
             self.sapl_documentos.materia.manage_addFile(id=nom_arquivo_pdf,file=data)
@@ -895,7 +895,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output_file_pdf = os.path.normpath(nom_arquivo_pdf)
         renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
-        data = open(output_file_pdf, "rb").read()                 
+        data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
             os.unlink(file)
             self.sapl_documentos.emenda.manage_addFile(id=nom_arquivo_pdf,file=data)
@@ -960,13 +960,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/relatorio-expediente.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        exec 'brasao = brasao_file'        
+        exec 'brasao = brasao_file'
         output_file_odt = "%s" % nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-        renderer.run()                                                                              
-        data = open(output_file_odt, "rb").read()                 
+        renderer.run()
+        data = open(output_file_odt, "rb").read()
         for file in [output_file_odt]:
-            os.unlink(file)                                                
+            os.unlink(file)
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
         return data
@@ -1002,7 +1002,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         if tipo_texto == 'compilado':
            nom_arquivo_pdf1 = "%s"%cod_norma+'_texto_consolidado.pdf'
         elif tipo_texto == 'integral':
-           nom_arquivo_pdf1 = "%s"%cod_norma+'_texto_integral.pdf'        
+           nom_arquivo_pdf1 = "%s"%cod_norma+'_texto_integral.pdf'
         url = self.sapl_documentos.norma_juridica.absolute_url() + "/%s"%nom_arquivo_odt
         odtFile = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
@@ -1030,7 +1030,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         nom_arquivo_odt = "%s"%cod_documento+'_texto_integral.odt'
         nom_arquivo_pdf1 = "%s"%cod_documento+'_texto_integral.pdf'
         arquivo = getattr(self.sapl_documentos.administrativo, nom_arquivo_odt)
-        odtFile = cStringIO.StringIO(str(arquivo.data))     
+        odtFile = cStringIO.StringIO(str(arquivo.data))
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
         renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
@@ -1186,7 +1186,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         return w
 
     def parecer_gerar_odt(self, inf_basicas_dic, nom_arquivo, nom_comissao, materia_vinculada, nom_autor, txt_ementa, tip_apresentacao, tip_conclusao, data_parecer, nom_relator, lst_composicao, modelo_proposicao):
-        url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/%s" % modelo_proposicao    
+        url = self.sapl_documentos.modelo.materia.parecer.absolute_url() + "/%s" % modelo_proposicao
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
         exec 'brasao = brasao_file'
@@ -1213,9 +1213,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def peticao_gerar_odt(self, inf_basicas_dic, nom_arquivo, modelo_path):
         utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()    
-        modelo = portal.unrestrictedTraverse(modelo_path)    
-        template_file = cStringIO.StringIO(str(modelo.data))        
+        portal = utool.getPortalObject()
+        modelo = portal.unrestrictedTraverse(modelo_path)
+        template_file = cStringIO.StringIO(str(modelo.data))
         brasao_file = self.get_brasao()
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
@@ -1226,13 +1226,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.peticao.manage_addFile(id=nom_arquivo,file=data)
         odt = getattr(self.sapl_documentos.peticao, nom_arquivo)
-        odt.manage_permission('View', roles=['Manager','Owner'], acquire=0)            
+        odt.manage_permission('View', roles=['Manager','Owner'], acquire=0)
 
     def peticao_gerar_pdf(self, cod_peticao):
         nom_arquivo_odt = "%s"%cod_peticao+'.odt'
         nom_arquivo_pdf1 = "%s"%cod_peticao+'.pdf'
         arquivo = getattr(self.sapl_documentos.peticao, nom_arquivo_odt)
-        odtFile = cStringIO.StringIO(str(arquivo.data))   
+        odtFile = cStringIO.StringIO(str(arquivo.data))
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
         renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
@@ -1242,19 +1242,19 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             self.sapl_documentos.peticao.manage_addFile(id=nom_arquivo_pdf1, file=data)
         pdf = getattr(self.sapl_documentos.peticao, nom_arquivo_pdf1)
         pdf.manage_permission('View', roles=['Manager','Owner'], acquire=0)
-            
+
 
     def proposicao_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao, modelo_path):
         utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()    
+        portal = utool.getPortalObject()
         if inf_basicas_dic['des_tipo_proposicao'] == 'Parecer' or inf_basicas_dic['des_tipo_proposicao'] == 'Parecer de Comissão':
-           materia = inf_basicas_dic['id_materia'] 
+           materia = inf_basicas_dic['id_materia']
            nom_comissao = inf_basicas_dic['nom_comissao']
            data_parecer = inf_basicas_dic['data_parecer']
            nom_relator = inf_basicas_dic['nom_relator']
            lst_composicao = []
-        modelo = portal.unrestrictedTraverse(modelo_path)    
-        template_file = cStringIO.StringIO(str(modelo.data))        
+        modelo = portal.unrestrictedTraverse(modelo_path)
+        template_file = cStringIO.StringIO(str(modelo.data))
         brasao_file = self.get_brasao()
         exec 'brasao = brasao_file'
         output_file_odt = "%s"%nom_arquivo
@@ -1271,7 +1271,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         nom_arquivo_odt = "%s"%cod_proposicao+'.odt'
         nom_arquivo_pdf1 = "%s"%cod_proposicao+'.pdf'
         arquivo = getattr(self.sapl_documentos.proposicao, nom_arquivo_odt)
-        odtFile = cStringIO.StringIO(str(arquivo.data))   
+        odtFile = cStringIO.StringIO(str(arquivo.data))
         output_file_pdf = os.path.normpath(nom_arquivo_pdf1)
         renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
@@ -1282,7 +1282,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         lst_anexos = []
         for anexo in self.pysc.anexo_proposicao_pysc(cod_proposicao,listar=True):
             arq = getattr(self.sapl_documentos.proposicao, anexo)
-            arquivo = cStringIO.StringIO(str(arq.data))   
+            arquivo = cStringIO.StringIO(str(arq.data))
             texto_anexo = PdfReader(arquivo, decompress=False).pages
             merger.addpages(texto_anexo)
 
@@ -1311,11 +1311,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         url = self.sapl_documentos.modelo.absolute_url() + "/planilha-visitantes.ods"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
-        exec 'brasao = brasao_file'        
+        exec 'brasao = brasao_file'
         output_file_ods = "contatos.ods"
         renderer = Renderer(template_file, locals(), output_file_ods, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-        renderer.run()                                                                              
-        data = open(output_file_ods, "rb").read()                 
+        renderer.run()
+        data = open(output_file_ods, "rb").read()
         for file in [output_file_ods]:
             os.unlink(file)
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'vnd.oasis.opendocument.spreadsheet'
@@ -1327,10 +1327,10 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_ods = "eleitores.ods"
         renderer = Renderer(template_file, locals(), output_file_ods, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-        renderer.run()                                                                              
-        data = open(output_file_ods, "rb").read()                 
+        renderer.run()
+        data = open(output_file_ods, "rb").read()
         for file in [output_file_ods]:
-            os.unlink(file)                                                
+            os.unlink(file)
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'vnd.oasis.opendocument.spreadsheet'
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_ods
         return data
@@ -1340,10 +1340,10 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_ods = "materias.ods"
         renderer = Renderer(template_file, locals(), output_file_ods, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-        renderer.run()                                                                              
-        data = open(output_file_ods, "rb").read()                 
+        renderer.run()
+        data = open(output_file_ods, "rb").read()
         for file in [output_file_ods]:
-            os.unlink(file)                                                
+            os.unlink(file)
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'vnd.oasis.opendocument.spreadsheet'
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_ods
         return data
@@ -1353,10 +1353,10 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_ods = "normas.ods"
         renderer = Renderer(template_file, locals(), output_file_ods, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
-        renderer.run()                                                                              
-        data = open(output_file_ods, "rb").read()                 
+        renderer.run()
+        data = open(output_file_ods, "rb").read()
         for file in [output_file_ods]:
-            os.unlink(file)                                                
+            os.unlink(file)
         self.REQUEST.RESPONSE.headers['Content-Type'] = 'vnd.oasis.opendocument.spreadsheet'
         self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_ods
         return data
@@ -1369,7 +1369,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output_file_pdf = os.path.normpath(nom_arquivo_pdf)
         renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
-        data = open(output_file_pdf, "rb").read()                 
+        data = open(output_file_pdf, "rb").read()
         for file in [output_file_pdf]:
             os.unlink(file)
             self.sapl_documentos.substitutivo.manage_addFile(id=nom_arquivo_pdf,file=data)
@@ -1445,7 +1445,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
           PageMerge(page).add(barcode).render()
         outputStream = '/tmp/' + nom_pdf_protocolo
         PdfWriter(outputStream, trailer=existing_pdf).write()
-        data = open('/tmp/' + nom_pdf_protocolo, 'rb').read()              
+        data = open('/tmp/' + nom_pdf_protocolo, 'rb').read() 
         for item in [outputStream]:
           if nom_pdf_protocolo in self.sapl_documentos.protocolo:
             documento = getattr(self.sapl_documentos.protocolo,nom_pdf_protocolo)
@@ -1567,7 +1567,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         if cod_materia.isdigit():
            cod_materia = cod_materia
         else:
-           cod_materia = self.pysc.b64decode_pysc(codigo=str(cod_materia))     
+           cod_materia = self.pysc.b64decode_pysc(codigo=str(cod_materia))
         for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia):
            nom_pdf_amigavel = materia.sgl_tipo_materia+'-'+str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)+'.pdf'
            nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
@@ -1713,7 +1713,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=proposicao.cod_mat_ou_doc):
               for materia in self.zsql.materia_obter_zsql(cod_materia=documento.cod_materia):
                   materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-              info_protocolo = '- Recebido em ' + proposicao.dat_recebimento + ' - '                  
+              info_protocolo = '- Recebido em ' + proposicao.dat_recebimento + ' - '
               texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' - ' + str(materia)
               storage_path = self.sapl_documentos.materia
               nom_pdf_saida = str(documento.cod_documento) + ".pdf"
@@ -1721,7 +1721,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             for emenda in self.zsql.emenda_obter_zsql(cod_emenda=proposicao.cod_emenda):
               for materia in self.zsql.materia_obter_zsql(cod_materia=emenda.cod_materia):
                   materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-              info_protocolo = '- Recebida em ' + proposicao.dat_recebimento + ' - '                  
+              info_protocolo = '- Recebida em ' + proposicao.dat_recebimento + ' - '
               texto = 'EMENDA ' + str(emenda.des_tipo_emenda.decode('utf-8').upper())+' Nº '+ str(emenda.num_emenda) + ' AO ' + str(materia)
               storage_path = self.sapl_documentos.emenda
               nom_pdf_saida = str(emenda.cod_emenda) + "_emenda.pdf"
@@ -1739,15 +1739,15 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
               for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
                   materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
               texto = 'PARECER ' + sgl_comissao + ' Nº '+ str(relatoria.num_parecer) + '/' +str(relatoria.ano_parecer) + ' AO ' + str(materia)
-              storage_path = self.sapl_documentos.parecer_comissao   
-              nom_pdf_saida = str(relatoria.cod_relatoria) + "_parecer.pdf"                      
-    
-        if self.sapl_documentos.props_sagl.restpki_access_token!='':                                        
+              storage_path = self.sapl_documentos.parecer_comissao
+              nom_pdf_saida = str(relatoria.cod_relatoria) + "_parecer.pdf"
+
+        if self.sapl_documentos.props_sagl.restpki_access_token!='':
            mensagem1 = texto + info_protocolo + 'Esta é uma cópia do original assinado digitalmente por ' + nom_autor + outros
            mensagem2 = 'Para validar o documento, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
         else:
            mensagem1 = ''
-           mensagem2 = '' 
+           mensagem2 = ''
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
@@ -1765,7 +1765,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             pwidth = self.getPageSizeW(page)
             pheight = self.getPageSizeH(page)
             can.setPageSize((pwidth, pheight))
-            can.setFillColorRGB(0,0,0) 
+            can.setFillColorRGB(0,0,0)
             # QRCode
             qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura_proc?txt_codigo_verificacao='+str(cod_validacao_doc))
             bounds = qr_code.getBounds()
@@ -1835,10 +1835,141 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arq=storage_path[nom_pdf_saida]
            arq.manage_edit(title=nom_pdf_saida,filedata=outputStream.getvalue(),content_type='application/pdf')
 
+    def peticao_autuar(self,cod_peticao):
+        for peticao in self.zsql.peticao_obter_zsql(cod_peticao=cod_peticao):
+            cod_validacao_doc = ''
+            outros = ''
+            qtde_assinaturas = []
+            for validacao in self.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=peticao.cod_peticao, ind_assinado=1):
+                nom_pdf_peticao = str(validacao.cod_assinatura_doc) + ".pdf"
+                pdf_peticao = self.sapl_documentos.documentos_assinados.absolute_url() + "/" +  nom_pdf_peticao
+                qtde_assinaturas.append(validacao.cod_usuario)
+                if validacao.ind_prim_assinatura == 1:
+                   nom_autor = validacao.nom_completo
+                cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
+            if len(qtde_assinaturas) == 2:
+               outros = " e outro"
+            elif len(qtde_assinaturas) > 2:
+               outros = " e outros"
+            info_protocolo = '- Recebido em ' + peticao.dat_recebimento + ' - '
+            tipo_tipo_peticionamento = peticao.des_tipo_peticionamento
+            if peticao.ind_doc_adm == "1":
+               for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=peticao.cod_documento):
+                   for protocolo in self.zsql.protocolo_obter_zsql(num_protocolo=documento.num_protocolo, ano_protocolo=documento.ano_documento):
+                       info_protocolo = ' - Protocolo nº ' + str(protocolo.num_protocolo) + '/' + str(protocolo.ano_protocolo) + ' recebido em ' + self.pysc.iso_to_port_pysc(protocolo.dat_protocolo) + ' ' + protocolo.hor_protocolo + ' - '
+                   texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' Nº '+ str(documento.num_documento)+ '/' +str(documento.ano_documento)
+                   storage_path = self.sapl_documentos.administrativo
+                   nom_pdf_saida = str(documento.cod_documento) + "_texto_integral.pdf"
+            elif peticao.ind_doc_materia == "1":
+               for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=peticao.cod_doc_acessorio):
+                   texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' - ' + str(materia)
+                   storage_path = self.sapl_documentos.materia
+                   nom_pdf_saida = str(documento.cod_documento) + ".pdf"
+            elif peticao.ind_norma == "1":
+               storage_path = self.sapl_documentos.norma_juridica
+               for norma in self.zsql.norma_juridica_obter_zsql(cod_norma=peticao.cod_norma):
+                   texto = str(norma.des_tipo_norma.decode('utf-8').upper())+' Nº '+ str(norma.num_norma) + '/' + str(norma.ano_norma)
+                   nom_pdf_saida = str(norma.cod_norma) + "_texto_integral.pdf"
+        if self.sapl_documentos.props_sagl.restpki_access_token!='':
+           mensagem1 = texto + info_protocolo + 'Esta é uma cópia do original assinado digitalmente por ' + nom_autor + outros
+           mensagem2 = 'Para validar o documento, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
+        else:
+           mensagem1 = ''
+           mensagem2 = ''
+        mensagem = mensagem1 + '\n' + mensagem2
+        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
+        pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
+
+        arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_peticao)
+        arquivo = cStringIO.StringIO(str(arq.data))
+        existing_pdf = PdfFileReader(arquivo, strict=False)
+        numPages = existing_pdf.getNumPages()
+
+        # cria novo PDF
+        packet = StringIO.StringIO()
+        can = canvas.Canvas(packet)
+        for page_num, i in enumerate(range(numPages), start=1):
+            page = existing_pdf.getPage(i)
+            pwidth = self.getPageSizeW(page)
+            pheight = self.getPageSizeH(page)
+            can.setPageSize((pwidth, pheight))
+            can.setFillColorRGB(0,0,0)
+            # QRCode
+            qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura_proc?txt_codigo_verificacao='+str(cod_validacao_doc))
+            bounds = qr_code.getBounds()
+            width = bounds[2] - bounds[0]
+            height = bounds[3] - bounds[1]
+            d = Drawing(55, 55, transform=[55./width,0,0,55./height,0,0])
+            d.add(qr_code)
+            x = 59
+            renderPDF.draw(d, can,  pwidth-59, 13)
+            # Margem direita
+            d = Drawing(10, 5)
+            lab = Label()
+            lab.setOrigin(0,250)
+            lab.angle = 90
+            lab.fontName = 'Arial'
+            lab.fontSize = 7
+            lab.textAnchor = 'start'
+            lab.boxAnchor = 'n'
+            lab.setText(mensagem)
+            d.add(lab)
+            renderPDF.draw(d, can, pwidth-24, 160)
+            # Numero de pagina
+            footer_text = "Pag. %s/%s" % (page_num, numPages)
+            can.saveState()
+            can.setFont('Arial', 8)
+            can.drawCentredString(pwidth-30, 10, footer_text)
+            can.restoreState()
+            can.showPage()
+        can.save()
+        packet.seek(0)
+        new_pdf = PdfFileReader(packet)
+        # Numero do documento
+        packet2 = StringIO.StringIO()
+        d = canvas.Canvas(packet2, pagesize=A4)
+        d.setFillColorRGB(0,0,0)
+        d.setFont("Arial_Bold", 13)
+        # alinhamento a esquerda
+        #d.drawString(85, 700, texto)
+        # alinhamento centralizado
+        d.drawCentredString(pwidth/2, 700, texto)
+        d.save()
+        packet2.seek(0)
+        new_pdf2 = PdfFileReader(packet2)
+        # Mescla arquivos
+        output = PdfFileWriter()
+        for page in range(existing_pdf.getNumPages()):
+            pdf_page = existing_pdf.getPage(page)
+            # numeração documento na primeira pagina
+            if peticao.ind_doc_adm == '1' and page == 0:
+               pdf_page.mergePage(new_pdf2.getPage(0))
+            # qrcode e margem direita em todas as páginas
+            if self.sapl_documentos.props_sagl.restpki_access_token != '' and cod_validacao_doc != '':
+               for wm in range(new_pdf.getNumPages()):
+                   watermark_page = new_pdf.getPage(wm)
+                   if page == wm:
+                      pdf_page.mergePage(watermark_page)
+            output.addPage(pdf_page)
+        outputStream = cStringIO.StringIO()
+        output.write(outputStream)
+        if nom_pdf_saida in storage_path:
+           storage_path.manage_delObjects(nom_pdf_saida)
+           storage_path.manage_addFile(nom_pdf_saida)
+           arq=storage_path[nom_pdf_saida]
+           arq.manage_edit(title=nom_pdf_saida,filedata=outputStream.getvalue(),content_type='application/pdf')
+        else:
+           storage_path.manage_addFile(nom_pdf_saida)
+           arq=storage_path[nom_pdf_saida]
+           arq.manage_edit(title=nom_pdf_saida,filedata=outputStream.getvalue(),content_type='application/pdf')
+
+        if peticao.ind_norma == "1":
+           self.sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(cod_norma=peticao.cod_norma)
+
     def restpki_client(self):
         restpki_url = 'https://restpkiol.azurewebsites.net/'
         #restpki_url = 'https://pki.rest/'
-        restpki_access_token = self.sapl_documentos.props_sagl.restpki_access_token            
+        restpki_access_token = self.sapl_documentos.props_sagl.restpki_access_token
         restpki_client = RestPkiClient(restpki_url, restpki_access_token)
         return restpki_client
 
@@ -1846,16 +1977,16 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for storage in self.zsql.assinatura_storage_obter_zsql(tip_documento=tipo_doc):
             tipo_doc = storage.tip_documento
             if tipo_doc == 'proposicao':
-               storage_path = self.sapl_documentos.proposicao            
+               storage_path = self.sapl_documentos.proposicao
                pdf_location = storage.pdf_location
-               pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)             
+               pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
                nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
                pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
-               nom_arquivo = str(codigo) + str(storage.pdf_file)               
+               nom_arquivo = str(codigo) + str(storage.pdf_file)
             else:
                for item in self.zsql.assinatura_documento_obter_zsql(codigo=codigo, tipo_doc=tipo_doc, ind_assinado=1):
                    if len([item]) >= 1:
-                      storage_path = self.sapl_documentos.documentos_assinados                               
+                      storage_path = self.sapl_documentos.documentos_assinados
                       pdf_location = 'sapl_documentos/documentos_assinados/'
                       pdf_signed = str(pdf_location) + str(item.cod_assinatura_doc) + '.pdf'
                       nom_arquivo_assinado = str(item.cod_assinatura_doc) + '.pdf'
@@ -1898,7 +2029,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    pdf_signed = str(pdf_location) + str(codigo) + str(storage.pdf_signed)
                    nom_arquivo_assinado = str(codigo) + str(storage.pdf_signed)
                    pdf_file = str(pdf_location) + str(codigo) + str(storage.pdf_file)
-                   nom_arquivo = str(codigo) + str(storage.pdf_file)                                  
+                   nom_arquivo = str(codigo) + str(storage.pdf_file)
         try:
            arquivo = self.restrictedTraverse(pdf_signed)
            pdf_tosign = nom_arquivo_assinado
@@ -1907,26 +2038,26 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            pdf_tosign = nom_arquivo
 
         x = crc32(str(arquivo))
-        
+
         if (x>=0):
            crc_arquivo= str(x)
         else:
-           crc_arquivo= str(-1 * x)              
-        
+           crc_arquivo= str(-1 * x)
+
         return pdf_tosign, storage_path, crc_arquivo
 
     def pades_signature(self, codigo, tipo_doc, cod_usuario, qtde_assinaturas):
         # get file to sign
-        pdf_tosign, storage_path, crc_arquivo = self.get_file_tosign(codigo, tipo_doc)     
+        pdf_tosign, storage_path, crc_arquivo = self.get_file_tosign(codigo, tipo_doc)
         arq = getattr(storage_path, pdf_tosign)
-        arquivo = cStringIO.StringIO(str(arq.data))           
+        arquivo = cStringIO.StringIO(str(arq.data))
         arquivo.seek(0)
         pdf_path = ''
         pdf_stream = str(arq.data)
 
         # Read the PDF stamp image
         utool = getToolByName(self, 'portal_url')
-        portal = utool.getPortalObject()  
+        portal = utool.getPortalObject()
         id_logo = portal.sapl_documentos.props_sagl.id_logo
         if hasattr(self.sapl_documentos.props_sagl, id_logo):
            url = self.url() + '/sapl_documentos/props_sagl/' + id_logo
@@ -1977,7 +2108,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         token = signature_starter.start_with_webpki()
 
         tokenjs = json.dumps(token)
- 
+
         return token, pdf_path, crc_arquivo, codigo, tipo_doc, cod_usuario, tokenjs
 
     def pades_signature_action(self, token, codigo, tipo_doc, cod_usuario, crc_arquivo_original):
@@ -1985,8 +2116,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdf_tosign, storage_path, crc_arquivo = self.get_file_tosign(codigo, tipo_doc)
         if str(crc_arquivo_original) != str(crc_arquivo):
            msg = 'O arquivo foi modificado durante o procedimento de assinatura! Tente novamente.'
-           raise ValueError(msg)        
-    
+           raise ValueError(msg)
+
         # Get the token for this signature (rendered in a hidden input field)
         token = token
         codigo = codigo
@@ -2035,7 +2166,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         f = signature_finisher.stream_signed_pdf()
         arq.manage_edit(title=file_hash,filedata=f.getvalue(),content_type='application/pdf')
 
-        if tipo_doc != 'proposicao':
+        if tipo_doc != 'proposicao' and tipo_doc != 'peticao':
            self.margem_direita(codigo, tipo_doc, cod_assinatura_doc, cod_usuario, file_hash)
 
         if hasattr(storage_path,filename):
@@ -2244,15 +2375,15 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                for comissao in self.zsql.comissao_obter_zsql(cod_comissao=metodo.cod_comissao):
                    texto = 'PAUTA - ' + metodo.num_reuniao + 'ª Reunião da ' + comissao.sgl_comissao + ', em ' + metodo.dat_inicio_reuniao
         elif tipo_doc == 'ata_comissao':
-           storage_path = self.sapl_documentos.reuniao_comissao      
+           storage_path = self.sapl_documentos.reuniao_comissao
            for metodo in self.zsql.reuniao_comissao_obter_zsql(cod_reuniao=codigo):
                for comissao in self.zsql.comissao_obter_zsql(cod_comissao=metodo.cod_comissao):
                    texto = 'ATA - ' + metodo.num_reuniao + 'ª Reunião da ' + comissao.sgl_comissao + ', em ' + metodo.dat_inicio_reuniao
         elif tipo_doc == 'documento_comissao':
-           storage_path = self.sapl_documentos.documento_comissao      
+           storage_path = self.sapl_documentos.documento_comissao
            for metodo in self.zsql.documento_comissao_obter_zsql(cod_documento=codigo):
                for comissao in self.zsql.comissao_obter_zsql(cod_comissao=metodo.cod_comissao):
-                   texto = metodo.txt_descricao + ' - ' + comissao.sgl_comissao                   
+                   texto = metodo.txt_descricao + ' - ' + comissao.sgl_comissao
 
         mensagem1 = texto + ' - Esta é uma cópia do original assinado digitalmente por ' + nom_autor + outros + '.'
         mensagem2 = 'Para validar o documento, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ string
@@ -2271,7 +2402,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             pwidth = self.getPageSizeW(page)
             pheight = self.getPageSizeH(page)
             can.setPageSize((pwidth, pheight))
-            can.setFillColorRGB(0,0,0) 
+            can.setFillColorRGB(0,0,0)
             # QRCode
             qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura_proc?txt_codigo_verificacao='+str(string))
             bounds = qr_code.getBounds()
@@ -2335,8 +2466,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             string = self.pysc.proposicao_calcular_checksum_pysc(proposicao.cod_proposicao, senha=1)
             nom_autor = proposicao.nom_autor
             pdf_proposicao = str(proposicao.cod_proposicao) + '.pdf'
-            pdf_assinado = str(proposicao.cod_proposicao) + '_signed.pdf'   
-            texto = 'Proposição eletrônica ' + string            
+            pdf_assinado = str(proposicao.cod_proposicao) + '_signed.pdf'
+            texto = 'Proposição eletrônica ' + string
         mensagem1 = 'Documento assinado digitalmente com usuário e senha por ' + nom_autor + '.'
         mensagem2 = texto + ', Para verificação de autenticidade utilize o QR Code exibido no rodapé.'
         mensagem = mensagem1 + '\n' + mensagem2
@@ -2354,7 +2485,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             pwidth = self.getPageSizeW(page)
             pheight = self.getPageSizeH(page)
             can.setPageSize((pwidth, pheight))
-            can.setFillColorRGB(0,0,0) 
+            can.setFillColorRGB(0,0,0)
             # QRCode
             qr_code = qr.QrCodeWidget(self.url() + '/sapl_documentos/proposicao/' + cod_proposicao + '_signed.pdf')
             bounds = qr_code.getBounds()
@@ -2418,38 +2549,38 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         if hasattr(self.sapl_documentos.props_sagl, 'logo_carimbo.png'):
            logo = ImageReader(self.portal_url() + '/sapl_documentos/props_sagl/logo_carimbo.png')
-        elif hasattr(self.sapl_documentos.props_sagl, 'logo_casa.gif'):        
-           logo = ImageReader(self.portal_url() + '/sapl_documentos/props_sagl/logo_casa.gif')           
+        elif hasattr(self.sapl_documentos.props_sagl, 'logo_casa.gif'):
+           logo = ImageReader(self.portal_url() + '/sapl_documentos/props_sagl/logo_casa.gif')
         else:
-           logo = ImageReader(self.portal_url() + '/imagens/brasao.gif')        
+           logo = ImageReader(self.portal_url() + '/imagens/brasao.gif')
 
-        nom_presidente = ''       
+        nom_presidente = ''
         # obtem dados da sessao
         if cod_sessao_plen != '0':
            for item in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen):
                for tipo in self.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=item.tip_sessao):
-                   id_sessao = str(item.num_sessao_plen) + 'ª Sessão ' + tipo.nom_sessao + ' - ' 
+                   id_sessao = str(item.num_sessao_plen) + 'ª Sessão ' + tipo.nom_sessao + ' - '
                data = item.dat_inicio_sessao
-               data1 = self.pysc.data_converter_pysc(data) 
+               data1 = self.pysc.data_converter_pysc(data)
                num_legislatura = item.num_legislatura
            for composicao in self.zsql.composicao_mesa_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_cargo=1, ind_excluido=0):
                for parlamentar in self.zsql.parlamentar_obter_zsql(cod_parlamentar=composicao.cod_parlamentar):
-                   nom_presidente = str(parlamentar.nom_parlamentar.decode('utf-8').upper())  
+                   nom_presidente = str(parlamentar.nom_parlamentar.decode('utf-8').upper())
            if nom_presidente == '':
               data = DateTime().strftime('%d/%m/%Y')
               data1 = self.pysc.data_converter_pysc(data)
               for sleg in self.zsql.periodo_comp_mesa_obter_zsql(data=data1):
                   for cod_presidente in self.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp, cod_cargo=1):
                       for presidencia in self.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-                          nom_presidente = str(presidencia.nom_parlamentar.decode('utf-8').upper())                   
+                          nom_presidente = str(presidencia.nom_parlamentar.decode('utf-8').upper())
         else:
            id_sessao = ""
            data = DateTime().strftime('%d/%m/%Y')
-           data1 = self.pysc.data_converter_pysc(data) 
+           data1 = self.pysc.data_converter_pysc(data)
            for sleg in self.zsql.periodo_comp_mesa_obter_zsql(data=data1):
                for cod_presidente in self.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp, cod_cargo=1):
                    for presidencia in self.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-                       nom_presidente = str(presidencia.nom_parlamentar.decode('utf-8').upper())           
+                       nom_presidente = str(presidencia.nom_parlamentar.decode('utf-8').upper())
 
         # prepara carimbo
         packet = StringIO.StringIO()
@@ -2459,23 +2590,23 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         sessao = "%s%s" % (id_sessao, data)
         presidente = "%s " % (nom_presidente)
         cargo = "Presidente"
-        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))   
-        pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))             
+        pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
+        pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         can.setFont('Arial_Bold', 10)
         can.drawString(400, 730, texto)
         can.setFont('Arial', 9)
         can.drawString(400, 720, sessao)
         can.drawString(400, 710, presidente)
-        can.drawString(400, 700, cargo)          
-        can.showPage()              
-        can.save()     
-        new_pdf = PdfFileReader(packet)         
-        output = PdfFileWriter()     
+        can.drawString(400, 700, cargo)
+        can.showPage()
+        can.save()
+        new_pdf = PdfFileReader(packet)
+        output = PdfFileWriter()
         # adiciona carimbo aos documentos
         for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia):
             if materia.des_tipo_materia == 'Requerimento':
                storage_path = self.sapl_documentos.materia
-               nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"                
+               nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
                if hasattr(storage_path, nom_pdf_saida):
                   arq = getattr(storage_path, nom_pdf_saida)
                   arquivo = cStringIO.StringIO(str(arq.data))
@@ -2503,14 +2634,14 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                         arq.manage_edit(title=nom_pdf_saida, filedata=outputStream.getvalue(), content_type='application/pdf')
                   except:
                      pass
-        
+
     def _getValidEmailAddress(self, member):
         email = None
         for usuario in self.zsql.usuario_obter_zsql(col_username=member):
             email = usuario.end_email
-            
+
         return email
-        
+
     security.declarePublic( 'mailPassword' )
     def mailPassword(self, forgotten_userid, REQUEST):
         membership = getToolByName(self, 'portal_membership')
@@ -2519,9 +2650,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         if member is None:
             msg = 'Usuário não encontrado'
             raise ValueError(msg)
-           
+
         email = self._getValidEmailAddress(member)
-        
+
         if email is None or email == '':
            msg = 'Endereço de email não cadastrado'
            raise ValueError(msg)
@@ -2533,7 +2664,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             mail_text = method(self, REQUEST, **kw)
         else:
             mail_text = method(**kw)
-        
+
         host = self.MailHost
 
         host.send( mail_text )
@@ -2543,7 +2674,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def create_payload(self, cod_materia):
 
         data = {}
-        for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0):    
+        for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0):
             data['codmateria'] = materia.cod_materia
             data['tipo'] = materia.des_tipo_materia
             data['numero'] = materia.num_ident_basica
@@ -2557,12 +2688,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 for field in fields:
                     nome_autor = autor['nom_autor_join']
                 lista_autor.append(nome_autor)
-            data['autoria'] = ', '.join(['%s' % (value) for (value) in lista_autor])       
+            data['autoria'] = ', '.join(['%s' % (value) for (value) in lista_autor])
             data['linkarquivo'] = ''
-            if hasattr(self.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf'):       
+            if hasattr(self.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf'):
                data['linkarquivo'] = self.portal_url() + '/sapl_documentos/materia/' + str(materia.cod_materia) + '_texto_integral.pdf'
             data['casalegislativa'] = self.sapl_documentos.props_sagl.nom_casa
-        
+
         serialized = json.dumps(data, sort_keys=True, indent=3)
 
         return json.loads(serialized)
@@ -2590,4 +2721,3 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
 
 InitializeClass(SAGLTool)
-

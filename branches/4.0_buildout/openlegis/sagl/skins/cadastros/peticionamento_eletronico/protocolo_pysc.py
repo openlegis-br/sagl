@@ -48,6 +48,11 @@ for peticao in context.zsql.peticao_obter_zsql(cod_peticao=cod_peticao):
        for numero in zsql.protocolo_codigo_obter_zsql():
            hdn_num_protocolo =  int(numero.novo_codigo)
 
+    for validacao in context.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=peticao.cod_peticao, ind_assinado=1):
+        if validacao.cod_assinatura_doc != None:
+           nom_pdf_assinado = str(validacao.cod_assinatura_doc) + ".pdf"
+    else:
+        nom_pdf_assinado = ''
 
 def criar_protocolo_adm(hdn_num_protocolo, tip_protocolo, tip_processo, tip_documento, txt_assunto_ementa, txt_interessado, txt_user_protocolo, numero, ano, data):
     context.zsql.protocolo_administrativo_incluir_zsql(num_protocolo=hdn_num_protocolo, tip_protocolo=tip_protocolo, tip_processo=tip_processo, tip_documento=tip_documento, txt_assunto_ementa = txt_assunto_ementa, txt_interessado=txt_interessado, txt_user_protocolo=txt_user_protocolo)
@@ -62,10 +67,10 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
     for numero_doc in context.zsql.numero_documento_administrativo_obter_zsql(tip_documento=tip_documento, ano_documento=ano):
         numero = numero_doc.novo_numero
 
-    if cod_documento_vinculado != None:
-       ind_tramitacao = 0
-    else:
+    if cod_documento_vinculado == 'Nulo':
        ind_tramitacao = 1
+    else:
+       ind_tramitacao = 0
 
     context.zsql.documento_administrativo_incluir_zsql(num_documento=numero, ano_documento=ano, dat_documento=data, tip_documento=tip_documento, num_protocolo=hdn_num_protocolo, txt_interessado=txt_interessado, ind_tramitacao=ind_tramitacao, txt_assunto=txt_assunto_ementa, cod_assunto=tip_peticionamento)
     
@@ -73,12 +78,16 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
         cod_documento = int(codigo.cod_documento)
         id_documento = str(cod_documento)+'_texto_integral.pdf'
 
-    if hasattr(context.sapl_documentos.peticao, str(cod_peticao) + '.pdf'):
-       tmp_copy = context.sapl_documentos.peticao.manage_copyObjects(ids=str(cod_peticao) + '.pdf')
-       tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
-       context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
-
     context.zsql.peticao_enviar_zsql(cod_peticao = cod_peticao, num_protocolo=hdn_num_protocolo, cod_documento=cod_documento)
+
+    if nom_pdf_assinado != '':
+       if hasattr(context.sapl_documentos.documentos_assinados,nom_pdf_assinado):
+          context.modelo_proposicao.peticao_autuar(cod_peticao=cod_peticao)
+    else:
+       if hasattr(context.sapl_documentos.peticao, str(cod_peticao) + '.pdf'):
+          tmp_copy = context.sapl_documentos.peticao.manage_copyObjects(ids=str(cod_peticao) + '.pdf')
+          tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
+          context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
     
     if cod_documento_vinculado != None and cod_documento_vinculado !='Nulo':
         context.zsql.documento_administrativo_vinculado_incluir_zsql(cod_documento_vinculante = cod_documento_vinculado, cod_documento_vinculado = cod_documento)
@@ -130,12 +139,16 @@ elif ind_doc_materia == '1':
        cod_documento_acessorio = int(codigo.cod_documento)
        id_documento = str(codigo.cod_documento)+'.pdf'
         
-   if hasattr(context.sapl_documentos.peticao, str(cod_peticao) + '.pdf'):
-      tmp_copy = context.sapl_documentos.peticao.manage_copyObjects(ids=str(cod_peticao) + '.pdf')
-      tmp_id = context.sapl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
-      context.sapl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
-
    context.zsql.peticao_enviar_zsql(cod_peticao = cod_peticao, cod_doc_acessorio=cod_documento_acessorio)
+
+   if nom_pdf_assinado != '':
+      if hasattr(context.sapl_documentos.documentos_assinados,nom_pdf_assinado):
+         context.modelo_proposicao.peticao_autuar(cod_peticao=cod_peticao)
+   else:
+      if hasattr(context.sapl_documentos.peticao, str(cod_peticao) + '.pdf'):
+         tmp_copy = context.sapl_documentos.peticao.manage_copyObjects(ids=str(cod_peticao) + '.pdf')
+         tmp_id = context.sapl_documentos.materia.manage_pasteObjects(tmp_copy)[0]['new_id']
+         context.sapl_documentos.materia.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
 
    if context.dbcon_logs:
       context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'documento_acessorio_materia', metodo = 'protocolo_pysc', cod_registro = cod_documento_acessorio, IP = context.pysc.get_ip()) 
