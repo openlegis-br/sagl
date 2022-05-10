@@ -47,12 +47,9 @@ for peticao in context.zsql.peticao_obter_zsql(cod_peticao=cod_peticao):
     else:
        for numero in zsql.protocolo_codigo_obter_zsql():
            hdn_num_protocolo =  int(numero.novo_codigo)
-
-    for validacao in context.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=peticao.cod_peticao, ind_assinado=1):
-        if validacao.cod_assinatura_doc != None:
-           nom_pdf_assinado = str(validacao.cod_assinatura_doc) + ".pdf"
-    else:
-        nom_pdf_assinado = ''
+    nom_pdf_assinado = ''
+    for validacao in context.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=cod_peticao, ind_assinado=1):
+        nom_pdf_assinado = str(validacao.cod_assinatura_doc) + ".pdf"
 
 def criar_protocolo_adm(hdn_num_protocolo, tip_protocolo, tip_processo, tip_documento, txt_assunto_ementa, txt_interessado, txt_user_protocolo, numero, ano, data):
     context.zsql.protocolo_administrativo_incluir_zsql(num_protocolo=hdn_num_protocolo, tip_protocolo=tip_protocolo, tip_processo=tip_processo, tip_documento=tip_documento, txt_assunto_ementa = txt_assunto_ementa, txt_interessado=txt_interessado, txt_user_protocolo=txt_user_protocolo)
