@@ -129,9 +129,13 @@ $(document).ready(() => {
       </div>
  </div>
 
-<dtml-unless ind_enviado>
-  <dtml-call expr="REQUEST.set('ind_enviado', '0')">
-</dtml-unless>
+<dtml-if ind_antigo>
+  <dtml-call expr="REQUEST.set('ind_enviado', '')">
+<dtml-else>
+  <dtml-unless ind_enviado>
+    <dtml-call expr="REQUEST.set('ind_enviado', '0')">
+  </dtml-unless>
+</dtml-if>
 
 <dtml-call "REQUEST.set('username', AUTHENTICATED_USER)">
 
@@ -167,6 +171,15 @@ href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/peticionamento_e
            </dtml-if sequence-start>
          </dtml-in>  
 </a>
+
+<a
+  <dtml-if expr="_.has_key('ind_antigo') and ind_antigo=='1'">
+     class="btn btn-sm btn-secondary mb-3 disabled"
+  <dtml-else> 
+     class="btn btn-sm btn-secondary mb-3"      
+  </dtml-if>
+  href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/peticionamento_eletronico_index_html?ind_antigo=1">Antigos</a>
+
 
 <dtml-if expr="ind_enviado=='0'">
 <dtml-in expr="zsql.peticao_obter_zsql(cod_usuario=cod_usuario_corrente, ind_enviado=ind_enviado, ind_excluido=0)">
@@ -223,8 +236,18 @@ href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/peticionamento_e
     </dtml-if sequence-start>
                <tr>
                     <td>
-                      <a href="<dtml-var portal_url>/sapl_documentos/peticao/<dtml-var cod_peticao>.pdf" target="_blank">                    
-                        <dtml-var des_tipo_peticionamento>
+                 <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao',codigo=cod_peticao)">
+                     <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+                 </dtml-in>
+                 <dtml-if expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados,cod_assinatura_doc+'.pdf')"> 
+                   <dtml-let filename="_.getattr(sapl_documentos.documentos_assinados,cod_assinatura_doc+'.pdf').absolute_url">
+                     <a class="" href="<dtml-var filename>" target="_blank">
+                       <dtml-var des_tipo_peticionamento>
+                     </a>
+                   </dtml-let>
+                 <dtml-else>
+                      <dtml-var des_tipo_peticionamento>     
+                 </dtml-if>
                     </td>
                     <td>
                        <dtml-if expr="ind_norma=='1'">
@@ -285,6 +308,47 @@ href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/peticionamento_e
     <p>Nenhuma petição foi enviada.</p>
     </fieldset>
 </dtml-in>
+</dtml-if>
+
+  <dtml-if expr="_.has_key('ind_antigo') and ind_antigo=='1'">
+	  <dtml-in expr="zsql.protocolo_pesquisa_publica_zsql(txt_interessado=nom_completo, dat_protocolo='08/05/2022')">
+	     <dtml-if sequence-start>
+	       <div class="table-responsive">
+                <table class="table display" id="historico">
+                  <thead class="table-secondary">  
+		   <tr>
+                      <th>Nº de Protocolo</th>
+                      <th>Resumo da Solicitação</th>
+ 	              <th>Data de Protocolo</th>
+	              <th>Proc. Adm.</th>
+		   </tr>
+		  </thead>
+	     </dtml-if>
+	           <tr>
+   	              <td><dtml-var num_protocolo>/<dtml-var ano_protocolo></td>
+	              <td><dtml-var txt_assunto_ementa></td>
+                      <td><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]"></td>
+                      <td>
+                       <dtml-if cod_documento>
+			 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                           <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                        <dtml-else>
+                           <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                         </dtml-if>
+                             <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+	                   </a>
+                       <dtml-else>
+                        <i>Aguardando autuação</i>
+                       </dtml-if>
+                      </td>
+	           </tr>
+             <dtml-if sequence-end>
+                 </table>
+                </div>
+             </dtml-if>
+	  <dtml-else>
+             <p>Nenhuma registro encontrado.</p>
+          </dtml-in>
 </dtml-if>
 
 <dtml-var standard_html_footer>
