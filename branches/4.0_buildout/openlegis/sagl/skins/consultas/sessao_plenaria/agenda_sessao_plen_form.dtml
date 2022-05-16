@@ -206,32 +206,60 @@
             <td>
               <dtml-if cod_materia>
                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
-                    <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
-                        <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></a></b> 
+                    <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_materia)+'_texto_integral.pdf')">
+                    <dtml-if expr="_.hasattr(sapl_documentos.materia,id_pdf)">
+                        <a href="<dtml-var portal_url>/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">&texto_original=1" target="_blank"><b><dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a> - 
+                    <dtml-else>
+                        <a target="_blank" href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">"><b><dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a> - 
+                    </dtml-if>
                 </dtml-in> - 
                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
                   <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
                 </dtml-in>
               <dtml-elif cod_emenda>
                 <dtml-in expr="zsql.emenda_obter_zsql(cod_emenda=cod_emenda, ind_excluido=0)">
-                  <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
-                      Emenda nº <dtml-var num_emenda> (<dtml-var des_tipo_emenda>) ao 
-                      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
-                        <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
-                      </dtml-in> - 
-                     </a></b>
+                <dtml-let id_emenda="_.str(cod_emenda)+'_emenda.pdf'">
+                    <dtml-if "_.hasattr(sapl_documentos.emenda,id_emenda)">
+                           <dtml-let emenda="_.getattr(sapl_documentos.emenda,id_emenda).absolute_url">
+                              <a target="_blank" href="<dtml-var emenda>">
+                                 <b>Emenda <dtml-var des_tipo_emenda> nº <dtml-var num_emenda> ao 
+                                   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                                     <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
+                                   </dtml-in>
+                                 </b>
+                              </a>
+                           </dtml-let>
+                    <dtml-else>
+                                 <b>Emenda <dtml-var des_tipo_emenda> nº <dtml-var num_emenda> ao 
+                                   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                                     <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
+                                   </dtml-in>
+                                 </b>
+                    </dtml-if> -
+                </dtml-let>
                   <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
                     <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
                   </dtml-in>
                 </dtml-in>
               <dtml-elif cod_substitutivo>
                 <dtml-in expr="zsql.substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo, ind_excluido=0)">
-                  <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
-                      Substitutivo nº <dtml-var num_substitutivo> ao 
-                      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
-                        <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
-                      </dtml-in> - 
-                     </a></b> 
+                 <dtml-let id_substitutivo="_.str(cod_substitutivo)+'_substitutivo.pdf'">
+                    <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_substitutivo)">
+                       <dtml-let substitutivo="_.getattr(sapl_documentos.substitutivo,id_substitutivo).absolute_url">
+                          <a target="_blank" href="<dtml-var substitutivo>">
+                            <b>Substitutivo nº <dtml-var num_substitutivo></b> ao 
+                               <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                                 <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
+                               </dtml-in>
+                          </a>
+                       </dtml-let>
+                    <dtml-else>
+                       Substitutivo nº <dtml-var num_substitutivo> ao 
+                         <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                           <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing>
+                         </dtml-in>
+                    </dtml-if>
+               </dtml-let> - 
                   <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
                     <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
                   </dtml-in>
@@ -312,9 +340,13 @@
         <dtml-if cod_materia>
             <td>
                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
-                    <b><a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
-                        <dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></a></b> - 
-                </dtml-in>
+                    <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_materia)+'_texto_integral.pdf')">
+                    <dtml-if expr="_.hasattr(sapl_documentos.materia,id_pdf)">
+                        <a href="<dtml-var portal_url>/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">&texto_original=1" target="_blank"><b><dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a> - 
+                    <dtml-else>
+                        <a target="_blank" href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">"><b><dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a> - 
+                    </dtml-if>
+                 </dtml-in>
                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
                   <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
                   <dtml-if sequence-end> - </dtml-if>
@@ -334,21 +366,23 @@
                      </dtml-if>
                   </dtml-in>
                <dtml-else>
-                     <i>Matéria não votada</i>
+                     <span class="small"><i>Matéria não votada</i></span>
                </dtml-if>
              </dtml-in> 
             </td>
         <dtml-elif cod_parecer>
                 <td>
                  <dtml-in expr="zsql.relatoria_obter_zsql(cod_relatoria=cod_parecer,ind_excluido=0)">
+                   <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_relatoria)+'_parecer.pdf')">
                    <dtml-call "REQUEST.set('cod_materia_sel', cod_materia)">
                    <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
                       <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_sel)">
-                        <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
+                        <dtml-if expr="_.hasattr(sapl_documentos.parecer_comissao,id_pdf)">
+                           <a href="<dtml-var portal_url>/sapl_documentos/parecer_comissao/<dtml-var id_pdf>" target="_blank"><b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> ao <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a>
+                        <dtml-else>
                            <b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> ao <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b> - 
-                        </a>
+                        </dtml-if>
                       </dtml-in>
-                      <b><dtml-var nom_comissao></b> - 
                    </dtml-in>
                  </dtml-in>
                   <dtml-var txt_observacao>
@@ -364,7 +398,7 @@
                          </dtml-if>
                       </dtml-in>
                    <dtml-else>
-                     <i>Matéria não votada</i>
+                     <span class="small"><i>Matéria não votada</i></span>
                    </dtml-if>
                  </dtml-in> 
                </td>
@@ -552,13 +586,12 @@
              <dtml-in expr="zsql.turno_discussao_obter_zsql(cod_turno=tip_turno)">
                   <b><dtml-if expr="des_turno=='Único'">Turno</dtml-if> <dtml-var des_turno></b> do 
              </dtml-in>
-	     <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
-                        <b><dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a> - 
-            <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">
-               <dtml-if num_materia>
-                  <b>Processo <dtml-var num_materia>/<dtml-var ano_materia></b> -
-               </dtml-if>
-            </dtml-in>
+                    <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_materia)+'_texto_integral.pdf')">
+                    <dtml-if expr="_.hasattr(sapl_documentos.materia,id_pdf)">
+                        <a href="<dtml-var portal_url>/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">&texto_original=1" target="_blank"><b><dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a> - 
+                    <dtml-else>
+                        <a target="_blank" href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">"><b><dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a> - 
+                    </dtml-if>
             </dtml-in>
                 <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
                   <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b>
@@ -577,10 +610,10 @@
                       </dtml-if>
                     </dtml-in>
                 <dtml-elif expr="cod_votacao and tip_resultado_votacao==0">
-                    <i>Matéria não votada</i>
+                    <span class="small"><i>Matéria não votada</i></span>
                 </dtml-if>
                 <dtml-else>
-                  <i>Matéria não votada</i>
+                  <span class="small"><i>Matéria não votada</i></span>
              </dtml-in> 
             </td>
         </tr>
@@ -589,15 +622,24 @@
    <dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
         <dtml-call "REQUEST.set('contador_sub', int(_['sequence-number']))">
         <tr>
-            <td><div align="center"><b><dtml-var num_ordem_materia>.<dtml-var contador_sub></b></div></td>
+            <td><div align="center"><b><span class="small"><dtml-var num_ordem_materia>.<dtml-var contador_sub></span></b></div></td>
             <td>
-                <b>Parecer da <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)"><dtml-var nom_comissao></dtml-in> nº <dtml-var num_parecer>/<dtml-var ano_parecer></b>
-              </a> -
+                   <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_relatoria)+'_parecer.pdf')">
+                   <dtml-call "REQUEST.set('cod_materia_sel', cod_materia)">
+                   <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_sel)">
+                        <dtml-if expr="_.hasattr(sapl_documentos.parecer_comissao,id_pdf)">
+                           <a href="<dtml-var portal_url>/sapl_documentos/parecer_comissao/<dtml-var id_pdf>" target="_blank"><b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> ao <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a>
+                        <dtml-else>
+                           <b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> ao <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b> - 
+                        </dtml-if>
+                      </dtml-in>
+                   </dtml-in>
               <dtml-in expr="zsql.tipo_fim_relatoria_obter_zsql(tip_fim_relatoria=tip_fim_relatoria)">
                  <dtml-if expr="tip_conclusao == 'F'">
-                    <b>Favorável à aprovação da matéria.</b>
+                    Favorável à aprovação da matéria.
                  <dtml-elif expr="tip_conclusao == 'C'">
-                    <b>Contrário à aprovação da matéria.</b>                 
+                    Contrário à aprovação da matéria.                 
                  </dtml-if>
               </dtml-in>
               <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
@@ -615,9 +657,9 @@
                         <b><dtml-var nom_resultado></b>
                     </dtml-if>
                 </dtml-in>
-                <dtml-else><i>Matéria não votada</i>
+                <dtml-else><span class="small"><i>Matéria não votada</i></span>
                 </dtml-if>
-                <dtml-else><i>Matéria não votada</i>
+                <dtml-else><span class="small"><i>Matéria não votada</i></span>
              </dtml-in>
             </td>
         </tr>
@@ -630,9 +672,19 @@
              <dtml-call "REQUEST.set('contador', int(_['sequence-number']))">
            </dtml-if>
         <tr>
-            <td><div align="center"><b><dtml-var num_ordem>.<dtml-var contador></b></div></td>
+            <td><div align="center"><b><span class="small"><dtml-var num_ordem>.<dtml-var contador></span></b></div></td>
             <td>
-                   <b>Substitutivo nº <dtml-var num_substitutivo></b> - 
+               <dtml-let id_substitutivo="_.str(cod_substitutivo)+'_substitutivo.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.substitutivo,id_substitutivo)">
+                     <dtml-let substitutivo="_.getattr(sapl_documentos.substitutivo,id_substitutivo).absolute_url">
+                        <a target="_blank" href="<dtml-var substitutivo>">
+                          <b>Substitutivo nº <dtml-var num_substitutivo></b>
+                        </a>
+                     </dtml-let>
+                  <dtml-else>
+                     Substitutivo nº <dtml-var num_substitutivo>                             
+                  </dtml-if>
+               </dtml-let> - 
               <dtml-in expr="zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=cod_substitutivo)">
                 <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b> - 
               </dtml-in>
@@ -649,9 +701,9 @@
                         <b><dtml-var nom_resultado></b>
                     </dtml-if>
                 </dtml-in>
-                <dtml-else><i>Matéria não votada</i>
+                <dtml-else><span class="small"><i>Matéria não votada</i></span>
                 </dtml-if>
-                <dtml-else><i>Matéria não votada</i>
+                <dtml-else><span class="small"><i>Matéria não votada</i></span>
              </dtml-in>
             </td>
         </tr>
@@ -664,9 +716,19 @@
            </dtml-if>
     <dtml-if expr="exc_pauta!=1">
         <tr>
-            <td><div align="center"><b><dtml-var num_ordem>.<dtml-var contador></b></div></td>
+            <td><div align="center"><b><span class="small"><dtml-var num_ordem>.<dtml-var contador></span></b></div></td>
             <td>
-              <b>Emenda nº <dtml-var num_emenda> (<dtml-var des_tipo_emenda>)</b> - 
+                <dtml-let id_emenda="_.str(cod_emenda)+'_emenda.pdf'">
+                    <dtml-if "_.hasattr(sapl_documentos.emenda,id_emenda)">
+                           <dtml-let emenda="_.getattr(sapl_documentos.emenda,id_emenda).absolute_url">
+                              <a target="_blank" href="<dtml-var emenda>">
+                                 <b>Emenda <dtml-var des_tipo_emenda> nº <dtml-var num_emenda></b>
+                              </a>
+                           </dtml-let>
+                    <dtml-else>
+                           <b>Emenda <dtml-var des_tipo_emenda> nº <dtml-var num_emenda></b>
+                    </dtml-if> -
+                </dtml-let>
               <dtml-in expr="zsql.autoria_emenda_obter_zsql(cod_emenda=cod_emenda)">
                 <b><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></b> - 
               </dtml-in>
@@ -682,25 +744,30 @@
                         <b><dtml-var nom_resultado></b><br />
                     </dtml-if>
                 </dtml-in>
-                <dtml-else><i>Matéria não votada</i>
+                <dtml-else><span class="small"><i>Matéria não votada</i></span>
                 </dtml-if>
-                <dtml-else><i>Matéria não votada</i>
+                <dtml-else><span class="small"><i>Matéria não votada</i></span>
              </dtml-in>
             </td>
         </tr>
       </dtml-if>
    </dtml-in>
    <dtml-elif cod_parecer>
+             <dtml-in expr="zsql.turno_discussao_obter_zsql(cod_turno=tip_turno)">
+                  <b><dtml-if expr="des_turno=='Único'">Turno</dtml-if> <dtml-var des_turno></b> do 
+             </dtml-in>
                  <dtml-in expr="zsql.relatoria_obter_zsql(cod_relatoria=cod_parecer,ind_excluido=0)">
-                    <dtml-call "REQUEST.set('cod_materia_sel', cod_materia)">
-                    <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
-                       <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_sel)">
-                          <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Item" data-src="ordem_dia_parecer_mostrar_proc?cod_ordem=<dtml-var cod_ordem>&modal=1">
-                             <b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> ao <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b>
-                          </a>
-                       </dtml-in>
-                       - <b><dtml-var nom_comissao></b>
-                    </dtml-in>
+                   <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_relatoria)+'_parecer.pdf')">
+                   <dtml-call "REQUEST.set('cod_materia_sel', cod_materia)">
+                   <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_sel)">
+                        <dtml-if expr="_.hasattr(sapl_documentos.parecer_comissao,id_pdf)">
+                           <a href="<dtml-var portal_url>/sapl_documentos/parecer_comissao/<dtml-var id_pdf>" target="_blank"><b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> ao <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a>
+                        <dtml-else>
+                           <b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> ao <dtml-var sgl_tipo_materia missing> <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b> 
+                        </dtml-if>
+                      </dtml-in>
+                   </dtml-in>
                    <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
                  </dtml-in>
                   - <dtml-var txt_observacao>
@@ -711,9 +778,9 @@
                             <b><dtml-var nom_resultado></b><br />
                          </dtml-in>
                       <dtml-else>
-                          <i>Matéria não votada</i>
+                          <span class="small"><i>Matéria não votada</i></span>
                       </dtml-if>
-                  <dtml-else><i>Matéria não votada</i>
+                  <dtml-else><span class="small"><i>Matéria não votada</i></span>
                   </dtml-in>
                   </td>
    </dtml-if>
