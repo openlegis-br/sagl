@@ -31,12 +31,24 @@
                           txt_indexacao = txa_txt_indexacao, 
                           dat_documento = pysc.data_converter_pysc(data=txt_dat_documento),
                           num_protocolo = txt_num_protocolo,
+                          ind_publico = rad_ind_publico,
                           ind_excluido = 0)">
 
   <dtml-if expr="metodo==zsql.documento_acessorio_atualizar_zsql">
+   <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+'.pdf')">
    <dtml-if file_nom_arquivo>
-     <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+'.pdf')">
      <dtml-call expr="sapl_documentos.materia.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+   </dtml-if>  
+   <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
+     <dtml-if expr="rad_ind_publico=='0'">
+        <dtml-let arquivo="_.getattr(sapl_documentos.materia,id_documento)">
+           <dtml-call "arquivo.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)">
+        </dtml-let>
+     <dtml-elif expr="rad_ind_publico=='1'">
+        <dtml-let arquivo="_.getattr(sapl_documentos.materia,id_documento)">     
+           <dtml-call "arquivo.manage_permission('View', roles=['Manager','Anonymous'], acquire=1)">
+        </dtml-let>
+     </dtml-if>
    </dtml-if>
   </dtml-if>
 
@@ -70,6 +82,15 @@
       <dtml-if file_nom_arquivo>
          <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+'.pdf')">
          <dtml-call expr="sapl_documentos.materia.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+        <dtml-if expr="rad_ind_publico=='0'">
+           <dtml-let arquivo="_.getattr(sapl_documentos.materia,id_documento)">
+              <dtml-call "arquivo.manage_permission('View', roles=['Manager','Operador','Operador Materia'], acquire=0)">
+           </dtml-let>
+        <dtml-elif expr="rad_ind_publico=='1'">
+           <dtml-let arquivo="_.getattr(sapl_documentos.materia,id_documento)">     
+              <dtml-call "arquivo.manage_permission('View', roles=['Manager','Anonymous'], acquire=0)">
+           </dtml-let>
+        </dtml-if>
       </dtml-if>
      <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
         <dtml-call expr="REQUEST.set('ano', _.DateTime().strftime('%Y'))">
@@ -160,6 +181,7 @@
     </dtml-if>
 
  </dtml-try>
+
 </dtml-unless>
 
 <dtml-if expr="dbcon_logs and hdn_cod_documento">
