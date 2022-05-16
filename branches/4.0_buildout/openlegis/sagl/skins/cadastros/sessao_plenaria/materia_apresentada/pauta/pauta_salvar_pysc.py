@@ -1,10 +1,10 @@
-## Script (Python) "pauta_expediente_salvar_pysc"
+## Script (Python) "pauta_salvar_pysc"
 ##bind container=container
 ##bind context=context
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=txt_cod_materia, cod_sessao_plen, txt_dat_ordem, lst_tip_quorum, rad_tip_votacao
+##parameters=txt_cod_materia, cod_sessao_plen, txt_dat_ordem
 ##title=
 ##
 
@@ -35,7 +35,7 @@ for item in cod_materia:
 lst_materias = [(i + 1, j) for i, j in enumerate(lst_materias)]
       
 for i, dic in lst_materias:
-    context.zsql.expediente_materia_incluir_zsql(cod_sessao_plen=cod_sessao_plen, cod_materia=dic.get('cod_materia',dic), dat_ordem=txt_dat_ordem, txt_observacao=dic.get('txt_observacao',dic), num_ordem=i, tip_quorum=lst_tip_quorum, tip_votacao=rad_tip_votacao)
+    context.zsql.materia_apresentada_sessao_incluir_zsql(cod_sessao_plen=cod_sessao_plen, cod_materia=dic.get('cod_materia',dic), dat_ordem=txt_dat_ordem, txt_observacao=dic.get('txt_observacao',dic), num_ordem=i, ind_excluid0=0)
 
 mensagem = 'Pauta gerada com sucesso!'
 mensagem_obs = ''   
