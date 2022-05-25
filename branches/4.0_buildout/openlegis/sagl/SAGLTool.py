@@ -1241,7 +1241,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.peticao.manage_addFile(id=nom_arquivo_pdf1, file=data)
         pdf = getattr(self.sapl_documentos.peticao, nom_arquivo_pdf1)
-        pdf.manage_permission('View', roles=['Manager','Owner'], acquire=0)
+        pdf.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
 
 
     def proposicao_gerar_odt(self, inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao, modelo_path):
