@@ -1958,10 +1958,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            storage_path.manage_addFile(nom_pdf_saida)
            arq=storage_path[nom_pdf_saida]
            arq.manage_edit(title=nom_pdf_saida,filedata=outputStream.getvalue(),content_type='application/pdf')
+           arq.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
         else:
            storage_path.manage_addFile(nom_pdf_saida)
            arq=storage_path[nom_pdf_saida]
            arq.manage_edit(title=nom_pdf_saida,filedata=outputStream.getvalue(),content_type='application/pdf')
+           arq.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
 
         if peticao.ind_norma == "1":
            self.sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(cod_norma=peticao.cod_norma)
