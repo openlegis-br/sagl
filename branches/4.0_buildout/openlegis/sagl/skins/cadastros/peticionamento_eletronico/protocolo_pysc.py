@@ -85,6 +85,8 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
           tmp_copy = context.sapl_documentos.peticao.manage_copyObjects(ids=str(cod_peticao) + '.pdf')
           tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
           context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
+          pdf = getattr(context.sapl_documentos.administrativo, id_documento)
+          pdf.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
     
     if cod_documento_vinculado != None and cod_documento_vinculado !='Nulo':
         context.zsql.documento_administrativo_vinculado_incluir_zsql(cod_documento_vinculante = cod_documento_vinculado, cod_documento_vinculado = cod_documento)
