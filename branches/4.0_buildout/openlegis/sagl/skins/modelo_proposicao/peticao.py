@@ -44,7 +44,7 @@ for peticao in context.zsql.peticao_obter_zsql(cod_peticao=cod_peticao):
         inf_basicas_dic['num_cep_resid'] = usuario.num_cep_resid
         inf_basicas_dic['num_tel_resid'] = usuario.num_tel_resid
         inf_basicas_dic['num_tel_celular'] = usuario.num_tel_celular
-        inf_basicas_dic['num_tel_comercial'] = = usuario.num_tel_comercial
+        inf_basicas_dic['num_tel_comercial'] = usuario.num_tel_comercial
 
 return st.peticao_gerar_odt(inf_basicas_dic, nom_arquivo, modelo_path)
 
