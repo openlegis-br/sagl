@@ -1847,6 +1847,14 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 if validacao.ind_prim_assinatura == 1:
                    nom_autor = validacao.nom_completo
                 cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
+                break
+            else:
+                nom_pdf_peticao = str(cod_peticao) + ".pdf"
+                pdf_peticao = self.sapl_documentos.peticao.absolute_url() + "/" +  nom_pdf_peticao
+                for usuario in self.zsql.usuario_obter_zsql(cod_usuario=peticao.cod_usuario):
+                    qtde_assinaturas.append(usuario.cod_usuario)
+                    nom_autor = usuario.nom_completo
+                    cod_validacao_doc = ''
             if len(qtde_assinaturas) == 2:
                outros = " e outro"
             elif len(qtde_assinaturas) > 2:
@@ -1860,27 +1868,34 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' Nº '+ str(documento.num_documento)+ '/' +str(documento.ano_documento)
                    storage_path = self.sapl_documentos.administrativo
                    nom_pdf_saida = str(documento.cod_documento) + "_texto_integral.pdf"
+                   caminho = '/sapl_documentos/administrativo/'
             elif peticao.ind_doc_materia == "1":
                for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=peticao.cod_doc_acessorio):
                    texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' - ' + str(materia)
                    storage_path = self.sapl_documentos.materia
                    nom_pdf_saida = str(documento.cod_documento) + ".pdf"
+                   caminho = '/sapl_documentos/materia/'
             elif peticao.ind_norma == "1":
                storage_path = self.sapl_documentos.norma_juridica
                for norma in self.zsql.norma_juridica_obter_zsql(cod_norma=peticao.cod_norma):
                    texto = str(norma.des_tipo_norma.decode('utf-8').upper())+' Nº '+ str(norma.num_norma) + '/' + str(norma.ano_norma)
                    nom_pdf_saida = str(norma.cod_norma) + "_texto_integral.pdf"
-        if self.sapl_documentos.props_sagl.restpki_access_token!='':
+                   caminho = '/sapl_documentos/norma_juridica/'
+        if cod_validacao_doc != '':
            mensagem1 = texto + info_protocolo + 'Esta é uma cópia do original assinado digitalmente por ' + nom_autor + outros
            mensagem2 = 'Para validar o documento, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
         else:
-           mensagem1 = ''
+           mensagem1 = texto + info_protocolo + 'Documento assinado com usuário e senha por ' + nom_autor
            mensagem2 = ''
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
 
-        arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_peticao)
+        if cod_validacao_doc != '':
+           arq = getattr(self.sapl_documentos.documentos_assinados, nom_pdf_peticao)
+        else:
+           arq = getattr(self.sapl_documentos.peticao, nom_pdf_peticao)
+
         arquivo = cStringIO.StringIO(str(arq.data))
         existing_pdf = PdfFileReader(arquivo, strict=False)
         numPages = existing_pdf.getNumPages()
@@ -1895,7 +1910,10 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             can.setPageSize((pwidth, pheight))
             can.setFillColorRGB(0,0,0)
             # QRCode
-            qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura_proc?txt_codigo_verificacao='+str(cod_validacao_doc))
+            if cod_validacao_doc != '':
+               qr_code = qr.QrCodeWidget(self.url()+'/conferir_assinatura_proc?txt_codigo_verificacao='+str(cod_validacao_doc))
+            else:
+               qr_code = qr.QrCodeWidget(self.url() + str(caminho) + str(nom_pdf_saida))
             bounds = qr_code.getBounds()
             width = bounds[2] - bounds[0]
             height = bounds[3] - bounds[1]
@@ -1945,11 +1963,10 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             if peticao.ind_doc_adm == '1' and page == 0:
                pdf_page.mergePage(new_pdf2.getPage(0))
             # qrcode e margem direita em todas as páginas
-            if self.sapl_documentos.props_sagl.restpki_access_token != '' and cod_validacao_doc != '':
-               for wm in range(new_pdf.getNumPages()):
-                   watermark_page = new_pdf.getPage(wm)
-                   if page == wm:
-                      pdf_page.mergePage(watermark_page)
+            for wm in range(new_pdf.getNumPages()):
+                watermark_page = new_pdf.getPage(wm)
+                if page == wm:
+                   pdf_page.mergePage(watermark_page)
             output.addPage(pdf_page)
         outputStream = cStringIO.StringIO()
         output.write(outputStream)
