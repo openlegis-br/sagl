@@ -86,7 +86,7 @@ def tramitar_documento(cod_documento, num_protocolo, ano_documento):
     hdn_url = 'protocolo_mostrar_proc?cod_protocolo=' + cod_protocolo
     
     if cod_unid_tram_local != None and cod_unid_tram_dest != None and cod_status != None:
-       context.zsql.tramitacao_administrativo_incluir_zsql(cod_documento=cod_documento, dat_tramitacao=DateTime().strftime('%Y-%m-%d'), cod_unid_tram_local=cod_unid_tram_local, cod_usuario_local=cod_usuario_corrente, cod_unid_tram_dest=cod_unid_tram_dest, dat_encaminha=DateTime().strftime('%Y-%m-%d %H:%M:%S'), cod_status=cod_status, txt_tramitacao = txt_tramitacao, ind_ult_tramitacao=1)
+       context.zsql.tramitacao_administrativo_incluir_zsql(cod_documento=cod_documento, dat_tramitacao=DateTime().strftime('%Y-%m-%d %H:%M:%S'), cod_unid_tram_local=cod_unid_tram_local, cod_usuario_local=cod_usuario_corrente, cod_unid_tram_dest=cod_unid_tram_dest, dat_encaminha=DateTime().strftime('%Y-%m-%d %H:%M:%S'), cod_status=cod_status, txt_tramitacao = txt_tramitacao, ind_ult_tramitacao=1)
         
     for tramitacao in context.zsql.tramitacao_administrativo_incluida_codigo_obter_zsql():
         cod_tramitacao = tramitacao.cod_tramitacao

@@ -46,7 +46,7 @@ if unidades_destino != None:
 else:
    if svalue != '0':
       unidadeDict = {}
-      unidadeDict['name'] = '* Configure as permissões da unidade da origem !'
+      unidadeDict['name'] = '* Configure as permissões da unidade de origem !'
       unidadeDict['id'] = ''
       unidadeArray.append(unidadeDict)
 
