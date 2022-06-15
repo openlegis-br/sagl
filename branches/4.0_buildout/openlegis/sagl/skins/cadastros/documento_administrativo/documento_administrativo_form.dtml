@@ -496,7 +496,7 @@ $(document).ready(() => {
   </div>
 
   <div class="form-row">
-    <div class="col-12 col-lg-12 mb-3">
+    <div class="col-12 col-lg-12">
       <label for="txa_txt_observacao">Observações</label> 
       <textarea class="form-control" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null=""></textarea>
     </div>
@@ -552,14 +552,35 @@ $(document).ready(() => {
         </div>
       </dtml-if>
  </dtml-if>
-  
-  <div class="text-left">
+ 
+  <dtml-if cod_documento>
+    <dtml-in expr="zsql.peticao_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+      <dtml-if sequence-start>
+   <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario)">
+      <dtml-call "REQUEST.set('usuario_envio', nom_completo)">
+   </dtml-in>
+        <div class="row">   
+          <div class="col-md-12 mt-2 text-right"> 
+            <span class="text-muted small">Petição enviada eletronicamente em <dtml-var dat_envio>, por <dtml-var usuario_envio missing>. [<dtml-var cod_peticao>]</span>
+          </div>
+        </div>
+      </dtml-if>
+    </dtml-in>
+ </dtml-if>
+ 
+ <div class="text-left mt-3">
     <input class="btn btn-primary" type="button" value="Salvar" onClick="documento_criticar()" />
     <dtml-if cod_documento>
       <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_excluir_proc?cod_documento=<dtml-var cod_documento missing>&url=<dtml-var portal_url>/consultas/documento_administrativo" data-confirm="Deseja realmente excluir o documento?">Excluir</a>
     </dtml-if>
  </div>
- 
+
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+</div>
+
 </form>
 </div>
 

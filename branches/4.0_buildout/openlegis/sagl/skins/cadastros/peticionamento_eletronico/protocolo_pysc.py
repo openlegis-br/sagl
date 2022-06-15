@@ -120,7 +120,7 @@ elif ind_norma == '1':
 
 elif ind_doc_materia == '1':
 
-   context.zsql.documento_acessorio_incluir_zsql(cod_materia=cod_materia_principal, nom_documento=txt_assunto_ementa, dat_documento=DateTime().strftime('%Y-%m-%d'), nom_autor_documento=txt_interessado, tip_documento=tip_derivado)
+   context.zsql.documento_acessorio_incluir_zsql(cod_materia=cod_materia_principal, nom_documento=txt_assunto_ementa, dat_documento=DateTime().strftime('%Y-%m-%d %H:%M:%S'), nom_autor_documento=txt_interessado, tip_documento=tip_derivado)
 
    for codigo in context.zsql.documento_acessorio_incluido_codigo_obter_zsql():
        cod_documento_acessorio = int(codigo.cod_documento)

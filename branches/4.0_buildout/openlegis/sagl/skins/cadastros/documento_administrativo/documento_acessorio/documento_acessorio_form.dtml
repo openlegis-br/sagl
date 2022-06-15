@@ -1,7 +1,5 @@
 <dtml-var standard_html_header>
 
-<script type = "text/javascript" src="javascript/data_validar.js"></script>
-
 <script type="text/javascript">
 
   function submeter(endereco){
@@ -37,13 +35,7 @@
          form.txt_nom_autor_documento.focus();
          return false;
       }  
-      if (form.txt_dat_documento.value!="" && !IsValidDate(form.txt_dat_documento.value)){
-         alert("Digite uma data válida!");
-         form.txt_dat_documento.focus();
-         form.txt_dat_documento.select();
-         return false;
-      } 
-              
+    
       form.hdn_tip_documento.value = form.lst_tip_documento.value;
         
       form.submit();
@@ -105,14 +97,24 @@ $(document).ready(function () {
   </div>
   <div class="form-row">
      <div class="col-4 col-sm-3 mb-3">
-        <label for="txt_dat_documento" class="required">Data</label>
+        <label for="txt_dat_documento" class="required">Data / Horário</label>
         <dtml-unless dat_documento>
-          <dtml-call expr="REQUEST.set('dat_documento', pysc.data_atual_port_pysc())">
+          <dtml-call expr="REQUEST.set('dat_documento', DateTime().strftime('%d/%m/%Y %H:%M'))">
         </dtml-unless>        
-        <input class="form-control date" type="text" name="txt_dat_documento" id ="txt_dat_documento" value="<dtml-var dat_documento missing null="">" autocomplete="off" required/>
+        <input class="form-control" type="text" name="txt_dat_documento" id ="txt_dat_documento" value="<dtml-var dat_documento missing>" required />
      </div>
+ <script>
+    $('#txt_dat_documento').datetimepicker({
+        locale: 'pt-br',
+        format: 'dd/mm/yyyy HH:MM',
+        uiLibrary: 'bootstrap4',
+        modal: true,
+        footer: true,
+        showOtherMonths: true, calendarWeeks: true
+    });
+ </script>
      <div class="col-8 col-sm-9 mb-3">
-        <label for="txt_nom_autor_documento" class="required">Autor</label>
+        <label for="txt_nom_autor_documento" class="required">Autoria</label>
         <input class="form-control" type="text" id="txt_nom_autor_documento" name="txt_nom_autor_documento" value="<dtml-var nom_autor_documento missing null="">" maxlength="50" required />        
      </div>
   </div>
