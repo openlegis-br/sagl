@@ -50,8 +50,9 @@ cod_tramitacao=hdn_cod_tramitacao
 tramitacao_dic = {}
 #obtém os dados da tramitação
 for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_tramitacao=hdn_cod_tramitacao):
-  tramitacao_dic['dat_tramitacao'] = tramitacao.dat_tramitacao
-  tramitacao_dic['dat_extenso'] = context.pysc.data_converter_por_extenso_pysc(data=tramitacao.dat_tramitacao)
+  dat_tramitacao = DateTime(tramitacao.dat_tramitacao, datefmt='international').strftime('%d/%m/%Y')
+  tramitacao_dic['dat_tramitacao'] = dat_tramitacao
+  tramitacao_dic['dat_extenso'] = context.pysc.data_converter_por_extenso_pysc(data=dat_tramitacao)
   tramitacao_dic['dat_encaminha'] = tramitacao.dat_encaminha
   tramitacao_dic['des_status'] = tramitacao.des_status
   if tramitacao.txt_tramitacao != None and tramitacao.txt_tramitacao!='':
