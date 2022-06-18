@@ -196,11 +196,11 @@ select#perfis, select#lst_unidade {
          <input class="form-control" id="txt_nome" name="txt_nome" type="text" maxlength="25" value="<dtml-var username missing>" <dtml-if username>readonly</dtml-if> />         
        </div>
        <div class="col-6 col-md-3 mb-3">
-         <label for="password" class="required">Nova Senha</label> 
+         <label for="password" class="required">Senha</label> 
          <input class="form-control" type="password" id="password" name="password" maxlength="12" <dtml-if username> value="password" </dtml-if> />               
        </div>       
        <div class="col-6 col-md-3 mb-3">
-         <label for="confirm" class="required">Confirmação de Senha</label>
+         <label for="confirm" class="required">Confirmar Senha</label>
          <input class="form-control" type="password" id="confirm" name="confirm" maxlength="12" <dtml-if username> value="pconfirm" </dtml-if> />              
        </div> 
     </div>
@@ -227,6 +227,11 @@ select#perfis, select#lst_unidade {
           </select>                        
        </div>
        <div class="col-12 col-md-6 mb-3">
+       
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="chk_ind_ativo" id="chk_ind_ativo" value="1" <dtml-if expr="_.has_key('cod_usuario') and ind_ativo==1">checked<dtml-elif expr="not _.has_key('cod_usuario')">checked</dtml-if> <dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">onclick="return false;" onkeydown="return false;"</dtml-unless> />
+            <label class="form-check-label" for="chk_ind_ativo">Ativo ?</label>
+          </div>   
 
           <dtml-if nome>
             <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=nome)">
@@ -278,9 +283,39 @@ select#perfis, select#lst_unidade {
           <input class="form-control date" type="text" name="txt_dat_nascimento" id="txt_dat_nascimento" value="<dtml-var dat_nascimento missing>" maxlength="10" />
        </div>
        <div class="col-6 col-md-3 mb-3">
+          <label for="txt_estado_civil">Estado Civil</label>
+          <input class="form-control" type="text" name="txt_estado_civil" id="txt_estado_civil" value="<dtml-var des_estado_civil missing null>" maxlength="20" />
+       </div>
+       <div class="col-6 col-md-3 mb-3">
+          <label for="rad_sex_usuario">Sexo</label>
+          <select class="custom-select" name="rad_sex_usuario" id="rad_sex_usuario">
+            <option value=""></option>
+            <dtml-in expr="[('M','Masculino'),('F','Feminino')]">
+                <option  
+                   <dtml-if expr="_.has_key('cod_usuario') and sex_usuario==_['sequence-item'][0]"> 
+                       selected
+                   </dtml-if>
+                   value="<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']">
+                </option>
+            </dtml-in>
+          </select>
+       </div>
+       <div class="col-6 col-md-3 mb-3">
           <label for="txt_num_tit_eleitor">Título de Eleitor</label>  
           <input class="form-control" type="text" name="txt_num_tit_eleitor"  id="txt_num_tit_eleitor" value="<dtml-var num_tit_eleitor missing>" maxlength="15" />
-       </div>     
+       </div>
+       <div class="col-6 col-md-3 mb-3">
+          <label for="txt_num_ctps">CTPS</label>  
+          <input class="form-control" type="text" name="txt_num_ctps"  id="txt_num_ctps" value="<dtml-var num_ctps missing null>" maxlength="8" />
+       </div>   
+       <div class="col-6 col-md-3 mb-3">
+          <label for="txt_num_serie_ctps">Série da CTPS</label>  
+          <input class="form-control" type="text" name="txt_num_serie_ctps"  id="txt_num_serie_ctps" value="<dtml-var num_serie_ctps missing null>" maxlength="4" />
+       </div> 
+       <div class="col-6 col-md-3 mb-3">
+          <label for="txt_num_pis_pasep">PIS / PASEP</label>  
+          <input class="form-control" type="text" name="txt_num_pis_pasep"  id="txt_num_pis_pasep" value="<dtml-var num_pis_pasep missing null>" maxlength="14" />
+       </div> 
        <div class="col-6 col-md-3 mb-3">
           <label for="txt_num_tel_resid">Telefone Fixo</label>  
           <input class="form-control" type="text" name="txt_num_tel_resid" id="txt_num_tel_resid" value="<dtml-var num_tel_resid missing>" maxlength="50" />
@@ -290,18 +325,15 @@ select#perfis, select#lst_unidade {
            <input class="form-control" type="text" name="txt_num_tel_celular" id="txt_num_tel_celular" value="<dtml-var num_tel_celular missing>" maxlength="50" />
        </div>
         </tr>            
-    </div>    
-
-    <div class="form-row">
-       <div class="col-12 col-md-9 mb-3">
+       <div class="col-6 col-md-6 mb-3">
           <label for="txt_end_residencial">Endereço Residencial</label>         
           <input class="form-control" type="text" id="txt_end_residencial" name="txt_end_residencial" value="<dtml-var end_residencial missing null>" maxlength="100"/>       
        </div>
-       <div class="col-12 col-md-3 mb-3">       
+       <div class="col-3 col-md-3 mb-3">       
           <label for="txt_num_cep_resid">CEP</label>         
           <input class="form-control" type="text" name="txt_num_cep_resid" id="txt_num_cep_resid" value="<dtml-var num_cep_resid missing>" maxlength="9" />
        </div>
-       <div class="col-12 col-md-9 mb-3">
+       <div class="col-6 col-md-9 mb-3">
           <label for="txt_municipio">Cidade</label>                
             <div class="input-group">
               <input class="form-control" type="text" id="txt_municipio" name="txt_municipio" value="<dtml-if cod_localidade_resid><dtml-var nom_localidade missing null=""></dtml-if>" maxlength="50" />
@@ -310,7 +342,7 @@ select#perfis, select#lst_unidade {
               </div>
             </div>       
        </div>
-       <div class="col-12 col-md-3 mb-3">     
+       <div class="col-3 col-md-3 mb-3">     
           <label for="lst_sgl_uf">Estado</label>                         
             <select class="custom-select" id="lst_sgl_uf" name="lst_sgl_uf">
                 <option value="">Selecione</option>
@@ -326,10 +358,35 @@ select#perfis, select#lst_unidade {
        </div>               
     </div>
 
-
     <p class="h5">Informações Funcionais</p>
     <div class="form-row">
-       <div class="col-12 col-md-6 mb-3">     
+       <div class="col-6 col-md-3 mb-3">     
+          <label for="txt_num_matricula">Matrícula</label>                         
+          <input class="form-control" type="text" name="txt_num_matricula" id="txt_num_matricula" value="<dtml-var num_matricula missing null>" maxlength="10" />
+       </div>
+       <div class="col-6 mb-3"> 
+          <label for="txt_nom_cargo" class="required">Cargo ou Função</label>
+          <input class="form-control" type="text" id="txt_nom_cargo" name="txt_nom_cargo" value="<dtml-var nom_cargo missing>" maxlength="50" <dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">readonly</dtml-unless> />       
+       </div> 
+       <div class="col-6 col-md-3 mb-3">     
+          <label for="txt_des_vinculo">Tipo de Vínculo</label>
+          <select class="custom-select" name="txt_des_vinculo" id="txt_des_vinculo">
+            <option value=""></option>
+            <dtml-in expr="[('Agente Político','Agente Político'), ('Comissionado','Comissionado'),('Efetivo','Efetivo'),('Terceirizado','Terceirizado'),]">
+                <option  
+                   <dtml-if expr="_.has_key('cod_usuario') and des_vinculo==_['sequence-item']"> 
+                       selected
+                   </dtml-if>
+                   value="<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']">
+                </option>
+            </dtml-in>
+          </select>                       
+       </div>
+       <div class="col-6 col-md-3 mb-3">     
+          <label for="txt_des_lotacao">Lotação</label>                         
+          <input class="form-control" type="text" name="txt_des_lotacao" id="txt_des_lotacao" value="<dtml-var des_lotacao missing null>" maxlength="50" />
+       </div>
+       <div class="col-12 col-md-3 mb-3">     
           <label for="txt_end_email" class="required">E-mail</label>                         
           <input class="form-control" type="text" id="txt_end_email" name="txt_end_email" value="<dtml-var end_email missing>" maxlength="100" />
        </div>
@@ -341,7 +398,7 @@ select#perfis, select#lst_unidade {
           <label for="txt_num_ramal">Ramal</label>                         
           <input class="form-control" type="text" name="txt_num_ramal" id="txt_num_ramal" value="<dtml-var num_ramal missing null>" maxlength="4" />
        </div> 
-       <div class="col-12 col-md-6 mb-3"> 
+       <div class="col-12 mb-3"> 
           <label for="lst_unidade">Unidade de Tramitação Vinculada</label>
           <select class="custom-select" id="lst_unidade" name="lst_cod_unid_tramitacao:list" size="5" multiple <dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">tabindex="-1" aria-disabled="true"</dtml-unless>>
              <dtml-in expr="zsql.unidade_tramitacao_obter_zsql()">
@@ -357,9 +414,6 @@ select#perfis, select#lst_unidade {
              </dtml-in>
          </select>
        </div>
-       <div class="col-12 col-md-6 mb-3"> 
-          <label for="txt_nom_cargo" class="required">Cargo ou Função</label>
-          <input class="form-control" type="text" id="txt_nom_cargo" name="txt_nom_cargo" value="<dtml-var nom_cargo missing>" maxlength="50" <dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">readonly</dtml-unless> />
           <dtml-if cod_usuario>
              <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario)">
                 <dtml-call expr="REQUEST.set('ind_responsavel', ind_responsavel)">
@@ -369,13 +423,13 @@ select#perfis, select#lst_unidade {
           <dtml-else>
              <dtml-call expr="REQUEST.set('ind_responsavel', 0)">
           </dtml-if>
-          <div class="form-check form-check-inline mt-2">
+       <div class="col-12 mb-2"> 
+          <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" name="chk_id_responsavel" id="chk_id_responsavel" value="1" <dtml-if expr="ind_responsavel==1">checked</dtml-if> <dtml-unless expr="AUTHENTICATED_USER.has_role(['Administrador'])">onclick="return false;" onkeydown="return false;"</dtml-unless> />
             <label class="form-check-label" for="chk_id_responsavel">Responsável pela Unidade</label>
-          </div>          
-       </div>                 
+          </div>   
+       </div>         
     </div>
-
     <div class="form-row">
        <div class="col-12 mb-3"> 
           <label for="txa_txt_observacao">Observações</label>

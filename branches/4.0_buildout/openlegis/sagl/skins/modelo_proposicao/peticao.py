@@ -36,10 +36,26 @@ for peticao in context.zsql.peticao_obter_zsql(cod_peticao=cod_peticao):
     inf_basicas_dic['data'] = context.pysc.data_converter_por_extenso_pysc(data=DateTime().strftime("%d/%m/%Y"))
     for usuario in context.zsql.usuario_obter_zsql(cod_usuario=peticao.cod_usuario):
         inf_basicas_dic['nom_completo'] = usuario.nom_completo
+        inf_basicas_dic['num_matricula'] = usuario.num_matricula
         inf_basicas_dic['nom_cargo'] = usuario.nom_cargo
+        inf_basicas_dic['lotacao'] = usuario.des_lotacao
+        inf_basicas_dic['vinculo'] = usuario.des_vinculo
         inf_basicas_dic['dat_nascimento'] = usuario.dat_nascimento
+        inf_basicas_dic['estado_civil'] = usuario.des_estado_civil
+        if usuario.sex_usuario == 'M':
+           inf_basicas_dic['sexo'] = 'Masculino'
+           inf_basicas_dic['sexo_servidor'] = 'servidor'
+        elif usuario.sex_usuario == 'F':
+           inf_basicas_dic['sexo'] = 'Feminino'
+           inf_basicas_dic['sexo_servidor'] = 'servidora'           
+        else:
+           inf_basicas_dic['sexo'] = ''
+           inf_basicas_dic['sexo_servidor'] = 'servidor(a)'           
         inf_basicas_dic['num_cpf'] = usuario.num_cpf
         inf_basicas_dic['num_rg'] = usuario.num_rg
+        inf_basicas_dic['num_ctps'] = usuario.num_ctps
+        inf_basicas_dic['num_serie_ctps'] = usuario.num_serie_ctps
+        inf_basicas_dic['num_pis_pasep'] = usuario.num_pis_pasep
         inf_basicas_dic['end_residencial'] = usuario.end_residencial
         inf_basicas_dic['num_cep_resid'] = usuario.num_cep_resid
         inf_basicas_dic['num_tel_resid'] = usuario.num_tel_resid
