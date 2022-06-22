@@ -1604,6 +1604,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                dic_anexo["data"] = DateTime(anexada.dat_anexacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf')
                anexos.append(dic_anexo)
+        for docadm in self.zsql.documento_administrativo_materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0):
+            if hasattr(self.sapl_documentos.administrativo, str(docadm.cod_documento) + '_texto_integral.pdf'):
+               dic_anexo = {}
+               dic_anexo["data"] = DateTime(docadm.data_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(docadm.cod_documento) + '_texto_integral.pdf')
+               anexos.append(dic_anexo)
         for documento in self.zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia, ind_excluido=0):
             if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
                dic_anexo = {}
