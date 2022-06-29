@@ -460,6 +460,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.reuniao_comissao.manage_addFile(id=nom_arquivo_pdf,file=data)
 
+
     def iom_gerar_odt(self, inf_basicas_dic, lst_mesa, lst_presenca_sessao, lst_materia_apresentada, lst_reqplen, lst_reqpres, lst_indicacao, lst_presenca_ordem_dia, lst_votacao, lst_presenca_expediente, lst_oradores, lst_presenca_encerramento, lst_presidente, lst_psecretario, lst_ssecretario):
         url = self.sapl_documentos.modelo.sessao_plenaria.absolute_url() + "/iom.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
@@ -1480,7 +1481,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for docvinculado in self.zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante=documento.cod_documento, ind_excluido=0):
            if hasattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral_signed.pdf'):
               dic_anexo = {}
-              dic_anexo["data"] = DateTime(docvinculado.dat_documento_vinculado, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
+              for protocolo in self.zsql.protocolo_obter_zsql(num_protocolo=docvinculado.num_protocolo, ano_protocolo=docvinculado.ano_documento):
+                  dic_anexo["data"] = DateTime(protocolo.dat_protocolo, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
+                  break
+              else:
+                  dic_anexo["data"] = DateTime(docvinculado.dat_documento_vinculado, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
               dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral_signed.pdf')
               anexos.append(dic_anexo)
            elif hasattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral.pdf'):
