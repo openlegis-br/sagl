@@ -83,7 +83,7 @@ for dic in lst_novas:
     hdn_url = context.portal_url() + '/cadastros/tramitacao_documento/itens_enviados_html'    
     context.relatorios.pdf_tramitacao_administrativo_preparar_pysc(hdn_cod_tramitacao = dic['cod_tramitacao'], hdn_url = hdn_url)
 
-mensagem = 'Tramitação em lote realizada com sucesso!'
+mensagem = 'Documentos tramitados com sucesso!'
 mensagem_obs = ''
 url = context.portal_url() + '/cadastros/tramitacao_documento/itens_enviados_html'
 redirect_url=context.portal_url()+'/mensagem_emitir?tipo_mensagem=success&mensagem=' + mensagem + '&mensagem_obs=' + mensagem_obs + '&url=' + url
