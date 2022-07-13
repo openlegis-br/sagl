@@ -1,6 +1,15 @@
 <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, ind_excluido=0)">
-  <dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!=None))">
-  <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
+  <dtml-if expr="_.has_key('hdn_cod_proposicao') and AUTHENTICATED_USER.has_role(['Autor'])">
+    <dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!=None))">
+    <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
+  <dtml-elif expr="_.has_key('hdn_cod_proposicao') and AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+    <dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!=None))">
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+          <dtml-call expr="REQUEST.set('usr_eh_autor', (col_username==col_username_sel))">
+      </dtml-in>
+    </dtml-in>
+  </dtml-if>
 </dtml-in>
 <dtml-if prop_enviada>
   <dtml-let mensagem="'Esta proposição já havia sido enviada! Erro de Sistema!'" tipo_mensagem="'danger'">
@@ -33,6 +42,11 @@
       <dtml-var mensagem_emitir>
     </dtml-let>
   <dtml-else>
+    <dtml-call expr="REQUEST.set('id_odt', _.str(hdn_cod_proposicao)+'.odt')">
+    <dtml-call expr="REQUEST.set('id_pdf', _.str(hdn_cod_proposicao)+'.pdf')">
+    <dtml-if expr="_.hasattr(sapl_documentos.proposicao,id_odt) and not _.hasattr(sapl_documentos.proposicao,id_pdf)">
+      <dtml-call expr="proposicao_guardar_odt_pysc(cod_proposicao=hdn_cod_proposicao)">
+    </dtml-if>
     <dtml-let cod_doc="_.str(pysc.proposicao_calcular_checksum_pysc(hdn_cod_proposicao))"
               mensagem="'Proposição enviada com sucesso!'" cod_doc_prop=cod_doc mensagem_obs="'Código de Autenticidade:' + cod_doc">
       <dtml-var mensagem_emitir>
