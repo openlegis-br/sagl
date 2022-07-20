@@ -6,12 +6,31 @@
 <script>
 
 $(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('table.display tfoot th').each(function () {
+        var title = $(this).text();
+        $(this).html('<input type="text" placeholder="Pesquisar ' + title + '" />');
+    });
+
     $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
     $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
     $('table.display').DataTable( {
+        initComplete: function () {
+            // Apply the search
+            this.api()
+                .columns()
+                .every(function () {
+                    var that = this;
+                     $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that.search(this.value).draw();
+                        }
+                    });
+                });
+        },
         "responsive": true,
         "order": [[0, "desc"]],
-        "bStateSave": true,        
+
         "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
         "lengthChange": true,
         "buttons": [
