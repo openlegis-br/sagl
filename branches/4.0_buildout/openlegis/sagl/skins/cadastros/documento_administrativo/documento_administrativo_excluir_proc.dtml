@@ -1,4 +1,5 @@
 <dtml-try>
+ <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
    <dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento = cod_documento, ind_excluido=0)">
       <dtml-let silent="1">
          <dtml-call expr="zsql.documento_acessorio_administrativo_excluir_zsql(cod_documento_acessorio=cod_documento_acessorio)">
@@ -22,6 +23,7 @@
             </dtml-in>
       </dtml-let>
    </dtml-in>
+ </dtml-if>
 
    <dtml-in expr="zsql.peticao_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
       <dtml-let silent="1">
@@ -82,14 +84,11 @@
 
 <dtml-comment>LOG DE AUDITORIA</dtml-comment>
 <dtml-if dbcon_logs>
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
   <dtml-call expr="zsql.logs_registrar_zsql(
             usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
             data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
             modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
-            metodo       = metodo1,
+            metodo       = 'documento_administrativo_excluir',
             IP           = pysc.get_ip(),
             cod_registro = cod_documento)"> 
 </dtml-if>
