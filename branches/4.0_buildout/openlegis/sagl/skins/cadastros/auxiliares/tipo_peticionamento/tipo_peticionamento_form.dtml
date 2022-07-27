@@ -96,7 +96,7 @@ $(document).ready(function () {
   <div class="form-row">
     <div class="col-6 mb-3">
            <dtml-if expr="REQUEST.get('escolha','')=='M'">
-             <label for="tip_mat_ou_doc" class="required">Tipo de Norma Jurídica</label>
+             <label for="tip_derivado" class="required">Tipo de Norma Jurídica</label>
               <select class="custom-select" id="tip_derivado" name="tip_derivado">
                  <option></option>
                  <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql()">
@@ -106,7 +106,7 @@ $(document).ready(function () {
                 </dtml-in>
              </select>
            <dtml-elif expr="REQUEST.get('escolha','')=='A'">
-             <label for="tip_mat_ou_doc" class="required">Tipo de Documento Administrativo</label>
+             <label for="tip_derivado" class="required">Tipo de Documento Administrativo</label>
               <select class="custom-select" id="tip_derivado" name="tip_derivado">
                 <option></option>              
                 <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql()">
@@ -116,7 +116,7 @@ $(document).ready(function () {
                 </dtml-in>
              </select>
            <dtml-elif expr="REQUEST.get('escolha','')=='D'">
-             <label for="tip_mat_ou_doc" class="required">Tipo de Documento Acessório</label>
+             <label for="tip_derivado" class="required">Tipo de Documento Acessório</label>
               <select class="custom-select" id="tip_derivado" name="tip_derivado">
                 <option></option>              
                 <dtml-in expr="zsql.tipo_documento_obter_zsql()">
@@ -128,7 +128,7 @@ $(document).ready(function () {
            </dtml-if>   
     </div>
     <div class="col-6 mb-3">
-      <label for="lst_cod_unid_tram_local" class="required">Unidade de Destino</label>  
+      <label for="lst_cod_tram_dest" class="required">Unidade de Destino</label>  
           <select class="custom-select" id="lst_cod_tram_dest" name="lst_cod_tram_dest" required>
              <option value="">Selecione</option>   
                <dtml-if expr="escolha=='A'">
@@ -147,6 +147,25 @@ $(document).ready(function () {
           </select>    
     </div>
   </div>
+
+<dtml-if tip_peticionamento>
+  <div class="form-row">
+     <div class="col-12 mb-3"> 
+        <label for="lst_usuarios">Usuários Permitidos</label>
+        <select id="lst_usuarios" name="lst_usuarios" class="form-control selectpicker show-tick" multiple data-actions-box="true" data-size="10" data-selected-text-format="count > 4">
+          <dtml-in expr="zsql.usuario_obter_zsql(ind_ativo='1',ind_excluido=0)">        
+            <option value="<dtml-var cod_usuario>"
+              <dtml-if tip_peticionamento>
+                <dtml-if expr="zsql.usuario_peticionamento_obter_zsql(cod_usuario=cod_usuario, tip_peticionamento=tip_peticionamento)">
+                   selected
+               </dtml-if>
+              </dtml-if> >
+              <dtml-var nom_completo> (<dtml-var col_username>)</option>            
+          </dtml-in>     
+        </select>
+        </div>
+  </div>
+</dtml-if>
 
   <input class="btn btn-primary" type="button" name="btn_tip_peticionamento_salvar" value="Salvar" onClick="campos_criticar(window.document.tip_peticionamento_form)" />
   <dtml-if tip_peticionamento>
