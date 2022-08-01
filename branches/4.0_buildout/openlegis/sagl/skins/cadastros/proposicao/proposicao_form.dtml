@@ -109,7 +109,7 @@ $(document).ready(function () {
   }
  </dtml-let>
 </dtml-if>
-<dtml-if expr="not _.has_key('cod_proposicao') or  (_.has_key('cod_proposicao') and ind_mat_ou_doc=='D')"> 
+
   function tipo_proposicao_mudou(){
     var form = document.proposicao_form;
     form.hdn_alterou.value=1;
@@ -117,7 +117,7 @@ $(document).ready(function () {
     var separador = tipo_proposicao.indexOf("&");
     var ind_mat_ou_doc = tipo_proposicao.split("&");
     if (ind_mat_ou_doc[1]=='D') {
-      $("#divMat").show();    
+      $("#divMat").show();
       form.lst_tip_id_basica.disabled = 0;
       form.txt_num_ident_basica.disabled = 0;
       form.txt_ano_ident_basica.disabled = 0;
@@ -130,7 +130,7 @@ $(document).ready(function () {
     }
     return;
   }
-</dtml-if>
+
     function addFileField() {
         var f = document.createElement("input");
         f.type = "file";
@@ -321,16 +321,13 @@ $(function () {
     <input type="hidden" name="hdn_alterou" value="0" />                      
     <input type="hidden" name="hdn_tip_proposicao" value="" />
     <input type="hidden" name="hdn_url" value="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao missing>" />
-    <dtml-if cod_proposicao>
-       <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var cod_proposicao missing>" />
-    <dtml-else>
-       <input type="hidden" name="hdn_cod_proposicao" value="" />
-    </dtml-if>  
+   <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var cod_proposicao missing>" />
+
 
     <div class="form-row">
        <div class="col-12 col-md-6 mb-3">
          <label for="lst_tip_proposicao" class="required">Tipo de Proposição</label>
-         <select class="custom-select" id="lst_tip_proposicao" name="lst_tip_proposicao" <dtml-unless cod_proposicao> onChange="javascript:tipo_proposicao_mudou()"</dtml-unless>
+         <select class="custom-select" id="lst_tip_proposicao" name="lst_tip_proposicao"  onChange="javascript:tipo_proposicao_mudou()"
             <dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar']) and prop_enviada)">
                disabled
             <dtml-elif expr="(AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao']) and prop_recebida)">
@@ -415,11 +412,11 @@ $(function () {
     </div>
 
 
-<dtml-if expr="not _.has_key('cod_proposicao') or  (_.has_key('cod_proposicao') and ind_mat_ou_doc=='D')"> 
-  <div class="form-row" id="divMat" <dtml-unless cod_proposicao>style="display:none;"</dtml-unless>>
+
+  <div class="form-row" id="divMat" <dtml-if expr="not _.has_key('cod_proposicao') or ind_mat_ou_doc=='M'">style="display:none;"</dtml-if>>
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_tip_id_basica">Matéria Principal</label>
-          <select class="custom-select" id="lst_tip_id_basica" name="lst_tip_id_basica" <dtml-if "not _.has_key('tip_id_basica_sel') or prop_enviada"> disabled </dtml-if>>
+          <select class="custom-select" id="lst_tip_id_basica" name="lst_tip_id_basica" <dtml-if "not _.has_key('tip_id_basica_sel') or prop_recebida"> disabled </dtml-if>>
              <option value="0"></option>
              <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P')">
                 <option
@@ -437,7 +434,7 @@ $(function () {
     <div class="col-6 col-md-3 mb-3">
       <label for="txt_num_ident_basica">Número</label> 
       <input class="form-control number" type="number" id="txt_num_ident_basica" name="txt_num_ident_basica" value="<dtml-var num_ident_basica_sel missing null="1">" 
-        <dtml-if "not _.has_key('num_ident_basica_sel') or prop_enviada">
+        <dtml-if "not _.has_key('num_ident_basica_sel') or prop_recebida">
            disabled 
         </dtml-if>  />    
     </div>
@@ -449,7 +446,7 @@ $(function () {
         </dtml-if> />
     </div>
   </div>
-</dtml-if>
+
 
   <dtml-if cod_proposicao>
     <div class="form-row">       
@@ -735,7 +732,7 @@ $(function () {
          </dtml-if cod_mat_ou_doc>	
        </div>
     </div>
-    <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var cod_proposicao missing>" />
+
     <dtml-if expr="not cod_mat_ou_doc and not prop_devolvida">
        <input class="btn btn-primary" type="button" value="Salvar Observações" onClick="observacao_salvar(document.observacao_form)" />
     </dtml-if>
