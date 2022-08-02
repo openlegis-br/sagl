@@ -194,7 +194,7 @@ if context.REQUEST['cod_sessao_plen']!='':
                           vereadores.append(dic_autores)
                       dic_requerimentos["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
                       lst_requerimentos.append(dic_requerimentos)
-                   else:
+                   if materia.des_tipo_materia != 'Requerimento' and materia.des_tipo_materia != 'Indicação' and materia.des_tipo_materia != 'Moção':
                       dic_outros = {}
                       dic_outros["num_ordem"] = item.num_ordem
                       dic_outros['txt_ementa'] = materia.txt_ementa
