@@ -280,18 +280,43 @@ $(function () {
               </dtml-let>                
              </dtml-if>
         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao']) and not prop_recebida and not prop_devolvida">                         
-             <button type="button" class="btn btn-sm btn-danger d-print-none" data-toggle="popover" title="Justificativa da Devolução"><i class="fas fa-window-close"></i> Devolver ao Autor</button>
-             <div id="PopoverContent" class="d-none">
-               <form id="myform" class="form-inline" role="form" method="post" action="proposicao_salvar_devolucao_proc" onSubmit="return confirm('Confirma a devolução da proposição ao Autor?');" class="was-validated">
-                 <input type="hidden" name="cod_proposicao" value="<dtml-var cod_proposicao missing>" />
-                 <div class="input-group">
-                   <textarea class="form-control" name="txt_justif_devolucao" rows="1" required></textarea>
-                   <div class="input-group-append" id="button-addon1">
-                      <button class="btn btn-sm btn-primary" type="submit" data-toggle="popover" data-placement="bottom" data-html="true" data-title="OK" formaction="proposicao_salvar_devolucao_proc">OK</button>                     
-                   </div>
-                 </div>     
-               </form>  
-             </div>   
+             <!-- Modal -->
+             <button type="button" class="btn btn-sm btn-danger d-print-none" data-toggle="modal" data-target="#devolucaoModal">
+                <i class="fas fa-window-close"></i> Devolver ao Autor
+             </button>
+             <div class="modal fade" id="devolucaoModal" tabindex="-1" aria-labelledby="devolucaoModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Devolução de Proposição</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                   <form id="myform" role="form" method="post" action="proposicao_salvar_devolucao_proc" onSubmit="return confirm('Confirma a devolução da proposição ao Autor?');" class="was-validated">
+                     <input type="hidden" name="cod_proposicao" value="<dtml-var cod_proposicao missing>" />
+                     <div class="form-row">
+                       <div class="col-12 mb-3">
+                        <label for="txt_justif_devolucao" class="required">Justiticativa</label>
+                        <textarea class="form-control" name="txt_justif_devolucao" rows="3" required></textarea>
+                       </div>
+                     </div>
+                     <div class="form-row">
+                       <div class="col-12 mb-2">
+                        <button class="btn btn-primary" method="post" action="proposicao_salvar_devolucao_proc">Devolver ao Autor</button>
+                       </div>
+                     </div>
+                     <div class="form-row">
+                       <div class="col-md-12">
+                         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+                       </div>
+                     </div>
+                   </form> 
+                  </div>
+                </div>
+              </div>
+            </div>
         </dtml-if>            
         <dtml-if expr="not prop_enviada and AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
            <dtml-if cod_proposicao>        
