@@ -1851,21 +1851,21 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             cod_validacao_doc = ''
             outros = ''
             qtde_assinaturas = []
-            for validacao in self.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=peticao.cod_peticao, ind_assinado=1):
-                nom_pdf_peticao = str(validacao.cod_assinatura_doc) + ".pdf"
-                pdf_peticao = self.sapl_documentos.documentos_assinados.absolute_url() + "/" +  nom_pdf_peticao
-                qtde_assinaturas.append(validacao.cod_usuario)
-                if validacao.ind_prim_assinatura == 1:
-                   nom_autor = validacao.nom_completo
-                cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
-                break
+            if self.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=peticao.cod_peticao, ind_assinado=1):
+               for validacao in self.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=peticao.cod_peticao, ind_assinado=1):
+                   nom_pdf_peticao = str(validacao.cod_assinatura_doc) + ".pdf"
+                   pdf_peticao = self.sapl_documentos.documentos_assinados.absolute_url() + "/" +  nom_pdf_peticao
+                   qtde_assinaturas.append(validacao.cod_usuario)
+                   if validacao.ind_prim_assinatura == 1:
+                      nom_autor = validacao.nom_completo
+                   cod_validacao_doc = str(self.cadastros.assinatura.format_verification_code(code=validacao.cod_assinatura_doc))
             else:
-                nom_pdf_peticao = str(cod_peticao) + ".pdf"
-                pdf_peticao = self.sapl_documentos.peticao.absolute_url() + "/" +  nom_pdf_peticao
-                for usuario in self.zsql.usuario_obter_zsql(cod_usuario=peticao.cod_usuario):
-                    qtde_assinaturas.append(usuario.cod_usuario)
-                    nom_autor = usuario.nom_completo
-                    cod_validacao_doc = ''
+               nom_pdf_peticao = str(cod_peticao) + ".pdf"
+               pdf_peticao = self.sapl_documentos.peticao.absolute_url() + "/" +  nom_pdf_peticao
+               for usuario in self.zsql.usuario_obter_zsql(cod_usuario=peticao.cod_usuario):
+                   qtde_assinaturas.append(usuario.cod_usuario)
+                   nom_autor = usuario.nom_completo
+                   cod_validacao_doc = ''
             if len(qtde_assinaturas) == 2:
                outros = " e outro"
             elif len(qtde_assinaturas) > 2:
