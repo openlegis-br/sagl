@@ -1712,6 +1712,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
              outros = " e outros"
           info_protocolo = '- Recebido em ' + proposicao.dat_recebimento + ' - '
           tipo_proposicao = proposicao.des_tipo_proposicao
+          nome_autor = ''
+          #if tipo_proposicao != 'Indicação' and tipo_proposicao !='Moção'  and tipo_proposicao != 'Requerimento' and tipo_proposicao != 'Requerimento ao Plenário' and tipo_proposicao != 'Requerimento à Presidência' and tipo_proposicao != 'Mensagem Aditiva':
+          #    nome_autor = '(' + nom_autor + ')'
           if proposicao.ind_mat_ou_doc == "M":
             for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
               if materia.num_protocolo != None and materia.num_protocolo != '':
@@ -1762,7 +1765,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         mensagem = mensagem1 + '\n' + mensagem2
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
-
+        pdfmetrics.registerFont(TTFont('Arial_Italic', '/usr/share/fonts/truetype/msttcorefonts/Arial_Italic.ttf'))
         arq = getattr(self.sapl_documentos.proposicao, nom_pdf_proposicao)
         arquivo = cStringIO.StringIO(str(arq.data))
         existing_pdf = PdfFileReader(arquivo, strict=False)
@@ -1817,6 +1820,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         #d.drawString(85, 700, texto)
         # alinhamento centralizado
         d.drawCentredString(pwidth/2, 700, texto)
+        # nome autor abaixo da numeracao
+        d.setFont("Arial_Italic", 10)
+        #d.drawCentredString(pwidth/2, 688, nome_autor)
         d.save()
         packet2.seek(0)
         new_pdf2 = PdfFileReader(packet2)
