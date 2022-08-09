@@ -71,6 +71,7 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia,
                                                    dat_publicacao2=REQUEST['dt_public2'],
                                                    cod_autor=REQUEST['hdn_cod_autor'],
                                                    cod_unid_tramitacao=REQUEST['lst_localizacao'],
+                                                   cod_unid_tramitacao2=REQUEST['lst_tramitou'],
                                                    rd_ordem=REQUEST['rd_ordenacao']):
     dic={}
     dic['titulo'] = materia.des_tipo_materia.decode('utf-8').upper()+" N° "+str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica)

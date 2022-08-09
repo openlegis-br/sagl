@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : tip_id_basica="" num_ident_basica="" ano_ident_basica="" num_protocolo="" dat_apresentacao="" dat_apresentacao2="" dat_publicacao="" dat_publicacao2="" cod_autor="" cod_relator="" des_tipo_autor="" des_assunto="" ind_tramitacao="" cod_unid_tramitacao="" cod_status="" cod_assunto="" cod_materia_principal="" rd_ordem="" ind_excluido=0
+arguments : tip_id_basica="" num_ident_basica="" ano_ident_basica="" num_protocolo="" dat_apresentacao="" dat_apresentacao2="" dat_publicacao="" dat_publicacao2="" cod_autor="" cod_relator="" des_tipo_autor="" des_assunto="" ind_tramitacao="" cod_unid_tramitacao="" cod_unid_tramitacao2="" cod_status="" cod_assunto="" cod_materia_principal="" rd_ordem="" ind_excluido=0
 max_rows : 5000
 max_cache : 100
 </dtml-comment>
@@ -47,7 +47,7 @@ FROM
     <dtml-if expr="cod_autor!=''">
      LEFT JOIN autoria ON materia_legislativa.cod_materia = autoria.cod_materia
     </dtml-if>
-    <dtml-if expr="cod_status!='' or cod_unid_tramitacao">
+    <dtml-if expr="cod_status!='' or cod_unid_tramitacao or cod_unid_tramitacao2">
      LEFT JOIN tramitacao ON materia_legislativa.cod_materia = tramitacao.cod_materia
     </dtml-if>
     <dtml-if cod_relator>
@@ -63,7 +63,7 @@ FROM
     <dtml-sqltest cod_assunto       column="materia_legislativa.cod_assunto"      op="="  type="int"   optional> <dtml-and>     
     <dtml-sqltest ind_excluido      column="materia_legislativa.ind_excluido"     op="="  type="int">
 <dtml-comment>
-    DATE_ADD(dat_apresentacao,INTERVAL 18 HOUR) <= NOW()
+    DATE_ADD(dat_apresentacao,INTERVAL 9 HOUR) <= NOW()
 </dtml-comment>
 
    <dtml-if expr="dat_apresentacao and dat_apresentacao2">
@@ -89,7 +89,7 @@ FROM
    </dtml-if>
 
    <dtml-if expr="dat_publicacao2 and (not dat_publicacao)">
-     AND and materia_legislativa.dat_publicacao = <dtml-sqlvar dat_publicacao2 type="nb"> 
+     AND materia_legislativa.dat_publicacao = <dtml-sqlvar dat_publicacao2 type="nb"> 
    </dtml-if>
 
 </dtml-sqlgroup>
@@ -115,21 +115,26 @@ FROM
    </dtml-if>
 
     <dtml-if cod_relator>
-      and relatoria.ind_excluido = 0 AND
-      parlamentar.cod_parlamentar = <dtml-sqlvar cod_relator type="string">   
+      AND and relatoria.ind_excluido = 0
+      AND parlamentar.cod_parlamentar = <dtml-sqlvar cod_relator type="string">   
     </dtml-if>
 
    <dtml-if cod_status>
-     AND materia_legislativa.cod_materia = tramitacao.cod_materia and
      tramitacao.ind_ult_tramitacao = 1 AND
      tramitacao.ind_excluido = 0 AND
      tramitacao.cod_status = <dtml-sqlvar cod_status type="int">
    </dtml-if>
 
    <dtml-if cod_unid_tramitacao>
-     AND materia_legislativa.cod_materia = tramitacao.cod_materia
      AND tramitacao.ind_ult_tramitacao = 1
      AND tramitacao.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao type="int">
+     AND tramitacao.ind_excluido = 0
+   </dtml-if>
+
+   <dtml-if cod_unid_tramitacao2>
+     AND tramitacao.ind_ult_tramitacao = 0
+     AND tramitacao.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao2 type="int">
+     AND tramitacao.ind_excluido = 0
    </dtml-if>
 
    <dtml-if expr="cod_autor!=''">

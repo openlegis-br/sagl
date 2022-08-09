@@ -60,7 +60,7 @@ if REQUEST[str('tipo_documento')] != 'None':
   tipo_documento= REQUEST[str('tipo_documento')]
 else: 
   tipo_documento = '' 
-for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_documento=tipo_documento, num_documento=REQUEST['txt_num_documento'], ano_documento=REQUEST['txt_ano_documento'], num_protocolo=REQUEST['txt_num_protocolo'], ind_tramitacao=REQUEST['rad_tramitando'], des_assunto=REQUEST['txa_txt_assunto'], cod_status=REQUEST['lst_status'], lst_assunto=REQUEST['lst_assunto'], txt_interessado=REQUEST['txa_txt_interessado'], dat_apres1=REQUEST['dt_apres1'], dat_apres2=REQUEST['dt_apres2'], rd_ordem=REQUEST['rd_ordenacao']):
+for documento in context.zsql.documento_administrativo_pesquisar_zsql(tip_documento=tipo_documento, num_documento=REQUEST['txt_num_documento'], ano_documento=REQUEST['txt_ano_documento'], num_protocolo=REQUEST['txt_num_protocolo'], ind_tramitacao=REQUEST['rad_tramitando'], des_assunto=REQUEST['txa_txt_assunto'], cod_status=REQUEST['lst_status'], lst_assunto=REQUEST['lst_assunto'], txt_interessado=REQUEST['txa_txt_interessado'], dat_apres1=REQUEST['dt_apres1'], dat_apres2=REQUEST['dt_apres2'], cod_unid_tramitacao=REQUEST['lst_localizacao'], cod_unid_tramitacao2=REQUEST['lst_tramitou'], rd_ordem=REQUEST['rd_ordenacao']):
         dic={}
 
         dic['titulo']=documento.des_tipo_documento.decode('utf-8').upper()+" N° "+str(documento.num_documento)+"/"+str(documento.ano_documento)
