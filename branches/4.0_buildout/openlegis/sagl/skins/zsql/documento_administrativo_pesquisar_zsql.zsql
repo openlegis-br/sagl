@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : num_documento="" ano_documento="" tip_documento="" num_protocolo="" ind_tramitacao="" cod_status="" des_assunto="" txt_interessado="" dat_apres1="" dat_apres2="" cod_unid_tramitacao="" cod_unid_tramitacao2="" lst_assunto="" rd_ordem="" ind_excluido="0"
+arguments : num_documento="" ano_documento="" tip_documento="" num_protocolo="" ind_tramitacao="" cod_status="" des_assunto="" txt_interessado="" dat_apres1="" dat_apres2="" cod_unid_tramitacao="" cod_unid_tramitacao2="" dat_tram1="" dat_tram2="" lst_assunto="" rd_ordem="" ind_excluido="0"
 max_rows : 10000
 max_cache : 100
 </dtml-comment>
@@ -24,6 +24,9 @@ SELECT
        </dtml-if>
        <dtml-if cod_unid_tramitacao>
          ,REPLACE(tramitacao_administrativo.cod_unid_tram_dest, 'L', '') as cod_unid_tram_dest
+       </dtml-if>
+       <dtml-if cod_unid_tramitacao2>
+         ,DATE_FORMAT(tramitacao_administrativo.dat_tramitacao, '%d/%m/%Y %H:%i:%s') as dat_tram
        </dtml-if>
        <dtml-if dat_fim_prazo>
          ,DATE_FORMAT(tramitacao_administrativo.dat_fim_prazo, '%d/%m/%y') as dat_fim_prazo_processo
@@ -99,9 +102,21 @@ FROM
     </dtml-if>
 
    <dtml-if cod_unid_tramitacao2>
-     AND tramitacao_administrativo.ind_ult_tramitacao = 0
-     AND tramitacao_administrativo.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao2 type="int">
+     AND (tramitacao_administrativo.cod_unid_tram_local = <dtml-sqlvar cod_unid_tramitacao2 type="int"> 
+          OR tramitacao_administrativo.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao2 type="int">)
      AND tramitacao_administrativo.ind_excluido = 0
+    <dtml-if dat_tram1>
+      <dtml-if dat_tram2>
+         AND DATE(tramitacao_administrativo.dat_tramitacao) >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_tram1)" type="nb">
+         AND DATE(tramitacao_administrativo.dat_tramitacao) <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_tram2)" type="nb">
+      <dtml-else>
+         AND DATE(tramitacao_administrativo.dat_tramitacao) = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_tram1)" type="nb">
+      </dtml-if>
+    <dtml-else>
+      <dtml-if dat_tram2>
+         AND DATE(tramitacao_administrativo.dat_tramitacao) = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_tram2)" type="nb">
+      </dtml-if>
+    </dtml-if>
    </dtml-if>
 
 <dtml-if expr="rd_ordem == '1'">
