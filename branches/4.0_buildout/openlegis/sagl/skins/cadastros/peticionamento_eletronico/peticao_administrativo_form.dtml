@@ -68,7 +68,7 @@
       // Set the input's value to the current value of the list
       $('#hdn_cod_documento_vinculado').val("");
       $('#txt_num_documento').val("");
-      $('#txt_ano_documento').val("");  
+      $('#txt_ano_documento').val("");
       $('#txa_txt_assunto').val("");
     });
   })
@@ -88,6 +88,18 @@ $('#chk_consulta_externa').click(function() {
 
 });
 
+function addFileField() {
+    var f = document.createElement("input");
+    f.type = "file";
+    f.class = "form-control-file";
+    f.id = "file_nom_anexo";
+    f.name = "file_nom_anexo";
+    f.accept="application/pdf";
+    p = document.getElementById("arquivos_anexos");
+    p.appendChild(f);
+    p.appendChild(document.createElement("br"));
+    p.appendChild(document.createElement("br"));
+}
 
 </script>
 
@@ -300,14 +312,34 @@ $(document).ready(function(){
   </div>
 </dtml-if>
 
-
+  <dtml-if cod_peticao>
+    <div class="form-row">
+       <div class="col-12">
+         <label class="form-label d-block">Anexos em PDF</label>
+           <small id="link_add_file">
+             <a class="btn btn-sm btn-light mb-3" onclick="addFileField(); return false;" href="#"><i class="fa fa-fw fa-plus"></i>Anexar Arquivo</a>
+           </small>
+         <dtml-in expr="pysc.anexo_peticao_pysc(str(cod_peticao), listar=True)" prefix="file">
+            <dtml-if expr="_.hasattr(sapl_documentos.peticao, file_item)">
+               <dtml-let documento="_.getattr(sapl_documentos.peticao,file_item).absolute_url">
+                  <a target="_blank" href="<dtml-var documento>">
+                    <i class="fa fa-fw fa-file-pdf"></i><dtml-var file_item>
+                  </a>
+                  <a class="btn btn-sm btn-danger" href="javascript:void(0)" onclick="location.href='anexo_excluir?anexo=<dtml-var file_item>&cod_peticao=<dtml-var cod_peticao missing>&modal=1'"> Excluir</a>
+               </dtml-let>
+            </dtml-if>
+         </dtml-in>
+         <span class="d-block mb-2" id="arquivos_anexos"></span>
+         </div>
+    </div>
+  </dtml-if>
 
   <div class="form-row">
     <div class="col-12 mb-3">
       <div class="form-check">
        <input class="form-check-input" type="checkbox" id="chk_consulta_externa" name="chk_consulta_externa" <dtml-if cod_documento_vinculado>checked</dtml-if>>
        <label class="form-check-label" for="chk_consulta_externa">
-         Anexar a processo existente?
+        Anexar petição a processo existente?
        </label>
      </div>
     </div>

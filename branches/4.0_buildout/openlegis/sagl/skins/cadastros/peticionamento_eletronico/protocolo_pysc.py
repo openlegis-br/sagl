@@ -76,6 +76,19 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
     if hasattr(context.sapl_documentos.peticao, str(cod_peticao) + '.pdf'):
        context.modelo_proposicao.peticao_autuar(cod_peticao=cod_peticao)
 
+    anexos = context.pysc.anexo_peticao_pysc(str(cod_peticao),listar=True)
+    for item in anexos:
+        id_anexo = string.split(item,'.')[0]
+        nom_doc = 'Anexo ' + string.split(id_anexo,'_')[2]
+        context.zsql.documento_acessorio_administrativo_incluir_zsql(tip_documento=tip_documento, cod_documento=int(cod_documento), nom_autor_documento=txt_interessado, dat_documento=DateTime().strftime('%Y-%m-%d %H:%M:%S'), nom_documento=nom_doc)
+        for cod_acessorio in context.zsql.documento_acessorio_administrativo_incluido_codigo_obter_zsql():
+            id_pdf = str(cod_acessorio.cod_documento_acessorio)+'.pdf'
+            tmp_copy = context.sapl_documentos.peticao.manage_copyObjects(ids=item)
+            tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
+            context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_pdf]))
+            pdf = getattr(context.sapl_documentos.administrativo, id_pdf)
+            pdf.manage_permission('View', roles=['Authenticated'], acquire=1)
+
     if cod_documento_vinculado != None and cod_documento_vinculado !='Nulo':
         context.zsql.documento_administrativo_vinculado_incluir_zsql(cod_documento_vinculante = cod_documento_vinculado, cod_documento_vinculado = cod_documento)
 
@@ -103,7 +116,6 @@ def tramitar_documento(cod_documento):
     mensagem = 'Protocolo realizado com sucesso!'
     mensagem_obs = ''   
     redirect_url=context.portal_url()+'/mensagem_emitir?modal=1&tipo_mensagem=success&mensagem=' + mensagem + '&mensagem_obs=' + mensagem_obs
-
     return context.relatorios.pdf_tramitacao_administrativo_preparar_pysc(hdn_cod_tramitacao=cod_tramitacao, hdn_url=redirect_url)
 
 if ind_doc_adm == '1':
