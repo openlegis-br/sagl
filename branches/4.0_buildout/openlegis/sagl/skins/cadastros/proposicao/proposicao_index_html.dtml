@@ -1,15 +1,31 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js"></script>
 <script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
 
 <script>
 
 $(document).ready(function() {
+    $('table.display tfoot td').each(function () {
+        var title = $(this).text();
+        $(this).html('<input type="text" class="form-control form-control-sm" placeholder="Pesquisar ' + title + '" />');
+    });
     $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
     $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
-
     $('table.display').DataTable( {
+        initComplete: function () {
+            // Apply the search
+            this.api()
+                .columns()
+                .every(function () {
+                    var that = this;
+                     $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that.search(this.value).draw();
+                        }
+                    });
+                });
+        },
         "responsive": true,
         <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='0'">
         <dtml-elif expr="_.has_key('ind_devolvido') and ind_devolvido=='1'">
@@ -126,7 +142,6 @@ $(document).ready(() => {
   </div>
 </div>
 
-
 <a
  <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='0'">
     class="btn btn-sm btn-primary mb-3 disabled" 
@@ -188,6 +203,12 @@ href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_envia
                     <td><dtml-var txt_descricao></td>
                 </tr>
     <dtml-if sequence-end>
+             <tfoot>
+                <tr>
+                    <td>Tipo de Proposição</td>
+                    <td>Ementa</td>
+                </tr>
+             </tfoot>
             </table>
     </dtml-if sequence-end>
 <dtml-else>
@@ -226,6 +247,14 @@ href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_envia
                     </td>
                 </tr>
     <dtml-if sequence-end>
+             <tfoot>
+                <tr>
+                    <td>Tipo de Proposição</td>
+                    <td>Ementa</td>
+                    <td>Envio</td>
+                    <td>Incorporada?</td>
+                </tr>
+             </tfoot>
             </table>
     </dtml-if sequence-end>
 <dtml-else>
@@ -263,6 +292,14 @@ href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_envia
                     </td>
                 </tr>
     <dtml-if sequence-end>
+             <tfoot>
+                <tr>
+                    <td>Tipo de Proposição</td>
+                    <td>Ementa</td>
+                    <td>Envio</td>
+                    <td>Devolução</td>
+                </tr>
+             </tfoot>
             </table>
     </dtml-if sequence-end>
 <dtml-else>
