@@ -57,7 +57,7 @@ $(document).ready(function() {
        <dtml-call expr="REQUEST.set('prop_recebida',(dat_recebimento!=None))">
     </dtml-in>
   </dtml-if>
-   <dtml-unless prop_recebida>
+   <dtml-if expr="not _.has_key('prop_recebida')">
       <form id="assinatura_solicitar" name="assinatura_solicitar" method="post" action="assinatura_solicitar_proc">
           <input type="hidden" name="hdn_cod_assinatura_doc" value="<dtml-var cod_assinatura_doc>" />
           <input type="hidden" name="hdn_codigo" value="<dtml-var codigo>" />
@@ -68,7 +68,7 @@ $(document).ready(function() {
              <label for="lst_cod_usuario" class="required">Selecione o Usuário</label>
                <div class="input-group">
                 <select class="form-control selectpicker" name="lst_cod_usuario:list:int" id="lst_cod_usuario" multiple="multiple" data-selected-text-format="count > 3" data-size="6" data-actions-box="true" required>
-                    <dtml-if expr="tipo_doc=='proposicao' or tipo_doc=='pauta_comissao' or tipo_doc=='ata_comissao'">
+                    <dtml-if expr="tipo_doc=='proposicao' or tipo_doc=='pauta_comissao' or tipo_doc=='ata_comissao' or tipo_doc=='parecer_comissao'">
                      <dtml-call expr="REQUEST.set('data_atual', _.DateTime().strftime('%d/%m/%Y'))">
                      <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor'])">
                         <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
@@ -98,7 +98,7 @@ $(document).ready(function() {
              </div>
           </div>      
       </form>
-   </dtml-unless>
+   </dtml-if>
 
   <dtml-if temCodigo>
       <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=codigo,tipo_doc=tipo_doc)">
