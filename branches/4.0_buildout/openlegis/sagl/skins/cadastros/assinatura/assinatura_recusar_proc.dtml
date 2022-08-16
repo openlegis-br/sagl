@@ -1,0 +1,20 @@
+<dtml-call expr="REQUEST.set('metodo', zsql.assinatura_documento_recusar_zsql)">
+    <dtml-call expr="metodo(cod_usuario          = cod_usuario,
+                            tipo_doc             = tipo_doc,
+                            codigo               = codigo,
+                            txt_motivo_recusa    = txa_txt_motivo_recusa)">
+    <dtml-let mensagem="'Recusa de assinatura registrada com sucesso!'" url="'cadastros/assinatura/assinaturas_pendentes'">
+       <dtml-var mensagem_emitir>
+    </dtml-let>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'assinatura_recusar',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = codigo)"> 
+</dtml-if>
