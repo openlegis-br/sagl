@@ -586,6 +586,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                           arquivo = cStringIO.StringIO(str(arq.data))
                           texto_emenda = PdfReader(arquivo, decompress=False).pages
                           writer.addpages(texto_emenda)
+                   for relat in self.zsql.relatoria_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
+                       relatoria = relat.cod_relatoria
+                       if hasattr(self.sapl_documentos.parecer_comissao, str(relatoria) + '_parecer.pdf'):
+                          arq = getattr(self.sapl_documentos.parecer_comissao, str(relatoria) + '_parecer.pdf')
+                          arquivo = cStringIO.StringIO(str(arq.data))
+                          texto_parecer = PdfReader(arquivo, decompress=False).pages
+                          writer.addpages(texto_parecer)
           output_file_pdf = cStringIO.StringIO()
           writer.write(output_file_pdf)
           output_file_pdf.seek(0)
@@ -1766,6 +1773,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Italic', '/usr/share/fonts/truetype/msttcorefonts/Arial_Italic.ttf'))
+        pdfmetrics.registerFont(TTFont('Times_New_Roman', '/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf'))
+        pdfmetrics.registerFont(TTFont('Times_New_Roman_Bold', '/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman_Bold.ttf'))
+        pdfmetrics.registerFont(TTFont('Times_New_Roman_Italic', '/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman_Italic.ttf'))
         arq = getattr(self.sapl_documentos.proposicao, nom_pdf_proposicao)
         arquivo = cStringIO.StringIO(str(arq.data))
         existing_pdf = PdfFileReader(arquivo, strict=False)
