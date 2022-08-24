@@ -1515,7 +1515,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             elif hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
-               dic_anexo["arquivo"] = getattr(selg.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf')
+               dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf')
                anexos.append(dic_anexo)
         anexos.sort(key=lambda dic: dic['data'])
         for dic in anexos:
