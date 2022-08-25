@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-import cStringIO
+from io import BytesIO
 from DateTime import DateTime
 from PyPDF4 import PdfFileWriter, PdfFileReader, PdfFileMerger
 from pdfrw import PdfReader, PdfWriter, PageMerge, IndirectPdfDict
@@ -92,7 +92,7 @@ def processo_adm_gerar_pdf(context):
     anexos.sort(key=lambda dic: dic['data'])
     anexos = [(i + 1, j) for i, j in enumerate(anexos)]
     for i, dic in anexos:
-        arquivo_doc = cStringIO.StringIO(str(dic['arquivo'].data))
+        arquivo_doc = BytesIO(str(dic['arquivo'].data))
         texto_anexo = PdfFileReader(arquivo_doc)
         nom_pdf = str(i) + '.pdf'
         f = open(os.path.join(dirpath) + '/' + nom_pdf, 'wb').write(str(dic['arquivo'].data))
@@ -114,6 +114,45 @@ def processo_adm_gerar_pdf(context):
     merger.close()
 
     download = open('/tmp/' + nom_pdf_amigavel, 'rb').read()
+
+    arquivo_doc = BytesIO(download)
+
+    existing_pdf = PdfFileReader(arquivo_doc, strict=False)
+    numPages = existing_pdf.getNumPages()
+    # cria novo PDF
+    packet = BytesIO()
+    can = canvas.Canvas(packet)
+    for page_num, i in enumerate(range(numPages), start=1):
+        page = existing_pdf.getPage(i)
+        pwidth = getPageSizeW(page)
+        pheight = getPageSizeH(page)
+        can.setPageSize((pwidth, pheight))
+        can.setFillColorRGB(0,0,0)
+        # Numero de pagina
+        num_pagina = "fls. %s/%s" % (page_num, numPages)
+        can.saveState()
+        can.setFont('Arial', 9)
+        can.drawCentredString(pwidth-45, pheight-60, id_processo)
+        can.setFont('Arial_Bold', 9)
+        can.drawCentredString(pwidth-45, pheight-72, num_pagina)
+        can.restoreState()
+        can.showPage()
+    can.save()
+    packet.seek(0)
+    new_pdf = PdfFileReader(packet)
+
+    output = PdfFileWriter()
+    for page in range(existing_pdf.getNumPages()):
+        pdf_page = existing_pdf.getPage(page)
+        # numeração de páginas
+        for wm in range(new_pdf.getNumPages()):
+            watermark_page = new_pdf.getPage(wm)
+            if page == wm:
+               pdf_page.mergePage(watermark_page)
+        output.addPage(pdf_page)
+    outputStream = BytesIO()
+    output.write(outputStream)
+
     context.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
     context.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
 
@@ -122,5 +161,5 @@ def processo_adm_gerar_pdf(context):
        file = '/tmp/'+nom_pdf_amigavel
        os.unlink(file)
 
-    return download
+    return outputStream.getvalue()
 
