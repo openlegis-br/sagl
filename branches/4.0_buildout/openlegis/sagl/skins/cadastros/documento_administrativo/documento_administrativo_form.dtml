@@ -183,7 +183,6 @@ $(document).ready(() => {
         <a class="dropdown-item" href="<dtml-var portal_url>/modelo_proposicao/capa_processo_adm?cod_documento=<dtml-var cod_documento>" target="_blank"><i class="far fa-file-pdf"></i> Capa de Processo</a>
         <a class="dropdown-item block" href="<dtml-var portal_url>/pysc/proc_adm_integral?cod_documento=<dtml-var cod_documento>" target="_blank"><i class="far fa-file-pdf"></i> Processo Integral</a>
         <a class="dropdown-item block" href="<dtml-var portal_url>/modelo_proposicao/processo_adm_eletronico?cod_documento=<dtml-var cod_documento>" target="_blank"><i class="far fa-file-pdf"></i> Processo para Impressão</a>
-
   </div>
  </div>
    </dtml-if>
@@ -425,10 +424,17 @@ $(document).ready(() => {
       <label class="d-block">PDF Texto Original</label>
       <dtml-if expr="_.has_key('cod_documento')">
         <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_texto_integral.pdf')">
+        <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento, tipo_doc='documento',cod_usuario=None)">
+          <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+        </dtml-in>
         <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
           <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">
              <a class="btn btn-secondary" target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
-               <i class="fa fa-fw fa-file-pdf"></i>Visualizar
+               <dtml-if expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados, cod_assinatura_doc+'.pdf')">
+                 <i class="fa fa-certificate"></i> Visualizar
+               <dtml-else>
+                 <i class="fa fa-fw fa-file-pdf"></i> Visualizar
+               </dtml-if>
              </a>
              <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_documento>&tipo_doc=documento&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>

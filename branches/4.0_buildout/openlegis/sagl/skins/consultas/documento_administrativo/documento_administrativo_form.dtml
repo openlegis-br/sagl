@@ -58,11 +58,18 @@ $(function () {
        </p>
       </div>
       <div class="col-12 col-lg-4 text-left text-lg-right">
+        <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento, tipo_doc='documento',cod_usuario=None)">
+          <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+        </dtml-in>
         <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_texto_integral.pdf')">
         <dtml-if expr="_.hasattr(sapl_documentos.administrativo,id_documento)">
           <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">        
              <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var documento>">
-                <i class="fa fa-file-pdf"></i> Texto Integral
+               <dtml-if expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados, cod_assinatura_doc+'.pdf')">
+                 <i class="fa fa-certificate"></i> Texto Integral
+               <dtml-else>
+                 <i class="fa fa-fw fa-file-pdf"></i> Texto Integral
+               </dtml-if>
              </a>
           </dtml-let>
         </dtml-if>
