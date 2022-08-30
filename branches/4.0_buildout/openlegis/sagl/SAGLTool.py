@@ -2503,6 +2503,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arq=storage_path[nom_pdf_documento]
            arq.manage_edit(title=nom_pdf_documento,filedata=outputStream.getvalue(),content_type='application/pdf')
 
+        if tipo_doc == 'parecer_comissao':
+           for relat in self.zsql.relatoria_obter_zsql(cod_relatoria=codigo):
+               nom_arquivo_pdf = "%s"%relat.cod_relatoria+'_parecer.pdf'
+               if relat.tip_fim_relatoria == '6' and hasattr(self.sapl_documentos.parecer_comissao, nom_arquivo_pdf):
+                  pdf = getattr(self.sapl_documentos.parecer_comissao, nom_arquivo_pdf)
+                  pdf.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
+
         return 'ok'
 
 
