@@ -38,6 +38,7 @@ import cStringIO
 import StringIO
 from appy.pod.renderer import Renderer
 from PyPDF4 import PdfFileWriter, PdfFileReader, PdfFileMerger
+#from PyPDF2 import PdfWriter as PdfFileWriter, PdfReader as PdfFileReader, PdfMerger as PdfFileMerger
 from pdfrw import PdfReader, PdfWriter, PageMerge
 from pdfrw.toreportlab import makerl
 from pdfrw.buildxobj import pagexobj
