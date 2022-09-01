@@ -422,9 +422,13 @@ $(document).ready(() => {
           <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento)">
             <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento).absolute_url">
                <a class="btn btn-secondary" target="_blank" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1">
-                  <i class="fa fa-fw fa-file-pdf"></i>Visualizar
-               </a>
-               <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/norma_juridica/texto_norma_excluir_proc?cod_norma=<dtml-var cod_norma>" data-confirm="Deseja realmente excluir o arquivo PDF do Texto Original?"><i class="fas fa-trash"></i> Excluir</a>             
+                 <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_norma, tipo_doc='norma',ind_assinado=1, cod_usuario=None)">
+                   <i class="fa fa-certificate"></i>
+                 <dtml-else>
+                   <i class="fa fa-fw fa-file-pdf"></i>
+                 </dtml-if>
+		 Visualizar	    
+               </a>        
                <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
                  <dtml-in expr="zsql.peticao_obter_zsql(cod_norma=cod_norma, ind_excluido=0)">
                     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_peticao>&tipo_doc=peticao&prop_recebida=1&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
@@ -432,6 +436,7 @@ $(document).ready(() => {
                     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_norma>&tipo_doc=norma&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
                  </dtml-in>
                </dtml-if>
+               <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/norma_juridica/texto_norma_excluir_proc?cod_norma=<dtml-var cod_norma>" data-confirm="Deseja realmente excluir o arquivo PDF do Texto Original?"><i class="fas fa-trash"></i> Excluir</a>  
             </dtml-let>
           <dtml-else>
              <div class="input-group">
