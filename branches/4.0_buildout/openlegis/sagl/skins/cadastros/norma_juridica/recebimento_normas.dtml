@@ -21,7 +21,7 @@ $(function () {
       </div>
  </div>
 
-<dtml-in expr="zsql.peticao_obter_zsql(ind_norma=1, ind_enviado='1', ind_recebido='0', ind_excluido=0)">
+<dtml-in expr="recebimento_normas_pysc()">
    <dtml-if sequence-start>
             <table class="table display" id="enviadas">    
              <thead class="table-secondary">
@@ -34,43 +34,24 @@ $(function () {
              </thead>
    </dtml-if sequence-start>
              <tr>
-                <td>
-                 <dtml-if expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=cod_peticao, ind_assinado=1)">
-                    <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=cod_peticao, ind_assinado=1)">
-                       <dtml-if expr="_.hasattr(sapl_documentos.documentos_assinados,str(cod_assinatura_doc)+'.pdf')">
-                          <dtml-let filename="_.getattr(sapl_documentos.documentos_assinados,str(cod_assinatura_doc)+'.pdf').absolute_url">
-                            <a class="" href="<dtml-var filename>" target="_blank">
-                               <dtml-var des_tipo_peticionamento> nº <dtml-var num_norma>/<dtml-var ano_norma>
-                            </a>
-                          </dtml-let>
-                       </dtml-if>
-                    </dtml-in>
-                 <dtml-else>
-                   <dtml-if expr="_.hasattr(sapl_documentos.peticao,str(cod_peticao)+'.pdf')">
-                     <dtml-let filename="_.getattr(sapl_documentos.peticao,str(cod_peticao)+'.pdf').absolute_url">
-                       <a class="" href="<dtml-var filename>" target="_blank">
-                          <dtml-var des_tipo_peticionamento> nº <dtml-var num_norma>/<dtml-var ano_norma>
-                       </a>
-                     </dtml-let>
-                   </dtml-if>
-                 </dtml-if>
+                <td> 
+                   <a class="" href="<dtml-var expr="_['sequence-item']['link']">" target="_blank">
+                      <dtml-var expr="_['sequence-item']['titulo']">
+                   </a>
                 </td>
                 <td>
-                  <dtml-var txt_descricao>
+                  <dtml-var expr="_['sequence-item']['descricao']">
                 </td>
                 <td>
-                  Em <dtml-var dat_envio>, por 
-                  <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario)">
-                      <dtml-var nom_completo>
-                  </dtml-in>
+                  Em <dtml-var expr="_['sequence-item']['data']">, por <dtml-var expr="_['sequence-item']['nom_usuario']">
                 </td>
                 <td>
-                  <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/cadastros/norma_juridica/incorporar_norma?cod_peticao=<dtml-var cod_peticao>" data-confirm="Confirma a incorporação da norma?"><i class="fas fa-copy"></i> Incorporar</a>
+                  <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/cadastros/norma_juridica/incorporar_norma?cod_peticao=<dtml-var expr="_['sequence-item']['cod_peticao']">" data-confirm="Confirma a incorporação da norma?"><i class="fas fa-copy"></i> Incorporar</a>
 
                   <a type="button" class="btn btn-sm btn-link text-danger" data-toggle="popover" title="Motivo da Devolução"><i class="fas fa-times"></i> Devolver</a>
                   <div id="PopoverContent" class="d-none">
                     <form id="myform" class="form-inline" role="form" method="post" action="devolver_norma_proc" onSubmit="return confirm('Confirma a devolução da norma?');">
-                      <input type="hidden" name="cod_peticao" value="<dtml-var cod_peticao missing>" />
+                      <input type="hidden" name="cod_peticao" value="<dtml-var expr="_['sequence-item']['cod_peticao']">" />
                       <div class="input-group">
                         <textarea class="form-control" name="txt_observacao" rows="1" required></textarea>
                         <div class="input-group-append" id="button-addon1">
@@ -87,6 +68,5 @@ $(function () {
 <dtml-else>
     <p>Não há normas pendentes de recebimento.</p>
 </dtml-in>
-
 
 <dtml-var standard_html_footer>
