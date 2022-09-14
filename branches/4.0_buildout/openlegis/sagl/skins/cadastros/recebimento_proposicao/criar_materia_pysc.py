@@ -24,6 +24,7 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
     ano_materia = DateTime().strftime("%Y")
     cod_mat = proposicao.cod_mat_ou_doc
     dat_apresentacao = DateTime().strftime("%Y-%m-%d")
+    dat_envio = proposicao.dat_envio
     txt_ementa = proposicao.txt_descricao.encode('utf-8')
     txt_observacao = proposicao.txt_observacao
     cod_autor = proposicao.cod_autor
@@ -112,8 +113,8 @@ def tramitar_materia(cod_materia, cod_proposicao, hdn_num_protocolo):
         else:
            cod_usuario_corrente = 0
            
-    hr_tramitacao = DateTime().strftime('%d/%m/%Y às %Hh%M')
-    txt_tramitacao = '<p>Matéria incorporada em ' + hr_tramitacao + ' - protocolo nº ' + str(hdn_num_protocolo) + '/' + DateTime().strftime("%Y") +' (enviada por meio eletrônico)</p>'    
+    hr_tramitacao = DateTime().strftime('%d/%m/%Y %Hh%M')
+    txt_tramitacao = '<p>Proposição enviada em' + dat_envio + '. Matéria incorporada em ' + hr_tramitacao + ', sob protocolo nº ' + str(hdn_num_protocolo) + '/' + DateTime().strftime("%Y") +'</p>'
 #    hdn_url = context.portal_url() + '/cadastros/materia/materia_mostrar_proc?cod_materia=' + str(cod_materia)+ '&modal=1'   
     hdn_url = context.portal_url() + '/cadastros/recebimento_proposicao/recebimento_proposicao_index_html#incorporada'
     
