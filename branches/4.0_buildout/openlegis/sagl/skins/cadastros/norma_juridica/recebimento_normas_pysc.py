@@ -14,10 +14,10 @@ for peticao in context.zsql.peticao_obter_zsql(ind_norma=1, ind_enviado='1', ind
     dic_peticao = {}
     dic_peticao['cod_peticao'] = peticao.cod_peticao
     dic_peticao['titulo'] = peticao.des_tipo_peticionamento + ' nº ' + str(peticao.num_norma) + '/' + str(peticao.ano_norma)
-    dic_peticao['descricao'] = peticao.txt_descricao
+    dic_peticao['descricao'] = peticao.txt_descricao.encode('utf-8')
     dic_peticao['data'] = peticao.dat_envio
     for usuario in context.zsql.usuario_obter_zsql(cod_usuario=peticao.cod_usuario):
-        dic_peticao['nom_usuario'] = usuario.nom_completo
+        dic_peticao['nom_usuario'] = usuario.nom_completo.encode('utf-8')
     storage_path = context.sapl_documentos.peticao
     nom_arquivo = str(peticao.cod_peticao)+'.pdf'
     for codigo in context.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=int(peticao.cod_peticao), ind_assinado='1'):
