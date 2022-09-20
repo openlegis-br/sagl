@@ -2658,36 +2658,35 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         output = PdfFileWriter()
         # adiciona carimbo aos documentos
         for materia in self.zsql.materia_obter_zsql(cod_materia=cod_materia):
-            if materia.des_tipo_materia == 'Requerimento':
-               storage_path = self.sapl_documentos.materia
-               nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
-               if hasattr(storage_path, nom_pdf_saida):
-                  arq = getattr(storage_path, nom_pdf_saida)
-                  arquivo = cStringIO.StringIO(str(arq.data))
+            storage_path = self.sapl_documentos.materia
+            nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
+            if hasattr(storage_path, nom_pdf_saida):
+               arq = getattr(storage_path, nom_pdf_saida)
+               arquivo = cStringIO.StringIO(str(arq.data))
+               existing_pdf = PdfFileReader(arquivo, strict=False)
+               try:
                   existing_pdf = PdfFileReader(arquivo, strict=False)
-                  try:
-                     existing_pdf = PdfFileReader(arquivo, strict=False)
-                     numPages = existing_pdf.getNumPages()
-                     # Mescla canvas
-                     for page in range(existing_pdf.getNumPages()):
-                         page_pdf = existing_pdf.getPage(page)
-                         # carimbo na primeira pagina
-                         if page == 0:
-                            page_pdf.mergePage(new_pdf.getPage(0))
-                         output.addPage(page_pdf)
-                     outputStream = cStringIO.StringIO()
-                     output.write(outputStream)
-                     if hasattr(storage_path, nom_pdf_saida):
-                        storage_path.manage_delObjects(nom_pdf_saida)
-                        storage_path.manage_addFile(nom_pdf_saida)
-                        arq=storage_path[nom_pdf_saida]
-                        arq.manage_edit(title=nom_pdf_saida, filedata=outputStream.getvalue(), content_type='application/pdf')
-                     else:
-                        storage_path.manage_addFile(nom_pdf_saida)
-                        arq=storage_path[nom_pdf_saida]
-                        arq.manage_edit(title=nom_pdf_saida, filedata=outputStream.getvalue(), content_type='application/pdf')
-                  except:
-                     pass
+                  numPages = existing_pdf.getNumPages()
+                  # Mescla canvas
+                  for page in range(existing_pdf.getNumPages()):
+                      page_pdf = existing_pdf.getPage(page)
+                      # carimbo na primeira pagina
+                      if page == 0:
+                         page_pdf.mergePage(new_pdf.getPage(0))
+                      output.addPage(page_pdf)
+                  outputStream = cStringIO.StringIO()
+                  output.write(outputStream)
+                  if hasattr(storage_path, nom_pdf_saida):
+                     storage_path.manage_delObjects(nom_pdf_saida)
+                     storage_path.manage_addFile(nom_pdf_saida)
+                     arq=storage_path[nom_pdf_saida]
+                     arq.manage_edit(title=nom_pdf_saida, filedata=outputStream.getvalue(), content_type='application/pdf')
+                  else:
+                     storage_path.manage_addFile(nom_pdf_saida)
+                     arq=storage_path[nom_pdf_saida]
+                     arq.manage_edit(title=nom_pdf_saida, filedata=outputStream.getvalue(), content_type='application/pdf')
+               except:
+                  pass
 
     def _getValidEmailAddress(self, member):
         email = None
