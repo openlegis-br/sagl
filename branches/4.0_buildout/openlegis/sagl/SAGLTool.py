@@ -909,7 +909,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.emenda.manage_addFile(id=nom_arquivo_pdf,file=data)
 
-    def capa_processo_gerar_odt(self, inf_basicas_dic, num_protocolo, dat_protocolo, hor_protocolo, dat_vencimento, num_proposicao, des_tipo_materia, nom_autor, txt_ementa, regime_tramitacao, nom_arquivo):
+    def capa_processo_gerar_odt(self, capa_dic, nom_arquivo):
         url = self.sapl_documentos.modelo.materia.absolute_url() + "/capa_processo.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
