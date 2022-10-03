@@ -14,7 +14,7 @@ context.REQUEST.RESPONSE.setHeader("Access-Control-Allow-Origin", "*")
 tipo_materia = None
 if svalue != '0' and svalue != '':
    for tipo in context.zsql.tipo_peticionamento_obter_zsql(tip_peticionamento=int(svalue)):
-       prefixo = str(tipo.tip_peticionamento) + '-'      
+       prefixo = str(tipo.tip_peticionamento)
        tipo_materia = tipo.des_tipo_peticionamento
 
 modelos=[]      
@@ -38,9 +38,10 @@ if svalue != '0' and svalue != '':
           dic['titulo_arquivo'] = str(modelo.title)
        else:
           dic['titulo_arquivo'] = modelo.getId()              
-       dic['id_arquivo'] = modelo.getId() 
+       dic['id_arquivo'] = modelo.getId()
+       prefixo_arquivo = string.split(dic['id_arquivo'],'-')[0]
        dic['path_arquivo'] = modelo.virtual_url_path() 
-       if prefixo in modelo.getId():
+       if prefixo == prefixo_arquivo:
           modelos.append(dic)
 
    modelos.sort(key=lambda dic: dic['titulo_arquivo'])
