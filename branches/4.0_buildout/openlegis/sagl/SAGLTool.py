@@ -909,19 +909,30 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.emenda.manage_addFile(id=nom_arquivo_pdf,file=data)
 
-    def capa_processo_gerar_odt(self, capa_dic, nom_arquivo):
+    def capa_processo_gerar_odt(self, capa_dic):
         url = self.sapl_documentos.modelo.materia.absolute_url() + "/capa_processo.odt"
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         brasao_file = self.get_brasao()
         exec 'brasao = brasao_file'
-        output_file_odt = "%s" % nom_arquivo
+        output_file_odt = "%s" % capa_dic['nom_arquivo_odt']
+        output_file_pdf = "%s" % capa_dic['nom_arquivo_pdf']
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
         data = open(output_file_odt, "rb").read()
+        odtFile = cStringIO.StringIO(data)
+        renderer = Renderer(odtFile,locals(),output_file_pdf,pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_pdf, "rb").read()
+        self.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
+        self.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %output_file_pdf)
         for file in [output_file_odt]:
             os.unlink(file)
-        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
-        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
+        for file in [output_file_pdf]:
+            os.unlink(file)
+        return data
+
+    def capa_processo_integral(self, cod_materia):
+        data = self.modelo_proposicao.capa_processo(cod_materia=cod_materia)
         return data
 
     def capa_processo_adm_gerar_odt(self, inf_basicas_dic, num_protocolo, dat_protocolo, hor_protocolo, dat_vencimento, num_documento, des_tipo_documento, txt_interessado, txt_assunto, nom_arquivo):
@@ -1587,6 +1598,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            id_processo = materia.sgl_tipo_materia+' '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
+        capa = cStringIO.StringIO(self.capa_processo_integral(cod_materia=cod_materia))
+        texto_capa = PdfFileReader(capa)
+        merger.append(texto_capa)
         if hasattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf'):
            arq = getattr(self.sapl_documentos.materia, str(cod_materia) + '_texto_integral.pdf')
            arquivo = cStringIO.StringIO(str(arq.data))

@@ -237,7 +237,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
          unidade_atual = unidade.nom_unidade_join
      capa_dic['situacao'] = 'Último Local: ' + tramitacao.dat_tramitacao + ' - ' + unidade_atual + ' - ' + tramitacao.des_status
 
- nom_arquivo = 'capa-'+materia.sgl_tipo_materia.encode('utf-8')+'-'+str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)+'.odt'
- nom_arquivo = nom_arquivo
+ capa_dic['nom_arquivo_odt'] = 'capa-'+materia.sgl_tipo_materia.encode('utf-8')+'-'+str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)+'.odt'
+ capa_dic['nom_arquivo_pdf'] = 'capa-'+materia.sgl_tipo_materia.encode('utf-8')+'-'+str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)+'.pdf'
 
-return st.capa_processo_gerar_odt(capa_dic, nom_arquivo)
+return st.capa_processo_gerar_odt(capa_dic)
