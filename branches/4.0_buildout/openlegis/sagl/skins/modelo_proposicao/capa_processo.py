@@ -227,7 +227,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  capa_dic['norma'] = None
  for norma in context.zsql.materia_buscar_norma_juridica_zsql(cod_materia=materia.cod_materia):
       dat_publicacao = ''
-      if norma.dat_publicacao != '':
+      if norma.dat_publicacao != '' and norma.dat_publicacao != None:
          dat_publicacao = '. Publicação no Diário Oficial: ' + norma.dat_publicacao
       capa_dic['norma'] = norma.des_norma + ' nº ' + str(norma.num_norma) + ' de ' + str(norma.dat_norma) + dat_publicacao
  capa_dic['observacoes'] = materia.txt_observacao

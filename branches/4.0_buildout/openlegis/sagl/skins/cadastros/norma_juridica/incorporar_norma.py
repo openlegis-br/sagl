@@ -18,7 +18,7 @@ for peticao in context.zsql.peticao_obter_zsql(cod_peticao=cod_peticao, ind_norm
     num_norma = peticao.num_norma
     ano_norma = peticao.ano_norma
     dat_norma = peticao.data_norma
-    txt_ementa = peticao.txt_descricao
+    txt_ementa = peticao.txt_descricao.encode('utf-8')
     if peticao.cod_materia != None:
        cod_materia = peticao.cod_materia
     else:
