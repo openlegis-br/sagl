@@ -81,7 +81,8 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  for expediente in context.zsql.expediente_materia_obter_zsql(cod_materia=materia.cod_materia):
      for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=expediente.cod_sessao_plen):
          capa_dic['dat_leitura'] = sessao.dat_inicio_sessao
- capa_dic['comissao'] = []
+ capa_dic['comissao'] = ''
+ lst_comissao = []
  for despacho in context.zsql.despacho_inicial_obter_zsql(cod_materia=materia.cod_materia, ind_excluido=0):
      dic = {}
      dic['nom_comissao'] = despacho.nom_comissao_index
@@ -91,7 +92,10 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
             dic['resultado'] = '(Favorável)'
          if relatoria.tip_conclusao == 'C':
             dic['resultado'] = '(Contrário)'
-     capa_dic['comissao'].append(dic)
+     lst_comissao.append(dic)
+ if len(lst_comissao) > 0:
+    capa_dic['comissao'] = lst_comissao
+
  lst_acessorios = []
  for substitutivo in context.zsql.substitutivo_obter_zsql(cod_materia=materia.cod_materia,ind_excluido=0):
      dic_substitutivo = {}
@@ -170,12 +174,12 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
 
  capa_dic['votacao'] = ', '.join(['%s' % (value) for (value) in lst_votacao])
 
- capa_dic['autografo'] = None
+ capa_dic['autografo'] = ''
  for documento in context.zsql.documento_acessorio_obter_zsql(cod_materia=materia.cod_materia, ind_excluido=0):
      if documento.des_tipo_documento == 'Autógrafo':
         capa_dic['autografo'] = documento.nom_documento
 
- capa_dic['veto'] = None
+ capa_dic['veto'] = ''
  for anexada in context.zsql.anexada_obter_zsql(cod_materia_anexada=materia.cod_materia, ind_excluido=0):
      for veto in context.zsql.materia_obter_zsql(cod_materia=anexada.cod_materia_principal, ind_excluido = 0):
          if veto.des_tipo_materia == 'Veto':
@@ -237,4 +241,3 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  nom_arquivo = nom_arquivo
 
 return st.capa_processo_gerar_odt(capa_dic, nom_arquivo)
-
