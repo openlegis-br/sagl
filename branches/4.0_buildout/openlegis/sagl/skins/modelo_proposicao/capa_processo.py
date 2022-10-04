@@ -152,9 +152,8 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
          data_sessao = sessao.dat_inicio_sessao
          for tipo_sessao in context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao):
              tipo_sessao = tipo_sessao.nom_sessao
-     for resultado in context.zsql.votacao_expediente_materia_obter_zsql(cod_materia=materia.cod_materia, ind_excluido=0):
-         for tipo_resultado in context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=resultado.tip_resultado_votacao, ind_excluido=0):
-             resultado = tipo_resultado.nom_resultado
+     for tipo_resultado in context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=votacao.tip_resultado_votacao, ind_excluido=0):
+         resultado = tipo_resultado.nom_resultado
      id_resultado = resultado + ' no Expediente da ' + str(num_sessao) + 'ª Sessão ' + tipo_sessao + ' de ' + data_sessao
      lst_votacao.append(id_resultado)
 
@@ -164,11 +163,10 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
          data_sessao = sessao.dat_inicio_sessao
          for tipo_sessao in context.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=sessao.tip_sessao):
              tipo_sessao = tipo_sessao.nom_sessao
-     for resultado in context.zsql.votacao_ordem_dia_obter_zsql(cod_materia=materia.cod_materia, ind_excluido=0):
-         for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=resultado.tip_turno):
-             des_turno = turno.des_turno
-         for tipo_resultado in context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=resultado.tip_resultado_votacao, ind_excluido=0):
-             resultado = tipo_resultado.nom_resultado
+     for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=votacao.tip_turno):
+         des_turno = turno.des_turno
+     for tipo_resultado in context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=votacao.tip_resultado_votacao, ind_excluido=0):
+         resultado = tipo_resultado.nom_resultado
      id_resultado = resultado + ' em ' + des_turno + ' na Ordem do Dia da ' + str(num_sessao) + 'ª Sessão ' + tipo_sessao + ' de ' + data_sessao
      lst_votacao.append(id_resultado)
 
