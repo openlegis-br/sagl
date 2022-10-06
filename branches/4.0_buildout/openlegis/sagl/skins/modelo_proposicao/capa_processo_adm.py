@@ -75,7 +75,7 @@ for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=
  lst_vinculados = []
  for vinculado in context.zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculado=documento.cod_documento,  ind_excluido=0):
      dic_vinculo = {}
-     dic_vinculado['id_documento'] = vinculado.sgl_tipo_documento_vinculante + ' nº ' + str(vinculado.num_documento_vinculante) + '/' + str(vinculado.ano_documento_vinculante)
+     dic_vinculo['id_documento'] = vinculado.sgl_tipo_documento_vinculante + ' nº ' + str(vinculado.num_documento_vinculante) + '/' + str(vinculado.ano_documento_vinculante)
      lst_vinculados.append(dic_vinculo)
  for vinculante in context.zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante=documento.cod_documento,  ind_excluido=0):
      dic_vinculo = {}
