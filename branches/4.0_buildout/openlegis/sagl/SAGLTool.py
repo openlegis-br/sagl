@@ -2031,6 +2031,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            arq.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
 
         if peticao.ind_norma == "1":
+           arq=storage_path[nom_pdf_saida]
+           arq.manage_permission('View', roles=['Anonymoys'], acquire=1)
            self.sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(cod_norma=peticao.cod_norma)
 
     def restpki_client(self):
