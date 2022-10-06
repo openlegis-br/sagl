@@ -34,7 +34,7 @@ for peticao in context.zsql.peticao_obter_zsql(cod_peticao=cod_peticao, ind_norm
     for validacao in context.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=cod_peticao, ind_assinado=1):
         nom_pdf_assinado = str(validacao.cod_assinatura_doc) + ".pdf"
 
-    context.zsql.norma_juridica_incluir_zsql(tip_norma=tip_norma, num_norma=num_norma, ano_norma=ano_norma, tip_esfera_federacao='M', cod_materia=cod_materia, dat_norma=dat_norma, txt_ementa=txt_ementa, ind_complemento=ind_complemento, cod_situacao=cod_situacao)
+    context.zsql.norma_juridica_incluir_zsql(tip_norma=tip_norma, num_norma=num_norma, ano_norma=ano_norma, tip_esfera_federacao='M', cod_materia=cod_materia, dat_norma=dat_norma, txt_ementa=txt_ementa, ind_complemento=ind_complemento, cod_situacao=cod_situacao, ind_publico=1)
 
     for codigo in context.zsql.norma_juridica_incluida_codigo_obter_zsql():
         cod_norma = codigo.cod_norma
