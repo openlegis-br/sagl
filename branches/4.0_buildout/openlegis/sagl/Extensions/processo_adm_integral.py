@@ -1,58 +1,39 @@
 # -*- coding: utf-8 -*-
 import os
-from io import BytesIO
+import cStringIO
 from DateTime import DateTime
 from PyPDF4 import PdfFileWriter, PdfFileReader, PdfFileMerger
 from pdfrw import PdfReader, PdfWriter, PageMerge, IndirectPdfDict
-from pdfrw.toreportlab import makerl
-from pdfrw.buildxobj import pagexobj
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import mm
-from reportlab.graphics.barcode import code128, qr
-from reportlab.graphics.shapes import Drawing
+
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.graphics.barcode import createBarcodeDrawing
-from reportlab.graphics import renderPDF
-from reportlab.graphics.charts.textlabels import Label
-from reportlab.lib.utils import ImageReader
-import shutil
 
-# obter altura da pagina
-def getPageSizeH(p):
-    h = int(p.mediaBox.getHeight())
-    return h
-
-
-# obter largura da pagina
-def getPageSizeW(p):
-    w = int(p.mediaBox.getWidth())
-    return w
 
 def processo_adm_gerar_pdf(context):
     cod_documento = context.REQUEST['cod_documento']
-    processo_integral =  str(cod_documento) + '_processo_integral.pdf'
+
     writer = PdfFileWriter()
     merger = PdfFileMerger(strict=False)
     for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
        nom_pdf_amigavel = documento.sgl_tipo_documento+'-'+str(documento.num_documento)+'-'+str(documento.ano_documento)+'.pdf'
        id_processo = documento.sgl_tipo_documento+' '+str(documento.num_documento)+'/'+str(documento.ano_documento)
-       dat_documento = documento.dat_documento
     nom_pdf_amigavel = nom_pdf_amigavel.decode('latin-1').encode("utf-8")
     pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
     pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
-    anexos = []
+    capa = cStringIO.StringIO(str(context.modelo_proposicao.capa_processo_adm(cod_documento=cod_documento)))
+    texto_capa = capa
+    merger.append(texto_capa)
     if hasattr(context.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral_signed.pdf'):
-       dic_anexo = {}
-       dic_anexo["data"] = DateTime(dat_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
-       dic_anexo["arquivo"] = getattr(context.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral_signed.pdf')
-       anexos.append(dic_anexo)
+       arq = getattr(context.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral_signed.pdf')
+       arquivo = cStringIO.StringIO(str(arq.data))
+       texto_documento = PdfFileReader(arquivo)
+       merger.append(texto_documento)
     elif hasattr(context.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral.pdf'):
-       dic_anexo = {}
-       dic_anexo["data"] = DateTime(dat_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
-       dic_anexo["arquivo"] = getattr(context.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral.pdf')
-       anexos.append(dic_anexo)
+       arq = getattr(context.sapl_documentos.administrativo, str(cod_documento) + '_texto_integral.pdf')
+       arquivo = cStringIO.StringIO(str(arq.data))
+       texto_documento = PdfFileReader(arquivo)
+       merger.append(texto_documento)
+    anexos = []
     for docvinculado in context.zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante=documento.cod_documento, ind_excluido=0):
        if hasattr(context.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral_signed.pdf'):
           dic_anexo = {}
@@ -87,13 +68,18 @@ def processo_adm_gerar_pdf(context):
            anexos.append(dic_anexo)
     anexos.sort(key=lambda dic: dic['data'])
     for dic in anexos:
-        arquivo_doc = BytesIO(str(dic['arquivo'].data))
+        arquivo_doc = cStringIO.StringIO(str(dic['arquivo'].data))
         texto_anexo = PdfFileReader(arquivo_doc)
         merger.append(texto_anexo)
-    output_file_pdf = BytesIO()
+    output_file_pdf = cStringIO.StringIO()
     merger.write(output_file_pdf)
     merger.close()
+    output_file_pdf.seek(0)
+    context.temp_folder.manage_addFile(nom_pdf_amigavel)
+    arq=context.temp_folder[nom_pdf_amigavel]
+    arq.manage_edit(title=nom_pdf_amigavel,filedata=output_file_pdf.getvalue(),content_type='application/pdf')
+    arq = getattr(context.temp_folder,nom_pdf_amigavel)
     context.REQUEST.RESPONSE.setHeader('Content-Type', 'application/pdf')
     context.REQUEST.RESPONSE.setHeader('Content-Disposition','inline; filename=%s' %nom_pdf_amigavel)
-    return output_file_pdf.getvalue()
-
+    context.temp_folder.manage_delObjects(nom_pdf_amigavel)
+    return arq
