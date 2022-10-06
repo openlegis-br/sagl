@@ -124,10 +124,13 @@ def tramitacao(tramitacao_dic):
     tmp+='<tr><td>Data do Despacho</td><td>' +str(tramitacao_dic['dat_tramitacao'])+ '</td></tr>\n'
     tmp+='<tr><td>Unidade de Origem</td><td>' +str(tramitacao_dic['unidade_origem'])+ '</td></tr>\n'
     tmp+='<tr><td>Unidade de Destino</td><td>' +str(tramitacao_dic['unidade_destino'])+ '</td></tr>\n'
+    nom_usuario_destino = str(tramitacao_dic['nom_usuario_destino'])
+    if nom_usuario_destino != None and nom_usuario_destino != "":
+       tmp+='<tr><td>Usuário de Destino</td><td>' +str(tramitacao_dic['nom_usuario_destino'])+ '</td></tr>\n'
     tmp+='<tr><td>Status</td><td>' +str(tramitacao_dic['des_status'])+ '</td></tr>\n'
     dat_fim_prazo = str(tramitacao_dic['dat_fim_prazo'])
     if dat_fim_prazo != None and dat_fim_prazo != "":
-      tmp+='<tr><td>Prazo</td><td>' +str(tramitacao_dic['dat_fim_prazo'])+ '</td></tr>\n'
+       tmp+='<tr><td>Prazo</td><td>' +str(tramitacao_dic['dat_fim_prazo'])+ '</td></tr>\n'
     tmp+='\t\t</blockTable>\n'
     tmp+='\t\t<para style="P2">\n'
     tmp+='\t\t\t<font color="white">-</font>\n'
@@ -199,3 +202,4 @@ def principal(imagem,dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url,sessao=''
     #return "tramitacao_mostrar_proc?cod_tramitacao="+str(cod_tramitacao)
 
 return principal(imagem, dic_rodape,inf_basicas_dic,tramitacao_dic,hdn_url,sessao)
+
