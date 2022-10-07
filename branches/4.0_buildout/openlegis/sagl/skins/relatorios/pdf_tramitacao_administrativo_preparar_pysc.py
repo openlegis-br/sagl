@@ -91,7 +91,7 @@ for tramitacao in context.zsql.tramitacao_administrativo_obter_zsql(cod_tramitac
     tramitacao_dic['unidade_destino'] = unid_destino.nom_unidade_join
 
   # usuario de destino
-  tramitacao_dic['nom_usuario_destino']
+  tramitacao_dic['nom_usuario_destino'] = ''
   if tramitacao.cod_usuario_dest != None:
     for usu_destino in context.zsql.usuario_obter_zsql(cod_usuario=tramitacao.cod_usuario_dest):
      tramitacao_dic['usuario_destino'] = usu_destino.col_username
