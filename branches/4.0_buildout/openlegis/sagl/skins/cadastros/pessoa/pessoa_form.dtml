@@ -130,6 +130,24 @@ $(document).ready(() => {
     bsCustomFileInput.init()
   })
 
+  $(document).ready(function(){
+    $("#txt_num_cep").change(function(){
+        var cep = $(this).val();
+        $.ajax({
+            url: 'cep_buscar_pysc',
+            type: 'post',
+            data: {numcep:cep},
+            dataType: 'json',
+            success:function(data){
+                 $('#txt_end_residencial').val(data['logradouro']);
+                 $('#txt_nom_bairro').val(data['bairro']);
+                 $('#txt_nom_cidade').val(data['cidade']);
+                 $('#txt_sgl_uf').val(data['estado']);
+            }
+        });
+    });
+});
+
 </script>
 
  <div class="row mb-2">
@@ -175,7 +193,7 @@ $(document).ready(() => {
   <input type="hidden" name="hdn_url" value="pessoa_mostrar_proc?cod_pessoa=<dtml-var cod_pessoa missing>" />
 
   <div class="form-row">
-    <div class="col-12 col-lg-6 mb-3">
+    <div class="col-12 col-lg-5 mb-3">
        <label for="txt_nom_pessoa" class="required">Nome do Visitante</label>
        <input class="form-control" type="text" id="txt_nom_pessoa" name="txt_nom_pessoa" maxlength="200" value="<dtml-var nom_pessoa missing>" required/>
     </div>
@@ -183,7 +201,7 @@ $(document).ready(() => {
        <label for="txt_doc_identidade" class="required">Documento de Identidade</label>
        <input class="form-control" type="text" id="txt_doc_identidade" name="txt_doc_identidade" maxlength="50" value="<dtml-var doc_identidade missing>" required/>
     </div>    
-    <div class="col-6 col-lg-3 mb-3">
+    <div class="col-6 col-lg-4 mb-3">
        <label for="rad_sex_pessoa" class="d-block required">Sexo</label>
        <dtml-in expr="[('Masculino', 'M'), ('Feminino', 'F'), ('Não declarado', 'N')]">
           <div class="form-check form-check-inline">
@@ -198,34 +216,36 @@ $(document).ready(() => {
   </div>
 
   <div class="form-row">
-    <div class="col-12 col-lg-6 mb-3">
-       <label for="txt_end_residencial" class="required">Endereço Residencial</label>
+    <div class="col-12 col-lg-2 mb-3">
+        <label for="txt_num_cep" class="required">CEP</label>
+        <input class="form-control cep" type="text" id="txt_num_cep" name="txt_num_cep" maxlength="15" value="<dtml-var num_cep missing>" />    
+    </div> 
+
+    <div class="col-12 col-lg-5 mb-3">
+       <label for="txt_end_residencial" class="required">Logradouro</label>
        <input class="form-control" type="text" id="txt_end_residencial" name="txt_end_residencial" maxlength="80" value="<dtml-var end_residencial missing>" />
     </div>
     <div class="col-6 col-lg-2 mb-3">
        <label for="txt_num_imovel" class="required">Número</label>
        <input class="form-control number" type="number" id="txt_num_imovel" name="txt_num_imovel" value="<dtml-var num_imovel missing>" />
-    </div>    
-    <div class="col-6 col-lg-4 mb-3">
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
        <label for="txa_txt_complemento">Complemento</label>
        <input class="form-control" type="text" id="txa_txt_complemento" name="txa_txt_complemento" maxlength="50" value="<dtml-var txt_complemento missing null>" />
     </div>
+   
   </div>
        
    <div class="form-row">
-    <div class="col-6 col-lg-4 mb-3">
+    <div class="col-12 col-lg-5 mb-3">
        <label for="txt_nom_bairro" class="required">Bairro</label>
        <input class="form-control" type="text" id="txt_nom_bairro" name="txt_nom_bairro" maxlength="80" value="<dtml-var nom_bairro missing>" />
-    </div>
-    <div class="col-6 col-lg-2 mb-3">
-        <label for="txt_num_cep" class="required">CEP</label>
-        <input class="form-control cep" type="text" id="txt_num_cep" name="txt_num_cep" maxlength="15" value="<dtml-var num_cep missing>" />    
-    </div>    
-    <div class="col-6 col-lg-4 mb-3">
+    </div> 
+    <div class="col-12 col-lg-5 mb-3">
         <label for="txt_nom_cidade" class="required">Cidade</label>
         <input class="form-control" type="text" id="txt_nom_cidade" name="txt_nom_cidade" maxlength="80" value="<dtml-var nom_cidade missing>" />
     </div>
-      <div class="col-6 col-lg-2 mb-3">
+      <div class="col-12 col-lg-2 mb-3">
         <label for="txt_sgl_uf" class="required">Estado</label>
         <input class="form-control" type="text" id="txt_sgl_uf" name="txt_sgl_uf" maxlength="2" value="<dtml-var sgl_uf missing null=SP>" />    
     </div>  

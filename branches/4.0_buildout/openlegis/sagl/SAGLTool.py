@@ -2795,4 +2795,20 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             raise ValueError(msg)
 
 
+    def cep_buscar(self, numcep):
+
+        url = 'https://brasilapi.com.br/api/cep/v2/%s'%numcep
+        resposta = requests.get(url)
+        dic_requisicao = resposta.json()
+        cepArray=[]
+        if 'errors' not in dic_requisicao:
+           cepDict = {}
+           cepDict['logradouro'] = dic_requisicao['street']
+           cepDict['bairro'] = dic_requisicao['neighborhood']
+           cepDict['cidade'] = dic_requisicao['city']
+           cepDict['estado'] = dic_requisicao['state']
+           cepArray.append(cepDict)
+           return json.dumps(cepDict)
+
+
 InitializeClass(SAGLTool)
