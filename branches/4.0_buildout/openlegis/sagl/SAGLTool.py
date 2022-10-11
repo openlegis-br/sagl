@@ -1630,7 +1630,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(relat.dat_destit_relator, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                for proposicao in self.zsql.proposicao_obter_zsql(cod_parecer=relat.cod_relatoria):
-                   dic_anexo["data"] = DateTime(proposicao.dat_recebimento,, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
+                   dic_anexo["data"] = DateTime(proposicao.dat_recebimento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf')
                anexos.append(dic_anexo)
         for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
