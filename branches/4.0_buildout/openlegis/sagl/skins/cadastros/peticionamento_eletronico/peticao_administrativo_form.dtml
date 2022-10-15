@@ -136,7 +136,7 @@ $(document).ready(function(){
                 for( var i = 0; i<len; i++){
                     var id = response[i]['id'];
                     var name = response[i]['name'];
-                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"' selected>"+name+"</option>");
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"'>"+name+"</option>");
                 }
             }
         });
@@ -170,7 +170,7 @@ $(document).ready(function(){
                 for( var i = 0; i<len; i++){
                     var id = response[i]['id'];
                     var name = response[i]['name'];
-                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"' selected>"+name+"</option>");
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"'>"+name+"</option>");
                 }
             }
         });       
@@ -217,11 +217,19 @@ $(document).ready(function(){
          <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
          <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
             <option value=''></option>
-            <dtml-if expr="_.has_key('cod_peticao') and cod_unid_tram_dest">
+            <dtml-if expr="_.has_key('cod_peticao') and cod_unid_tram_dest!=None and cod_unid_tram_dest!=''">
                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest,ind_adm=1)">
                    <option 
                      value="<dtml-var cod_unid_tramitacao>"
                      <dtml-if expr="_.has_key('cod_unid_tram_dest') and _.str(cod_unid_tram_dest)==_.str(cod_unid_tramitacao)">selected</dtml-if> >  
+                      <dtml-var nom_unidade_join>
+                   </option>
+               </dtml-in>
+            <dtml-elif expr="not _.has_key('cod_peticao')">
+               <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
+                   <option 
+                     value="<dtml-var cod_unid_tramitacao>"
+                     <dtml-if expr="_.has_key('cod_peticao') and  _.str(cod_unid_tram_dest)==_.str(cod_unid_tramitacao)">selected</dtml-if> >  
                       <dtml-var nom_unidade_join>
                    </option>
                </dtml-in>
