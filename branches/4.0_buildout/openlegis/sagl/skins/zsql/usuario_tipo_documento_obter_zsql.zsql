@@ -1,0 +1,24 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_usuario tip_documento ind_excluido=0
+max_rows : 1500
+max_cache : 100
+</dtml-comment>
+SELECT
+     REPLACE(usuario_tipo_documento.cod_usuario, 'L', '')   as cod_usuario,
+     REPLACE(usuario_tipo_documento.tip_documento, 'L', '') as tip_documento,
+     usuario.col_username,
+     usuario.nom_completo
+
+FROM 
+    usuario_tipo_documento
+    LEFT JOIN usuario ON usuario_tipo_documento.cod_usuario=usuario.cod_usuario and usuario.ind_excluido = 0
+
+<dtml-sqlgroup where>  
+  <dtml-sqltest cod_usuario        column="usuario_tipo_documento.cod_usuario"         op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest tip_documento      column="usuario_tipo_documento.tip_documento" op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest ind_excluido       column="usuario_tipo_documento.ind_excluido"        op="=" type="int"  optional>
+</dtml-sqlgroup>
+
+ORDER BY 
+  usuario.nom_completo
