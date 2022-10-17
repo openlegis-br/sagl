@@ -193,7 +193,6 @@ $(document).ready(() => {
   <li class="nav-item">
     <a class="nav-link active" id="index-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dados Básicos</a>
   </li>
- <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
   <li class="nav-item">
     <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="acessorios-tab" data-toggle="tab" href="#acessorios" role="tab" aria-controls="acessorios" aria-selected="false">Documentos Acessórios
            <dtml-if cod_documento>
@@ -216,7 +215,6 @@ $(document).ready(() => {
        </dtml-if>
     </a>
   </li>
-</dtml-if>
   <li class="nav-item">
     <a class="nav-link <dtml-unless cod_documento>disabled</dtml-unless>" id="materias-tab" data-toggle="tab" href="#materias" role="tab" aria-controls="materias" aria-selected="false">Matérias Vinculadas
        <dtml-if cod_documento>
@@ -266,12 +264,12 @@ $(document).ready(() => {
   <div class="form-row">
     <div class="col-12 col-lg-6 mb-3">
        <label for="lst_tip_documento" class="required">Tipo de Documento</label>
-       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
           <select class="custom-select" id="lst_tip_documento" name="lst_tip_documento" <dtml-unless cod_documento>onChange="numero_buscar(document.documento_administrativo_form)"</dtml-unless> required>
             <option>Selecione</option>
-            <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
-               <option
-                  <dtml-if tip_documento_sel>
+          <dtml-in expr="consultas.documento_administrativo.permissao_tipo()" mapping>
+             <dtml-if expr="ind_incluir == 1">
+             <option 
+                 <dtml-if tip_documento_sel>
                      <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_sel)">
                         selected
                      </dtml-if>     
@@ -280,34 +278,14 @@ $(document).ready(() => {
                      <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_novo)">
                         selected
                      </dtml-if>
-                  </dtml-if>                                                                        
-                  value="<dtml-var tip_documento>">
-                  <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
-               </option>
-            </dtml-in>
-          </select>
-       <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
-          <select class="custom-select" id="lst_tip_documento" name="lst_tip_documento" <dtml-unless cod_documento>onChange="numero_buscar(document.documento_administrativo_form)"</dtml-unless> required required>
-            <option>Selecione</option>
-            <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
-               <option
-                 <dtml-if tip_documento_sel>
-                   <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_sel)">
-                      selected
-                   </dtml-if>     
-                 </dtml-if>
-                 <dtml-if expr="REQUEST.has_key('tip_documento_novo')">
-                    <dtml-if expr="_.int(tip_documento) == _.int(tip_documento_novo)">
-                       selected
-                    </dtml-if>
-                 </dtml-if>                                                                        
-                 value="<dtml-var tip_documento>">
+                  </dtml-if> 
+                  value="<dtml-var tip_documento>" 
+             >
                  <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
-                </option>
-            </dtml-in>
+             </option>
+             </dtml-if>
+          </dtml-in>
           </select>
-
-       </dtml-if>
     </div>
     <div class="col-6 col-lg-3 mb-3">
        <label for="txt_num_documento" class="required">Número</label>
@@ -594,7 +572,6 @@ $(document).ready(() => {
 </div>
 
 <dtml-if cod_documento>
- <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
   <div class="tab-pane p-3 border fade" id="acessorios">
     <dtml-with documento_acessorio>
       <dtml-var documento_acessorio_index_html>
@@ -605,7 +582,6 @@ $(document).ready(() => {
       <dtml-var documento_vinculado_index_html>
     </dtml-with>
   </div>
- </dtml-if>
   <div class="tab-pane p-3 border fade" id="materias">
     <dtml-with materia_vinculada>
       <dtml-var materia_vinculada_index_html>
