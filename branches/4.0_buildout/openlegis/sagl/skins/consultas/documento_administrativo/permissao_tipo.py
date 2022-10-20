@@ -39,7 +39,14 @@ for tipo in context.zsql.tipo_documento_administrativo_obter_zsql(ind_escluido=0
           dic_tipo['ind_incluir']= 0
           if context.zsql.usuario_tipo_documento_obter_zsql(tip_documento=tipo.tip_documento, cod_usuario=cod_usuario_corrente, ind_excluido=0):
              dic_tipo['ind_incluir']= 1
-          lst_tipo.append(dic_tipo) 
+          lst_tipo.append(dic_tipo)
+    elif tipo.ind_publico == 1:
+       dic_tipo= {}
+       dic_tipo['tip_documento']= tipo.tip_documento
+       dic_tipo['sgl_tipo_documento']= tipo.sgl_tipo_documento
+       dic_tipo['des_tipo_documento']= tipo.des_tipo_documento
+       dic_tipo['ind_publico']= tipo.ind_publico
+       lst_tipo.append(dic_tipo)
 
 lst_tipo = [
     e
