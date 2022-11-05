@@ -1,9 +1,17 @@
 <dtml-try>
-    <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
-      <dtml-var documento_administrativo_form>
-    </dtml-in>
+ <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
+  <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
+     <dtml-var documento_administrativo_form>
+  <dtml-elif expr="ind_publico==1">
+     <dtml-var documento_administrativo_form>
+  <dtml-else>
+    <dtml-let mensagem="'Acesso negado!'" tipo_mensagem="'danger'">
+       <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-if>
+ </dtml-in>
 <dtml-except>
-  <dtml-let mensagem="'Houve um erro!'">
+  <dtml-let mensagem="'Houve um erro!'" tipo_mensagem="'danger'">
      <dtml-var mensagem_emitir>
   </dtml-let>
 </dtml-try>
