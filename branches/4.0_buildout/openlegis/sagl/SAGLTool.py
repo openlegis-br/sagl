@@ -1540,7 +1540,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         anexos.sort(key=lambda dic: dic['data'])
         for dic in anexos:
             arquivo_doc = cStringIO.StringIO(str(dic['arquivo'].data))
-            texto_anexo = PdfFileReader(arquivo_doc)
+            texto_anexo = PdfFileReader(arquivo_doc, strict=False)
             merger.append(texto_anexo)
         output_file_pdf = cStringIO.StringIO()
         merger.write(output_file_pdf)
