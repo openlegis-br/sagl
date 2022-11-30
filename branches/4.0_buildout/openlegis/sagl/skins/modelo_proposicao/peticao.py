@@ -61,6 +61,23 @@ for peticao in context.zsql.peticao_obter_zsql(cod_peticao=cod_peticao):
         inf_basicas_dic['num_tel_resid'] = usuario.num_tel_resid
         inf_basicas_dic['num_tel_celular'] = usuario.num_tel_celular
         inf_basicas_dic['num_tel_comercial'] = usuario.num_tel_comercial
+        
+    materia_vinculada = {}
+    for materia in context.zsql.materia_obter_zsql(cod_materia = peticao.cod_materia):
+        materia_vinculada['id_materia'] = materia.des_tipo_materia + ' nº ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica)
+        materia_vinculada['txt_ementa'] = materia.txt_ementa
+        materia_vinculada['autoria'] = ''
+        autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia,)
+        fields = autores.data_dictionary().keys()
+        lista_autor = []
+        for autor in autores:
+            for field in fields:
+                nome_autor = autor['nom_autor_join']
+                inf_basicas_dic['nome_autor'] = autor['nom_autor_join']       
+            lista_autor.append(nome_autor)
+        materia_vinculada['autoria'] = ', '.join(['%s' % (value) for (value) in lista_autor])
+
+    inf_basicas_dic['materia_vinculada'] = materia_vinculada
 
 return st.peticao_gerar_odt(inf_basicas_dic, nom_arquivo, modelo_path)
 
