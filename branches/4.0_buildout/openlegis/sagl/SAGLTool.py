@@ -1890,6 +1890,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
     def peticao_autuar(self,cod_peticao):
         for peticao in self.zsql.peticao_obter_zsql(cod_peticao=cod_peticao):
             cod_validacao_doc = ''
+            nom_autor = ''
             outros = ''
             qtde_assinaturas = []
             if self.zsql.assinatura_documento_obter_zsql(tipo_doc='peticao', codigo=peticao.cod_peticao, ind_assinado=1):
