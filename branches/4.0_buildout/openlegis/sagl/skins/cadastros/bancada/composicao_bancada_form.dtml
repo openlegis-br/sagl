@@ -48,7 +48,11 @@ function composicao_excluir(form){
 <dtml-in expr="zsql.bancada_obter_zsql(cod_bancada=cod_bancada)">
   <dtml-call expr="REQUEST.set('nom_bancada', nom_bancada)">
   <dtml-call expr="REQUEST.set('nome_bancada', nome_bancada)">
-  <dtml-call expr="REQUEST.set('cod_partido_sel', cod_partido_sel)">
+  <dtml-if EXPR="cod_partido_sel != None">
+     <dtml-call expr="REQUEST.set('cod_partido_sel', cod_partido_sel)">
+  <dtml-else>
+     <dtml-call expr="REQUEST.set('cod_partido_sel', None)">
+  </dtml-if>
 </dtml-in>
 
 <dtml-in expr="zsql.periodo_comp_bancada_obter_zsql(cod_periodo_comp=cod_periodo_comp)">
@@ -66,9 +70,8 @@ function composicao_excluir(form){
   <input type="hidden" name="hdn_cod_periodo_comp" value="<dtml-var cod_periodo_comp missing>">
   <input type="hidden" name="hdn_cod_bancada" value="<dtml-var cod_bancada missing>">
   <input type="hidden" name="hdn_nom_bancada" value="<dtml-var nom_bancada missing>">
-  <dtml-if cod_comp_bancada>
-     <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/consultas/bancada/composicao_bancada_mostrar_proc?cod_bancada=<dtml-var cod_bancada>&cod_periodo_comp=<dtml-var cod_periodo_comp>&num_legislatura=<dtml-var num_legislatura>" />
-  </dtml-if>
+  <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/consultas/bancada/composicao_bancada_mostrar_proc?cod_bancada=<dtml-var cod_bancada>&cod_periodo_comp=<dtml-var cod_periodo_comp>&num_legislatura=<dtml-var num_legislatura>" />
+
 
   <div class="form-row">
      <div class="col-8 col-sm-8 mb-3">
@@ -79,7 +82,7 @@ function composicao_excluir(form){
        <dtml-else>
           <select class="custom-select" id="lst_parlamentar" name="lst_parlamentar" size="1" required>
               <option>Selecione</option>
-              <dtml-if expr="_.int(cod_partido_sel)!=0">
+              <dtml-if expr="cod_partido_sel!=0 and cod_partido_sel != None ">
                  <dtml-in expr="zsql.bancada_obter_parlamentares_zsql(num_legislatura=num_legislatura, cod_partido=cod_partido_sel)">
                     <option 
                       <dtml-if expr="_.has_key('cod_comp_bancada') and cod_parlamentar_sel == composicao_bancada_form.cod_parlamentar_sel">
