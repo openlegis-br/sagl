@@ -312,7 +312,7 @@ class StrippingParser( SGMLParser ):
 
     """ Pass only allowed tags;  raise exception for known-bad.
     """
-    from html.htmlentitydefs import entitydefs # replace entitydefs from sgmllib
+    from htmlentitydefs import entitydefs # replace entitydefs from sgmllib
 
     def __init__( self, valid_tags=None, nasty_tags=None ):
 
