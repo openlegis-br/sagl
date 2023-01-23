@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=cod_proposicao='', listar=None, nomear=None
+##parameters=cod_proposicao, listar=None, nomear=None
 ##title=
 ##
 if listar:
