@@ -67,5 +67,5 @@ def importar_estrutura(context):
     site = context.getSite()
     setupMountPoint(site)
     setupConteudo(site)
-    setupAdicionarUsuarios(site)
+#    setupAdicionarUsuarios(site)
     setupAdicionaAcomp(site)
