@@ -1,6 +1,6 @@
 <dtml-unless senha>
   <dtml-if expr="AUTHENTICATED_USER.has_role(['Alterar Senha'])">
-    <dtml-call expr="REQUEST.RESPONSE.redirect(portal_url() +'/generico/senha_trocar_form?senha=1')">
+    <dtml-call expr="REQUEST.RESPONSE.redirect(portal_url() +'/cadastros/usuario/usuario_mostrar_proc?senha=1')">
   </dtml-if>
 </dtml-unless>
 
@@ -89,12 +89,12 @@
             <li class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-at"></i><span class="d-none d-sm-inline"> e-Processo</span></a>
                 <ul class="dropdown-menu dropdown-menu-right">
-                      <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar', 'Operador', 'Operador Materia'])">
+                      <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar', 'Operador', 'Operador Materia','Revisor Proposicao'])">
                          <li class="dropdown-header">Processo Legislativo</li>
                             <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
                                 <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao?ind_enviado=0">Proposições Eletrônicas</a></li>
                             </dtml-if>
-                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia','Revisor Proposicao'])">
                                 <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/recebimento_proposicao">Recebimento de Proposições</a></li>
                             </dtml-if>
                          <dtml-if cod_usuario_corrente>
@@ -119,7 +119,7 @@
                 </ul>
             </li>
             <li class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-fw fa-user-cog"></i> <dtml-var expr="_.SecurityGetUser().getUserName()"></a>
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-fw fa-user-cog"></i> &dtml-AUTHENTICATED_USER;</a>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li class="navbar-login nav-item d-flex">
                                 <div class="col-4">
@@ -147,7 +147,7 @@
                                            <p class="text-left mb-0"><strong><dtml-var nom_parlamentar></strong></p>
                                         </dtml-in>
                                     <dtml-else>
-                                       <p class="text-left mb-0"><strong><dtml-var expr="_.SecurityGetUser().getUserName()"></strong></p>
+                                       <p class="text-left mb-0"><strong>&dtml-AUTHENTICATED_USER;</strong></p>
                                     </dtml-if>
                                     <p class="text-left text-muted small mt-0">
                                       <dtml-if cargo>
@@ -181,7 +181,11 @@
                     <li class="dropdown-divider"></li>
                  </dtml-if>
                     <li class="nav-item pr-2 pl-2 py-2">
-                        <a href="<dtml-var portal_url>/generico/senha_trocar_form" class="btn btn-primary btn-block"><i class="fa fa-fw fa-lock"></i> Troca de Senha</a>
+                       <dtml-if expr="AUTHENTICATED_USER.has_role(['Administrador'])">
+                          <a href="<dtml-var portal_url>/cadastros/usuario/usuario_mostrar_proc?nome=<dtml-var AUTHENTICATED_USER>" class="btn btn-primary btn-block"><i class="fa fa-fw fa-lock"></i> Dados do Usuário</a>
+                       <dtml-else>
+                          <a href="<dtml-var portal_url>/cadastros/usuario/usuario_mostrar_proc" class="btn btn-primary btn-block"><i class="fa fa-fw fa-lock"></i> Dados do Usuário</a>
+                       </dtml-if>
                     </li>
                     <li class="nav-item pr-2 pl-2">
                         <a href="<dtml-var portal_url>/generico/log_out_proc" class="btn btn-danger btn-block"><i class="fa fa-fw fa-sign-out-alt"></i> Finalizar Sessão</a>
@@ -234,7 +238,7 @@
        <form class="px-0 py-2" action='<dtml-var portal_url>/generico/palavra_chave_buscar_proc' name='search_header' id='search_header' method="POST">
            <div class="input-group">
               <label class="d-none" for="txt_pesquisa">Palavra-chave</label>
-              <input type="text" id="txt_pesquisa" name="txt_palavra_chave" class="form-control" placeholder="Pequisar..." required>
+              <input type="text" id="txt_pesquisa" name="txt_palavra_chave" class="form-control" placeholder="Pesquisar..." required>
               <div class="input-group-append">
                   <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i><span class="d-none">Pesquisar</span></button>
               </div>
@@ -284,7 +288,7 @@
                        </li>
                     </dtml-if>
 
-                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Autor', 'Assessor Parlamentar'])">
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Autor', 'Assessor Parlamentar', 'Revisor Proposicao'])">
                       <li class="dropdown-submenu">
                           <a class="dropdown-item dropdown-toggle" href="#">Proposições Eletrônicas</a>
                           <ul class="dropdown-menu">
@@ -294,7 +298,7 @@
                               <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao?ind_enviado=1">Proposições Enviadas</a></li>
                               <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/proposicao?ind_devolvido=1">Proposições Devolvidas</a></li>                              
                             </dtml-if>
-                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
                               <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/recebimento_proposicao">Recebimento de Proposições</a></li>
                             </dtml-if>
                           </ul>
@@ -319,6 +323,9 @@
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                     <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/norma_juridica">Pesquisa de Legislação</a></li>
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+                       <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/norma_juridica/recebimento_normas">Recebimento de Normas</a></li>                    
+                    </dtml-if>
                     <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/legislacao">Índice Cronológico</a></li>
                     <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_indice_assunto">Legislação por Assunto</a></li>
                 </ul>
@@ -336,6 +343,7 @@
                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/tramitacao_lote_form">Caixa de Entrada</a></li>
                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/rascunhos_html">Tramitações em Rascunho</a></li>
                             <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/itens_enviados_html">Tramitações Enviadas</a></li>
+                            <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/historico_html">Histórico de Tramitações</a></li>
                             <dtml-if expr="pysc.arquivo_morto_adm_contar_pysc(cod_usuario=cod_usuario_corrente) > 0">
                                <li><a class="dropdown-item" href="<dtml-var portal_url>/cadastros/tramitacao_documento/arquivo_morto">Arquivo</a></li>
                             </dtml-if>
@@ -356,7 +364,7 @@
                         </ul>
                       </li>
                     </dtml-if>
-                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Materia'])">
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Operador Materia', 'Operador Entidade'])">
                       <li><a class="dropdown-item" href="<dtml-var portal_url>/consultas/instituicao">Cadastro de Entidades</a></li>
                     </dtml-if>
                     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Arquivo'])">

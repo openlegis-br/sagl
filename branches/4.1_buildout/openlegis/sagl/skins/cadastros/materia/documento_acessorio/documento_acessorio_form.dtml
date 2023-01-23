@@ -34,9 +34,9 @@
           return false;
       }
       var field = form.txt_nom_documento.value; 
-      var mxlen = 50;
+      var mxlen = 250;
       if(field.length > mxlen) { 
-         alert("A descrição deve conter no máximo 50 caracteres!");
+         alert("A descrição deve conter no máximo 250 caracteres!");
          form.txt_nom_documento.focus();         
          return false;
       }
@@ -46,13 +46,7 @@
          form.txt_nom_autor_documento.focus();
          return false;
       }  
-      if (form.txt_dat_documento.value!="" && !IsValidDate(form.txt_dat_documento.value)){
-         alert("Digite uma data de documento válida!");
-         form.txt_dat_documento.focus();
-         form.txt_dat_documento.select();
-         return false;
-      }
-     
+    
       form.submit();
   } 
 
@@ -125,7 +119,7 @@ $(document).ready(function () {
    <dtml-call expr="REQUEST.set('id_materia', _.str(sgl_tipo_materia)+ ' ' +_.str(num_ident_basica)+ '/' +_.str(ano_ident_basica))">
 </dtml-in>
 
-<h1 class="firstHeading">Documento Acessório - <dtml-var id_materia></h1>
+<h1 class="firstHeading">Documento Acessório ao <dtml-var id_materia></h1>
 
 <dtml-call expr="REQUEST.set('temProposicao',REQUEST.has_key('hdnCodProposicao'))">
 <dtml-if temProposicao>
@@ -194,10 +188,7 @@ $(document).ready(function () {
      </div>
      <div class="col-12 col-sm-6 mb-3">
           <label for="txt_nom_documento" class="required">Descrição</label>        
-          <input class="form-control" type="text" id="txt_nom_documento" name="txt_nom_documento" value="<dtml-var nom_documento html_quote missing null="">" maxlength="50" required />
-          <small id="passwordHelpInline" class="text-muted">
-            Máximo 50 caracteres.
-          </small>          
+          <input class="form-control" type="text" id="txt_nom_documento" name="txt_nom_documento" value="<dtml-var nom_documento html_quote missing null="">" maxlength="250" required />        
           <div class="invalid-feedback">
              Este campo é obrigatório!
           </div> 
@@ -205,23 +196,25 @@ $(document).ready(function () {
   </div>
   <div class="form-row">
      <div class="col-6 col-sm-3 mb-3">
-          <label for="txt_dat_documento" class="required">Data</label>
+          <label for="txt_dat_documento" class="required">Data / Horário</label>
           <dtml-unless dat_documento>
-             <dtml-call expr="REQUEST.set('dat_documento', pysc.data_atual_port_pysc())">
+             <dtml-call expr="REQUEST.set('dat_documento', DateTime().strftime('%d/%m/%Y %H:%M:%S'))">
           </dtml-unless>
-          <input class="form-control date" type="text" name="txt_dat_documento" id ="txt_dat_documento" value="<dtml-var dat_documento missing>" maxlength="10" required /> 
+          <input class="form-control" type="text" name="txt_dat_documento" id ="txt_dat_documento" value="<dtml-var dat_documento missing>" required /> 
           <div class="invalid-feedback">
              Este campo é obrigatório!
-          </div> 
-        <script>
-        $('#txt_dat_documento').datepicker({
-            locale: 'pt-br',
-            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
-            format: 'dd/mm/yyyy',
-            uiLibrary: 'bootstrap4',
-            iconsLibrary: 'fontawesome'
-        });
-        </script>                     
+          </div>
+ <script>
+    $('#txt_dat_documento').datetimepicker({
+        locale: 'pt-br',
+        format: 'dd/mm/yyyy HH:MM:SS',
+        uiLibrary: 'bootstrap4',
+        modal: true,
+        footer: true,
+        showOtherMonths: true, calendarWeeks: true
+    });
+ </script>
+                    
      </div>
      <div class="col-6 col-sm-3 mb-3">
           <label for="txt_num_protocolo">Número de Protocolo</label>
@@ -268,7 +261,11 @@ $(document).ready(function () {
                <dtml-if "_.hasattr(sapl_documentos.materia,id_documento)">
                  <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
                     <a class="btn btn-secondary" target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">">
-                      <i class="fa fa-fw fa-file-pdf"></i> Visualizar                
+                     <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento, tipo_doc='doc_acessorio',ind_assinado=1, cod_usuario=None)">
+                        <i class="fa fa-certificate"></i> Visualizar
+                      <dtml-else>
+                        <i class="fa fa-fw fa-file-pdf"></i> Visualizar
+                      </dtml-if>
                     </a>
                   <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
                      <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_documento>&tipo_doc=doc_acessorio&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
@@ -337,11 +334,22 @@ $(document).ready(function () {
  </div>
 
  <div class="form-row">
-   <div class="col-12 col-sm-6 mb-3">
+   <div class="col-12 col-sm-2 mb-3">
+      <label for="rad_ind_publico" class="required d-block">Acesso Público?</label>
+      <dtml-in expr="[(1,'Sim'), (0,'Não')]">
+        <div class="form-check form-check-inline">            
+          <input class="form-check-input" type="radio" id="rad<dtml-var expr="_['sequence-key']">" name="rad_ind_publico" value="<dtml-var expr="_['sequence-key']">"
+           <dtml-if expr="_.has_key('cod_documento') and ind_publico==_['sequence-key']">checked</dtml-if>
+           <dtml-if expr="not _.has_key('cod_documento') and _['sequence-item']=='Sim'">checked</dtml-if> />
+           <label class="form-check-label" for="rad<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></label>
+        </div>
+      </dtml-in> 
+   </div>
+   <div class="col-12 col-sm-5 mb-3">
       <label for="txa_txt_ementa">Ementa </label>
       <textarea class="form-control auto-resize" id="txa_txt_ementa" name="txa_txt_ementa" rows="1"><dtml-var txt_ementa missing null=""></textarea>
    </div>
-   <div class="col-12 col-sm-6 mb-3">
+   <div class="col-12 col-sm-5 mb-3">
       <label for="txa_txt_observacao">Observações</label>
       <textarea class="form-control auto-resize" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null=""></textarea>
    </div>

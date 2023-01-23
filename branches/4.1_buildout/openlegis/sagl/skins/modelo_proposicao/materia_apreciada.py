@@ -81,9 +81,9 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
                  abstencoes = ' - ' + str(votacao.num_abstencao) + " abstenção"
               elif votacao.num_abstencao > 1:
                  abstencoes =  ' - ' + str(votacao.num_abstencao) + " abstenções"
-              contagem_votos = votos_favoraveis + votos_contrarios + abstencoes
+              contagem_votos = votos_favoraveis.decode('iso-8859-1').encode('utf-8') + votos_contrarios.decode('iso-8859-1').encode('utf-8') + abstencoes.decode('iso-8859-1').encode('utf-8')
           if votacao.votacao_observacao != '':
-             votacao_observacao = ' - ' + votacao.votacao_observacao
+             votacao_observacao = ' - ' + votacao.votacao_observacao.encode('utf-8')
           else:
              votacao_observacao = ''
           if votacao.tip_resultado_votacao:
@@ -95,7 +95,7 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
           else:
              nom_resultado = " (Matéria não votada)"
              votacao_observacao = ""
-      dic_votacao["nom_resultado"] = nom_resultado
+      dic_votacao["nom_resultado"] = nom_resultado.encode('utf-8')
       dic_votacao["ordem_observacao"] = votacao_observacao           
       dic_votacao["votacao_observacao"] = votacao_observacao     
           

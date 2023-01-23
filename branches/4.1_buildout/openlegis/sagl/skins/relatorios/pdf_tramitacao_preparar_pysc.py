@@ -50,8 +50,9 @@ cod_tramitacao=hdn_cod_tramitacao
 tramitacao_dic = {}
 #obtém os dados da tramitação
 for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tramitacao):
-  tramitacao_dic['dat_tramitacao'] = tramitacao.dat_tramitacao
-  tramitacao_dic['dat_extenso'] = context.pysc.data_converter_por_extenso_pysc(data=tramitacao.dat_tramitacao)
+  dat_tramitacao = DateTime(tramitacao.dat_tramitacao, datefmt='international').strftime('%d/%m/%Y')
+  tramitacao_dic['dat_tramitacao'] = dat_tramitacao
+  tramitacao_dic['dat_extenso'] = context.pysc.data_converter_por_extenso_pysc(data=dat_tramitacao)
   tramitacao_dic['dat_encaminha'] = tramitacao.dat_encaminha
   tramitacao_dic['des_status'] = tramitacao.des_status
   if tramitacao.txt_tramitacao != None and tramitacao.txt_tramitacao!='':
@@ -100,6 +101,7 @@ for tramitacao in context.zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tram
     tramitacao_dic['unidade_destino'] = unid_destino.nom_unidade_join
 
   # usuario de destino
+  tramitacao_dic['nom_usuario_destino'] = ''
   if tramitacao.cod_usuario_dest != None:
     for usu_destino in context.zsql.usuario_obter_zsql(cod_usuario=tramitacao.cod_usuario_dest):
      tramitacao_dic['usuario_destino'] = usu_destino.col_username

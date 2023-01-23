@@ -1,5 +1,5 @@
 <dtml-unless hdn_cod_tramitacao>
-  <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=hdn_cod_materia, cod_unid_tram_origem=lst_cod_unid_tram_local, cod_unid_tram_dest=lst_cod_unid_tram_dest, cod_usuario_local=hdn_cod_usuario_local, ind_ult_tramitacao=1)">
+  <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=hdn_cod_materia, cod_unid_tram_origem=lst_cod_unid_tram_local, cod_unid_tram_dest=lst_cod_unid_tram_dest, cod_usuario_local=hdn_cod_usuario_local, cod_status=lst_cod_status, ind_ult_tramitacao=1)">
       <dtml-if cod_tramitacao>
          <dtml-call expr="REQUEST.set('existe_tramitacao', '1')">
          <dtml-let mensagem="'Você já incluiu uma tramitação idêntica! Verifique na caixa de Rascunhos ou de Itens Enviados.'" tipo_mensagem="'warning'">
@@ -44,7 +44,7 @@
   <dtml-call expr="metodo(   
         cod_tramitacao  = hdn_cod_tramitacao,     
         cod_materia = hdn_cod_materia,
-        dat_tramitacao = pysc.data_converter_pysc(data=txt_dat_tramitacao),
+        dat_tramitacao = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
         cod_unid_tram_local = lst_cod_unid_tram_local,
         cod_usuario_local = hdn_cod_usuario_local,
         dat_encaminha = pysc.data_converter_pysc(data=txt_dat_encaminha),
@@ -60,10 +60,10 @@
     <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao  = cod_ult_tramitacao, cod_materia = hdn_cod_materia, ind_ult_tramitacao = 0)">
     <dtml-call expr="zsql.tramitacao_registrar_recebimento_zsql(cod_tramitacao=cod_ult_tramitacao, cod_usuario_corrente=hdn_cod_usuario_local)">      
   </dtml-if>
-
-  <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=hdn_cod_materia, cod_status=lst_cod_status)">
   
   <dtml-call expr="zsql.trans_commit_zsql()">
+
+  <dtml-call expr="pysc.atualiza_indicador_tramitacao_materia_pysc(cod_materia=hdn_cod_materia, cod_status=lst_cod_status)">
 
 <dtml-except>
     <dtml-call expr="zsql.trans_rollback_zsql()">
@@ -153,6 +153,14 @@
     <dtml-call expr="cadastros.tramitacao_materia.tramitacao_juntar_pdf(cod_tramitacao=hdn_cod_tramitacao)">
   </dtml-if>
 </dtml-if>
+
+<dtml-comment>
+<dtml-in expr="zsql.status_tramitacao_obter_zsql(cod_status=lst_cod_status, ind_excluido=0)">
+  <dtml-if expr="des_status =='Deferido'">
+     <dtml-call expr="modelo_proposicao.requerimento_aprovar(cod_sessao_plen=0, nom_resultado=des_status, cod_materia=hdn_cod_materia)">
+  </dtml-if>
+</dtml-in>
+</dtml-comment>
 
 <dtml-if dbcon_logs>
   <dtml-call expr="zsql.logs_registrar_zsql(

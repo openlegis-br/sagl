@@ -31,6 +31,7 @@ if context.REQUEST['cod_reuniao']!='':
         dic = {} 
         dic["num_ordem"] = item.num_ordem
         dic["txt_ementa"] = item.txt_observacao
+        dic["nom_relator"] = ''
         if item.cod_parecer != None: 
            parecer = context.zsql.relatoria_obter_zsql(cod_relatoria=item.cod_parecer)[0]
            dic["cod_materia"] = item.cod_parecer
@@ -42,8 +43,8 @@ if context.REQUEST['cod_reuniao']!='':
                sgl_comissao = comissao.sgl_comissao
            for relator in context.zsql.parlamentar_obter_zsql(cod_parlamentar=parecer.cod_parlamentar):
                 dic["nom_relator"] = relator.nom_parlamentar
-           dic["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/parecer_comissao/' + str(item.cod_parecer) + '_parecer.pdf' + '">' + 'PARECER ' + sgl_comissao+ ' Nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer) + '</link>'
-           dic["id_materia"] = 'PARECER ' + sgl_comissao+ ' Nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer) + " - " +  sgl_tipo_materia +' ' + str(num_ident_basica) + '/' + str(ano_ident_basica)
+           dic["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/parecer_comissao/' + str(item.cod_parecer) + '_parecer.pdf' + '">' + 'Parecer ' + sgl_comissao+ ' nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer) + '</link>'
+           dic["id_materia"] = 'Parecer ' + sgl_comissao+ ' nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer) + " - " +  sgl_tipo_materia +' ' + str(num_ident_basica) + '/' + str(ano_ident_basica)
            dic["nom_autor"] = ""
            dic["substitutivo"] = ''
            dic["substitutivos"] = ''           
@@ -53,7 +54,7 @@ if context.REQUEST['cod_reuniao']!='':
         if item.cod_materia != None:        
            materia = context.zsql.materia_obter_zsql(cod_materia=item.cod_materia)[0]        
            dic["cod_materia"] = item.cod_materia
-           dic["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+str(item.cod_materia)+'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+           dic["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+str(item.cod_materia)+'">'+materia.des_tipo_materia.decode('utf-8')+' nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
            dic["id_materia"] = materia.des_tipo_materia.decode('utf-8').upper()+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
            dic["nom_relator"] = ''          
            dic["nom_autor"] = ''
@@ -64,7 +65,10 @@ if context.REQUEST['cod_reuniao']!='':
                for field in fields:
                    nome_autor = autor['nom_autor_join']
                lista_autor.append(nome_autor)
-           dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+           dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
+           if item.cod_relator != '' and item.cod_relator != None:
+              for relator in context.zsql.parlamentar_obter_zsql(cod_parlamentar=item.cod_relator):
+                  dic["nom_relator"] = relator.nom_parlamentar
 
            dic["substitutivo"] = ''
            lst_qtde_substitutivos=[]

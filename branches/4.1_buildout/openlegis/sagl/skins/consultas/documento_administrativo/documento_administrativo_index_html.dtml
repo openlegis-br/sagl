@@ -1,6 +1,6 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="javascript/data_validar.js" "></script>
+<script type="text/javascript" src="javascript/data_validar.js"></script>
 
 <script type="text/javascript">
 
@@ -49,6 +49,10 @@ function documento_criticar(form){
             <a class="btn btn-primary btn-sm d-print-none" href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_form" ><i class="fa fa-fw fa-plus"></i> Incluir Documento</a>
             <a class="btn btn-primary btn-sm d-print-none" href="<dtml-var portal_url>/cadastros/documento_administrativo/numero_reservar_form" ><i class="fas fa-fw fa-list-ol"></i> Reserva de Numeração</a>
           </div>
+        <dtml-elif expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
+          <dtml-if expr="zsql.usuario_tipo_documento_obter_zsql(cod_usuario=cod_usuario_corrente, ind_excluido=0)">
+            <a class="btn btn-primary btn-sm d-print-none" href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_form" ><i class="fa fa-fw fa-plus"></i> Incluir Documento</a>
+          </dtml-if>
         </dtml-if>
       </div>
  </div>
@@ -68,15 +72,9 @@ function documento_criticar(form){
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_tip_documento">Tipo de Documento</label>
       <select id="lst_tip_documento" name="lst_tip_documento" class="form-control selectpicker" data-dropup-auto="false" data-size="6" multiple="multiple" multiple data-actions-box="true" title="Todos" data-header="Tipo de Documento" data-selected-text-format="count > 3">
-           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo', 'Consulta Modulo Administrativo'])">
-              <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
-                 <option value="<dtml-var tip_documento>"><dtml-var des_tipo_documento></option>
-              </dtml-in>
-           <dtml-else>
-              <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_publico=1,ind_excluido=0)">
-                 <option value="<dtml-var tip_documento>"><dtml-var des_tipo_documento></option>
-              </dtml-in>
-           </dtml-if>
+          <dtml-in expr="permissao_tipo()" mapping>
+             <option value="<dtml-var tip_documento>"><dtml-var des_tipo_documento></option>
+          </dtml-in>
       </select>
     </div>
     <div class="col-6 col-md-3 mb-3">
@@ -130,17 +128,23 @@ function documento_criticar(form){
     </script>    
   </div>
   <div class="form-row">
-    <div class="col-12 col-md-4 mb-3">
+    <div class="col-12 col-md-6 mb-3">
       <label for="txa_txt_interessado">Interessado</label>
       <input type="text" class="form-control" name="txa_txt_interessado" id="txa_txt_interessado"/>
     </div>
+    <div class="col-12 col-sm-6 mb-3">
+       <label for="txa_txt_assunto"><span class="pf-label">Termos da Pesquisa</span></label></th>
+       <input class="form-control" id="txa_txt_assunto" type="text" name="txa_txt_assunto" />
+    </div>
+  </div>
+  <div class="form-row">
     <div class="col-12 col-md-4 mb-3">
-      <label for="lst_status">Situação</label>
-        <select id="lst_status" name="lst_status" class="custom-select" data-size="6">
-            <option value="">Todas</option>
-            <dtml-in expr="zsql.status_tramitacao_administrativo_obter_zsql(ind_excluido=0)">
-              <option value="<dtml-var cod_status missing>">
-                <dtml-var sgl_status> - <dtml-var des_status>
+      <label for="lst_tramitou">Tramitou por:</label>
+        <select id="lst_tramitou" name="lst_tramitou" class="custom-select" data-size="6">
+            <option value=""></option>
+            <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
+              <option value="<dtml-var cod_unid_tramitacao missing>">
+                <dtml-var nom_unidade_join>
               </option>
             </dtml-in>
        </select>
@@ -150,15 +154,37 @@ function documento_criticar(form){
         <select id="lst_localizacao" name="lst_localizacao" class="custom-select" data-size="6">
             <option value="">Todas</option>
             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
-              <option value="<dtml-var cod_unid_tramitacao missing>">                
+              <option value="<dtml-var cod_unid_tramitacao missing>">
                 <dtml-var nom_unidade_join>
+              </option>
+            </dtml-in>
+       </select>
+    </div>
+    <div class="col-12 col-md-4 mb-3">
+      <label for="lst_status">Situação Atual</label>
+        <select id="lst_status" name="lst_status" class="custom-select" data-size="6">
+            <option value="">Todas</option>
+            <dtml-in expr="zsql.status_tramitacao_administrativo_obter_zsql(ind_excluido=0)">
+              <option value="<dtml-var cod_status missing>">
+                <dtml-var sgl_status> - <dtml-var des_status>
               </option>
             </dtml-in>
        </select>
     </div>
   </div>
   <div class="form-row">
-  <div class="col-6 col-sm-3 mb-3">
+    <div class="col-12 col-md-4 mb-3">
+      <label for="lst_assunto">Classificação</label>
+        <select id="lst_assunto" name="lst_assunto" class="custom-select" data-size="6">
+            <option value="">Todos</option>
+            <dtml-in expr="zsql.tipo_peticionamento_obter_zsql(ind_doc_adm=1, ind_excluido=0)">
+              <option value="<dtml-var tip_peticionamento missing>">
+                <dtml-var des_tipo_peticionamento>
+              </option>
+            </dtml-in>
+       </select>
+    </div>
+  <div class="col-6 col-sm-4 mb-3">
       <label for="rad_tramitando" class="d-block">Em Tramitação?</label>
         <select id="rad_tramitando" name="rad_tramitando" class="form-control selectpicker show-tick">
          <dtml-in expr="[('Não', '0'), ('Sim', '1'), ('Tanto faz', '')]">      
@@ -166,7 +192,7 @@ function documento_criticar(form){
          </dtml-in>
         </select>
    </div>                         
-    <div class="col-6 col-sm-3 mb-3">
+    <div class="col-6 col-sm-4 mb-3">
       <label for="rd_ordenacao" class="d-block">Ordenação</label>
         <select id="rd_ordenacao" name="rd_ordenacao" class="form-control selectpicker show-tick">
          <dtml-in expr="[('Descendente', '1'), ('Ascendente', '2')]">      
@@ -174,10 +200,6 @@ function documento_criticar(form){
          </dtml-in>
         </select>
     </div>
-    <div class="col-12 col-sm-6 mb-3">
-       <label for="txa_txt_assunto"><span class="pf-label">Termos da Pesquisa</span></label></th>
-       <input class="form-control" id="txa_txt_assunto" type="text" name="txa_txt_assunto" />
-    </div>        
   </div>  
   <div class="form-row">
     <div class="col-12 col-md-12 mt-2 text-left"> 

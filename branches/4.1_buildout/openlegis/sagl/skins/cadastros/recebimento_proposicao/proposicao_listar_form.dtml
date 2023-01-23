@@ -15,19 +15,20 @@ function refreshPage() {
 }
 </style>
 
-<dtml-if expr="envrec=='E'">
+<dtml-if expr="envrec=='E' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
     <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido=0)">  
        <dtml-if sequence-start>
          <p class="text-muted font-weight-bold">Proposições em elaboração ou revisão textual</p>
 	  <table class="table table-striped display" id="pendentes">
               <thead>
 	        <tr>  
-	          <th>Envio</th>
+	          <th width="15%">Envio</th>
 	          <th>Tipo</th>
 	          <th>Ementa</th>
 	          <th>Autor</th>
 	        </tr>
                </thead>
+               </tbody>
        </dtml-if sequence-start>
        <dtml-call expr="REQUEST.set('id_odt', _.str(cod_proposicao)+'.odt')"> 
        <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_proposicao)+'.pdf')">              
@@ -47,32 +48,42 @@ function refreshPage() {
                </a>
             </td>
             <td><dtml-var des_tipo_proposicao></td>
-            <td><dtml-var txt_descricao></td>
+            <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
             <td><dtml-var nom_autor></td>
             </tr>
           </dtml-if>
          </dtml-if>
        </dtml-if>
        <dtml-if sequence-end>
+          </tbody>
+              <tfoot>
+                <tr>  
+		  <th>Envio</th>
+		  <th>Tipo</th>
+	          <th>Ementa</th>
+		  <th>Autor</th>
+                </tr>
+              </tfoot>
          </table>
        </dtml-if sequence-end>
         <dtml-else>
            <p class="text-muted">Não há proposições para revisão textual.</p>        
     </dtml-in>
 
-<dtml-elif expr="envrec=='P'">
+<dtml-elif expr="envrec=='P' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
     <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido=0)">  
        <dtml-if sequence-start>
          <p class="text-muted font-weight-bold">Proposições revisadas e aguardando assinatura digital</p>
 	  <table class="table table-striped display" id="assinatura">
               <thead>
 	        <tr>  
-	          <th>Envio</th>
+	          <th width="15%">Envio</th>
 	          <th>Tipo</th>
 	          <th>Ementa</th>
 	          <th>Autor</th>
 	        </tr>
                </thead>
+               <tbody>
        </dtml-if sequence-start>
        <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.pdf')">
        <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">          
@@ -88,25 +99,34 @@ function refreshPage() {
                </a>
             </td>
             <td><dtml-var des_tipo_proposicao></td>
-            <td><dtml-var txt_descricao></td>
+            <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
             <td><dtml-var nom_autor></td>
             </tr>
           </dtml-if>         
        <dtml-if sequence-end>
+          </tbody>
+              <tfoot>
+                <tr>  
+		  <th>Envio</th>
+		  <th>Tipo</th>
+	          <th>Ementa</th>
+		  <th>Autor</th>
+                </tr>
+              </tfoot>
          </table>
        </dtml-if sequence-end>
         <dtml-else>
            <p class="text-muted">Não há proposições aguardando assinatura.</p>         
     </dtml-in>
 
-<dtml-elif expr="envrec=='A'">
+<dtml-elif expr="envrec=='A' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
     <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido='0')">  
        <dtml-if sequence-start>
          <p class="text-muted font-weight-bold">Proposições assinadas e prontas para incorporação</p>
 		    <table class="table table-striped display" id="pendentes">
                        <thead>
 		        <tr>  
-		            <th>Envio</th>
+		            <th width="15%">Envio</th>
 		            <th>Tipo</th>
 	                    <th>Ementa</th>
 		            <th>Autor</th>
@@ -129,7 +149,7 @@ function refreshPage() {
                   </a>
                </td>
                <td><dtml-var des_tipo_proposicao></td>
-               <td><dtml-var txt_descricao></td>
+               <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
                <td><dtml-var nom_autor></td>
                </tr>
              </dtml-if>
@@ -137,20 +157,28 @@ function refreshPage() {
        </dtml-if>
        <dtml-if sequence-end>
           </tbody>
+              <tfoot>
+                <tr>  
+		  <th width="15%">Envio</th>
+		  <th>Tipo</th>
+	          <th>Ementa</th>
+		  <th>Autor</th>
+                </tr>
+              </tfoot>
         </table>
        </dtml-if sequence-end>
         <dtml-else>
            <p class="text-muted">Não há proposições para protocolo.</p>       
     </dtml-in>
 
-   <dtml-elif expr="envrec=='I'">
+   <dtml-elif expr="envrec=='I' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
         <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_incorporado=1)" size=300>
         <dtml-if sequence-start>
             <p class="text-muted font-weight-bold">Histórico das últimas proposições incorporadas</p>        
             <table id="incorporadas" class="table table-striped display">
               <thead>
                 <tr>  
-                    <th>Incorporação</th>
+                    <th width="15%">Incorporação</th>
                     <th>Tipo</th>
                     <th>Ementa</th>
 		    <th>Autor</th>
@@ -167,7 +195,7 @@ function refreshPage() {
                 </dtml-if>
                     <td><a href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao >"><b><dtml-var dat_recebimento></b></a></td>
                     <td><dtml-var des_tipo_proposicao></td>
-                    <td><dtml-var txt_descricao></td>
+                    <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
                     <td><dtml-var nom_autor></td>
                   <dtml-if expr="ind_mat_ou_doc=='D' and cod_emenda==None and cod_substitutivo==None and cod_parecer==None">                    
                      <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_documento=cod_mat_ou_doc)">
@@ -181,7 +209,11 @@ function refreshPage() {
                   <dtml-if cod_mat>
                      <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_mat)">
                           <td>
-                            <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
+                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                              <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
+                            <dtml-else>
+                              <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
+                            </dtml-if>
                           </td>
                     <dtml-else> 
                           <td><dtml-var cod_mat missing>Falha no registro vinculado.</td>
@@ -196,20 +228,29 @@ function refreshPage() {
              </dtml-if>
         <dtml-if sequence-end>
              </tbody>
+              <tfoot>
+                <tr>  
+                    <th>Incorporação</th>
+                    <th>Tipo</th>
+                    <th>Ementa</th>
+		    <th>Autor</th>
+                    <th>Vínculo</th>
+                </tr>
+              </tfoot>
             </table>
         </dtml-if sequence-end>
         <dtml-else>
            <p class="text-muted">Não há proposições incorporadas.</p>
         </dtml-in>
 
-  <dtml-elif expr="envrec=='R'">
-        <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_devolvido='1')" size=50>
+  <dtml-elif expr="envrec=='R' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
+        <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_devolvido='1')" size=100>
         <dtml-if sequence-start>
             <p class="text-muted font-weight-bold">Proposições devolvidas ao autor</p>
             <table id="devolvidas" class="table table-striped display">
               <thead>
                 <tr>  
-                   <th>Devolução</th>
+                   <th width="15%">Devolução</th>
                    <th>Tipo</th>
                    <th>Ementa</th>
                    <th>Autor</th>
@@ -225,12 +266,20 @@ function refreshPage() {
          </dtml-if>
            <td><a href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao >"><b><dtml-var dat_devolucao missing null=""></b></a></td>
             <td><dtml-var des_tipo_proposicao></td>
-            <td><dtml-var txt_descricao></td>
+            <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
             <td><dtml-var nom_autor></td>
           </tr>
        </dtml-if>
         <dtml-if sequence-end>
              </tbody>
+              <tfoot>
+                <tr>  
+                   <th>Devolução</th>
+                   <th>Tipo</th>
+                   <th>Ementa</th>
+                   <th>Autor</th>
+                </tr>
+              </tfoot>
             </table>
         </dtml-if sequence-end>
         <dtml-else>

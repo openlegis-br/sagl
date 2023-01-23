@@ -36,7 +36,7 @@ def xhtml2rml(self,chaineHtml,chaineStyle):
  "Otilde":"Õ", "otilde":"õ", "ugrave":"ù", "Ugrave":"Ù", "uacute":"ú", "ordm":"º",  "ordf":"ª", \
  "Uacute":"Ú", "ucirc":"û", "Ucirc":"Û", "uuml":"ü", "Uuml":"Ü", "ntilde":"ñ", "Ntilde":"Ñ", "ccedil":"ç",\
  "Ccedil":"Ç", "yacute":"ý", "Yacute":"Ý", "szlig":"ß", "laquo":"«", "raqo":"»", "para":"§", "copy":"©",\
- "nbsp":" ", "quot": "\"", "amp":"&", "lt":"<", "gt":">" }
+ "nbsp":" ", "quot": "'" }
        if dEnt.has_key(entite):
          return dEnt[entite]
        else:
@@ -72,17 +72,18 @@ def xhtml2rml(self,chaineHtml,chaineStyle):
        if debutTag.lower()=='p':
           contentTag = reEntites.sub(replace_entites, contentTag)
           debutTag='para' + ' style="' + chaineStyle + '"'
+          attrTag = ''
           finTag='</para><para style="P5"><font color="white">-</font></para>'
           return '\r\n' + finTag + '\r\n' + '<'+ debutTag + attrTag +'>\r\n'+ contentTag + '\r\n'
 
        if debutTag.lower() in ('pre','code'):
           debutTag='xpre'
           finTag='</xpre>'
-          attrTag = ' style="ploneCode"'
+          attrTag = ''
           entete ='\r\n</para>\r\n'
           fin='\r\n<para' + ' style="' + chaineStyle + '">\r\n'
-          return entete + '<'+ debutTag + attrTag +'>\r\n <![CDATA[ \r\n'+ contentTag + '\r\n ]]'\
- + '> \r\n' + finTag + '\r\n' + fin    
+          return entete + '<'+ debutTag + attrTag + '>\r\n <![CDATA[ \r\n'+ contentTag + '\r\n ]]'\
+ + '> \r\n' + finTag + '\r\n' + fin
 
        elif match.group('hNumber') is not None:
           contentTag = reEntites.sub(replace_entites, contentTag)
@@ -95,7 +96,7 @@ def xhtml2rml(self,chaineHtml,chaineStyle):
           contentTag = reEntites.sub(replace_entites, contentTag)
           debutTag='blockTable'
           finTag='</blockTable>'
-          attrTag = ' style="ploneTable"'
+          attrTag = ''
           entete ='\r\n</para>\r\n'
           fin='\r\n<para' + ' style="' + chaineStyle + '">\r\n'
           return entete + '<'+ debutTag + attrTag +'>\r\n'+ contentTag + '\r\n' + finTag + fin      

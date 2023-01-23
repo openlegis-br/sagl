@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : num_documento="" ano_documento="" tip_documento="" num_protocolo="" ind_tramitacao="" cod_status="" des_assunto="" txt_interessado="" dat_apres1="" dat_apres2="" cod_unid_tramitacao="" rd_ordem="" ind_excluido="0"
+arguments : num_documento="" ano_documento="" tip_documento="" num_protocolo="" ind_tramitacao="" cod_status="" des_assunto="" txt_interessado="" dat_apres1="" dat_apres2="" cod_unid_tramitacao="" cod_unid_tramitacao2="" dat_tram1="" dat_tram2="" lst_assunto="" rd_ordem="" ind_excluido="0"
 max_rows : 10000
 max_cache : 100
 </dtml-comment>
@@ -18,7 +18,6 @@ SELECT
        documento_administrativo.ind_tramitacao,
        tipo_documento_administrativo.sgl_tipo_documento,
        tipo_documento_administrativo.des_tipo_documento
-
        <dtml-if cod_status>
          ,REPLACE(tramitacao_administrativo.cod_status, 'L', '') as cod_status
          ,tramitacao_administrativo.dat_tramitacao
@@ -26,25 +25,26 @@ SELECT
        <dtml-if cod_unid_tramitacao>
          ,REPLACE(tramitacao_administrativo.cod_unid_tram_dest, 'L', '') as cod_unid_tram_dest
        </dtml-if>
+       <dtml-if cod_unid_tramitacao2>
+         ,DATE_FORMAT(tramitacao_administrativo.dat_tramitacao, '%d/%m/%Y %H:%i:%s') as dat_tram
+       </dtml-if>
        <dtml-if dat_fim_prazo>
          ,DATE_FORMAT(tramitacao_administrativo.dat_fim_prazo, '%d/%m/%y') as dat_fim_prazo_processo
        </dtml-if>
 
 FROM 
      documento_administrativo 
-     LEFT JOIN tipo_documento_administrativo ON
-     documento_administrativo.tip_documento=tipo_documento_administrativo.tip_documento
-
-    <dtml-comment>se o campo Situação Atual estiver preenchido.</dtml-comment>
-    <dtml-if expr="cod_status!='' or cod_unid_tramitacao">
-      ,tramitacao_administrativo
-    </dtml-if>
+     LEFT JOIN tipo_documento_administrativo ON documento_administrativo.tip_documento = tipo_documento_administrativo.tip_documento
+     <dtml-if expr="cod_status!='' or cod_unid_tramitacao or cod_unid_tramitacao2">
+      LEFT JOIN tramitacao_administrativo ON documento_administrativo.cod_documento = tramitacao_administrativo.cod_documento
+     </dtml-if>
 
 <dtml-sqlgroup where>
     <dtml-sqltest num_documento   column="documento_administrativo.num_documento"    op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ano_documento   column="documento_administrativo.ano_documento"    op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ind_tramitacao  column="documento_administrativo.ind_tramitacao"   op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest num_protocolo   column="documento_administrativo.num_protocolo"    op="="  type="int"    optional> <dtml-and>
+    <dtml-sqltest lst_assunto     column="documento_administrativo.cod_assunto" op="="  type="int"    optional> <dtml-and>
     <dtml-sqltest ind_excluido    column="documento_administrativo.ind_excluido"     op="="  type="int"    optional> <dtml-and>
 
 <dtml-if dat_apres1>
@@ -62,6 +62,7 @@ FROM
 
 </dtml-sqlgroup>
 
+ <dtml-unless dat_tram1>
    <dtml-if expr="tip_documento!=''">
     AND (
         <dtml-if expr="pysc.verifica_lista_pysc(tip_documento)">
@@ -70,38 +71,64 @@ FROM
            documento_administrativo.tip_documento in (<dtml-var expr="tip_documento[1:-1]">)
         </dtml-if>
       )
+   <dtml-else>
+       AND  (
+       <dtml-in expr="consultas.documento_administrativo.permissao_tipo()" mapping>
+           documento_administrativo.tip_documento = <dtml-var tip_documento> 
+           <dtml-unless sequence-end>
+              OR
+           </dtml-unless>
+       </dtml-in>
+       )
    </dtml-if>
+ </dtml-unless>
 
     <dtml-if des_assunto>
-      and match(documento_administrativo.txt_assunto,documento_administrativo.txt_observacao)
+      AND match(documento_administrativo.txt_assunto,documento_administrativo.txt_observacao)
        against (<dtml-sqlvar des_assunto type="string"> IN BOOLEAN MODE)
     </dtml-if>
 
     <dtml-if txt_interessado>
-       and MATCH(documento_administrativo.txt_interessado)
+       AND MATCH(documento_administrativo.txt_interessado)
        against (<dtml-sqlvar txt_interessado type="string"> IN BOOLEAN MODE)
     </dtml-if>
 
     <dtml-if cod_status>
-      and documento_administrativo.cod_documento = tramitacao_administrativo.cod_documento and
-      tramitacao_administrativo.ind_ult_tramitacao = 1 and
-      tramitacao_administrativo.ind_excluido = 0 and
-      tramitacao_administrativo.cod_status = <dtml-sqlvar cod_status type="int">
+      AND tramitacao_administrativo.ind_ult_tramitacao = 1
+      AND tramitacao_administrativo.ind_excluido = 0
+      AND tramitacao_administrativo.cod_status = <dtml-sqlvar cod_status type="int">
     </dtml-if>
 
     <dtml-if cod_unid_tramitacao>
-      and documento_administrativo.cod_documento = tramitacao_administrativo.cod_documento and
-      tramitacao_administrativo.ind_ult_tramitacao = 1 and
-      tramitacao_administrativo.ind_excluido = 0 and
-      tramitacao_administrativo.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao type="int">
+      AND documento_administrativo.cod_documento = tramitacao_administrativo.cod_documento
+      AND tramitacao_administrativo.ind_ult_tramitacao = 1
+      AND tramitacao_administrativo.ind_excluido = 0
+      AND tramitacao_administrativo.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao type="int">
     </dtml-if>
 
     <dtml-if cod_unid_tramitacao>
-      and documento_administrativo.cod_documento = tramitacao_administrativo.cod_documento and
-      tramitacao_administrativo.ind_ult_tramitacao = 1 and
-      tramitacao_administrativo.ind_excluido = 0 and
-      tramitacao_administrativo.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao type="int">
+      AND tramitacao_administrativo.ind_ult_tramitacao = 1
+      AND tramitacao_administrativo.ind_excluido = 0
+      AND tramitacao_administrativo.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao type="int">
     </dtml-if>
+
+   <dtml-if cod_unid_tramitacao2>
+     AND (tramitacao_administrativo.cod_unid_tram_local = <dtml-sqlvar cod_unid_tramitacao2 type="int"> 
+          OR tramitacao_administrativo.cod_unid_tram_dest = <dtml-sqlvar cod_unid_tramitacao2 type="int">)
+     AND tramitacao_administrativo.ind_excluido = 0
+    <dtml-if dat_tram1>
+      <dtml-if dat_tram2>
+         AND DATE(tramitacao_administrativo.dat_tramitacao) >= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_tram1)" type="nb">
+         AND DATE(tramitacao_administrativo.dat_tramitacao) <= <dtml-sqlvar "pysc.port_to_iso_pysc(dat_tram2)" type="nb">
+      <dtml-else>
+         AND DATE(tramitacao_administrativo.dat_tramitacao) = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_tram1)" type="nb">
+      </dtml-if>
+    <dtml-else>
+      <dtml-if dat_tram2>
+         AND DATE(tramitacao_administrativo.dat_tramitacao) = <dtml-sqlvar "pysc.port_to_iso_pysc(dat_tram2)" type="nb">
+      </dtml-if>
+    </dtml-if>
+   </dtml-if>
 
 <dtml-if expr="rd_ordem == '1'">
   ORDER BY  tipo_documento_administrativo.sgl_tipo_documento, documento_administrativo.ano_documento DESC, LPAD(documento_administrativo.num_documento, 5, '0') DESC

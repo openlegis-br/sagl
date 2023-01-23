@@ -1,5 +1,5 @@
 from zope.component import adapts
-from zope.interface import implementer
+from zope.interface import implements
 
 from openlegis.sagl.interfaces import IFileSAGL
 
@@ -8,12 +8,12 @@ from zopyx.txng3.core.content import IndexContentCollector as ICC
 from zopyx.txng3.core.config import DEFAULT_LANGUAGE
 
 
-@implementer(IIndexableContent)
 class FileAdapter:
     """ Adapter para o tipo File do Zope
     """
 
     adapts(IFileSAGL)
+    implements(IIndexableContent)
 
     def __init__(self, context):
         self.context = context

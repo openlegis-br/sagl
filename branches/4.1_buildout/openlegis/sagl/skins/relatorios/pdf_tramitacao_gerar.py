@@ -124,6 +124,9 @@ def tramitacao(tramitacao_dic):
     tmp+='<tr><td>Data da Ação</td><td>' +str(tramitacao_dic['dat_tramitacao'])+ '</td></tr>\n'
     tmp+='<tr><td>Unidade de Origem</td><td>' +str(tramitacao_dic['unidade_origem'])+ '</td></tr>\n'
     tmp+='<tr><td>Unidade de Destino</td><td>' +str(tramitacao_dic['unidade_destino'])+ '</td></tr>\n'
+    nom_usuario_destino = str(tramitacao_dic['nom_usuario_destino'])
+    if nom_usuario_destino != None and nom_usuario_destino != "":
+       tmp+='<tr><td>Usuário de Destino</td><td>' +str(tramitacao_dic['nom_usuario_destino'])+ '</td></tr>\n'
     tmp+='<tr><td>Status</td><td>' +str(tramitacao_dic['des_status'])+ '</td></tr>\n'
     dat_fim_prazo = str(tramitacao_dic['dat_fim_prazo'])
     if dat_fim_prazo != None and dat_fim_prazo != "":

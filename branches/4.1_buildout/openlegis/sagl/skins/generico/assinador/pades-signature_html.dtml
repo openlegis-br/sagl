@@ -1,34 +1,71 @@
 <dtml-var standard_html_header>
 
-<script src="static/js/lacuna-web-pki-2.14.6.min.js"></script>
-<script src="static/js/jquery.blockUI.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+
+    $('[data-toggle="popover"]').popover('show');
+
+    $('[data-toggle="popover"]').on('click', function () {
+        $('[data-toggle="popover"]').popover('destroy');
+    });
+
+  });
+</script>
 
 <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
    <dtml-call expr="REQUEST.set('cod_usuario', int(cod_usuario))">
 </dtml-in>
 
-<dtml-call "REQUEST.set('campos', pades_signature_pdf(codigo=codigo,tipo_doc=tipo_doc,cod_usuario=cod_usuario))">
-<dtml-call "REQUEST.set('token', campos[0])">
-<dtml-call "REQUEST.set('pdf_path', campos[1])">
-<dtml-call "REQUEST.set('crc_arquivo', campos[2])">
-
-<form id="signForm" action="pades-signature-action_html" method="post">
-  <input type="hidden" id="token" name="token" value="<dtml-var token>" />
-  <input type="hidden" id="crc_arquivo_original" name="crc_arquivo_original" value="<dtml-var crc_arquivo>" />  
-  <input type="hidden" id="codigo" name="codigo" value="<dtml-var codigo>">
-  <input type="hidden" id="cod_usuario" name="cod_usuario" value="<dtml-var cod_usuario>">  
-  <input type="hidden" id="tipo_doc" name="tipo_doc" value="<dtml-var tipo_doc>">
-  <input type="hidden" id="modal" name="modal" value="1" />
-  <div class="form-row">
-     <div class="col-12 mb-3">
-       <label for="certificateSelect">Selecione um Certificado Digital</label>
-       <select class="custom-select"  id="certificateSelect" class="form-control"></select>
+<dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=codigo,tipo_doc=tipo_doc)">
+  <dtml-with expr="_.namespace(assinaturas=zsql.assinatura_documento_obter_zsql(codigo=codigo,tipo_doc=tipo_doc))">
+    <dtml-call expr="REQUEST.set('txt_qtde_assinaturas', len(assinaturas))">
+  </dtml-with>
+<dtml-else>
+  <dtml-unless expr="_.has_key('txt_qtde_assinaturas')">
+  <form class="d-print-none" method="post" id="qtde_assinaturas" name="qtde_assinaturas" action="pades-signature_html">  
+    <div class="form-row">
+     <div class="col-4 mb-3">
+       <label for="txt_qtde_assinaturas">Quantidade de Signatários</label>
+       <input class="form-control number" type="number" id="txt_qtde_assinaturas" name="txt_qtde_assinaturas" value="1" min="1" required data-toggle="popover" data-trigger="focus" title="Informação importante:" data-content="Informando até 3 (três) signatários, as assinaturas digitais serão exibidas na última página do documento, limitando a visualização de apenas três assinaturas. Informando 4 (quatro) signatários ou mais, uma nova página em branco será adicionada ao final do documento para visibilidade de todas as assinaturas."/>
      </div>
-  </div>
-  <button id="signButton" type="button" class="btn btn-primary"><i class="fas fa-file-signature"></i> Assinar PDF</button>
-  <button id="refreshButton" type="button" class="btn btn-secondary"><i class="fas fa-sync"></i> Recarregar Certificados</button>
-</form>
+    </div>
+    <input class="btn btn-primary" type="submit" name="button" value="Prosseguir" />
+    <input type="hidden" id="codigo" name="codigo" value="<dtml-var codigo>">
+    <input type="hidden" id="tipo_doc" name="tipo_doc" value="<dtml-var tipo_doc>">
+    <input type="hidden" id="modal" name="modal" value="1">    
+  </form>
+  </dtml-unless>
+</dtml-if>
 
-<script src="static/js/lacuna-web-pki-client.js"></script>
+<dtml-if expr="_.has_key('txt_qtde_assinaturas')">
+  <script src="static/js/lacuna-web-pki-2.14.6.min.js"></script>
+  <script src="static/js/jquery.blockUI.js"></script>
+  <dtml-call "REQUEST.set('campos', pades_signature_pdf(codigo=codigo, tipo_doc=tipo_doc, cod_usuario=cod_usuario, qtde_assinaturas=txt_qtde_assinaturas))">
+  <dtml-call "REQUEST.set('token', campos[0])">
+  <dtml-call "REQUEST.set('pdf_path', campos[1])">
+  <dtml-call "REQUEST.set('crc_arquivo', campos[2])">
 
+  <form id="signForm" action="pades-signature-action_html" method="post">
+    <input type="hidden" id="token" name="token" value="<dtml-var token>" />
+    <input type="hidden" id="crc_arquivo_original" name="crc_arquivo_original" value="<dtml-var crc_arquivo>" />  
+    <input type="hidden" id="codigo" name="codigo" value="<dtml-var codigo>">
+    <input type="hidden" id="cod_usuario" name="cod_usuario" value="<dtml-var cod_usuario>">  
+    <input type="hidden" id="tipo_doc" name="tipo_doc" value="<dtml-var tipo_doc>">
+    <input type="hidden" id="modal" name="modal" value="1" />
+    <input type="hidden" id="txt_qtde_assinaturas" name="txt_qtde_assinaturas" value="<dtml-var txt_qtde_assinaturas>">  
+    <div class="form-row">
+       <div class="col-12 mb-3">
+         <label for="certificateSelect">Selecione um Certificado Digital</label>
+         <select class="custom-select"  id="certificateSelect" class="form-control"></select>
+       </div>
+    </div>
+    <div class="form-row">
+       <div class="col-10 mb-3">
+         <button id="signButton" type="button" class="btn btn-primary"><i class="fas fa-file-signature"></i> Assinar PDF</button>
+         <button id="refreshButton" type="button" class="btn btn-secondary"><i class="fas fa-sync"></i> Recarregar Certificados</button>
+       </div>
+    </div>
+  </form>
+  <script src="static/js/lacuna-web-pki-client.js"></script>
+</dtml-if>
 <dtml-var standard_html_footer>

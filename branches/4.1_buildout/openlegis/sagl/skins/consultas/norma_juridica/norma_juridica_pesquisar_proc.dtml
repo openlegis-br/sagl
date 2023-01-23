@@ -7,7 +7,9 @@
   <div class="col-12 col-sm-4 text-left text-sm-right mb-2">
     <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
      <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/consultas/norma_juridica" ><i class="fa fa-fw fa-search"></i> Nova Pesquisa</a>
-     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">          
+     <dtml-call expr="REQUEST.set('chk_ind_publico', 1)">    
+     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+        <dtml-call expr="REQUEST.set('chk_ind_publico', '')">    
         <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_form" ><i class="fa fa-fw fa-plus"></i> Incluir Norma</a>
      </dtml-if>   
     </div>
@@ -36,7 +38,7 @@
 </dtml-if>
 <dtml-call "REQUEST.set('start',(page-1) * step + 1)">
 
-<dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=lst_tip_norma, num_norma=pysc.extrai_id_pysc(id=txt_numero), ano_norma=txt_ano, des_assunto=txt_assunto, cod_assunto=lst_assunto_norma, cod_situacao=lst_tip_situacao_norma, dat_norma=dt_norma, dat_norma2=dt_norma2, dat_publicacao=dt_public, dat_publicacao2=dt_public2, rd_ordem=rd_ordenacao)" size="step" start="start" orphan=0>
+<dtml-in expr="zsql.norma_juridica_obter_zsql(tip_norma=lst_tip_norma, num_norma=pysc.extrai_id_pysc(id=txt_numero), ano_norma=txt_ano, des_assunto=txt_assunto, cod_assunto=lst_assunto_norma, cod_situacao=lst_tip_situacao_norma, dat_norma=dt_norma, dat_norma2=dt_norma2, dat_publicacao=dt_public, dat_publicacao2=dt_public2, ind_publico=chk_ind_publico, rd_ordem=rd_ordenacao)" size="step" start="start" orphan=0>
  <dtml-if sequence-start>
     <dtml-if next-sequence>
        <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
@@ -188,7 +190,13 @@
     <div class="col-12 text-left mt-1"> 
      <div class="btn-group btn-group-sm">
       <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_original)">
-          <a class="btn btn-primary" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1" target="_blank"><i class="far fa-file-pdf"></i> Texto Original</a>
+          <a class="btn btn-primary" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1" target="_blank">
+            <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_norma, tipo_doc='norma',ind_assinado=1, cod_usuario=None)">
+              <i class="fa fa-certificate"></i> Texto Original
+            <dtml-else>
+              <i class="fa fa-fw fa-file-pdf"></i> Texto Original
+            </dtml-if>
+          </a>
       </dtml-if> 
       <dtml-if "_.hasattr(sapl_documentos.norma_juridica,texto_odt) and _.hasattr(sapl_documentos.norma_juridica,texto_consolidado)">
            <dtml-let documento_odt="_.getattr(sapl_documentos.norma_juridica,texto_odt).absolute_url">         
@@ -212,7 +220,7 @@
     <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
       <nav aria-label="Paginação">
         <ul class="pagination justify-content-center mb-0">
-          <dtml-var "pysc.PageListOutput_pysc('norma_juridica_pesquisar_proc', page, step, _['sequence-length'], incluir=incluir, lst_tip_norma=lst_tip_norma, txt_numero=txt_numero, txt_ano=txt_ano, txt_assunto=txt_assunto, lst_assunto_norma=lst_assunto_norma, lst_tip_situacao_norma=lst_tip_situacao_norma, dt_norma=dt_norma, dt_norma2=dt_norma2, dt_public=dt_public, dt_public2=dt_public2, rd_ordenacao=rd_ordenacao)">
+          <dtml-var "pysc.PageListOutput_pysc('norma_juridica_pesquisar_proc', page, step, _['sequence-length'], incluir=incluir, lst_tip_norma=lst_tip_norma, txt_numero=txt_numero, txt_ano=txt_ano, txt_assunto=txt_assunto, lst_assunto_norma=lst_assunto_norma, lst_tip_situacao_norma=lst_tip_situacao_norma, dt_norma=dt_norma, dt_norma2=dt_norma2, dt_public=dt_public, dt_public2=dt_public2, ind_publico=ind_publico, rd_ordenacao=rd_ordenacao)">
         </ul>
       </nav>
     </dtml-if>

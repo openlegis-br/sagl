@@ -6,6 +6,9 @@
   <dtml-call expr="REQUEST.set('metodo', zsql.relatoria_atualizar_zsql)">
 <dtml-else>
   <dtml-call expr="REQUEST.set('metodo', zsql.relatoria_incluir_zsql)">
+  <dtml-in expr="zsql.numero_parecer_obter_zsql(cod_comissao=hdn_cod_comissao, ano_parecer=txt_ano_parecer)">
+     <dtml-call expr="REQUEST.set('txt_num_parecer', novo_numero)">
+  </dtml-in>
 </dtml-if>
 
 <dtml-if expr="hdn_num_ordem!=''">
@@ -118,7 +121,7 @@
           </dtml-in>
           <dtml-call expr="REQUEST.set('hdn_hor_tramitacao', _.DateTime().strftime('%d/%m/%Y as %H:%M'))">
           <dtml-call expr="REQUEST.set('txt_tramitacao', '<p>Parecer ' + sgl_comissao + ' ' + txt_num_parecer +'/' + txt_ano_parecer + ' incorporado em ' + hdn_hor_tramitacao + '</p>')">
-          <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%d/%m/%Y'))">
+          <dtml-call expr="REQUEST.set('hdn_dat_tramitacao', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
           <dtml-call expr="REQUEST.set('hdn_dat_encaminha', _.DateTime().strftime('%Y-%m-%d %H:%M:%S'))">
           <dtml-call expr="REQUEST.set('sgl_status', 'PAR')">
           <dtml-in expr="zsql.status_tramitacao_obter_zsql(sgl_status=sgl_status)">
@@ -127,7 +130,7 @@
           <dtml-try> 
              <dtml-call expr="zsql.trans_begin_zsql()">                   
              <dtml-call expr="zsql.tramitacao_incluir_zsql(cod_materia = hdn_cod_materia,
-                                                   dat_tramitacao = pysc.data_converter_pysc(data=hdn_dat_tramitacao),
+                                                   dat_tramitacao = hdn_dat_tramitacao,
                                                    cod_unid_tram_local = cod_unid_tram_local,
                                                    cod_usuario_local = cod_usuario_corrente,
                                                    dat_encaminha = hdn_dat_encaminha,

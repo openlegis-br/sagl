@@ -1,0 +1,47 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_peticao tip_peticionamento txt_descricao cod_unid_tram_dest cod_documento_vinculado num_norma ano_norma dat_norma cod_materia txt_observacao
+max_rows : 1
+max_cache : 100
+</dtml-comment>
+
+UPDATE 
+  peticao
+
+SET
+  tip_peticionamento = <dtml-sqlvar tip_peticionamento type="int">,
+  txt_descricao = <dtml-sqlvar txt_descricao type="string">,
+  cod_unid_tram_dest = <dtml-sqlvar cod_unid_tram_dest type="int" optional>
+  
+<dtml-if cod_materia>
+  , cod_materia =
+  <dtml-if expr="cod_materia=='Nulo'"> NULL
+  <dtml-else><dtml-sqlvar cod_materia type="int" optional>
+  </dtml-if>
+</dtml-if>
+
+<dtml-if cod_documento_vinculado>
+  , cod_documento_vinculado = 
+  <dtml-if expr="cod_documento_vinculado=='Nulo'"> NULL
+  <dtml-else><dtml-sqlvar cod_documento_vinculado type="int" optional>
+  </dtml-if>
+</dtml-if>
+
+<dtml-if num_norma>
+  , num_norma = <dtml-sqlvar num_norma type="int">
+</dtml-if>
+
+<dtml-if ano_norma>
+  , ano_norma = <dtml-sqlvar ano_norma type="nb">
+</dtml-if>
+
+<dtml-if dat_norma>
+  , dat_norma = <dtml-sqlvar dat_norma type="nb">
+</dtml-if>
+
+<dtml-if txt_observacao>
+  , txt_observacao = <dtml-sqlvar txt_observacao type="string">
+</dtml-if>
+
+WHERE
+  <dtml-sqltest cod_peticao op="=" type="int">

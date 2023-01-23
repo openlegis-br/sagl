@@ -42,7 +42,7 @@ $(document).ready(function() {
 
   <h1 class="firstHeading">Assinatura Digital de Documentos</h1> 
 
-  <dtml-in expr="zsql.assinatura_documento_obter_zsql(cod_usuario=cod_usuario_corrente, ind_assinado=0)">
+  <dtml-in expr="zsql.assinatura_documento_obter_zsql(cod_usuario=cod_usuario_corrente, ind_assinado=0, ind_recusado=0)">
     <dtml-if cod_assinatura_doc>
        <dtml-call expr="REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
        <dtml-call expr="REQUEST.set('formatted_code', format_verification_code(cod_assinatura_doc))">
@@ -53,8 +53,7 @@ $(document).ready(function() {
         <thead class="table-secondary">
          <tr>
            <th>Data da Solicitação</th>
-           <th width="40%">Identificação do Documento</th>
-           <th>Código de Validação</th>
+           <th>Identificação do Documento</th>
            <th>Ações</th>
          </tr>
         </thead>
@@ -116,7 +115,7 @@ $(document).ready(function() {
                   Petição Eletrônica          
                <dtml-elif expr="tipo_doc == 'proposicao'">
                   <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=codigo, ind_excluido=0)">
-                     Proposição Eletrônica nº <dtml-var cod_proposicao>
+                     Proposição Eletrônica nº <dtml-var cod_proposicao> (<dtml-var des_tipo_proposicao> - <dtml-var txt_descricao> - Autoria: <dtml-var nom_autor>)
                   </dtml-in>                              
                <dtml-elif expr="tipo_doc == 'protocolo'">
                   <dtml-in expr="zsql.protocolo_obter_zsql(cod_protocolo=codigo, ind_excluido=0)">
@@ -164,10 +163,48 @@ $(document).ready(function() {
                   </dtml-in>                                            
                </dtml-if>
            </td>
-           <td><dtml-var formatted_code></td>           
            <td>
-              <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/<dtml-var expr="gerar_link_pysc(tipo_doc,codigo)">?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="far fa-file-pdf"></i> Visualizar</a>
+              <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/<dtml-var expr="gerar_link_pysc(tipo_doc,codigo)">" target="_blank"><i class="far fa-file-pdf"></i> Visualizar</a>
               <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var codigo>&tipo_doc=<dtml-var tipo_doc>&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
+             <!-- Modal -->
+             <button type="button" class="btn btn-sm btn-danger d-print-none" data-toggle="modal" data-target="#recusaModal<dtml-var formatted_code>">
+                <i class="fas fa-window-close"></i> Recusar
+             </button>
+             <div class="modal fade" id="recusaModal<dtml-var formatted_code>" tabindex="-1" aria-labelledby="recusaModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="ModalLabel">Recusa de Assinatura</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                   <form id="myform" role="form" method="post" action="assinatura_recusar_proc" onSubmit="return confirm('Confirma a recusa da assinatura?');" class="was-validated">
+                     <input type="hidden" name="cod_usuario" value="<dtml-var cod_usuario_corrente missing>" />
+                     <input type="hidden" name="tipo_doc" value="<dtml-var tipo_doc missing>" />
+                     <input type="hidden" name="codigo" value="<dtml-var codigo missing>" />
+                     <div class="form-row">
+                       <div class="col-12 mb-3">
+                        <label for="txa_txt_motivo_recusa" class="required">Motivo da Recusa</label>
+                        <textarea class="form-control" name="txa_txt_motivo_recusa" rows="3" required></textarea>
+                       </div>
+                     </div>
+                     <div class="form-row">
+                       <div class="col-12 mb-2">
+                        <button class="btn btn-primary" method="post" action="assinatura_recusar_proc">Recusar Assinatura</button>
+                       </div>
+                     </div>
+                     <div class="form-row">
+                       <div class="col-md-12">
+                         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+                       </div>
+                     </div>
+                   </form> 
+                  </div>
+                </div>
+              </div>
+            </div>
            </td>
          </tr>
     <dtml-if sequence-end>
@@ -175,7 +212,7 @@ $(document).ready(function() {
      </div>
     </dtml-if>
   <dtml-else>
-     <p>Nenhum documento pendente de assinatura.</p>
+     <p>Não há documentos pendentes de assinatura.</p>
   </dtml-in>
   
 <dtml-var standard_html_footer>

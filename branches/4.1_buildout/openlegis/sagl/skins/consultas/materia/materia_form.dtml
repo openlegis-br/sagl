@@ -11,7 +11,18 @@ $(function () {
         return $('#PopoverContent').html()
     }
     })
-}); 
+});
+
+ <dtml-let isAnon="portal_membership.isAnonymousUser()">
+    <dtml-if expr="not isAnon">
+  function documento_acessorio_excluir(cod_documento){ 
+       if (confirm("Deseja realmente excluir o documento acessório?")) {          
+          location.href="documento_acessorio_excluir_proc?cod_documento_acessorio="+cod_documento+"&cod_materia=<dtml-var cod_materia missing>";
+       }
+  } 
+    </dtml-if> 
+ </dtml-let>
+ 
 </script>
 
  <div class="row mb-2">
@@ -27,7 +38,7 @@ $(function () {
             </button>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
               <a class="dropdown-item" href="<dtml-var portal_url>/relatorios/pdf_detalhe_materia_preparar_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" target="_blank"><i class="far fa-file-pdf"></i> PDF Textual</a>
-               <a class="dropdown-item" href="<dtml-var portal_url>/modelo_proposicao/processo_eletronico?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" target="_blank"><i class="far fa-file-pdf"></i> Processo Integral</a>
+               <a class="dropdown-item block" href="<dtml-var portal_url>/modelo_proposicao/processo_eletronico?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" target="_blank"><i class="far fa-file-pdf"></i> Processo Integral</a>
             </div>
           </div>
         </dtml-if>
@@ -157,7 +168,7 @@ $(function () {
     <p class="col-12"><b>Matéria Anexadora:</b>
      <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_anexada=cod_materia, ind_excluido=0)">
        <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal, ind_excluido = 0)">
-          <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
+          <a <dtml-if expr="des_tipo_materia=='Veto'">class="text-danger font-weight-bold"</dtml-if> href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">">
             <b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica missing null="">/<dtml-var ano_ident_basica missing null=""></b></a>
        </dtml-in><dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
      </dtml-in>
@@ -563,21 +574,27 @@ $(function () {
         </div>
  </dtml-if>
 
- <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
-    <dtml-call expr="REQUEST.set('temDocAC', 1)">
- </dtml-in>
-
  <dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
     <dtml-call expr="REQUEST.set('temDocADM', 1)">
  </dtml-in>
 
  <dtml-let isAnon="portal_membership.isAnonymousUser()">
     <dtml-if expr="not isAnon">
+      <dtml-call expr="REQUEST.set('metodo_acessorio', zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia, ind_excluido=0))">
+      <dtml-in metodo_acessorio>
+         <dtml-call expr="REQUEST.set('temDocAC', 1)">
+      </dtml-in>    
       <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
          <dtml-if expr="_.has_key('cod_ult_unidade') and int(cod_ult_unidade) == int(cod_unid_tramitacao)">
             <dtml-call expr="REQUEST.set('add_doc', 1)">
          </dtml-if>
       </dtml-in>
+     <dtml-else>
+      <dtml-call expr="REQUEST.set('metodo_acessorio', zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia, ind_excluido=0))">
+       <dtml-in metodo_acessorio>
+          <dtml-call expr="REQUEST.set('ind_publico', 1)">       
+          <dtml-call expr="REQUEST.set('temDocAC', 1)">
+       </dtml-in>  
      </dtml-if>
  </dtml-let>
 
@@ -642,8 +659,8 @@ $(function () {
               </div>   
             </dtml-if>
           </dtml-let>
-      
-         <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+          
+         <dtml-in metodo_acessorio>
             <dtml-if sequence-start>
               <p class="text-center font-weight-bold h6">Documentos Acessórios</p>
               <div class="table-responsive">            
@@ -651,8 +668,8 @@ $(function () {
                  <thead">
                    <tr>
                      <th>Identificação do Documento</th>
-                     <th>Autor</th>                                          
-                     <th>Data</th>
+                     <th>Autoria</th>                                          
+                     <th>Data / Horário</th>
                    </tr>
                  </thead>
              </dtml-if>
@@ -662,7 +679,12 @@ $(function () {
                        <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
                           <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
                              <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
-                               <i class="fas fa-file-pdf"></i> <dtml-var des_tipo_documento> - <dtml-var nom_documento missing>
+                               <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento, tipo_doc='doc_acessorio',ind_assinado=1, cod_usuario=None)">
+                                  <i class="fa fa-certificate"></i>
+                                <dtml-else>
+                                  <i class="fa fa-fw fa-file-pdf"></i>
+                               </dtml-if>
+                               <dtml-var des_tipo_documento> - <dtml-var nom_documento missing>
                              </a>
                            <dtml-if expr="sapl_documentos.props_sagl.restpki_access_token!='' and dbcon_logs">
                              <dtml-let isAnon="portal_membership.isAnonymousUser()">                      
@@ -676,12 +698,12 @@ $(function () {
                                 </dtml-if>
                               </dtml-let>
                               <dtml-if expr="_.has_key('add_doc') and _.has_key('usuario_doc') and _.has_key('usuario_logado') and usuario_doc==usuario_logado">
-                                <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='doc_acessorio', codigo=cod_documento)">
-                                  <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
-                                </dtml-in>
-                                <dtml-if expr="not _.has_key('cod_assinatura_doc')">
-                                   <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinatura Digital" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_documento>&tipo_doc=doc_acessorio&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
-                                </dtml-if>             
+                               <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento, tipo_doc='doc_acessorio')">             
+                               <dtml-else>
+                                  <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_documento>&tipo_doc=doc_acessorio&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
+                               </dtml-if>
+                               <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_documento>&tipo_doc=doc_acessorio&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+                               <button type="button" class="btn btn-sm btn-danger" onClick="documento_acessorio_excluir(<dtml-var cod_documento missing>)"><i class="fas fa-trash"></i> Excluir</button>          
                               </dtml-if>
                            </dtml-if>                             
                           </dtml-let>

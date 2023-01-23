@@ -50,7 +50,7 @@ def paraStyle():
     tmp+='\t\t<paraStyle name="P1" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9.0" leading="10" alignment="LEFT"/>\n'
     tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="10" leading="12" alignment="JUSTIFY"/>\n'
-    tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10.0" leading="11" alignment="CENTER"/>\n'
+    tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="10.0" leading="13" alignment="CENTER"/>\n'
     tmp+='\t</stylesheet>\n'
     return tmp
 
@@ -95,7 +95,10 @@ def pauta(lst_splen, lst_pauta):
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
         if dic['id_materia']!=None:
-            tmp+='\t\t<para style="P4"><b><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</b></para>\n'
+            if dic['cod_materia']!='':
+               tmp+='\t\t<para style="P4"><b><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + '</b></para>\n'
+            if dic['cod_parecer']!='':               
+               tmp+='\t\t<para style="P4"><b><font color="#126e90"><u>' + dic['link_materia']+'</u></font> - '+ dic['nom_autor'] + ', que '+ dic['txt_materia'] + '</b></para>\n'
             tmp+='\t\t<para style="P3" spaceAfter="4">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
@@ -105,25 +108,43 @@ def pauta(lst_splen, lst_pauta):
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
 
-        if dic['substitutivo']!= 0:
+        tmp+='\t\t<para style="P3"><b>Turno</b>: '+ dic['des_turno'] +' | <b>Quorum</b>: '+ dic['des_quorum']+' | <b>Tipo de Votação</b>: '+ dic['tip_votacao'] + '' + '</para>\n'
+        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
+        tmp+='\t\t\t<font color="white"> </font>\n'
+        tmp+='\t\t</para>\n'
+
+        if dic['parecer']!= 0 and dic['parecer']!= '':
+            tmp+='\t\t<para style="P3"><b><u>PARECERES:</u></b></para>\n\n'
+            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+            tmp+='\t\t\t<font color="white"> </font>\n'
+            tmp+='\t\t</para>\n'
+            for item in dic['pareceres']:
+                tmp+='\t\t<para style="P3"><b><font color="#126e90">' + item["link_materia"] + '</font> - ' + item["conclusao"] + '</b> ' + item["relatoria"] + '</para>\n'
+                tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+                tmp+='\t\t\t<font color="white"> </font>\n'
+                tmp+='\t\t</para>\n'
+
+        if dic['substitutivo']!= 0 and dic['substitutivo']!= '':
+            tmp+='\t\t<para style="P3"><b><u>SUBSTITUTIVOS:</u></b></para>\n\n'
+            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+            tmp+='\t\t\t<font color="white"> </font>\n'
+            tmp+='\t\t</para>\n'        
             for substitutivo in dic['substitutivos']:
                 tmp+='\t\t<para style="P3"><b><font color="#126e90">' + substitutivo["id_substitutivo"] + '</font> - ' + substitutivo["autoria"] + '</b> - ' + substitutivo["txt_ementa"] + '</para>\n'
                 tmp+='\t\t<para style="P2" spaceAfter="4">\n'
                 tmp+='\t\t\t<font color="white"> </font>\n'
                 tmp+='\t\t</para>\n'
 
-        if dic['emenda']!= 0:
+        if dic['emenda']!= 0 and dic['emenda']!= '':
+            tmp+='\t\t<para style="P3"><b><u>EMENDAS:</u></b></para>\n\n'
+            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+            tmp+='\t\t\t<font color="white"> </font>\n'
+            tmp+='\t\t</para>\n'             
             for emenda in dic['emendas']:
                 tmp+='\t\t<para style="P3"><b><font color="#126e90">' + emenda["id_emenda"] + '</font> - ' + emenda["autoria"] + '</b> - ' + emenda["txt_ementa"] + '</para>\n'
                 tmp+='\t\t<para style="P2" spaceAfter="4">\n'
                 tmp+='\t\t\t<font color="white"> </font>\n'
                 tmp+='\t\t</para>\n'
-
-        tmp+='\t\t<para style="P3"><b>Turno</b>: '+ dic['des_turno'] +' | <b>Quorum</b>: '+ dic['des_quorum']+' | <b>Tipo de Votação</b>: '+ dic['tip_votacao'] + '' + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
-        tmp+='\t\t\t<font color="white"> </font>\n'
-        tmp+='\t\t</para>\n'
-
     return tmp
 
 def presidente(lst_presidente):

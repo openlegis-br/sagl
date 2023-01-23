@@ -2,7 +2,7 @@
 
 import csv
 
-from zope.component.hooks import setSite
+from zope.site.hooks import setSite
 
 from Products.GenericSetup.tool import SetupTool
 from Products.CMFDefault.Portal import CMFSite
@@ -11,7 +11,7 @@ from Products.CMFCore.utils import getToolByName
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_base
 
-from AccessControl.class_init import InitializeClass
+from App.class_init import InitializeClass
 
 _TOOL_ID = 'portal_setup'
 _DEFAULT_PROFILE = 'openlegis.sagl:default'
@@ -52,7 +52,7 @@ manage_addSAGLForm = PageTemplateFile('www/addSAGL', globals())
 manage_addSAGLForm.__name__ = 'addSAGL'
 
 
-def manage_addSAGL(context, id, title='SAGL', description='',
+def manage_addSAGL(context, id, title='OpenLegis - Processo Legislativo Eletrônico', description='',
                    database='MySQL', profile_id=_DEFAULT_PROFILE, RESPONSE=None):
     """ Adicionar uma instancia do SAGL-OpenLegis.
     """
@@ -80,14 +80,14 @@ def manage_addSAGL(context, id, title='SAGL', description='',
     if database == 'MySQL':
         site.manage_addProduct['ZMySQLDA'].manage_addZMySQLConnection(
             id='dbcon_interlegis',
-            title='Banco de Dados SAGL (MySQL)',
+            title='Banco de Dados do SAGL - OpenLegis (MySQL)',
             use_unicode=True,
             connection_string='openlegis sagl sagl'
         )
     else:
         site.manage_addProduct['ZPsycopgDA'].manage_addZPsycopgConnection(
             id='dbcon_interlegis',
-            title='Banco de Dados SAGL (PostgreSQL)',
+            title='Banco de Dados do SAGL - OpenLegis (PostgreSQL)',
             connection_string='dbname=interlegis user=sagl password=sagl host=localhost'
         )
 

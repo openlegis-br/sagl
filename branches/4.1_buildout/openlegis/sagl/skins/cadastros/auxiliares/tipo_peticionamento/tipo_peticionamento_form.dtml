@@ -1,0 +1,248 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+  function campos_criticar(form){  
+
+     if (form.des_tipo_peticionamento.value == "") {
+        alert("A descrição deve ser preenchida!");
+        form.des_tipo_peticionamento.focus();
+        return false;
+     }
+    if (form.tip_derivado.value == ""){
+        alert("Escolha um tipo de registro derivado!");
+        form.tip_derivado.focus();
+        return false;
+    }
+     form.submit();
+  }
+
+  function tip_peticionamento_excluir(form) {
+
+     if (confirm("Deseja realmente excluir?")) {  
+        location.href = "tipo_peticionamento_excluir_proc?tip_peticionamento=" + form.tip_peticionamento.value;
+     }
+  }
+  function set_ind_mat_doc(valor){
+       location.href = "tipo_peticionamento_form?escolha="+valor+'&tip_derivado='+document.tip_peticionamento_form.tip_derivado.value+ '&des_tipo_peticionamento='+document.tip_peticionamento_form.des_tipo_peticionamento.value+'&tip_peticionamento='+'<dtml-var tip_peticionamento missing>';
+  }
+
+function modelo_criticar(form){  
+
+  if (form.txt_title.value == "") {
+    alert("O nome do modelo deve ser informado!");
+    form.txt_title.focus();
+    return false;
+  }
+
+  if (form.file_nom_arquivo.value == 0) {
+    alert("Selecione um arquivo ODT para incluir como modelo!");
+    form.file_nom_arquivo.focus();
+    return false;
+  }
+
+  form.submit();
+}
+
+$(document).ready(function () {
+  bsCustomFileInput.init()
+})
+
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Tipo de Peticionamento Eletrônico</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="index_html"><i class="fa fa-fw fa-undo"></i> Voltar</a>         
+         </div>
+      </div>
+ </div>
+
+<form class="mb-3" name="tip_peticionamento_form" method="post" action="tipo_peticionamento_salvar_proc">
+  <input type="hidden" name="tip_peticionamento" value="<dtml-var tip_peticionamento missing>" />
+  <div class="form-row">
+    <div class="col-12 mb-3">
+       <label for="des_tipo_peticionamento" class="required">Descrição</label>        
+       <input class="form-control" type="text" id="des_tipo_peticionamento" name="des_tipo_peticionamento" value="<dtml-var des_tipo_peticionamento missing>" maxlength="50" required />
+    </div>  
+  </div>
+
+  <div class="form-row">
+    <div class="col-12 mb-3">
+       <label class="d-block required">Incorporar como:</label>
+          <div class="form-check form-check-inline">         
+             <input class="form-check-input" type="radio" id="inlineRadio1" name="ind_mat_ou_doc" value="A" size="50" maxlength="50" onClick="set_ind_mat_doc('A')"<dtml-if expr="REQUEST.get('escolha','')=='A' or (_.has_key('ind_mat_ou_doc') and ind_mat_ou_doc=='A')">checked</dtml-if> />
+            <label class="form-check-label" for="inlineRadio1">Documento Administrativo</label>             
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="inlineRadio2" name="ind_mat_ou_doc" value="M" size="50" maxlength="50" onClick="set_ind_mat_doc('M')"<dtml-if expr="REQUEST.get('escolha','')=='M' or (_.has_key('ind_mat_ou_doc') and ind_mat_ou_doc=='M')">checked</dtml-if> />
+            <label class="form-check-label" for="inlineRadio2">Protocolo de Norma Jurídica</label>
+          </div>
+          <div class="form-check form-check-inline">         
+             <input class="form-check-input" type="radio" id="inlineRadio3" name="ind_mat_ou_doc" value="D" size="50" maxlength="50" onClick="set_ind_mat_doc('D')"<dtml-if expr="REQUEST.get('escolha','')=='D' or (_.has_key('ind_mat_ou_doc') and ind_mat_ou_doc=='D')">checked</dtml-if> />
+            <label class="form-check-label" for="inlineRadio3">Documento Acessório de Matéria</label>             
+          </div>
+    </div> 
+  </div>
+
+  <div class="form-row">
+    <div class="col-6 mb-3">
+           <dtml-if expr="REQUEST.get('escolha','')=='M'">
+             <label for="tip_derivado" class="required">Tipo de Norma Jurídica</label>
+              <select class="custom-select" id="tip_derivado" name="tip_derivado">
+                 <option></option>
+                 <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql()">
+                   <option 
+                     value="<dtml-var tip_norma>"<dtml-if expr="tip_derivado==tip_norma">selected</dtml-if>>
+                     <dtml-var des_tipo_norma></option>
+                </dtml-in>
+             </select>
+           <dtml-elif expr="REQUEST.get('escolha','')=='A'">
+             <label for="tip_derivado" class="required">Tipo de Documento Administrativo</label>
+              <select class="custom-select" id="tip_derivado" name="tip_derivado">
+                <option></option>              
+                <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql()">
+                  <option 
+                     value="<dtml-var tip_documento>"<dtml-if expr="(_.has_key('tip_derivado') and tip_derivado==tip_documento)">selected</dtml-if>>
+                     <dtml-var des_tipo_documento></option>
+                </dtml-in>
+             </select>
+           <dtml-elif expr="REQUEST.get('escolha','')=='D'">
+             <label for="tip_derivado" class="required">Tipo de Documento Acessório</label>
+              <select class="custom-select" id="tip_derivado" name="tip_derivado">
+                <option></option>              
+                <dtml-in expr="zsql.tipo_documento_obter_zsql()">
+                  <option 
+                     value="<dtml-var tip_documento>"<dtml-if expr="(_.has_key('tip_derivado') and tip_derivado==tip_documento)">selected</dtml-if>>
+                     <dtml-var des_tipo_documento></option>
+                </dtml-in>
+             </select>    
+           </dtml-if>   
+    </div>
+    <div class="col-6 mb-3">
+      <label for="lst_cod_tram_dest">Unidade de Destino</label>
+          <select class="custom-select" id="lst_cod_tram_dest" name="lst_cod_tram_dest" required>
+             <option value="">Selecione</option>
+               <dtml-if expr="escolha=='A'">
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>" <dtml-if expr="_.has_key('cod_unid_tram_dest') and str(cod_unid_tram_dest) == str(cod_unid_tramitacao)">selected</dtml-if>>
+                      <dtml-var nom_unidade_join>
+                    </option>
+                 </dtml-in>
+               <dtml-elif expr="escolha=='M'">
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>" <dtml-if expr="_.has_key('cod_unid_tram_dest') and str(cod_unid_tram_dest) == str(cod_unid_tramitacao)">selected</dtml-if>>
+                      <dtml-var nom_unidade_join>
+                    </option>
+                 </dtml-in>
+               <dtml-elif expr="escolha=='D'">
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>" <dtml-if expr="_.has_key('cod_unid_tram_dest') and str(cod_unid_tram_dest) == str(cod_unid_tramitacao)">selected</dtml-if>>
+                      <dtml-var nom_unidade_join>
+                    </option>
+                 </dtml-in>
+               <dtml-else>
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_leg=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>" <dtml-if expr="_.has_key('cod_unid_tram_dest') and int(cod_unid_tram_dest) == int(cod_unid_tramitacao)">selected</dtml-if>>
+                      <dtml-var nom_unidade_join>
+                    </option>
+                 </dtml-in>
+               </dtml-if>                 
+          </select>    
+    </div>
+  </div>
+
+<dtml-if tip_peticionamento>
+  <div class="form-row">
+     <div class="col-12 mb-3"> 
+        <label for="lst_usuarios">Usuários Permitidos</label>
+        <select id="lst_usuarios" name="lst_usuarios" class="form-control selectpicker show-tick" multiple data-actions-box="true" data-size="10" data-selected-text-format="count > 4" data-live-search="true">
+          <dtml-in expr="zsql.usuario_obter_zsql(ind_ativo='1',ind_excluido=0)">        
+            <option value="<dtml-var cod_usuario>"
+              <dtml-if tip_peticionamento>
+                <dtml-if expr="zsql.usuario_peticionamento_obter_zsql(cod_usuario=cod_usuario, tip_peticionamento=tip_peticionamento)">
+                   selected
+               </dtml-if>
+              </dtml-if> >
+              <dtml-var nom_completo> (<dtml-var col_username>)</option>            
+          </dtml-in>     
+        </select>
+        </div>
+  </div>
+</dtml-if>
+
+  <input class="btn btn-primary" type="button" name="btn_tip_peticionamento_salvar" value="Salvar" onClick="campos_criticar(window.document.tip_peticionamento_form)" />
+  <dtml-if tip_peticionamento>
+    <input class="btn btn-danger" type="button" name="btn_tip_peticionamento_excluir" value="Excluir" onClick="tip_peticionamento_excluir(window.document.tip_peticionamento_form)" />
+  </dtml-if>
+<div class="row">
+      <div class="col-md-12 mt-2">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+      </div>
+   </div>
+</form>
+
+<dtml-if tip_peticionamento>
+    <legend>Modelos ODT</legend>
+    <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(tip_peticionamento)+'-')">
+      <dtml-with expr="sapl_documentos.modelo.peticionamento">
+       <dtml-in expr="objectValues('File')" sort="title_or_id">
+        <dtml-if sequence-start>
+           <table class="table">
+            <thead class="table-secondary">       
+              <tr>
+                <th>Nome do Modelo</th>
+                <th width="20%">Última Alteração</th>
+                <th width="20%">Ações</th>
+              </tr>
+            </thead>
+        </dtml-if> 
+        <dtml-if expr="id().startswith(prefixo_arquivo)">         
+           <tr>
+            <td class="edit" style="cursor: pointer" id="<dtml-var id>" title="<dtml-var title>"><dtml-var title_or_id></td>
+            <td><dtml-var bobobase_modification_time fmt="%d/%m/%Y - %H:%M"></td>
+            <td>
+              <div class="btn-group">
+              <a class="btn btn-sm btn-secondary" target="_blank" href="&dtml-absolute_url;" title="Download"><i class="fas fa-fw fa-download"></i></a>
+              <a class="btn btn-sm btn-secondary" target="_blank" href="<dtml-var portal_url>/sapl_documentos/modelo/peticionamento/externalEdit_/<dtml-var id>.zem" title="Editor Externo"><i class="fa fa-fw fa-edit"></i></a>
+              <a class="btn btn-sm btn-danger" href="modelo_excluir_proc?id_documento=<dtml-var id>&hdn_url=tipo_peticionamento_mostrar_proc?tip_peticionamento=<dtml-var tip_peticionamento>" data-confirm="Deseja realmente excluir o modelo?" title="Excluir"><i class="fa fa-fw fa-trash"></i></a>
+              </div>
+            </td>
+           </tr>
+        </dtml-if>
+        <dtml-if sequence-end>
+           </table>
+        </dtml-if> 
+       <dtml-else>
+          <p>Nenhum modelo cadastrado.</p>  
+       </dtml-in>
+      </dtml-with>
+
+ <form name="modelo_form" method="post" action="modelo_incluir_proc" enctype="multipart/form-data">
+ <div class="form-row">
+   <div class="col-6 mb-3"> 
+     <label for="txt_title" class="required">Nome do Modelo</label>   
+     <input class="form-control" type="text" id="txt_title" name="txt_title" maxlength="100"/>
+   </div>
+   <div class="col-6 mb-3">
+      <label for="file_nom_arquivo">Arquivo ODT</label> 
+      <div class="input-group">                   
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/vnd.oasis.opendocument.text">
+          <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+        </div>
+        <div class="input-group-append">
+          <input class="btn btn-primary" type="button" class="btn btn-sm btn-secondary" value="Incluir" onClick="modelo_criticar(document.modelo_form)" />
+          <input type="hidden" name="id_documento" value="<dtml-var tip_peticionamento>-<dtml-var expr="ZopeTime().timeTime()">.odt">
+          <input type="hidden" name="hdn_url" value="tipo_peticionamento_mostrar_proc?tip_peticionamento=<dtml-var tip_peticionamento>">              
+        </div>
+      </div>
+   </div>
+ </div>
+ </form>
+</dtml-if>
+
+<dtml-var standard_html_footer>

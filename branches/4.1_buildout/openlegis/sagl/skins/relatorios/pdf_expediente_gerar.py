@@ -1,4 +1,4 @@
-##parameters=rodape_dic, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_pareceres, lst_presidente, sessao=''
+##parameters=rodape_dic, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_pareceres, lst_outros, lst_presidente, sessao=''
 """Script para geração da pauta das matérias do expediente em PDF
    Autor: Luciano De Fázio - OpenLegis
    versão: 1.0
@@ -226,6 +226,31 @@ def mocoes(lst_mocoes):
 
     return tmp
 
+lst_outros = [(i + 1, j) for i, j in enumerate(lst_outros)]
+def outros(lst_outros):
+    """
+    """
+    tmp = ''
+    if lst_outros != []:
+       tmp+='\t\t<para style="P7" spaceBefore="15"><b><u>VOTAÇÕES DIVERSAS</u></b></para>\n\n'
+       tmp+='\t\t<para style="P2" spaceAfter="6">\n'
+       tmp+='\t\t\t<font color="white"> </font>\n'
+       tmp+='\t\t</para>\n'
+    for i, outro in lst_outros:
+     if len(outro) > 0:
+        tmp+='\t\t<para style="P1">'+ str(i) +') <font color="#126e90">' + outro['link_materia']+'</font> - '+ outro['nom_autor'] + '</para>\n'
+        tmp+='\t\t<para style="P2" spaceAfter="2">\n'
+        tmp+='\t\t\t<font color="white"> </font>\n'
+        tmp+='\t\t</para>\n'
+        tmp+='\t\t<para style="P3">' + outro['txt_ementa'].replace('&','&amp;') + '</para>\n'
+        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
+        tmp+='\t\t\t<font color="white"> </font>\n'
+        tmp+='\t\t</para>\n'
+     else:
+        tmp+='\t\t<para style="P3">Não há nenhum item</para>\n'
+
+    return tmp
+
 
 def presidente(lst_presidente):
     """ Gera o codigo rml da assinatura"""
@@ -265,6 +290,7 @@ def principal(cabecalho, rodape, sessao, imagem, inf_basicas_dic):
     tmp+=indicacoes(lst_indicacoes)
     tmp+=requerimentos(lst_requerimentos)
     tmp+=mocoes(lst_mocoes)
+    tmp+=outros(lst_outros)
     tmp+=presidente(lst_presidente)
     tmp+='\t</story>\n'
     tmp+='</document>\n'

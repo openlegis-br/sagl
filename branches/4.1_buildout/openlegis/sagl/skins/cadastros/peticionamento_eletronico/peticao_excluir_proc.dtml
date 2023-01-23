@@ -1,0 +1,42 @@
+<dtml-try>
+   <dtml-call expr="REQUEST.set('metodo', zsql.peticao_excluir_zsql)">        
+   <dtml-call expr="metodo(cod_peticao=cod_peticao)">
+   <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_peticao)+'.pdf')">
+   <dtml-call expr="REQUEST.set('id_odt', _.str(cod_peticao)+'.odt')">
+   <dtml-if "_.hasattr(sapl_documentos.peticao,id_pdf)">
+      <dtml-call expr="sapl_documentos.peticao.manage_delObjects(id_pdf)">
+   </dtml-if>
+   <dtml-if "_.hasattr(sapl_documentos.peticao,id_odt)">
+      <dtml-call expr="sapl_documentos.peticao.manage_delObjects(id_odt)">
+   </dtml-if>
+   <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_peticao,tipo_doc='peticao')">
+     <dtml-try>
+        <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                      cod_assinatura_doc  = cod_assinatura_doc,
+                      codigo              = codigo,
+                      tipo_doc            = tipo_doc)">
+     <dtml-except>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+     </dtml-try>
+   </dtml-in>
+<dtml-except>
+  <dtml-let mensagem="'Houve um erro! Petição não excluída!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>  
+<dtml-else>
+  <dtml-let mensagem="'Petição excluída com sucesso!'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'peticao_excluir_proc',
+            IP           = pysc.get_ip(),
+            cod_registro = cod_peticao)"> 
+</dtml-if>
+

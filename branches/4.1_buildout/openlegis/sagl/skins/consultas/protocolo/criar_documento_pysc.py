@@ -37,20 +37,31 @@ def criar_documento(tip_documento, num_documento, ano_documento, dat_documento, 
     id_protocolo = str(cod_protocolo)+'_protocolo.pdf'
     id_protocolo_signed = str(cod_protocolo)+'_protocolo_signed.pdf'
     
+    tipo_doc = context.zsql.tipo_documento_administrativo_obter_zsql(tip_documento=tip_documento)[0]
+
     if hasattr(context.sapl_documentos.protocolo,id_protocolo_signed):
        tmp_copy = context.sapl_documentos.protocolo.manage_copyObjects(ids=id_protocolo_signed)
        tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
        context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
+       documento = getattr(context.sapl_documentos.administrativo,id_documento)
+       if tipo_doc.ind_publico == 0:
+          documento.manage_permission('View', roles=['Authenticated', 'Manager'], acquire=0)
+       elif tipo_doc.ind_publico == 1:
+          documento.manage_permission('View', roles=['Anonymous','Manager'], acquire=1)
     elif hasattr(context.sapl_documentos.protocolo,id_protocolo):
        tmp_copy = context.sapl_documentos.protocolo.manage_copyObjects(ids=id_protocolo)
        tmp_id = context.sapl_documentos.administrativo.manage_pasteObjects(tmp_copy)[0]['new_id']
        context.sapl_documentos.administrativo.manage_renameObjects(ids=list([tmp_id]),new_ids=list([id_documento]))
+       documento = getattr(context.sapl_documentos.administrativo,id_documento)
+       if tipo_doc.ind_publico == 0:
+          documento.manage_permission('View', roles=['Authenticated', 'Manager'], acquire=0)
+       elif tipo_doc.ind_publico == 1:
+          documento.manage_permission('View', roles=['Anonymous','Manager'], acquire=1)
 
     if context.dbcon_logs:
        context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'documento_administrativo', metodo = 'documento_administrativo_incluir_zsql', cod_registro = cod_documento, IP = context.pysc.get_ip()) 
 
-    return tramitar_documento(cod_documento, num_protocolo, ano_documento)
-   
+    return tramitar_documento(cod_documento, num_protocolo, ano_documento) 
 
 
 def tramitar_documento(cod_documento, num_protocolo, ano_documento):
@@ -71,11 +82,11 @@ def tramitar_documento(cod_documento, num_protocolo, ano_documento):
            cod_usuario_corrente = 0
            
     hr_tramitacao = DateTime().strftime('%d/%m/%Y às %H:%M')
-    txt_tramitacao = 'Protocolo nº ' + str(num_protocolo) + '/' + str(ano_documento) + ' autuado em ' + hr_tramitacao 
+    txt_tramitacao = '<p>Protocolo nº ' + str(num_protocolo) + '/' + str(ano_documento) + ' autuado em ' + hr_tramitacao +'</p>'
     hdn_url = 'protocolo_mostrar_proc?cod_protocolo=' + cod_protocolo
     
     if cod_unid_tram_local != None and cod_unid_tram_dest != None and cod_status != None:
-       context.zsql.tramitacao_administrativo_incluir_zsql(cod_documento=cod_documento, dat_tramitacao=DateTime().strftime('%Y-%m-%d'), cod_unid_tram_local=cod_unid_tram_local, cod_usuario_local=cod_usuario_corrente, cod_unid_tram_dest=cod_unid_tram_dest, dat_encaminha=DateTime().strftime('%Y-%m-%d %H:%M:%S'), cod_status=cod_status, txt_tramitacao = txt_tramitacao, ind_ult_tramitacao=1)
+       context.zsql.tramitacao_administrativo_incluir_zsql(cod_documento=cod_documento, dat_tramitacao=DateTime().strftime('%Y-%m-%d %H:%M:%S'), cod_unid_tram_local=cod_unid_tram_local, cod_usuario_local=cod_usuario_corrente, cod_unid_tram_dest=cod_unid_tram_dest, dat_encaminha=DateTime().strftime('%Y-%m-%d %H:%M:%S'), cod_status=cod_status, txt_tramitacao = txt_tramitacao, ind_ult_tramitacao=1)
         
     for tramitacao in context.zsql.tramitacao_administrativo_incluida_codigo_obter_zsql():
         cod_tramitacao = tramitacao.cod_tramitacao

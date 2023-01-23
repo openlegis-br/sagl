@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=tipo_materia, txt_numero, txt_ano, rad_tramitando, txt_assunto, lst_status, hdn_cod_autor, txt_num_protocolo, dt_apres, dt_apres2, dt_public, dt_public2, lst_localizacao, rd_ordenacao
+##parameters=tipo_materia, txt_numero, txt_ano, rad_tramitando, txt_assunto, lst_status, hdn_cod_autor, txt_num_protocolo, dt_apres, dt_apres2, dt_public, dt_public2, lst_localizacao, lst_tramitou, rd_ordenacao
 ##title=
 ##
 REQUEST  = context.REQUEST
@@ -28,6 +28,7 @@ for item in context.zsql.materia_pesquisar_zsql(
                                                dat_publicacao=REQUEST['dt_public'],
                                                dat_publicacao2=REQUEST['dt_public2'],
                                                cod_unid_tramitacao=REQUEST['lst_localizacao'],
+                                               cod_unid_tramitacao2=REQUEST['lst_tramitou'],
                                                rd_ordem=REQUEST['rd_ordenacao']
                                                ):
 

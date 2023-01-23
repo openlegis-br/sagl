@@ -10,12 +10,14 @@
   <dtml-call expr="REQUEST.set('metodo', zsql.usuario_excluir_zsql)">
   <dtml-call expr="REQUEST.set('item', _['sequence-item'])">
   <dtml-in expr="zsql.usuario_obter_zsql(col_username=_['sequence-item'])">
-    <dtml-try>
-      <dtml-call expr="REQUEST.set('cod_usuario', cod_usuario)">
-      <dtml-call expr="metodo(cod_usuario=cod_usuario)">
-    <dtml-except>
-       <dtml-call expr="REQUEST.set('erro', 1)">
-    </dtml-try>
+    <dtml-if cod_usuario>
+       <dtml-try>
+           <dtml-call expr="REQUEST.set('cod_usuario', cod_usuario)">
+           <dtml-call expr="metodo(cod_usuario=cod_usuario)">
+       <dtml-except>
+          <dtml-call expr="REQUEST.set('erro', 1)">
+       </dtml-try>
+    </dtml-if>
   </dtml-in>
 </dtml-in>
 
@@ -32,7 +34,7 @@
 </dtml-unless> 
 
 <dtml-comment>LOG DE AUDITORIA</dtml-comment>
-<dtml-if dbcon_logs>
+<dtml-if expr="dbcon_logs and _.has_key('cod_usuario')">
   <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
   <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
   <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
@@ -43,5 +45,5 @@
             metodo       = metodo1,
             IP           = pysc.get_ip(),
             dados        = REQUEST.form.items(),
-            cod_registro = cod_usuario)"> 
+            cod_registro = int(cod_usuario))"> 
 </dtml-if>

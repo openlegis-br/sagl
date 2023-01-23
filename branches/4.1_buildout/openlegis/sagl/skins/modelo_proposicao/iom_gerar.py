@@ -46,33 +46,116 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
           dic_presenca["nom_completo"] = parlamentar.nom_completo
           dic_presenca['sgl_partido'] = parlamentar.sgl_partido
           lst_presenca_sessao.append(dic_presenca)
+
   # Materias Apresentadas
   lst_materia_apresentada=[]
   for materia_apresentada in context.zsql.materia_apresentada_sessao_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
       dic_materia_apresentada = {}
+      # seleciona os detalhes de uma matéria
       if materia_apresentada.cod_materia != None:
          materia = context.zsql.materia_obter_zsql(cod_materia=materia_apresentada.cod_materia)[0]
          dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
-         dic_materia_apresentada["id_materia"] = materia.des_tipo_materia.decode('utf-8').upper()+" Nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
          dic_materia_apresentada["txt_ementa"] = materia.txt_ementa
-         dic_materia_apresentada["nom_autor"] = ""
+         dic_materia_apresentada["id_materia"] = materia.des_tipo_materia+" nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+         dic_materia_apresentada["link_materia"] = '<link href="'+context.sapl_documentos.absolute_url()+'/materia/'+ str(materia_apresentada.cod_materia) + '_texto_integral.pdf' +'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+         dic_materia_apresentada["nom_autor"] = ''
          autores = context.zsql.autoria_obter_zsql(cod_materia=materia_apresentada.cod_materia)
          fields = autores.data_dictionary().keys()
          lista_autor = []
          for autor in autores:
-	   for field in fields:
-                   nome_autor = autor['nom_autor_join']
-  	   lista_autor.append(nome_autor)
-         dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
+             for field in fields:
+                 nome_autor = autor['nom_autor_join']
+             lista_autor.append(nome_autor)
+         dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
+#         dic_materia_apresentada["cod_proposicao"] = ''
+#         dic_materia_apresentada["arquivo_odt"] = ''
+#         for proposicao in context.zsql.proposicao_obter_zsql(ind_mat_ou_doc='M', cod_mat_ou_doc=materia_apresentada.cod_materia):
+#             dic_materia_apresentada["cod_proposicao"] = proposicao.cod_proposicao
+#             if hasattr(context.sapl_documentos.proposicao, str(proposicao.cod_proposicao) + '.odt'):
+#                arq = getattr(context.sapl_documentos.proposicao, str(proposicao.cod_proposicao) + '.odt')
+#                dic_materia_apresentada["arquivo_odt"] = str(arq.data)
          lst_materia_apresentada.append(dic_materia_apresentada)
-      if materia_apresentada.cod_documento != None:
+
+      elif materia_apresentada.cod_emenda != None:
+         for emenda in context.zsql.emenda_obter_zsql(cod_emenda=materia_apresentada.cod_emenda):
+             materia = context.zsql.materia_obter_zsql(cod_materia=emenda.cod_materia)[0]
+             dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
+             dic_materia_apresentada["txt_ementa"] = emenda.txt_ementa
+             dic_materia_apresentada["id_materia"] = 'Emenda ' + emenda.des_tipo_emenda + ' nº ' + str(emenda.num_emenda) + " ao " + materia.sgl_tipo_materia + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
+             dic_materia_apresentada["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/emenda/' + str(materia_apresentada.cod_emenda) + '_emenda.pdf' + '">' + 'EMENDA ' + emenda.des_tipo_emenda.decode('utf-8').upper() + ' Nº ' + str(emenda.num_emenda) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+             dic_materia_apresentada["nom_autor"] = ""
+             autores = context.zsql.autoria_emenda_obter_zsql(cod_emenda=emenda.cod_emenda)
+             fields = autores.data_dictionary().keys()
+             lista_autor = []
+             for autor in autores:
+                 for field in fields:
+                     nome_autor = autor['nom_autor_join']
+                 lista_autor.append(nome_autor)
+         dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
+ #        dic_materia_apresentada["cod_proposicao"] = ''
+ #        dic_materia_apresentada["arquivo_odt"] = ''
+ #        for proposicao in context.zsql.proposicao_obter_zsql(cod_emenda=materia_apresentada.cod_emenda):
+ #            if hasattr(context.sapl_documentos.proposicao, str(proposicao.cod_proposicao) + '.odt'):
+ #               arq = getattr(context.sapl_documentos.proposicao, str(proposicao.cod_proposicao) + '.odt')
+ #               dic_materia_apresentada["arquivo_odt"] = str(arq.data)
+         lst_materia_apresentada.append(dic_materia_apresentada)
+
+      elif materia_apresentada.cod_substitutivo != None:
+         for substitutivo in context.zsql.substitutivo_obter_zsql(cod_substitutivo=materia_apresentada.cod_substitutivo):
+             materia = context.zsql.materia_obter_zsql(cod_materia=substitutivo.cod_materia)[0]
+             dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
+             dic_materia_apresentada["txt_ementa"] = substitutivo.txt_ementa
+             dic_materia_apresentada["id_materia"] = 'Substitutivo ' + ' nº ' + str(substitutivo.num_substitutivo) + " ao " + materia.sgl_tipo_materia + ' ' + str(materia.num_ident_basica) + "/" + str(materia.ano_ident_basica)
+             dic_materia_apresentada["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/substitutivo/' + str(materia_apresentada.cod_substitutivo) + '_substitutivo.pdf' + '">' + 'SUBSTITUTIVO Nº ' + str(substitutivo.num_substitutivo) + " - " +  materia.sgl_tipo_materia + ' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+             dic_materia_apresentada["nom_autor"] = ""
+             autores = context.zsql.autoria_substitutivo_obter_zsql(cod_substitutivo=substitutivo.cod_substitutivo)
+             fields = autores.data_dictionary().keys()
+             lista_autor = []
+             for autor in autores:
+                 for field in fields:
+                     nome_autor = autor['nom_autor_join']
+                 lista_autor.append(nome_autor)
+         dic_materia_apresentada["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
+#         dic_materia_apresentada["cod_proposicao"] = ''
+#         dic_materia_apresentada["arquivo_odt"] = ''
+#         for proposicao in context.zsql.proposicao_obter_zsql(cod_substitutivo=materia_apresentada.cod_substitutivo):
+#             if hasattr(context.sapl_documentos.proposicao, str(proposicao.cod_proposicao) + '.odt'):
+#                arq = getattr(context.sapl_documentos.proposicao, str(proposicao.cod_proposicao) + '.odt')
+#                dic_materia_apresentada["arquivo_odt"] = str(arq.data)
+         lst_materia_apresentada.append(dic_materia_apresentada)
+
+      elif materia_apresentada.cod_parecer != None:
+         for parecer in context.zsql.relatoria_obter_zsql(cod_relatoria=materia_apresentada.cod_parecer):
+             materia = context.zsql.materia_obter_zsql(cod_materia=parecer.cod_materia)[0]
+             dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
+             dic_materia_apresentada["txt_ementa"] = materia_apresentada.txt_observacao
+             for comissao in context.zsql.comissao_obter_zsql(cod_comissao=parecer.cod_comissao):
+                 sgl_comissao = comissao.sgl_comissao
+                 nom_comissao = comissao.nom_comissao
+             dic_materia_apresentada["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/parecer_comissao/' + str(materia_apresentada.cod_parecer) + '_parecer.pdf' + '">' + 'PARECER ' + sgl_comissao+ ' Nº ' + str(parecer.num_parecer) + '/' + str(parecer.ano_parecer) + " - " +  materia.sgl_tipo_materia +' ' + str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica) + '</link>'
+             dic_materia_apresentada["nom_autor"] = nom_comissao.decode('utf-8').upper()
+ #            dic_materia_apresentada["cod_proposicao"] = ''
+ #            dic_materia_apresentada["arquivo_odt"] = ''
+ #            for proposicao in context.zsql.proposicao_obter_zsql(cod_parecer=materia_apresentada.cod_parecer):
+ #                if hasattr(context.sapl_documentos.proposicao, str(proposicao.cod_proposicao) + '.odt'):
+ #                   arq = getattr(context.sapl_documentos.proposicao, str(proposicao.cod_proposicao) + '.odt')
+ #                   dic_materia_apresentada["arquivo_odt"] = str(arq.data)
+             lst_materia_apresentada.append(dic_materia_apresentada)
+
+      elif materia_apresentada.cod_documento != None:
          materia = context.zsql.documento_administrativo_obter_zsql(cod_documento=materia_apresentada.cod_documento)[0]
          dic_materia_apresentada["num_ordem"] = materia_apresentada.num_ordem
-         dic_materia_apresentada["id_materia"] = materia.des_tipo_documento.decode('utf-8').upper()+" Nº "+str(materia.num_documento)+"/"+str(materia.ano_documento)
          dic_materia_apresentada["txt_ementa"] = materia.txt_assunto
-         dic_materia_apresentada["nom_autor"] =  materia.txt_interessado
+         dic_materia_apresentada["id_materia"] = materia.des_tipo_documento+" "+str(materia.num_documento)+"/"+str(materia.ano_documento)
+         dic_materia_apresentada["link_materia"] = '<link href="'+context.sapl_documentos.absolute_url()+'/administrativo/'+ str(materia_apresentada.cod_documento) + '_texto_integral.pdf' +'">'+materia.des_tipo_documento.decode('utf-8').upper()+' Nº '+str(materia.num_documento)+'/'+str(materia.ano_documento)+'</link>'
+         dic_materia_apresentada["nom_autor"] = materia.txt_interessado
+ #        dic_materia_apresentada["cod_proposicao"] = ''
+ #        dic_materia_apresentada["arquivo_odt"] = ''
+ #        if hasattr(context.sapl_documentos.administrativo, str(materia_apresentada.cod_documento) + '_texto_integral.pdf'):
+ #           arq = getattr(context.sapl_documentos.administrativo, str(materia_apresentada.cod_documento) + '_texto_integral.pdf')
+#            dic_materia_apresentada["arquivo_odt"] = str(arq.data)
          lst_materia_apresentada.append(dic_materia_apresentada)
-         
+
   # Matérias do Expediente
   lst_reqplen = []
   lst_reqpres = []   
@@ -80,7 +163,7 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
   for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
       for materia in context.zsql.materia_obter_zsql(cod_materia=item.cod_materia,ind_excluido=0):
           # Requerimentos ao Plenario
-          if materia.des_tipo_materia == 'Requerimento':    
+          if materia.des_tipo_materia == 'Requerimento' or materia.des_tipo_materia == 'Requerimento ao Plenário':
              dic_reqpl = {}
              dic_reqpl['txt_ementa'] = materia.txt_ementa
              dic_reqpl['num_ident_basica'] = materia.num_ident_basica
@@ -139,72 +222,79 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
           dic_presenca_ordem_dia['nom_completo'] = parlamentar.nom_completo
           dic_presenca_ordem_dia['sgl_partido'] = parlamentar.sgl_partido
           lst_presenca_ordem_dia.append(dic_presenca_ordem_dia)
+
   # Lista das materias da Ordem do Dia
   lst_votacao=[]
-  for votacao in context.zsql.ordem_dia_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):  
-     # Seleciona os detalhes de uma materia
-      materia = context.zsql.materia_obter_zsql(cod_materia=votacao.cod_materia)[0]
-      dic_votacao = {}
-      dic_votacao["num_ordem"] = votacao.num_ordem
-      dic_votacao["id_materia"] = materia.des_tipo_materia.decode('utf-8').upper()+" Nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
-      dic_votacao["des_numeracao"]=""
-      numeracao = context.zsql.numeracao_obter_zsql(cod_materia=votacao.cod_materia)
-      if len(numeracao):
-         numeracao = numeracao[0]
-         dic_votacao["des_numeracao"] = str(numeracao.num_materia)+"/"+str(numeracao.ano_materia)
-      dic_votacao["des_turno"]=""
-      dic_votacao["txt_ementa"] = materia.txt_ementa
-      dic_votacao["nom_autor"] = ""
-      autores = context.zsql.autoria_obter_zsql(cod_materia=votacao.cod_materia)
-      fields = autores.data_dictionary().keys()
-      lista_autor = []
-      for autor in autores:
-	for field in fields:
-            nome_autor = autor['nom_autor_join']
-        lista_autor.append(nome_autor)
-      dic_votacao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
-      nom_resultado = ''
-      votacao_observacao = ''
-      for votacao in context.zsql.votacao_ordem_dia_obter_zsql(cod_materia=votacao.cod_materia, cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):
-          contagem_votos = ''
-          if votacao.tip_votacao == 2:
-              if votacao.num_votos_sim == 0:
-                 votos_favoraveis = ''
-              elif votacao.num_votos_sim == 1:
-                 votos_favoraveis = ' - ' +str(votacao.num_votos_sim) + " voto favorável"
-              elif votacao.num_votos_sim > 1:
-                 votos_favoraveis = ' - ' + str(votacao.num_votos_sim) + " votos favoráveis"
-              if votacao.num_votos_nao == 0:
-                 votos_contrarios = ''
-              elif votacao.num_votos_nao == 1:
-                 votos_contrarios = ' - ' + str(votacao.num_votos_nao) + " voto contrário"
-              elif votacao.num_votos_nao > 1:
-                 votos_contrarios = ' - ' + str(votacao.num_votos_nao) + " votos contrários"
-              if votacao.num_abstencao == 0:
-                 abstencoes = ''
-              elif votacao.num_abstencao == 1:
-                 abstencoes = ' - ' + str(votacao.num_abstencao) + " abstenção"
-              elif votacao.num_abstencao > 1:
-                 abstencoes =  ' - ' + str(votacao.num_abstencao) + " abstenções"
-              contagem_votos = votos_favoraveis + votos_contrarios + abstencoes
-          if votacao.votacao_observacao != '':
-             votacao_observacao = ' - ' + votacao.votacao_observacao
-          else:
-             votacao_observacao = ''
-          if votacao.tip_resultado_votacao:
-             for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=votacao.tip_turno):
-                 turno_discussao = turno.des_turno
-             resultado = context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=votacao.tip_resultado_votacao, ind_excluido=0)
-             for i in resultado:
-                 nom_resultado= ' (' + i.nom_resultado+ ' em ' + turno_discussao + contagem_votos + votacao_observacao + ')'
-          else:
-             nom_resultado = " (Matéria não votada)"
-             votacao_observacao = ""
-      dic_votacao["nom_resultado"] = nom_resultado
-      dic_votacao["ordem_observacao"] = votacao_observacao           
-      dic_votacao["votacao_observacao"] = votacao_observacao     
+  for votacao in context.zsql.ordem_dia_obter_zsql(cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):
+     if votacao.cod_materia != None:
+        # Seleciona os detalhes de uma materia
+         materia = context.zsql.materia_obter_zsql(cod_materia=votacao.cod_materia)[0]
+         dic_votacao = {}
+         dic_votacao["num_ordem"] = votacao.num_ordem
+         dic_votacao["id_materia"] = materia.des_tipo_materia.decode('utf-8').upper()+" Nº "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
+         dic_votacao["des_numeracao"]=""
+         numeracao = context.zsql.numeracao_obter_zsql(cod_materia=votacao.cod_materia)
+         if len(numeracao):
+            numeracao = numeracao[0]
+            dic_votacao["des_numeracao"] = str(numeracao.num_materia)+"/"+str(numeracao.ano_materia)
+         dic_votacao["des_turno"]=""
+         dic_votacao["txt_ementa"] = materia.txt_ementa
+         dic_votacao["nom_autor"] = ""
+         autores = context.zsql.autoria_obter_zsql(cod_materia=votacao.cod_materia)
+         fields = autores.data_dictionary().keys()
+         lista_autor = []
+         for autor in autores:
+	   for field in fields:
+               nome_autor = autor['nom_autor_join']
+           lista_autor.append(nome_autor)
+         dic_votacao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
+         dic_votacao["arquivo_odt"] = ''
+         for proposicao in context.zsql.proposicao_obter_zsql(ind_mat_ou_doc='M', cod_materia=votacao.cod_materia):
+             if hasattr(context.sapl_documentos.proposicao, str(proposicao.cod_proposicao) + '.odt'):
+                arq = getattr(context.sapl_documentos.proposicao, str(proposicao.cod_proposicao) + '.odt')
+                dic_votacao["arquivo_odt"] = str(arq.data)
+         nom_resultado = ''
+         votacao_observacao = ''
+         for votacao in context.zsql.votacao_ordem_dia_obter_zsql(cod_materia=votacao.cod_materia, cod_sessao_plen=sessao.cod_sessao_plen, ind_excluido=0):
+             contagem_votos = ''
+             if votacao.tip_votacao == 2:
+                 if votacao.num_votos_sim == 0:
+                    votos_favoraveis = ''
+                 elif votacao.num_votos_sim == 1:
+                    votos_favoraveis = ' - ' +str(votacao.num_votos_sim) + " voto favorável"
+                 elif votacao.num_votos_sim > 1:
+                    votos_favoraveis = ' - ' + str(votacao.num_votos_sim) + " votos favoráveis"
+                 if votacao.num_votos_nao == 0:
+                    votos_contrarios = ''
+                 elif votacao.num_votos_nao == 1:
+                    votos_contrarios = ' - ' + str(votacao.num_votos_nao) + " voto contrário"
+                 elif votacao.num_votos_nao > 1:
+                    votos_contrarios = ' - ' + str(votacao.num_votos_nao) + " votos contrários"
+                 if votacao.num_abstencao == 0:
+                    abstencoes = ''
+                 elif votacao.num_abstencao == 1:
+                    abstencoes = ' - ' + str(votacao.num_abstencao) + " abstenção"
+                 elif votacao.num_abstencao > 1:
+                    abstencoes =  ' - ' + str(votacao.num_abstencao) + " abstenções"
+                 contagem_votos = votos_favoraveis + votos_contrarios + abstencoes
+             if votacao.votacao_observacao != '':
+                votacao_observacao = ' - ' + votacao.votacao_observacao
+             else:
+                votacao_observacao = ''
+             if votacao.tip_resultado_votacao:
+                for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=votacao.tip_turno):
+                    turno_discussao = turno.des_turno
+                resultado = context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=votacao.tip_resultado_votacao, ind_excluido=0)
+                for i in resultado:
+                    nom_resultado= ' (' + i.nom_resultado+ ' em ' + turno_discussao + contagem_votos + votacao_observacao + ')'
+             else:
+                nom_resultado = " (Matéria não votada)"
+                votacao_observacao = ""
+         dic_votacao["nom_resultado"] = nom_resultado
+         dic_votacao["ordem_observacao"] = votacao_observacao
+         dic_votacao["votacao_observacao"] = votacao_observacao
 
-      lst_votacao.append(dic_votacao)
+         lst_votacao.append(dic_votacao)
       
   # Lista presenca no Grande Expediente
   lst_presenca_expediente = []

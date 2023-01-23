@@ -38,14 +38,14 @@ remetente = email_casa
 
 destinatario = str(end_email)
 
-link = request.SERVER_URL + "/materia/acompanhamento/acomp_materia_confirmar_proc?txt_hash=" + str(txt_hash)
+link = request.SERVER_URL + "/consultas/materia/acompanhamento/acomp_materia_confirmar_proc?txt_hash=" + str(txt_hash)
 
 html = """\
 <html>
   <head></head>
   <body>
     <p>
-       Para acompanhar por e-mail o andamento da matéria legislativa identificada como {projeto}, solicitamos que confirme o recebimento de futuras mensagens eletrônicas, <a href="{link}" target="blank">clicando aqui</a>.
+       Para receber em seu e-mail o andamento da matéria identificada como {projeto}, solicitamos que confirme o recebimento de futuras mensagens eletrônicas, <a href="{link}" target="blank">clicando aqui</a>.
     </p>
     <p>
        Caso não tenha solicitado o acompanhamento dessa matéria, favor ignorar a presente mensagem.          

@@ -1,0 +1,27 @@
+<dtml-call expr="REQUEST.set('cod_sessao_plen', cod_sessao_plen)">
+<dtml-call expr="REQUEST.set('cod_comissao_sel', cod_comissao)">
+
+<dtml-in expr="zsql.materia_obter_zsql(tip_id_basica=tip_ident_basica,
+                                       num_ident_basica=num_ident_basica,
+                                       ano_ident_basica=ano_ident_basica,
+                                       ind_excluido=0)">
+  <dtml-call expr="REQUEST.set('hdn_cod_materia', cod_materia)">
+  <dtml-in expr="zsql.relatoria_obter_zsql(num_parecer=num_parecer, ano_parecer=ano_parecer, cod_comissao=cod_comissao, cod_materia=hdn_cod_materia)">
+    <dtml-if expr="tip_conclusao=='F'">
+       <dtml-call expr="REQUEST.set('enunciado', 'PARECER FAVORÁVEL')">
+    <dtml-elif expr="tip_conclusao=='C'">
+       <dtml-call expr="REQUEST.set('enunciado', 'PARECER CONTRÁRIO')">
+    </dtml-if>
+    <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+      <dtml-call expr="REQUEST.set('txt_observacao', enunciado + ' | Relatoria: ' + nom_parlamentar)">
+    </dtml-in>
+    <dtml-call expr="REQUEST.set('cod_parecer', cod_relatoria)">
+    <dtml-call expr="REQUEST.set('cod_comissao_sel', cod_comissao)">
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('mensagem', 'PARECER NÃO LOCALIZADO! Preencha as informações corretamente.')">
+  </dtml-in>
+</dtml-in>
+
+<dtml-var ordem_dia_parecer_form>
+
+

@@ -1,0 +1,79 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_peticao="" cod_usuario="" tip_peticionamento="" dat_envio="" dat_recebimento="" ind_norma="" ind_doc_adm="" ind_doc_materia="" cod_norma="" cod_documento="" cod_doc_acessorio="" num_protocolo="" ind_enviado="" ind_pendente="" ind_recebido="" ind_excluido=0
+max_rows : 500
+max_cache : 100
+</dtml-comment>
+
+SELECT
+    p.cod_peticao,
+    p.cod_usuario,
+    p.txt_descricao,
+    p.txt_observacao,
+    p.tip_peticionamento,
+    p.cod_materia,
+    p.cod_doc_acessorio,
+    p.cod_documento,
+    p.cod_documento_vinculado,
+    p.cod_norma,
+    p.num_norma,
+    p.ano_norma,
+    DATE_FORMAT(p.dat_norma, '%d/%m/%Y') as dat_norma,
+    DATE_FORMAT(p.dat_norma, '%Y/%m/%d') as data_norma,    
+    DATE_FORMAT(p.timestamp, '%d/%m/%Y %H:%i:%s') as timestamp,
+    DATE_FORMAT(p.dat_envio, '%d/%m/%Y') as data_envio,
+    DATE_FORMAT(p.dat_envio, '%d/%m/%Y %H:%i:%s') as dat_envio,
+    DATE_FORMAT(p.dat_recebimento, '%d/%m/%Y %H:%i:%s') as dat_recebimento,
+    p.num_protocolo,
+    p.ind_excluido,
+    t.des_tipo_peticionamento,
+    t.ind_norma,
+    t.ind_doc_adm,
+    t.ind_doc_materia,
+    t.tip_derivado,
+    if(t.cod_unid_tram_dest IS NOT NULL, t.cod_unid_tram_dest, p.cod_unid_tram_dest) as cod_unid_tram_dest
+
+
+FROM 
+    peticao p    
+    LEFT JOIN tipo_peticionamento t on p.tip_peticionamento = t.tip_peticionamento
+
+<dtml-sqlgroup where>
+    <dtml-sqltest cod_peticao          op="=" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_usuario          op="=" type="int" optional> <dtml-and>
+    <dtml-sqltest tip_peticionamento   op="=" column="p.tip_peticionamento" type="int" optional> <dtml-and>
+    <dtml-sqltest dat_envio            op="=" type="nb" optional> <dtml-and>
+    <dtml-sqltest dat_recebimento      op="=" type="nb" optional> <dtml-and>
+    <dtml-sqltest ind_norma            op="=" column="t.ind_norma" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_norma            op="=" column="p.cod_norma" type="int" optional> <dtml-and>
+    <dtml-sqltest ind_doc_adm          op="=" column="t.ind_doc_adm" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_documento        op="=" column="p.cod_documento" type="int" optional> <dtml-and>
+    <dtml-sqltest ind_doc_materia      op="=" column="t.ind_doc_materia" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_doc_acessorio    op="=" column="p.cod_documento_acessorio" type="int" optional> <dtml-and>
+    <dtml-sqltest num_protocolo        op="=" column="p.num_protocolo" type="int" optional> <dtml-and>
+    <dtml-sqltest ind_excluido         op="=" column="p.ind_excluido" type="int" optional> <dtml-and>
+
+ <dtml-if expr="ind_enviado=='0'">
+    p.dat_envio IS NULL
+ </dtml-if>
+ <dtml-if expr="ind_enviado=='1'">
+    p.dat_envio IS NOT NULL
+ </dtml-if>
+ <dtml-and>
+ <dtml-if expr="ind_recebido=='0'">
+    p.dat_recebimento IS NULL
+ </dtml-if>
+ <dtml-if expr="ind_recebido=='1'">
+    p.dat_recebimento IS NOT NULL
+ </dtml-if>
+</dtml-sqlgroup>
+
+ORDER BY 
+ <dtml-if expr="ind_enviado=='0'">
+    p.timestamp ASC
+ <dtml-elif expr="ind_enviado=='1'">
+    p.dat_recebimento DESC
+ <dtml-else>
+    p.dat_envio DESC
+ </dtml-if>
+

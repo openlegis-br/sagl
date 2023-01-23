@@ -1,0 +1,22 @@
+<dtml-try>
+   <dtml-call "sapl_documentos.peticao.manage_delObjects(anexo)">
+<dtml-except>
+  <dtml-let mensagem="'Houve um erro!'" mensagem_obs="'Anexo não excluído.'" tipo_mensagem="'danger'" modal="'1'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>  
+<dtml-else>
+  <dtml-let mensagem="'Anexo excluído com sucesso!'" url="'peticao_mostrar_proc?cod_peticao='+cod_peticao+'&modal=1'" modal="'1'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'anexo_peticao)excluir',
+            IP           = pysc.get_ip(),
+            cod_registro = cod_peticao)"> 
+</dtml-if>

@@ -130,6 +130,8 @@ if context.REQUEST['cod_sessao_plen']!='':
         lst_requerimentos = []
         # Pareceres
         lst_pareceres = []
+        # Outros
+        lst_outros = []
         for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=codigo,ind_excluido=0):
             # Materias Legislativas
             if item.cod_materia != None:
@@ -192,6 +194,22 @@ if context.REQUEST['cod_sessao_plen']!='':
                           vereadores.append(dic_autores)
                       dic_requerimentos["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
                       lst_requerimentos.append(dic_requerimentos)
+                   if materia.des_tipo_materia != 'Requerimento' and materia.des_tipo_materia != 'Indicação' and materia.des_tipo_materia != 'Moção':
+                      dic_outros = {}
+                      dic_outros["num_ordem"] = item.num_ordem
+                      dic_outros['txt_ementa'] = materia.txt_ementa
+                      dic_outros["link_materia"] = '<link href="'+context.consultas.absolute_url()+'/materia/materia_mostrar_proc?cod_materia='+item.cod_materia+'">'+materia.des_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)+'</link>'
+                      dic_outros["nom_autor"] = ""
+                      dic_autores = {}
+                      autores = context.zsql.autoria_obter_zsql(cod_materia=item.cod_materia)
+                      fields = autores.data_dictionary().keys()
+                      lista_autor = []
+                      for autor in autores:
+                          for field in fields:
+                              nome_autor = autor['nom_autor_join']
+                          lista_autor.append(nome_autor)
+                      dic_outros["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
+                      lst_outros.append(dic_outros)
             # Pareceres
             elif item.cod_parecer != None:
                  for parecer in context.zsql.relatoria_obter_zsql(cod_relatoria=item.cod_parecer,ind_excluido=0):
@@ -281,7 +299,7 @@ if context.REQUEST['cod_sessao_plen']!='':
         rodape['sgl_uf']= local.sgl_uf
 
     sessao=session.id
-    caminho = context.pdf_expediente_gerar(rodape, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_pareceres, lst_presidente, sessao)
+    caminho = context.pdf_expediente_gerar(rodape, imagem, inf_basicas_dic, lst_materia_apresentada, lst_indicacoes, lst_requerimentos, lst_mocoes, lst_pareceres, lst_outros, lst_presidente, sessao)
     if caminho=='aviso':
         return response.redirect('mensagem_emitir_proc')
     else:

@@ -1,0 +1,70 @@
+<dtml-if hdn_cod_peticao>
+   <dtml-call expr="REQUEST.set('metodo', zsql.peticao_atualizar_zsql)">
+ <dtml-else>
+   <dtml-call expr="REQUEST.set('metodo', zsql.peticao_incluir_zsql)">
+</dtml-if>
+
+<dtml-if expr="_.has_key('lst_tip_materia') and lst_tip_materia!=''">
+    <dtml-in expr="zsql.materia_obter_zsql(tip_id_basica=lst_tip_materia, num_ident_basica=txt_num_materia, ano_ident_basica=txt_ano_materia, ind_excluido=0)">
+        <dtml-call expr="REQUEST.set('cod_materia', int(cod_materia))">
+        <dtml-call expr="REQUEST.set('txa_txt_descricao', txt_ementa)">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+        <dtml-let mensagem="'A matéria originária informada não existe no sistema!'" tipo_mensagem="'danger'" modal="'1'">
+            <dtml-var mensagem_emitir>
+        </dtml-let>
+    </dtml-in>
+<dtml-else>
+    <dtml-call expr="REQUEST.set('cod_materia', 'Nulo')">
+</dtml-if>
+
+<dtml-in expr="zsql.tipo_peticionamento_obter_zsql(tip_peticionamento=lst_tip_peticionamento, ind_excluido=0)">
+    <dtml-call expr="REQUEST.set('cod_unid_tram_dest', cod_unid_tram_dest)">
+</dtml-in>
+
+<dtml-unless erro>
+<dtml-try>
+    <dtml-call expr="metodo(
+         cod_peticao             = hdn_cod_peticao,
+         cod_usuario             = cod_usuario_corrente,
+         tip_peticionamento      = lst_tip_peticionamento,
+         txt_descricao           = txa_txt_descricao,
+         cod_unid_tram_dest      = cod_unid_tram_dest,
+         num_norma               = txt_num_norma,
+         ano_norma               = txt_ano_norma,
+         dat_norma               = pysc.data_converter_pysc(data=txt_dat_norma),
+         cod_materia             = cod_materia,
+         )">
+<dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar os dados do formulário! Tente novamente.'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+<dtml-else>
+    <dtml-if expr="metodo==zsql.peticao_atualizar_zsql">
+       <dtml-call expr="REQUEST.set('cod_peticao', hdn_cod_peticao)">
+       <dtml-if file_nom_arquivo>
+          <dtml-call expr="REQUEST.set('id_documento', _.str(cod_peticao)+'.pdf')">
+          <dtml-try>
+              <dtml-call expr="sapl_documentos.peticao.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+          <dtml-except> 
+          </dtml-try>
+       </dtml-if>
+    <dtml-elif expr="zsql.peticao_incluir_zsql">
+       <dtml-in expr="zsql.peticao_incluida_codigo_obter_zsql()">
+         <dtml-call expr="REQUEST.set('cod_peticao', cod_peticao)">
+         <dtml-call expr="REQUEST.set('hdn_url', hdn_url + str(cod_peticao))">
+       </dtml-in>
+     </dtml-if>
+     <dtml-let mensagem="'Dados salvos com sucesso!'" url="hdn_url">
+        <dtml-var mensagem_emitir>
+     </dtml-let>
+</dtml-try>
+<dtml-if cod_peticao>
+ <dtml-call expr="REQUEST.set('id_documento', _.str(cod_peticao)+'.pdf')"> 
+ <dtml-if "_.hasattr(sapl_documentos.peticao,id_documento)">
+    <dtml-let arquivo="_.getattr(sapl_documentos.peticao,id_documento)">
+        <dtml-call "arquivo.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)">
+    </dtml-let>  
+ </dtml-if>
+</dtml-if>
+</dtml-unless>

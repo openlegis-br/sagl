@@ -1,25 +1,20 @@
-<dtml-comment>
-  Função: Obtém os dados do documento selecionado e mostra-os no formulário de atualização.
-  Argumentos: cod_documento: int - número do documento selecionado.
-  Retorno: Mostra ao usuário o formulário de atualização.
-  Luciano De Fazio em 13/02/2016
-</dtml-comment>
-
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+    <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+</dtml-in>
 <dtml-try>
-  <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
     <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
-      <dtml-var documento_administrativo_form>
+      <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+          <dtml-var documento_administrativo_form>
+      <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia']) and ind_publico==1">
+          <dtml-var documento_administrativo_form>
+      <dtml-elif expr="AUTHENTICATED_USER.has_role(['Authenticated']) and zsql.usuario_tipo_documento_obter_zsql(tip_documento=tip_documento, cod_usuario=cod_usuario_corrente, ind_excluido=0)">
+          <dtml-var documento_administrativo_form>
+      <dtml-else>
+          <dtml-let mensagem="'Você não tem permissão para visualizar este registro!'">
+             <dtml-var mensagem_emitir>
+          </dtml-let>   
+      </dtml-if>
     </dtml-in>
-  <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador Materia'])">
-    <dtml-in expr="zsql.documento_administrativo_obter_publico_zsql(cod_documento=cod_documento,ind_publico=1,ind_excluido=0)">
-      <dtml-var documento_administrativo_form>
-    <dtml-else>
-      <dtml-let mensagem="'Você não tem permissão para visualizar este registro!'">
-         <dtml-var mensagem_emitir>
-      </dtml-let>
-    </dtml-in>
-  </dtml-if>
-
 <dtml-except>
   <dtml-let mensagem="'Houve um erro!'">
      <dtml-var mensagem_emitir>

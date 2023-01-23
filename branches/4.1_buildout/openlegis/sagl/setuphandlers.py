@@ -32,6 +32,7 @@ def setupConteudo(portal):
             'pauta_sessao.zexp',
             'partido.zexp',
             'pessoa.zexp',
+            'peticao.zexp',
             'proposicao.zexp',
             'props_sagl.zexp',
             'protocolo.zexp',
@@ -52,20 +53,12 @@ def setupAdicionarUsuarios(portal):
     portal.acl_users._addUser(name='openlegis', password='openlegis', confirm='openlegis', roles=['Operador','Administrador'], domains=[])
     
 
-def setupAdicionaProps(portal):
+def setupAdicionaAcomp(portal):
     props = portal.sapl_documentos.props_sagl
     try:
-        props.manage_addProperty('acompanhamento_materia', '0', 'int')
+        props.manage_addProperty('acompanhamento_materia', '1', 'int')
     except:
         pass
-    try:
-        props.manage_addProperty('restpki_access_token', '', 'string')
-    except:
-        pass        
-    try:
-        props.manage_addProperty('recaptcha_key', '', 'string')
-    except:
-        pass  
 
 
 def importar_estrutura(context):
@@ -75,4 +68,4 @@ def importar_estrutura(context):
     setupMountPoint(site)
     setupConteudo(site)
     setupAdicionarUsuarios(site)
-    setupAdicionaProps(site)
+    setupAdicionaAcomp(site)

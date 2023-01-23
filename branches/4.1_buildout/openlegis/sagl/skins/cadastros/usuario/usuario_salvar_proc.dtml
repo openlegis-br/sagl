@@ -10,6 +10,10 @@
   </dtml-in>
 </dtml-if>
 
+<dtml-unless chk_ind_ativo>
+     <dtml-call expr="REQUEST.set('chk_ind_ativo', '0')">
+</dtml-unless>
+
 <dtml-unless hdn_cod_usuario>
     <dtml-if expr="zsql.usuario_obter_zsql(num_cpf=txt_num_cpf)">
        <dtml-let mensagem="'Já existe um usuário com este CPF.'" tipo_mensagem="'danger'">
@@ -31,19 +35,28 @@
         col_username = txt_nome,   
         nom_completo = txt_nom_completo,
         dat_nascimento = pysc.data_converter_pysc(data=txt_dat_nascimento),
+        des_estado_civil = txt_estado_civil,
+        sex_usuario = rad_sex_usuario,
         num_cpf = txt_num_cpf,
         num_rg = txt_num_rg,
         num_tit_eleitor = txt_num_tit_eleitor,
+        num_ctps = txt_num_ctps,
+        num_serie_ctps = txt_num_serie_ctps,
+        num_pis_pasep = txt_num_pis_pasep,
         end_residencial = txt_end_residencial,
         cod_localidade_resid = cod_localidade_resid,
         num_cep_resid = txt_num_cep_resid,
         num_tel_resid = txt_num_tel_resid,
         num_tel_celular = txt_num_tel_celular,
         end_email = txt_end_email,
+        num_matricula = txt_num_matricula,
         nom_cargo = txt_nom_cargo,
+        des_lotacao = txt_des_lotacao,
+        des_vinculo = txt_des_vinculo,
         num_tel_comercial = txt_num_tel_comercial,
         num_ramal = txt_num_ramal,
-        txt_observacao = txa_txt_observacao
+        txt_observacao = txa_txt_observacao,
+        ind_ativo = chk_ind_ativo
   )">
 <dtml-except>
     <dtml-let mensagem="'Houve um erro no banco de dados.'" tipo_mensagem="'danger'">
@@ -66,14 +79,19 @@
    </dtml-unless>
    <dtml-if expr="(lst_cod_unid_tramitacao != ['0'] or lst_cod_unid_tramitacao != 0)">
       <dtml-call expr="pysc.usuario_unid_tram_vincular_pysc(cod_usuario = hdn_cod_usuario, cod_unid_tramitacao = lst_cod_unid_tramitacao, ind_responsavel = chk_ind_responsavel)">
-   <dtml-else>
-      <dtml-call expr="zsql.usuario_incluido_codigo_obter_zsql(cod_usuario=hdn_cod_usuario)">
    </dtml-if>
 
-   <dtml-if expr="(name == AUTHENTICATED_USER.getUserName()) and (roles == ['Operador'])">
-     <dtml-call expr="REQUEST.set('url', portal_url() + '/index_html')">
+   <dtml-unless lst_peticionamento>
+      <dtml-call expr="REQUEST.set('lst_peticionamento', '')">
+   </dtml-unless>
+   <dtml-if expr="(lst_peticionamento != ['0'] or lst_peticionamento != 0)">
+      <dtml-call expr="tipo_peticionamento_permitir_pysc(cod_usuario=hdn_cod_usuario, tip_peticionamento=lst_peticionamento)">
+   </dtml-if>
+
+   <dtml-if expr="AUTHENTICATED_USER.has_role(['Administrador'])">
+     <dtml-call expr="REQUEST.set('url', portal_url() + '/cadastros/usuario/usuario_mostrar_proc?nome='+txt_nome)">
    <dtml-else>
-     <dtml-call expr="REQUEST.set('url', 'index_html')">
+     <dtml-call expr="REQUEST.set('url', portal_url())">
    </dtml-if>
    <dtml-if atualizar>
      <dtml-call expr="REQUEST.set('metodo', acl_users.manage_users('Change', REQUEST))">
@@ -82,11 +100,11 @@
      <dtml-call expr="REQUEST.set('roles', roles+['Alterar Senha'])">
    </dtml-if>
    <dtml-if expr="metodo">
-     <dtml-let mensagem="'O usuário foi salvo com sucesso.'" url=url>
+     <dtml-let mensagem="'Dados do usuário salvos com sucesso.'" url=url>
        <dtml-var mensagem_emitir>
      </dtml-let>
    <dtml-else>
-     <dtml-let mensagem="'Não foi possível salvar o usuario! Tente novamente.'" tipo_mensagem="'danger'">
+     <dtml-let mensagem="'Não foi possível salvar os dados do usuario! Tente novamente.'" tipo_mensagem="'danger'">
        <dtml-var mensagem_emitir>
      </dtml-let>
    </dtml-if>

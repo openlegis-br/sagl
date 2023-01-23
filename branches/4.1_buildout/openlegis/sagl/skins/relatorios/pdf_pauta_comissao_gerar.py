@@ -50,8 +50,8 @@ def paraStyle():
     tmp+='\t\t<paraStyle name="P0" fontName="Helvetica-Bold" fontSize="11" leading="12" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P1" fontName="Helvetica" fontSize="11" leading="12" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P2" fontName="Helvetica" fontSize="9" leading="10" alignment="LEFT"/>\n'
-    tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="11" leading="15" alignment="JUSTIFY"/>\n'
-    tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="11" leading="12" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="P3" fontName="Helvetica" fontSize="11" leading="12" alignment="JUSTIFY"/>\n'
+    tmp+='\t\t<paraStyle name="P4" fontName="Helvetica" fontSize="11" leading="12" alignment="CENTER"/>\n'
     tmp+='\t\t<paraStyle name="P5" fontName="Helvetica-Bold" fontSize="12" leading="13" alignment="CENTER"/>\n'    
     tmp+='\t</stylesheet>\n'
     return tmp
@@ -70,11 +70,11 @@ def pauta(lst_reuniao, lst_pauta):
         # reuniao de comissao
         if dicrc['reuniao']!=None:
            tmp+='\t\t<para style="P5">' + dicrc['reuniao'].replace('&','&amp;') + '</para>\n'
-           tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+           tmp+='\t\t<para style="P2" spaceAfter="2">\n'
            tmp+='\t\t\t<font color="white"> </font>\n'
            tmp+='\t\t</para>\n'
            tmp+='\t\t<para style="P5">' + dicrc['nom_comissao'] + '</para>\n'
-           tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+           tmp+='\t\t<para style="P2" spaceAfter="2">\n'
            tmp+='\t\t\t<font color="white"> </font>\n'
            tmp+='\t\t</para>\n'  
            tmp+='\t\t<para style="P1">Em ' + dicrc['datareuniao'] + ' às ' + dicrc['horareuniao']+ '</para>\n'
@@ -99,45 +99,38 @@ def pauta(lst_reuniao, lst_pauta):
         tmp+='\t\t<condPageBreak height="5mm"/>\n'
 
         #pauta
-        if dic['num_ordem']!=None:
-            tmp+='\t\t<para style="P4"><font color="#222"><b>Item nº ' + str(dic['num_ordem']) + '</b></font></para>\n'
-            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
-            tmp+='\t\t\t<font color="white"> </font>\n'
-            tmp+='\t\t</para>\n'
         if dic['id_materia']!=None:
-            tmp+='\t\t<para style="P4"><b><font color="#126e90"><u>' + dic['link_materia']+'</u></font>'+'</b></para>\n'
-            tmp+='\t\t<para style="P3" spaceAfter="4">\n'
+            tmp+='\t\t<para style="P3"><b>' + str(dic['num_ordem']) + ') <font color="#126e90"><u>' + dic['link_materia']+'</u></font> - Autoria:</b> ' + dic['nom_autor'].replace('&','&amp;') + '</para>\n'
+            tmp+='\t\t<para style="P3" spaceAfter="2">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
         if dic['txt_ementa']!=None:
             tmp+='\t\t<para style="P3">' + dic['txt_ementa'].replace('&','&amp;') + '</para>\n'
             tmp+='\t\t<para style="P2" spaceAfter="1">\n'
             tmp+='\t\t\t<font color="white"> </font>\n'
-            tmp+='\t\t</para>\n'
-        if dic['nom_relator']!=None and dic['nom_relator']!='':
-            tmp+='\t\t<para style="P3">Relatoria: ' + dic['nom_relator'].replace('&','&amp;') + '</para>\n'
-            tmp+='\t\t<para style="P2" spaceAfter="2">\n'
-            tmp+='\t\t\t<font color="white"> </font>\n'
-            tmp+='\t\t</para>\n'            
-        if dic['nom_autor']!=None and dic['nom_autor']!='':
-            tmp+='\t\t<para style="P3">Autoria: ' + dic['nom_autor'].replace('&','&amp;') + '</para>\n'
-            tmp+='\t\t<para style="P2" spaceAfter="2">\n'
-            tmp+='\t\t\t<font color="white"> </font>\n'
-            tmp+='\t\t</para>\n'            
+            tmp+='\t\t</para>\n' 
+         
 
         if dic['substitutivo']!= 0:
             for substitutivo in dic['substitutivos']:
-                tmp+='\t\t<para style="P3"><u><b><font color="#126e90">' + substitutivo["id_substitutivo"] + '</font></b></u> - ' + substitutivo["autoria"] + '</para>\n'
-                tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+                tmp+='\t\t<para style="P3"><font color="#126e90">' + substitutivo["id_substitutivo"] + '</font> - ' + substitutivo["autoria"] + '</para>\n'
+                tmp+='\t\t<para style="P2" spaceAfter="2">\n'
                 tmp+='\t\t\t<font color="white"> </font>\n'
                 tmp+='\t\t</para>\n'
 
         if dic['emenda']!= 0:
             for emenda in dic['emendas']:
-                tmp+='\t\t<para style="P3"><u><b><font color="#126e90">' + emenda["id_emenda"] + '</font></b></u> - ' + emenda["autoria"] + '</para>\n'
-                tmp+='\t\t<para style="P2" spaceAfter="4">\n'
+                tmp+='\t\t<para style="P3"><font color="#126e90">' + emenda["id_emenda"] + '</font> - ' + emenda["autoria"] + ' - ' + emenda["txt_ementa"] + '</para>\n'
+                tmp+='\t\t<para style="P2" spaceAfter="2">\n'
                 tmp+='\t\t\t<font color="white"> </font>\n'
                 tmp+='\t\t</para>\n'
+
+        if dic['nom_relator']!=None and dic['nom_relator']!='':
+            tmp+='\t\t<para style="P3"><b>Relatoria:</b> ' + dic['nom_relator'].replace('&','&amp;') + '</para>\n'
+            tmp+='\t\t<para style="P2" spaceAfter="2">\n'
+            tmp+='\t\t\t<font color="white"> </font>\n'
+            tmp+='\t\t</para>\n'   
+
 
     for dicrc in lst_reuniao:
         tmp+='\t\t<para style="P3" spaceAfter="30">\n'

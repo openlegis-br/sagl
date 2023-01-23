@@ -1,6 +1,16 @@
 <dtml-in expr="zsql.proposicao_obter_zsql(cod_proposicao=hdn_cod_proposicao, ind_excluido=0)">
-  <dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!=None))">
-  <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
+  <dtml-call expr="REQUEST.set('col_username_sel', col_username)">   
+  <dtml-if expr="_.has_key('hdn_cod_proposicao') and AUTHENTICATED_USER.has_role(['Autor'])">
+    <dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!=None))">
+    <dtml-call expr="REQUEST.set('usr_eh_autor',(col_username==AUTHENTICATED_USER.getUserName()))">
+  <dtml-elif expr="_.has_key('hdn_cod_proposicao') and AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+    <dtml-call expr="REQUEST.set('prop_enviada',(dat_envio!=None))">
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+          <dtml-call expr="REQUEST.set('usr_eh_autor', (col_username==col_username_sel))">
+      </dtml-in>
+    </dtml-in>
+  </dtml-if>
 </dtml-in>
 <dtml-if prop_enviada>
   <dtml-let mensagem="'Esta proposição já havia sido enviada! Erro de Sistema!'" tipo_mensagem="'danger'">
@@ -12,6 +22,7 @@
   </dtml-let>
 <dtml-else>
   <dtml-try>
+    <dtml-call expr="zsql.trans_begin_zsql()">      
     <dtml-call expr="REQUEST.set('metodo', zsql.proposicao_registrar_envio_zsql)">        
     <dtml-call expr="metodo(cod_proposicao = hdn_cod_proposicao, dat_envio = pysc.data_atual_iso_pysc())">
     <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=hdn_cod_proposicao, tipo_doc='proposicao', ind_assinado=0)">
@@ -20,16 +31,23 @@
                       cod_assinatura_doc  = cod_assinatura_doc,
                       codigo              = codigo,
                       tipo_doc            = tipo_doc,
-                      cod_usuario         = cod_usuario)">                      
+                      cod_usuario         = cod_usuario)"> 
       <dtml-except>
         <dtml-call expr="REQUEST.set('erro', 1)">
       </dtml-try>
     </dtml-in> 
+    <dtml-call expr="zsql.trans_commit_zsql()">                                                  
   <dtml-except>
+     <dtml-call expr="zsql.trans_rollback_zsql()">          
     <dtml-let mensagem="'Não foi possível enviar a proposição. Tente novamente!'" tipo_mensagem="'danger'">
       <dtml-var mensagem_emitir>
     </dtml-let>
   <dtml-else>
+    <dtml-call expr="REQUEST.set('id_odt', _.str(hdn_cod_proposicao)+'.odt')">
+    <dtml-call expr="REQUEST.set('id_pdf', _.str(hdn_cod_proposicao)+'.pdf')">
+    <dtml-if expr="_.hasattr(sapl_documentos.proposicao,id_odt) and not _.hasattr(sapl_documentos.proposicao,id_pdf)">
+      <dtml-call expr="proposicao_guardar_odt_pysc(cod_proposicao=hdn_cod_proposicao)">
+    </dtml-if>
     <dtml-let cod_doc="_.str(pysc.proposicao_calcular_checksum_pysc(hdn_cod_proposicao))"
               mensagem="'Proposição enviada com sucesso!'" cod_doc_prop=cod_doc mensagem_obs="'Código de Autenticidade:' + cod_doc">
       <dtml-var mensagem_emitir>
@@ -39,14 +57,11 @@
 
 <dtml-comment>LOG DE AUDITORIA</dtml-comment>
 <dtml-if dbcon_logs>
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
-  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
   <dtml-call expr="zsql.logs_registrar_zsql(
             usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
             data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
             modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
-            metodo       = metodo1,
+            metodo       = 'proposicao_enviar_proc',
             IP           = pysc.get_ip(),
             cod_registro = hdn_cod_proposicao)"> 
 </dtml-if>

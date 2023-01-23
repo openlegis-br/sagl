@@ -136,7 +136,7 @@ $(document).ready(function () {
 
 
 jQuery(function($){
-   $("#txt_num_tel_parlamentar").mask("(99) 99999-9999");
+   $("#txt_num_tel_parlamentar").mask("(99) 9999-9999");
 });
 
 </script>
@@ -172,23 +172,50 @@ jQuery(function($){
   <legend>Dados Pessoais</legend>
 
   <div class="form-row">
-     <div class="col-12 col-md-6 mb-3">
+     <div class="col-12 col-md-4 mb-3">
        <label for="txt_nom_completo" class="form-label required">Nome Completo</label>
        <input class="form-control" type="text" name="txt_nom_completo" id="txt_nom_completo" value="<dtml-var nom_completo missing>" size="50" maxlength="50" required />
       <div class="invalid-feedback">
         Este campo é obrigatório!
       </div>
     </div>
-    <div class="col-12 col-md-6 mb-3">
+    <div class="col-12 col-md-4 mb-3">
        <label for="txt_nom_parlamentar" class="form-label required">Nome Parlamentar</label>
        <input class="form-control" type="text" name="txt_nom_parlamentar" id="txt_nom_parlamentar" value="<dtml-var nom_parlamentar missing>" size="50" maxlength="50" required/>
       <div class="invalid-feedback">
         Este campo é obrigatório!
       </div>
     </div>
+    <div class="col-12 col-md-4 mb-3">
+       <label for="txt_loginname">Login</label>    
+       <div class="input-group">
+         <dtml-if cod_parlamentar>
+           <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+              <dtml-if expr="col_username">
+                 <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
+                 <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button" name="btn_incluir" onclick="location.href='<dtml-var portal_url>/cadastros/auxiliares/autor/autor_mostrar_proc?tip_autor=1&cod_parlamentar=<dtml-var cod_parlamentar>&cod_autor=<dtml-var cod_autor>';">Editar</button>
+                 </div>
+              <dtml-else>
+                 <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
+                 <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button" name="btn_incluir" onclick="location.href='<dtml-var portal_url>/cadastros/auxiliares/autor/autor_mostrar_proc?tip_autor=1&cod_parlamentar=<dtml-var cod_parlamentar>&cod_autor=<dtml-var cod_autor>';">Criar</button>
+                 </div>
+              </dtml-if>
+           <dtml-else>
+                 <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
+                 <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button" name="btn_incluir" onclick="location.href='<dtml-var portal_url>/cadastros/auxiliares/autor/autor_form?tip_autor=1&des_tipo_autor=Parlamentar&cod_parlamentar=<dtml-var cod_parlamentar>';">Criar</button>
+                 </div>
+           </dtml-in>
+         <dtml-else>
+           <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
+         </dtml-if>
+        </div>
+       </div>
   </div>
   <div class="form-row">
-    <div class="form-group col-6 col-md-2">
+    <div class="form-group col-6 col-md-3">
       <label for="rad_ind_ativo" class="form-label required">Ativo?</label>
       <select class="custom-select" name="rad_ind_ativo" id="rad_ind_ativo" required="">
         <option value=""></option>
@@ -235,20 +262,19 @@ jQuery(function($){
         });
         </script>
      </div>
-     <div class="col-6 col-sm-6 col-md-4 mb-3">
-        <label for="lst_cod_nivel_instrucao">Nível de Instrução</label>
-        <select class="custom-select" name="lst_cod_nivel_instrucao" id="lst_cod_nivel_instrucao">
-              <option value=""></option>
-              <dtml-in expr="zsql.nivel_instrucao_obter_zsql()">
-                 <option  
-                    <dtml-if expr="_.has_key('cod_parlamentar') and cod_nivel_instrucao==parlamentar_form.cod_nivel_instrucao"> 
-                        selected
-                    </dtml-if>
-                    value="<dtml-var cod_nivel_instrucao>"><dtml-var des_nivel_instrucao>
-                 </option>
-              </dtml-in>
-        </select>
-    </div>
+    <div class="col-6 col-sm-6 col-md-3 mb-3">
+        <label for="txt_dat_falecimento">Data de Falecimento</label>
+        <input type="text" class="form-control date" name="txt_dat_falecimento" id="txt_dat_falecimento" value="<dtml-var dat_falecimento missing null>" autocomplete="off" pattern=".{10,}">
+        <script>
+        $('#txt_dat_falecimento').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>
+     </div>
   </div>
   <div class="form-row">
     <div class="col-6 col-md-4 mb-3">
@@ -265,7 +291,7 @@ jQuery(function($){
     </div>
   </div>
   <div class="form-row">
-     <div class="col-6 col-md-4 mb-3">
+     <div class="col-6 col-md-3 mb-3">
         <label for="lst_tip_situacao_militar">Situação Militar</label>
         <select class="custom-select" name="lst_tip_situacao_militar" id="lst_tip_situacao_militar">
               <option value=""></option>
@@ -279,37 +305,42 @@ jQuery(function($){
               </dtml-in>
         </select>
     </div>
-    <div class="col-6 col-md-4 mb-3">
+    <div class="col-6 col-md-3 mb-3">
        <label for="txt_nom_profissao">Profissão</label>
        <input class="form-control" type="text" name="txt_nom_profissao" id="txt_nom_profissao" value="<dtml-var nom_profissao missing null>" maxlength="50" />
     </div>
+     <div class="col-6 col-md-3 mb-3">
+        <label for="lst_cod_nivel_instrucao">Nível de Instrução</label>
+        <select class="custom-select" name="lst_cod_nivel_instrucao" id="lst_cod_nivel_instrucao">
+              <option value=""></option>
+              <dtml-in expr="zsql.nivel_instrucao_obter_zsql()">
+                 <option  
+                    <dtml-if expr="_.has_key('cod_parlamentar') and cod_nivel_instrucao==parlamentar_form.cod_nivel_instrucao"> 
+                        selected
+                    </dtml-if>
+                    value="<dtml-var cod_nivel_instrucao>"><dtml-var des_nivel_instrucao>
+                 </option>
+              </dtml-in>
+        </select>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+       <label for="txt_des_curso">Curso</label>
+       <input class="form-control" type="text" name="txt_des_curso" id="txt_des_curso" value="<dtml-var des_curso missing null>" maxlength="50" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-4 col-md-4 mb-3">
+       <label for="txt_num_gab_parlamentar">Gabinete</label>
+       <input class="form-control" type="text" name="txt_num_gab_parlamentar" id="txt_num_gab_parlamentar" value="<dtml-var num_gab_parlamentar missing null>" maxlength="3" />
+    </div>
+    <div class="col-8 col-md-4 mb-3">
+       <label for="txt_num_tel_parlamentar">Telefone do Gabinete</label>
+       <input class="form-control phone" type="text" name="txt_num_tel_parlamentar" id="txt_num_tel_parlamentar" value="<dtml-var num_tel_parlamentar missing null>" maxlength="50" />
+    </div>
     <div class="col-12 col-md-4 mb-3">
-       <label for="txt_loginname">Login</label>    
-       <div class="input-group">
-         <dtml-if cod_parlamentar>
-           <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
-              <dtml-if expr="col_username">
-                 <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
-                 <div class="input-group-append">
-                    <button class="btn btn-secondary" type="button" name="btn_incluir" onclick="location.href='<dtml-var portal_url>/cadastros/auxiliares/autor/autor_mostrar_proc?tip_autor=1&cod_parlamentar=<dtml-var cod_parlamentar>&cod_autor=<dtml-var cod_autor>';">Editar</button>
-                 </div>
-              <dtml-else>
-                 <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
-                 <div class="input-group-append">
-                    <button class="btn btn-secondary" type="button" name="btn_incluir" onclick="location.href='<dtml-var portal_url>/cadastros/auxiliares/autor/autor_mostrar_proc?tip_autor=1&cod_parlamentar=<dtml-var cod_parlamentar>&cod_autor=<dtml-var cod_autor>';">Criar</button>
-                 </div>
-              </dtml-if>
-           <dtml-else>
-                 <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
-                 <div class="input-group-append">
-                    <button class="btn btn-secondary" type="button" name="btn_incluir" onclick="location.href='<dtml-var portal_url>/cadastros/auxiliares/autor/autor_form?tip_autor=1&des_tipo_autor=Parlamentar&cod_parlamentar=<dtml-var cod_parlamentar>';">Criar</button>
-                 </div>
-           </dtml-in>
-         <dtml-else>
-           <input type="text" class="form-control" name="txt_loginname" id="txt_loginname" value="<dtml-var col_username missing null>" disabled>
-         </dtml-if>
-        </div>
-       </div>
+       <label for="txt_num_fax_parlamentar">Fax do Gabinete</label>
+       <input class="form-control phone" type="text" name="txt_num_fax_parlamentar" id="txt_num_fax_parlamentar" value="<dtml-var num_fax_parlamentar missing null>" maxlength="50" />
+    </div>
   </div>
   <div class="form-row">
     <div class="col-12 col-md-6 mb-3">
@@ -322,20 +353,6 @@ jQuery(function($){
     <div class="col-12 col-md-6 mb-3">
        <label for="txt_end_web">Homepage</label>
        <input class="form-control" type="text" name="txt_end_web" id="txt_end_web" value="<dtml-var end_web missing null>" maxlength="100" />
-    </div>
-  </div>
-  <div class="form-row">
-    <div class="col-4 col-md-2 mb-3">
-       <label for="txt_num_gab_parlamentar">Gabinete</label>
-       <input class="form-control" type="text" name="txt_num_gab_parlamentar" id="txt_num_gab_parlamentar" value="<dtml-var num_gab_parlamentar missing null>" maxlength="3" />
-    </div>
-    <div class="col-8 col-md-5 mb-3">
-       <label for="txt_num_tel_parlamentar">Telefone do Gabinete</label>
-       <input class="form-control" type="text" name="txt_num_tel_parlamentar" id="txt_num_tel_parlamentar" value="<dtml-var num_tel_parlamentar missing null>" maxlength="50" />
-    </div>
-    <div class="col-12 col-md-5 mb-3">
-       <label for="txt_num_fax_parlamentar">Fax do Gabinete</label>
-       <input class="form-control phone" type="text" name="txt_num_fax_parlamentar" id="txt_num_fax_parlamentar" value="<dtml-var num_fax_parlamentar missing null>" maxlength="50" />
     </div>
   </div>
   <div class="form-row">
@@ -375,11 +392,15 @@ jQuery(function($){
     </div>
   </div>
   <div class="form-row">
-    <div class="col-6 mb-3">
+    <div class="col-6 col-md-4 mb-4">
+       <label for="txt_num_celular">Telefone Celular</label>
+       <input class="form-control mobile" type="text" name="txt_num_celular" id="txt_num_celular" value="<dtml-var num_celular missing null>" maxlength="50" />
+    </div>
+    <div class="col-6 col-md-4 mb-3">
        <label for="txt_num_tel_resid">Telefone Residencial</label>
        <input class="form-control phone" type="text" name="txt_num_tel_resid" id="txt_num_tel_resid" value="<dtml-var num_tel_resid missing null>" maxlength="50" />
     </div>
-    <div class="col-6 mb-3">
+    <div class="col-12 col-md-4 mb-4">
        <label for="txt_num_fax_resid">Fax Residencial</label>
        <input class="form-control phone" type="text" name="txt_num_fax_resid" id="txt_num_fax_resid" value="<dtml-var num_fax_resid missing null>" maxlength="50" />
     </div>

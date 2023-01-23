@@ -6,12 +6,31 @@
 <script>
 
 $(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('table.display tfoot th').each(function () {
+        var title = $(this).text();
+        $(this).html('<input type="text" class="form-control form-control-sm" placeholder="Pesquisar ' + title + '" />');
+    });
+
     $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
     $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
     $('table.display').DataTable( {
+        initComplete: function () {
+            // Apply the search
+            this.api()
+                .columns()
+                .every(function () {
+                    var that = this;
+                     $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that.search(this.value).draw();
+                        }
+                    });
+                });
+        },
         "responsive": true,
         "order": [[0, "desc"]],
-        "bStateSave": true,        
+
         "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
         "lengthChange": true,
         "buttons": [
@@ -100,6 +119,7 @@ $(document).ready(() => {
 <h1 class="firstHeading">Recebimento de Proposições</h1> 
 
 <ul class="nav nav-tabs proposicao border-0 mt-4" id="nav_proposicao" role="tablist">
+ <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
     <li class="nav-item active">
         <a class="nav-link active" id="pendente-tab" data-toggle="tab" href="#pendente" role="tab" aria-controls="pendente" data-target="#pendente" aria-selected="true">Revisão <dtml-var expr="proposicoes_contar_pysc(caixa='revisao')"></a>
     </li>
@@ -107,16 +127,21 @@ $(document).ready(() => {
     <li class="nav-item">
         <a class="nav-link" id="assinatura-tab" data-toggle="tab" href="#assinatura" role="tab" aria-controls="assinatura" data-target="#assinatura" aria-selected="true">Assinatura <dtml-var expr="proposicoes_contar_pysc(caixa='assinatura')"></a>
     </li>     
-   </dtml-if>
+  </dtml-if>
+ </dtml-if>
+ <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
     <li class="nav-item">
         <a class="nav-link" id="protocolo-tab" data-toggle="tab" href="#protocolo" role="tab" aria-controls="protocolo" data-target="#protocolo" aria-selected="true">Protocolo <dtml-var expr="proposicoes_contar_pysc(caixa='protocolo')"></a>
     </li>    
+ </dtml-if>
+ <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
     <li class="nav-item">
        <a class="nav-link" id="incorporada-tab" data-toggle="tab" href="#incorporada" role="tab" aria-controls="incorporada" data-target="#incorporada" aria-selected="true">Incorporadas</a>
     </li>
     <li class="nav-item">
        <a class="nav-link" id="devolvida-tab" data-toggle="tab" href="#devolvida" role="tab" aria-controls="devolvida" data-target="#devolvida" aria-selected="true">Devolvidas <dtml-var expr="proposicoes_contar_pysc(caixa='devolvido')"></a>
     </li>
+ </dtml-if>
 </ul>
 
 <div class="tab-content bg-white">

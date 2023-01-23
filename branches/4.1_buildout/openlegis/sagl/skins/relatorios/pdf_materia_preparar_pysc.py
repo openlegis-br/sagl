@@ -2,7 +2,6 @@ import os
 
 request=context.REQUEST
 response=request.RESPONSE
-session= request.SESSION
 
 data=DateTime().strftime('%d/%m/%Y')
 
@@ -72,19 +71,13 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia,
                                                    dat_publicacao2=REQUEST['dt_public2'],
                                                    cod_autor=REQUEST['hdn_cod_autor'],
                                                    cod_unid_tramitacao=REQUEST['lst_localizacao'],
+                                                   cod_unid_tramitacao2=REQUEST['lst_tramitou'],
                                                    rd_ordem=REQUEST['rd_ordenacao']):
     dic={}
-    dic['titulo']=materia.des_tipo_materia.decode('utf-8').upper()+" N° "+str(materia.num_ident_basica)+"/"+str(materia.ano_ident_basica)
-    if context.portal_membership.isAnonymousUser() and materia.sgl_tipo_materia=='PDL' and materia.txt_indexacao == "TÍTULO" and materia.ano_ident_basica>=2014:
-       for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=materia.cod_materia):
-           if len(tramitacao) > 0 and (tramitacao.sgl_status=='APROVADA' or tramitacao.sgl_status=='LEI CAMARA'):
-              dic['txt_ementa']= materia.txt_ementa
-           else:
-              dic['txt_ementa']= "CONCEDE TÍTULO HONORÍFICO"
-    else:
-       dic['txt_ementa']= materia.txt_ementa 
-
-    dic["nom_autor"] = ""
+    dic['titulo'] = materia.des_tipo_materia.decode('utf-8').upper()+" N° "+str(materia.num_ident_basica) + '/' + str(materia.ano_ident_basica)
+    dic['txt_ementa']= materia.txt_ementa
+    dic["dat_apresentacao"] = context.pysc.iso_to_port_pysc(materia.dat_apresentacao)
+    dic["nom_autor"] = ''
     autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
     fields = autores.data_dictionary().keys()
     lista_autor = []
@@ -92,30 +85,26 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia,
         for field in fields:
             nome_autor = autor['nom_autor_join']
         lista_autor.append(nome_autor)
-    dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
-           
-    des_status = " "
-    txt_tramitacao= " "
-
-    dic['localizacao_atual']=" "
+    dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
+    dic['localizacao_atual'] = ''
     for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=materia.cod_materia,ind_ult_tramitacao=1):
         if tramitacao.cod_unid_tram_dest:
            cod_unid_tram = tramitacao.cod_unid_tram_dest
         else:
-           cod_unid_tram = tramitacao.cod_unid_tram_local        
+           cod_unid_tram = tramitacao.cod_unid_tram_local
         for unidade_tramitacao in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = cod_unid_tram):
             if unidade_tramitacao.cod_orgao:
                dic['localizacao_atual']=unidade_tramitacao.nom_orgao
             else:
-               dic['localizacao_atual']=unidade_tramitacao.nom_comissao  
-        des_status=tramitacao.des_status
-        txt_tramitacao=tramitacao.txt_tramitacao
+               dic['localizacao_atual']=unidade_tramitacao.nom_comissao
+        dic['prazo'] = ''
+        if tramitacao.dat_fim_prazo != '':
+           dic['prazo'] = 'Prazo: ' + str(tramitacao.dat_fim_prazo)
+        dic['des_situacao'] = tramitacao.des_status
+        dic['ultima_acao'] = tramitacao.txt_tramitacao
+        dic['dat_tramitacao'] = tramitacao.dat_tramitacao
 
-    dic['des_situacao'] = des_status
-    dic['ultima_acao'] = txt_tramitacao
-
-
-    dic['norma_vinculada']= " "
+    dic['norma_vinculada'] = ''
     for norma_vinculada in context.zsql.materia_buscar_norma_juridica_zsql(cod_materia=materia.cod_materia):
         dic['norma_vinculada']= norma_vinculada.sgl_norma+" "+str(norma_vinculada.num_norma)+"/"+str(norma_vinculada.ano_norma)
 
@@ -128,7 +117,6 @@ filtro['numero']=REQUEST.txt_numero
 filtro['ano']=REQUEST.txt_ano
 filtro['autor']=REQUEST.hdn_txt_autor
 filtro['tipo_autor']=REQUEST.lst_tip_autor
-#filtro['relator']=REQUEST.txt_relator
 filtro['assunto']=REQUEST.txt_assunto
 
 # Atribuição do restante dos dados que precisam de processamento
@@ -136,11 +124,6 @@ if REQUEST.hdn_txt_autor=='  ':
     filtro['autor']=''
 
 filtro['tipo_materia']=''
-
-#filtro['partido']=''
-#if REQUEST.lst_cod_partido!='':
-#    for partido in context.zsql.partido_obter_zsql(ind_excluido=0,cod_partido=REQUEST.lst_cod_partido):
-#        filtro['partido']=partido.sgl_partido + ' - ' + partido.nom_partido
 
 filtro['tramitando']=''
 if REQUEST.rad_tramitando=='1':
@@ -154,15 +137,14 @@ if REQUEST.lst_status!='':
         filtro['situacao_atual']=status.sgl_status + ' - ' + status.des_status
 
 filtro['localizacao']=''
-if REQUEST.lst_localizacao!='':          
+if REQUEST.lst_localizacao!='':
     for unidade_tramitacao in context.zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao = REQUEST.lst_localizacao):
         if unidade_tramitacao.cod_orgao:
            filtro['localizacao']=unidade_tramitacao.nom_orgao
         else:
            filtro['localizacao']=unidade_tramitacao.nom_comissao
 
-sessao = session.id
-caminho = context.pdf_materia_gerar(sessao,imagem,data,materias,cabecalho,rodape,filtro)
+caminho = context.pdf_materia_gerar(imagem,data,materias,cabecalho,rodape,filtro)
 if caminho=='aviso':
    return response.redirect('mensagem_emitir_proc')
 else:

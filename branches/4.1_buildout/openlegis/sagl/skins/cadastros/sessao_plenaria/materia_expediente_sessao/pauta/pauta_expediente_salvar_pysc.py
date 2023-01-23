@@ -37,7 +37,7 @@ lst_materias = [(i + 1, j) for i, j in enumerate(lst_materias)]
 for i, dic in lst_materias:
     context.zsql.expediente_materia_incluir_zsql(cod_sessao_plen=cod_sessao_plen, cod_materia=dic.get('cod_materia',dic), dat_ordem=txt_dat_ordem, txt_observacao=dic.get('txt_observacao',dic), num_ordem=i, tip_quorum=lst_tip_quorum, tip_votacao=rad_tip_votacao)
 
-mensagem = 'Pauta de matérias do expediente gerada com sucesso!'
+mensagem = 'Pauta gerada com sucesso!'
 mensagem_obs = ''   
 redirect_url=context.portal_url()+'/mensagem_emitir?modal=1&tipo_mensagem=success&mensagem=' + mensagem + '&mensagem_obs=' + mensagem_obs
 RESPONSE.redirect(redirect_url)

@@ -1,0 +1,227 @@
+<dtml-var standard_html_header>
+
+<script src="javascript/data_validar.js"></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js"></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#tramitacao tfoot td').each(function () {
+        var title = $(this).text();
+        $(this).html('<input type="text" class="form-control form-control-sm" placeholder="' + title + '" />');
+    });
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+    var table = $('#tramitacao').DataTable( {
+        initComplete: function () {
+            // Apply the search
+            this.api()
+                .columns()
+                .every(function () {
+                    var that = this;
+                     $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that.search(this.value).draw();
+                        }
+                    });
+                });
+        },
+        "responsive": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
+});
+</script>
+
+<script>
+function campos_criticar(){  
+  var form = document.historico_form;
+  if (form.lst_tramitou.selectedIndex=='') {
+    $.showAlert({title: "Mensagem do Sistema", body: "Selecione uma unidade de tramitação !"});
+    return false;
+  }
+  if (form.dat_tram1.value == "") {
+    $.showAlert({title: "Mensagem do Sistema", body: "Informe a data inicial !"});
+    return false;
+  } 
+  if (form.dat_tram1.value != "" && !IsValidDate(form.dat_tram1.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data inicial válida!"});
+    return false;
+  }
+  if (form.dat_tram2.value == "") {
+    $.showAlert({title: "Mensagem do Sistema", body: "Informe a data final !"});
+    return false;
+  } 
+  if (form.dat_tram2.value != "" && !IsValidDate(form.dat_tram2.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data final válida!"});
+    return false;
+  } 
+  form.submit();
+}
+</script>
+
+<h1 class="firstHeading">Histórico de Tramitações</h1> 
+<p class="text-muted font-weight-bold">Listagem de processos que tramitaram por unidade selecionada.</p>
+<form class="mb-3" method="post" id="historico_form" name="historico_form" action="historico_html">
+   <div class="form-row">
+     <div class="col-8 col-md-6 mb-3">
+          <label for="lst_tramitou" class="required">Unidade de Tramitação</label>
+          <select class="custom-select" id="lst_tramitou" name="lst_tramitou" required>
+             <option value="">Selecione</option>
+              <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
+                <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tramitacao, ind_adm=1)">
+                  <dtml-if expr="not dat_extincao">
+                    <option 
+                    <dtml-if expr="_.has_key('lst_tramitou') and _.int(cod_unid_tramitacao)==_.int(lst_tramitou)">
+                      selected
+                    </dtml-if>
+                    value="<dtml-var cod_unid_tramitacao>"><dtml-var nom_unidade_join></option>
+                  </dtml-if>
+                </dtml-in>
+               </dtml-in>
+          </select>    
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+         <label for="dat_tram1" class="required">Data Inicial</label>
+         <input class="form-control date" type="text" name="dat_tram1" id="dat_tram1" value="<dtml-var dat_tram1 missing>" required />
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+         <label for="dat_tram2" class="required">Data Final</label>
+         <input class="form-control date" type="text" name="dat_tram2" id="dat_tram2" value="<dtml-var dat_tram1 missing>" required />
+     </div>
+    <script>
+        $('#dat_tram1').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#dat_tram2').val();
+            }
+        });
+        $('#dat_tram2').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#dat_tram1').val();
+            }
+        });
+    </script>
+   </div>
+   <div class="text-left">
+    <input class="btn btn-primary" type="button" value="Pesquisar" onClick="campos_criticar(form)" />
+   </div>
+</form>
+
+<dtml-if expr="_.has_key('lst_tramitou') and _.has_key('dat_tram1') and _.has_key('dat_tram2')">
+  <hr class="d-print-none" />
+  <h2 class="d-print-none mb-3">Resultado da Pesquisa</h2> 
+  <dtml-in expr="zsql.documento_administrativo_pesquisar_zsql(cod_unid_tramitacao2=lst_tramitou, dat_tram1=dat_tram1, dat_tram2=dat_tram2, rd_ordem=2)">
+    <dtml-if sequence-start>
+     <div class="table-responsive">
+      <table class="table table-striped display" id="tramitacao">
+        <thead class="table-secondary">
+          <tr>
+            <th>Tramitação</th>
+            <th>Processo</th>
+            <th>Interessado</th>
+            <th>Assunto</th>
+          </tr>
+        </thead>
+        <tbody>
+    </dtml-if>
+          <tr>
+            <td><dtml-var dat_tram></td>
+            <td>
+            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+               <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+            <dtml-else>
+               <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+            </dtml-if>
+              <dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></a>
+            </td>
+            <td><dtml-var txt_interessado></td>
+            <td><dtml-var txt_assunto></td>
+          </tr>
+    <dtml-if sequence-end>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Data da Tramitação</td>
+            <td>Processo</td>
+            <td>Interessado</td>
+            <td>Assunto</td>
+          </tr>
+        </tfoot>
+       </table>
+     </div>
+      <div id="panelBtn" class="d-print-none" style="margin-bottom: 20px;">
+        <div class="row">
+           <div class="col-sm-12 mt-2"></div>
+        </div>
+      </div>
+    </dtml-if sequence-end>
+  <dtml-else>
+      Nenhum processo passou pela unidade no período selecionado.
+  </dtml-in>
+</dtml-if>
+<dtml-var standard_html_footer>

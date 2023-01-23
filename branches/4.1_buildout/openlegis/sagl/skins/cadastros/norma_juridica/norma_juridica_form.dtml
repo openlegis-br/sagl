@@ -226,7 +226,18 @@ $(document).ready(() => {
  <input type="hidden" name="hdn_ano_norma_ant" value="<dtml-var ano_norma_ant missing>"/>
  <input type="hidden" name="hdn_cod_norma" value="<dtml-var cod_norma missing>"/>
 
-  <legend>Dados Básicos</legend>
+ <div class="form-row">
+  <div class="col-8 col-sm-8 mb-3">
+    <legend>Dados Básicos</legend>
+  </div>
+  <div class="col-4 col-sm-4 mb-3 text-right">
+    <div class="custom-control custom-switch">
+      <input type="checkbox" class="custom-control-input" name ="chk_ind_publico" id="chk_ind_publico" <dtml-if expr="_.has_key('cod_norma') and ind_publico==1">checked</dtml-if>>
+      <label class="custom-control-label" for="chk_ind_publico"><span class="small">Acesso Público</span></label>
+    </div>
+  </div> 
+  
+ </div>
    <div class="form-row">
     <div class="col-12 col-sm-6 mb-3">
       <label for="lst_tip_norma" class="required">Tipo de Norma</label>
@@ -422,12 +433,21 @@ $(document).ready(() => {
           <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento)">
             <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento).absolute_url">
                <a class="btn btn-secondary" target="_blank" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1">
-                  <i class="fa fa-fw fa-file-pdf"></i>Visualizar
-               </a>
-               <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/norma_juridica/texto_norma_excluir_proc?cod_norma=<dtml-var cod_norma>" data-confirm="Deseja realmente excluir o arquivo PDF do Texto Original?"><i class="fas fa-trash"></i> Excluir</a>             
+                 <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_norma, tipo_doc='norma',ind_assinado=1, cod_usuario=None)">
+                   <i class="fa fa-certificate"></i>
+                 <dtml-else>
+                   <i class="fa fa-fw fa-file-pdf"></i>
+                 </dtml-if>
+		 Visualizar	    
+               </a>        
                <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
-                  <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_norma>&tipo_doc=norma&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
+                 <dtml-in expr="zsql.peticao_obter_zsql(cod_norma=cod_norma, ind_excluido=0)">
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_peticao>&tipo_doc=peticao&prop_recebida=1&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
+                 <dtml-else>
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_norma>&tipo_doc=norma&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
+                 </dtml-in>
                </dtml-if>
+               <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/norma_juridica/texto_norma_excluir_proc?cod_norma=<dtml-var cod_norma>" data-confirm="Deseja realmente excluir o arquivo PDF do Texto Original?"><i class="fas fa-trash"></i> Excluir</a>  
             </dtml-let>
           <dtml-else>
              <div class="input-group">
@@ -470,7 +490,7 @@ $(document).ready(() => {
                        <option value="0">Selecione um modelo</option>
                         <dtml-with expr="sapl_documentos.modelo.norma">
                           <dtml-in expr="objectValues('File')" sort="title_or_id">
-                            <dtml-if expr="id.startswith(prefixo_arquivo)">
+                            <dtml-if expr="id().startswith(prefixo_arquivo)">
                               <option value="<dtml-var id>"><dtml-var title_or_id></option>
                             </dtml-if>
                           </dtml-in>
@@ -598,6 +618,21 @@ $(document).ready(() => {
       </dtml-if>
  </dtml-if>
 
+ <dtml-if cod_norma>
+    <dtml-in expr="zsql.peticao_obter_zsql(cod_norma=cod_norma, ind_excluido=0)">
+      <dtml-if sequence-start>
+   <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario)">
+      <dtml-call "REQUEST.set('usuario_envio', nom_completo)">
+   </dtml-in>
+        <div class="row">   
+          <div class="col-md-12 mt-2 text-right"> 
+            <p class="text-muted small">Norma enviada eletronicamente em <dtml-var dat_envio>, por <dtml-var usuario_envio missing>. [<dtml-var cod_peticao>]</p>
+          </div>
+        </div>
+      </dtml-if>
+    </dtml-in>
+ </dtml-if>
+ 
   <div class="text-left">
     <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar()"/>
     <dtml-if cod_norma>
@@ -610,14 +645,8 @@ $(document).ready(() => {
        <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
     </div>
 </div>
-
 </form>
-
-
 </div>
-
-
-
 
 <dtml-if expr="_.has_key('cod_norma')">
   <div class="tab-pane p-3 border fade" id="anexos">
@@ -729,8 +758,8 @@ $(document).ready(() => {
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Relacionamento" data-src="vinculo_norma_juridica/vinculo_norma_juridica_form?cod_norma=<dtml-var cod_norma missing>&modal=1" data-toggle="tooltip" data-placement="bottom" title="Cadastro de Relacionamento">Incluir Norma Relacionada</button>
 
 </div>
-</dtml-if>
 
+</dtml-if>
 
 <script>
 autosize(document.querySelectorAll('textarea'));

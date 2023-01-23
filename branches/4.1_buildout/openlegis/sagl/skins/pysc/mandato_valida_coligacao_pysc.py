@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=lst_num_legislatura,lst_cod_coligacao
+##parameters=lst_num_legislatura="" lst_cod_coligacao=""
 ##title=
 ##
 '''Esse script tem como finalidade validar coligacao indicada na inclusao de mandato''' 

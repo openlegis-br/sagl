@@ -6,6 +6,8 @@ import requests
 import base64
 import simplejson as json
 
+import cStringIO
+import StringIO
 
 class StandardSecurityContexts:
     PKI_BRAZIL = '201856ce-273c-4058-a872-8937bd547d36'
@@ -95,6 +97,9 @@ class PadesSignatureStarter:
         self.pdf_content = f.read()
         f.close()
 
+    def set_pdf_stream(self, pdf_stream):
+        self.pdf_content = pdf_stream
+
     def start_with_webpki(self):
         if self.pdf_content is None:
             raise Exception('The PDF to sign was not set')
@@ -154,100 +159,14 @@ class PadesSignatureFinisher:
         f.write(self._signed_pdf_content)
         f.close()
 
-
-class CadesSignatureStarter:
-    content_to_sign = None
-    security_context_id = None
-    signature_policy_id = None
-    cms_to_cosign_bytes = None
-    encapsulate_content = None
-    callback_argument = None
-    _client = None
-
-    def __init__(self, client):
-        self._client = client
-
-    def set_file_to_sign_path(self, path):
-        f = open(path, 'rb')
-        self.content_to_sign = f.read()
-        f.close()
-
-    def set_cms_to_cosign_path(self, path):
-        f = open(path, 'rb')
-        self.cms_to_cosign_bytes = f.read()
-        f.close()
-
-    def start_with_webpki(self):
-        if self.content_to_sign is None and self.cms_to_cosign_bytes is None:
-            raise Exception('The content to sign was not set and no CMS to be co-signed was given')
-
-        if self.signature_policy_id is None:
-            raise Exception('The signature policy was not set')
-
-        data = dict()
-        data['signaturePolicyId'] = self.signature_policy_id
-        data['securityContextId'] = self.security_context_id
-        data['callbackArgument'] = self.callback_argument
-        data['encapsulateContent'] = self.encapsulate_content
-        if self.content_to_sign is not None:
-            data['contentToSign'] = base64.b64encode(self.content_to_sign)
-        if self.cms_to_cosign_bytes is not None:
-            data['cmsToCoSign'] = base64.b64encode(self.cms_to_cosign_bytes)
-
-        response = self._client.post('Api/CadesSignatures', data=data)
-        return response.json().get('token', None)
-
-
-class CadesSignatureFinisher:
-    token = None
-    _client = None
-    _done = False
-    _cms = None
-    _certificate = None
-    _callback_argument = None
-
-    def __init__(self, restpki_client):
-        self._client = restpki_client
-
-    def finish(self):
-        if not self.token:
-            raise Exception('The token was not set')
-
-        response = self._client.post('Api/CadesSignatures/%s/Finalize' % self.token).json()
-        self._cms = base64.b64decode(response.get('cms', None))
-        self._certificate = response.get('certificate', None)
-        self._callback_argument = response.get('callbackArgument', None)
-        self._done = True
-
-    @property
-    def cms(self):
-        if not self._done:
-            raise Exception('The property "cms" can only be called after calling the finish() method')
-
-        return self._cms
-
-    @property
-    def certificate(self):
-        if not self._done:
-            raise Exception('The property "certificate" can only be called after calling the finish() method')
-
-        return self._certificate
-
-    @property
-    def callback_argument(self):
-        if not self._done:
-            raise Exception('The property "callback_argument" can only be called after calling the finish() method')
-
-        return self._callback_argument
-
-    def write_cms(self, path):
+    def stream_signed_pdf(self):
         if not self._done:
             raise Exception(
-                'The method write_cms() can only be called after calling the finish() method')
+                'The method stream_signed_pdf() can only be called after calling the finish() method')
+        f = StringIO.StringIO()
+        f.write(self._signed_pdf_content)
 
-        f = open(path, 'wb')
-        f.write(self._cms)
-        f.close()
+        return f
 
 
 class ValidationItem:
