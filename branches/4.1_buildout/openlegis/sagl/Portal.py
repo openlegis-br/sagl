@@ -2,7 +2,8 @@
 
 import csv
 
-from zope.site.hooks import setSite
+#from zope.site.hooks import setSite
+from zope.component.hooks import setSite
 
 from Products.GenericSetup.tool import SetupTool
 from Products.CMFDefault.Portal import CMFSite

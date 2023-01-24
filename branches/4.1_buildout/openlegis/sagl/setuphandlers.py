@@ -50,8 +50,10 @@ def setupConteudo(portal):
 
 def setupAdicionarUsuarios(portal):
     # Metodo para criar usuario padrao
-    portal.acl_users._addUser(name='openlegis', password='openlegis', confirm='openlegis', roles=['Operador','Administrador'], domains=[])
-    
+    try:
+        portal.acl_users._addUser(name='openlegis', password='openlegis', confirm='openlegis', roles=['Operador','Administrador'], domains=[])
+    except:
+        pass
 
 def setupAdicionaAcomp(portal):
     props = portal.sapl_documentos.props_sagl
