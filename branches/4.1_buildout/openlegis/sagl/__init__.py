@@ -62,6 +62,8 @@ def initialize(context):
     allow_module('datetime')
     allow_module('datetime.datetime.timetuple')
     allow_module('PyPDF2')
+    allow_module('PyPDF4')
+    allow_module('PyPDF4.utils')
     allow_module('pdfrw')
     allow_module('StringIO')
     allow_module('PIL')
