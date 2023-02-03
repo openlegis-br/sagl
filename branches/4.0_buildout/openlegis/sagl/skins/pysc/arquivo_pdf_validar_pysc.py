@@ -14,7 +14,6 @@ response =  request.response
 
 try:
     pdf = PdfFileReader(file)
-    return pdf.documentInfo
 except PdfReadError:
     raise ValueError('O arquivo enviado não é um documento PDF válido.')
 
