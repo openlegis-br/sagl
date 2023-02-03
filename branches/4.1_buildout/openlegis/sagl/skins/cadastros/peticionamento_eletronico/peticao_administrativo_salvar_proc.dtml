@@ -36,10 +36,9 @@
        <dtml-call expr="REQUEST.set('cod_peticao', hdn_cod_peticao)">
        <dtml-if file_nom_arquivo>
           <dtml-call expr="REQUEST.set('id_documento', _.str(cod_peticao)+'.pdf')">
-          <dtml-try>
+          <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
               <dtml-call expr="sapl_documentos.peticao.manage_addFile(id=id_documento,file=file_nom_arquivo)">
-          <dtml-except> 
-          </dtml-try>
+          </dtml-if>
        </dtml-if>
     <dtml-elif expr="zsql.peticao_incluir_zsql">
        <dtml-in expr="zsql.peticao_incluida_codigo_obter_zsql()">
@@ -61,10 +60,14 @@
   <dtml-if file_nom_anexo>
      <dtml-try>
       <dtml-in file_nom_anexo prefix="file">
-        <dtml-call expr="sapl_documentos.peticao.manage_addFile(id=pysc.anexo_peticao_pysc(cod_peticao,nomear=True), file=file_item)">
+        <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_item)">
+           <dtml-call expr="sapl_documentos.peticao.manage_addFile(id=pysc.anexo_peticao_pysc(cod_peticao,nomear=True), file=file_item)">
+        </dtml-if>
       </dtml-in>
      <dtml-except>
-       <dtml-call expr="sapl_documentos.peticao.manage_addFile(id=pysc.anexo_peticao_pysc(cod_peticao,nomear=True), file=file_nom_anexo)">
+       <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_anexo)">
+          <dtml-call expr="sapl_documentos.peticao.manage_addFile(id=pysc.anexo_peticao_pysc(cod_peticao,nomear=True), file=file_nom_anexo)">
+       </dtml-if>
      </dtml-try>
   </dtml-if>
 </dtml-if>

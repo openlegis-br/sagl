@@ -97,19 +97,22 @@
 
     <dtml-if file_nom_arquivo>
       <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.pdf')">
-        <dtml-try>
-            <dtml-call expr="sapl_documentos.proposicao.manage_addFile(id=id_documento,file=file_nom_arquivo)">
-        <dtml-except> 
-        </dtml-try>
+      <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
+          <dtml-call expr="sapl_documentos.proposicao.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+      </dtml-if>
     </dtml-if>
 
     <dtml-if file_nom_anexo>
        <dtml-try>
         <dtml-in file_nom_anexo prefix="file">
-          <dtml-call expr="sapl_documentos.proposicao.manage_addFile(id=pysc.anexo_proposicao_pysc(cod_proposicao,nomear=True), file=file_item)">
+          <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_item)">
+             <dtml-call expr="sapl_documentos.proposicao.manage_addFile(id=pysc.anexo_proposicao_pysc(cod_proposicao, nomear=True), file=file_item)">
+          </dtml-if>
         </dtml-in>
        <dtml-except>
-         <dtml-call expr="sapl_documentos.proposicao.manage_addFile(id=pysc.anexo_proposicao_pysc(cod_proposicao,nomear=True), file=file_nom_anexo)">
+          <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_item)">
+             <dtml-call expr="sapl_documentos.proposicao.manage_addFile(id=pysc.anexo_proposicao_pysc(cod_proposicao,nomear=True), file=file_nom_anexo)">
+          </dtml-if>
        </dtml-try>
     </dtml-if>
 
