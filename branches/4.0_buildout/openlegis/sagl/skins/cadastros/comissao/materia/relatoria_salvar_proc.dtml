@@ -169,7 +169,9 @@
                     <dtml-let parecer="_.getattr(sapl_documentos.parecer_comissao,id_parecer) ">
                         <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
                         <dtml-try>
-                            <dtml-call "parecer.manage_upload(file=file_nom_arquivo_parecer)">
+                            <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo_parecer)">
+                               <dtml-call "parecer.manage_upload(file=file_nom_arquivo_parecer)">
+                            </dtml-if>
                         <dtml-except>
                             <dtml-call expr="REQUEST.set('erro', 1)">              
                         </dtml-try>
@@ -182,8 +184,10 @@
                <dtml-call expr="REQUEST.set('id_parecer',_.str(ult_relatoria_incluida)+'_parecer.pdf')">
              </dtml-if>
              <dtml-if "not existe_arquivo">
-          <dtml-try>            
-                  <dtml-call expr="sapl_documentos.parecer_comissao.manage_addFile(id=id_parecer,file=file_nom_arquivo_parecer)">
+          <dtml-try>
+              <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo_parecer)">
+                 <dtml-call expr="sapl_documentos.parecer_comissao.manage_addFile(id=id_parecer, file=file_nom_arquivo_parecer)">
+              </dtml-if>
                  <dtml-except> 
                      <dtml-call expr="REQUEST.set('erro', 1)">              
                  </dtml-try>      

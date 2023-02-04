@@ -32,7 +32,9 @@
                     <dtml-let documento="_.getattr(sapl_documentos.documento_comissao,id_documento) ">
                         <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
                         <dtml-try>
-                            <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
+                          <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
+                             <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
+                          </dtml-if>
                         <dtml-except>
                             <dtml-call expr="REQUEST.set('erro', 1)">              
                         </dtml-try>
@@ -55,8 +57,10 @@
                <dtml-call expr="REQUEST.set('id_documento',_.str(ult_documento_incluido)+'_documento.pdf')">
              </dtml-if>
              <dtml-if "not existe_arquivo">
-          <dtml-try>            
-                  <dtml-call expr="sapl_documentos.documento_comissao.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+          <dtml-try>
+             <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
+                <dtml-call expr="sapl_documentos.documento_comissao.manage_addFile(id=id_documento, file=file_nom_arquivo)">
+             </dtml-if>
                  <dtml-except> 
                      <dtml-call expr="REQUEST.set('erro', 1)">              
                  </dtml-try>      

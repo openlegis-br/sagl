@@ -11,18 +11,18 @@
 </dtml-in>
 
 <dtml-try>
-   <dtml-call expr="metodo(tip_documento = lst_tip_documento,
-                           nom_documento = txt_nom_documento,
-                           nom_autor_documento = nom_usuario,
-                           cod_documento = cod_documento,
-                           dat_documento = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
-                           ind_excluido = 0)">
-<dtml-except>
+  <dtml-call expr="metodo(tip_documento = lst_tip_documento,
+                          nom_documento = txt_nom_documento,
+                          nom_autor_documento = nom_usuario,
+                          cod_documento = cod_documento,
+                          dat_documento = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+                          ind_excluido = 0)">
+  <dtml-except>
     <dtml-let mensagem="'Não foi possível incluir o documento acessório. Tente novamente!'" tipo_mensagem="'danger'">
        <dtml-var mensagem_emitir>
     </dtml-let>
 
-<dtml-else>
+  <dtml-else>
     <dtml-try>
       <dtml-in expr="zsql.documento_acessorio_administrativo_incluido_codigo_obter_zsql()">
         <dtml-call expr="REQUEST.set('hdn_cod_documento', cod_documento_acessorio)">
@@ -33,7 +33,9 @@
 
     <dtml-if file_nom_arquivo>
        <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+'.pdf')">
-       <dtml-call expr="sapl_documentos.administrativo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+       <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
+          <dtml-call expr="sapl_documentos.administrativo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+       </dtml-if>
     </dtml-if>
  
     <dtml-if hdn_cod_documento>

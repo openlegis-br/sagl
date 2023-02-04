@@ -107,7 +107,9 @@
            <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento) ">
            <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
            <dtml-try>
-               <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
+             <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
+                <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
+             </dtml-if>
            <dtml-except>
                <dtml-call expr="REQUEST.set('erro', 1)">
                <dtml-let mensagem="'Ocorreu erro ao tentar salvar texto integral'+str(hdn_cod_documento)">
@@ -119,7 +121,9 @@
        <dtml-if expr="not existe_arquivo">
         <dtml-try>
          <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+ '_' + 'texto_integral.pdf')">
-         <dtml-call expr="sapl_documentos.administrativo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+         <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
+            <dtml-call expr="sapl_documentos.administrativo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+         </dtml-if>
         </dtml-try>
        </dtml-if>
     </dtml-if>
