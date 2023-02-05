@@ -1,54 +1,115 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/jquery.tablesorter/jquery.jeditable.js"></script>
+<script src="<dtml-var portal_url>/js/dataTables.rowReorder.min.js"></script>
+<link rel="stylesheet" href="<dtml-var portal_url>/css/rowReorder.bootstrap4.min.css" />
 
-<script type="text/javascript" charset="utf-8">
- $(document).ready(function(){
- $(".edit").editable('<dtml-var portal_url>/cadastros/acompanhamento_sessao/item_atualizar_proc',
- {
-            event: "click",
-            style: "inherit",
-            onblur: "submit",
-            width:($(".edit").width() + 220) + "px",
-            height:($(".edit").height() + 30) + "px",
-            placeholder: "Clique para alterar o texto",
-            tooltip: "Clique para editar",
-            id   : 'cod_item',
-            name : 'txt_exibicao',
-            type : 'textarea',
-            tpl: "<input class="form-control" type='text' style='width: 400px'>"
-        });
-   });
-</script>
-
-<script>
-  function conteudo_gerar(){
-      lst_cod_sessao = document.getElementById("lst_cod_sessao");
-      lst_cod_sessao.options[lst_cod_sessao.selectedIndex].value;     
-
-      if (lst_cod_sessao.selectedIndex == 0) {
-         alert("É necessário selecionar uma Sessão!");
-      }
-
-      if ((lst_cod_sessao.selectedIndex != 0) && confirm("Confirma a geração de conteúdo para a Sessão selecionada?")) {
-         location.href="<dtml-var portal_url>/cadastros/acompanhamento_sessao/gerar_itens_painel_pysc?cod_sessao_plen="+lst_cod_sessao.options[lst_cod_sessao.selectedIndex].value;
-         setTimeout(function(){window.location.reload(true)},3000);
-         return true;
-       }
-         return;
-  }
+<script type="text/javascript">
 
   function sessao_encerrar(){
-       if (confirm("Deseja realmente encerrar a Sessão?")) {
-          location.href="sessao_encerrar_proc?url=<dtml-var portal_url>/cadastros/acompanhamento_sessao";
+       if (confirm("Deseja excluir a lista de itens desta sessão?")) {
+          location.href="sessao_encerrar_proc?cod_sessao_plen=<dtml-var hdn_cod_sessao_plen missing>&url=<dtml-var portal_url>/cadastros/acompanhamento_sessao?hdn_cod_sessao_plen=<dtml-var hdn_cod_sessao_plen missing>";
        }
        return;
   }
+  
+$(document).ready(function() {
+
+    var table = $('#painel').DataTable( {
+         "order": [[ 0, 'asc' ]],
+         "rowReorder": {
+             selector: 'td:nth-child(1)',       
+             //selector: 'tr',
+             //   update: true,
+         },      
+        "responsive": true,
+        "bStateSave": true,        
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('painelDataTable<dtml-var hdn_cod_sessao_plen missing>', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('painelDataTable<dtml-var hdn_cod_sessao_plen missing>'));
+        },
+        "lengthMenu": [[100, 200], [100, 200]],
+        "lengthChange": true,
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+    table.on('row-reorder.dt', function (dragEvent, data, nodes) {
+        for (var i = 0, ien = data.length ; i < ien ; i++) {
+            var rowData = table.row(data[i].node).data();
+            var codigo = table.row(data[i].node).id();
+            $.ajax({
+                type: "GET",
+                cache: false,
+                contentType: "application/json; charset=utf-8",
+                url: 'item_atualizar_posicao_proc',
+                data: {cod_sessao_plen: <dtml-var hdn_cod_sessao_plen missing="0">,  Id: codigo, fromPosition: data[i].oldData, toPosition: data[i].newData },
+                dataType: "json"
+            });
+            }
+    });    
+});
 
 </script>
 
-<h1 class="firstHeading">Plenário Virtual</h1>
- <dtml-in expr="zsql.sessao_plenaria_painel_obter_zsql()">
+<dtml-if hdn_cod_sessao_plen>
+  <dtml-in expr="zsql.sessao_plenaria_painel_obter_zsql(cod_sessao_plen=hdn_cod_sessao_plen)">
+    <dtml-call expr="REQUEST.set('hdn_cod_sessao_plen', cod_sessao_plen)">
+  </dtml-in>
+</dtml-if>
+
+<div class="row">
+  <div class="col-12 col-lg-10">
+    <h1 class="firstHeading">Painel de Exibição</h1>
+  </div>
+  <div class="col-12 col-lg-2">
+    <div class="text-right">
+       <a class="btn btn-sm btn-link" href="<dtml-var portal_url>/consultas/sessao_plenaria/painel/" target="_blank"><i class="fas fa-external-link-alt"></i> Abrir Exibição</a>
+    </div>
+  </div>
+</div>
+
+ <form class="form" method="post" name="lista_gerar_form" action="conteudo_gerar_proc">
+   <div class="row">
+     <div class="col-12 mb-3 form-group">
+       <dtml-call expr="REQUEST.set('ano_sessao', _.DateTime().strftime('%Y'))">
+       <select class="form-control selectpicker show-tick jumpmenu" data-dropup-auto="false" id="lst_cod_sessao" name="lst_cod_sessao">
+         <option value="<dtml-var ACTUAL_URL>"> Selecione uma sessão</option>
+         <dtml-in expr="zsql.sessao_plenaria_obter_zsql(ano_sessao=ano_sessao, ind_excluido=0)">
+           <dtml-if expr="hr_fim_sessao==''">
+              <option 
+                 <dtml-if expr="_.has_key('hdn_cod_sessao_plen') and int(cod_sessao_plen)==int(hdn_cod_sessao_plen)">
+                    selected
+                 </dtml-if> 
+                 value="<dtml-var ACTUAL_URL>?hdn_cod_sessao_plen=<dtml-var cod_sessao_plen>">
+                <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+                   <dtml-var num_sessao_plen missing>ª Sessão <dtml-var nom_sessao> - <dtml-var dat_inicio_sessao>
+                </dtml-in>
+               </option>
+           </dtml-if>
+         </dtml-in>
+       </select>
+     </div>
+   </div>
+ </form> 
+
+<dtml-if hdn_cod_sessao_plen>
+ <dtml-in expr="zsql.sessao_plenaria_painel_obter_zsql(cod_sessao_plen=hdn_cod_sessao_plen)">
      <dtml-if sequence-even>
         <dtml-call "REQUEST.set ('class', 'odd')">
      <dtml-else>
@@ -56,34 +117,22 @@
      </dtml-if>
      <dtml-if sequence-start>
 
-<dtml-if cod_sessao_plen>
-    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
-      <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
-       <table class="table">
-        <tr><td colspan="4"><div align="center">
-        <h2 style="font-size: 130% !important;letter-spacing:-0.03em !important;line-height:1.5em;"><dtml-var num_sessao_plen missing>ª Sessão <dtml-var nom_sessao> da <dtml-var num_sessao_leg>ª Sessão Legislativa da <dtml-var num_legislatura>ª Legislatura <br /></h2><h4 style="font-size: 110% !important;letter-spacing:-0.03em !important; color: #555;"><dtml-var expr="pysc.data_converter_por_extenso_pysc(data=dat_inicio_sessao)"> (<dtml-var dia_sessao>) - <dtml-var expr="pysc.hora_formatar_pysc(hora=hr_inicio_sessao)"></h4>
-        </div></td></tr>
-       </table>
-      </dtml-in>
-    </dtml-in>
-</dtml-if>
       <form name="acompanhamento_sessao_form" method="post">
-       <fieldset>
-        <table class="table">
-          <thead>
+        <table class="table table-bordered" id="painel">
+          <thead class="table-secondary">
             <tr>
-              <th width="5%" >Item</th>
-              <th width="13%">Fase</th>
-              <th width="47%">Texto para exibição</th>
-              <th width="10%">Ações</th>
-              <th width="20%">Resultado</th>
+              <th width="5%">Ordem</th>
+              <th width="15%">Fase</th>
+              <th>Descrição</th>
+              <th width="20%">Status</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
      </dtml-if sequence-start>
-            <tr class="<dtml-var class>">
-              <td>
-                 <b><div align="center"><a name="<dtml-var num_ordem>"><dtml-var num_ordem></a></div></b>
+            <tr id="<dtml-var cod_item>" <dtml-if expr="dat_fim!=None">style="background: #f9f9f9"</dtml-if><dtml-if expr="ind_exibicao==1">style="background: #caf0c6"</dtml-if>>
+              <td style="cursor: move">
+                 <dtml-var num_ordem>
               </td>
               <td>
                 <dtml-var nom_fase>
@@ -94,80 +143,102 @@
                        <b><dtml-var sgl_tipo_materia missing> N° <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b> - <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)"><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></dtml-in> - <dtml-var txt_ementa>
                     </dtml-in>
                  <dtml-else>
-                  <div class="edit" id="<dtml-var cod_item>" style="display: inline; cursor: pointer;"><dtml-var txt_exibicao></div>
+                   <a href="" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Item" data-src="item_mostrar_proc?cod_item=<dtml-var cod_item>&cod_sessao_plen=<dtml-var hdn_cod_sessao_plen>&modal=1"> <dtml-var txt_exibicao></a>
                  </dtml-if>
-                 <dtml-if expr="nom_fase == 'Presença'">
-                    <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
-                      <dtml-call expr="REQUEST.set('dat_sessao', dat_inicio_sessao)">
-                    </dtml-in>
-                      <dtml-in expr="zsql.presenca_ordem_dia_obter_zsql(dat_sessao=dat_sessao, cod_sessao_plen=cod_sessao_plen, tip_frequencia='P', ind_excluido=0)">
-                       <dtml-if sequence-start><b>PARLAMENTARES PRESENTES:</b></dtml-if sequence-start>
-                       <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
-                          <dtml-var nom_parlamentar> (<dtml-var sgl_partido missing null="">)</dtml-in><dtml-unless sequence-end>,</dtml-unless>
-                       </dtml-in>
-                 </dtml-if>
-              </td>
-              <td <dtml-if expr="dat_fim!=None">style="background: #c0d6f1"</dtml-if> <dtml-if expr="ind_exibicao==1">style="background: #55C84C"</dtml-if>>
-                <dtml-if expr="ind_exibicao==1">
-                  <p align="center">
-                    <a href="item_finalizar_proc?cod_item=<dtml-var cod_item>">Finalizar</a>
-                  </p>
-                <dtml-elif expr="dat_fim!=None">
-                  <p align="center">
-                    <a href="item_exibir_proc?cod_item=<dtml-var cod_item>">Reniciar</a>
-                  </p>
-                <dtml-else>
-                  <p align="center">
-                    <a href="item_exibir_proc?cod_item=<dtml-var cod_item>">Iniciar</a>
-                  </p>
-                </dtml-if>
               </td>
               <td>
+                <div class="small">
+                 <dtml-if expr="ind_exibicao==1"><div class="font-weight-bold">EM EXIBIÇÃO</div></dtml-if>
                  <dtml-if dat_inicio>
                      <b>Início</b>: <dtml-var hr_inicio>
+                 <dtml-else>
+                     <span class="text-muted font-italic">Não exibido</span><br />
                  </dtml-if>
-                 <dtml-if dat_fim>
-                     <b>Fim</b>: <dtml-var hr_fim>
+                 <dtml-if expr="dat_fim!=None">
+                     <br /><b>Fim</b>: <dtml-var hr_fim>
                  </dtml-if>
-                 <dtml-if expr="nom_fase == 'Presença'">
-                    <br /><b>Presenças:</b> <dtml-var expr="pysc.quantidade_presentes_ordem_dia_pysc(cod_sessao_plen=cod_sessao_plen,dat_ordem=dat_sessao)">
-                 </dtml-if>
+                </div>
+              </td>
+              <td>
+                <dtml-if expr="ind_exibicao==1">
+                  <div align="center">
+                    <a class="btn btn-sm btn-danger" href="item_finalizar_proc?cod_sessao_plen=<dtml-var hdn_cod_sessao_plen>&cod_item=<dtml-var cod_item>&num_ordem=<dtml-var num_ordem>">Finalizar</a>
+                  </div>
+                <dtml-elif expr="dat_fim!=None">
+                  <div align="center">
+                    <a class="btn btn-sm btn-secondary" href="item_exibir_proc?cod_sessao_plen=<dtml-var hdn_cod_sessao_plen>&cod_item=<dtml-var cod_item>&num_ordem=<dtml-var num_ordem>">Reenviar</a>
+                  </div>
+                <dtml-else>
+                  <div align="center">
+                    <a class="btn btn-sm btn-success" href="item_exibir_proc?cod_sessao_plen=<dtml-var hdn_cod_sessao_plen>&cod_item=<dtml-var cod_item>&num_ordem=<dtml-var num_ordem>">Enviar</a>
+                  </div>
+                </dtml-if>
               </td>
             </tr>
      <dtml-if sequence-end>
            <tbody>
          </table>
-       </fieldset>
-       <p align="center">
-         <input class="form-control" type="button" value="Encerrar Sessão" onClick="sessao_encerrar()">
-       </p>
+         <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Item" data-src="item_form?cod_sessao_plen=<dtml-var hdn_cod_sessao_plen>&modal=1">Incluir Item</button>
+         <input class="btn btn-sm btn-danger" type="button" value="Excluir Lista" onClick="sessao_encerrar()">
         </form>
      </dtml-if sequence-end>
-     <dtml-else>
-       <form class="pf-form" method="post" name="lista_gerar_form" action="conteudo_gerar_proc">
-         <fieldset>
-            <div id="inputs">
-              <div class="pf-element pf-full-width">
-                <label for="lst_tip_materia"><span class="pf-label">Selecione a Sessão</span></label>
-                <dtml-call expr="REQUEST.set('ano_sessao', _.DateTime().strftime('%Y'))">
-                <select class="custom-select"  class="pf-field" id="lst_cod_sessao" name="lst_cod_sessao">
-                  <option value="0"></option>
-                  <dtml-in expr="zsql.sessao_plenaria_obter_zsql(ano_sessao=ano_sessao,ind_excluido=0)">
-                    <dtml-if expr="hr_fim_sessao==''">
-                      <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
-                       <option value="<dtml-var cod_sessao_plen>"><dtml-var num_sessao_plen missing>ª Sessão <dtml-var nom_sessao> - <dtml-var dat_inicio_sessao></option>
-                      </dtml-in>
-                    </dtml-if>
-                  </dtml-in>
-                </select>
-              </div>
-              <div class="pf-element pf-buttons">
-                <input class="form-control" class="pf-button btn botao" type="button" value="Gerar Conteúdo" onclick="javascript:conteudo_gerar();" />
-              </div>
-            </div>
-         </fieldset>
-
-       </form> 
+<dtml-else>
+    <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/cadastros/acompanhamento_sessao/gerar_itens_painel_pysc?cod_sessao_plen=<dtml-var hdn_cod_sessao_plen>">Gerar Lista</a>
 </dtml-in>
 </form>
+<dtml-else>
+<p class="font-weight-bold">Item em exibição no painel:</p>
+<dtml-in expr="zsql.sessao_plenaria_painel_obter_zsql(ind_exibicao='1')">
+     <div class="card mb-4">
+       <div class="card-body text-left bg-light">
+      <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen)">
+            <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=tip_sessao)">
+                   <p class="h4 card-title "><dtml-var num_sessao_plen>ª <dtml-if expr="nom_sessao!='Audiência Pública'">Sessão</dtml-if> <dtml-var nom_sessao></p>
+            </dtml-in>
+      </dtml-in>
+   <div class="card-text">
+                <dtml-if cod_materia>
+                   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                       <b><dtml-var des_tipo_materia missing> n° <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b> - <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)"><dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless></dtml-in>
+                   <p class="desc"><dtml-var txt_ementa></p>
+                   </dtml-in>
+                <dtml-else>
+                  <dtml-var txt_exibicao>
+                </dtml-if>
+             </h2>
+   </div>  
+<dtml-else>
+     <div class="card mb-4">
+       <div class="card-body text-left bg-light">
+         <h2>Aguardando mensagem...</h2>
+       </div>
+     </div>
+ </div>
+ </div>
+ </div>
+</dtml-in>
+</dtml-if>
+
+<script type="text/javascript">
+    function initJumpMenus() {
+        // Turns all <select> elements with the 'jumpmenu' class into jump menus
+        var selectElements = document.getElementsByTagName("select");
+        for( i = 0; i < selectElements.length; i++ ) {
+            // Check for the class and make sure the element has an ID
+            if( selectElements[i].className == "form-control selectpicker show-tick jumpmenu" && document.getElementById(selectElements[i].id) != "" ) {
+                jumpmenu = document.getElementById(selectElements[i].id);
+                jumpmenu.onchange = function() {
+                    if( this.options[this.selectedIndex].value != '' ) {
+                        // Redirect
+                        location.href=this.options[this.selectedIndex].value;
+                    }
+                }
+            }
+        }
+    }
+    window.onload = function() {
+        initJumpMenus();
+    }
+</script>
+
 <dtml-var standard_html_footer>

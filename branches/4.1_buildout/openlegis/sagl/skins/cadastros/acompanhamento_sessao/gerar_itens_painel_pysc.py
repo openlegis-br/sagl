@@ -8,6 +8,9 @@
 ##title=
 ##
 
+REQUEST = context.REQUEST
+RESPONSE = REQUEST.RESPONSE
+
 itens = []
 
 cod_sessao_plen = int(context.REQUEST['cod_sessao_plen'])
@@ -183,3 +186,5 @@ for i, dic in itens:
   context.zsql.sessao_plenaria_painel_incluir_zsql(tip_item=dic.get('tipo_item',dic), cod_sessao_plen=dic.get('cod_sessao_plen',dic), nom_fase=dic.get('nom_fase',dic), num_ordem=i, txt_exibicao=dic.get('txt_exibicao',dic), cod_materia=dic.get('cod_materia',dic), txt_autoria=dic.get('txt_autoria',dic), txt_turno=dic.get('txt_turno',dic), ind_extrapauta=dic.get('ind_extrapauta',dic), ind_exibicao=dic.get('ind_exibicao',dic))
 #   return  i, dic.get('tipo_item',dic), dic.get('nom_fase',dic), dic.get('txt_exibicao',dic), dic.get('cod_materia',dic), dic.get('txt_autoria',dic), dic.get('txt_turno',dic), dic.get('ind_extrapauta',dic), dic.get('ind_exibicao',dic)
 
+redirect_url=context.portal_url()+'/cadastros/acompanhamento_sessao/acompanhamento_sessao_index_html?hdn_cod_sessao_plen=' + cod_sessao_plen
+REQUEST.RESPONSE.redirect(redirect_url)
