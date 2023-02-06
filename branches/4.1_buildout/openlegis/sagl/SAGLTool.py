@@ -2154,7 +2154,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         if int(qtde_assinaturas) <= 3:
            signature_starter.visual_representation = ({
                'text': {
-                   'text': 'Assinado digitalmente por {{signerName}} {{br_cpf_formatted}}',
+                   'text': 'Assinado digitalmente por {{signerName}}',
                    'includeSigningTime': True,
                    'horizontalAlign': 'Left'
                },
@@ -2171,7 +2171,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif int(qtde_assinaturas) > 3:
            signature_starter.visual_representation = ({
                'text': {
-                   'text': 'Assinado digitalmente por {{signerName}} {{br_cpf_formatted}}',
+                   'text': 'Assinado digitalmente por {{signerName}}',
                    'includeSigningTime': True,
                    'horizontalAlign': 'Left'
                },
