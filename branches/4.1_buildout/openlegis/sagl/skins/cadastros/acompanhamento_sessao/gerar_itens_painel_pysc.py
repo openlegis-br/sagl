@@ -81,7 +81,7 @@ for requerimentos in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=
     dic_requerimentos["tipo_item"] = 'Matéria'
     dic_requerimentos["cod_sessao_plen"] = sessao.cod_sessao_plen
     dic_requerimentos["nom_fase"] = 'Expediente'
-    dic_requerimentos["txt_exibicao"] = materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa
+    dic_requerimentos["txt_exibicao"] = materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ str(materia.txt_ementa).decode('latin-1').encode('utf-8')
     dic_requerimentos["cod_materia"] = materia.cod_materia
     dic_requerimentos["txt_autoria"] = ''
     autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
@@ -102,7 +102,7 @@ for requerimentos in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=
 #  for materia in context.zsql.materia_obter_zsql(cod_materia=mocoes.cod_materia, des_tipo_materia='Moção', ind_excluido=0):
 #    dic_mocoes["tipo_item"] = 'Matéria'
 #    dic_mocoes["nom_fase"] = 'Expediente'
-#    dic_mocoes["txt_exibicao"] = materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa
+#    dic_mocoes["txt_exibicao"] = materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ materia.txt_ementa.decode('latin-1').encode('utf-8') 
 #    dic_mocoes["cod_materia"] = materia.cod_materia
 #    dic_mocoes["txt_autoria"] = ''
 #    autores = context.zsql.autoria_obter_zsql(cod_materia=materia.cod_materia)
@@ -153,7 +153,7 @@ for ordem_dia in context.zsql.ordem_dia_obter_zsql(cod_sessao_plen=int(context.R
     for quorum in context.zsql.quorum_votacao_obter_zsql(cod_quorum=ordem_dia.tip_quorum):
         dic_ordem_dia["txt_quorum"] = quorum.des_quorum
         quorum = quorum.des_quorum
-    dic_ordem_dia["txt_exibicao"] =  materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ str(materia.txt_ementa) + ' Turno: ' + str(turno) + ' | Quórum: ' +str(quorum)
+    dic_ordem_dia["txt_exibicao"] =  materia.sgl_tipo_materia.decode('utf-8').upper()+' Nº '+str(materia.num_ident_basica)+"/"+str(context.pysc.ano_abrevia_pysc(ano=str(materia.ano_ident_basica)))+" - "+ str(materia.txt_ementa).decode('latin-1').encode('utf-8')  + ' Turno: ' + str(turno) + ' | Quórum: ' +str(quorum)
     dic_ordem_dia["cod_materia"] = ordem_dia.cod_materia
     dic_ordem_dia["txt_autoria"] = ''
     autores = context.zsql.autoria_obter_zsql(cod_materia=ordem_dia.cod_materia)
