@@ -2154,7 +2154,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         if int(qtde_assinaturas) <= 3:
            signature_starter.visual_representation = ({
                'text': {
-                   'text': 'Assinado digitalmente por {{signerName}} {{br_cpf_formatted}}',
+                   'text': 'Assinado digitalmente por {{signerName}}',
                    'includeSigningTime': True,
                    'horizontalAlign': 'Left'
                },
@@ -2171,7 +2171,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif int(qtde_assinaturas) > 3:
            signature_starter.visual_representation = ({
                'text': {
-                   'text': 'Assinado digitalmente por {{signerName}} {{br_cpf_formatted}}',
+                   'text': 'Assinado digitalmente por {{signerName}}',
                    'includeSigningTime': True,
                    'horizontalAlign': 'Left'
                },
@@ -2545,6 +2545,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                   pdf = getattr(self.sapl_documentos.parecer_comissao, nom_arquivo_pdf)
                   pdf.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
 
+        if tipo_doc == 'doc_acessorio':
+           for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=codigo):
+               nom_arquivo_pdf = "%s"%documento.cod_documento+'.pdf'
+               if documento.ind_publico == '0' and hasattr(self.sapl_documentos.materia, nom_arquivo_pdf):
+                  pdf = getattr(self.sapl_documentos.materia, nom_arquivo_pdf)
+                  pdf.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
+                
         return 'ok'
 
 
