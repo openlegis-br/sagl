@@ -7,16 +7,28 @@
       var form = document.instituicao_form;
       var regexp_digitos = /\D+/;
 
-      if (form.txa_txt_nom_instituicao.value == "") {
-         alert("O nome da entidade deve ser preenchido!");
-         form.txa_txt_nom_instituicao.focus();
-         return false;
-      }
-
       if (form.lst_tip_instituicao.selectedIndex==0){
           alert("Escolha um tipo de entidade!");
           form.lst_tip_instituicao.focus();
           return false;
+      }
+
+      if (form.lst_txt_atividade.selectedIndex==0){
+          alert("Escolha uma atividade!");
+          form.lst_txt_atividade.focus();
+          return false;
+      }
+
+      if (form.lst_txt_origem.selectedIndex==0){
+          alert("Escolha uma origem!");
+          form.lst_txt_origem.focus();
+          return false;
+      }
+
+      if (form.txa_txt_nom_instituicao.value == "") {
+         alert("O nome da entidade deve ser preenchido!");
+         form.txa_txt_nom_instituicao.focus();
+         return false;
       }
 
       if (form.txt_end_instituicao.value == "") {
@@ -25,12 +37,6 @@
          return false;
       }
 
-      if (form.txt_nom_bairro.value == "") {
-         alert("O bairro deve ser preenchido!");
-         form.txt_nom_bairro.focus();
-         return false;
-      }  
-      
       if (form.txt_num_cep.value == "") {
          alert("O CEP deve ser preenchido!");
          form.txt_num_cep.focus();
@@ -103,6 +109,24 @@
       location.href = URL;
    }
 
+  $(document).ready(function(){
+    $("#txt_num_cep").change(function(){
+        var cep = $(this).val();
+        $.ajax({
+            url: 'cep_buscar_pysc',
+            type: 'post',
+            data: {numcep:cep},
+            dataType: 'json',
+            success:function(data){
+                 $('#txt_end_instituicao').val(data['logradouro']);
+                 $('#txt_nom_bairro').val(data['bairro']);
+                 $('#txt_municipio').val(data['cidade']);
+                 $('#txt_sgl_uf').val(data['estado']);
+            }
+        });
+    });
+});
+
 </script>
 
  <div class="row mb-2">
@@ -112,7 +136,7 @@
       <div class="col-12 col-md-6 text-left text-md-right">
          <div class="btn-group d-print-none ">
            <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/consultas/instituicao" ><i class="fa fa-fw fa-search"></i> Nova Pesquisa</a>
-           <dtml-if cod_entidade>          
+           <dtml-if cod_instituicao>          
              <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Entidade', 'Operador Modulo Administrativo'])">
                <a class="btn btn-primary btn-sm d-print-none" href="<dtml-var portal_url>/cadastros/instituicao/instituicao_form""><i class="fa fa-fw fa-plus"></i> Incluir Entidade</a>
              </dtml-if>
@@ -128,13 +152,9 @@
  <input type="hidden" name="hdn_txt_ip" value="<dtml-var REMOTE_ADDR missing>" />
 
  <div class="form-row">
-  <div class="col-12 col-md-6 mb-3">
-     <label for="txa_txt_nom_instituicao" class="required">Nome da Entidade</label>
-     <input class="form-control" type="text" id="txa_txt_nom_instituicao" name="txa_txt_nom_instituicao" maxlength="200" value="<dtml-var nom_instituicao missing>" required/>  
-  </div>
-  <div class="col-6 col-md-3 mb-3">
-              <label for="lst_tip_instituicao" class="required">Tipo</label>
-              <select class="custom-select"  id="lst_tip_instituicao" name="lst_tip_instituicao" <dtml-unless cod_instituicao>onChange="categoria_listar(document.instituicao_form)"</dtml-unless> <dtml-if cod_instituicao>onfocus="this.initialSelect = this.selectedIndex;" onchange="this.selectedIndex = this.initialSelect;"</dtml-if> required>
+  <div class="col-6 col-md-4 mb-3">
+              <label for="lst_tip_instituicao" class="required">Tipo de Entidade</label>
+              <select class="custom-select" id="lst_tip_instituicao" name="lst_tip_instituicao" <dtml-if cod_instituicao>onfocus="this.initialSelect = this.selectedIndex;" onchange="this.selectedIndex = this.initialSelect;"</dtml-if> required>
                 <option value="0">Selecione</option>
                 <dtml-if cod_instituicao>
                    <dtml-call expr="REQUEST.set('tip_instituicao_sel', tip_instituicao)">
@@ -155,40 +175,60 @@
                   </dtml-if>
               </select>
   </div>
-  <div class="col-6 col-md-3 mb-3">
-              <label for="lst_categoria">Categoria</label>
-              <select class="custom-select"  id="lst_categoria" name="lst_categoria">
-                <option value="0">Selecione</option>
-                  <dtml-if cod_instituicao>
-                     <dtml-call expr="REQUEST.set('cod_categoria_sel', cod_categoria)">
-                  </dtml-if>
-                <dtml-in expr="zsql.categoria_instituicao_obter_zsql(tip_instituicao=tip_instituicao_sel, ind_excluido=0)">
-                <option
-                  <dtml-if tip_instituicao>
-                     <dtml-if expr="_.has_key('cod_instituicao') and _.int(cod_categoria_sel) == _.int(cod_categoria)">
-                       selected
-                     </dtml-if>
-                  </dtml-if>     
-                  value="<dtml-var cod_categoria>">
-                  <dtml-var des_categoria>
-                </option>
-                </dtml-in>
+  <div class="col-6 col-md-4 mb-3">
+              <label for="lst_txt_atividade" class="required">Atividade</label>
+              <select class="custom-select" id="lst_txt_atividade" name="lst_txt_atividade">
+                 <option value>Selecione</option>
+                  <dtml-in expr="zsql.instituicao_atividade_obter_zsql()">
+                    <option
+                       <dtml-if cod_instituicao>
+                          <dtml-if expr="_.has_key('cod_instituicao') and txt_atividade_sel == txt_atividade">
+                              selected
+                          </dtml-if>
+                       </dtml-if>
+                       value="<dtml-var txt_atividade>">
+                           <dtml-var txt_atividade>
+                    </option>
+                  </dtml-in>
               </select>
+  </div>
+  <div class="col-6 col-md-4 mb-3">
+              <label for="lst_txt_origem" class="required">Origem</label>
+              <select class="custom-select" id="lst_txt_origem" name="lst_txt_origem">
+                 <option value>Selecione</option>
+                   <dtml-in expr="zsql.instituicao_origem_obter_zsql()">
+                     <option
+                       <dtml-if cod_instituicao>
+                          <dtml-if expr="_.has_key('cod_instituicao') and txt_origem_sel == txt_origem">
+                             selected
+                          </dtml-if>
+                       </dtml-if>
+                       value="<dtml-var txt_origem>">
+                           <dtml-var txt_origem>
+                     </option>
+                   </dtml-in>
+              </select>
+  </div>
+ </div>
+ <div class="form-row">
+  <div class="col-12 mb-3">
+     <label for="txa_txt_nom_instituicao" class="required">Nome da Entidade</label>
+     <input class="form-control" type="text" id="txa_txt_nom_instituicao" name="txa_txt_nom_instituicao" maxlength="200" value="<dtml-var nom_instituicao missing>" required/>  
   </div>
  </div>
 
  <div class="form-row">
+  <div class="col-6 col-md-2 mb-3">
+     <label for="txt_num_cep" class="required">CEP</label>
+     <input class="form-control" type="text" id="txt_num_cep" name="txt_num_cep" maxlength="15" value="<dtml-var num_cep missing null="">" required />
+  </div>
   <div class="col-12 col-md-5 mb-3">
      <label for="txt_end_instituicao" class="required">Endereço</label>
      <input class="form-control" type="text" id="txt_end_instituicao" name="txt_end_instituicao" maxlength="80" value="<dtml-var end_instituicao missing null="">" required/>
   </div>
   <div class="col-6 col-md-5 mb-3">
-     <label for="txt_nom_bairro" class="required">Bairro</label>
+     <label for="txt_nom_bairro">Bairro</label>
      <input class="form-control" type="text" id="txt_nom_bairro" name="txt_nom_bairro" maxlength="80" value="<dtml-var nom_bairro missing null="">" required />
-  </div>
-  <div class="col-6 col-md-2 mb-3">
-     <label for="txt_num_cep" class="required">CEP</label>
-     <input class="form-control" type="text" id="txt_num_cep" name="txt_num_cep" maxlength="15" value="<dtml-var num_cep missing null="">" required />
   </div>
  </div>
 
