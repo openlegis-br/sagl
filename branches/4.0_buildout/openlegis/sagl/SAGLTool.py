@@ -2545,6 +2545,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                   pdf = getattr(self.sapl_documentos.materia, nom_arquivo_pdf)
                   pdf.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
 
+        if tipo_doc == 'documento':
+           for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=codigo):
+               nom_arquivo_pdf = "%s"%documento.cod_documento+'_texto_integral.pdf'
+               if documento.ind_publico == '1' and hasattr(self.sapl_documentos.administrativo, nom_arquivo_pdf):
+                  pdf = getattr(self.sapl_documentos.administrativo, nom_arquivo_pdf)
+                  pdf.manage_permission('View', roles=['Anonymous'], acquire=0)
+                
         return 'ok'
 
 
