@@ -1,0 +1,36 @@
+<dtml-if expr="zsql.autoria_substitutivo_obter_zsql(cod_autor=lst_cod_autor,cod_substitutivo=cod_substitutivo)">
+   <dtml-let mensagem="'Já existe esta autoria.'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+   </dtml-let>
+   <dtml-call expr="REQUEST.set('erro', 1)">
+</dtml-if>
+
+<dtml-unless erro>
+<dtml-try>
+     <dtml-call expr="REQUEST.set('metodo', zsql.autoria_substitutivo_incluir_zsql)">  
+      <dtml-call expr="metodo(cod_autor=lst_cod_autor, cod_substitutivo=cod_substitutivo)">
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar os dados da autoria. Tente novamente!'" tipo_mensagem="'danger'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
+     <dtml-let mensagem="'Autoria incluída com sucesso!'" cod_autor=lst_cod_autor cod_substitutivo=cod_substitutivo url="'autoria_substitutivo_form?cod_autor='+lst_cod_autor + '&cod_substitutivo=' + cod_substitutivo" tipo_mensagem="'success'">
+        <dtml-var autoria_substitutivo_form>
+    </dtml-let>
+</dtml-try>
+</dtml-unless>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_substitutivo)"> 
+</dtml-if>

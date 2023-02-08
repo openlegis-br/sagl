@@ -1,0 +1,126 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+
+function campos_criticar(form){  
+
+  if (form.lst_num_legislatura.selectedIndex==0){
+      $('#lst_num_legislatura').addClass('is-invalid');
+      form.lst_num_legislatura.focus();
+      return false;
+  }
+
+  if (form.txt_nom_bancada.value == "") {
+      $('#txt_nom_bancada').addClass('is-invalid');
+      form.txt_nom_bancada.focus();
+      return false;
+  }
+
+  if (form.txt_dat_criacao.value == "") {
+      $('#txt_dat_criacao').addClass('is-invalid');
+      form.txt_dat_criacao.focus();
+      return false;
+  }
+  
+  if (!IsValidDate(form.txt_dat_criacao.value)) {
+      $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data de criação válida!"});
+      form.txt_dat_criacao.focus();
+      return false;     
+  }
+
+  if (form.txt_dat_extincao.value != "" && 
+      !IsValidDate(form.txt_dat_extincao.value)) {
+      $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data de extinção válida!"});
+      form.txt_dat_extincao.focus();
+      return false;
+  }
+
+  form.submit();
+}
+</script>
+
+<h1 class="firstHeading">Cadastro de Bancada</h1> 
+
+<form name="bancada_form" method="post" action="bancada_salvar_proc">
+  <div class="form-row">
+     <div class="col-12 col-sm-8 mb-3">
+        <label for="txt_nom_bancada" class="required">Nome da Bancada</label>
+        <input class="form-control" type="text" id="txt_nom_bancada" name="txt_nom_bancada" value="<dtml-var nome_bancada missing>" maxlength="60" required />
+     </div>
+     <div class="col-12 col-sm-4 mb-3">
+        <label for="lst_num_legislatura" class="required">Legislatura</label>
+        <select class="custom-select" id="lst_num_legislatura" name="lst_num_legislatura" required>
+          <option value="0">Selecione</option>
+            <dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
+               <option 
+                 <dtml-if num_legislatura_sel>
+                   <dtml-if expr="_.int(num_legislatura) == _.int(num_legislatura_sel)">
+                     selected
+                   </dtml-if>
+                 </dtml-if>
+                 value="<dtml-var num_legislatura>">
+                 <dtml-var expr="pysc.periodo_legislatura_format_pysc(num_legislatura,dat_inicio,dat_fim)">
+               </option>
+            </dtml-in>
+        </select>
+        <div class="invalid-feedback">
+           Este campo é obrigatório !
+        </div>
+     </div>
+  </div>
+  <div class="form-row">
+     <div class="col-6 col-sm-4 mb-3">
+        <label for="lst_cod_partido">Partido</label>
+        <select class="custom-select" id="lst_cod_partido" name="lst_cod_partido">
+           <option value="">Selecione</option>
+            <dtml-in expr="zsql.partido_obter_zsql(ind_excluido=0)">
+            <option 
+             <dtml-if cod_partido_sel>
+              <dtml-if expr="_.int(cod_partido) == _.int(cod_partido_sel)">
+               selected
+             </dtml-if>
+            </dtml-if>
+             value="<dtml-var cod_partido>">
+              <dtml-var sgl_partido>
+                </option>
+            </dtml-in>
+        </select>
+     </div>
+     <div class="col-6 col-sm-4 mb-3">
+        <label for="txt_dat_criacao" class="required">Data de Criação</label>
+        <input class="form-control date" type="text" name="txt_dat_criacao" id="txt_dat_criacao" value="<dtml-var dat_criacao missing null="">" maxlength="10" required />
+        <div class="invalid-feedback">
+           Este campo é obrigatório !
+        </div>
+     </div>
+     <div class="col-6 col-sm-4 mb-3">
+        <label for="txt_dat_extincao">Data de Extinção</label>
+        <input class="form-control date" type="text" name="txt_dat_extincao" id="txt_dat_extincao" value="<dtml-var dat_extincao missing null="">" maxlength="10" />
+     </div>
+  </div>
+  <div class="form-row">
+     <div class="col-12 mb-3">
+        <label for="txt_descricao">Descrição</label>
+        <textarea class="form-control" id="txt_descricao" name="txt_descricao"><dtml-var descricao missing></textarea> 
+     </div>
+  </div>
+  <input type="hidden" name="hdn_cod_bancada" value="<dtml-var cod_bancada missing>" />
+  <input type="hidden" name="hdn_url" value="<dtml-var portal_url>/consultas/bancada/bancada_index_html?hdn_num_legislatura=<dtml-var num_legislatura_sel>" />
+  <div class="text-left">
+     <input class="btn btn-primary" type="button" name="btn_bancada_salvar" value="Salvar" onClick="campos_criticar(document.bancada_form)" />
+     <dtml-if cod_bancada>
+        <a class="btn btn-danger d-print-none" href="<dtml-var portal_url>/cadastros/auxiliares/bancada/bancada_excluir_proc?cod_bancada=<dtml-var cod_bancada>" data-confirm="Deseja realmente excluir a Bancada?">Excluir</a>
+     </dtml-if>
+     <input class="btn btn-secondary" type="button" name="retornar" value="Voltar" onclick="javascript:history.go(-1)">
+  </div>
+  <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+  </div>
+
+</form>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,150 @@
+<dtml-var standard_html_header>
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+<script>
+
+$(document).ready(function() {
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora    
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+    $('#enviadas').DataTable( {
+        "responsive": true,
+        "bStateSave": true,
+        "order": [[0, "desc"]],                          
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('envDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('envDataTable'));
+        },
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
+</script>
+
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+  <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+</dtml-in>
+
+<h1 class="firstHeading">Tramitação de Processos Administrativos</h1>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+   <a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/primeira_tramitacao_lote_form">Primeira Tramitação</a>
+</dtml-if>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/tramitacao_lote_form">Caixa de Entrada <dtml-if expr="pysc.caixa_entrada_administrativo_contar_pysc(cod_usuario=cod_usuario_corrente) > 0">(<dtml-var expr="pysc.caixa_entrada_administrativo_contar_pysc(cod_usuario=cod_usuario_corrente)">)</dtml-if></a>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/rascunhos_html">Rascunhos <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_usuario_local=cod_usuario_corrente, ind_ult_tramitacao=1, ind_rascunho=1, ind_tramitacao=1)" size="1"><dtml-call expr="REQUEST.set('qtde', _['sequence-length'])">(<dtml-var qtde>)</dtml-in></a>
+<a class="btn btn-sm btn-primary mb-3 disabled" href="<dtml-var portal_url>/cadastros/tramitacao_documento/itens_enviados_html">Enviadas</a>
+<dtml-if expr="pysc.arquivo_morto_adm_contar_pysc(cod_usuario=cod_usuario_corrente) > 0">
+  <a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/arquivo_morto">Arquivo</a>
+</dtml-if>
+
+<p class="text-muted font-weight-bold">Tramitações enviadas</p>
+
+    <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_usuario_local=cod_usuario_corrente, ind_ult_tramitacao=1, ind_encaminha=1, ind_recebido=0, ind_tramitacao=1)">
+      <dtml-if sequence-start>
+        <div class="table-responsive">
+           <table class="table" id="enviadas">
+             <thead class="table-secondary">
+		 <tr>  
+		     <th width="20%">Data de Envio</th>
+		     <th>Identificação do Processo</th>
+                     <th width="15%">Origem</th>		     		     
+		     <th width="15%">Destino</th>
+		     <th width="15%">Status</th>
+		 </tr>
+             </thead>
+       </dtml-if>
+                   <tr>
+                     <td>
+                       <dtml-if dat_tramitacao>
+                         <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Formulário de Tramitação" data-src="tramitacao_mostrar_proc?cod_documento=<dtml-var cod_documento>&hdn_cod_tramitacao=<dtml-var cod_tramitacao>&modal=1" class="btn btn-primary btn-sm"><dtml-var dat_encaminha></a>
+                       </dtml-if>
+                     </td> 
+                     <td>
+                        <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento)">
+                           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">        
+                              <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                           <dtml-else>
+                              <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                          </dtml-if>
+                          <b><dtml-var des_tipo_documento> nº <dtml-var num_documento>/<dtml-var ano_documento></b></a> - 
+                          <b><dtml-var txt_interessado></b>
+                          - <dtml-var txt_assunto>
+                        </dtml-in>
+                     </td>
+                     <td>
+                        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local,ind_adm=1)">
+                          <dtml-var nom_unidade_join>
+                        </dtml-in>
+                     </td>                                                                                             
+                     <td>
+                        <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest, ind_adm=1)">
+                           <dtml-var nom_unidade_join>
+                        </dtml-in>
+                     </td>
+                     <td>
+                      <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+                      <dtml-if "_.hasattr(sapl_documentos.administrativo.tramitacao,pdf)">
+                        <dtml-let arquivo_pdf="_.getattr(sapl_documentos.administrativo.tramitacao,pdf).absolute_url">
+                         <a href="<dtml-var arquivo_pdf>" target="_blank"><dtml-var expr="des_status"></a>
+                       </dtml-let>
+                      <dtml-else>
+                       <dtml-var expr="des_status">
+                      </dtml-if>
+                     </td>
+                   </tr>
+      <dtml-if sequence-end>
+           </table>
+         </div> 
+      </dtml-if>  
+   <dtml-else>
+     <p>Nenhuma tramitação enviada.</p>
+   </dtml-in>
+
+<dtml-var standard_html_footer>

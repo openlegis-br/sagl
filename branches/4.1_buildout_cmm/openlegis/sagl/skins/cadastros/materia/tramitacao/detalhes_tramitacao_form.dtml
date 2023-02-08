@@ -1,0 +1,166 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+
+  function tramitacao_excluir(){    
+     if (confirm("Deseja realmente excluir a tramitação?")) {
+        location.href="tramitacao_excluir_proc?cod_tramitacao=<dtml-var cod_tramitacao missing>&cod_materia=<dtml-var cod_materia>&ind_ult_tramitacao=<dtml-var ind_ult_tramitacao missing="">&modal=1";
+     }
+  } 
+
+</script>
+
+<dtml-call expr="REQUEST.set('cod_tramitacao', int(hdn_cod_tramitacao))">
+
+<h1 class="firstHeading">Tramitação</h1>
+
+  <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+    <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+    <input type="hidden" name="hdn_cod_usuario_corrente" value="<dtml-var cod_usuario_corrente missing>" />
+  </dtml-in>
+
+  <div class="form-row">
+    <div class="col-12 col-md-3 mb-3">
+       <label for="txt_dat_tramitacao">Data da Tramitação</label>
+       <input type="hidden" name="lst_cod_ult_tram_dest" value="" />
+
+       <input class="form-control" type="text" name="txt_dat_tramitacao" id="txt_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" required readonly />
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>        
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_cod_unid_tram_local">Unidade de Origem</label>
+      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local, ind_leg=1)">
+         <input class="form-control" type="text" id="lst_cod_unid_tram_local" value="<dtml-var nom_unidade_join>" readonly>
+      </dtml-in>
+    </div>    
+    <div class="col-12 col-md-3 mb-3">
+      <label class="d-block">Usuário de Origem</label>
+         <dtml-if cod_usuario_local>
+           <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario_local)">      
+              <input class="form-control" type="text" value="<dtml-var nom_completo missing>" readonly>           
+            </dtml-in>
+         <dtml-else>
+            <input class="form-control" type="text" value="" disabled>
+         </dtml-if>
+    </div>     
+  </div> 
+  <div class="form-row">
+    <div class="col-12 col-md-3 mb-3">
+      <label for="txt_dat_encaminha">Encaminhamento</label>
+      <input class="form-control" type="text" name="txt_dat_encaminha" id="txt_dat_encaminha" value="<dtml-var dat_encaminha missing null="">" readonly > 
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>        
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_cod_unid_tram_dest">Unidade de Destino</label>
+      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest, ind_leg=1)">
+         <input class="form-control" type="text" id="lst_cod_unid_tram_dest" value="<dtml-var nom_unidade_join>" readonly>
+      </dtml-in>
+    </div>
+    <div class="col-12 col-md-3 mb-3">
+      <label for="lst_cod_usuario_dest">Usuário de Destino</label>
+      <dtml-if cod_usuario_dest>
+        <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario_dest)">      
+           <input class="form-control" type="text" id="lst_cod_usuario_dest" value="<dtml-var nom_completo>" readonly>
+        </dtml-in>      
+        <dtml-else> 
+         <input class="form-control" type="text" id="lst_cod_usuario_dest" value="" readonly>
+      </dtml-if>
+    </div>
+  </div> 
+
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3"> 
+      <label for="lst_cod_status">Status</label>
+      <dtml-in expr="zsql.status_tramitacao_obter_zsql(cod_status=cod_status)">
+         <input class="form-control" type="text" id="lst_cod_status" value="<dtml-var des_status>" readonly>
+      </dtml-in>      
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_dat_fim_prazo">Data Fim de Prazo</label><br />
+      <input class="form-control date" type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" value="<dtml-var dat_fim_prazo missing null="">" readonly />    
+    </div>    
+    <div class="col-6 col-md-3 mb-3">
+      <label class="d-block">Urgente ?</label>
+      <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+         <div class="custom-control custom-radio custom-control-inline">     
+           <input class="custom-control-input"  type="radio" id="rad<dtml-var expr="_['sequence-item'][0]">" name="rad_ind_urgencia" value="<dtml-var sequence-key>"
+           <dtml-if expr="_.has_key('cod_tramitacao') and ind_urgencia==_['sequence-key']">checked=1</dtml-if> disabled />
+             <label class="custom-control-label" for="rad<dtml-var expr="_['sequence-item'][0]">"><dtml-var sequence-item></label>
+         </div>
+      </dtml-in>    
+    </div>    
+  </div>   
+
+  <div class="form-row">
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txa_dat_recebimento">Recebimento</label>    
+      <input class="form-control" type="text" id="txa_dat_recebimento" value="<dtml-var dat_recebimento missing null>" readonly>
+    </div>
+    <div class="col-6 col-md-9 mb-3">
+      <label class="d-block">Despacho em PDF</label>
+      <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+      <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)"> 
+       <div class="btn-group" role="group" aria-label="tram_button">
+         <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+            <a class="btn btn-secondary" target="_blank" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">">
+              <i class="far fa-file-pdf"></i> Visualizar
+            </a>
+         </dtml-let>
+         <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) and sapl_documentos.props_sagl.restpki_access_token!=''">
+            <dtml-if expr="int(cod_usuario_corrente)==int(cod_usuario_local)" >
+               <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_tramitacao>&tipo_doc=tramitacao&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
+            </dtml-if>
+         </dtml-if>
+        </div>
+      </dtml-if>
+      <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+         <dtml-let pdf_assinado="_.getattr(sapl_documentos.materia.tramitacao,pdf_assinado).absolute_url">
+            <a class="btn btn-secondary" href="<dtml-var pdf_assinado>?<dtml-var expr="ZopeTime().timeTime()">">
+             <i class="fas fa-certificate"></i>Despacho Assinado
+           </a>
+         </dtml-let>
+      </dtml-if>             
+    </div>    
+  </div>
+  
+  <div class="form-row">
+    <div class="col-12 mb-3">
+      <label for="txa_txt_tramitacao">Texto do Despacho</label>
+      <textarea class="form-control" name="txa_txt_tramitacao" id="txa_txt_tramitacao" rows="1" readonly><dtml-var txt_tramitacao missing></textarea>
+    </div>
+  </div>
+
+  <div class="text-left">
+    <dtml-if expr="ind_ult_tramitacao==1 and AUTHENTICATED_USER.has_role(['Operador'])">
+       <input type="button" class="btn btn-danger" value="Excluir" onClick="tramitacao_excluir()" />
+    <dtml-elif expr="ind_ult_tramitacao==1 and int(cod_usuario_corrente)==int(cod_usuario_local)">
+       <input type="button" class="btn btn-danger" value="Excluir" onClick="tramitacao_excluir()" />
+    </dtml-if>
+  </div>
+      
+<script>
+tinymce.init({
+  selector: '#txa_txt_tramitacao',
+  language: 'pt_BR',
+  height: 250,
+  readonly : 1,
+  plugins: [
+    'advlist autolink link image lists charmap print preview hr anchor pagebreak',
+    'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+    'table emoticons template paste help'
+  ],
+  toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
+    ' link image | print preview media fullpage | ',
+  menubar: 'edit view insert format tools help',
+  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+});
+</script>
+   
+<dtml-var standard_html_footer>

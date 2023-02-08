@@ -1,0 +1,501 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js" "></script>
+
+<script type="text/javascript">
+ function reuniao_criticar(form){
+    var form = document.reuniao_comissao_form;
+    if (form.txt_num_reuniao.value == "") {
+       $('#txt_num_reuniao').addClass('is-invalid');
+       form.txt_num_reuniao.focus();
+       return false;
+    }
+    if (form.lst_tip_reuniao.selectedIndex == 0){
+       $('#lst_tip_reuniao').addClass('is-invalid');
+       form.lst_tip_reuniao.focus();
+       return false;
+    }    
+    if (form.txt_dat_inicio_reuniao.value == "") {
+       $('#txt_dat_inicio_reuniao').addClass('is-invalid');
+       form.txt_dat_inicio_reuniao.focus();
+       return false;
+    }
+    if (form.txt_hr_inicio_reuniao.value == "") {
+       $('#txt_hr_inicio_reuniao').addClass('is-invalid');
+       form.txt_hr_inicio_reuniao.focus();
+       return false;
+    }
+    if (!IsValidDate(form.txt_dat_inicio_reuniao.value)) {
+        $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data válida!"});
+       form.txt_dat_inicio_reuniao.focus();
+       return false;     
+    }
+       if (form.file_nom_arquivo_pauta.value != "") {
+       form.hdn_file_pauta.value = 1;
+    }
+       if (form.file_nom_arquivo_ata.value != "") {
+       form.hdn_file_ata.value = 1;
+    }
+    form.submit();
+ }
+ function reuniao_excluir(form){
+    if (confirm("Deseja realmente excluir?")) {  
+    location.href="reuniao_comissao_excluir_proc?cod_reuniao=" + form.hdn_cod_reuniao.value +
+    "&cod_comissao=" + form.hdn_cod_comissao.value;
+    }
+ }   
+ function ativa_desativa_file_field_pauta(form) {
+    form.file_nom_arquivo_pauta.disabled = !(form.radTI[2].checked);
+ }
+ function ativa_desativa_file_field_ata(form) {
+    form.file_nom_arquivo_ata.disabled = !(form.radTI2[2].checked);
+ }
+
+ function gerar_odt(){
+      if (confirm("Confirma a geração do arquivo ODT?")) {
+         location.href="<dtml-var portal_url>/modelo_proposicao/ata_comissao_gerar?cod_reuniao=<dtml-var cod_reuniao missing>&modal=1";
+         setTimeout(function(){window.location.reload(true)},3000);
+       }
+         return;
+  }
+
+ function gerar_pdf(){
+      if (confirm("Confirma a geração do arquivo PDF?")) {
+         location.href="<dtml-var portal_url>/modelo_proposicao/ata_comissao_gerar_pdf?cod_reuniao=<dtml-var cod_reuniao missing>&modal=1";
+         setTimeout(function(){window.location.reload(true)},3000);
+       }
+         return;
+  }
+
+ function excluir_odt(){
+      if (confirm("Confirma a exclusão do arquivo ODT da Ata?")) {
+         location.href="ata_odt_excluir?cod_reuniao=<dtml-var cod_reuniao missing>&modal=1";
+         setTimeout(function(){window.location.reload(true)},3000);
+       }
+         return;
+  }
+
+ window.onload = function(){  
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
+    //Change hash for page-reload
+    $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').on('shown', function (e) {
+        window.location.hash = e.target.hash;
+    }); 
+} 
+
+$(document).ready(() => {
+  let url = location.href.replace(/\/$/, "");
+   if (location.hash) {
+    const hash = url.split("#");
+    $('#nav_materia a[href="#'+hash[1]+'"]').tab("show");
+    url = location.href.replace(/\/#/, "#");
+    history.replaceState(null, null, url);
+  } 
+
+  $('a[data-toggle="tab"]').on("click", function() {
+    let newUrl;
+    const hash = $(this).attr("href");
+    if(hash == "#home") {
+      newUrl = url.split("#")[0];
+    } else {
+      newUrl = url.split("#")[0] + hash;
+    }
+    newUrl += "";
+    history.replaceState(null, null, newUrl);
+  });
+});
+ 
+</script>
+
+<dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao, ind_excluido=0)">
+   <dtml-call expr="REQUEST.set('sgl_comissao', sgl_comissao)">
+</dtml-in>
+
+<ul class="nav nav-tabs border-0 mt-2" id="nav_materia" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="index-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dados Básicos</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_reuniao>disabled</dtml-unless>" id="pauta-tab" data-toggle="tab" href="#pauta" role="tab" aria-controls="pauta" aria-selected="false">
+      Itens da Pauta
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_reuniao>disabled</dtml-unless>" id="presenca-tab" data-toggle="tab" href="#presenca" role="tab" aria-controls="presenca" aria-selected="false">
+      Registro de Presença
+    </a>
+  </li>
+</ul>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active" id="home">
+  
+<form name="reuniao_comissao_form" id="reuniao_comissao_form" method="post" action="reuniao_comissao_salvar_proc" method="post" enctype="multipart/form-data">
+
+   <div class="form-row">
+     <div class="col-6 col-md-3 mb-3">
+        <label for="txt_num_reuniao" class="form-label required">Número</label>
+        <input class="form-control number" type="number" id="txt_num_reuniao" name="txt_num_reuniao" value="<dtml-var num_reuniao missing>" maxlength="3" required>
+        <div class="invalid-feedback">
+          Este campo é obrigatório !
+        </div>
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+        <label for="lst_tip_reuniao" class="required">Tipo de Reunião</label>
+        <select class="custom-select" id="lst_tip_reuniao" name="lst_tip_reuniao" required>
+           <option value="0">Selecione </option>
+           <option value="Ordinária" <dtml-if expr="_.has_key('cod_reuniao') and str(des_tipo_reuniao)=='Ordinária'"> selected</dtml-if>>Ordinária</option>   
+           <option value="Extraordinária" <dtml-if expr="_.has_key('cod_reuniao') and str(des_tipo_reuniao)=='Extraordinária'"> selected</dtml-if>>Extraordinária</option>  
+        </select>  
+        <div class="invalid-feedback">
+          Este campo é obrigatório!
+        </div>           
+     </div>   
+     <div class="col-6 col-sm-6 col-md-3 mb-3">
+        <label for="txt_dat_inicio_reuniao" class="form-label required">Data</label>
+        <input class="form-control date" type="text" name="txt_dat_inicio_reuniao" id="txt_dat_inicio_reuniao"  value="<dtml-var dat_inicio_reuniao missing null>" required />
+        <div class="invalid-feedback">
+          Este campo é obrigatório !
+        </div>
+        <script>
+        $('#txt_dat_inicio_reuniao').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>        
+     </div>
+     <div class="col-6 col-sm-6 col-md-3 mb-3">
+        <label for="txt_hr_inicio_reuniao" class="form-label required">Horário de Início</label>
+        <input class="form-control time" type="text" name="txt_hr_inicio_reuniao" id="txt_hr_inicio_reuniao"  value="<dtml-var hr_inicio_reuniao missing null>" required />
+        <div class="invalid-feedback">
+          Este campo é obrigatório !
+        </div>
+     </div>
+   </div>
+   <div class="form-row">     
+     <div class="col-6 col-sm-6 col-md-3 mb-3">
+        <label for="txt_hr_fim_reuniao" class="form-label">Horário de Fim</label>
+        <input class="form-control time" type="text" name="txt_hr_fim_reuniao" id="txt_hr_fim_reuniao"  value="<dtml-var hr_fim_reuniao missing null>" />
+        <div class="invalid-feedback">
+          Este campo é obrigatório !
+        </div>
+     </div>
+     <div class="col-6 col-sm-6 col-md-9 mb-3">  
+         <label for="txt_url_video">Player de Vídeo</label>
+         <div class="input-group">
+           <input class="form-control" type="text" id="txt_url_video" name="txt_url_video" maxlength="150" value="<dtml-var url_video missing null>" placeholder="Exemplo: https://www.youtube.com/embed/XXXXX" autocomplete="off" />
+           <dtml-if expr="_.has_key('cod_reuniao') and url_video">
+              <div class="input-group-append">                            
+                <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Reprodução de Vídeo" data-src="<dtml-var url_video missing null=''>"><i class="fa fa-fw fa-play"></i><span class="d-none">Video</span></button>
+              </div>
+           </dtml-if>
+         </div>
+     </div>         
+   </div>
+   <div class="form-row">
+     <div class="col-6 mb-3">
+       <label for="txa_txt_tema">Assunto / Tema</label>
+       <textarea class="form-control" id="txa_txt_tema" name="txa_txt_tema"><dtml-var txt_tema missing null></textarea>
+     </div>
+
+     <div class="col-6 mb-3">
+       <label for="txa_txt_observacao">Observações</label>
+       <textarea class="form-control" id="txa_txt_observacao" name="txa_txt_observacao"><dtml-var txt_observacao missing></textarea>
+     </div>
+   </div>  
+      
+   <div class="form-row">
+     <div class="col-6 mb-3">
+          <label class="form-label d-block">
+            Pauta da Reunião
+          <dtml-if cod_reuniao>
+            <dtml-call expr="REQUEST.set('id_pauta', _.str(cod_reuniao)+'_pauta.pdf')">                   
+              <dtml-if "not _.hasattr(sapl_documentos.reuniao_comissao,id_pauta)">            
+                  <a class="btn btn-sm btn-secondary" href="<dtml-var portal_url>/relatorios/pdf_pauta_comissao_preparar_pysc?cod_reuniao=<dtml-var cod_reuniao>">Gerar</a>
+              </dtml-if>
+          </dtml-if>
+          </label>
+          <input type="hidden" name="hdn_file_pauta" value="0"/>
+          <dtml-if cod_reuniao>
+             <dtml-call expr="REQUEST.set('id_pauta', _.str(cod_reuniao)+'_pauta.pdf')">
+             <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_pauta)">
+                <dtml-let pauta="_.getattr(sapl_documentos.reuniao_comissao,id_pauta).absolute_url">
+                   <p>
+                   <a class="btn btn-sm btn-primary" href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i> Visualizar</a>
+                   <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                     <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_reuniao>&tipo_doc=pauta_comissao&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+                  </dtml-if>
+                  </p>
+                </dtml-let>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" class="custom-control-input" id="radTI_1" name="radTI" value="M" checked="true" onClick="ativa_desativa_file_field_pauta(document.reuniao_comissao_form)"/>
+                  <label class="custom-control-label" for="radTI_1">Manter</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" class="custom-control-input" id="radTI_2" name="radTI" value="E" onClick="ativa_desativa_file_field_pauta(document.reuniao_comissao_form)"/>
+                  <label class="custom-control-label" for="radTI_2">Excluir</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" class="custom-control-input" id="radTI_3" name="radTI" value="S" onClick="ativa_desativa_file_field_pauta(document.reuniao_comissao_form)"/>
+                  <label class="custom-control-label" for="radTI_3">Substituir</label>
+                </div>
+               <input type="file" class="form-control-file" name="file_nom_arquivo_pauta" id="file_nom_arquivo_pauta" disabled="1"> 
+             <dtml-else>
+               <input type="file" class="form-control-file" name="file_nom_arquivo_pauta" id="file_nom_arquivo_pauta" accept="application/pdf">
+               <input type="hidden" name="radTI" value="I"/>
+             </dtml-if>
+          <dtml-else>
+             <input type="file" class="form-control-file" name="file_nom_arquivo_pauta" id="file_nom_arquivo_pauta" accept="application/pdf">
+             <input type="hidden" name="radTI" value="I"/>
+          </dtml-if>
+     </div>
+     <div class="col-6 mb-3">
+          <label for="file_nom_arquivo_ata" class="form-label d-block">Ata da Reunião
+          <dtml-if cod_reuniao>
+            <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_reuniao)+'_ata.pdf')">                   
+            <dtml-call expr="REQUEST.set('id_odt', _.str(cod_reuniao)+'_ata.odt')">                   
+              <dtml-if expr="not _.hasattr(sapl_documentos.reuniao_comissao,id_pdf) and not _.hasattr(sapl_documentos.reuniao_comissao,id_odt)">
+                  <a class="btn btn-sm btn-secondary" href="javascript:void(0)" onclick="javascript:gerar_odt()">Gerar ODT</a> 
+              <dtml-elif expr="not _.hasattr(sapl_documentos.reuniao_comissao,id_pdf) and _.hasattr(sapl_documentos.reuniao_comissao,id_odt)"> 
+                  <a class="btn btn-sm btn-secondary" target="_blank" href="&dtml-URL1;/sapl_documentos/reuniao_comissao/externalEdit_/<dtml-var id_odt>.zem">LibreOffice</a>
+                  <a class="btn btn-sm btn-secondary" href="javascript:void(0)" onclick="javascript:gerar_pdf()">Gerar PDF</a>      
+                  <a class="btn btn-sm btn-danger" href="javascript:void(0)" onclick="javascript:excluir_odt()">Excluir ODT</a>
+              </dtml-if>
+          </dtml-if>
+          </label>
+            <input type="hidden" name="hdn_file_ata" value="0"/>
+            <dtml-if cod_reuniao>
+               <dtml-call expr="REQUEST.set('id_ata', _.str(cod_reuniao)+'_ata.pdf')">
+               <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_ata)">
+                  <dtml-let ata="_.getattr(sapl_documentos.reuniao_comissao,id_ata).absolute_url">
+                    <p>
+                    <a class="btn btn-sm btn-primary" href="<dtml-var ata>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank"><i class="fa fa-file-pdf"></i> Visualizar</a>
+                    <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                      <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_reuniao missing>&tipo_doc=ata_comissao&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+                    </dtml-if>
+                    </p>
+                  </dtml-let>
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="radTI2_1" name="radTI2" value="M" checked="true" onClick="ativa_desativa_file_field_ata(document.reuniao_comissao_form)"/>
+                    <label class="custom-control-label" for="radTI2_1">Manter</label>
+                  </div>
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="radTI2_2" name="radTI2" value="E" onClick="ativa_desativa_file_field_ata(document.reuniao_comissao_form)"/>
+                    <label class="custom-control-label" for="radTI2_2">Excluir</label>
+                  </div>
+                  <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="radTI2_3" name="radTI2" value="S" onClick="ativa_desativa_file_field_ata(document.reuniao_comissao_form)"/>
+                    <label class="custom-control-label" for="radTI2_2">Substituir</label>
+                  </div>
+                 <input type="file" class="form-control-file" name="file_nom_arquivo_ata" id="file_nom_arquivo_ata" disabled="1">
+               <dtml-else>
+                  <input type="file" class="form-control-file" name="file_nom_arquivo_ata" id="file_nom_arquivo_ata" accept="application/pdf">
+                  <input type="hidden" name="radTI2" value="I"/>
+               </dtml-if>
+            <dtml-else>
+               <input type="file" class="form-control-file" name="file_nom_arquivo_ata" id="file_nom_arquivo_ata" accept="application/pdf">
+               <input type="hidden" name="radTI2" value="I"/>
+            </dtml-if>
+     </div>
+   </div>
+
+   <input type="hidden" name="hdn_cod_reuniao"  value="<dtml-var cod_reuniao missing>">
+   <input type="hidden" name="hdn_cod_comissao" value="<dtml-var cod_comissao>">
+   <dtml-if cod_reuniao>
+      <input type="hidden" name="hdn_url" value="reuniao_comissao_mostrar_proc?cod_reuniao=<dtml-var cod_reuniao missing>&cod_comissao=<dtml-var cod_comissao>&modal=1" />
+   </dtml-if>
+   <input type="hidden" name="modal" value="1">
+
+  <div class="text-center">
+     <button class="btn btn-primary" onClick="return reuniao_criticar()">Salvar</button>
+     <dtml-if cod_reuniao>
+         <a class="btn btn-danger" href="reuniao_comissao_excluir_proc?cod_reuniao=<dtml-var cod_reuniao>&cod_comissao=<dtml-var cod_comissao>&modal=1" data-confirm="Deseja realmente excluir a reunião?">Excluir</a>
+     </dtml-if>
+  </div>
+   <div class="row">
+      <div class="col-md-12 mt-2">
+         <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+      </div>
+   </div>
+</form>
+</div>
+
+<div class="tab-pane p-3 border fade" id="presenca">
+<dtml-if cod_reuniao>
+<script type="text/javascript">
+$(document).ready(function() {
+  $("#checkedAll").change(function(){
+    if(this.checked){
+      $(".checkSingle").each(function(){
+        this.checked=true;
+      })              
+    }else{
+      $(".checkSingle").each(function(){
+        this.checked=false;
+      })              
+    }
+  });
+
+  $(".checkSingle").click(function () {
+    if ($(this).is(":checked")){
+      var isAllChecked = 0;
+      $(".checkSingle").each(function(){
+        if(!this.checked)
+           isAllChecked = 1;
+      })              
+      if(isAllChecked == 0){ $("#checkedAll").prop("checked", true); }     
+    }else {
+      $("#checkedAll").prop("checked", false);
+    }
+  });
+});
+</script>
+
+<form name="presenca_form" method="post" action="presenca_salvar_proc">
+   <input type="hidden" name="hdn_url" value="reuniao_comissao_mostrar_proc?cod_reuniao=<dtml-var cod_reuniao missing>&cod_comissao=<dtml-var cod_comissao>&modal=1#presenca" />
+   <input type="hidden" name="cod_reuniao" value="<dtml-var cod_reuniao missing>">
+   <input type="hidden" name="cod_comissao" value="<dtml-var cod_comissao>">
+   <input type="hidden" name="modal" value="1">       
+   <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(data=_.DateTime(dat_inicio_reuniao_ord), ind_excluido=0)">
+      <dtml-if sequence-start>
+        <div class="table-responsive mb-3">           
+        <table class="table table-striped">
+          <thead class="">
+            <tr>
+              <th width="6%">
+                <div class="form-check">    
+                  <input class="form-check-input position-static" type="checkbox" name="checkedAll" id="checkedAll">
+                  <label class="form-check-label" for="checkedAll"><b>Todos</b></label> 
+                </div>
+              </th>
+              <th>Vereador</th>
+              <th>Cargo na Comissão</th>      
+              <th>Titular?</th>                      
+            </tr>
+          </thead>
+      </dtml-if>
+      <dtml-in expr="zsql.composicao_comissao_obter_zsql(cod_comissao=cod_comissao, cod_periodo_comp=cod_periodo_comp)">
+                 <tr>
+                   <td>
+                     <div class="form-check">
+                        <input class="checkSingle form-check-input position-static" type="checkbox" name="chk_presen_parlamentar:list" value="<dtml-var cod_parlamentar>" 
+                           <dtml-if expr="zsql.reuniao_comissao_presenca_obter_zsql(cod_reuniao=cod_reuniao, cod_parlamentar=cod_parlamentar)">
+                               checked=1
+                           </dtml-if> 
+                        />
+                      </div> 
+                   </td>
+                   <td>
+                      <dtml-var nom_parlamentar missing>
+                   </td>
+                   <td>
+                       <dtml-var des_cargo missing>
+                   </td>  
+                   <td>
+                     <dtml-if expr="ind_titular">Sim <dtml-else>Não</dtml-if>
+                   </td>                                    
+               </tr>
+               <dtml-else>
+                 <tr>
+                   <td colspan="4">Não existem membros da comissão cadastrados na data da reunião.</td>
+                 </tr>
+      </dtml-in>
+        <dtml-if sequence-end>
+           </table>
+           </div>
+            <div clas="text-center">
+                <input class="btn btn-primary" type="submit" name="button" value="Salvar" />
+            </div>           
+        </dtml-if>
+      <dtml-else>
+          <p>Não existe período de composição cadastrado na data da reunião.</p>
+       </dtml-in>
+    </table>
+</form>
+</dtml-if cod_reuniao>
+</div>
+
+<div class="tab-pane p-3 border fade" id="pauta">
+<dtml-if cod_reuniao>
+  <dtml-in prefix="loop" expr="zsql.reuniao_comissao_pauta_obter_zsql(cod_reuniao=cod_reuniao, ind_excluido=0)">
+     <dtml-if sequence-start>
+       <div class="table-responsive mb-3">     
+        <table class="table table-striped display" id="expediente">
+          <thead class="">
+            <tr>
+                <th width="5%">Item</th>
+                <th>Identificação da Matéria</th>
+                <th width="20%">Resultado</th>
+            </tr>
+          </thead> 
+     </dtml-if sequence-start>
+
+        <tr id="<dtml-var cod_item>">
+           <td style="cursor: move">
+              <dtml-var num_ordem>
+           </td>
+           <td>
+             <dtml-if cod_materia>
+                 <dtml-in expr="zsql.materia_obter_zsql(cod_materia=_.getitem('cod_materia'), ind_excluido=0)">
+                    <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Item da Pauta" data-src="pauta_mostrar_proc?cod_item=<dtml-var cod_item>&cod_materia=<dtml-var cod_materia>&modal=1">
+                      <b><dtml-var des_tipo_materia missing> nº <dtml-var num_ident_basica missing>/<dtml-var ano_ident_basica missing></b></a>
+                 </dtml-in>
+                 - <dtml-var txt_observacao>
+                 <dtml-if expr="_.has_key('cod_relator') and cod_relator!=None">
+                   <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_relator)">
+                      <br /><b>Relatoria Designada:</b> <dtml-var nom_parlamentar>
+                   </dtml-in>
+                 </dtml-if>                         
+             </dtml-if>              
+             <dtml-if cod_parecer>
+                <dtml-in expr="zsql.relatoria_obter_zsql(cod_relatoria=cod_parecer, cod_comissao=cod_comissao)">
+                <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+                   <dtml-call expr="REQUEST.set('id_materia', sgl_tipo_materia + ' nº ' + str(num_ident_basica)+'/'+str(ano_ident_basica))">
+                </dtml-in>
+                <dtml-if expr="tip_conclusao=='F'">
+                   <dtml-call expr="REQUEST.set('enunciado', 'FAVORÁVEL')">
+                <dtml-elif expr="tip_conclusao=='C'">
+                   <dtml-call expr="REQUEST.set('enunciado', 'CONTRÁRIO')">
+                </dtml-if>              
+                  <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Item da Pauta" data-src="pauta_mostrar_proc?cod_item=<dtml-var cod_item>&cod_parecer=<dtml-var cod_parecer>&modal=1">                
+                    <b>Parecer <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer> - <dtml-var enunciado> ao <dtml-var id_materia> </b>          
+                  </a>
+                 <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                    <br /><b>Relatoria:</b> <dtml-var nom_parlamentar>
+                 </dtml-in>                  
+                </dtml-in>
+             </dtml-if>
+           </td>
+           <td>
+               <dtml-if expr="_.has_key('tip_resultado_votacao') and tip_resultado_votacao!=None">	           
+                 <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=tip_resultado_votacao)">
+                    <b><dtml-var nom_resultado></b>
+                 </dtml-in>
+               <dtml-else>
+                  Sem registro
+               </dtml-if>        
+           </td>  
+         </tr>     
+     <dtml-if sequence-end>
+        </table>
+       </div>
+     </dtml-if sequence-end>
+  <dtml-else>
+     <p>Não há nenhum item na pauta.</p>
+  </dtml-in>
+
+<div class="form-row">
+  <div class="col-12 text-left">
+  <a class="btn btn-sm btn-secondary mb-3" data-toggle="modal" data-target="#iFrameModal" data-title="Adicionar Matéria na Pauta" data-src="pauta_reuniao_form?cod_reuniao=<dtml-var cod_reuniao missing>&modal=1" ><i class="fa fa-plus"></i> Matéria</a>
+  <a class="btn btn-sm btn-secondary mb-3" data-toggle="modal" data-target="#iFrameModal" data-title="Adicionar Parecer na Pauta" data-src="pauta_reuniao_parecer_form?cod_reuniao=<dtml-var cod_reuniao missing>&cod_comissao=<dtml-var cod_comissao>&modal=1" ><i class="fa fa-plus"></i> Parecer</a>  
+</div>
+</dtml-if>
+</div
+
+<dtml-var standard_html_footer>

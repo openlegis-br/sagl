@@ -1,0 +1,67 @@
+<dtml-if expr="zsql.numeracao_obter_zsql(cod_materia = hdn_cod_materia, 
+                                         num_ordem_atual = hdn_num_ordem,     
+                                         tip_materia = lst_tip_materia, 
+                                         num_materia = txt_num_materia,
+                                         ano_materia = txt_ano_materia,
+                                         ind_excluido = 0)">
+  <dtml-let mensagem="'Esta numeração já existe para essa matéria.'" tipo_mensagem="'warning'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
+
+<dtml-in expr="zsql.numeracao_novo_numero_obter_zsql(cod_materia = hdn_cod_materia)">       
+   <dtml-call expr="REQUEST.set('numero', novo_numero)">       
+</dtml-in>
+
+<dtml-unless expr="numero">
+  <dtml-call expr="REQUEST.set('numero', 1)">
+</dtml-unless>
+
+<dtml-if hdn_num_ordem>
+  <dtml-call expr="REQUEST.set('metodo', zsql.numeracao_atualizar_zsql)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.numeracao_incluir_zsql)">
+  <dtml-call expr="REQUEST.set('hdn_num_ordem', numero)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(
+                        num_ordem   = hdn_num_ordem, 
+                        cod_materia = hdn_cod_materia,
+                        tip_materia = lst_tip_materia,
+                        num_materia = txt_num_materia,
+                        ano_materia = txt_ano_materia,
+                        dat_materia = pysc.data_converter_pysc(data = txt_dat_materia)
+                        )">
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar a numeração!'" tipo_mensagem="'danger'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>   
+<dtml-else>
+  <dtml-if hdn_url>
+    <dtml-let mensagem="'Numeração salva com sucesso!'" url=hdn_url>
+       <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-let mensagem="'Numeração salva com sucesso!'">
+       <dtml-var mensagem_emitir>
+    </dtml-let>  
+  </dtml-if>
+</dtml-try>
+
+</dtml-if>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_materia)"> 
+</dtml-if>

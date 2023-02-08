@@ -1,0 +1,768 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js"></script>
+
+<script type="text/javascript">
+
+  function campos_criticar(){
+
+  var form=document.norma_juridica_form;       
+
+  var regexp_digitos = /\D+/;
+
+    if (form.lst_tip_norma.selectedIndex==0){
+       alert("O tipo de norma deve ser selecionado!");
+       form.lst_tip_norma.focus();
+       return false;
+    }
+
+    if (form.txt_num_norma.value == "") {
+       alert("O número da norma deve ser preenchido!");
+       form.txt_num_norma.focus();
+       return false;
+    }
+
+    if (regexp_digitos.test(form.txt_num_norma.value)) {
+       alert("O número da norma deve ser um número natural!");
+       form.txt_num_norma.focus();
+       return false;
+    }
+
+    if (form.txt_ano_norma.value == "") {
+       alert("O ano da norma deve ser preenchido!");
+       form.txt_ano_norma.focus();
+       return false;
+    }
+
+    if (regexp_digitos.test(form.txt_ano_norma.value)) {
+       alert("O ano da norma deve ser um número natural!");
+       form.txt_ano_norma.focus();
+       return false;
+    }
+
+    if (form.txt_dat_norma.value == "") {
+       alert ("A data da norma deve ser preenchida!")
+       form.txt_dat_norma.focus();
+       form.txt_dat_norma.select();
+       return false;
+    }
+
+    if (!IsValidDate(form.txt_dat_norma.value)) {
+       alert("Digite uma data válida!");
+       form.txt_dat_norma.focus();
+       return false;
+    }
+
+      var dtapm=form.txt_dat_norma.value;
+      var anoi=form.txt_ano_norma.value;
+      var ano=dtapm.substring(6,10);
+      
+      if (ano != anoi){
+         alert("A data deve corresponder ao ano da norma!");
+         form.txt_dat_norma.focus();
+         form.txt_dat_norma.select();
+         return false;
+      }
+
+    if (form.lst_tip_esfera_federacao.selectedIndex==""){
+       alert("A esfera da federação deve ser selecionada!");
+       form.lst_tip_esfera_federacao.focus();
+       return false;
+    }
+
+    if (form.lst_tip_situacao_norma.selectedIndex==""){
+       alert("O status da norma deve ser selecionado!");
+       form.lst_tip_situacao_norma.focus();
+       return false;
+    }
+
+    if (form.txt_dat_publicacao.value != "") {
+       if (!IsValidDate(form.txt_dat_publicacao.value)) {
+          alert("Digite uma data de publicação válida!");
+          form.txt_dat_publicacao.focus();
+          return false;
+       }
+    }
+
+    var npag_i = parseInt(form.txt_num_pag_inicio_publ.value); 
+    var npag_f = parseInt(form.txt_num_pag_fim_publ.value); 
+    if (npag_i > npag_f) { 
+       alert("A página inicial deve ser menor ou igual que a página final!");
+       form.txt_num_pag_fim_publ.focus();
+       form.txt_num_pag_fim_publ.selec();
+       return false;
+    }
+
+    if (form.txa_txt_ementa.value == "") {
+       alert("A ementa deve ser preenchida!");
+       form.txa_txt_ementa.focus();
+       return false;
+    }
+
+  form.submit();
+  }
+
+  function texto_consolidado_gerar(){
+    if (confirm("Confirma a geração do texto compilado em PDF?")) {
+       location.href="<dtml-var portal_url>/modelo_proposicao/norma_gerar_pdf?cod_norma=<dtml-var cod_norma missing>&tipo_texto=compilado";
+       setTimeout(function(){window.location.reload(true)},3000);
+       return true;
+     }
+    return;
+  }
+  
+  function texto_integral_gerar(){
+    if (confirm("Confirma a geração do texto integral em PDF?")) {
+       location.href="<dtml-var portal_url>/modelo_proposicao/norma_gerar_pdf?cod_norma=<dtml-var cod_norma missing>&tipo_texto=integral";
+       setTimeout(function(){window.location.reload(true)},3000);
+       return true;
+     }
+    return;
+  }
+
+
+  function texto_odt_gerar(){
+    lst_modelo = document.getElementById("lst_modelo");
+    lst_modelo.options[lst_modelo.selectedIndex].value;     
+
+    if (lst_modelo.selectedIndex == 0) {
+        $.showAlert({title: "Mensagem do Sistema", body: "É necessário selecionar um modelo!"});
+    }
+
+    if ((lst_modelo.selectedIndex != 0) && confirm("Confirma a geração do arquivo ODT?")) {
+       location.href="<dtml-var portal_url>/modelo_proposicao/norma?cod_norma=<dtml-var cod_norma missing>&modelo_norma="+lst_modelo.options[lst_modelo.selectedIndex].value;
+       setTimeout(function(){window.location.reload(true)},3000);
+       return false;
+     }
+  return;
+  }
+
+  function ementa_buscar(form){
+    if ((form.lst_tip_id_basica.selectedIndex != 0) &&
+       (form.txt_num_ident_basica.value!="") && 
+       (form.txt_ano_ident_basica.value!="")){
+       location.href="ementa_buscar_proc?tip_ident_basica="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+"&num_ident_basica="+form.txt_num_ident_basica.value+"&ano_ident_basica="+form.txt_ano_ident_basica.value+"&tip_norma="+form.lst_tip_norma[form.lst_tip_norma.selectedIndex].value+"&tip_norma="+form.lst_tip_norma.value+"&num_norma="+form.txt_num_norma.value+"&ano_norma="+form.txt_ano_norma.value+"&dat_norma="+form.txt_dat_norma.value+"&tip_esfera_federacao="+form.lst_tip_esfera_federacao[form.lst_tip_esfera_federacao.selectedIndex].value+"&tip_materia="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+"&ind_complemento="+form.rad_ind_complemento.value;
+    }
+  }
+
+$(document).ready(function () {
+  bsCustomFileInput.init()
+})
+
+window.onload = function(){  
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
+    //Change hash for page-reload
+    $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').on('shown', function (e) {
+        window.location.hash = e.target.hash;
+    }); 
+} 
+
+$(document).ready(() => {
+  let url = location.href.replace(/\/$/, "");
+   if (location.hash) {
+    const hash = url.split("#");
+    $('#nav_norma a[href="#'+hash[1]+'"]').tab("show");
+    url = location.href.replace(/\/#/, "#");
+    history.replaceState(null, null, url);
+  } 
+
+  $('a[data-toggle="tab"]').on("click", function() {
+    let newUrl;
+    const hash = $(this).attr("href");
+    if(hash == "#home") {
+      newUrl = url.split("#")[0];
+    } else {
+      newUrl = url.split("#")[0] + hash;
+    }
+    newUrl += "";
+    history.replaceState(null, null, newUrl);
+  });
+});
+
+</script>
+
+<div class="row mb-2">
+  <div class="col-12 col-lg-8">
+    <dtml-if cod_norma>
+      <h1 class="firstHeading"><dtml-var des_tipo_norma> nº <dtml-var num_norma>, de <dtml-var dat_norma></h1>
+    <dtml-else>
+      <h1 class="firstHeading">Cadastro de Norma Jurídica</h1> 
+    </dtml-if>
+  </div>
+  <div class="col-12 col-lg-4 text-lg-right">
+   <dtml-if cod_norma>  
+    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+     <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/relatorios/pdf_detalhe_norma_preparar_pysc?cod_norma=<dtml-var cod_norma>" target="_blank" ><i class="fas fa-fw fa-file-pdf"></i> PDF</a> 
+     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">          
+        <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_form" ><i class="fa fa-fw fa-plus"></i> Incluir Norma</a>
+     </dtml-if>   
+    </div>
+   </dtml-if>
+    </div>
+</div>
+
+
+<ul class="nav nav-tabs border-0" id="nav_norma" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="index-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dados Básicos</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_norma>disabled</dtml-unless>" id="relacionadas-tab" data-toggle="tab" href="#relacionadas" role="tab" aria-controls="relacionadas" aria-selected="false">Normas Relacionadas</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_norma>disabled</dtml-unless>" id="anexos-tab" data-toggle="tab" href="#anexos" role="tab" aria-controls="anexada" aria-selected="false">Anexos</a>
+  </li>
+</ul>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active" id="home">
+
+<form name="norma_juridica_form" method="post" action="norma_juridica_salvar_proc" enctype="multipart/form-data">
+ <input type="hidden" name="hdn_tip_norma_ant" value="<dtml-var tip_norma_ant missing>"/>
+ <input type="hidden" name="hdn_num_norma_ant" value="<dtml-var num_norma_ant missing>"/>
+ <input type="hidden" name="hdn_ano_norma_ant" value="<dtml-var ano_norma_ant missing>"/>
+ <input type="hidden" name="hdn_cod_norma" value="<dtml-var cod_norma missing>"/>
+
+ <div class="form-row">
+  <div class="col-8 col-sm-8 mb-3">
+    <legend>Dados Básicos</legend>
+  </div>
+  <div class="col-4 col-sm-4 mb-3 text-right">
+    <div class="custom-control custom-switch">
+      <input type="checkbox" class="custom-control-input" name ="chk_ind_publico" id="chk_ind_publico" <dtml-if expr="_.has_key('cod_norma') and ind_publico==1">checked</dtml-if>>
+      <label class="custom-control-label" for="chk_ind_publico"><span class="small">Acesso Público</span></label>
+    </div>
+  </div> 
+  
+ </div>
+   <div class="form-row">
+    <div class="col-12 col-sm-6 mb-3">
+      <label for="lst_tip_norma" class="required">Tipo de Norma</label>
+      <select class="custom-select" id="lst_tip_norma" name="lst_tip_norma">
+        <option value ="0">Selecione</option>
+          <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
+             <option
+             <dtml-if tip_norma_sel>
+               <dtml-if expr="_.int(tip_norma) == _.int(tip_norma_sel)">
+                  selected
+               </dtml-if>
+             </dtml-if>
+             value="<dtml-var tip_norma missing>">
+             <dtml-var sgl_tipo_norma> - <dtml-var des_tipo_norma></option>
+          </dtml-in>
+      </select>      
+      <div class="invalid-feedback">
+         Este campo é obrigatório!
+      </div>  
+    </div>
+    <div class="col-6 col-sm-3 mb-3">
+      <label for="txt_num_norma" class="required">Número</label> 
+      <input class="form-control number" type="number" id="txt_num_norma" name="txt_num_norma" value="<dtml-var num_norma missing null="1">" required/>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+    </div>
+    <div class="col-6 col-sm-3 mb-3">
+      <label for="txt_ano_norma" class="required">Ano</label>
+      <dtml-unless ano_norma>
+         <dtml-call expr="REQUEST.set('ano_norma', _.DateTime.year(_.DateTime()))">
+      </dtml-unless>
+      <input class="form-control year" type="number" id="txt_ano_norma" name="txt_ano_norma" value="<dtml-var ano_norma missing>" autocomplete="off" required />
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-6 col-lg-3 mb-3">
+      <label for="txt_dat_norma" class="required">Data da Norma</label>
+      <dtml-unless dat_norma>
+         <dtml-call expr="REQUEST.set('dat_norma', _.DateTime().strftime('%d/%m/%Y'))">
+      </dtml-unless>
+      <input class="form-control date" type="text" id="txt_dat_norma" name="txt_dat_norma" value="<dtml-var dat_norma missing null="">" autocomplete="off" pattern=".{10,}" required />
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+        <script>
+        $('#txt_dat_norma').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>    
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+      <label for="lst_tip_esfera_federacao" class="required">Esfera da Federação</label>
+      <select class="custom-select" id="lst_tip_esfera_federacao" name="lst_tip_esfera_federacao">
+         <option value ="">Selecione</option>
+          <dtml-in expr="['Municipal', 'Estadual', 'Federal']">
+             <option
+             <dtml-if expr="_.has_key('cod_norma') and tip_esfera_federacao==_['sequence-item'][0]">selected</dtml-if>
+               <dtml-if expr="not _.has_key('cod_norma') and _['sequence-item'][0]=='M'">selected</dtml-if>
+                 value="<dtml-var expr="_['sequence-item'][0]">">
+                 <dtml-var expr="_['sequence-item']">
+             </option>
+          </dtml-in>
+      </select>   
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+      <label class="required d-block">Complementar?</label>
+      <dtml-in expr="[(0,'Não'),(1,'Sim')]">
+         <div class="form-check form-check-inline">      
+           <input class="form-check-input" type="radio" id="rad<dtml-var expr="_['sequence-key']">" name="rad_ind_complemento" value="<dtml-var expr="_['sequence-key']">"
+          <dtml-if expr="_.has_key('cod_norma') and ind_complemento==_['sequence-key']">checked
+          <dtml-elif expr="_['sequence-item']=='Não'">checked
+          </dtml-if> />
+          <label class="form-check-label" for="rad<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></label>
+         </div>        
+      </dtml-in>    
+    </div>
+    <div class="col-6 col-lg-3 mb-3">
+      <label for="lst_tip_situacao_norma" class="required">Status</label>
+      <select class="custom-select" id="lst_tip_situacao_norma" name="lst_tip_situacao_norma">
+        <option value ="">Selecione</option>
+          <dtml-in expr="zsql.tipo_situacao_norma_obter_zsql(ind_excluido=0)">
+             <option
+              <dtml-if expr="_.has_key('cod_situacao') and _.int(tip_situacao_norma) == cod_situacao">
+                 selected
+              <dtml-elif expr="not _.has_key('cod_situacao') and tip_situacao_norma == 1">selected
+                 </dtml-if>
+              value="<dtml-var tip_situacao_norma missing>">
+              <dtml-var des_tipo_situacao></option>
+           </dtml-in>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row"> 
+    <div class="col-12 mb-3">
+      <label for="txa_txt_ementa" class="required">Ementa</label>
+      <textarea class="form-control auto-resize" id="txa_txt_ementa" name="txa_txt_ementa" rows="1" required><dtml-var txt_ementa missing></textarea>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+    </div>
+  </div> 
+
+  <div class="form-row">
+    <div class="col-6 col-lg-3 mb-3">
+      <label for="txt_dat_publicacao">Data de Publicação</label>
+      <input class="form-control date" type="text" id="txt_dat_publicacao" name="txt_dat_publicacao" value="<dtml-var dat_publicacao missing null="">" autocomplete="off" pattern=".{10,}" />
+        <script>
+        $('#txt_dat_publicacao').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>    
+    </div>
+    <div class="col-6 col-lg-5 mb-3">
+      <label for="txt_des_veiculo_publicacao">Veículo de Publicação</label>
+      <input class="form-control" type="text" id="txt_des_veiculo_publicacao" name="txt_des_veiculo_publicacao" value="<dtml-var des_veiculo_publicacao missing null="">" maxlength="30"/>    
+    </div>
+    <div class="col-6 col-lg-2 mb-3">    
+      <label for="txt_num_pag_inicio_publ">Página Inícial</label><br/>
+      <input class="form-control number" type="number" id="txt_num_pag_inicio_publ" name="txt_num_pag_inicio_publ" value="<dtml-var num_pag_inicio_publ missing null="">" />
+    </div>
+    <div class="col-6 col-lg-2 mb-3"> 
+      <label for="txt_num_pag_fim_publ">Página Final</label><br/>
+      <input class="form-control number" type="number" id="txt_num_pag_fim_publ" name="txt_num_pag_fim_publ" value="<dtml-var num_pag_fim_publ missing null="">" />      
+    </div>    
+  </div>
+
+  <div class="form-row">
+    <div class="col-6 mb-3">
+       <label for="txa_txt_indexacao">Indexação</label>
+       <textarea class="form-control auto-resize" id="txa_txt_indexacao" name="txa_txt_indexacao" rows="1"><dtml-var txt_indexacao missing null></textarea>
+    </div>
+    <div class="col-6 mb-3">
+       <label for="txa_txt_observacao">Observações</label> 
+       <textarea class="form-control auto-resize" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null></textarea>
+    </div>
+ </div>
+
+
+  <legend>Matéria Legislativa</legend>
+  <div class="form-row">
+    <div class="col-12 col-sm-6 mb-3">
+      <label for="lst_tip_id_basica">Tipo de Matéria</label>
+      <select class="custom-select" id="lst_tip_id_basica" name="lst_tip_id_basica" <dtml-if expr="not _.has_key('cod_norma')">onChange="ementa_buscar(document.norma_juridica_form)"</dtml-if>>
+        <option>
+          <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0)">
+            <option
+             <dtml-if tip_id_basica_sel>
+               <dtml-if expr="_.int(tip_materia) == _.int(tip_id_basica_sel)">
+                  selected
+               </dtml-if>
+             </dtml-if>
+             value="<dtml-var tip_materia missing>"> <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+            </option>
+          </dtml-in>
+      </select>
+    </div>
+    <div class="col-6 col-sm-3 mb-3">
+      <label for="txt_num_ident_basica">Número</label> 
+      <input class="form-control number" type="number" id="txt_num_ident_basica" name="txt_num_ident_basica" size="5" value="<dtml-var num_ident_basica_sel missing>" <dtml-if expr="not _.has_key('cod_norma')">onChange="ementa_buscar(document.norma_juridica_form)"</dtml-if>>
+    </div>
+    <div class="col-6 col-sm-3 mb-3">
+      <label for="txt_ano_ident_basica">Ano</label>
+      <input class="form-control year" type="number" id="txt_ano_ident_basica" name="txt_ano_ident_basica" size="4" value="<dtml-var ano_ident_basica_sel missing>" <dtml-if expr="not _.has_key('cod_norma')">onChange="ementa_buscar(document.norma_juridica_form)"</dtml-if>>      
+    </div>
+  </div>
+
+  <legend>Textos Integrais</legend>
+  <div class="form-row">
+    <div class="col-12 col-lg-6 mb-3">
+       <label class="form-label d-block">PDF Texto Original</label>
+       <input type="hidden" name="hdn_file" value="0"/>
+       <dtml-if cod_norma>
+    <dtml-let documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
+       <dtml-if "_.hasattr(sapl_documentos.norma_juridica,documento_odt)">
+          <dtml-call expr="REQUEST.set('temODT', 1)">
+       </dtml-if>
+    </dtml-let>       
+          <dtml-call expr="REQUEST.set('id_documento', _.str(cod_norma)+'_texto_integral.pdf')">
+          <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento)">
+            <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_documento).absolute_url">
+               <a class="btn btn-secondary" target="_blank" href="<dtml-var portal_url>/pysc/download_norma_pysc?cod_norma=<dtml-var cod_norma>&texto_original=1">
+                 <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_norma, tipo_doc='norma',ind_assinado=1, cod_usuario=None)">
+                   <i class="fa fa-certificate"></i>
+                 <dtml-else>
+                   <i class="fa fa-fw fa-file-pdf"></i>
+                 </dtml-if>
+		 Visualizar	    
+               </a>        
+               <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                 <dtml-in expr="zsql.peticao_obter_zsql(cod_norma=cod_norma, ind_excluido=0)">
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_peticao>&tipo_doc=peticao&prop_recebida=1&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
+                 <dtml-else>
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_norma>&tipo_doc=norma&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
+                 </dtml-in>
+               </dtml-if>
+               <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/norma_juridica/texto_norma_excluir_proc?cod_norma=<dtml-var cod_norma>" data-confirm="Deseja realmente excluir o arquivo PDF do Texto Original?"><i class="fas fa-trash"></i> Excluir</a>  
+            </dtml-let>
+          <dtml-else>
+             <div class="input-group">
+               <div class="custom-file">
+                 <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
+                 <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+               </div>
+               <dtml-if expr="_.has_key('temODT')">   
+                 <div class="input-group-append">                   
+                    <button class="btn btn-secondary" type="button" onclick="javascript:texto_integral_gerar()">Gerar do ODT</button>
+                 </div>
+               </dtml-if> 
+              </div>
+          </dtml-if>
+       <dtml-else>
+          <div class="input-group">
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
+              <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+            </div>
+          </div>
+       </dtml-if>
+    </div>
+  <dtml-if cod_norma>    
+    <div class="col-12 col-lg-6 mb-3">
+       <label for="txt_texto_odt">ODT Texto da Norma</label><br />
+          <dtml-let id_documento_odt="_.str(cod_norma)+'_texto_integral.odt'">
+             <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento_odt)">
+                <dtml-let documento_odt="_.getattr(sapl_documentos.norma_juridica,id_documento_odt).absolute_url">
+                  <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_norma)+'_texto_integral.odt')">
+                  <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Visualização de Arquivo" data-src="<dtml-var portal_url>/generico/view_odt?arquivo_odt=<dtml-var documento_odt>&<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-fw fa-file-alt"></i>Visualizar</button>
+                  <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Arquivo ODT" data-src="<dtml-var portal_url>/webeditor/editorNorma?<dtml-var documento_odt>" data-toggle="tooltip" data-placement="bottom" title="Editar Online"><i class="fa fa-fw fa-edit"></i>Editar</button>                  
+                   <button type="button" class="btn btn-secondary" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/norma_juridica/externalEdit_/<dtml-var nome_arquivo_odt>.zem'" data-toggle="tooltip" data-placement="bottom" title="Editar no LibreOffice"><i class="fas fa-fw fa-external-link-alt"></i>LibreOffice</button>
+                   <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/norma_juridica/texto_odt_norma_excluir_proc?cod_norma=<dtml-var cod_norma missing>" data-confirm="Deseja realmente excluir o arquivo ODT do Texto Compilado?"><i class="fas fa-trash"></i> Excluir</a>
+                </dtml-let>
+             <dtml-else>
+                  <dtml-call expr="REQUEST.set('prefixo_arquivo', _.str(sgl_tipo_norma)+'-')">
+                  <div class="input-group">                  
+                    <select class="custom-select"  id="lst_modelo" name="lst_modelo">
+                       <option value="0">Selecione um modelo</option>
+                        <dtml-with expr="sapl_documentos.modelo.norma">
+                          <dtml-in expr="objectValues('File')" sort="title_or_id">
+                            <dtml-if expr="id.startswith(prefixo_arquivo)">
+                              <option value="<dtml-var id>"><dtml-var title_or_id></option>
+                            </dtml-if>
+                          </dtml-in>
+                        </dtml-with>
+                    </select>
+                    <div class="input-group-append">
+                      <button class="btn btn-secondary" type="button" onclick="return texto_odt_gerar()">Gerar</button>
+                    </div>
+                  </div>
+             </dtml-if>
+          </dtml-let>    
+    </div>   
+
+    <div class="col-12 col-lg-6 mb-3">
+      <label for="txt_texto_pdf" class="d-block">PDF Texto Compilado</label>
+      <dtml-let id_documento_pdf="_.str(cod_norma)+'_texto_consolidado.pdf'">
+         <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_documento_pdf)">
+            <dtml-let documento_pdf="_.getattr(sapl_documentos.norma_juridica,id_documento_pdf).absolute_url">
+               <dtml-call expr="REQUEST.set('nome_arquivo_pdf',_.str(cod_norma)+'_texto_consolidado.pdf')">
+               <a class="btn btn-secondary" target="_blank" href="<dtml-var portal_url>/sapl_documentos/norma_juridica/<dtml-var nome_arquivo_pdf>?<dtml-var expr="ZopeTime().timeTime()">">              
+                  <i class="fa fa-fw fa-file-code"></i>Visualizar
+               </a>
+               <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/norma_juridica/texto_consolidado_excluir_proc?cod_norma=<dtml-var cod_norma missing>" data-confirm="Deseja realmente excluir o arquivo PDF do Texto Compilado?"><i class="fas fa-trash"></i> Excluir</a>               
+            </dtml-let>
+         <dtml-else>
+           <div class="input-group">
+             <div class="custom-file">
+               <input type="file" class="custom-file-input" id="file_nom_arquivo_compilado" name="file_nom_arquivo_compilado" accept="application/pdf">
+               <label class="custom-file-label" for="file_nom_arquivo_compilado">Selecione o arquivo</label>
+             </div>
+             <dtml-if expr="_.has_key('temODT')">
+               <div class="input-group-append">
+                <input type="button" class="btn btn-secondary" value="Gerar do ODT" onclick="javascript:texto_consolidado_gerar()" />
+               </div>
+             </dtml-if>
+            </div>
+         </dtml-if>
+      </dtml-let>
+    </div>
+    </dtml-if>
+
+  </div>
+
+  <div id="accordion" class="mt-2 assuntos">
+    <div class="card mb-3">   
+       <div class="card-header" id="headingOne"> 
+          <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapse" aria-expanded="false" aria-controls="collapse"> 
+            <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+             <span class="h5">Classificação por Assunto</span>
+          </a>
+      </div> 
+      <div id="collapse" class="collapse" aria-labelledby="headingOne" data-parent=".assuntos">
+        <div class="card-body">      
+         <p class="d-none">
+           <label for="check_hide">
+            <input type="checkbox" id="check_hide" name="chk_assunto_norma" value="1" checked="checked">
+           </label>
+         </p>
+        <dtml-in expr="zsql.assunto_norma_juridica_obter_zsql(ind_excluido=0)">
+          <dtml-if expr="not _.has_key('cod_norma')">
+           <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="chk_assunto_norma-<dtml-var cod_assunto>" name="chk_assunto_norma" value="<dtml-var cod_assunto>">
+              <label class="custom-control-label" for="chk_assunto_norma-<dtml-var cod_assunto>"><dtml-var des_assunto></label>
+           </div>
+          <dtml-else>
+           <div class="custom-control custom-checkbox">
+             <input class="custom-control-input" type="checkbox" id="chk_assunto_norma-<dtml-var cod_assunto>" name="chk_assunto_norma" value="<dtml-var cod_assunto>"<dtml-if expr="_.str(cod_assunto) in _.string.split(_.str(cod_assunto_sel),',')"> checked</dtml-if>>
+              <label class="custom-control-label" for="chk_assunto_norma-<dtml-var cod_assunto>"><dtml-var des_assunto></label>
+           </div>          
+          </dtml-if>
+        </dtml-in>
+       </div>
+     </div>
+   </div>
+ </div>
+
+ <dtml-if cod_norma>
+    <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)">
+       <dtml-call expr="REQUEST.set('temArquivo', 1)">
+    </dtml-in>
+
+    <dtml-if temArquivo> 
+      <div id="accordion" class="arquivo">
+        <div class="card mb-4">
+          <div class="card-header" id="headingOne">
+            <p class="h5 mb-0">
+              <a href="#" class="d-block text-left collapsed" data-toggle="collapse" data-target="#collapseArquivo" aria-expanded="false" aria-controls="collapseArquivo"> 
+                <i class="fa float-right pt-1 align-self-center" aria-hidden="true"></i>
+                 <span class="h5">Arquivo Permanente</span>
+              </a>
+            </p>
+          </div>
+          <div id="collapseArquivo" class="collapse" aria-labelledby="headingOne" data-parent=".arquivo">
+            <div class="card-body"> 
+            <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_norma=cod_norma)" mapping>
+               <dtml-if sequence-start>
+                 <table class="table">
+                  <thead>
+                   <tr>
+                    <th width="20%">Recipiente</th>
+                    <th width="20%">Data de Arquivamento</th>
+                    <th>Observações</th>
+                   </tr>
+                  </thead>
+                </dtml-if>
+                <tr>
+                  <td> 
+                    <dtml-var num_recipiente>
+                 </td>
+                 <td> 
+                   <dtml-var dat_arquivamento>
+                 </td>
+                 <td> 
+                   <dtml-var txt_observacao_arquivo missing null="">
+                 </td>
+                </tr>
+              <dtml-if sequence-end>
+                </table>
+              </dtml-if>
+            </dtml-in>
+           </div>
+          </div>
+         </div>
+        </div>
+      </dtml-if>
+ </dtml-if>
+
+ <dtml-if cod_norma>
+    <dtml-in expr="zsql.peticao_obter_zsql(cod_norma=cod_norma, ind_excluido=0)">
+      <dtml-if sequence-start>
+   <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario)">
+      <dtml-call "REQUEST.set('usuario_envio', nom_completo)">
+   </dtml-in>
+        <div class="row">   
+          <div class="col-md-12 mt-2 text-right"> 
+            <p class="text-muted small">Norma enviada eletronicamente em <dtml-var dat_envio>, por <dtml-var usuario_envio missing>. [<dtml-var cod_peticao>]</p>
+          </div>
+        </div>
+      </dtml-if>
+    </dtml-in>
+ </dtml-if>
+ 
+  <div class="text-left">
+    <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar()"/>
+    <dtml-if cod_norma>
+      <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_excluir_proc?cod_norma=<dtml-var cod_norma>" data-confirm="Deseja realmente excluir a norma?">Excluir</a>
+    </dtml-if>
+  </div>
+
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
+    </div>
+</div>
+</form>
+</div>
+
+<dtml-if expr="_.has_key('cod_norma')">
+  <div class="tab-pane p-3 border fade" id="anexos">
+   <legend>Anexos</legend> 
+   <dtml-in expr="zsql.anexo_norma_obter_zsql(cod_norma=cod_norma)">
+     <dtml-if sequence-start>
+       <table class="table">
+         <thead class="table-secondary">
+           <tr>
+             <th>Descrição</th>
+             <th width="20%">Arquivo</th>
+           </tr>
+         </thead>
+     </dtml-if>
+         <tr>
+             <td>
+               <a href="#" data-src="anexo/anexo_norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>&cod_anexo=<dtml-var cod_anexo>&modal=1" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Anexo">
+                  <dtml-var txt_descricao>
+               </a>
+             </td>
+             <td>
+              <dtml-let id_anexo="_.str(cod_norma)+'_anexo_'+ _.str(cod_anexo)">
+               <dtml-if expr="_.hasattr(sapl_documentos.norma_juridica,id_anexo)">
+                  <dtml-let anexo="_.getattr(sapl_documentos.norma_juridica,id_anexo).absolute_url">
+                    <dtml-call expr="REQUEST.set('nome_anexo',_.str(cod_norma)+'_anexo_'+ _.str(cod_anexo))">
+                    <a href="<dtml-var portal_url>/sapl_documentos/norma_juridica/<dtml-var nome_anexo>" target="_blank">
+                     <i class="fa fa-fw fa-file"></i>Visualizar
+                    </a>
+                  </dtml-let>
+               </dtml-if>
+              </dtml-let>
+             </td>
+         </tr>
+     <dtml-if sequence-end>
+       </table>
+     </dtml-if>
+   <dtml-else>
+       <p>Nenhum anexo cadastrado.</p>
+   </dtml-in> 
+
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Anexo" data-src="anexo/anexo_norma_juridica_form?cod_norma=<dtml-var cod_norma missing>&modal=1" data-toggle="tooltip" data-placement="bottom" title="Cadastro de Anexo">Incluir Anexo</button>
+
+</div>
+
+  <div class="tab-pane p-3 border fade" id="relacionadas">
+   <legend>Normas Relacionadas</legend>                   
+   <dtml-in expr="zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+   <dtml-if sequence-start>
+    <table class="table">
+      <thead class="table-secondary">
+        <tr>  
+           <th width="20%">Vínculo Passivo</th>
+           <th>Identificação da Norma</th>
+           <th width="20%">Observações</th>
+        </tr>
+      </thead> 
+    </dtml-if>
+      <tr> 
+         <td>
+            <dtml-var des_vinculo_passivo>
+         </td>
+         <td>
+            <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referente>">
+            <dtml-var des_tipo_norma> nº <dtml-var num_norma>, de <dtml-var dat_norma null=""></a> - <dtml-var txt_ementa_referente>
+         </td>
+         <td>
+             <dtml-var txt_observacao_vinculo missing null="">
+         </td>
+      </tr>
+   <dtml-if sequence-end>
+     </table>
+   </dtml-if>
+  </dtml-in>
+
+  <dtml-in expr="zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)">
+   <dtml-if sequence-start>
+    <table class="table">
+      <thead class="table-secondary">
+        <tr>  
+           <th width="20%">Vínculo Ativo</th>
+           <th>Identificação da Norma</th>
+           <th width="20%">Observações</th>
+        </tr>
+      </thead>
+    </dtml-if>
+      <tr> 
+         <td>
+            <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Editar Relacionamento" data-src="<dtml-var portal_url>/cadastros/norma_juridica/vinculo_norma_juridica/vinculo_norma_juridica_mostrar_proc?cod_vinculo=<dtml-var cod_vinculo>&modal=1">
+              <dtml-var des_vinculo>
+            </a>
+         </td>
+         <td>
+            <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma_referida>">
+            <dtml-var des_tipo_norma> nº <dtml-var num_norma>, de <dtml-var dat_norma null=""></a> - <dtml-var txt_ementa_referida>
+         </td>
+         <td>
+           <dtml-var txt_observacao_vinculo missing null="">
+         </td>
+      </tr>
+   <dtml-if sequence-end>
+     </table>
+   </dtml-if>
+  </dtml-in>
+  <dtml-unless "zsql.vinculo_norma_juridica_referidas_obter_zsql(cod_norma=cod_norma)
+                or zsql.vinculo_norma_juridica_referentes_obter_zsql(cod_norma=cod_norma)">
+       <p>Nenhuma norma relacionada.</p>
+  </dtml-unless>
+
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Relacionamento" data-src="vinculo_norma_juridica/vinculo_norma_juridica_form?cod_norma=<dtml-var cod_norma missing>&modal=1" data-toggle="tooltip" data-placement="bottom" title="Cadastro de Relacionamento">Incluir Norma Relacionada</button>
+
+</div>
+
+</dtml-if>
+
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
+
+<dtml-var standard_html_footer>

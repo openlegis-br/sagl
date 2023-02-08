@@ -1,0 +1,40 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : txt_dat_apresentacao="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+SELECT DISTINCT
+    p.nom_completo as nom_completo,
+    p.nom_parlamentar as nom_parlamentar,
+    REPLACE(p.cod_parlamentar, 'L', '') as cod_parlamentar,
+    REPLACE(au.cod_autor, 'L', '') as cod_autor,
+    au.col_username as col_username_autor
+FROM 
+   legislatura l
+   LEFT JOIN mandato m ON l.num_legislatura = m.num_legislatura
+   LEFT JOIN parlamentar p on m.cod_parlamentar =p.cod_parlamentar
+   LEFT JOIN afastamento a ON m.cod_mandato = a.cod_mandato AND <dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> BETWEEN DATE(a.dat_inicio_afastamento) AND DATE(a.dat_fim_afastamento)
+   LEFT JOIN autor au ON au.cod_parlamentar = p.cod_parlamentar
+WHERE
+    l.dat_inicio is not null AND
+    l.dat_fim is not null AND
+    m.dat_inicio_mandato is not null AND
+    <dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> BETWEEN DATE(l.dat_inicio) AND DATE(l.dat_fim) AND
+    m.dat_inicio_mandato >= l.dat_inicio AND
+    (<dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> >= DATE(m.dat_inicio_mandato) AND
+    IF(m.dat_fim_mandato is null, m.dat_fim_mandato is null, <dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> <= DATE(m.dat_fim_mandato)) AND
+    IF(m.ind_titular=0, 
+       a.cod_afastamento is null, 
+       IF(a.cod_afastamento is null, cod_afastamento is null,
+          IF(a.dat_fim_afastamento is null,
+             (a.dat_inicio_afastamento >= <dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> AND a.dat_fim_afastamento is null AND a.ind_excluido=0),
+             <dtml-sqlvar "pysc.data_converter_pysc(txt_dat_apresentacao)" type="string"> NOT BETWEEN a.dat_inicio_afastamento AND a.dat_fim_afastamento AND a.ind_excluido=0)
+            )
+         )
+      ) and
+    au.ind_excluido = <dtml-sqlvar ind_excluido type="int"> and
+    p.ind_excluido = <dtml-sqlvar ind_excluido type="int"> and
+    l.ind_excluido = <dtml-sqlvar ind_excluido type="int"> and
+    m.ind_excluido = <dtml-sqlvar ind_excluido type="int">
+ORDER BY p.nom_completo

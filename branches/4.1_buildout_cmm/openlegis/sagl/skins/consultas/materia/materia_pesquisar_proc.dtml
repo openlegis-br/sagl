@@ -1,0 +1,430 @@
+<dtml-var standard_html_header>
+
+ <div class="row mb-2">
+  <div class="col-12 col-sm-8 align-self-center">
+    <h1 class="firstHeading">Pesquisa de Matérias</h1>
+  </div>
+  <div class="col-12 col-sm-4 text-left text-sm-right mb-2">
+    <div class="btn-group" role="group">
+     <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/consultas/materia" ><i class="fa fa-fw fa-search"></i> Nova Pesquisa</a>
+     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">         
+        <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/cadastros/materia/materia_form_resumido" ><i class="fa fa-fw fa-plus"></i> Incluir Matéria</a>
+     </dtml-if>   
+    </div>
+  </div>
+ </div>
+
+<dtml-if hdn_cod_autor>
+  <dtml-in expr="zsql.autor_obter_zsql(cod_autor=hdn_cod_autor)">
+     <dtml-call expr="REQUEST.set('lst_tip_autor', des_tipo_autor)">
+     <dtml-call expr="REQUEST.set('hdn_txt_autor', nom_autor_join)">
+  </dtml-in>
+<dtml-else>
+     <dtml-call expr="REQUEST.set('lst_tip_autor', '')">
+     <dtml-call expr="REQUEST.set('hdn_txt_autor', '')">
+</dtml-if>
+
+<dtml-if cod_relator>
+    <dtml-call expr="REQUEST.set('cod_relator', cod_relator)">
+<dtml-else>
+    <dtml-call expr="REQUEST.set('cod_relator', '')">
+</dtml-if>
+
+<dtml-if lst_tip_materia>
+    <dtml-call expr="REQUEST.set('lst_tip_materia', str(lst_tip_materia))">
+<dtml-else>
+    <dtml-call expr="REQUEST.set('lst_tip_materia', '')">
+</dtml-if>
+
+<dtml-if expr="REQUEST.get('g-recaptcha-response')!=''">
+
+<dtml-call "REQUEST.set('existe_seq_anterior', 0)">
+<dtml-call "REQUEST.set('existe_seq_posterior', 0)">
+<dtml-if page>
+  <dtml-call "REQUEST.set('page', _.int(page))">
+<dtml-else>
+  <dtml-call "REQUEST.set('page', 1)">
+</dtml-if>
+<dtml-if step>
+  <dtml-call "REQUEST.set('step', _.int(step))">
+<dtml-else>
+  <dtml-call "REQUEST.set('step', 10)">
+</dtml-if>
+<dtml-call "REQUEST.set('start',(page-1) * step + 1)">
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+  <dtml-call expr="REQUEST.set('metodo', zsql.materia_pesquisar_zsql)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', zsql.materia_pesquisar_publico_zsql)">
+</dtml-if>
+
+<dtml-in expr="metodo(tip_id_basica=lst_tip_materia, num_ident_basica=pysc.extrai_id_pysc(id=txt_numero),
+                      ano_ident_basica=txt_ano, ind_tramitacao=rad_tramitando, cod_relator=cod_relator,
+                      des_assunto=txt_assunto, cod_status=lst_status,
+                      cod_autor=hdn_cod_autor, num_protocolo=txt_num_protocolo,
+                      dat_apresentacao=dt_apres, dat_apresentacao2=dt_apres2, 
+                      dat_publicacao=dt_public, dat_publicacao2=dt_public2,
+                      cod_unid_tramitacao=lst_localizacao, cod_unid_tramitacao2=lst_tramitou,
+                      rd_ordem=rd_ordenacao)"
+                      size="step" start="start" orphan=0>
+<dtml-if sequence-start>
+    <dtml-if next-sequence>
+       <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+    </dtml-if>
+    <dtml-if previous-sequence>
+       <dtml-call "REQUEST.set('existe_seq_anterior', 1)">
+    </dtml-if>
+    <div class="card mb-3">
+      <div class="card-header">
+       <div class="row">
+      <div class="col-8 col-sm-9 align-self-center">
+         <i class="far fa-list-alt"></i> Resultado: <dtml-var sequence-length> matéria<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>
+      </div>
+      <div class="col-4 col-sm-3 text-right align-self-center">
+         <div class="dropdown d-print-none">
+           <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <i class="fas fa-file-export"></i> Exportar
+           </button>
+           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+              <dtml-let isAnon="portal_membership.isAnonymousUser()">
+                 <dtml-if expr="not isAnon">
+                     <a class="dropdown-item" href="<dtml-var portal_url>/relatorios/pdf_materia_preparar_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">&tipo_materia=<dtml-var "REQUEST.form.get('lst_tip_materia')">" target="_blank"><i class="far fa-file-pdf"></i> PDF</a>
+                     <a class="dropdown-item" href="<dtml-var portal_url>/consultas/materia/exportar_materias_ods_pysc?<dtml-var "REQUEST.get('QUERY_STRING','')">&tipo_materia=<dtml-var "REQUEST.form.get('lst_tip_materia')">" target="_blank"><i class="far fa-file-excel"></i> ODS</a>
+                 </dtml-if>
+              </dtml-let>
+               <a class="dropdown-item" href="<dtml-var portal_url>/generico/RSS2_materias?<dtml-var "REQUEST.get('QUERY_STRING','')">&tipo_materia=<dtml-var "REQUEST.form.get('lst_tip_materia')">" target="_blank"><i class="fas fa-rss"></i> RSS</a>
+           </div>
+         </div>
+      </div>
+       </div>
+      </div>
+      <ul class="list-group list-group-flush">
+   </dtml-if sequence-start>
+   <li class="list-group-item">
+    <div class="row">
+      <div class="col-12 col-sm-9 col-lg-10">
+               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                 <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+               <dtml-else>
+                 <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" >
+               </dtml-if>
+              <p class="h6 font-weight-bold text-uppercase mb-1"><i class="fas fa-caret-right"></i> <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></p></a> 
+      </div>
+      <div class="col-12 col-sm-3 col-lg-2 text-sm-right">
+        <dtml-if expr="ind_tramitacao == 1"><span class="badge badge-primary">Em Tramitação</span></dtml-if>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <p class="mb-0"><dtml-var txt_ementa missing null></p>
+      </div>
+    </div>
+    
+  <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+    <dtml-if sequence-start>
+       <div class="row">
+         <div class="col-12">
+       <b>Autoria:</b>
+    </dtml-if>
+       <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+    <dtml-if sequence-end>
+         </div>
+       </div>
+     </dtml-if>
+  </dtml-in>
+  
+  <div class="row">
+    <div class="col-12">
+        <b>Data de Apresentação:</b> <dtml-var "pysc.iso_to_port_pysc(dat_apresentacao)">
+    </div>
+    <div class="col-12">  
+      <dtml-if num_protocolo>
+          <b>Protocolo:</b> <dtml-var num_protocolo>/<dtml-var ano_ident_basica>
+      </dtml-if>
+    </div>  
+  </div>
+
+  <dtml-in expr="zsql.regime_tramitacao_obter_zsql(cod_regime_tramitacao = cod_regime_tramitacao)">
+    <div class="row">  
+       <div class="col-12"> 
+         <b>Regime de Tramitação:</b> <span <dtml-if expr="des_regime_tramitacao=='Urgência' or des_regime_tramitacao=='Regime de Urgência Especial' or des_regime_tramitacao=='Urgência Especial'">class="text-danger font-weight-bold"</dtml-if>><dtml-var des_regime_tramitacao missing></span>
+       </div>
+    </div>
+  </dtml-in>    
+ 
+ <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">
+   <dtml-call expr="REQUEST.set('temProcesso', num_materia)">
+ </dtml-in>
+ <dtml-if temProcesso>
+    <div class="row">
+      <dtml-in expr="zsql.numeracao_obter_zsql(cod_materia=cod_materia)">  
+        <div class="col-12">        
+          <b>Processo:</b> <dtml-var num_materia missing null="">/<dtml-var ano_materia missing null="">
+        </div>
+      </dtml-in>
+    </div>
+ </dtml-if>
+ 
+ <dtml-if expr="zsql.anexada_obter_zsql(cod_materia_anexada=cod_materia, ind_excluido=0)">
+  <div class="row">
+   <div class="col-12">
+    <b>Matéria Anexadora:</b>
+    <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_anexada=cod_materia, ind_excluido=0)"> 
+       <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal, ind_excluido = 0)">
+          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+             <a <dtml-if expr="des_tipo_materia=='Veto'">class="text-danger font-weight-bold"</dtml-if> href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+          <dtml-else>
+             <a <dtml-if expr="des_tipo_materia=='Veto'">class="text-danger font-weight-bold"</dtml-if> href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" >
+          </dtml-if>
+          <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing null="">/<dtml-var ano_ident_basica missing null=""></a>
+       </dtml-in><dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
+    </dtml-in>
+   </div>
+  </div>
+ </dtml-if>
+
+ <dtml-if expr="zsql.anexada_obter_zsql(cod_materia_principal=cod_materia, ind_excluido=0)">
+  <div class="row">
+   <div class="col-12">
+    <b>Matéria Anexada:</b>
+    <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_principal=cod_materia, ind_excluido=0)">    
+       <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_anexada, ind_excluido = 0)">
+          <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+             <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+          <dtml-else>
+             <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" >
+          </dtml-if>
+          <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica missing null="">/<dtml-var ano_ident_basica missing null=""></a>
+       </dtml-in><dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
+    </dtml-in>
+   </div>
+  </div>
+ </dtml-if>
+ 
+ <dtml-call expr="REQUEST.set('temSubstitutivo', '0')">
+ <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia)">
+     <dtml-if cod_substitutivo>
+        <dtml-call expr="REQUEST.set('temSubstitutivo', '1')">
+     </dtml-if>
+ </dtml-in>
+ <dtml-call expr="REQUEST.set('temEmenda', '0')">
+ <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia)">
+     <dtml-if cod_emenda>
+         <dtml-call expr="REQUEST.set('temEmenda', '1')">
+     </dtml-if>
+ </dtml-in>
+
+ <dtml-call expr="REQUEST.set('temDoc', '0')">
+ <dtml-let isAnon="portal_membership.isAnonymousUser()">
+    <dtml-if expr="not isAnon">
+      <dtml-call expr="REQUEST.set('metodo_acessorio', zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia, ind_excluido=0))">
+      <dtml-in metodo_acessorio>
+         <dtml-call expr="REQUEST.set('temDoc', '1')">
+      </dtml-in> 
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('metodo_acessorio', zsql.documento_acessorio_obter_zsql(cod_materia=cod_materia, ind_excluido=0))">
+       <dtml-in metodo_acessorio>
+          <dtml-call expr="REQUEST.set('temDoc', '1')">
+       </dtml-in>  
+    </dtml-if>
+ </dtml-let>
+
+ <dtml-if expr="temSubstitutivo=='1' or temEmenda=='1'">
+    <div class="row">
+      <div class="col-12">
+           <dtml-in expr="zsql.substitutivo_obter_zsql(cod_materia=cod_materia)">
+             <dtml-if sequence-start>
+               <b>Substitutivo<dtml-if expr="_['sequence-length'] > 1">s</dtml-if></b> [<dtml-var sequence-length>]
+             </dtml-if sequence-start>
+           </dtml-in>
+           <dtml-in expr="zsql.emenda_obter_zsql(cod_materia=cod_materia)">
+             <dtml-if sequence-start>
+               <b>Emenda<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>:</b> [<dtml-var sequence-length>]
+             </dtml-if sequence-start>
+           </dtml-in>
+      </div>
+    </div>
+ </dtml-if>
+ <dtml-if expr="temDoc=='1'">
+    <div class="row">
+      <div class="col-12">
+          <dtml-in metodo_acessorio>
+            <dtml-if sequence-start>            
+               <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Acessório<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>:</b>
+            </dtml-if>
+             <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
+             <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
+               <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
+                 <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                      <dtml-if expr="nom_documento != None">
+                        <dtml-var nom_documento>
+                      <dtml-else>
+                        <dtml-var des_tipo_documento>
+                      </dtml-if>
+                 </a>
+               </dtml-let>
+             <dtml-else>
+                <dtml-if expr="nom_documento != None">
+                  <dtml-var nom_documento>
+                <dtml-else>
+                  <dtml-var des_tipo_documento>
+                </dtml-if>
+             </dtml-if>
+            <dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
+          </dtml-in>
+      </div>
+    </div>
+ </dtml-if>
+
+<dtml-in expr="zsql.relatoria_obter_zsql(cod_materia=cod_materia)">
+   <dtml-if sequence-start>
+    <div class="row">
+      <div class="col-12">
+      <b>Parecer<dtml-if expr="_['sequence-length'] > 1">es</dtml-if> de Comiss<dtml-if expr="_['sequence-length'] == 1">ão<dtml-else>ões</dtml-if>:</b>
+   </dtml-if>
+     <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+        <dtml-call expr="REQUEST.set('id_parecer', _.str(cod_relatoria)+'_parecer.pdf')">
+        <dtml-if "_.hasattr(sapl_documentos.parecer_comissao,id_parecer)">
+           <dtml-let parecer="_.getattr(sapl_documentos.parecer_comissao,id_parecer).absolute_url">
+                <a target="_blank" href="<dtml-var parecer>"><dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer></a>
+           </dtml-let>
+       <dtml-else>
+             <dtml-var sgl_comissao> nº <dtml-var num_parecer>/<dtml-var ano_parecer>
+        </dtml-if>
+     </dtml-in>
+     <dtml-unless sequence-end>,</dtml-unless>
+   <dtml-if sequence-end>
+      </div>
+    </div>
+   </dtml-if>
+</dtml-in>
+   
+
+ <dtml-call expr="REQUEST.set('des_status', '')">
+ <dtml-call expr="REQUEST.set('txt_tramitacao', '')">
+ <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+     <dtml-if cod_unid_tram_dest>
+         <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
+     <dtml-else>
+         <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_local)">
+     </dtml-if>
+     <dtml-comment>obtém a unidade de tramitação da matéria.</dtml-comment>
+     <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram)">
+        <div class="row">
+          <div class="col-12">
+             <b>Localização Atual:</b> <dtml-var nom_unidade_join>
+          </div>
+        </div>
+     </dtml-in>
+     <dtml-call expr="REQUEST.set('des_status', des_status)">
+     <dtml-call expr="REQUEST.set('txt_tramitacao', txt_tramitacao)">
+     <dtml-if des_status>
+        <div class="row">
+          <div class="col-12">
+             <b>Situação em <dtml-var dat_tramitacao>:</b> <dtml-var des_status null="">
+             <dtml-if dat_fim_prazo>(Prazo: <dtml-var dat_fim_prazo>)</dtml-if>
+          </div>
+        </div>
+     </dtml-if>
+ </dtml-in>
+ <dtml-comment>possui cod_situacao e não possui tramitação </dtml-comment>
+ <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia)">
+     <dtml-if expr="cod_tramitacao and cod_tramitacao!=''">
+         <dtml-call "REQUEST.set('com_tramitacao', 1)">
+     </dtml-if>
+ </dtml-in>
+ <dtml-if txt_observacao>
+ <dtml-elif expr="cod_situacao and not _.has_key('com_tramitacao')">
+  <div class="row">
+    <div class="col-12">
+      <dtml-in expr="zsql.tipo_situacao_materia_obter_zsql(tip_situacao_materia=cod_situacao)">
+         <b>Situação:</b> <dtml-var des_tipo_situacao missing>
+      </dtml-in>
+    </div>
+  </div>
+ </dtml-if>
+
+ <dtml-comment>obtém a norma derivada </dtml-comment>
+ <dtml-in expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia=cod_materia)">
+    <dtml-if sequence-start>
+       <div class="row">
+         <div class="col-12">
+           <b>Norma Derivada:</b>
+    </dtml-if>
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+              <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><dtml-var sgl_norma> <dtml-var num_norma>, de <dtml-var dat_norma></a>
+           <dtml-else>
+              <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>"><dtml-var sgl_norma> <dtml-var num_norma>/<dtml-var ano_norma></a>
+           </dtml-if>
+     <dtml-unless sequence-end>,</dtml-unless>
+     <dtml-if sequence-end>
+         </div>
+       </div>
+     </dtml-if>
+ </dtml-in>
+ 
+ <dtml-call expr="REQUEST.set('redacao_final', _.str(cod_materia)+'_redacao_final.pdf')">
+ <dtml-call expr="REQUEST.set('texto_original', _.str(cod_materia)+'_texto_integral.pdf')">
+ <dtml-if "_.hasattr(sapl_documentos.materia,redacao_final) or _.hasattr(sapl_documentos.materia,texto_original)">
+  <div class="row d-print-none">
+    <div class="col-12 text-left mt-1 mb-2"> 
+     <div class="btn-group btn-group-sm">
+      <dtml-if "_.hasattr(sapl_documentos.materia,texto_original)">
+          <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">&texto_original=1" target="_blank"><i class="far fa-file-pdf"></i> Texto Integral</a>
+      </dtml-if> 
+      <dtml-if "_.hasattr(sapl_documentos.materia,redacao_final)">
+          <a class="btn btn-sm btn-primary" href="<dtml-var portal_url>/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">&redacao_final=1" target="_blank"><i class="fas fa-file-pdf"></i> Redação Final</a>
+      </dtml-if>    
+     </div>
+    </div>
+  </div>
+ </dtml-if>
+
+ <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_materia=cod_materia)" mapping>
+    <b>Arquivo Permanente:</b> <dtml-var num_recipiente>
+ </dtml-in>
+
+<dtml-comment>
+ <dtml-if expr="des_tipo_materia=='Indicação' or des_tipo_materia=='Requerimento' or des_tipo_materia=='Moção'">
+    <dtml-if expr="(_.DateTime() <= dt_vencimento)">
+       <span class="text-danger"><i class="fas fa-exclamation-circle"></i> <b>Vigência:</b> <dtml-var dat_vencimento></span>
+    </dtml-if>
+ </dtml-if>
+</dtml-comment>
+
+</li>
+
+  <dtml-if sequence-end>
+   </ul>
+  </div>
+  <dtml-if next-sequence>
+    <dtml-call "REQUEST.set('existe_seq_posterior', 1)">
+  </dtml-if next-sequence>
+  <dtml-if expr="existe_seq_anterior or existe_seq_posterior">
+      <nav aria-label="Paginação">
+        <ul class="pagination justify-content-center">
+          <dtml-var "pysc.PageListOutput_pysc('materia_pesquisar_proc', page, step, _['sequence-length'], incluir=incluir, txt_num_protocolo=txt_num_protocolo, cod_relator=cod_relator, existe_ocorrencia=existe_ocorrencia, lst_tip_materia=lst_tip_materia, txt_numero=txt_numero, txt_ano=txt_ano, dt_apres=dt_apres, dt_apres2=dt_apres2, dt_public=dt_public, dt_public2=dt_public2, hdn_cod_autor=hdn_cod_autor, txt_assunto=txt_assunto, rad_tramitando=rad_tramitando, lst_status=lst_status, lst_localizacao=lst_localizacao, lst_tramitou=lst_tramitou, lst_tip_autor=lst_tip_autor, hdn_txt_autor=hdn_txt_autor, rd_ordenacao=rd_ordenacao)">
+       </ul>
+      </nav>
+   </dtml-if>
+</dtml-if sequence-end>
+
+<dtml-else>
+ <div class="row">
+    <div class="col-12">
+       <p>Nenhuma ocorrência encontrada.</p>
+    </div>
+ </div>
+</dtml-in>
+<dtml-else>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <h5 class="alert-heading">Confirme que você não é um robô.</h5>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+       <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <a class="btn btn-danger" href="javascript:void(0)" onClick="window.history.go(-1); return false;"><i class="fa fa-fw fa-undo"></i> Voltar</a>
+</dtml-if>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,118 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+function campos_criticar(form){  
+ 
+  if (!(form.rad_des_tipo_autor[0].checked ||
+        form.rad_des_tipo_autor[1].checked ||
+        form.rad_des_tipo_autor[2].checked)){
+      alert("O tipo de autor deve ser selecionado!");
+      form.rad_des_tipo_autor[0].focus;
+      return false;
+  }
+
+  if (form.txt_des_tipo_autor.value == "") {
+    alert("A descrição do tipo de autor deve ser informada!");
+    form.txt_des_tipo_autor.focus();
+    return false;
+  }
+
+  form.submit();
+
+}
+
+function tipo_autor_excluir() {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "tipo_autor_excluir_proc?tip_autor_ant=<dtml-var tip_autor_ant missing>";
+  }
+  
+}
+
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Tipo de Autor</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="index_html"><i class="fa fa-fw fa-undo"></i> Voltar</a>         
+         </div>
+      </div>
+ </div>
+
+<form name="tipo_autor_form" method="post" action="tipo_autor_salvar_proc">
+
+  <div class="form-row">
+    <div class="col-12 col-sm-4 mb-3">
+           <label class="d-block required">Tipo de Autor</label>             
+           <dtml-in expr="[('Parlamentar','Parlamentar'), ('Comissão','Comissao'), ('Outros','Outros')]">
+             <div class="form-check form-check-inline">             
+               <input class="form-check-input" type="radio" id="rad<dtml-var expr="_['sequence-item']">" name="rad_des_tipo_autor" value="<dtml-var expr="_['sequence-item']">" 
+                onClick="<dtml-if expr="_['sequence-key']=='Parlamentar'">location.href='tipo_autor_form?des_tipo_autor=Parlamentar'<dtml-if tip_autor_ant>+'&amp;tip_autor_ant='+form.tip_autor_ant.value</dtml-if>;
+                         <dtml-elif expr="_['sequence-key']=='Comissão'">location.href='tipo_autor_form?des_tipo_autor=Comissao'<dtml-if tip_autor_ant>+'&amp;tip_autor_ant='+form.tip_autor_ant.value</dtml-if>;
+                         <dtml-else>location.href='tipo_autor_form?des_tipo_autor=_des_&amp;enable=1<dtml-if tip_autor_ant>&amp;tip_autor_ant='+form.tip_autor_ant.value<dtml-else>'</dtml-if>;
+                         </dtml-if>" 
+                <dtml-if expr="_.has_key('des_tipo_autor')">
+                   <dtml-if expr="des_tipo_autor==_['sequence-item']">
+                      checked
+                   <dtml-elif expr="(des_tipo_autor=='_des_')">
+                     <dtml-call expr="REQUEST.set('des_tipo_autor', '')">
+                   <dtml-elif expr="(des_tipo_autor!='Parlamentar' and des_tipo_autor!='Comissao' and _['sequence-item']=='Outros')">
+                     checked
+                     <dtml-call expr="REQUEST.set('enable', 1)">
+                   </dtml-if>
+                </dtml-if> />
+                <label class="form-check-label" for="rad<dtml-var expr="_['sequence-item']">"><dtml-var expr="_['sequence-key']"></label>
+              </div>    
+           </dtml-in>
+    </div>
+    <div class="col-12 col-sm-8 mb-3">
+           <label for="txt_des_tipo_autor" class="required">Descrição</label>                 
+             <dtml-if expr="pysc.browser_verificar_pysc(HTTP_USER_AGENT)">
+               <input class="form-control" type="text" id="txt_des_tipo_autor" name="txt_des_tipo_autor"  maxlength="50" <dtml-unless enable>disabled</dtml-unless>
+               <dtml-if expr="_.has_key('des_tipo_autor') and des_tipo_autor=='_des_'">value=""<dtml-else>value="<dtml-var des_tipo_autor missing>"
+               </dtml-if>>
+             <dtml-else>
+               <dtml-if enable>
+                  <input class="form-control" type="text" id="txt_des_tipo_autor" name="txt_des_tipo_autor" maxlength="50" value="<dtml-var des_tipo_autor missing>" />
+               <dtml-else>
+                  <input class="form-control" type="text" id="txt_des_tipo_autor" name="txt_des_tipo_autor" maxlength="50" value="<dtml-var des_tipo_autor missing>" readonly />               
+               </dtml-if>
+             </dtml-if>
+    </div>
+  </div>
+
+  <legend>Proposições Eletrônicas</legend>
+  <div class="form-row mb-3">
+    <div class="col-12 mb-3">
+      <div class="form-check d-none">
+        <input class="form-check-input" type="checkbox" value="0" id="defaultCheck" name="chk_tip_proposicao" checked />
+        <label class="form-check-label" for="defaultCheck">
+          Default checkbox
+        </label>
+      </div>
+      <dtml-in expr="zsql.tipo_proposicao_obter_zsql(ind_excluido=0)">   
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="chk_tip_proposicao-<dtml-var tip_proposicao>" name="chk_tip_proposicao" value="<dtml-var tip_proposicao>"<dtml-if expr="_.has_key('tip_proposicao_sel') and _.str(tip_proposicao) in _.string.split(_.str(tip_proposicao_sel),',')"> checked="1"</dtml-if>>
+          <label class="form-check-label" for="chk_tip_proposicao-<dtml-var tip_proposicao>"><dtml-var des_tipo_proposicao></label>                
+        </div>
+      </dtml-in>
+    </div>
+  </div>
+
+
+
+
+
+    <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar(document.tipo_autor_form)" />
+    <dtml-if tip_autor_ant>
+      <input class="btn btn-danger" type="button" value="Excluir" onClick="tipo_autor_excluir(document.tipo_autor_form)" />
+    </dtml-if>
+    <input type="hidden" name="tip_autor_ant" value="<dtml-var tip_autor_ant missing>" />
+
+</form>
+
+<dtml-var standard_html_footer>

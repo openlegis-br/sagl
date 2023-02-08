@@ -1,0 +1,23 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : tip_id_basica_sel sigla_tipo_materia ano_ident_basica ind_excluido=0 
+max_rows : 1
+max_cache : 100
+</dtml-comment>
+
+SELECT 
+  COALESCE(MAX(num_ident_basica),0) + 1 as novo_numero
+ 
+FROM
+   materia_legislativa
+   LEFT JOIN tipo_materia_legislativa ON materia_legislativa.tip_id_basica = tipo_materia_legislativa.tip_materia
+
+<dtml-sqlgroup where>
+  <dtml-sqltest tip_id_basica_sel   column="materia_legislativa.tip_id_basica"          op="="  type="int" optional> <dtml-and>
+  <dtml-sqltest sigla_tipo_materia  column="tipo_materia_legislativa.sgl_tipo_materia"  op="="  type="nb" optional> <dtml-and>
+  <dtml-sqltest ano_ident_basica    column="materia_legislativa.ano_ident_basica"       op="="  type="int" optional> <dtml-and>
+  <dtml-sqltest ind_excluido        column="materia_legislativa.ind_excluido"           op="="  type="int">
+</dtml-sqlgroup>
+
+ 
+

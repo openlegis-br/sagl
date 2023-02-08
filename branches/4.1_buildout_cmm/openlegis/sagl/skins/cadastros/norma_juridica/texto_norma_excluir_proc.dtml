@@ -1,0 +1,59 @@
+<dtml-call expr="REQUEST.set('erro', 0)">
+
+<dtml-call expr="REQUEST.set('id_texto', _.str(cod_norma)+'_texto_integral.pdf')">
+<dtml-if expr="_.hasattr(sapl_documentos.norma_juridica,id_texto)">
+ <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_texto) ">
+  <dtml-try>
+    <dtml-call "sapl_documentos.norma_juridica.manage_delObjects(id_texto)">
+    <dtml-call expr="sapl_documentos.norma_juridica.Catalog.removerCatalogo(cod_norma)">
+  <dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-try>
+ </dtml-let>
+</dtml-if>
+
+<dtml-call expr="REQUEST.set('id_texto_assinado', _.str(cod_norma)+'_texto_integral_signed.pdf')">
+<dtml-if expr="_.hasattr(sapl_documentos.norma_juridica,id_texto_assinado)">
+ <dtml-let documento="_.getattr(sapl_documentos.norma_juridica,id_texto_assinado) ">
+  <dtml-try>
+    <dtml-call "sapl_documentos.norma_juridica.manage_delObjects(id_texto_assinado)">
+    <dtml-call expr="sapl_documentos.norma_juridica.Catalog.removerCatalogo(cod_norma)">
+  <dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-try>
+ </dtml-let>
+</dtml-if>
+
+    <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_norma,tipo_doc='norma')">
+       <dtml-try>
+         <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                       cod_assinatura_doc  = cod_assinatura_doc,
+                       codigo              = codigo,
+                       tipo_doc            = tipo_doc)">
+       <dtml-except>
+         <dtml-call expr="REQUEST.set('erro', 1)">
+       </dtml-try>
+    </dtml-in>
+
+  <dtml-if erro>
+    <dtml-let mensagem="'Ocorreu um erro ao excluir o texto original em PDF!'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-call expr="sapl_documentos.norma_juridica.Catalog.atualizarCatalogo(cod_norma)">
+    <dtml-let mensagem="'Texto original em PDF excluído com sucesso!'" url="'norma_juridica_mostrar_proc?cod_norma='+cod_norma">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-if>
+  
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'pdf_excluir',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),            
+            cod_registro = cod_norma)"> 
+</dtml-if>  

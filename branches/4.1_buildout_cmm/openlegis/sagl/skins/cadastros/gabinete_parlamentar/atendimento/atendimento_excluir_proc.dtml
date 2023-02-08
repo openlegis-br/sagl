@@ -1,0 +1,39 @@
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+  <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+  </dtml-in>
+<dtml-elif expr="AUTHENTICATED_USER.has_role(['Autor'])">
+  <dtml-in expr="zsql.autor_obter_zsql(parlamentar=1,col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-if cod_parlamentar>
+          <dtml-call expr="REQUEST.set('cod_parlamentar_corrente', int(cod_parlamentar))">
+      </dtml-if>
+  </dtml-in>
+</dtml-if>
+
+<dtml-try>
+ <dtml-call expr="REQUEST.set('metodo', zsql.gabinete_atendimento_excluir_zsql)">
+ <dtml-call expr="metodo(cod_atendimento = cod_atendimento, cod_parlamentar = cod_parlamentar_corrente)">
+<dtml-except>
+   <dtml-let mensagem="'Houve um erro! Atendimento não excluído!'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+   </dtml-let>
+<dtml-else>
+   <dtml-let mensagem="'Atendimento excluído com sucesso!'">
+      <dtml-var mensagem_emitir>
+   </dtml-let>
+</dtml-try>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_atendimento)"> 
+</dtml-if>

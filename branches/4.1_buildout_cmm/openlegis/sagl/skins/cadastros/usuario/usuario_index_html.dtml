@@ -1,0 +1,94 @@
+<dtml-var standard_html_header>
+<h1 class="firstHeading">Gerenciamento de Usuários</h1>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+  $("#checkedAll").change(function(){
+    if(this.checked){
+      $(".checkSingle").each(function(){
+        this.checked=true;
+      })              
+    }else{
+      $(".checkSingle").each(function(){
+        this.checked=false;
+      })              
+    }
+  });
+
+  $(".checkSingle").click(function () {
+    if ($(this).is(":checked")){
+      var isAllChecked = 0;
+      $(".checkSingle").each(function(){
+        if(!this.checked)
+           isAllChecked = 1;
+      })              
+      if(isAllChecked == 0){ $("#checkedAll").prop("checked", true); }     
+    }else {
+      $("#checkedAll").prop("checked", false);
+    }
+  });
+});
+
+   function validate() {
+     var checkbox= document.querySelector('input[name="names:list"]:checked');
+     if(!checkbox) {
+       alert('Selecione ao menos um usuário!');
+       return false;
+     }
+     else return confirm('Confirma a exclusão?');
+   }
+
+   function mostrar(){
+      location.href = "usuario_form";
+   } 
+
+</script>
+
+<form id="usuario_index" name="usuario_index" action="usuario_excluir_proc" method="post" onsubmit="return validate()">
+<table class="table">
+ <thead class="table-secondary">
+  <tr>
+    <th width="5%">
+      <div class="form-check form-check-inline">    
+        <input class="form-check-input position-static" type="checkbox" name="checkedAll" id="checkedAll">
+        <label class="form-check-label d-none" for="checkedAll"></label> 
+      </div>
+    </th>
+    <th width="20%">Nome do Usuário</th>
+    <th>Perfil</th>
+  </tr>
+ </thead>
+  <tr class="table-default">
+<dtml-in "acl_users.getUsers()">
+  <dtml-let user_roles="_.getitem('sequence-item').getRoles()">
+    <dtml-unless "('Manager' in user_roles)">
+        <tr>
+          <td width="6%">
+            <div class="form-check">
+               <input class="checkSingle form-check-input position-static" type="checkbox" name="names:list" value="<dtml-var sequence-item>" />
+             </div>
+          </td>
+          <td>
+            <a href="usuario_mostrar_proc?nome=<dtml-var sequence-item>"><i class="fa fa-fw fa-user"></i> <dtml-var sequence-item></a>
+          </td>
+          <td>
+             <dtml-in user_roles>
+              <dtml-if expr="_['sequence-item'] != 'Authenticated'">             
+                <i class="fas fa-fw fa-caret-right"></i><dtml-var sequence-item>
+              </dtml-if>
+             </dtml-in>
+          </td>
+        </tr>
+    </dtml-unless>
+  </dtml-let>
+</dtml-in>
+</table>
+
+<div class="text-left mt-4">
+  <input class="btn btn-primary" type="button" name="submit" value="Incluir Usuário" onClick="mostrar()"/>
+  <input class="btn btn-danger"  type="submit" id="btn_excluir" value="Excluir" />
+</div>
+
+</form>
+<dtml-var standard_html_footer>

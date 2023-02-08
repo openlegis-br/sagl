@@ -1,0 +1,33 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_materia
+max_rows : 10
+max_cache : 100
+</dtml-comment>
+SELECT DISTINCT
+   sp.cod_sessao_plen,
+   sp.tip_sessao,
+   rv.num_votos_sim,
+   rv.num_votos_nao,
+   rv.num_abstencao,
+   rv.tip_resultado_votacao,
+   rv.txt_observacao as observacao_votacao,
+   rv.cod_votacao,
+   em.tip_votacao
+FROM
+   sessao_plenaria sp 
+   LEFT JOIN expediente_materia em ON sp.cod_sessao_plen=em.cod_sessao_plen 
+   LEFT JOIN registro_votacao rv ON em.cod_materia=rv.cod_materia 
+WHERE
+   sp.ind_excluido=0
+   AND em.ind_excluido=0
+   AND rv.ind_excluido=0
+   AND (sp.cod_sessao_plen=em.cod_sessao_plen AND rv.cod_materia=em.cod_materia AND rv.cod_ordem=em.cod_ordem)
+   AND rv.cod_materia=<dtml-sqlvar cod_materia type="int">
+   AND rv.cod_emenda is null
+   AND rv.cod_subemenda is null
+   AND rv.cod_substitutivo is null
+
+ORDER BY 
+   DATE(sp.dat_inicio_sessao) ASC
+

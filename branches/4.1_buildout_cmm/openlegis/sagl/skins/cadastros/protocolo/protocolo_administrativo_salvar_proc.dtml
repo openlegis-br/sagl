@@ -1,0 +1,69 @@
+<dtml-if expr="int(sapl_documentos.props_sagl.numero_protocolo_anual)==1">
+   <dtml-in expr="zsql.protocolo_numero_obter_zsql(ano_protocolo = _.DateTime().strftime('%Y'))">
+     <dtml-call expr="REQUEST.set('hdn_num_protocolo', _.int(novo_numero))">
+   </dtml-in>
+<dtml-else>
+   <dtml-in expr="zsql.protocolo_codigo_obter_zsql()">
+     <dtml-call expr="REQUEST.set('hdn_num_protocolo', _.int(novo_codigo))">
+   </dtml-in>
+</dtml-if>
+
+<dtml-call expr="REQUEST.set('txt_user', AUTHENTICATED_USER.getUserName())">
+
+<dtml-if expr="_.has_key('chk_consulta_externa') and chk_consulta_externa == 'on'">
+  <dtml-call expr="REQUEST.set('txt_codigo_acesso',senha_protocolo_gerar_pysc())">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('txt_codigo_acesso','')">
+</dtml-if>
+
+<dtml-call expr="REQUEST.set('metodo', zsql.protocolo_administrativo_incluir_zsql)">
+
+<dtml-try>
+  <dtml-call expr="metodo(
+        num_protocolo            = hdn_num_protocolo,
+        tip_protocolo		 = rad_tip_protocolo,
+        tip_documento            = lst_tip_documento,
+        num_paginas              = txt_num_paginas,
+        txt_assunto_ementa       = txa_txt_assunto,
+        txt_interessado          = txa_txt_interessado,
+        txt_observacao           = txa_txt_observacao,
+        txt_user_protocolo       = txt_user,
+        txt_codigo_acesso        = txt_codigo_acesso)">
+
+  <dtml-in expr="zsql.protocolo_incluido_codigo_obter_zsql()">
+    <dtml-call expr="REQUEST.set('codigo', cod_protocolo)">
+
+    <dtml-if file_nom_arquivo>
+      <dtml-call expr="REQUEST.set('id_documento', _.str(codigo)+'_protocolo.pdf')">
+      <dtml-try>
+        <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
+           <dtml-call expr="sapl_documentos.protocolo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+        </dtml-if>
+      <dtml-except>
+            <dtml-let mensagem="'Ocorreu erro ao salvar o documento digitalizado'+codigo" tipo_mensagem="'danger'">
+               <dtml-var mensagem_emitir>
+            </dtml-let>
+      </dtml-try>
+    </dtml-if>
+
+    <dtml-let mensagem="'Documento protocolado com sucesso!'" url="hdn_url" codigo="cod_protocolo">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-in>
+
+</dtml-try>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = codigo)"> 
+</dtml-if>

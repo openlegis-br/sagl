@@ -1,0 +1,49 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_assinatura_doc codigo tipo_doc cod_usuario ind_assinado ind_recusado ind_prim_assinatura ind_excluido=0
+max_rows : 5000
+max_cache : 100
+</dtml-comment>
+
+SELECT 
+  cod_assinatura_doc,
+  codigo,
+  tipo_doc,
+  a.cod_usuario,
+  DATE_FORMAT(dat_solicitacao, '%d/%m/%Y %T') as dat_solicitacao,
+  DATE_FORMAT(dat_solicitacao, '%Y/%m/%d %T') as data_solicitacao,
+  DATE_FORMAT(dat_assinatura, '%d/%m/%Y %T') as dat_assinatura,
+  DATE_FORMAT(dat_assinatura, '%Y/%m/%d %T') as data_assinatura,
+  DATE_FORMAT(dat_recusa, '%d/%m/%Y %T') as dat_recusa,
+  DATE_FORMAT(dat_recusa, '%Y/%m/%d %T') as data_recusa,
+  ind_assinado,
+  ind_recusado,
+  txt_motivo_recusa,
+  ind_prim_assinatura,
+  u.nom_completo,
+  u.num_cpf
+FROM 
+  assinatura_documento a
+   LEFT JOIN usuario u ON a.cod_usuario = u.cod_usuario
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_assinatura_doc  op="=" type="nb"     optional><dtml-and>
+  <dtml-sqltest codigo              op="=" type="int"    optional><dtml-and>
+  <dtml-sqltest tipo_doc            op="=" type="nb"     optional><dtml-and>
+  <dtml-sqltest ind_assinado        op="=" type="int"    optional><dtml-and>
+  <dtml-sqltest ind_recusado        op="=" type="int"    optional><dtml-and>
+  <dtml-sqltest ind_prim_assinatura op="=" type="int"    optional><dtml-and>
+  <dtml-sqltest ind_excluido        column="a.ind_excluido" op="=" type="int">
+</dtml-sqlgroup>
+
+<dtml-if cod_usuario>
+  AND a.cod_usuario = <dtml-sqlvar cod_usuario type="int">
+</dtml-if>
+
+<dtml-if rd_ordenacao>
+  ORDER BY
+    a.dat_solicitacao DESC
+<dtml-else>
+  ORDER BY
+    a.dat_solicitacao ASC
+</dtml-if>
+

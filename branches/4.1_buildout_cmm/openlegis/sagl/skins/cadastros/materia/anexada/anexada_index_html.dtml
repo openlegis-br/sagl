@@ -1,0 +1,55 @@
+<h1 class="firstHeading">Matérias Anexadas</h1>
+
+  <dtml-if cod_materia_principal>
+    <dtml-call expr="REQUEST.set('cod_materia', cod_materia_principal)">
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('cod_materia_principal', cod_materia)">
+  </dtml-if>
+
+   <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0)">
+    <dtml-if sequence-start>
+       <table class="table">
+        <thead class="table-secondary">
+         <tr> 
+           <th>Matéria Anexada</th>
+           <th width="25%">Data de Anexação </th>
+           <th width="25%">Data de Desanexação</th>
+           <th width="25%">Arquivo</th>
+         </tr>
+        </thead>
+    </dtml-if sequence-start>
+         <tr>
+           <td >
+              <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Matéria Anexada" data-src="anexada/anexada_mostrar_proc?cod_materia_anexada=<dtml-var cod_materia_anexada>&cod_materia_principal=<dtml-var cod_materia_principal>&dat_anexacao=<dtml-var dat_anexacao>&modal=1">
+                 <dtml-var tip_materia_anexada> <dtml-var num_materia_anexada>/<dtml-var ano_materia_anexada>
+              </a>
+           </td>        
+           <td><dtml-var dat_anexacao missing></td>
+           <td><dtml-var dat_desanexacao missing null=""></td>
+           <td>
+                <dtml-call expr="REQUEST.set('redacao_final', _.str(cod_materia_anexada)+'_redacao_final.pdf')">
+                <dtml-call expr="REQUEST.set('texto_original', _.str(cod_materia_anexada)+'_texto_integral.pdf')">
+                <dtml-if "_.hasattr(sapl_documentos.materia,redacao_final)">
+                   <a target="_blank" href="<dtml-var portal_url>/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia_anexada)">&redacao_final=1" title="Redação Final">
+                      <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 2px;"></i>Redação Final
+                   </a>
+                <dtml-elif "_.hasattr(sapl_documentos.materia,texto_original)">
+                   <a target="_blank" href="<dtml-var portal_url>/pysc/download_materia_pysc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia_anexada)">&texto_original=1" title="Texto Integral">
+                      <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 2px;"></i>
+                      Texto Original
+                   </a>
+                <dtml-else>
+                  <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;color: #e9e9e9"></i>
+                </dtml-if>
+           </td>
+         </tr>
+    <dtml-if sequence-end> 
+      </table>  
+    </dtml-if sequence-end>
+   <dtml-else>
+    <p>Nenhuma matéria anexada.</p>
+  </dtml-in>
+
+<div class="align-left">
+  <button type="button" class="btn m btn-primary d-print-none" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Matéria Anexada" data-src="anexada/anexada_form?cod_materia=<dtml-var cod_materia>&incluir_anexada=1&modal=1">Anexar Matéria</button>
+</div>

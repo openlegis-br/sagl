@@ -1,0 +1,39 @@
+<legend>Proposições Apresentadas</legend>
+
+<dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+  <dtml-call expr="REQUEST.set('cod_autor', cod_autor)">
+</dtml-in>
+
+<dtml-in expr="zsql.parlamentar_somar_proposicao_zsql(cod_parlamentar=cod_parlamentar)">
+  <dtml-call expr="REQUEST.set('total', total)">
+</dtml-in>
+
+<dtml-call expr="REQUEST.set('ano_prop_anterior',0)">
+
+<table class="table">
+  <dtml-in expr="zsql.parlamentar_obter_proposicao_zsql(cod_parlamentar=cod_parlamentar)"> 
+    <dtml-if expr="ano_prop_anterior!=ano_ident_basica">
+      <thead class="table-secondary">
+       <tr class="text-left">
+          <dtml-call expr="REQUEST.set('ano_prop_anterior',ano_ident_basica)">   
+          <td colspan="3"><b>Ano:</b> <dtml-var ano_ident_basica></td>
+       </tr>
+       </thead>
+    </dtml-if>    
+    <tr> 
+      <td><a href="<dtml-var portal_url>/consultas/materia/materia_pesquisar_proc?incluir=0&existe_ocorrencia=0&lst_tip_materia=<dtml-var tip_materia>&txt_numero=&txt_prot_pref=&txt_ano=<dtml-var ano_ident_basica>&txt_npc=&txt_num_protocolo=&dt_apres=&dt_apres2=&dt_public=&dt_public2=&hdn_txt_autor=&hdn_cod_autor=<dtml-var cod_autor>&lst_tip_autor=Parlamentar&lst_cod_partido=&txt_relator=&txt_assunto=&rad_tramitando=&lst_localizacao=&lst_tramitou=&lst_status=&rd_ordenacao=1&chk_coautor=0"><dtml-var des_tipo_materia></a></td>
+      <td class="text-center"><dtml-var qtde></td>
+    </tr>
+    <dtml-if sequence-end>
+         <dtml-if expr="total>0">
+         <tr class="table-secondary">
+            <td class="font-weight-bold">Total de Proposições</td>
+            <td class="text-center"><b><dtml-var total></b></td>
+         </tr>
+         </dtml-if>
+    </dtml-if sequence-end>
+
+  <dtml-else>
+        <p>Nenhuma proposição cadastrada.</p>
+  </dtml-in>
+</table>

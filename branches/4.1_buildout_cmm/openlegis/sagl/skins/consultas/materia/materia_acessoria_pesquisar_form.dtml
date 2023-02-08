@@ -1,0 +1,194 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js"></script>
+
+<script type="text/javascript">
+
+(function ($) {
+  $(function () {
+    document.onkeypress = function (event) {
+      var form = pesq_acessoria_form;
+      if (event.keyCode === 13) {
+        form.submit();
+      }
+    };
+  });
+}(jQuery));
+
+function pesquisa_criticar(form){  
+
+  var form = document.pesq_acessoria_form;
+
+  if (form.lst_tip_materia_acessoria.value == "") {
+     $('#lst_tip_materia_acessoria').removeClass('is-valid');
+     $('#lst_tip_materia_acessoria').addClass('is-invalid');
+     form.lst_tip_materia_acessoria.focus();
+     return false;
+  }
+
+  if (form.dt_apres_ac.value != "" && !IsValidDate(form.dt_apres_ac.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data inicial válida!"});
+    return false;
+  } 
+
+  if (form.dt_apres2_ac.value != "" && !IsValidDate(form.dt_apres2_ac.value)) {
+    $.showAlert({title: "Mensagem do Sistema", body: "Digite uma data final válida!"});
+    return false;
+  } 
+
+  var materia_principal = form.lst_tip_materia_ac[form.lst_tip_materia_ac.selectedIndex].value;
+
+  if (materia_principal!=''){
+     if ((form.lst_tip_materia_ac[form.lst_tip_materia_ac.selectedIndex].value == "") ||
+        (form.txt_numero_ac.value == "") || (form.txt_ano_ac.value == ""))  {
+         $.showAlert({title: "Mensagem do Sistema", body: "informe tipo, número e ano da matéria principal!"});
+         form.txt_numero_ac.focus(); 
+         return false;
+     }
+  }
+  form.submit();
+}
+</script>
+
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+  <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
+     <script src='https://www.google.com/recaptcha/api.js?hl=pt-BR' async defer></script>
+  </dtml-if>
+</dtml-let>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Pesquisa de Matérias</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">      
+             <a class="btn btn-primary btn-sm d-print-none" href="<dtml-var portal_url>/cadastros/materia/materia_form_resumido"><i class="fa fa-fw fa-plus"></i> Incluir Matéria</a>
+         </dtml-if>
+      </div>
+ </div>
+
+<dtml-var materia_menu>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
+
+<form novalidate name="pesq_acessoria_form" action="materia_acessoria_pesquisar_proc">
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_tip_materia_acessoria" class="form-label required">Tipo de Matéria Acessória</label>
+      <select class="custom-select" id="lst_tip_materia_acessoria" name="lst_tip_materia_acessoria" required>
+          <option value=""></option>
+          <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='A', ind_excluido=0)">
+                <option value="<dtml-var des_tipo_materia>"><dtml-var des_tipo_materia></option>
+          </dtml-in>
+      </select>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_numero_acessoria">Número</label>
+      <input name="txt_numero_acessoria" id="txt_numero_acessoria" type="number" class="form-control number" autocomplete="off">
+    </div>
+    <div class="col-6 col-md-3 mb-3 controls">
+      <label for="txt_ano_apresentacao">Ano</label>
+      <input name="txt_ano_apresentacao" id="txt_ano_apresentacao" type="number" min="1900" maxlength="4" class="form-control year" autocomplete="off">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="hdn_cod_autor_ac">Autoria</label>
+        <select id="hdn_cod_autor_ac" name="hdn_cod_autor_ac" class="form-control selectpicker show-tick" data-size="6" data-live-search="true" title="Todas" data-header="Pesquisar Autor">
+              <option value="">Todas</option>
+              <dtml-in expr="zsql.autor_obter_zsql(ind_excluido=0)">
+                <option value="<dtml-var cod_autor>"><dtml-var nom_autor_join></option>
+              </dtml-in>
+       </select>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="dt_apres_ac">Data Inicial</label>
+        <input type="text" class="form-control date" id="dt_apres_ac" name="dt_apres_ac" autocomplete="off">
+    </div>
+   <div class="col-6 col-md-3 mb-3">
+      <label for="dt_apres2_ac">Data Final</label>
+      <input type="text" class="form-control date" id="dt_apres2_ac" name="dt_apres2_ac" autocomplete="off">
+    </div>
+    <script>
+
+        $('#dt_apres_ac').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#dt_apres2_ac').val();
+            }
+        });
+        $('#dt_apres2_ac').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#dt_apres_ac').val();
+            }
+        });
+    </script>  
+  </div>
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_tip_materia_ac">Matéria Principal</label>
+      <select class="custom-select" id="lst_tip_materia_ac" name="lst_tip_materia_ac">
+          <option value=""></option>
+          <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P', ind_excluido=0)">
+                <option value="<dtml-var tip_materia>"><dtml-var des_tipo_materia></option>
+          </dtml-in>
+      </select>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_numero_ac">Número</label>
+      <input name="txt_numero_ac" id="txt_numero_ac" type="number" min="1" maxlength="6" class="form-control number"  autocomplete="off">
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_ano_ac">Ano</label>
+      <input name="txt_ano_ac" id="txt_ano_ac" type="number" min="1900" maxlength="4" class="form-control year" autocomplete="off">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12 col-md-9 mb-3">
+      <label for="txt_assunto_ac">Termos da Pesquisa</label>
+      <input type="text" class="form-control" name="txt_assunto_ac" id="txt_assunto_ac" autocomplete="off"data-toggle="popover" data-trigger="focus" title="Dicas de Preenchimento" data-content="A frase colocada entre aspas duplas pesquisa por registros com a frase exata. Um asterisco (*) é um operador de truncamento que pode ser inserido ao fim de uma palavra. Um sinal de mais (+) precedente indica que a palavra deve estar presente no texto. Um sinal de menos (-) precedente indica que a palavra não deve estar presente em qualquer parte do texto.">
+    </div>
+    <div class="col-12 col-md-3 mb-3">
+      <label for="rd_ordenacao_ac" class="d-block">Ordenação</label>
+        <select id="rd_ordenacao_ac" name="rd_ordenacao_ac" class="custom-select">
+         <dtml-in expr="[('Data', '1'), ('Matéria Principal', '2')]">      
+            <option value="<dtml-var expr="_['sequence-item']">" <dtml-if expr="_['sequence-item']==''">selected</dtml-if>><dtml-var expr="_['sequence-key']"></option>
+         </dtml-in>
+        </select>
+    </div>
+  </div>
+  <div class="form-row">
+       <div class="col-12 col-md-12 mt-2 text-left"> 
+        <dtml-let isAnon="portal_membership.isAnonymousUser()">
+            <dtml-if expr="isAnon and sapl_documentos.props_sagl.recaptcha_key">
+                <div class="g-recaptcha mb-3" data-sitekey="<dtml-var "sapl_documentos.props_sagl.recaptcha_key">"></div>
+            </dtml-if>
+         </dtml-let>
+          <button type="button" id="search-btn2" class="btn btn-primary" onClick="return pesquisa_criticar()"><i class="fa fa-fw fa-search"></i> Pesquisar</button>
+          <input class="btn btn-secondary" type="reset" name="btn_materia_limpar" value="Limpar" />
+     </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i>  Campos obrigatórios</p>
+    </div>
+  </div>
+</form>
+
+</div>
+</div>
+
+<dtml-var standard_html_footer>

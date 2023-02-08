@@ -1,0 +1,38 @@
+<dtml-in expr="zsql.relatoria_obter_zsql(cod_comissao=cod_comissao,cod_materia=cod_materia,num_ordem=num_ordem,ind_excluido=0)">
+  <dtml-if cod_relatoria>
+     <dtml-call expr="REQUEST.set('erro', 1)">
+     <dtml-let mensagem="'Existe um relator cadastrado pela Comissão. Não é possível excluir a designação da Comissão!'" tipo_mensagem="'danger'">
+        <dtml-var mensagem_emitir>
+     </dtml-let>
+  </dtml-if>
+</dtml-in>
+
+<dtml-unless erro>
+<dtml-try>
+  <dtml-call expr="REQUEST.set('metodo', zsql.despacho_inicial_excluir_zsql)">
+  <dtml-call expr="metodo(num_ordem = num_ordem, cod_materia = cod_materia)">
+<dtml-except>
+  <dtml-let mensagem="'Ocorreu um erro ao excluir a designação de comissão!'" tipo_mensagem="'danger'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
+  <dtml-let mensagem="'Designação de Comissão excluída com sucesso!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>
+</dtml-unless>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_materia)"> 
+</dtml-if>

@@ -1,0 +1,38 @@
+<dtml-if hdn_tip_sessao>
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_sessao_plenaria_atualizar_zsql)">
+<dtml-elif expr="zsql.tipo_sessao_plenaria_obter_zsql(nom_sessao=txt_nom_sessao)">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+  <dtml-let mensagem="'Já existe um tipo de sessão com esse nome.'" tipo_mensagem="'danger'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else> 
+  <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=hdn_tip_sessao,
+                                                      nom_sessao = txt_nom_sessao,
+                                                      num_minimo = txt_num_minimo,
+                                                      ind_excluido = 1)">
+        <dtml-call expr="REQUEST.set('metodo', zsql.tipo_sessao_plenaria_atualizar_zsql)">
+        <dtml-call expr="REQUEST.set('hdn_tip_sessao', tip_sessao)">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('metodo', zsql.tipo_sessao_plenaria_incluir_zsql)">
+    </dtml-in>
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="metodo(tip_sessao = hdn_tip_sessao,
+                            nom_sessao = txt_nom_sessao,
+                            num_minimo = txt_num_minimo,
+                            ind_excluido = 0)">
+
+  <dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar o tipo de sessão. Tente novamente!'" tipo_mensagem="'danger'">
+      <dtml-var hdn_tip_sessao>
+    </dtml-let> 
+
+  <dtml-else>
+    <dtml-let mensagem="'Tipo de sessão plenária salvo com sucesso!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let> 
+  </dtml-try>
+</dtml-unless>
+

@@ -1,0 +1,44 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_comp_comissao="" ncod_comp_comissao="" cod_comissao="" cod_periodo_comp="" cod_cargo="" cod_parlamentar="" ind_excluido=0
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+SELECT
+      REPLACE(compc.cod_comissao, 'L', '') as cod_comissao,
+      REPLACE(compc.cod_periodo_comp, 'L', '') as cod_periodo_comp,
+      REPLACE(compc.cod_comp_comissao, 'L', '') as cod_comp_comissao,
+      compc.ind_titular,
+      compc.cod_cargo,
+      DATE_FORMAT(compc.dat_designacao, '%d/%m/%Y') as dat_designacao,
+      DATE_FORMAT(compc.dat_desligamento, '%d/%m/%Y') as dat_desligamento,
+      compc.des_motivo_desligamento,
+      compc.obs_composicao,
+      REPLACE(compc.cod_parlamentar, 'L', '') as cod_parlamentar,
+      p.nom_completo,
+      nom_parlamentar,
+      cargoc.des_cargo,
+      comissao.nom_comissao
+
+FROM
+      composicao_comissao as compc,
+      parlamentar as p,
+      cargo_comissao as cargoc,
+      comissao
+
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_comp_comissao op="=" type="int" optional> <dtml-and>
+  <dtml-sqltest ncod_comp_comissao op="!=" type="int" column="compc.cod_comp_comissao" optional> <dtml-and>
+  <dtml-sqltest ind_excluido      op="=" type="int" column="compc.ind_excluido" optional> <dtml-and>
+  <dtml-sqltest cod_periodo_comp  op="=" type="int" column="compc.cod_periodo_comp" optional> <dtml-and>
+  <dtml-sqltest cod_cargo op="=" type="int" column="cargoc.cod_cargo" optional> <dtml-and>
+  <dtml-sqltest cod_parlamentar op="=" type="int" column="compc.cod_parlamentar" optional> <dtml-and>
+  <dtml-sqltest cod_comissao op="=" type="int" column="comissao.cod_comissao" optional> <dtml-and>
+  compc.cod_parlamentar = p.cod_parlamentar and
+  compc.cod_cargo = cargoc.cod_cargo and
+  compc.cod_comissao = comissao.cod_comissao
+</dtml-sqlgroup>
+ORDER BY 
+  p.nom_completo
+

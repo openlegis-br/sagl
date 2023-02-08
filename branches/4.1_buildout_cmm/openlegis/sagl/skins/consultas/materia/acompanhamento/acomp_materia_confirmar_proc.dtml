@@ -1,0 +1,69 @@
+<dtml-var standard_html_header>
+
+<h1 class="firstHeading">Acompanhamento de Matéria</h1>
+
+<dtml-in expr="zsql.acomp_materia_obter_zsql(txt_hash=txt_hash)">
+  <dtml-if expr="ind_excluido==1">
+    <dtml-call expr="REQUEST.set('erro', 0)">
+    <dtml-call expr="REQUEST.set('metodo', zsql.acomp_materia_atualizar_zsql)">
+    <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+  <dtml-elif expr="ind_excluido==0">
+    <dtml-call expr="REQUEST.set('erro', 0)">
+    <dtml-call expr="REQUEST.set('cod_materia', cod_materia)">
+  </dtml-if>
+<dtml-else>
+  <dtml-call expr="REQUEST.set('erro', 1)">
+</dtml-in>
+
+<dtml-unless erro>
+<table class="table">
+  <tr>
+     <td>
+        <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)"><div align="center">
+           <h2>
+              <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank">
+              <dtml-else>
+                <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=cod_materia)">" target="_blank">
+              </dtml-if>
+              <dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica> - 
+              <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+                <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+              </dtml-in></a></h2>
+           <dtml-var txt_ementa>
+        </dtml-in></div>
+     </td>
+  </tr>
+</table>
+</dtml-unless>
+
+<dtml-if erro>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5>ouve um erro ao localizar sua inscrição!</h5>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">×</span>
+        </button>
+    </div>
+</dtml-if>
+<dtml-unless erro>
+ <dtml-try>
+    <dtml-call expr="REQUEST.set('ind_excluido', 0)">
+    <dtml-call expr="metodo(txt_hash = txt_hash, ind_excluido = ind_excluido)">
+ <dtml-except>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h5>Seu e-mail já se encontra ativo para acompanhamento desta matéria!</h5>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">×</span>
+        </button>
+    </div>
+ <dtml-else>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <h5>E-mail ativado com sucesso!</h5>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">×</span>
+        </button>
+    </div>
+ </dtml-try>
+</dtml-unless>
+
+<dtml-var standard_html_footer>

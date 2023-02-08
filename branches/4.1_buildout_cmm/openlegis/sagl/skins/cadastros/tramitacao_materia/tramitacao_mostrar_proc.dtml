@@ -1,0 +1,207 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+  function campos_criticar(form){
+
+      var form = document.encaminhamento_registrar;
+
+      form.submit();
+   }
+    
+</script>
+
+<dtml-if lote>
+    <div class="alert alert-<dtml-var tipo_mensagem missing=success html_quote> alert-dismissible fade show" role="alert">
+        <h5>Tramitação em lote realizada com sucesso!</h5>
+          <p class="mb-0">Confira abaixo a tramitação da última matéria selecionada.</p>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</dtml-if>
+
+<h1 class="firstHeading">Tramitação de Matéria Legislativa</h1>
+
+<dtml-call expr="REQUEST.set('cod_materia', hdn_cod_materia)">
+
+<div class="card mb-4">
+  <div class="card-body bg-light text-center">
+    <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">  
+       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+          <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var hdn_cod_materia>" target="_blank">
+       <dtml-else>
+          <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=hdn_cod_materia)">" target="_blank">
+       </dtml-if>
+       <p class="h5"><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a> - 
+         <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=hdn_cod_materia)">
+            <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+         </dtml-in></p>
+          <dtml-var txt_ementa>
+    </dtml-in>
+  </div>
+</div>
+
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+   <dtml-if cod_usuario>
+      <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+      <dtml-in expr="zsql.funcionario_obter_zsql(cod_usuario=cod_usuario)">
+         <dtml-call expr="REQUEST.set('cod_funcionario_corrente', int(cod_funcionario))">
+      </dtml-in>
+   </dtml-if>
+</dtml-in>
+
+<dtml-in expr="zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tramitacao)">
+    <dtml-call expr="REQUEST.set('hdn_cod_materia', int(cod_materia))">
+    <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_dest', int(cod_unid_tram_dest))">
+
+  <div class="form-row">
+    <div class="col-12 col-md-3 mb-3">
+       <label for="txt_dat_tramitacao" class="required">Data da Tramitação</label>
+       <dtml-unless dat_tramitacao>
+          <dtml-call expr="REQUEST.set('dat_tramitacao', _.DateTime().strftime('%d/%m/%Y %H:%M'))">
+       </dtml-unless>
+       <input type="hidden" name="hdn_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" />       
+       <input class="form-control" type="text" name="txt_dat_tramitacao" id="txt_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" required readonly />
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_cod_unid_tram_local" class="required">Unidade Local</label>
+      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_local, ind_leg=1)">
+         <input class="form-control" type="text" id="lst_cod_unid_tram_local" value="<dtml-var nom_unidade_join>" readonly>
+      </dtml-in>
+    </div>    
+    <div class="col-12 col-md-3 mb-3">
+      <label for="txt_nom_usuario"class="d-block">Usuário de Origem</label>
+      <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">      
+         <input class="form-control" type="text" id="txt_nom_usuario" value="<dtml-var nom_completo>" disabled> 
+         <input type="hidden" name="hdn_cod_usuario_local" id="hdn_cod_usuario_local" value="<dtml-var cod_usuario_corrente>">     
+     </dtml-in>
+    </div>     
+  </div> 
+  <div class="form-row">
+    <div class="col-12 col-md-3 mb-3">
+      <label for="txt_dat_encaminha">Encaminhamento</label>
+      <input class="form-control" type="text" name="txt_dat_encaminha" id="txt_dat_encaminha" value="<dtml-var dat_encaminha missing null>" readonly > 
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>        
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_cod_unid_tram_dest">Unidade de Destino</label>
+      <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram_dest, ind_leg=1)">
+         <input class="form-control" type="text" id="lst_cod_unid_tram_dest" value="<dtml-var nom_unidade_join>" readonly>
+      </dtml-in>
+    </div>
+    <div class="col-12 col-md-3 mb-3">
+      <label for="lst_cod_usuario_dest">Usuário de Destino</label>
+      <dtml-if cod_usuario_dest>
+        <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario_dest)">      
+           <input class="form-control" type="text" id="lst_cod_usuario_dest" value="<dtml-var nom_completo>" readonly>
+        </dtml-in>      
+        <dtml-else> 
+         <input class="form-control" type="text" id="lst_cod_usuario_dest" value="" readonly>
+      </dtml-if>
+    </div>
+  </div> 
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3"> 
+      <label for="lst_cod_status">Status</label>
+      <dtml-in expr="zsql.status_tramitacao_obter_zsql(cod_status=cod_status)">
+         <input class="form-control" type="text" id="lst_cod_status" value="<dtml-var des_status>" readonly>
+      </dtml-in>      
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_dat_fim_prazo">Data de Fim de Prazo</label><br />
+      <input class="form-control date" type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" value="<dtml-var dat_fim_prazo missing null="">" readonly />    
+    </div>    
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txa_dat_recebimento">Recebimento</label>    
+      <input class="form-control" type="text" id="txa_dat_recebimento" value="<dtml-var dat_recebimento missing null>" readonly>
+    </div>  
+    <div class="col-12 col-md-3 mb-3">
+      <label class="d-block required">Urgente ?</label>
+         <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+           <div class="custom-control custom-radio custom-control-inline">                  
+              <input type="radio" id="rad<dtml-var expr="_['sequence-item'][0]">" name="rad_ind_urgencia" value="<dtml-var sequence-key>" class="custom-control-input"  disabled
+                 <dtml-if expr="_.has_key('ind_urgencia') and ind_urgencia==_['sequence-key']">checked=1</dtml-if>
+                  />
+              <label class="custom-control-label" for="rad<dtml-var expr="_['sequence-item'][0]">"><dtml-var sequence-item></label>
+            </div>
+         </dtml-in>
+    </div>
+    <div class="col-6 col-md-9 mb-3">
+      <label class="d-block">Despacho em PDF</label>
+      <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+      <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)"> 
+       <div class="btn-group" role="group" aria-label="tram_button">
+         <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+            <a class="btn btn-secondary" target="_blank" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">">
+              <i class="far fa-file-pdf"></i> Visualizar
+            </a>
+         </dtml-let>
+         <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf) and sapl_documentos.props_sagl.restpki_access_token!=''">
+            <dtml-if expr="int(cod_usuario_corrente)==int(cod_usuario_local)" >
+             <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_tramitacao,tipo_doc='tramitacao')">             
+               <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_tramitacao>&tipo_doc=tramitacao&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+             <dtml-else>
+               <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_tramitacao>&tipo_doc=tramitacao&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>               
+             </dtml-if>                
+            </dtml-if>
+         </dtml-if>
+        </div>
+      </dtml-if>           
+    </div>    
+  </div>
+
+  <div class="form-row">
+    <div class="col-12 mb-3">
+      <label for="txa_txt_tramitacao">Texto do Despacho</label>
+      <textarea class="form-control" name="txa_txt_tramitacao" id="txa_txt_tramitacao" rows="1" readonly><dtml-var txt_tramitacao missing null></textarea>
+    </div>
+  </div>
+
+  <dtml-if expr="dat_encaminha and not dat_recebimento and (int(cod_usuario_corrente)==int(cod_usuario_local))">
+     <form name="retomada_registrar" method="post" action="retomada_registrar_proc" class="needs-validation" novalidate>
+        <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao>" />
+        <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia>" />        
+        <input type="hidden" name="modal" value="1" />
+        <dtml-if modal>                 
+          <input class="btn btn-danger"  type="submit" name="button" value="Retomar Tramitação" />
+        </dtml-if>
+        <dtml-unless modal>
+          <input  class="btn btn-primary" type="button" value="Voltar" onClick="location.href='tramitacao_lote_form'">
+        </dtml-unless>
+     </form>
+  <dtml-elif expr="not dat_encaminha and not dat_recebimento and (int(cod_usuario_corrente)==int(cod_usuario_local))">
+     <form name="encaminhamento_registrar" method="post" action="encaminhamento_registrar_proc" class="needs-validation" novalidate>
+      <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var cod_tramitacao>" />
+      <input type="hidden" name="hdn_cod_materia" value="<dtml-var hdn_cod_materia>" />
+      <input type="hidden" name="cod_usuario_corrente" value="<dtml-var cod_usuario_local>" />
+      <input type="hidden" name="modal" value="1" />
+      <input type="hidden" name="cod_tramitacao" value="<dtml-var cod_tramitacao missing>" /> 
+      <a class="btn btn-primary" href="tramitacao_form?hdn_cod_materia=<dtml-var hdn_cod_materia>&hdn_cod_tramitacao=<dtml-var cod_tramitacao>&modal=1">Editar</a>
+      <input class="btn btn-success" type="submit" name="btn_tramitacao_salvar" value="Encaminhar" onClick="campos_criticar(document.encaminhamento_registrar)" />
+     </form>
+  </dtml-if>
+</dtml-in>
+
+<script>
+tinymce.init({
+  selector: '#txa_txt_tramitacao',
+  language: 'pt_BR',
+  height: 250,
+  readonly : 1,
+  plugins: [
+    'advlist autolink link image lists charmap print preview hr anchor pagebreak',
+    'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+    'table emoticons template paste help'
+  ],
+  toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
+    ' link image | print preview media fullpage | ',
+  menubar: 'edit view insert format tools help',
+  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+});
+</script>
+
+<dtml-var standard_html_footer>

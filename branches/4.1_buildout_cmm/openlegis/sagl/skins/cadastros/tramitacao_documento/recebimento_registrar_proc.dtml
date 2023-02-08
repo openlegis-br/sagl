@@ -1,0 +1,26 @@
+<dtml-try>
+   <dtml-call expr="REQUEST.set('metodo', zsql.tramitacao_adm_registrar_recebimento_zsql)">
+   <dtml-call expr="metodo(cod_tramitacao=hdn_cod_tramitacao, cod_usuario_corrente=cod_usuario_corrente)">
+<dtml-except>
+  <dtml-let mensagem="'Houve um erro no banco de dados!'" tipo_mensagem="'danger'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>  
+<dtml-else>
+  <dtml-let mensagem="'Tramitação recebida com sucesso!'" url="'tramitacao_documento_index_html'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>
+
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = 'tramitacao_documento',
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_tramitacao)"> 
+</dtml-if>

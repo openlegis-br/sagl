@@ -1,0 +1,363 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js"></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
+<script>
+
+$(document).ready(function() {
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+
+    $('table.display').DataTable( {
+        "responsive": true,
+        "order": [[ 2, "desc" ]],                      
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
+
+window.onload = function(){  
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
+    //Change hash for page-reload
+    $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').on('shown', function (e) {
+        window.location.hash = e.target.hash;
+    }); 
+} 
+
+$(document).ready(() => {
+  let url = location.href.replace(/\/$/, "");
+   if (location.hash) {
+    const hash = url.split("#");
+    $('#nav_peticao a[href="#'+hash[1]+'"]').tab("show");
+    url = location.href.replace(/\/#/, "#");
+    history.replaceState(null, null, url);
+  } 
+
+  $('a[data-toggle="tab"]').on("click", function() {
+    let newUrl;
+    const hash = $(this).attr("href");
+    if(hash == "#home") {
+      newUrl = url.split("#")[0];
+    } else {
+      newUrl = url.split("#")[0] + hash;
+    }
+    newUrl += "";
+    history.replaceState(null, null, newUrl);
+  });
+});
+</script>
+
+   <dtml-call "REQUEST.set('username', AUTHENTICATED_USER)">
+   <dtml-in expr="zsql.usuario_obter_zsql(col_username=username)">
+      <dtml-call "REQUEST.set('nom_completo', nom_completo)">
+      <dtml-call "REQUEST.set('nom_cargo', nom_cargo)">
+      <dtml-call "REQUEST.set('cod_usuario_corrente', cod_usuario)">
+   <dtml-else>
+      <dtml-call "REQUEST.set('nom_completo', AUTHENTICATED_USER)">
+   </dtml-in>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Peticionamento Eletrônico</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+       <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
+         <div class="btn-group">
+           <button type="button" class="btn btn-sm btn-primary d-print-none mb-2 dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <i class="fa fa-fw fa-plus"></i> Peticionar
+           </button>
+           <div class="dropdown-menu dropdown-menu-right">
+            <dtml-in expr="zsql.tipo_peticionamento_obter_zsql(ind_doc_materia=1, ind_excluido=0)">
+                <dtml-if expr="_['sequence-length'] > 0 and zsql.usuario_peticionamento_obter_zsql(cod_usuario=cod_usuario_corrente, tip_peticionamento=tip_peticionamento)">
+                  <dtml-call expr="REQUEST.set('mostrar_acessorio', 1)">
+                </dtml-if>
+            </dtml-in>
+            <dtml-if expr="_.has_key('mostrar_acessorio')">
+              <a href="#" class="dropdown-item" data-toggle="modal" data-target="#iFrameModal" data-title="Documento Acessório de Matéria" data-src="peticao_acessorio_form?modal=1">Acessório de Matéria</a>
+            </dtml-if>
+            <dtml-in expr="zsql.tipo_peticionamento_obter_zsql(ind_doc_adm=1, ind_excluido=0)">
+               <dtml-if expr="_['sequence-length'] > 0 and zsql.usuario_peticionamento_obter_zsql(cod_usuario=cod_usuario_corrente, tip_peticionamento=tip_peticionamento)">
+                  <dtml-call expr="REQUEST.set('mostrar_adm', 1)">
+               </dtml-if>
+            </dtml-in>
+            <dtml-if expr="_.has_key('mostrar_adm')">
+                  <a href="#" class="dropdown-item" data-toggle="modal" data-target="#iFrameModal" data-title="Peticionar em Processo Administrativo" data-src="peticao_administrativo_form?modal=1">Processo Administrativo</a>
+            </dtml-if>
+            <dtml-in expr="zsql.tipo_peticionamento_obter_zsql(ind_norma=1, ind_excluido=0)">
+               <dtml-if expr="_['sequence-length'] > 0 and zsql.usuario_peticionamento_obter_zsql(cod_usuario=cod_usuario_corrente, tip_peticionamento=tip_peticionamento)">
+                  <dtml-call expr="REQUEST.set('mostrar_norma', 1)">
+               </dtml-if>
+            </dtml-in>
+            <dtml-if expr="_.has_key('mostrar_norma')">
+               <a href="#" class="dropdown-item" data-toggle="modal" data-target="#iFrameModal" data-title="Protocolo de Norma Jurídica" data-src="peticao_norma_form?modal=1">Protocolo de Norma</a>
+            </dtml-if>
+           </div>
+         </div>
+       </dtml-if>
+      </div>
+ </div>
+
+<dtml-if ind_antigo>
+  <dtml-call expr="REQUEST.set('ind_enviado', '')">
+<dtml-else>
+  <dtml-unless ind_enviado>
+    <dtml-call expr="REQUEST.set('ind_enviado', '0')">
+  </dtml-unless>
+</dtml-if>
+
+<dtml-call "REQUEST.set('username', AUTHENTICATED_USER)">
+
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=username)">
+    <dtml-call "REQUEST.set('nom_completo', nom_completo)">
+    <dtml-call "REQUEST.set('nom_cargo', nom_cargo)">
+    <dtml-call "REQUEST.set('cod_usuario_corrente', cod_usuario)">
+</dtml-in>
+
+<a
+ <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='0'">
+    class="btn btn-sm btn-primary mb-3 disabled" 
+  <dtml-else>
+    class="btn btn-sm btn-primary mb-3"   
+  </dtml-if>
+href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/peticionamento_eletronico_index_html?ind_enviado=0">Em elaboração
+         <dtml-in expr="zsql.peticao_obter_zsql(cod_usuario=cod_usuario_corrente, ind_enviado='0', ind_excluido=0)">
+           <dtml-if sequence-start>
+            (<dtml-var sequence-length>)
+           </dtml-if sequence-start>
+         </dtml-in>
+</a>
+<a
+  <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='1'">
+     class="btn btn-sm btn-primary mb-3 disabled"
+  <dtml-else> 
+     class="btn btn-sm btn-primary mb-3"      
+  </dtml-if>
+  href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/peticionamento_eletronico_index_html?ind_enviado=1">Enviados
+         <dtml-in expr="zsql.peticao_obter_zsql(cod_usuario=cod_usuario_corrente, ind_enviado='1', ind_excluido=0)">
+           <dtml-if sequence-start>
+            (<dtml-var sequence-length>)
+           </dtml-if sequence-start>
+         </dtml-in>  
+</a>
+
+<dtml-if expr="ind_enviado=='0'">
+<dtml-in expr="zsql.peticao_obter_zsql(cod_usuario=cod_usuario_corrente, ind_enviado=ind_enviado, ind_excluido=0)">
+    <dtml-if sequence-start>    
+            <table class="table display" id="enviadas">    
+             <thead class="table-secondary">
+                <tr>  
+                    <th width="20%">Tipo</th>
+                    <th>Descrição</th>
+                    <th width="20%">Criação</th>
+                </tr>
+             </thead>
+    </dtml-if sequence-start>
+               <tr>
+                    <td>
+                        <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="<dtml-var des_tipo_peticionamento>" data-src="peticao_mostrar_proc?cod_peticao=<dtml-var cod_peticao>&modal=1">
+                           <dtml-var des_tipo_peticionamento>
+                        </a>                    
+                    </td>
+                    <td>
+                        <dtml-if expr="ind_norma=='1'">
+                           Nº <dtml-var num_norma>/<dtml-var ano_norma> - 
+                        </dtml-if>
+                        <dtml-var txt_descricao>  <dtml-if txt_observacao><br /><span class="text-danger">Motivo da devolução:</span> <dtml-var txt_observacao missing></dtml-if>
+                        <dtml-if expr="ind_doc_materia=='1'">
+                           <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                              (<dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>)
+                           </dtml-in>
+                        </dtml-if>
+                    </td>
+                    <td><dtml-var timestamp></td>
+                </tr>
+    <dtml-if sequence-end>
+            </table>
+    </dtml-if sequence-end>
+<dtml-else>
+    <p>Não há petições em elaboração.</p>
+</dtml-in>
+</dtml-if>
+
+<dtml-if expr="ind_enviado=='1'">
+<dtml-in expr="zsql.peticao_obter_zsql(cod_usuario=cod_usuario_corrente, ind_enviado=ind_enviado, ind_excluido=0)">
+    <dtml-if sequence-start>    
+        <fieldset>
+            <table class="table display" id="enviadas">    
+             <thead class="table-secondary">
+                <tr>  
+                    <th width="20%">Tipo</th>
+                    <th width="40%">Descrição</th>
+                    <th>Envio</th>
+                    <th>Registro</th>
+                </tr>
+             </thead>
+    </dtml-if sequence-start>
+               <tr>
+                    <td>
+                 <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao',codigo=cod_peticao)">
+                     <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+                     <dtml-if expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados,cod_assinatura_doc+'.pdf')"> 
+                       <dtml-let filename="_.getattr(sapl_documentos.documentos_assinados,cod_assinatura_doc+'.pdf').absolute_url">
+                         <a class="" href="<dtml-var filename>" target="_blank">
+                           <dtml-var des_tipo_peticionamento>
+                         </a>
+                       </dtml-let>
+                     </dtml-if>
+                 <dtml-else>
+                      <dtml-var des_tipo_peticionamento>     
+               </dtml-in>
+                    </td>
+                    <td>
+                       <dtml-if expr="ind_norma=='1'">
+                         Nº <dtml-var num_norma>/<dtml-var ano_norma> - 
+                       </dtml-if>
+                      <dtml-var txt_descricao>
+                        <dtml-if expr="ind_doc_materia=='1'">
+                           <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+                              (<dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>)
+                           </dtml-in>
+                        </dtml-if>
+                    </td>
+                    <td><dtml-var dat_envio></td>
+                    <td>               
+	               <dtml-if expr="ind_doc_adm=='1'">
+                         <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+                           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                             <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                           <dtml-else>
+                             <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                           </dtml-if>
+                               <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+                             </a> 
+                         </dtml-in>
+	               </dtml-if>
+	               <dtml-if expr="ind_norma=='1'">
+	                 <dtml-if expr="cod_norma!=None">
+                            <dtml-in expr="zsql.norma_juridica_obter_zsql(cod_norma=cod_norma, ind_excluido=0)">
+                               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Norma'])">
+                                <a href="<dtml-var portal_url>/cadastros/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
+                               <dtml-else>
+                                <a href="<dtml-var portal_url>/consultas/norma_juridica/norma_juridica_mostrar_proc?cod_norma=<dtml-var cod_norma>">
+                               </dtml-if>
+                                 <dtml-var sgl_tipo_norma> <dtml-var num_norma>/<dtml-var ano_norma>
+                               </a> 
+                            </dtml-in>
+                         <dtml-else>
+                            <span class="text-danger font-weight-bold">Pendente</span>
+	                 </dtml-if>
+	               </dtml-if>
+      	               <dtml-if expr="ind_doc_materia=='1'">
+                            <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_documento=cod_doc_acessorio, ind_excluido=0)">
+                               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                                <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>#acessorio">
+                               <dtml-else>
+                                <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>#acessorio">
+                               </dtml-if>                    
+                                 <dtml-var des_tipo_documento>
+                              </a>
+                            </dtml-in>
+      	               </dtml-if>
+                    </td>
+                </tr>
+    <dtml-if sequence-end>
+            </table>
+    </dtml-if sequence-end>
+<dtml-else>
+    <p>Nenhuma petição foi enviada.</p>
+    </fieldset>
+</dtml-in>
+</dtml-if>
+
+  <dtml-if expr="_.has_key('ind_antigo') and ind_antigo=='1'">
+	  <dtml-in expr="zsql.protocolo_pesquisa_publica_zsql(txt_interessado=nom_completo, dat_protocolo='08/05/2022')">
+	     <dtml-if sequence-start>
+	       <div class="table-responsive">
+                <table class="table display" id="historico">
+                  <thead class="table-secondary">  
+		   <tr>
+                      <th>Nº de Protocolo</th>
+                      <th>Resumo da Solicitação</th>
+ 	              <th>Data de Protocolo</th>
+	              <th>Proc. Adm.</th>
+		   </tr>
+		  </thead>
+	     </dtml-if>
+	           <tr>
+   	              <td><dtml-var num_protocolo>/<dtml-var ano_protocolo></td>
+	              <td><dtml-var txt_assunto_ementa></td>
+                      <td><dtml-var "pysc.iso_to_port_pysc(dat_protocolo)"> <dtml-var hor_protocolo></td>
+                      <td>
+                       <dtml-if cod_documento>
+			 <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+                           <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                        <dtml-else>
+                           <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>" target="_blank">
+                         </dtml-if>
+                             <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+	                   </a>
+                       <dtml-else>
+                        <i>Aguardando autuação</i>
+                       </dtml-if>
+                      </td>
+	           </tr>
+             <dtml-if sequence-end>
+                 </table>
+                </div>
+             </dtml-if>
+	  <dtml-else>
+             <p>Nenhuma registro encontrado.</p>
+          </dtml-in>
+</dtml-if>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,53 @@
+<dtml-if hdn_cod_item>
+    <dtml-call expr="REQUEST.set('metodo', zsql.sessao_plenaria_painel_atualizar_zsql)">
+<dtml-else>
+    <dtml-call expr="REQUEST.set('metodo', zsql.sessao_plenaria_painel_incluir_zsql)">
+</dtml-if>
+
+<dtml-if expr="hdn_nom_fase==None or hdn_nom_fase==''">
+   <dtml-call expr="REQUEST.set('hdn_nom_fase', 'Mensagem do Operador')">
+</dtml-if>
+
+<dtml-if expr="hdn_num_ordem==None or hdn_num_ordem==''">
+   <dtml-call expr="REQUEST.set('hdn_num_ordem', num_ordem_obter_pysc(cod_sessao_plen=hdn_cod_sessao_plen))">
+</dtml-if>
+
+<dtml-if expr="hdn_tip_item==None or hdn_tip_item==''">
+   <dtml-call expr="REQUEST.set('hdn_tip_item', 'Mensagem')">
+</dtml-if>
+
+<dtml-if expr="hdn_ind_exibicao==None or hdn_ind_exibicao==''">
+   <dtml-call expr="REQUEST.set('hdn_ind_exibicao', 0)">
+</dtml-if>
+
+<dtml-if expr="hdn_ind_extrapauta==None or hdn_ind_extrapauta==''">
+   <dtml-call expr="REQUEST.set('hdn_ind_extrapauta', 0)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(  
+        cod_sessao_plen = hdn_cod_sessao_plen,
+        cod_item        = hdn_cod_item,
+        nom_fase        = hdn_nom_fase,
+        num_ordem       = hdn_num_ordem,
+        tip_item        = hdn_tip_item,
+        txt_exibicao    = txa_txt_exibicao,
+        ind_exibicao    = hdn_ind_exibicao,
+        ind_extrapauta  = hdn_ind_extrapauta
+  )">
+<dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar o item.'" tipo_mensagem="'danger'">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+<dtml-else>
+   <dtml-if hdn_url>
+      <dtml-let tipo_mensagem="'success'" mensagem="'Item salvo com sucesso.'" modal="'1'" url=hdn_url>
+          <dtml-var mensagem_emitir>
+      </dtml-let>
+   <dtml-else>
+      <dtml-let tipo_mensagem="'success'" mensagem="'Item salvo com sucesso.'" modal="'1'">
+          <dtml-var mensagem_emitir>
+      </dtml-let>
+   </dtml-if>
+</dtml-try>
+

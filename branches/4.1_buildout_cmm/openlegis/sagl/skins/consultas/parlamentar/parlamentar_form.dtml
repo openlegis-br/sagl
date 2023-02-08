@@ -1,0 +1,128 @@
+<dtml-var standard_html_header>
+
+<div class="row">
+ <div class="col-9">
+    <h1 class="firstHeading">
+       <dtml-var nom_parlamentar>
+    </h1>
+ </div>
+ <div class="col-3 text-right align-self-center">
+     <dtml-call expr="REQUEST.set('logo_partido', _.str(cod_partido)+'_logo.png')">
+     <dtml-if expr="cod_partido!=None">
+        <dtml-if expr="_.hasattr(sapl_documentos.partido, logo_partido)">
+          <img class="img-fluid" alt="<dtml-var cod_partido>" width="80px" src="<dtml-var portal_url>/sapl_documentos/partido/<dtml-var logo_partido>">
+        <dtml-elif expr="_.hasattr(imagens.logo_partido, logo_partido)">
+          <img class="img-fluid" alt="<dtml-var cod_partido>" width="80px" src="<dtml-var portal_url>/imagens/logo_partido/<dtml-var logo_partido>">
+        </dtml-if>
+     <dtml-else>
+        <small class="text-muted">Sem partido</small>
+     </dtml-if>
+ </div>
+</div>
+
+<div class="card mb-3">
+  <div class="row no-gutters">
+    <div class="col-12 col-md-3 col-lg-2 bg-light text-center text-md-left">
+           <dtml-call expr="REQUEST.set('id_foto', _.str(cod_parlamentar)+'_foto_parlamentar')">
+           <dtml-if expr="_.hasattr(sapl_documentos.parlamentar.fotos,id_foto)">              
+              <img alt="<dtml-var nom_completo>" src="<dtml-var portal_url>/sapl_documentos/parlamentar/fotos/<dtml-var id_foto>" class="mx-auto img-fluid">
+           <dtml-else>
+              <img class="mx-auto img-fluid" alt="<dtml-var nom_completo>" src="<dtml-var portal_url>/imagens/avatar.png">
+           </dtml-if>
+    </div>
+    <div class="col-12 col-md-9">
+      <div class="card-body">
+        <ul class="infoVereador">
+          <li><b>Nome civil:</b> <dtml-var nom_completo></li>
+          <dtml-if dat_nascimento>
+             <li><b>Data de nascimento:</b> <dtml-var dat_nascimento></li>
+           </dtml-if>
+         <dtml-call expr="REQUEST.set('dat_atual', _.DateTime().strftime('%d/%m/%Y'))">                   
+          <dtml-if expr="pysc.autoria_parlamentar_validar_pysc(cod_parlamentar=cod_parlamentar,txt_dat_apresentacao=dat_atual)">
+           <dtml-if num_tel_parlamentar>
+              <li><b>Telefone: </b><dtml-var num_tel_parlamentar missing></li>
+           </dtml-if>
+           <dtml-if expr="end_email">
+              <li><a href="mailto:<dtml-var end_email>"><i class="fa fa-fw fa-envelope"></i> <dtml-var end_email></a></li>
+           </dtml-if>
+         </dtml-if>
+           <dtml-if end_web>
+              <li><a href="<dtml-var end_web>" target="_blank"><i class="fa fa-fw fa-link"></i> Site pessoal</a></li>
+           </dtml-if>
+        </ul>
+          <dtml-if expr="pysc.autoria_parlamentar_validar_pysc(cod_parlamentar=cod_parlamentar,txt_dat_apresentacao=dat_atual)">
+             <span class=" badge badge-primary mt-2">Em exercício</span>
+          <dtml-else>
+             <span class="badge badge-danger mt-2">Inativo</span>
+          </dtml-if>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ul class="nav nav-tabs border-0" id="nav_parlamentar" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="biografia-tab" data-toggle="tab" href="#biografia" role="tab" aria-controls="biografia" aria-selected="true">Biografia</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link " id="filiacao-tab" data-toggle="tab" href="#filiacao" role="tab" aria-controls="filiacao" aria-selected="false">Filiações</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link " id="mandato-tab" data-toggle="tab" href="#mandato" role="tab" aria-controls="mandato" aria-selected="false">Mandatos</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link " id="mesa-tab" data-toggle="tab" href="#mesa" role="tab" aria-controls="mesa" aria-selected="false">Mesa Diretora</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link " id="comissao-tab" data-toggle="tab" href="#comissao" role="tab" aria-controls="comissao" aria-selected="false">Comissões</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link " id="proposicao-tab" data-toggle="tab" href="#proposicao" role="tab" aria-controls="proposicao" aria-selected="false">Proposições</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link " id="relatoria-tab" data-toggle="tab" href="#relatoria" role="tab" aria-controls="relatoria" aria-selected="false">Relatorias</a>
+  </li>
+</ul>
+
+<div class="tab-content bg-white">
+   <div class="tab-pane p-3 border fade show active" id="biografia">
+        <dtml-with biografia>
+          <dtml-var biografia_index_html>
+        </dtml-with>
+   </div>
+   <div class="tab-pane p-3 border fade" id="filiacao">
+       <dtml-with filiacao_partidaria>
+         <dtml-var filiacao_partidaria_index_html>
+       </dtml-with>
+   </div>
+   <div class="tab-pane p-3 border fade" id="mandato">
+       <dtml-with mandato>
+         <dtml-var mandato_index_html>
+       </dtml-with>
+   </div>
+   <div class="tab-pane p-3 border fade" id="mesa">
+       <dtml-with mesa>
+         <dtml-var mesa_index_html>
+       </dtml-with>
+   </div>
+   <div class="tab-pane p-3 border fade" id="comissao">
+       <dtml-with comissoes>
+         <dtml-var comissoes_index_html>
+       </dtml-with>
+   </div>
+   <div class="tab-pane p-3 border fade" id="proposicao">
+       <dtml-with proposicoes>
+         <dtml-var proposicoes_index_html>
+       </dtml-with>
+   </div>
+   <div class="tab-pane p-3 border fade" id="relatoria">
+       <dtml-with relatoria>
+         <dtml-var relatoria_index_html>
+       </dtml-with>
+   </div>
+</div>
+
+<div class="text-left mt-3 d-print-none">
+     <a class="btn btn-secondary" href="<dtml-var portal_url>/consultas/parlamentar" ><i class="fa fa-fw fa-undo"></i> Lista de Vereadores</a>
+</div>
+<dtml-var standard_html_footer>

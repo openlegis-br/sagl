@@ -1,0 +1,61 @@
+<dtml-var standard_html_header>
+
+<a id="ajuda" href="<dtml-var portal_url>/ajuda/proposicao#consulta">Ajuda</a>
+<h1 class="firstHeading"> Proposição </h1> 
+
+<ul>
+    <li>
+        <a href="proposicao_form">Elaborar Nova Proposição</a>
+    </li>
+</ul>
+
+<table class="table"  width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+    <td height="10"></td>
+  </tr>
+</table>
+
+<dtml-comment>
+**************************************************************************
+*      O código abaixo gera uma lista com os nomes das comissões e utili-*
+*   za o processo de BATCHING para quebrar a lista em sequências. O n. de*
+*   comissões em uma página pode atingir no máximo 10.                   *
+**************************************************************************
+</dtml-comment>
+
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, col_username=AUTHENTICATED_USER.getUserName())" size=8 start=query_start orphan=2>
+  <dtml-if sequence-start>    
+    <table class="table">    
+            <tr>  
+              <th width="18%">Enviada em</th>
+              <th width="15%">Tipo</th>
+              <th width="55%">Descrição</th>
+              <th width="12%">Recebida?</th>
+            </tr>
+      <dtml-if previous-sequence>
+            <tr>
+              <td><a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">Página Anterior (<dtml-var previous-sequence-size>)</a></td>
+            </tr>
+      </dtml-if previous-sequence>
+    </dtml-if sequence-start>
+            <tr> 
+              <td width="18%"><a href="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao >"><dtml-if expr="dat_envio=='00/00/0000 00:00:00'">Em elaboração...<dtml-else><dtml-var dat_envio></dtml-if></a></td>
+              <td width="15%"><dtml-var des_tipo_proposicao></td>
+              <td width="55%"><dtml-var txt_descricao></td>
+              <td width="12%">
+	      <dtml-if expr="dat_recebimento and dat_devolucao">Devolvida
+	      <dtml-else><dtml-if expr="dat_recebimento and not dat_devolucao">Sim<dtml-else>Não</dtml-if>
+	      </dtml-if></td>
+            </tr>
+    <dtml-if sequence-end>
+      <dtml-if next-sequence>
+            <tr>
+              <td><a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">Próxima Página (<dtml-var next-sequence-size>)</a></td>
+            </tr>
+      </dtml-if next-sequence>
+          </table>
+    </dtml-if sequence-end>
+<dtml-else>
+            <p>Nenhuma proposição foi enviada ainda.</p>
+</dtml-in> 
+<dtml-var standard_html_footer>

@@ -1,0 +1,112 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+    $('#logradouros').DataTable( {
+        "responsive": true,
+        "bStateSave": true,        
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('loDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('loDataTable'));
+        },
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
+
+</script>
+
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Logradouros</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+          <a class="btn btn-sm btn-primary d-print-none mb-3" href="logradouro_form"><i class="fa fa-fw fa-plus"></i> Incluir Logradouro</a>
+         </div>
+      </div>
+ </div>
+
+ <dtml-in expr="zsql.logradouro_obter_zsql(ind_excluido=0)">
+  <dtml-if sequence-start>
+    <table class="table" id="logradouros">
+    <thead class="table-secondary">
+     <tr>
+      <th>Logradouro</th>
+      <th>Bairro</th>
+      <th>CEP</th>
+      <th>Localidade</th>
+     </tr>
+    </thead>
+  </dtml-if sequence-start>
+        <tr>
+           <td><b><a href="logradouro_mostrar_proc?cod_logradouro=<dtml-var cod_logradouro>" target="_blank"><dtml-var nom_logradouro></a></b></td>
+           <td><dtml-var nom_bairro missing null=""></td>
+           <td><dtml-var num_cep missing null=""></td>
+           <td>
+            <dtml-if expr="cod_localidade_sel!=None">
+              <dtml-in expr="zsql.localidade_obter_zsql(cod_localidade=cod_localidade_sel)">
+                 <dtml-var nom_localidade missing null=""> - <dtml-var sgl_uf missing null="">
+              </dtml-in>
+            </dtml-if>
+        </tr>
+    <dtml-if sequence-end>
+   </table>
+    </dtml-if sequence-end>
+ <dtml-else>
+   <p>Nenhum logradouro cadastrado.</td>
+ </dtml-in>
+
+<dtml-var standard_html_footer>
+

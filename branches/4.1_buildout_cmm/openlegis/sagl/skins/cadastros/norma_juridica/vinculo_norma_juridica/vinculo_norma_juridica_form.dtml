@@ -1,0 +1,108 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+function campos_criticar(form){  
+
+  var regexp_digitos = /\D+/; 
+
+  if (form.lst_tip_vinculo.value == "") {
+     alert("A natureza do relacionamento deve ser selecionada!");
+     form.lst_tip_vinculo.focus();
+     return false;
+  }
+
+  if (form.lst_tip_norma.value == "") {
+     alert("O tipo de norma deve ser selecionado!");
+     form.lst_tip_norma.focus();
+     return false;
+  }
+
+  if (form.txt_num_norma.value == "") {
+     alert("O número da norma deve ser preenchido!");
+     form.txt_num_norma.focus();
+     return false;
+  }
+
+  if (form.txt_ano_norma.value == "") {
+     alert("O ano da norma deve ser preenchido!");
+     form.txt_ano_norma.focus();
+     return false;
+  }
+
+  form.submit();
+}
+
+function vinculo_norma_juridica_excluir() {
+       
+  if (confirm("Deseja realmente excluir?")) {  
+    location.href = "vinculo_norma_juridica_excluir_proc?cod_vinculo=<dtml-var cod_vinculo missing>&cod_norma=<dtml-var cod_norma missing>&modal=1";
+  }
+  
+}
+
+</script>
+
+<h1>Cadastro de Norma Relacionada</h1>
+
+<form name="vinculo_norma_juridica_form" method="post" action="vinculo_norma_juridica_salvar_proc">
+   <table class="table table-borderless">
+    <tr>
+       <td colspan="3"><label for="lst_tip_vinculo" class="required">Natureza do Relacionamento</label>
+                <select class="custom-select" id="lst_tip_vinculo" name="lst_tip_vinculo">
+                  <option value=""></option>
+                    <dtml-in expr="zsql.tipo_vinculo_norma_obter_zsql(ind_excluido=0)">
+                      <option
+                       <dtml-if expr="_.has_key('tip_vinculo') and tip_vinculo==tipo_vinculo">selected</dtml-if>
+                       value="<dtml-var tipo_vinculo>">
+                       <dtml-var des_vinculo>
+                     </option>
+                </dtml-in>
+              </select>
+      </td>
+      </tr>
+             <tr>
+                <td><label for="lst_tip_norma" class="required">Tipo Norma</label>
+              <select class="custom-select" id="lst_tip_norma" name="lst_tip_norma">
+               <option> 
+               <dtml-in expr="zsql.tipo_norma_juridica_obter_zsql(ind_excluido=0)">
+                  <option
+                      <dtml-if expr="_.has_key('tip_norma_juridica') and _.int(tip_norma) == _.int(tip_norma_juridica)">
+                        selected
+                      </dtml-if>
+                   value="<dtml-var tip_norma missing>"> 
+                   <dtml-var sgl_tipo_norma> - <dtml-var des_tipo_norma></option>
+               </dtml-in>
+              </select>
+       </td>
+       <td><label for="txt_num_norma">Número</label>
+              <input class="form-control number" type="number" id="txt_num_norma" name="txt_num_norma" value="<dtml-var num_norma missing null="">">
+       </td>
+       <td><label for="txt_ano_norma">Ano</label>
+             <input class="form-control year" type="number" id="txt_ano_norma" name="txt_ano_norma" value="<dtml-var ano_norma missing>">
+       </td>
+    </tr>
+      <td colspan="3">
+        <label for="txa_txt_observacao_vinculo">Observações</label>
+        <textarea class="form-control auto-resize" id="txa_txt_observacao_vinculo" name="txa_txt_observacao_vinculo" rows="1"><dtml-var txt_observacao_vinculo missing null=""></textarea>
+      </td>
+    <tr>
+    </tr>
+  </table>
+
+  <div class="text-center">
+    <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar(document.vinculo_norma_juridica_form)">
+    <dtml-if cod_vinculo>
+      <input class="btn btn-danger" type="button" value="Excluir" onClick="vinculo_norma_juridica_excluir(document.vinculo_norma_juridica_form)">
+    </dtml-if>
+  </div>
+ <input type="hidden" name="cod_norma_referente" value="<dtml-var cod_norma>">
+ <input type="hidden" name="cod_vinculo" value="<dtml-var cod_vinculo missing>">
+ <input type="hidden" name="modal" value="1"> 
+</form>
+
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
+
+<dtml-var standard_html_footer>

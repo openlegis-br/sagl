@@ -1,0 +1,42 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_emenda cod_autor ind_excluido=0
+max_rows : 100
+max_cache : 100
+</dtml-comment>
+SELECT 
+     REPLACE(a.cod_emenda, 'L', '') as cod_emenda,
+     REPLACE(a.cod_autor, 'L', '')   as cod_autor,
+     if(tp.des_tipo_autor='Parlamentar',p.nom_parlamentar, 
+     if(tp.des_tipo_autor='Bancada',b.nom_bancada,
+     if(tp.des_tipo_autor='Comissao', c.nom_comissao, au.nom_autor))) as nom_autor_join,
+     tp.des_tipo_autor
+
+FROM 
+    autoria_emenda a
+    LEFT JOIN emenda e ON e.cod_emenda = a.cod_emenda
+    LEFT JOIN autor au ON au.cod_autor = a.cod_autor
+    LEFT JOIN tipo_autor tp ON au.tip_autor = tp.tip_autor
+    LEFT JOIN parlamentar p ON au.cod_parlamentar = p.cod_parlamentar AND p.ind_excluido=0
+    LEFT JOIN comissao c ON au.cod_comissao=c.cod_comissao AND c.ind_excluido=0
+    LEFT JOIN bancada b ON au.cod_bancada=b.cod_bancada AND b.ind_excluido=0
+
+<dtml-sqlgroup where>  
+ ((p.cod_parlamentar is not null AND tp.des_tipo_autor='Parlamentar') OR
+  (b.cod_bancada     is not null AND (tp.des_tipo_autor='Bancada')) OR  
+  (c.cod_comissao    is not null AND (tp.des_tipo_autor='Comissao')) OR 
+  (tp.des_tipo_autor!='Parlamentar' AND tp.des_tipo_autor!='Bancada' and tp.des_tipo_autor!='Comissao')) <dtml-and>
+  <dtml-sqltest cod_parlamentar    column="au.cod_parlamentar"       op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest cod_comissao       column="au.cod_comissao"          op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest cod_bancada        column="au.cod_bancada"           op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest nom_autor          column="au.nom_autor"             op="=" type="nb"   optional><dtml-and>
+  <dtml-sqltest col_username       column="au.col_username"          op="=" type="nb"   optional><dtml-and>
+  <dtml-sqltest cod_autor          column="au.cod_autor"             op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest des_tipo_autor     column="tp.des_tipo_autor"        op="=" type="nb"   optional><dtml-and>
+  <dtml-sqltest cod_emenda         column="a.cod_emenda"             op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest cod_autor          column="a.cod_autor"              op="=" type="int"  optional><dtml-and>
+  <dtml-sqltest ind_excluido       column="a.ind_excluido"           op="=" type="int"> <dtml-and>
+</dtml-sqlgroup>
+
+ORDER BY 
+  nom_autor_join

@@ -1,0 +1,114 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+    var table = $('#jdTable').DataTable( {
+        "responsive": true,
+         "order": [[ 2, "asc" ], [ 0, "asc" ]],
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
+});
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Comissões</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
+            <a class="btn btn-sm btn-primary d-print-none mb-3" href="<dtml-var portal_url>/cadastros/comissao/comissao_form"><i class="fa fa-fw fa-plus"></i> Incluir Comissão</a>
+         </dtml-if> 
+      </div>
+ </div>
+
+        <table id="jdTable" class="table ">
+            <thead class="table-secondary">
+                <tr>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <dtml-in expr="zsql.comissao_obter_zsql(ind_excluido=0,)">
+                    <tr>
+                        <td>
+                           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
+                              <a href="<dtml-var portal_url>/cadastros/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><dtml-var nom_comissao></a>
+                           <dtml-else>
+                              <a href="<dtml-var portal_url>/consultas/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><dtml-var nom_comissao></a>
+                           </dtml-if>
+                        </td>
+                        <td><dtml-var nom_tipo_comissao></td>
+                        <td>
+                            <dtml-if dat_extincao>Inativa<dtml-else>Ativa</dtml-if>
+                        </td>
+                    </tr>
+                </dtml-in>
+            </tbody>
+        </table>
+
+    <div id="panelBtn" class="d-print-none" style="margin-bottom: 20px;">
+      <div class="row">
+         <div class="col-sm-12 mt-2"></div>
+      </div>
+    </div>
+
+<dtml-var standard_html_footer>

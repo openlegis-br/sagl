@@ -1,0 +1,100 @@
+
+<legend>Composição</legend>
+
+<div class="row">
+  <div class="col-12 mb-3 form-group">
+    <label for="cod_periodo_comp">Selecione o período:</label>
+      <select class="selectpicker show-tick jumpmenu" name="cod_periodo_comp" id="cod_periodo_comp" >
+        <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao='')">
+          <option 
+            <dtml-if cod_periodo_comp_sel>
+              <dtml-if expr="(cod_periodo_comp==cod_periodo_comp_sel)"> 
+                selected
+              </dtml-if>
+            <dtml-elif expr="(_.DateTime() <= dat_fim and _.DateTime() >= dat_inicio)">
+              <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', cod_periodo_comp)">
+              selected
+            </dtml-if>
+            value="<dtml-var ACTUAL_URL>?cod_comissao=<dtml-var cod_comissao>&cod_periodo_comp_sel=<dtml-var cod_periodo_comp>#composicao"><dtml-var dat_inicio_periodo> a <dtml-var dat_fim_periodo>
+          </option>
+       <dtml-else>
+         <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', -1)">           
+       </dtml-in>
+      </select>
+       <dtml-if expr="not _.has_key('cod_periodo_comp_sel')">
+         <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao='')">
+           <dtml-if sequence-start>
+             <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', cod_periodo_comp)">
+           </dtml-if>
+         </dtml-in>
+       </dtml-if>   
+   </div>        
+  </div>
+
+<dtml-if expr="_.int(cod_periodo_comp_sel) != -1">
+  <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_periodo_comp=cod_periodo_comp_sel)">
+     <dtml-call expr="REQUEST.set('dat_inicio_periodo', dat_inicio_periodo)">
+     <dtml-call expr="REQUEST.set('dat_fim_periodo', dat_fim_periodo)">
+     <input type="hidden" name="dat_inicio_periodo" value="<dtml-var dat_inicio_periodo missing>" >
+     <input type="hidden" name="dat_fim_periodo"    value="<dtml-var dat_fim_periodo missing>" >
+  </dtml-in>
+  <dtml-in expr="zsql.composicao_comissao_obter_zsql(cod_comissao=cod_comissao, cod_periodo_comp=cod_periodo_comp_sel)">
+    <dtml-if sequence-start>
+    <div class="table-responsive">
+     <table class="table">
+       <thead class="table-secondary">
+        <tr>
+          <th>Vereador</th>
+          <th>Cargo</th>
+          <th>Titular</th>
+          <th>Data Designação</th>
+          <th>Data Desligamento</th>
+        </tr>
+       </thead> 
+    </dtml-if sequence-start>
+        <tr><td>
+                <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Composição - <dtml-var nom_comissao>" data-src="composicao/composicao_comissao_mostrar_proc?cod_comp_comissao=<dtml-var cod_comp_comissao>&cod_periodo_comp=<dtml-var cod_periodo_comp_sel>&modal=1">
+<dtml-var nom_parlamentar missing></a></td>
+             <td><dtml-var des_cargo missing></td>
+             <td><dtml-if expr="ind_titular">Sim <dtml-else>Não</dtml-if></td>
+             <td><dtml-var dat_designacao></td>
+             <td><dtml-var dat_desligamento missing null=""></td>
+        </tr>
+    <dtml-if sequence-end>
+           </table>
+         </div>
+    </dtml-if sequence-end>
+  <dtml-else>
+   <p>Nenhum membro cadastrado no período.</p>
+   </fieldset>
+  </dtml-in>
+<dtml-else>
+   <p>Nenhum período de composição cadastrado.</p>
+ </fieldset>
+</dtml-if>
+
+     <button type="button" class="btn m btn-primary d-print-none" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Composição - <dtml-var nom_comissao>" data-src="composicao/composicao_comissao_form?cod_comissao=<dtml-var cod_comissao>&cod_periodo_comp=<dtml-var cod_periodo_comp_sel>&dat_inicio_periodo=<dtml-var dat_inicio_periodo missing>&dat_fim_periodo=<dtml-var dat_fim_periodo missing>&modal=1">Incluir Membro</button>
+
+
+<script type="text/javascript">
+    function initJumpMenus() {
+        // Turns all <select> elements with the 'jumpmenu' class into jump menus
+        var selectElements = document.getElementsByTagName("select");
+        for( i = 0; i < selectElements.length; i++ ) {
+            // Check for the class and make sure the element has an ID
+            if( selectElements[i].className == "selectpicker show-tick jumpmenu" && document.getElementById(selectElements[i].id) != "" ) {
+                jumpmenu = document.getElementById(selectElements[i].id);
+                jumpmenu.onchange = function() {
+                    if( this.options[this.selectedIndex].value != '' ) {
+                        // Redirect
+                        location.href=this.options[this.selectedIndex].value;
+                    }
+                }
+            }
+        }
+    }
+    window.onload = function() {
+        initJumpMenus();
+    }
+</script>
+

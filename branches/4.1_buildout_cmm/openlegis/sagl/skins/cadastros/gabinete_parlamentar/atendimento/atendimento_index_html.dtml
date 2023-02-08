@@ -1,0 +1,77 @@
+<dtml-var standard_html_header>
+
+<script>
+$(document).ready(function() {
+    $('table.display').DataTable( {
+        "responsive": true,
+        "columnDefs": [
+           {
+              'targets': 0,
+              'checkboxes': {
+                 'selectRow': true
+              }
+           }
+        ],
+        "select": {
+           'style': 'multi'
+        },
+        "order": [[1, 'asc']],
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+    
+ </script>
+
+<h1 class="firstHeading">Atendimentos no Gabinete</h1> 
+    
+ <dtml-in expr="zsql.gabinete_atendimento_obter_zsql(cod_parlamentar=cod_parlamentar_corrente)"> 
+  <dtml-if sequence-start>
+       <table class="table display" id="atendimentos">
+        <thead class="table-secondary">
+          <tr> 
+            <th width="10%">Data</th>
+            <th>Nome do Eleitor</th>
+            <th width="30%">Assunto</th>
+            <th>Situação</th>
+         </tr>
+        </thead>        
+  </dtml-if sequence-start>
+         <tr>
+              <td>            
+                 <a data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Atendimento" data-src="atendimento_mostrar_proc?cod_atendimento=<dtml-var cod_atendimento>&modal=1" href="#">
+                   <dtml-var dat_atendimento>
+                 </a>
+               </td>
+              <td>
+                 <a data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Eleitor" data-src="../eleitor/eleitor_mostrar_proc?hdn_cod_eleitor=<dtml-var cod_eleitor>&modal=1" href="#">              
+                   <dtml-var nom_eleitor>
+                 </a>
+              </td>
+              <td><dtml-var txt_assunto></td>
+              <td><dtml-var txt_status></td>
+         </tr>
+    <dtml-if sequence-end>
+      </table>  
+    </dtml-if sequence-end>
+<dtml-else>
+   <p>Nenhum atendimento registrado.</p>
+</dtml-in>
+
+<dtml-var standard_html_footer>

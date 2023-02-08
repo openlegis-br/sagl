@@ -1,0 +1,31 @@
+<dtml-call expr="REQUEST.set('erro', 0)">
+<dtml-call expr="REQUEST.set('id_texto', _.str(cod_norma)+'_texto_consolidado.pdf')">
+<dtml-if expr="_.hasattr(sapl_documentos.norma_juridica,id_texto)">
+  <dtml-try>
+    <dtml-call "sapl_documentos.norma_juridica.manage_delObjects(id_texto)">
+  <dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-try>
+  
+  <dtml-if erro>
+    <dtml-let mensagem="'Ocorreu um erro ao excluir o PDF compilado da norma!'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-let mensagem="'PDF compilado excluído com sucesso!'" url="'norma_juridica_mostrar_proc?cod_norma='+cod_norma">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-if>
+</dtml-if>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'pdf_consolidado_excluir',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),            
+            cod_registro = cod_norma)"> 
+</dtml-if>  

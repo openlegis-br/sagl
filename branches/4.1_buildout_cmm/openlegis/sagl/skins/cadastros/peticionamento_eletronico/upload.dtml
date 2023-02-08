@@ -1,0 +1,17 @@
+<dtml-unless codigo>
+  <dtml-call expr="REQUEST.set('codigo', _.DateTime().strftime('%s'))">
+</dtml-unless>
+
+<dtml-call expr="REQUEST.set('filename', codigo + '.pdf')">
+
+<dtml-if anexo>
+ <dtml-try>
+   <dtml-call expr="sapl_documentos.administrativo.manage_addFile(filename)">
+   <dtml-let arquivo="_.getattr(sapl_documentos.administrativo,filename)">
+      <dtml-call expr="arquivo.manage_upload(file=anexo)">
+      <dtml-call expr="arquivo.manage_permission('View', roles=['Anonymous','Authenticated',], acquire=1)">
+   </dtml-let>
+     <dtml-call expr="REQUEST.RESPONSE.redirect('peticionamento_eletronico_form?codigo='+str(codigo)+'&hdn_lst_assunto='+hdn_lst_assunto+'&txa_txt_assunto='+hdn_txt_assunto+'&hdn_lst_cod_unid_tram_dest='+str(hdn_lst_cod_unid_tram_dest)+'&filename='+filename+'&modal=1')">
+ </dtml-try>
+</dtml-if>
+

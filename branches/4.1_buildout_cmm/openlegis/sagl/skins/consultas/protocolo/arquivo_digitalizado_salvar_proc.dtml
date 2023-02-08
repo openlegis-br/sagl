@@ -1,0 +1,30 @@
+    <dtml-call expr="REQUEST.set('existe_arquivo', 0)">
+    <dtml-if file_nom_arquivo>
+       <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_protocolo)+ '_protocolo.pdf')">
+       <dtml-if expr="_.hasattr(sapl_documentos.protocolo,id_documento)">
+           <dtml-let documento="_.getattr(sapl_documentos.protocolo,id_documento) ">
+           <dtml-call expr="REQUEST.set('existe_arquivo', 1)">
+           <dtml-try>
+             <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
+               <dtml-call "documento.manage_upload(file=file_nom_arquivo)">
+             </dtml-if>
+           <dtml-except>
+               <dtml-call expr="REQUEST.set('erro', 1)">
+               <dtml-let mensagem="'Ocorreu erro ao tentar incluir o arquivo digitalizado '+hdn_cod_protocolo">
+                  <dtml-var mensagem_emitir>
+               </dtml-let>
+           </dtml-try>
+           </dtml-let>
+       </dtml-if>
+       <dtml-if expr="not existe_arquivo">
+         <dtml-try>
+           <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_protocolo)+ '_protocolo.pdf')">
+           <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
+              <dtml-call expr="sapl_documentos.protocolo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+           </dtml-if>
+           <dtml-let mensagem="'Arquivo digitalizado incluído com sucesso!'" url="'protocolo_mostrar_proc?cod_protocolo='+hdn_cod_protocolo">
+             <dtml-var mensagem_emitir>
+           </dtml-let>
+         </dtml-try>
+       </dtml-if>
+    </dtml-if>

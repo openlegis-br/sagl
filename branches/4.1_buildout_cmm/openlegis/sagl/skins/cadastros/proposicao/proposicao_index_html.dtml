@@ -1,0 +1,311 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="<dtml-var portal_url>/js/moment.min.js"></script>
+<script type="text/javascript" src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
+<script>
+
+$(document).ready(function() {
+    $('table.display tfoot td').each(function () {
+        var title = $(this).text();
+        $(this).html('<input type="text" class="form-control form-control-sm" placeholder="Pesquisar ' + title + '" />');
+    });
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+    $('table.display').DataTable( {
+        initComplete: function () {
+            // Apply the search
+            this.api()
+                .columns()
+                .every(function () {
+                    var that = this;
+                     $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that.search(this.value).draw();
+                        }
+                    });
+                });
+        },
+        "responsive": true,
+        <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='0'">
+        <dtml-elif expr="_.has_key('ind_devolvido') and ind_devolvido=='1'">
+        "order": [[ 3, "desc" ]],                      
+        <dtml-else>
+        "order": [[ 2, "desc" ]],
+        </dtml-if>
+        "bStateSave": true,        
+        "fnStateSave": function (oSettings, oData) {
+            localStorage.setItem('displayDataTable', JSON.stringify(oData));
+        },
+        "fnStateLoad": function (oSettings) {
+            return JSON.parse(localStorage.getItem('displayDataTable'));
+        },
+        "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+        "lengthChange": true,
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+        }
+    });
+});
+
+window.onload = function(){  
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
+    //Change hash for page-reload
+    $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').on('shown', function (e) {
+        window.location.hash = e.target.hash;
+    }); 
+} 
+
+$(document).ready(() => {
+  let url = location.href.replace(/\/$/, "");
+   if (location.hash) {
+    const hash = url.split("#");
+    $('#nav_proposicao a[href="#'+hash[1]+'"]').tab("show");
+    url = location.href.replace(/\/#/, "#");
+    history.replaceState(null, null, url);
+  } 
+
+  $('a[data-toggle="tab"]').on("click", function() {
+    let newUrl;
+    const hash = $(this).attr("href");
+    if(hash == "#home") {
+      newUrl = url.split("#")[0];
+    } else {
+      newUrl = url.split("#")[0] + hash;
+    }
+    newUrl += "";
+    history.replaceState(null, null, newUrl);
+  });
+});
+</script>
+
+<div class="row">
+  <div class="col-12 col-lg-8">
+    <dtml-if cod_materia>
+      <h1 class="firstHeading"><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></h1>
+    <dtml-else>
+      <h1 class="firstHeading">Proposições Eletrônicas</h1> 
+    </dtml-if>
+  </div>
+  <div class="col-12 col-lg-4 text-lg-right mb-2">
+     <div class="btn-group" role="group">
+       <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">         
+          <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/cadastros/proposicao/proposicao_form" ><i class="fa fa-fw fa-plus"></i> Criar Proposição</a>
+       </dtml-if>       
+      </div>
+  </div>
+</div>
+
+<a
+ <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='0'">
+    class="btn btn-sm btn-primary mb-3 disabled" 
+  <dtml-else>
+    class="btn btn-sm btn-primary mb-3"   
+  </dtml-if>
+href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_enviado=0">Em elaboração</a>
+<a
+  <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='1'">
+     class="btn btn-sm btn-primary mb-3 disabled"
+  <dtml-else> 
+     class="btn btn-sm btn-primary mb-3"      
+  </dtml-if>
+  href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_enviado=1">Enviadas
+</a>
+<a
+  <dtml-if expr="_.has_key('ind_devolvido') and ind_devolvido=='1'">
+     class="btn btn-sm btn-primary mb-3 disabled"
+  <dtml-else> 
+     class="btn btn-sm btn-primary mb-3"      
+  </dtml-if>
+  href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_devolvido=1">Devolvidas
+</a>
+
+<dtml-unless ind_enviado>
+  <dtml-call expr="REQUEST.set('ind_enviado', '0')">
+</dtml-unless>
+<dtml-unless ind_devolvido>
+  <dtml-call expr="REQUEST.set('ind_devolvido', 0)">
+</dtml-unless>
+
+  <dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
+    <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+      <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
+          <dtml-call expr="REQUEST.set('col_username', col_username)">
+      </dtml-in>
+    </dtml-in>
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('col_username',AUTHENTICATED_USER.getUserName())">
+  </dtml-if>
+
+<dtml-if expr="ind_enviado=='0' and ind_devolvido==0">
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, ind_devolvido=ind_devolvido, col_username=col_username)">
+    <dtml-if sequence-start>    
+            <table class="table display" id="enviadas">    
+             <thead class="table-secondary">
+                <tr>  
+                    <th width="20%">Tipo de Proposição</th>
+                    <th>Ementa</th>
+                </tr>
+             </thead>
+    </dtml-if sequence-start>
+               <tr>
+                    <td>
+                        <a href="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">
+                            <dtml-var des_tipo_proposicao>
+                        </a>
+                    </td>
+                    <td><dtml-var txt_descricao></td>
+                </tr>
+    <dtml-if sequence-end>
+             <tfoot>
+                <tr>
+                    <td>Tipo de Proposição</td>
+                    <td>Ementa</td>
+                </tr>
+             </tfoot>
+            </table>
+    </dtml-if sequence-end>
+<dtml-else>
+    <p>Nenhuma proposição em elaboração.</p>
+</dtml-in>
+</dtml-if>
+
+<dtml-if expr="ind_enviado=='1'">
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, ind_devolvido='0', col_username=col_username)">
+    <dtml-if sequence-start>    
+        <fieldset>
+            <table class="table display" id="enviadas">    
+             <thead class="table-secondary">
+                <tr>  
+                    <th width="20%">Tipo de Proposição</th>
+                    <th>Ementa</th>
+                    <th width="18%">Envio</th>
+                    <th>Incorporada?</th>
+                </tr>
+             </thead>
+    </dtml-if sequence-start>
+               <tr>
+                    <td>
+                        <a href="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">
+                            <dtml-var des_tipo_proposicao>
+                        </a>                    
+                     </td>
+                    <td><dtml-var txt_descricao></td>
+                    <td>
+                        <dtml-if expr="dat_envio==None">Em elaboração<dtml-else><dtml-var dat_envio></dtml-if>
+                    </td>
+                    <td>
+	                <dtml-if expr="dat_devolucao!=None"><p style="color:#DE1E1E;font-weight:bold">Devolvida</p>
+                          <dtml-else><dtml-if expr="dat_recebimento and not dat_devolucao">Sim<dtml-else>Não</dtml-if>
+	                </dtml-if>
+                    </td>
+                </tr>
+    <dtml-if sequence-end>
+             <tfoot>
+                <tr>
+                    <td>Tipo de Proposição</td>
+                    <td>Ementa</td>
+                    <td>Envio</td>
+                    <td>Incorporada?</td>
+                </tr>
+             </tfoot>
+            </table>
+    </dtml-if sequence-end>
+<dtml-else>
+    <p>Nenhuma proposição foi enviada.</p>
+    </fieldset>
+</dtml-in>
+</dtml-if>
+
+<dtml-if expr="_.has_key('ind_devolvido') and ind_devolvido=='1'">
+<dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_devolvido=ind_devolvido, col_username=col_username)">
+    <dtml-if sequence-start>    
+        <fieldset>
+            <table class="table display" id="devolvidas">    
+             <thead class="table-secondary">
+                <tr>  
+                    <th width="20%">Tipo de Proposição</th>
+                    <th>Ementa</th>
+                    <th width="18%">Envio</th>
+                    <th>Devolução</th>
+                </tr>
+             </thead>
+    </dtml-if sequence-start>
+               <tr>
+                    <td>
+                        <a href="proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>">
+                            <dtml-var des_tipo_proposicao>
+                        </a>                    
+                     </td>
+                    <td><dtml-var txt_descricao></td>
+                    <td>
+                        <dtml-if expr="dat_envio==None">Em elaboração<dtml-else><dtml-var dat_envio></dtml-if>
+                    </td>
+                    <td>
+	                <dtml-var dat_devolucao missing>
+                    </td>
+                </tr>
+    <dtml-if sequence-end>
+             <tfoot>
+                <tr>
+                    <td>Tipo de Proposição</td>
+                    <td>Ementa</td>
+                    <td>Envio</td>
+                    <td>Devolução</td>
+                </tr>
+             </tfoot>
+            </table>
+    </dtml-if sequence-end>
+<dtml-else>
+    <p>Nenhuma proposição foi devolvida.</p>
+    </fieldset>
+</dtml-in>
+</dtml-if>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,75 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/email_validar.js" "></script>
+
+<script type="text/javascript">
+<!--
+  function campos_criticar(form){
+     var form = document.acomp_materia_form;
+     if (form.txt_end_email.value==""){
+         alert(unescape("O endere\u00e7o de email deve ser preenchido!"));
+         form.txt_end_email.focus();
+         return false;
+      }
+     if( document.forms[0].txt_end_email.value=="" 
+        || document.forms[0].txt_end_email.value.indexOf('@')==-1 
+          || document.forms[0].txt_end_email.value.indexOf('.')==-1 )
+          	  {
+	           alert(unescape('Informe um e-mail v\u00e1lido!'));
+	           return false;
+	           }
+      form.submit();
+}
+//-->
+</script>
+
+<dtml-if expr="cod_materia.isdigit()">
+   <dtml-call "REQUEST.set('cod_materia', int(cod_materia))">
+<dtml-else>
+   <dtml-call "REQUEST.set('cod_materia', pysc.b64decode_pysc(codigo=cod_materia))">
+</dtml-if> 
+
+<dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">
+  <div class="row">
+    <div class="col-12 col-mb-2"> 
+        <p class="h5"><b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></b></p>
+    </div>
+  </div>
+  <div class="row mb-2">  
+    <div class="col-12">
+      <dtml-var txt_ementa>    
+    </div>
+  </div>    
+  <div class="row mb-3">  
+    <div class="col-12">
+       Autoria:
+      <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=cod_materia)">
+         <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+      </dtml-in>  
+    </div>
+  </div>         
+</dtml-in>
+
+<hr />
+
+<form action="acomp_materia_salvar_proc" name="acomp_materia_form" method="post">
+  <input type="hidden" name="hdn_cod_materia" value="<dtml-var cod_materia>" />
+  <input type="hidden" name="modal" value="1" />  
+  <div class="form-row">
+    <div class="col-12 mb-3">
+       <label for="txt_end_email" class="required">E-mail </label>
+       <input class="form-control" type="text" id="txt_end_email" name="txt_end_email" maxlength="100" required/>
+    </div>
+   </div>
+   <div class="text-left">
+     <input class="btn btn-primary" type="button"name="button" value="Cadastrar" onClick="campos_criticar()" />
+   </div>
+ <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+    </div>
+</div>
+</form>
+
+<dtml-var standard_html_footer>             
+

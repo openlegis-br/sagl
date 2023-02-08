@@ -1,0 +1,57 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+  function campos_criticar(form){
+      form.submit();
+  }
+
+</script>
+
+<legend>Gerar Lista de Destinatários</legend>
+
+  <form name="destinatario_gerar" method="post" action="destinatario_salvar_proc">
+
+  <dtml-in expr="zsql.instituicao_obter_zsql(tip_instituicao=lst_tip_instituicao)" prefix=item>
+
+        <dtml-if sequence-start>
+	   <p>
+	    <b>Resultado da Pesquisa: </b><dtml-var sequence-length> registros(s) encontrado(s).
+	   </p>
+         <table class="table">
+          <thead class="table-secondary">
+            <tr>
+              <th width="40%">Nome</th>
+              <th width="30%">Tipo</th>
+              <th width="40%">Responsável</th>
+            </tr>
+          </thead>
+        </dtml-if sequence-start>
+            <tr>
+              <td>
+               <dtml-var nom_instituicao>
+              </td>
+              <input type="hidden" name="lst_cod_instituicao" value="<dtml-var cod_instituicao>" />
+              <td>
+                <dtml-var nom_tipo_instituicao>
+              </td>
+
+              <td>
+                   <dtml-var nom_responsavel>
+              </td>
+            </tr> 
+        <dtml-if sequence-end>
+          <tr>
+          </table>
+           <div class="text-left">
+            <input class="btn btn-primary" type="button" name="btn_destinatario_gerar" value="Confirmar Geração" onClick="campos_criticar(document.destinatario_gerar)" />
+           </div>
+        </dtml-if sequence-end>
+
+      <dtml-else>
+        <p>Nenhum registro encontrado.</p>
+      </dtml-in> 
+      <input type="hidden" name="hdn_cod_documento" value="<dtml-var cod_documento missing>" />
+      <input type="hidden" name="modal" value="1" />      
+  </form>
+
+<dtml-var standard_html_footer>

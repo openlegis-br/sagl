@@ -1,0 +1,26 @@
+  <dtml-if expr="hdn_ind_unico == 'true'">  
+     <dtml-call expr="REQUEST.set('chk_ind_unico',1)">
+  <dtml-else>
+     <dtml-call expr="REQUEST.set('chk_ind_unico',0)">
+  </dtml-if>
+
+<dtml-if expr="_.int(hdn_cod_cargo) != 0">
+  <dtml-call expr="REQUEST.set('metodo', zsql.cargo_bancada_atualizar_zsql)">
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.cargo_bancada_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_cargo = hdn_cod_cargo,
+                          des_cargo = hdn_des_cargo,
+                          ind_unico = chk_ind_unico)">
+<dtml-except>
+ <dtml-let mensagem="'Não foi possível salvar o cargo de Bancada. Tente novamente!'"> 
+     <dtml-var mensagem_emitir>
+  </dtml-let> 
+    
+<dtml-else>
+  <dtml-let mensagem="'Cargo de Bancada salvo com sucesso!'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+ </dtml-try>

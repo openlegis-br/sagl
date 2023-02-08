@@ -1,0 +1,206 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+  function campos_criticar(){
+  var form = document.peticionamento_form;
+      if (form.lst_assunto.selectedIndex==''){
+          alert("O assunto deve ser selecionado ");
+          form.lst_assunto.focus();
+          return false;
+      }
+
+
+      if (form.lst_cod_unid_tram_dest.selectedIndex==''){
+          alert("A unidade de destino deve ser selecionada!");
+          form.lst_cod_unid_tram_dest.focus();
+          return false;
+      }
+
+      if (form.txa_txt_assunto.value == "") {
+         alert("O resumo da solicitação deve ser preenchido!");
+         form.txa_txt_assunto.focus();
+         return false;
+      }
+      
+   <dtml-if codigo>
+     <dtml-if expr="not _.hasattr(sapl_documentos.administrativo,codigo+'.pdf')">
+       if (document.getElementById("anexo").value != "") {
+         $.showAlert({title: "Mensagem do Sistema", body: "Um arquivo PDF foi selecionado mas ainda foi não carregado no sistema! Se deseja anexar o arquivo, antes de protocolar a petição, clique no botão Carregar."});           
+         form.anexo.focus();
+         return false;
+        } 
+     </dtml-if>   
+   <dtml-else>
+      if (document.getElementById("anexo").value != "") {
+       $.showAlert({title: "Mensagem do Sistema", body: "Um arquivo PDF foi selecionado mas ainda foi não carregado no sistema! Se deseja anexar o arquivo, antes de protocolar a petição, clique no botão Carregar."});
+       form.anexo.focus();
+       return false;
+      }   
+   </dtml-if>
+
+      if (confirm("Confirma o protocolo desta petição ?")) {
+         form.submit();
+      }
+  }
+
+  function arquivo_carregar(codigo){
+    var form1 = document.peticionamento_form;
+    var codigo = codigo;
+    document.arquivo_form.hdn_lst_assunto.value = form1.lst_assunto[form1.lst_assunto.selectedIndex].value;
+    document.arquivo_form.hdn_lst_cod_unid_tram_dest.value = form1.lst_cod_unid_tram_dest[form1.lst_cod_unid_tram_dest.selectedIndex].value;    
+    document.arquivo_form.hdn_txt_assunto.value = form1.txa_txt_assunto.value;
+    if (document.getElementById("anexo").value == "") {
+       alert("Selecione um arquivo para carregar!");
+       form.anexo.focus();
+       return false;
+    }
+      document.arquivo_form.submit();
+  }
+
+  function arquivo_excluir(codigo){
+       var form1 = document.peticionamento_form;
+       lst_assunto = form1.lst_assunto[form1.lst_assunto.selectedIndex].value;
+       lst_unidade = form1.lst_cod_unid_tram_dest[form1.lst_cod_unid_tram_dest.selectedIndex].value;       
+       txt_assunto = form1.txa_txt_assunto.value;
+       if (confirm("Deseja realmente excluir o anexo em PDF?")) {
+          location.href="arquivo_excluir?codigo=" + codigo + 
+          "&hdn_lst_assunto=" + lst_assunto + 
+          '&hdn_lst_cod_unid_tram_dest=' + lst_unidade + 
+          '&hdn_txt_assunto=' + txt_assunto + 
+          '&modal=1';
+       }
+       return;
+  }
+
+  $(document).ready(function () {
+    bsCustomFileInput.init()
+  })
+
+</script>
+
+
+    <dtml-if expr="_.has_key('mensagem')">
+     <dtml-if expr="_.has_key('sucesso')">
+       <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <h5><dtml-var mensagem newline_to_br html_quote></h5>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+       </div>
+     <dtml-else>
+       <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <h5><dtml-var mensagem newline_to_br html_quote></h5>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+       </div>
+     </dtml-if>
+   </dtml-if>
+ 
+   <dtml-call "REQUEST.set('username', AUTHENTICATED_USER)">
+
+   <dtml-in expr="zsql.usuario_obter_zsql(col_username=username)">
+      <dtml-call "REQUEST.set('nom_completo', nom_completo)">
+      <dtml-call "REQUEST.set('nom_cargo', nom_cargo)">
+   <dtml-else>
+      <dtml-call "REQUEST.set('nom_completo', AUTHENTICATED_USER)">
+   </dtml-in>
+
+   <form enctype="multipart/form-data" id="peticionamento_form" name="peticionamento_form" method="post" action="protocolo_pysc">
+
+<dtml-unless codigo>
+  <dtml-call expr="REQUEST.set('codigo', _.DateTime().strftime('%s'))">
+</dtml-unless>
+
+
+     <input type="hidden" id="codigo" name="codigo" value="<dtml-var codigo missing>" />
+
+     <div class="form-row">
+        <div class="col-12 mb-3">
+	  <label for="txa_txt_interessado">Nome do Requerente</label>
+	  <input class="form-control" type="text" id="txa_txt_interessado" name="txa_txt_interessado" value="<dtml-var nom_completo>" readonly/>        
+        </div>
+      </div>
+      
+     <div class="form-row">         
+        <div class="col-6 mb-3">
+	 <label for="lst_assunto" class="required">Assunto</label>
+         <select class="custom-select" id="lst_assunto" name="lst_assunto">
+	      <option></option>
+                <dtml-in expr="['Adiantamento de 13º salário', 'Adiantamento de despesas de viagem', 'Compra de produto ou serviço', 'Férias', 'Justificativa de falta', 'Licença-prêmio', 'Outros assuntos']">
+                   <option value="<dtml-var expr="_['sequence-item']">"
+                     <dtml-if expr="_.has_key('hdn_lst_assunto') and hdn_lst_assunto==_.str(_['sequence-item'])">selected</dtml-if> >
+                     <dtml-var expr="_['sequence-item']"> </option>
+                </dtml-in>
+	 </select>     
+        </div>
+        <div class="col-6 mb-3">
+         <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
+         <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
+            <option></option>
+               <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
+                   <option 
+                     value="<dtml-var cod_unid_tramitacao>"
+                     <dtml-if expr="_.has_key('hdn_lst_cod_unid_tram_dest') and hdn_lst_cod_unid_tram_dest==_.str(cod_unid_tramitacao)">selected</dtml-if> >  
+                      <dtml-var nom_unidade_join>
+                   </option>
+               </dtml-in>
+         </select>        
+       </div>
+     </div>
+     <div class="form-row">
+        <div class="col-12 mb-3">
+	  <label for="txa_txt_assunto" class="required">Resumo da Solicitação</label>
+	  <textarea class="form-control auto-resize" id="txa_txt_assunto" name="txa_txt_assunto" rows="1"><dtml-var txa_txt_assunto missing></textarea>
+        </div>
+     </div>
+  </form>
+
+     <div class="form-row">
+        <div class="col-12 mb-3">    
+ 	   <label class="d-block">Anexo PDF</label>
+           <dtml-if expr="_.has_key('codigo')">
+              <dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao',codigo=codigo)">
+                 <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+              </dtml-in>
+           </dtml-if>
+           <dtml-if expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados,cod_assinatura_doc+'.pdf')">
+             <a class="btn btn-secondary" href="<dtml-var portal_url>/sapl_documentos/documentos_assinados/<dtml-var cod_assinatura_doc>.pdf" target="_blank">
+                <i class="fas fa-certificate"></i> <dtml-var cod_assinatura_doc>.pdf
+             </a>
+             <input class="btn btn-primary" type="button" id="excluir" name="excluir" value="Excluir"  onClick="arquivo_excluir(<dtml-var codigo>)"/>
+           <dtml-elif expr="_.has_key('codigo') and _.hasattr(sapl_documentos.administrativo,codigo+'.pdf')">
+              <a class="btn btn-secondary" href="<dtml-var portal_url>/sapl_documentos/administrativo/<dtml-var filename>" target="_blank">
+                 <i class="fa fa-file-pdf"></i> Visualizar
+              </a>
+              <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                 <button type="button" class="btn btn-secondary d-print-none " data-toggle="modal" data-target="#iFrameModal" data-title="Assinatura Digital" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var codigo>&tipo_doc=peticao&modal=1"><i class="fas fa-file-signature"></i>Assinar</button>              
+              </dtml-if>
+              <input class="btn btn-danger" type="button" value="Excluir"  onClick="arquivo_excluir(<dtml-var codigo>)"/>
+           <dtml-else>
+              <form action="upload" id="arquivo_form" name="arquivo_form" method="post" enctype="multipart/form-data">
+                <div class="btn-group d-print-none ">   
+                  <div class="custom-file">                         
+                     <input class="custom-file-input" type="file" id="anexo" name="anexo" accept="application/pdf" />
+                     <label class="custom-file-label" for="file_redacao">Arquivo digitalizado</label>  
+                  </div>                 
+                  <input class="btn btn-secondary" type="button" id="upload" value="Carregar"  onClick="arquivo_carregar(<dtml-var codigo>)"/>
+                </div>
+               <input type="hidden" name="modal" value="1" />                
+               <input type="hidden" name="hdn_lst_assunto" value="" />
+               <input type="hidden" name="hdn_txt_assunto" value="" />
+               <input type="hidden" name="hdn_lst_cod_unid_tram_dest" value="" />               
+              <form>
+           </dtml-if>        
+        </div>
+     </div>
+
+     <div class="text-left">
+       <input class="btn btn-primary" type="button" value="Protocolar Petição" onClick="campos_criticar()" />
+     </div>
+
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
+
+<dtml-var standard_html_footer>

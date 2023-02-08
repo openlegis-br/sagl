@@ -1,0 +1,57 @@
+<dtml-call expr="REQUEST.set('id_parecer', _.str(cod_relatoria)+'_parecer.pdf')">
+<dtml-call expr="REQUEST.set('status','D')">
+<dtml-if expr="_.hasattr(sapl_documentos.parecer_comissao,id_parecer)">
+    <dtml-try>
+	  <dtml-call expr="sapl_documentos.parecer_comissao.manage_delObjects(id_parecer)">
+	  <dtml-except>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-try>
+</dtml-if>
+
+<dtml-if expr="zsql.proposicao_obter_zsql(cod_parecer=cod_relatoria,ind_mat_ou_doc='D')">
+  <dtml-call expr="zsql.proposicao_desincorporar_zsql(cod_parecer=cod_relatoria)">
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="REQUEST.set('metodo', zsql.relatoria_excluir_zsql)">  
+    <dtml-call expr="metodo(cod_relatoria=cod_relatoria)">
+    <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=cod_relatoria,tipo_doc='parecer_comissao')">
+      <dtml-try>
+         <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                      cod_assinatura_doc  = cod_assinatura_doc,
+                      codigo              = codigo,
+                      tipo_doc            = tipo_doc)">
+      <dtml-except>
+        <dtml-call expr="REQUEST.set('erro', 1)">
+      </dtml-try>
+    </dtml-in>   
+  <dtml-except>  
+    <dtml-call expr="REQUEST.set('erro', 1)"> 
+  <dtml-else>
+    <dtml-let mensagem="'Relatoria excluída com sucesso!'">
+       <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+</dtml-unless>
+
+<dtml-if erro>
+  <dtml-let mensagem="'Ocorreu um erro ao excluir a Relatoria!'" tipo_mensagem="'danger'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-if>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_relatoria)"> 
+</dtml-if>

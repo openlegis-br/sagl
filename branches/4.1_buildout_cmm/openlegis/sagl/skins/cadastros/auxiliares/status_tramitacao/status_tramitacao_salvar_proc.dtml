@@ -1,0 +1,40 @@
+<dtml-if expr="lst_ind_tramitacao=='Retorno'">
+  <dtml-call expr="REQUEST.set('ind_fim_tramitacao', 0)">
+  <dtml-call expr="REQUEST.set('ind_retorno_tramitacao', 1)">
+<dtml-elif expr="lst_ind_tramitacao=='Fim'">
+  <dtml-call expr="REQUEST.set('ind_fim_tramitacao', 1)">
+  <dtml-call expr="REQUEST.set('ind_retorno_tramitacao', 0)">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('ind_fim_tramitacao', 0)">
+  <dtml-call expr="REQUEST.set('ind_retorno_tramitacao', 0)">
+</dtml-if>
+
+<dtml-if hdn_cod_status>
+  <dtml-call expr="REQUEST.set('metodo', zsql.status_tramitacao_atualizar_zsql)">
+<dtml-elif expr="zsql.status_tramitacao_obter_zsql(sgl_status=txt_sgl_status)">
+    <dtml-let mensagem="'Já existe um status de tramitação com essa sigla.'" tipo_mensagem="'danger'">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.status_tramitacao_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_status             = hdn_cod_status,
+                          sgl_status             = txt_sgl_status,
+                          des_status             = txt_des_status,
+                          ind_fim_tramitacao     = ind_fim_tramitacao,
+                          num_dias_prazo         = txt_num_dias_prazo,
+                          ind_retorno_tramitacao = ind_retorno_tramitacao,
+                          )">
+
+<dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar o status de tramitação. Tente novamente!'" tipo_mensagem="'danger'">
+        <dtml-var mensagem_emitir>
+    </dtml-let> 
+
+<dtml-else>
+    <dtml-let mensagem="'Status de tramitação salvo com sucesso!'">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+</dtml-try>

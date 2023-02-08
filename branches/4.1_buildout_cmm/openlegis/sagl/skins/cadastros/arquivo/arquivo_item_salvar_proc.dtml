@@ -1,0 +1,95 @@
+<dtml-if hdn_cod_materia>
+  <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_recipiente = hdn_cod_recipiente, cod_materia = hdn_cod_materia)">
+    <dtml-call expr="REQUEST.set('erro', 1)">
+    <dtml-let mensagem="'A matéria informada já está contida neste recipiente!'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-in>
+ <dtml-unless erro>
+   <dtml-try>
+     <dtml-call expr="REQUEST.set('metodo', zsql.arquivo_item_incluir_zsql)">   
+     <dtml-call expr="metodo(
+         cod_recipiente            = hdn_cod_recipiente,
+         tip_suporte               = lst_tip_suporte,
+         cod_materia               = hdn_cod_materia,
+         dat_arquivamento          = pysc.data_converter_pysc(data=txt_dat_arquivamento),
+         txt_observacao            = txa_txt_observacao)">
+   <dtml-except>
+     <dtml-let mensagem="'Não foi possível incluir a matéria!'" tipo_mensagem="'danger'">
+         <dtml-var mensagem_emitir>
+      </dtml-let>
+   <dtml-else>
+      <dtml-let mensagem="'Matéria incluída com sucesso!'">
+        <dtml-var mensagem_emitir>
+      </dtml-let>
+   </dtml-try>
+ </dtml-unless>
+
+<dtml-elif hdn_cod_documento>
+  <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_recipiente = hdn_cod_recipiente,
+                                                              cod_documento = hdn_cod_documento)">
+    <dtml-call expr="REQUEST.set('erro', 1)">
+    <dtml-let mensagem="'O documento informado já está contido neste recipiente!'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-in>
+ <dtml-unless erro>
+   <dtml-try>
+     <dtml-call expr="REQUEST.set('metodo', zsql.arquivo_item_incluir_zsql)">   
+     <dtml-call expr="metodo(
+         cod_recipiente            = hdn_cod_recipiente,
+         tip_suporte               = lst_tip_suporte,
+         cod_documento             = hdn_cod_documento,
+         dat_arquivamento          = pysc.data_converter_pysc(data=txt_dat_arquivamento),
+         txt_observacao            = txa_txt_observacao)">
+   <dtml-except>
+     <dtml-let mensagem="'Não foi possível incluir o documento!'" tipo_mensagem="'danger'">
+         <dtml-var mensagem_emitir>
+      </dtml-let>
+   <dtml-else>
+      <dtml-let mensagem="'Documento incluído com sucesso!'">
+        <dtml-var mensagem_emitir>
+      </dtml-let>
+   </dtml-try>
+ </dtml-unless>
+
+<dtml-elif hdn_cod_norma>
+  <dtml-in expr="zsql.arquivo_recipiente_listar_conteudo_zsql(cod_recipiente = hdn_cod_recipiente,
+                                                              cod_norma = hdn_cod_norma)">
+    <dtml-call expr="REQUEST.set('erro', 1)">
+    <dtml-let mensagem="'A norma informada já está contida neste recipiente!'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-in>
+ <dtml-unless erro>
+   <dtml-try>
+     <dtml-call expr="REQUEST.set('metodo', zsql.arquivo_item_incluir_zsql)">   
+     <dtml-call expr="metodo(
+         cod_recipiente            = hdn_cod_recipiente,
+         tip_suporte               = lst_tip_suporte,
+         cod_norma                 = hdn_cod_norma,
+         dat_arquivamento          = pysc.data_converter_pysc(data=txt_dat_arquivamento),
+         txt_observacao            = txa_txt_observacao)">
+   <dtml-except>
+     <dtml-let mensagem="'Não foi possível incluir a norma!'" tipo_mensagem="'danger'">
+         <dtml-var mensagem_emitir>
+      </dtml-let>
+   <dtml-else>
+      <dtml-let mensagem="'Norma incluída com sucesso!'">
+        <dtml-var mensagem_emitir>
+      </dtml-let>
+   </dtml-try>
+ </dtml-unless>
+</dtml-if>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if expr="dbcon_logs and hdn_cod_recipiente">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'arquivo_item_salvar_proc',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_recipiente)"> 
+</dtml-if>

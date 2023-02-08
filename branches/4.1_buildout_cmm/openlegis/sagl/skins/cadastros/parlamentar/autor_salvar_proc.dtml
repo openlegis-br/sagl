@@ -1,0 +1,39 @@
+<dtml-unless expr="pysc.username_criar_pysc(txt_login)">
+  <dtml-let mensagem="'O username informado já está em uso. Escolha outro e tente novamente!'">        
+      <dtml-var mensagem_emitir>
+  </dtml-let>
+  <dtml-call expr="REQUEST.set('erro', 1)">
+</dtml-unless>
+
+<dtml-unless erro>
+<dtml-try>
+  <dtml-in expr="zsql.tipo_autor_obter_zsql(des_tipo_autor='parlamentar')">
+    <dtml-call expr="REQUEST.set('tip_autor', tip_autor)">
+  </dtml-in>
+  <dtml-call expr="REQUEST.set('metodo', zsql.autor_incluir_zsql)">  
+  <dtml-call expr="metodo(tip_autor=tip_autor, cod_parlamentar=cod_parlamentar, col_username=txt_login)">
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar um autor.'" tipo_mensagem="'danger'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
+  <dtml-let mensagem="'Autor salvo com sucesso e sua senha é \'inicial\'.'" url="'parlamentar_mostrar_proc?'+QUERY_STRING">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>
+</dtml-unless>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_parlamentar)"> 
+</dtml-if>

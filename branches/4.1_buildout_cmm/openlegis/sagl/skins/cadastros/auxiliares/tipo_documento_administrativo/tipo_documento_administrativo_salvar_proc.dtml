@@ -1,0 +1,48 @@
+<dtml-if hdn_tip_documento>
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_documento_administrativo_atualizar_zsql)">
+<dtml-elif expr="zsql.tipo_documento_administrativo_obter_zsql(sgl_tipo_documento=txt_sgl_tipo_documento)">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+  <dtml-let mensagem="'Já existe um tipo de documento administrativo com essa sigla.'" tipo_mensagem="'danger'">    
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_documento_administrativo_incluir_zsql)">
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="metodo(tip_documento      = hdn_tip_documento,
+                            sgl_tipo_documento = txt_sgl_tipo_documento,
+                            des_tipo_documento = txt_des_tipo_documento,
+                            ind_publico        = rad_ind_publico
+                            )">
+
+    <dtml-unless hdn_tip_documento>
+           <dtml-in expr="zsql.documento_administrativo_incluido_codigo_obter_zsql()">
+             <dtml-call "REQUEST.set('hdn_tip_documento', cod_documento)">
+           </dtml-in>
+    </dtml-unless>
+
+  <dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar o tipo de documento administrativo. Tente novamente!'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+    </dtml-let> 
+
+  <dtml-else>
+    <dtml-if hdn_tip_documento>
+      <dtml-unless lst_usuarios>
+         <dtml-call expr="REQUEST.set('lst_usuarios', '')">
+      </dtml-unless>
+      <dtml-call expr="usuarios_permitir_pysc(tip_documento=hdn_tip_documento, cod_usuario=lst_usuarios)">
+    </dtml-if>
+    <dtml-let mensagem="'Tipo de documento administrativo salvo com sucesso!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let> 
+  </dtml-try>
+      <dtml-if expr="hdn_tip_documento!='' and hdn_tip_documento!=None">
+      <dtml-call expr="REQUEST.set('tip_documento', _.int(hdn_tip_documento))">
+      <dtml-call expr="REQUEST.set('ind_publico', _.int(rad_ind_publico))">
+      <dtml-call expr="ajusta_permissao(tip_documento=tip_documento,ind_publico=ind_publico)">
+      </dtml-if>
+</dtml-unless>
+

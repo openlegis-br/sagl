@@ -1,0 +1,30 @@
+<dtml-call expr="REQUEST.set('erro', 0)">
+<dtml-call expr="REQUEST.set('id_texto', _.str(cod_documento)+'_texto_integral.odt')">
+<dtml-if expr="_.hasattr(sapl_documentos.administrativo,id_texto)">
+  <dtml-try>
+    <dtml-call "sapl_documentos.administrativo.manage_delObjects(id_texto)">
+  <dtml-except>
+    <dtml-call expr="REQUEST.set('erro', 1)">
+  </dtml-try>
+  
+  <dtml-if erro>
+    <dtml-let mensagem="'Ocorreu um erro ao excluir o arquivo ODT!'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  <dtml-else>
+    <dtml-let mensagem="'Arquivo ODT excluído com sucesso!'" url="'documento_administrativo_mostrar_proc?cod_documento='+cod_documento">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-if>
+</dtml-if>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'odt_documento_excluir',
+            IP           = pysc.get_ip(),
+            cod_registro = cod_documento)"> 
+</dtml-if>

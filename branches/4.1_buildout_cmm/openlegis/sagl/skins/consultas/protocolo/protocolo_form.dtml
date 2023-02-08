@@ -1,0 +1,367 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+  function campos_criticar(form){
+    if (document.getElementById("file_nom_arquivo").value == "") {
+       $.showAlert({title: "Mensagem do Sistema", body: "É necessário selecionar um arquivo!"});    
+       form.file_nom_arquivo.focus();
+       return false;
+    }
+      form.submit();
+  }
+
+  $(document).ready(function () {
+    bsCustomFileInput.init()
+  })
+
+$(function () {
+    $('[data-toggle="popover"]').popover({
+    container: 'body',
+    html: true,
+    placement: 'right',
+    sanitize: false,
+    content: function() {
+        return $('#PopoverContent').html()
+    }
+    })
+}); 
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+         <h1 class="firstHeading">Protocolo nº <dtml-var num_protocolo>/<dtml-var ano_protocolo> <dtml-if expr="ind_anulado==1">(Nulo)</dtml-if></h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+        <div class="btn-group d-print-none "> 
+          <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/consultas/protocolo" ><i class="fa fa-fw fa-search"></i> Nova Pesquisa</a>                           
+<dtml-let isAnon="portal_membership.isAnonymousUser()">
+  <dtml-if expr="not isAnon">
+      <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-fw fa-file-export"></i> Gerar
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+           <button type="button" class="dropdown-item" data-toggle="modal" data-target="#iFrameModal" data-title="Etiqueta de Protocolo" data-src="<dtml-var portal_url>/relatorios/pdf_etiqueta_protocolo_preparar_pysc?rad_tip_protocolo=&txt_cod_protocolo=<dtml-var cod_protocolo>&txt_num_protocolo=<dtml-var num_protocolo>&txt_ano_protocolo=<dtml-var ano_protocolo>&dt_apres=&dt_apres2=&rad_tip_processo=&lst_tip_documento=&lst_tip_materia=&txt_assunto=&txa_txt_interessado=&hdn_cod_autor=">Etiqueta de Protocolo</button>
+           <button type="button" class="dropdown-item" data-toggle="modal" data-target="#iFrameModal" data-title="Etiqueta de Processo" data-src="<dtml-var portal_url>/relatorios/pdf_capa_processo_preparar_pysc?rad_tip_protocolo=&txt_cod_protocolo=<dtml-var cod_protocolo>&txt_num_protocolo=<dtml-var num_protocolo>&txt_ano_protocolo=<dtml-var ano_protocolo>&dt_apres=&dt_apres2=&rad_tip_processo=&lst_tip_documento=&lst_tip_materia=&txt_assunto=&txa_txt_interessado=&hdn_cod_autor=">Etiqueta de Processo</button>           
+           <button type="button" class="dropdown-item" data-toggle="modal" data-target="#iFrameModal" data-title="Emissão de Comprovante" data-src="comprovante_protocolo_mostrar_proc?cod_protocolo=<dtml-var cod_protocolo>&modal=1">Comprovante de Protocolo</button>  
+      </div>
+  </dtml-if>
+</dtml-let>
+        </div>
+      </div>
+ </div>
+
+ <div class="row mb-2">
+  <div class="col-12">
+     <p class="h5 ementa"><dtml-var txt_assunto_ementa></p>
+  </div>
+ </div>
+
+ <div class="row">
+      <div class="col-12 col-lg-8 align-self-center mb-2">
+       <p class="h6">
+         <dtml-if cod_autor>
+            <i class="fa fa-user"></i>           
+            <b>Autoria:</b>         
+            <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+               <dtml-var nom_autor_join>           
+	    </dtml-in>
+	<dtml-elif txt_interessado>
+            <i class="fa fa-user"></i>           
+            <b>Interessado:</b> 	
+            <dtml-var txt_interessado>
+	</dtml-if>
+       </div>
+      <div class="col-12 col-lg-4">
+         <dtml-call expr="REQUEST.set('id_documento', _.str(cod_protocolo)+'_protocolo.pdf')">
+         <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">
+            <div class="btn-group float-right">
+            <dtml-let documento="_.getattr(sapl_documentos.protocolo,id_documento).absolute_url">
+               <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-file-pdf"></i> Arquivo Digitalizado</a>
+            </dtml-let>
+            <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo'])">
+               <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
+                  <button type="button" class="btn btn-sm btn-secondary d-print-none " data-toggle="modal" data-target="#iFrameModal" data-title="Assinatura Digital" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_protocolo>&tipo_doc=protocolo&modal=1"><i class="fas fa-file-signature"></i>Assinar</button>
+               </dtml-if>
+            </dtml-if>
+            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador'])">
+               <a class="btn btn-sm btn-danger d-print-none " href="arquivo_digitalizado_excluir_proc?cod_protocolo=<dtml-var cod_protocolo>" data-confirm="Deseja realmente excluir a arquivo digitalizado?">Excluir</a>
+            </dtml-if>            
+           </div>
+         <dtml-else>
+            <form action="arquivo_digitalizado_salvar_proc" id="arquivo_form" name="arquivo_form" method="post" enctype="multipart/form-data">         
+              <input type="hidden" name="hdn_cod_protocolo" value="<dtml-var cod_protocolo missing>" />
+              <div class="btn-group d-print-none ">   
+                <div class="custom-file">                         
+                   <input class="custom-file-input" type="file" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" />
+                   <label class="custom-file-label" for="file_redacao">Arquivo digitalizado</label>  
+                </div>                 
+                <input class="btn btn-secondary" type="button" id="upload" value="Carregar"  onClick="campos_criticar(document.arquivo_form)"/>
+              </div>
+            </form>
+         </dtml-if>
+      </div>       
+ </div>
+ 
+ <hr />
+
+ <div class="row">
+    <p class="col-12"><b>Data de Entrada</b>: 
+       <dtml-var "pysc.iso_to_port_pysc(dat_protocolo)">  <dtml-var expr="hor_protocolo[0:2]+':'+hor_protocolo[3:5]">
+    </p>
+ </div>
+
+ <dtml-if num_paginas>
+   <div class="row"> 
+      <p class="col-12"><b>Número de Páginas</b>: <dtml-var num_paginas></p>
+   </div>
+ </dtml-if>
+
+ <div class="row">
+    <p class="col-12"><b>Natureza do Processo</b>: 
+	<dtml-if expr="tip_processo==0">
+		Administrativo
+	<dtml-elif expr="tip_processo==1">
+		Legislativo
+	</dtml-if>
+    </p>
+ </div>
+
+ <div class="row">
+     <p class="col-12">	
+	<dtml-if expr="tip_processo==0">
+		<b>Tipo de Documento: </b>
+	</dtml-if>
+
+	<dtml-if expr="tip_processo==1">
+		<b>Tipo de Matéria: </b>
+	</dtml-if>
+	<dtml-if expr="tip_processo==0">
+	   <dtml-var des_tipo_documento> 
+	<dtml-elif expr="tip_processo==1 and tip_natureza_materia==1">
+           <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_materia, tip_natureza='P', ind_excluido=0)">
+              <dtml-var des_tipo_materia>
+           </dtml-in>
+	<dtml-elif expr="tip_processo==1 and tip_natureza_materia==2">
+           <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_materia,tip_natureza='A',ind_excluido=0)">
+              <dtml-var des_tipo_materia>
+            </dtml-in>
+	<dtml-elif expr="tip_processo==1 and tip_natureza_materia==3">
+           <dtml-in expr="zsql.tipo_documento_obter_zsql(tip_documento=tip_materia, ind_excluido=0)">
+              <dtml-var des_tipo_documento>
+           </dtml-in>
+	<dtml-elif expr="tip_processo==1 and tip_natureza_materia==4">
+           Parecer de Comissão
+	</dtml-if>
+    </p>
+ </div>
+
+ <div class="row">
+    <div class="col-12 mb-3">
+      <b>Processo Derivado: </b>    
+      	<dtml-if expr="tip_processo==0">
+              <dtml-in expr="zsql.documento_administrativo_pesquisar_zsql(tip_documento=tip_documento, num_protocolo=num_protocolo, ano_documento=ano_protocolo)">
+                 <dtml-if sequence-start>
+                    <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">              
+                       <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>"><dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></a>
+                    <dtml-else>
+                       <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento>
+                    </dtml-if>
+                 </dtml-if>
+             <dtml-else> 
+              <dtml-call expr="REQUEST.set('id_documento', _.str(cod_protocolo)+'_protocolo.pdf')">
+                <dtml-if "_.hasattr(sapl_documentos.protocolo,id_documento)">             
+                 <button type="button" class="btn btn-sm btn-secondary" data-toggle="popover" title="Unidade de Destino"><i class="fas fa-plus-circle"></i> Criar Processo</button>
+                 <div id="PopoverContent" class="d-none">
+                   <form id="myform" class="form-inline" role="form" method="post" action="criar_documento_pysc" onSubmit="return confirm('Confirma a criação do processo administrativo?');" class="was-validated">
+                    <input type="hidden" name="cod_protocolo"   value="<dtml-var cod_protocolo>" />                   
+                    <div class="input-group">
+                     <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
+                       <option></option>
+                       <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(ind_adm=1)">
+                         <option value="<dtml-var cod_unid_tramitacao>"><dtml-var nom_unidade_join></option>
+                       </dtml-in>             
+                     </select>                    
+                     <div class="input-group-append" id="button-addon1">
+                        <button class="btn btn-sm btn-primary" type="submit" data-toggle="popover" data-placement="bottom" data-html="true" data-title="OK">OK</button>                     
+                     </div>
+                    </div>     
+                   </form>  
+                 </div>
+                <dtml-else>
+                   <span class="text-danger"> <i class="fas fa-exclamation-triangle"></i> Carregue o arquivo digitalizado para habilitar a criação do processo.</span>
+                </dtml-if>                  
+              </dtml-in>
+
+      	<dtml-elif expr="tip_processo==0 and ind_publico==1">
+           <dtml-in expr="zsql.documento_administrativo_obter_zsql(num_protocolo=num_protocolo,ano_documento=ano_protocolo)">
+              <dtml-if sequence-start>
+                    <dtml-call "REQUEST.set('vinculo_documento', 1)">
+                    <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento>">
+                    <dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></a>
+              </dtml-if>
+           <dtml-else>
+              <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador Materia'])">
+                <form class="d-inline-block" method="post" action="<dtml-var portal_url>/cadastros/documento_administrativo/numero_buscar_proc">
+                  <input type="hidden" name="tip_documento"   value="<dtml-var tip_documento missing>" />
+                  <input type="hidden" name="ano_documento"   value="<dtml-var ano_protocolo>" />
+                  <input type="hidden" name="dat_documento"   value="<dtml-var "pysc.iso_to_port_pysc(dat_protocolo)">" />
+                  <input type="hidden" name="num_protocolo"   value="<dtml-var num_protocolo>" />
+                  <input type="hidden" name="txt_assunto"     value='<dtml-var txt_assunto_ementa html_quote>' />
+                  <input type="hidden" name="txt_interessado" value="<dtml-var txt_interessado missing null="">" />
+                  <input class="btn btn-sm btn-secondary" type="submit" name="cmdCriarDoc" value="Criar Documento" />
+                </form>
+              </dtml-if>
+           </dtml-in>           
+      	<dtml-elif expr="tip_processo==1">
+          <dtml-if expr="tip_natureza_materia==1">
+            <dtml-in expr="zsql.materia_obter_zsql(num_protocolo=num_protocolo,ano_ident_basica=ano_protocolo)">
+               <dtml-if sequence-start>
+                     <dtml-call "REQUEST.set('vinculo_materia', 1)">
+                     <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">
+                     <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
+               </dtml-if>
+            <dtml-else>
+               <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                  <form class="d-inline-block" name="materia_form" method="post" action="criar_materia_pysc" onSubmit="return confirm('Confirma a criação da matéria legislativa?');">
+                     <input type="hidden" name="cod_protocolo" value="<dtml-var cod_protocolo>" />
+                     <input class="btn btn-sm btn-secondary" type="submit" name="cmdCriarMat" value="Criar Matéria" />
+                   </form>
+                </dtml-if>
+            </dtml-in>
+          <dtml-elif expr="tip_natureza_materia==2">
+            <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_materia=tip_materia,tip_natureza='A',ind_excluido=0)">
+                 <dtml-call "REQUEST.set('des_tipo_mat_acessoria', des_tipo_materia)">
+            </dtml-in>
+            <dtml-if expr="des_tipo_mat_acessoria=='Emenda' or tip_materia == 97">
+               <dtml-in expr="zsql.emenda_obter_zsql(num_protocolo=num_protocolo,cod_materia=cod_materia_principal)">
+                 <dtml-if sequence-start>
+                     <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Emenda" data-src="<dtml-var portal_url>/cadastros/materia/emenda/emenda_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>&cod_emenda=<dtml-var cod_emenda>&modal=1">
+                        Emenda nº <dtml-var num_emenda> (<dtml-var des_tipo_emenda>)
+                     </a>
+                 </dtml-if>
+               <dtml-else>
+                 <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                    <dtml-call "REQUEST.set('dat_apresentacao', pysc.iso_to_port_pysc(dat_protocolo))">
+                    <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+                       <dtml-call "REQUEST.set('tip_autor', tip_autor)">                                         
+                       <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
+                         <dtml-call "REQUEST.set('des_tipo_autor', des_tipo_autor)">                               
+                       </dtml-in>
+                    </dtml-in>
+                    <dtml-call "REQUEST.set('cod_autor_sel', cod_autor)">
+                    <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Emenda" data-src="<dtml-var portal_url>/cadastros/materia/emenda/emenda_form?cod_materia=<dtml-var cod_materia_principal>&dat_apresentacao=<dtml-var dat_apresentacao>&txt_ementa=<dtml-var txt_assunto_ementa html_quote>&num_protocolo=<dtml-var num_protocolo>&tip_autor=<dtml-var tip_autor>&des_tipo_autor=<dtml-var des_tipo_autor>&cod_autor_sel=<dtml-var cod_autor_sel>&modal=1">Cadastrar Emenda</button>  
+                 </dtml-if>
+               </dtml-in>
+            <dtml-elif expr="des_tipo_mat_acessoria=='Substitutivo' or tip_materia == 98">
+               <dtml-in expr="zsql.substitutivo_obter_zsql(num_protocolo=num_protocolo,cod_materia=cod_materia_principal)">
+                 <dtml-if sequence-start>
+                     <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Substitutivo" data-src="<dtml-var portal_url>/cadastros/materia/substitutivo/substitutivo_mostrar_proc?cod_materia=<dtml-var cod_materia_principal>&cod_substitutivo=<dtml-var cod_substitutivo>&modal=1">                 
+                        Substitutivo nº <dtml-var num_substitutivo>
+                     </a>
+                 </dtml-if>
+               <dtml-else>
+                 <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                    <dtml-call "REQUEST.set('dat_apresentacao', pysc.iso_to_port_pysc(dat_protocolo))">
+                    <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+                       <dtml-call "REQUEST.set('tip_autor', tip_autor)">                                         
+                       <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
+                         <dtml-call "REQUEST.set('des_tipo_autor', des_tipo_autor)">                               
+                       </dtml-in>
+                    </dtml-in>
+                    <dtml-call "REQUEST.set('cod_autor_sel', cod_autor)">
+                    <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Substitutivo" data-src="<dtml-var portal_url>/cadastros/materia/substitutivo/substitutivo_form?cod_materia=<dtml-var cod_materia_principal>&dat_apresentacao=<dtml-var dat_apresentacao>&num_protocolo=<dtml-var num_protocolo>&tip_autor=<dtml-var tip_autor>&des_tipo_autor=<dtml-var des_tipo_autor>&cod_autor_sel=<dtml-var cod_autor_sel>&modal=1">Cadastrar Substitutivo</button> 
+                 </dtml-if>
+               </dtml-in>
+             </dtml-if>
+          <dtml-elif expr="tip_natureza_materia==3">
+            <dtml-in expr="zsql.tipo_documento_obter_zsql(tip_documento=tip_materia, ind_excluido=0)">
+                 <dtml-call "REQUEST.set('des_tipo_mat_acessoria', des_tipo_documento)">
+                 <dtml-call "REQUEST.set('tip_documento', tip_documento)">
+            </dtml-in>
+            <dtml-in  expr="zsql.documento_acessorio_obter_zsql(num_protocolo=num_protocolo,cod_materia=cod_materia_principal)">
+                 <dtml-if sequence-start>
+                     <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Documento Acessório" data-src="<dtml-var portal_url>/cadastros/materia/documento_acessorio/documento_acessorio_mostrar_proc?cod_documento=<dtml-var cod_documento>&modal=1">
+                        <dtml-var des_tipo_mat_acessoria> - <dtml-var nom_documento>
+                     </a>
+                 </dtml-if>
+            <dtml-else>
+                 <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                   <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+                      <dtml-call expr="REQUEST.set('nom_autor_documento', nom_autor_join)">
+                   </dtml-in>                 
+                   <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Documento Acessório" data-src="<dtml-var portal_url>/cadastros/materia/documento_acessorio/documento_acessorio_form?cod_materia=<dtml-var cod_materia_principal>&tip_documento_sel=<dtml-var tip_materia>&num_protocolo=<dtml-var num_protocolo>&nom_autor_documento=<dtml-var nom_autor_documento>&modal=1">Cadastrar <dtml-var des_tipo_mat_acessoria></button>                     
+                 </dtml-if>
+            </dtml-in>
+          <dtml-elif expr="tip_natureza_materia==4">
+             <dtml-if expr="ind_anulado==0 and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+                    <dtml-call "REQUEST.set('cod_comissao', cod_comissao)">
+                </dtml-in>
+                <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=cod_materia_principal, cod_comissao=cod_comissao,ind_excluido=0)">
+                    <dtml-call "REQUEST.set('num_ordem', num_ordem)">
+                <dtml-else>
+                    <dtml-call "REQUEST.set('num_ordem', '1')">
+                </dtml-in>
+                <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+                    <dtml-call "REQUEST.set('sgl_comissao', sgl_comissao)">
+                </dtml-in>
+                <dtml-in expr="zsql.relatoria_obter_zsql(cod_comissao=cod_comissao, cod_materia=cod_materia_principal, num_protocolo=num_protocolo, num_ordem=num_ordem)">
+                  <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Parecer" data-src="<dtml-var portal_url>/cadastros/comissao/materia/relatoria_mostrar_proc?cod_relatoria=<dtml-var cod_relatoria>&cod_materia=<dtml-var cod_materia>&cod_comissao=<dtml-var cod_comissao>&num_ordem=<dtml-var num_ordem>&modal=1">
+                    Parecer <dtml-var sgl_comissao> <dtml-var num_parecer missing null>/<dtml-var ano_parecer>
+                  </a>
+                <dtml-else>
+                <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=cod_materia_principal, ind_excluido=0)">
+                    <dtml-call "REQUEST.set('num_ordem', int(num_ordem) + 1)">
+                <dtml-else>
+                    <dtml-call "REQUEST.set('num_ordem', '1')">
+                </dtml-in>                
+                  <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Parecer" data-src="<dtml-var portal_url>/cadastros/comissao/materia/relatoria_form?cod_materia=<dtml-var cod_materia_principal>&cod_comissao=<dtml-var cod_comissao>&num_protocolo=<dtml-var num_protocolo>&modal=1">Cadastrar Parecer</button>                 
+                </dtml-in>
+             </dtml-if>
+          </dtml-if>
+        </dtml-if>
+    </div>
+ </div>
+
+ <dtml-if expr="tip_natureza_materia==2 or tip_natureza_materia==3 or tip_natureza_materia==4">
+   <div class="row">  
+     <p class="col-12"><b>Matéria Vinculada: </b>
+        <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal,ind_excluido=0)">
+           <dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+        </dtml-in>
+     </p>
+   </div>
+ </dtml-if>
+
+ <dtml-if txt_observacao>
+   <div class="row"> 
+       <p class="col-12"><b>Observações:</b> <dtml-var txt_observacao missing></p>
+   </div> 
+ </dtml-if>
+
+ <dtml-if expr="txt_user_protocolo!=''">
+ <div class="row">
+    <p class="col-12"><b>Responsável pelo Recebimento:</b> 
+     <dtml-var txt_user_protocolo missing null="">
+    </p>
+ </div>
+ </dtml-if> 
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo']) and tip_processo==0">
+ <div class="row">
+    <div class="col-12 mb-3">
+         <b>Chave de Acesso:</b> 
+
+       <dtml-if expr="codigo_acesso!=None">
+         <form class="d-inline-block" name="pesquisa_publica" action="<dtml-var portal_url>/consultas/protocolo/pesquisa_publica_proc" method="post">
+            <input type="hidden" name="txt_chave_acesso" value="<dtml-var codigo_acesso>" />
+            <button type="submit" class="btn btn-sm btn-secondary"><i class="fa fa-fw fa-unlock"></i> <dtml-var codigo_acesso></button>
+         </form>
+       <dtml-else>
+          <a class="btn btn-sm btn-secondary" href="<dtml-var portal_url>/cadastros/protocolo/senha_protocolo_gerar_proc?cod_protocolo=<dtml-var cod_protocolo>" data-confirm="Confirma a geração da chave de acesso?"><i class="fa fa-fw fa-lock"></i> Gerar</a>       
+       </dtml-if>
+    </div>
+ </div>
+</dtml-if>
+
+<dtml-var standard_html_footer>

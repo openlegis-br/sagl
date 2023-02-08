@@ -1,0 +1,59 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+arguments : cod_localidade="" tip_localidade="" nom_localidade_pesq_like="" nom_localidade_pesq="" sgl_uf=""
+max_rows : 1000
+max_cache : 100
+</dtml-comment>
+
+<dtml-if expr="pysc.verifica_conector_bd_pysc() == 1">
+SELECT 
+  REPLACE(cod_localidade, 'L', '') as cod_localidade,
+  nom_localidade,
+  nom_localidade_pesq,
+  tip_localidade,
+  sgl_uf,
+  sgl_regiao,
+  ind_excluido
+FROM 
+  localidade 
+
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_localidade       op="=" type="int" optional> <dtml-and>
+  <dtml-sqltest tip_localidade       op="=" type="nb" optional> <dtml-and>
+  <dtml-sqltest sgl_uf               op="=" type="nb" optional> <dtml-and>
+  <dtml-sqltest nom_localidade_pesq  op="=" type="nb" optional> <dtml-and>
+  ind_excluido = 0 <dtml-and>
+  <dtml-if nom_localidade_pesq_like> 
+       nom_localidade_pesq like concat('%','<dtml-var nom_localidade_pesq_like>','%')
+  </dtml-if>
+</dtml-sqlgroup>
+
+ORDER BY sgl_uf, nom_localidade
+
+<dtml-else>
+
+SELECT 
+  cod_localidade as cod_localidade,
+  nom_localidade,
+  nom_localidade_pesq,
+  tip_localidade,
+  sgl_uf,
+  sgl_regiao,
+  ind_excluido
+FROM 
+  localidade 
+
+<dtml-sqlgroup where>
+  <dtml-sqltest cod_localidade       op="=" type="int" optional> <dtml-and>
+  <dtml-sqltest tip_localidade       op="=" type="nb" optional> <dtml-and>
+  <dtml-sqltest sgl_uf               op="=" type="nb" optional> <dtml-and>
+  <dtml-sqltest nom_localidade_pesq  op="=" type="nb" optional> <dtml-and>
+  ind_excluido = 0 <dtml-and>
+  <dtml-if nom_localidade_pesq_like> 
+       nom_localidade_pesq like concat('%','<dtml-var nom_localidade_pesq_like>','%')
+  </dtml-if>
+</dtml-sqlgroup>
+
+ORDER BY sgl_uf, nom_localidade
+
+</dtml-if>

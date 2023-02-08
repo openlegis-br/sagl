@@ -1,0 +1,43 @@
+<dtml-var standard_html_header>
+  <script type="text/javascript" >
+      function campos_criticar(form) {
+        if (form.lst_parlamentar.value == ""){
+           $.showAlert({title: "Mensagem do Sistema", body: "Selecione um Vereador!"});        
+           form.txt_parlamentar.focus();
+           return false;        
+        }    
+        return true;
+      }  
+</script>
+
+<form name="parlamentar_pesquisar_form">
+
+ <div class="form-row">
+   <div class="col-12 mb-3">
+     <label for="lst_parlamentar">Nome do Vereador</label>
+        <select id="lst_parlamentar" name="lst_parlamentar" class="form-control selectpicker show-tick" title="Selecione" data-live-search="true">
+         <option></option>
+          <dtml-in expr="zsql.parlamentar_obter_zsql(ind_excluido=0)">
+           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Parlamentar'])">
+             <option value="<dtml-var portal_url>/cadastros/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>">
+                 <dtml-var nom_completo> <dtml-if expr="nom_completo != nom_parlamentar">(<dtml-var nom_parlamentar>)</dtml-if>
+             </option>
+           <dtml-else>
+             <option value="<dtml-var portal_url>/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>">
+                 <dtml-var nom_completo> <dtml-if expr="nom_completo != nom_parlamentar">(<dtml-var nom_parlamentar>)</dtml-if> 
+             </option>
+           </dtml-if>
+          </dtml-in>
+       </select>
+       <small id="autorHelp" class="form-text text-muted">Selecione um Vereador e clique no botão OK para visualizar os dados cadastrais.</small>       
+   </div>
+ </div>
+
+<input type="hidden" name="modal" value="1">
+
+<input class="btn btn-primary" type="button" value="OK" onClick="javascript:
+if (campos_criticar(document.parlamentar_pesquisar_form)) {parent.location.href = this.form.lst_parlamentar.options[this.form.lst_parlamentar.selectedIndex].value; return false;}">
+
+</form>
+
+<dtml-var standard_html_footer>

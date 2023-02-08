@@ -1,0 +1,34 @@
+<dtml-call expr="REQUEST.set('metodo', zsql.pessoa_salvar_complemento_zsql)">
+<dtml-try>
+  <dtml-call expr="metodo(
+      cod_pessoa 		= hdn_cod_pessoa,
+      dat_nascimento		= pysc.data_converter_pysc(data=txt_dat_nascimento),
+      des_estado_civil		= txt_des_estado_civil,
+      nom_conjuge		= txt_nom_conjuge,
+      num_dependentes		= txt_num_dependentes,
+      num_tit_eleitor		= txt_num_tit_eleitor,
+      des_tempo_residencia	= txt_des_tempo_residencia,
+      des_profissao		= txt_des_profissao,
+      des_local_trabalho	= txt_des_local_trabalho
+      )">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('erro', 0)">
+  <dtml-let mensagem="'Dados do visitante salvos com sucesso!'" >
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_pessoa)"> 
+</dtml-if>

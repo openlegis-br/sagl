@@ -1,0 +1,119 @@
+<dtml-var standard_html_header>
+
+<dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao)">
+  <dtml-call expr="REQUEST.set('nom_comissao', nom_comissao)">
+  <dtml-call expr="REQUEST.set('sgl_comissao', sgl_comissao)">
+</dtml-in>
+
+<div class="row mb-2">
+ <div class="col-12 col-md-10 align-self-center"> 
+    <h1 class="firstHeading"><dtml-var nom_comissao></h1>
+ </div>
+ <div class="col-12 col-md-2 text-left text-md-right">
+   <a class="btn btn-sm btn-primary btn-sm" href="<dtml-var portal_url>/consultas/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><i class="fas fa-undo"></i> Voltar</a>  
+ </div>
+</div>
+
+<div class="row mb-2">
+ <div class="col-12 col-md-6">
+      <legend>Histórico de Composições</legend>
+ </div>
+</div>
+
+<div class="row">
+  <div class="col-12 mb-3 form-group">
+    <label for="cod_periodo_comp">Selecione o período:</label>
+      <select class="selectpicker show-tick jumpmenu" name="cod_periodo_comp" id="cod_periodo_comp" >
+        <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao='')">
+          <option 
+            <dtml-if cod_periodo_comp_sel>
+              <dtml-if expr="(cod_periodo_comp==cod_periodo_comp_sel)"> 
+                selected
+              </dtml-if>
+            <dtml-elif expr="(_.DateTime() <= dat_fim and _.DateTime() >= dat_inicio)">
+              <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', cod_periodo_comp)">
+              selected
+            </dtml-if>
+            value="<dtml-var ACTUAL_URL>?cod_comissao=<dtml-var cod_comissao>&cod_periodo_comp_sel=<dtml-var cod_periodo_comp>#composicao"><dtml-var dat_inicio_periodo> a <dtml-var dat_fim_periodo>
+          </option>
+       <dtml-else>
+         <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', -1)">           
+       </dtml-in>
+      </select>
+       <dtml-if expr="not _.has_key('cod_periodo_comp_sel')">
+         <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_comissao='')">
+           <dtml-if sequence-start>
+             <dtml-call expr="REQUEST.set('cod_periodo_comp_sel', cod_periodo_comp)">
+           </dtml-if>
+         </dtml-in>
+       </dtml-if>   
+   </div>        
+  </div>
+
+<dtml-if expr="_.int(cod_periodo_comp_sel) != -1">
+  <dtml-in expr="zsql.periodo_comp_comissao_obter_zsql(cod_periodo_comp=cod_periodo_comp_sel)">
+     <dtml-call expr="REQUEST.set('dat_inicio_periodo', dat_inicio_periodo)">
+     <dtml-call expr="REQUEST.set('dat_fim_periodo', dat_fim_periodo)">
+     <input type="hidden" name="dat_inicio_periodo" value="<dtml-var dat_inicio_periodo missing>" >
+     <input type="hidden" name="dat_fim_periodo"    value="<dtml-var dat_fim_periodo missing>" >
+  </dtml-in>
+  <dtml-in expr="zsql.composicao_comissao_obter_zsql(cod_comissao=cod_comissao, cod_periodo_comp=cod_periodo_comp_sel)">
+    <dtml-if sequence-start>
+    <div class="table-responsive">
+     <table class="table">
+       <thead class="table-secondary">
+        <tr>
+          <th>Vereador</th>
+          <th>Cargo</th>
+          <th>Titular</th>
+          <th>Data Designação</th>
+          <th>Data Desligamento</th>
+        </tr>
+       </thead> 
+    </dtml-if sequence-start>
+       <dtml-unless dat_desligamento>
+        <tr>
+             <td><a href="<dtml-var portal_url>/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>"><b><dtml-var nom_parlamentar></b></a></td>
+             <td><dtml-var des_cargo missing></td>
+             <td><dtml-if expr="ind_titular">Sim <dtml-else>Não</dtml-if></td>
+             <td><dtml-var dat_designacao></td>
+             <td><dtml-var dat_desligamento missing null=""></td>
+        </tr>
+       </dtml-unless>
+    <dtml-if sequence-end>
+           </table>
+         </div>
+    </dtml-if sequence-end>
+  <dtml-else>
+   <p>Nenhum membro cadastrado no período.</p>
+   </fieldset>
+  </dtml-in>
+<dtml-else>
+   <p>Nenhum período de composição cadastrado.</p>
+ </fieldset>
+</dtml-if>
+
+<script type="text/javascript">
+    function initJumpMenus() {
+        // Turns all <select> elements with the 'jumpmenu' class into jump menus
+        var selectElements = document.getElementsByTagName("select");
+        for( i = 0; i < selectElements.length; i++ ) {
+            // Check for the class and make sure the element has an ID
+            if( selectElements[i].className == "selectpicker show-tick jumpmenu" && document.getElementById(selectElements[i].id) != "" ) {
+                jumpmenu = document.getElementById(selectElements[i].id);
+                jumpmenu.onchange = function() {
+                    if( this.options[this.selectedIndex].value != '' ) {
+                        // Redirect
+                        location.href=this.options[this.selectedIndex].value;
+                    }
+                }
+            }
+        }
+    }
+    window.onload = function() {
+        initJumpMenus();
+    }
+</script>
+
+<dtml-var standard_html_footer>
+

@@ -1,0 +1,128 @@
+<script src="<dtml-var portal_url>/js/moment.min.js""></script>
+<script src="<dtml-var portal_url>/js/datetime-moment.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $.fn.dataTable.moment( 'DD/MM/YYYY HH:mm:ss' );    //Formatação com Hora
+    $.fn.dataTable.moment('DD/MM/YYYY');    //Formatação sem Hora
+    var table = $('#reunioes_table').DataTable( {
+        "responsive": true,
+        "order": [[ 1, "desc" ], [ 0, "asc" ]],
+        "buttons": [
+            {
+                extend: 'collection',
+                text: 'Exportar',
+                buttons: [ 
+                           {
+                             extend:    'excelHtml5',
+                             text:      '<i class="far fa-file-excel"></i> Excel',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'pdfHtml5',
+                             download: 'open',
+                             text:      '<i class="fa fa-file-adobe"></i> PDF',
+                             titleAttr: 'PDF'
+                           },
+                           {
+                             extend:    'print',
+                             text:      '<i class="fa fa-print"></i> Impressão',
+                             titleAttr: 'Impressão'
+                           },
+                         ],
+               className: '',
+               dropup: true,
+               autoClose: true,
+               fade: true
+
+            }
+        ],
+        "language": {
+          search: "Pesquisar:",
+          processing:     "Processando...",
+          loadingRecords: "Carregando...",
+          lengthMenu:     "Exibir _MENU_ registros por página",
+          info:           "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoEmpty:      "Exibindo _START_ a _END_ de _TOTAL_ registros",
+          infoFiltered:   "(total de registros:_MAX_)",
+          emptyTable:     "Nenhum registro encontrado",
+          zeroRecords:     "Nenhum registro encontrado",
+          paginate: {
+            first:      "Primeiro",
+            previous:   "Anterior",
+            next:       "Próximo",
+            last:       "Último"
+          },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
+        }
+    });
+});
+</script>
+
+<legend>Reuniões</legend>
+
+   <table id="reunioes_table" class="table responsive nowrap" style="width:100%">
+      <thead class="table-secondary">
+         <tr>
+           <th>Título</th>
+           <th>Data</th>
+           <th>Pauta</th>
+           <th>Ata</th>
+           <th>Vídeo</th>           
+         </tr>
+      </thead>
+   <tbody>
+     <dtml-in expr="zsql.reuniao_comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
+        <tr>
+          <td>
+             <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Reunião - <dtml-var nom_comissao>" data-src="reuniao/reuniao_comissao_mostrar_proc?cod_reuniao=<dtml-var cod_reuniao>&modal=1"">
+<dtml-var num_reuniao>ª Reunião <dtml-var des_tipo_reuniao></a>
+          </td>
+          <td>
+             <dtml-var dat_inicio_reuniao>
+          </td>
+          <td>
+             <dtml-let id_pauta="_.str(cod_reuniao)+'_pauta.pdf'">
+                <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_pauta)">
+                   <dtml-let pauta="_.getattr(sapl_documentos.reuniao_comissao,id_pauta).absolute_url">
+                      <a target="_blank" href="<dtml-var pauta>?<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;"></i></a>
+                   </dtml-let>
+                <dtml-else>
+                  <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;color: #e9e9e9"></i>
+                </dtml-if>
+             </dtml-let>
+          </td>
+          <td>
+             <dtml-let id_ata="_.str(cod_reuniao)+'_ata.pdf'">
+                <dtml-if "_.hasattr(sapl_documentos.reuniao_comissao,id_ata)">
+                   <dtml-let ata="_.getattr(sapl_documentos.reuniao_comissao,id_ata).absolute_url">
+                      <a target="_blank" href="<dtml-var ata>?<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;"></i></a>
+                   </dtml-let>
+                <dtml-else>
+                   <i class="fa fa-file-pdf" style="font-size: 21px;margin-right: 6px;color: #e9e9e9"></i>
+                </dtml-if>
+             </dtml-let>
+          </td>
+          <td>
+                 <dtml-if url_video>
+                    <a target="_blank" href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Reprodução de Vídeo" data-src="<dtml-var url_video>"><i class="fab fa-fw fa-youtube" style="font-size: 21px; margin-right: 6px;"></i></a> 
+                 <dtml-else>
+                   <i class="fab fa-fw fa-youtube" style="font-size: 21px;margin-right: 6px;color: #e9e9e9"></i>
+                 </dtml-if> 
+          </td>
+        </tr>
+     </dtml-in>
+   </tbody>
+  </table>
+
+  <button type="button" class="btn m btn-primary d-print-none mt-3" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Reunião - <dtml-var nom_comissao>" data-src="reuniao/reuniao_comissao_form?cod_comissao=<dtml-var cod_comissao>&modal=1">Incluir Reunião</button>
+
+

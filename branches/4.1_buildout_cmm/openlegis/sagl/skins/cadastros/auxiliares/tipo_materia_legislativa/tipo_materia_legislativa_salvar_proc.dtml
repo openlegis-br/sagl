@@ -1,0 +1,31 @@
+<dtml-if hdn_tip_materia>
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_materia_legislativa_atualizar_zsql)">
+<dtml-elif expr="zsql.tipo_materia_legislativa_obter_zsql(sgl_tipo_materia=txt_sgl_tipo_materia)">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+  <dtml-let mensagem="'Já existe um tipo de matéria com essa sigla.'" tipo_mensagem="'danger'">    
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_materia_legislativa_incluir_zsql)">
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="metodo(tip_materia      = hdn_tip_materia,
+                            sgl_tipo_materia = txt_sgl_tipo_materia,
+                            des_tipo_materia = txt_des_tipo_materia,
+                            tip_natureza     = rad_tip_natureza,
+                            ind_publico      = rad_ind_publico                            
+                            )">
+
+  <dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar o tipo de matéria. Tente novamente!'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+    </dtml-let> 
+
+  <dtml-else>
+    <dtml-let mensagem="'Tipo de materia salvo com sucesso!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let> 
+  </dtml-try>
+</dtml-unless>

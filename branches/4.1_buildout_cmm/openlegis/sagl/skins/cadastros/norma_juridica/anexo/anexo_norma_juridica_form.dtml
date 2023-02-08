@@ -1,0 +1,66 @@
+<dtml-var standard_html_header>
+
+  <script type="text/javascript">
+
+  function campos_criticar(form){  
+    var form = document.anexo_norma_juridica_form;
+    if (form.txa_txt_descricao.value == "") {
+       alert("A descrição do anexo deve ser preenchida!");
+       form.txa_txt_descricao.focus();
+       return false;
+    }
+    if (form.file_nom_anexo.value == "") {
+       alert("Um arquivo deve ser selecionado como anexo!");
+       form.file_nom_anexo.focus();
+       return false;
+    }
+    form.submit();
+  }
+  function anexo_norma_juridica_excluir() {  
+    if (confirm("Deseja realmente excluir o anexo?")) {  
+      location.href = "anexo_norma_juridica_excluir_proc?cod_norma=<dtml-var cod_norma missing>&cod_anexo=<dtml-var cod_anexo missing>&modal=1";
+    }
+  }
+
+  </script>
+
+<form name="anexo_norma_juridica_form" method="post" action="anexo_norma_juridica_salvar_proc" enctype="multipart/form-data">
+   <h1>Cadastro de Anexo</h1>
+   <table class="table table-borderless">
+    <tr>
+       <td><label for="txa_txt_descricao" class="required">Descrição</label>
+           <input class="form-control" type="text" id="txa_txt_descricao"  name="txa_txt_descricao" maxlength="200" <dtml-if cod_anexo>disabled</dtml-if> value="<dtml-var txt_descricao missing null="">">
+      </td>
+    </tr>
+    <tr>
+      <td>
+         <label for="file_nom_anexo" class="required d-block">Texto Integral</label>
+           <dtml-if expr="_.has_key('cod_anexo')"> 
+             <dtml-call expr="REQUEST.set('id_anexo', _.str(cod_norma)+'_anexo_'+ _.str(cod_anexo))">
+             <dtml-if "_.hasattr(sapl_documentos.norma_juridica,id_anexo)">
+               <dtml-let anexo="_.getattr(sapl_documentos.norma_juridica,id_anexo).absolute_url">
+                 <a target="_blank" href="<dtml-var anexo>">
+                    <i class="fa fa-fw fa-file"></i>Visualizar
+                 </a>
+               </dtml-let>
+             </dtml-if>
+           <dtml-else>
+              <input type="file" class="form-control-file" name="file_nom_anexo" id="file_nom_anexo">
+           </dtml-if>
+      </td>
+    </tr>
+  </table>
+
+  <div class="text-center">
+    <dtml-if cod_anexo>
+      <input class="btn btn-danger" type="button" value="Excluir" onClick="anexo_norma_juridica_excluir()">
+    <dtml-else>
+      <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar()">
+    </dtml-if>
+  </div>
+ <input type="hidden" name="hdn_cod_norma" value="<dtml-var cod_norma>">
+ <input type="hidden" name="cod_anexo" value="<dtml-var cod_anexo missing>">
+ <input type="hidden" name="modal" value="1"> 
+</form>
+
+<dtml-var standard_html_footer>

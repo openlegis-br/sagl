@@ -1,0 +1,152 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+    function atualizar(cod_sessao_plen,cod_parlamentar,campo_num,campo_url,form_arq) {
+        if (campo_num.value == "") {
+        alert("O campo não pode ficar vazio!");
+        campo_num.focus();
+        return;
+        }
+
+        var form = document.oradores_form;
+        var txt_num_ordem = campo_num.value;
+        var txt_url_discurso = campo_url.value;
+        location.href = "oradores_expediente_salvar_proc?hdn_cod_sessao_plen=<dtml-var cod_sessao_plen>&lst_cod_parlamentar=" + cod_parlamentar + '&txt_num_ordem=' + txt_num_ordem + '&hdn_cod_sessao_leg=&hdn_num_legislatura=<dtml-var num_legislatura>&hdn_tip_sessao=<dtml-var tip_sessao>&hdn_dat_sessao=<dtml-var dat_sessao>&flag_atualizar=1'+'&txt_url_discurso='+txt_url_discurso;
+    }
+
+    function excluir(cod_sessao_plen,cod_parlamentar){
+        var form = document.oradores_form;    
+        if (confirm("Deseja realmente excluir o orador?")) {
+            location.href = "oradores_expediente_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_parlamentar=" + cod_parlamentar + '&cod_sessao_leg=&num_legislatura=<dtml-var num_legislatura>&tip_sessao=<dtml-var tip_sessao>&dat_sessao=<dtml-var dat_sessao>';
+        }
+        return;
+    }
+
+    function discurso_excluir(cod_parlamentar){
+        var form =  document.oradores_form;
+        if (confirm("Deseja realmente excluir o discurso?")) {
+            location.href="discurso_expediente_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_parlamentar=" + cod_parlamentar + '&cod_sessao_leg=&num_legislatura=<dtml-var num_legislatura>&tip_sessao=<dtml-var tip_sessao>&dat_sessao=<dtml-var dat_sessao>';
+        }
+        return;
+    }
+
+    function campos_criticar(){
+    var form=document.oradores_cadastro_form;
+    if (form.txt_num_ordem.value == "") {
+       alert("O número de ordem deve ser preenchido!");
+       form.txt_num_ordem.focus();
+       return false;
+       }
+    if (form.lst_cod_parlamentar.selectedIndex==0){
+       alert("O vereador deve ser selecionado!");
+       form.lst_cod_parlamentar.focus();
+       return false;
+       }
+    form.submit();
+    }
+
+</script>
+
+<dtml-var sessao_plenaria_menu>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
+
+<legend>Oradores do Pequeno Expediente</legend>
+
+<form name="oradores_form" method="post" action="oradores_expediente_salvar_proc">
+
+    <dtml-in expr="zsql.oradores_expediente_obter_zsql(cod_sessao_plen=cod_sessao_plen, ind_excluido=0)">
+        <dtml-if sequence-start>
+         <table class="table">
+            <tr>
+                <th width="10%">Ordem</th>
+                <th>Vereador</th>
+                <th>URL do Discurso</th>
+                <th>Ações</th>
+            </tr>
+        </dtml-if sequence-start>
+          <tr>
+            <td>
+                <input class="form-control" type="number" id="txt_num_ordem_<dtml-var num_ordem>" name="txt_num_ordem" size="2" value="<dtml-var num_ordem>">
+            </td>
+            <td>
+                <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar, ind_excluido=0)">
+                    <dtml-var nom_parlamentar>/<dtml-var sgl_partido>
+                    <input type="hidden" name="hdn_cod_parlamentar" value="<dtml-var cod_parlamentar>" />
+                </dtml-in>
+            </td>
+            <td>
+                <input class="form-control" type="text" id="txt_url_discurso_<dtml-var num_ordem>" name="txt_url_discurso" value="<dtml-var url_discurso missing null="">">
+            </td>
+            <td>
+                <a class="btn btn-secondary" href="javascript:atualizar(<dtml-var cod_sessao_plen>,<dtml-var cod_parlamentar>,document.oradores_form.txt_num_ordem_<dtml-var num_ordem>,document.oradores_form.txt_url_discurso_<dtml-var num_ordem>,document.oradores_discurso_form_<dtml-var num_ordem>)">Atualizar</a> 
+                 <a class="btn btn-danger" href="javascript:excluir(<dtml-var cod_sessao_plen>,<dtml-var cod_parlamentar>)">Excluir</a>
+            </td>
+        </tr>
+    <dtml-if sequence-end>
+    </table>
+    
+    </dtml-if sequence-end>
+    <dtml-else>
+       <p>Nenhum orador cadastrado.</p>
+    </dtml-in>
+</form>
+
+
+<form name="oradores_cadastro_form" method="post" action="oradores_expediente_salvar_proc" enctype="multipart/form-data">
+
+<p class="h5">Inclusão de Orador</p>
+<table class="table">
+   <thead class="d-none">
+    <tr>
+        <th width="10%">Ordem</th>
+        <th>Vereador</th>
+        <th></th>        
+    </tr>
+   </thead>
+    <tr>
+        <td width="10%">
+            <label for="txt_num_ordem" class="required">Ordem</label>        
+            <input class="form-control" type="number" id="txt_num_ordem" name="txt_num_ordem" maxlength="2" autocomplete="off" />
+        </td>
+        <td>
+            <label for="lst_cod_parlamentar" class="required">Vereador</label>        
+            <select class="custom-select" id="lst_cod_parlamentar" name="lst_cod_parlamentar" size="1">
+                <option value ="">Selecione</option>            
+                <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_sessao)">
+                   <option
+                        value="<dtml-var cod_parlamentar >">
+                        <dtml-var nom_parlamentar>
+                    </option>
+                </dtml-in>
+            </select>           
+        </td>
+        <td>
+         <label  class="d-block">Ação</label>                
+         <a href="#" class="btn btn-primary" onClick="campos_criticar(document.oradores_cadastro_form)">Adicionar</a>          
+        </td>                
+    </tr>
+</table>
+    <div class="text-left mb-3">
+      <dtml-if expr="zsql.oradores_expediente_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
+         <a class="btn btn-danger" href="oradores_expediente_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_sessao_leg=&num_legislatura=<dtml-var num_legislatura>&tip_sessao=<dtml-var tip_sessao>&dat_sessao=<dtml-var dat_sessao>" data-confirm="Deseja realmente excluir todos os oradores cadastrados?">Excluir Lista</a>
+      <dtml-else>
+         <dtml-call expr="REQUEST.set('cod_sessao_anterior', int(cod_sessao_plen) - 1)">
+         <a class="btn btn-primary" href="oradores_expediente_incluir?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_sessao_leg=&num_legislatura=<dtml-var num_legislatura>&tip_sessao=<dtml-var tip_sessao>&dat_sessao=<dtml-var dat_sessao>&ativos=1" data-confirm="Gerar lista de oradores com Vereadores ativos na data da Sessão?">Vereadores Ativos</a>
+         <dtml-if expr="zsql.oradores_expediente_obter_zsql(cod_sessao_plen = cod_sessao_anterior, ind_excluido=0)">         
+            <a class="btn btn-primary" href="oradores_expediente_incluir?cod_sessao_plen=<dtml-var cod_sessao_plen>&cod_sessao_leg=&num_legislatura=<dtml-var num_legislatura>&tip_sessao=<dtml-var tip_sessao>&dat_sessao=<dtml-var dat_sessao>" data-confirm="Gerar lista de oradores com base na sessão anterior?">Sessão Anterior</a>      
+         </dtml-if>   
+      </dtml-if>    
+    </div>
+    <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>" />
+    <input type="hidden" name="hdn_cod_sessao_leg" value="<dtml-var cod_sessao_leg missing>"/>
+    <input type="hidden" name="hdn_dat_sessao" value="<dtml-var dat_sessao missing>"/>
+    <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura missing>"/>
+    <input type="hidden" name="hdn_tip_sessao" value="<dtml-var tip_sessao missing>"/>
+    <input type="hidden" name="txt_url_discurso" value=""/>
+</form>
+</div>
+</div>
+<dtml-var standard_html_footer>

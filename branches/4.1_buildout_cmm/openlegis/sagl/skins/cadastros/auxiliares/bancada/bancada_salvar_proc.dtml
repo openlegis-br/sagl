@@ -1,0 +1,25 @@
+<dtml-if hdn_cod_bancada>
+  <dtml-call expr="REQUEST.set('metodo', zsql.bancada_atualizar_zsql)">
+<dtml-else> 
+  <dtml-call expr="REQUEST.set('metodo', zsql.bancada_incluir_zsql)">
+</dtml-if>
+
+<dtml-try>
+  <dtml-call expr="metodo(cod_bancada = hdn_cod_bancada,
+                          num_legislatura = lst_num_legislatura,
+                          cod_partido = lst_cod_partido,
+                          nom_bancada = txt_nom_bancada,
+                          descricao = txt_descricao,
+                          dat_criacao = pysc.data_converter_pysc(data=txt_dat_criacao),
+                          dat_extincao = pysc.data_converter_pysc(data=txt_dat_extincao)
+                          )">
+
+<dtml-except>
+  <dtml-let mensagem="'Não foi possível salvar a Bancada. Tente novamente!'" tipo_mensagem="'danger'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>   
+    <dtml-let mensagem="'Bancada salva com sucesso!'" tipo_mensagem="'success'" url=hdn_url>
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+</dtml-try>

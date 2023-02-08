@@ -1,0 +1,43 @@
+<dtml-call expr="REQUEST.set('cod_pessoa', _['REQUEST']['cod_pessoa'])">
+
+<dtml-call expr="REQUEST.set('arquivo_foto', _['REQUEST']['webcam'])">
+
+<dtml-call expr="REQUEST.set('id_foto', cod_pessoa+'_foto_pessoa.jpg')">
+
+       <dtml-if expr="_.hasattr(sapl_documentos.pessoa,id_foto)">
+         <dtml-let foto="_.getattr(sapl_documentos.pessoa,id_foto) ">
+           <dtml-try>
+               <dtml-call "foto.manage_upload(file=arquivo_foto)">
+               <dtml-let mensagem="'Fotografia capturada com sucesso!'">
+                  <dtml-var mensagem>
+               </dtml-let>
+           <dtml-except>
+               <dtml-let mensagem="'Ocorreu erro ao salvar a fotografia'" tipo_mensagem="'danger'">
+                  <dtml-var mensagem_emitir>
+               </dtml-let>
+           </dtml-try>
+         </dtml-let>
+       <dtml-else>
+         <dtml-try>
+           <dtml-call expr="sapl_documentos.pessoa.manage_addImage(id=id_foto,file=arquivo_foto)">
+           <dtml-let mensagem="'Fotografia capturada com sucesso!'">
+              <dtml-var mensagem>
+           </dtml-let>
+         <dtml-except>
+           <dtml-let mensagem="'Ocorreu erro ao salvar a fotografia'">
+              <dtml-var mensagem_emitir>
+           </dtml-let>
+         </dtml-try>
+       </dtml-if>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'pessoa_fotografia_salvar',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_pessoa)"> 
+</dtml-if>

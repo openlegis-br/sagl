@@ -1,0 +1,50 @@
+<dtml-call expr="REQUEST.set('cod_ult_tramitacao', '')">
+
+  <dtml-in expr="zsql.tramitacao_obter_penultima_zsql(cod_materia=cod_materia)">
+    <dtml-if sequence-start>
+      <dtml-call expr="REQUEST.set('cod_ult_tramitacao', cod_tramitacao)">
+    </dtml-if>
+  </dtml-in>
+
+<dtml-try>
+  <dtml-call expr="zsql.trans_begin_zsql()">
+  <dtml-call expr="REQUEST.set('metodo', zsql.tramitacao_excluir_zsql)">  
+  <dtml-call expr="metodo(cod_tramitacao = cod_tramitacao)">
+
+   <dtml-call expr="REQUEST.set('pdf', _.str(cod_tramitacao)+'_tram.pdf')">
+   <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)">
+      <dtml-call expr="sapl_documentos.materia.tramitacao.manage_delObjects(pdf)">
+   </dtml-if>
+
+   <dtml-call expr="REQUEST.set('pdf_assinado', _.str(cod_tramitacao)+'_tram_signed.pdf')">
+   <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf_assinado)">
+      <dtml-call expr="sapl_documentos.materia.tramitacao.manage_delObjects(pdf_assinado)">
+   </dtml-if>
+
+  <dtml-if cod_ult_tramitacao>
+    <dtml-call expr="zsql.tramitacao_ind_ultima_atualizar_zsql(cod_tramitacao  = cod_ult_tramitacao,
+                                                               cod_materia = cod_materia,  
+                                                               ind_ult_tramitacao = 1)">
+  </dtml-if> 
+  <dtml-call expr="zsql.trans_commit_zsql()">
+<dtml-except>
+  <dtml-call expr="zsql.trans_rollback_zsql()">
+  <dtml-let mensagem="'Houve um erro! Tramitação não excluída.'" tipo_mensagem="'danger'">
+     <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>   
+    <dtml-let mensagem="'Tramitação excluída com sucesso!'">
+        <dtml-var mensagem_emitir>
+    </dtml-let>
+</dtml-try>
+
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = 'tramitacao_materia',
+            metodo       = 'tramitacao_excluir_proc',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_tramitacao)"> 
+</dtml-if>

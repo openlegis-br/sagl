@@ -1,0 +1,84 @@
+<dtml-call expr="REQUEST.set('metodo', zsql.documento_acessorio_administrativo_incluir_zsql)"> 
+
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=REQUEST['AUTHENTICATED_USER'].getUserName())">
+  <dtml-if expr="nom_cargo != '' and nom_cargo != None">
+     <dtml-call expr="REQUEST.set('nom_usuario', nom_cargo)">
+  <dtml-else>
+     <dtml-call expr="REQUEST.set('nom_usuario', nom_completo)">
+  </dtml-if>
+<dtml-else>
+  <dtml-call expr="REQUEST.set('nom_usuario', REQUEST['AUTHENTICATED_USER'].getUserName())">
+</dtml-in>
+
+<dtml-try>
+  <dtml-call expr="metodo(tip_documento = lst_tip_documento,
+                          nom_documento = txt_nom_documento,
+                          nom_autor_documento = nom_usuario,
+                          cod_documento = cod_documento,
+                          dat_documento = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+                          ind_excluido = 0)">
+  <dtml-except>
+    <dtml-let mensagem="'Não foi possível incluir o documento acessório. Tente novamente!'" tipo_mensagem="'danger'">
+       <dtml-var mensagem_emitir>
+    </dtml-let>
+
+  <dtml-else>
+    <dtml-try>
+      <dtml-in expr="zsql.documento_acessorio_administrativo_incluido_codigo_obter_zsql()">
+        <dtml-call expr="REQUEST.set('hdn_cod_documento', cod_documento_acessorio)">
+      </dtml-in>
+    <dtml-except>
+      <dtml-call expr="REQUEST.set('erro', 1)">
+    </dtml-try>
+
+    <dtml-if file_nom_arquivo>
+       <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+'.pdf')">
+       <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_arquivo)">
+          <dtml-call expr="sapl_documentos.administrativo.manage_addFile(id=id_documento,file=file_nom_arquivo)">
+       </dtml-if>
+    </dtml-if>
+ 
+    <dtml-if hdn_cod_documento>
+      <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento)+'.pdf')">
+      <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
+        <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento) ">
+          <dtml-if expr="zsql.tipo_documento_administrativo_obter_zsql(tip_documento=lst_tip_documento,ind_publico=1,ind_excluido=0)">
+            <dtml-call "documento.manage_permission('View', roles=['Anonymous','Manager','Operador','Operador Modulo Administrativo'], acquire=0)">
+          <dtml-else>
+            <dtml-call "documento.manage_permission('View', roles=['Manager','Operador','Authenticated','Operador Modulo Administrativo'], acquire=1)">
+          </dtml-if>
+        </dtml-let>
+      </dtml-if>
+    </dtml-if>
+
+  <dtml-call expr="REQUEST.set('hdn_url', 'documento_administrativo_mostrar_proc?cod_documento=' + str(cod_documento))">           
+
+  <dtml-if erro>
+     <dtml-let mensagem="'Não foi possível incluir o documento acessório. Tente novamente.'" tipo_mensagem="'danger'">
+          <dtml-var mensagem_emitir>
+     </dtml-let>
+  <dtml-else>
+    <dtml-if hdn_url>
+       <dtml-let mensagem="'Documento acessório incluído com sucesso!'" tipo_mensagem="'success'" url=hdn_url>
+           <dtml-var mensagem_emitir>
+       </dtml-let>
+    <dtml-else>
+       <dtml-let mensagem="'Documento acessório incluído com sucesso!'" tipo_mensagem="'success'">
+           <dtml-var mensagem_emitir>
+       </dtml-let>
+    </dtml-if>
+  </dtml-if>
+
+</dtml-try>
+
+<dtml-if expr="dbcon_logs and hdn_cod_documento">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = 'documento_acessorio_adm',
+            metodo       = 'documento_acessorio_salvar_proc',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_documento)"> 
+</dtml-if>
+

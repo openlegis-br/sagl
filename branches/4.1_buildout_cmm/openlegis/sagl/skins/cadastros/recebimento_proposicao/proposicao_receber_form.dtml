@@ -1,0 +1,137 @@
+<dtml-var standard_html_header>
+ 
+  <h1 class="firstHeading">Incorporação de Proposição</h1> 
+
+        <table class="table table-bordered">
+            <thead class="table-secondary">
+        	<tr>
+            	 <th>
+                   <b>Código de Autenticidade:</b>
+  		   <dtml-if txtCodDoc>
+                     <dtml-var txtCodDoc>
+                     <input type="hidden" name="txtCodDoc" value="<dtml-var txtCodDoc>" />
+  		   <dtml-else>
+                     <input class="form-control" type="text" name="txtCodDoc" size="15" />
+                   </dtml-if>
+                 </th>
+             </thead>
+                  <tr>
+                    <td>
+	               <b>Tipo de Proposição Eletrônica:</b> <dtml-var des_tipo_proposicao>
+                    </td>
+                  </tr>
+               </tr>
+             <dtml-if cod_materia>
+               <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+                 <tr>
+                  <td>
+                    <b>Matéria Vinculada: </b><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                  </td>
+                 </tr>
+               </dtml-in> 
+             </dtml-if>               
+            <dtml-if txtCodDoc>
+              <tr>
+                <td>
+                    <b>Ementa:</b> <dtml-var txt_descricao>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    <b>Autoria:</b> <dtml-var nom_autor>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                    <b>Data de Envio:</b> <dtml-var dat_envio missing>
+                </td>
+              </tr>  
+            </dtml-if>
+        </table>
+
+      <dtml-if txtCodDoc>
+          <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+             <dtml-call expr="REQUEST.set('tip_autor', tip_autor)">
+             <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor=tip_autor)">
+                 <dtml-call expr="REQUEST.set('des_tipo_autor', des_tipo_autor)">
+             </dtml-in>
+          </dtml-in>
+          <dtml-in expr="zsql.tipo_proposicao_obter_zsql(tip_proposicao=tip_proposicao)">
+              <dtml-call expr="REQUEST.set('des_tipo_proposicao', des_tipo_proposicao)">
+          </dtml-in>
+        <dtml-if expr="ind_mat_ou_doc=='M'">
+            <form name="materia_form" method="post" action="criar_materia_pysc" onSubmit="return confirm('Confirma a criação da matéria legislativa?');">
+               <dtml-call expr="REQUEST.set('txt_user', AUTHENTICATED_USER.getUserName())">            
+               <input type="hidden" name="cod_proposicao" value="<dtml-var cod_proposicao>" />
+               <div class="text-center">
+                  <input class="btn btn-primary" type="submit" name="cmdCriarMat" value="Criar Matéria" />
+
+        <dtml-elif expr="ind_mat_ou_doc=='D' and des_tipo_proposicao!='Emenda' and des_tipo_proposicao!='Mensagem Aditiva' and des_tipo_proposicao!='Substitutivo' and des_tipo_proposicao!='Parecer' and des_tipo_proposicao!='Parecer de Comissão'">
+            <form method="post" action="../materia/documento_acessorio/documento_acessorio_form">
+                <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" />
+                <input type="hidden" name="nom_autor_documento" value="<dtml-var cod_autor>" />
+                <input type="hidden" name="nom_documento" value="des_tipo_proposicao" />
+                <input type="hidden" name="txt_ementa" value="<dtml-var txt_descricao>" />
+                <input type="hidden" name="hdnCodProposicao" value="<dtml-var cod_proposicao>" />    
+                <input type="hidden" name="hdnCodCompleto" value="<dtml-var txtCodDoc>" />
+               <div class="text-center">
+                    <input class="btn btn-primary" type="submit" value="Criar Documento Acessório">
+
+        <dtml-elif expr="ind_mat_ou_doc=='D' and (des_tipo_proposicao=='Emenda' or des_tipo_proposicao=='Mensagem Aditiva')">
+            <form method="post" action="../materia/emenda/emenda_form">
+                <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" />
+                <input type="hidden" name="tip_autor" value="<dtml-var tip_autor>" />
+                <input type="hidden" name="des_tipo_autor" value="<dtml-var des_tipo_autor>" />
+                <input type="hidden" name="cod_autor_prop" value="<dtml-var cod_autor>" />
+                <input type="hidden" name="txt_ementa" value="<dtml-var txt_descricao>" />
+                <input type="hidden" name="hdnCodProposicao" value="<dtml-var cod_proposicao>" />    
+                <input type="hidden" name="hdnCodCompleto" value="<dtml-var txtCodDoc>" />
+               <div class="text-center">
+                    <input class="btn btn-primary" type="submit" value="Criar Emenda">
+
+        <dtml-elif expr="ind_mat_ou_doc=='D' and des_tipo_proposicao=='Substitutivo'">
+            <form method="post" action="../materia/substitutivo/substitutivo_form">
+                <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" />
+                <input type="hidden" name="tip_autor" value="<dtml-var tip_autor>" />
+                <input type="hidden" name="des_tipo_autor" value="<dtml-var des_tipo_autor>" />
+                <input type="hidden" name="cod_autor_prop" value="<dtml-var cod_autor>" />
+                <input type="hidden" name="txt_ementa" value="<dtml-var txt_descricao>" />
+                <input type="hidden" name="hdnCodProposicao" value="<dtml-var cod_proposicao>" />    
+                <input type="hidden" name="hdnCodCompleto" value="<dtml-var txtCodDoc>" />
+               <div class="text-center">
+                    <input class="btn btn-primary" type="submit" value="Criar Substitutivo">
+        <dtml-elif expr="ind_mat_ou_doc=='D' and (des_tipo_proposicao=='Parecer' or des_tipo_proposicao=='Parecer de Comissão')">
+            <form method="post" action="../comissao/materia/relatoria_form" class="needs-validation" novalidate>
+              <div class="row">
+               <div class="col-12 mb-3">
+                 <label for="cod_comissao" class="required">Selecione a Comissão</label>
+                 <select class="custom-select" id="lst_cod_comissao" name="cod_comissao" required>
+                    <option></option> 
+                    <dtml-in expr="zsql.comissao_obter_zsql()">
+                       <dtml-if expr="dat_extincao is None">
+                          <option value="<dtml-var cod_comissao>"><dtml-var nom_comissao></option>
+                       </dtml-if>
+                    </dtml-in>
+                 </select>
+                 <div class="invalid-feedback">
+                   Este campo é obrigatório!
+                 </div>
+               </div>
+              </div>
+                <input type="hidden" name="modal" value="1" />              
+                <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" />
+                <dtml-in expr="zsql.autor_obter_zsql(cod_autor=cod_autor)">
+                  <input type="hidden" name="cod_parlamentar" value="<dtml-var cod_parlamentar>" />
+                </dtml-in>
+                <input type="hidden" name="txt_ementa" value="<dtml-var txt_descricao>" />
+                <input type="hidden" name="hdnCodProposicao" value="<dtml-var cod_proposicao>" />    
+                <input type="hidden" name="hdnCodCompleto" value="<dtml-var txtCodDoc>" />
+               <div>           
+                    <input class="btn btn-primary" type="submit" value="Criar Parecer">                    
+        </dtml-if>
+               <input class="btn btn-secondary" type="button" value="Voltar" onClick="history.go(-1)" />
+               </div>
+           </form>
+      </dtml-if>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,334 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript" src="javascript/data_validar.js"></script>
+
+<script type="text/javascript">
+
+function campos_criticar(){
+
+  var form = document.protocolo_legislativo_form;
+  var regexp_digitos = /\D+/;
+
+  if (form.lst_tip_materia.selectedIndex==0){
+     alert("Selecione um tipo de matéria legislativa!");
+     form.lst_tip_materia.focus();
+     return false;
+  }
+
+  if (regexp_digitos.test(form.txt_num_paginas.value)) {
+     alert("O número de páginas deve ser um numero natural!");
+     form.txt_num_paginas.focus();
+     return false;
+  }
+
+  if (form.txa_txt_ementa.value == "") {
+     alert("A ementa deve ser preenchida!");
+     form.txa_txt_ementa.focus();
+     return false;
+  }
+
+  var tipo_autor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;
+  if (tipo_autor=='0'){
+     alert("Um tipo de autor deve ser selecionado!");
+     form.lst_tip_autor.focus();
+     return false;
+  }
+
+  var cod_autor = form.lst_cod_autor[form.lst_cod_autor.selectedIndex].value;
+  if (cod_autor=='0'){
+     alert("Um autor deve ser selecionado!");
+     form.lst_cod_autor.focus();
+     return false; 
+  }
+
+  var tip_natureza = document.getElementById('lst_tip_natureza').value;
+  if (tip_natureza=='2' || tip_natureza=='3' || tip_natureza=='4') {
+      if ((form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value == "") ||
+         (form.txt_num_ident_basica.value == "") || (form.txt_ano_ident_basica.value == ""))  {
+          alert("Devem ser informados tipo, número e ano da Matéria Legislativa à qual este protocolo será vinculado!");
+          form.lst_tip_id_basica.focus(); 
+          return false;
+      }
+  }
+
+  form.submit();
+}
+
+   function tipo_autor_mudou(form){
+      var valor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;      
+      var separador = valor.indexOf("&");
+      var URL = 'protocolo_legislativo_form?tip_autor=' + valor.substring(0,separador)
+              + '&des_tipo_autor=' + valor.substring(separador+1,valor.length)
+              + '&tip_natureza=' + form.lst_tip_natureza.options[form.lst_tip_natureza.selectedIndex].value 
+              + '&tip_materia_sel=' + form.lst_tip_materia.options[form.lst_tip_materia.selectedIndex].value 
+              + '&num_paginas=' + form.txt_num_paginas.value
+              + '&txt_assunto_ementa=' + form.txa_txt_ementa.value
+              + '&txt_observacao=' + form.txa_txt_observacao.value;
+      location.href= URL;
+   }
+
+   function tipo_natureza_mudou(form){
+      var valor = form.lst_tip_autor[form.lst_tip_autor.selectedIndex].value;      
+      var valor1 = document.getElementById('lst_tip_natureza').value
+      var separador = valor.indexOf("&");
+      var separador1 = valor1.indexOf("&");    
+      var URL = 'protocolo_legislativo_form?tip_natureza=' + valor1
+              + '&tip_materia_sel=' + form.lst_tip_materia.options[form.lst_tip_materia.selectedIndex].value 
+              + '&num_paginas=' + form.txt_num_paginas.value
+              + '&txt_assunto_ementa=' + form.txa_txt_ementa.value
+              + '&txt_observacao=' + form.txa_txt_observacao.value;
+      location.href= URL;
+   }
+
+$(document).ready(function () {
+  bsCustomFileInput.init()
+})
+
+</script>
+
+ <div class="row mb-2">
+      <div class="col-12 col-md-8 align-self-center">
+        <h1 class="firstHeading">Protocolo Legislativo</h1>
+      </div>
+      <div class="col-12 col-md-4 text-left text-md-right">
+         <div class="btn-group d-print-none ">
+           <a class="btn btn-primary btn-sm" href="<dtml-var portal_url>/consultas/protocolo" ><i class="fa fa-fw fa-search"></i> Pesquisa de Protocolos</a>         
+         </div>
+      </div>
+ </div>
+
+<dtml-call expr="REQUEST.set('dat_atual', _.DateTime().strftime('%d/%m/%Y'))">
+
+<dtml-in expr="zsql.legislatura_obter_zsql(ind_excluido=0)">
+  <dtml-if expr="((_.DateTime(dat_atual) >= dat_inicio and _.DateTime(dat_atual) <= dat_fim))">
+    <dtml-call expr="REQUEST.set('num_legislatura_sel', num_legislatura)">
+  </dtml-if>
+</dtml-in>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Protocolo', 'Operador Materia'])">
+<ul class="nav nav-tabs border-0" id="nav_protocolo" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="LEG-tab" data-toggle="tab" href="#LEG" role="tab" aria-controls="LEG" aria-selected="true">Protocolo Legislativo</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="ADM-tab" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_administrativo_form" role="tab" aria-controls="ADM" aria-selected="false">Protocolo Administrativo</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="anular-tab" href="<dtml-var portal_url>/cadastros/protocolo/protocolo_anular_form" role="tab" aria-controls="anular" aria-selected="false">Anulação de Protocolo</a>
+  </li>
+</ul>
+</dtml-if>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active" id="LEG">
+
+<legend>Identificação da Matéria</legend>
+
+<form action="protocolo_legislativo_salvar_proc" name="protocolo_legislativo_form" method="post" enctype="multipart/form-data">
+
+<input type="hidden" name="hdn_cod_protocolo" value="<dtml-var cod_protocolo missing>" />
+<input type="hidden" name="hdn_tip_protocolo" value="0" />
+<input type="hidden" name="hdn_tip_processo" value="1" />
+<input type="hidden" name="hdn_url" value="<dtml-var portal_url>/cadastros/protocolo/protocolo_legislativo_form" />
+
+  <div class="form-row">
+    <div class="col-12 col-sm-6 mb-3">
+         <label for="lst_tip_natureza" class="required">Natureza da Matéria</label>
+         <select class="custom-select"  name="lst_tip_natureza" id="lst_tip_natureza" onChange="tipo_natureza_mudou(document.protocolo_legislativo_form)" required>
+              <dtml-unless tip_natureza>
+                 <dtml-call expr="REQUEST.set('tip_natureza', '1')">
+             </dtml-unless>
+              <dtml-in expr="[('Principal', '1'), ('Acessória', '2'), ('Documento Acessório', '3'), ('Parecer de Comissão', '4')]">
+               <option <dtml-if expr="REQUEST.has_key('tip_natureza') and int(_['sequence-item'])==_.int(REQUEST['tip_natureza'])">
+                      selected </dtml-if>
+                      value="<dtml-var expr="int(_['sequence-item'])">">
+              <dtml-var expr="_['sequence-item']"> - <dtml-var expr="_['sequence-key']"></option>
+              </dtml-in>
+         </select>
+    </div>
+    <div class="col-12 col-sm-6 mb-3">
+        <label for="lst_tip_materia" class="required">Tipo de Matéria</label>
+        <select class="custom-select" id="lst_tip_materia" name="lst_tip_materia" required>
+           <option value="0">Selecione</option>
+             <dtml-if expr="tip_natureza=='1'">
+               <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='P',ind_excluido=0)">
+                 <option 
+                   <dtml-if expr="REQUEST.has_key('tip_materia_sel')">
+                     <dtml-if expr="_.int(tip_materia) == _.int(tip_materia_sel)">
+                        selected
+                     </dtml-if>
+                   </dtml-if>
+                     value="<dtml-var tip_materia>" >
+                   <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+                 </option>
+               </dtml-in>
+             <dtml-elif expr="tip_natureza=='2'">
+               <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='A',ind_excluido=0)">
+                 <option 
+                   <dtml-if expr="REQUEST.has_key('tip_materia_sel')">
+                     <dtml-if expr="_.int(tip_materia) == _.int(tip_materia_sel)">
+                        selected
+                     </dtml-if>
+                   </dtml-if>
+                     value="<dtml-var tip_materia>" >
+                   <dtml-var des_tipo_materia>
+                 </option>
+               </dtml-in>
+             <dtml-elif expr="tip_natureza=='3'">
+               <dtml-in expr="zsql.tipo_documento_obter_zsql(ind_excluido=0)">
+                 <option 
+                   <dtml-if expr="REQUEST.has_key('tip_materia_sel')">
+                     <dtml-if expr="_.int(tip_documento) == _.int(tip_materia_sel)">
+                        selected
+                     </dtml-if>
+                   </dtml-if>
+                     value="<dtml-var tip_documento>" >
+                   <dtml-var des_tipo_documento>
+                 </option>
+               </dtml-in>
+             <dtml-elif expr="tip_natureza=='4'">
+                  <option value="99" selected>Parecer</option>
+             </dtml-if>
+        </select>
+    </div>
+  </div>
+  
+  <div class="form-row">
+    <div class="col-12 mb-3">
+       <label for="txa_txt_ementa" class="required">Ementa</label>
+       <textarea class="form-control auto-resize" id="txa_txt_ementa" name="txa_txt_ementa" rows="1" maxlength="500"><dtml-var txt_assunto_ementa missing html_quote></textarea>
+    </div>
+  </div>
+  
+  <div class="form-row">
+    <div class="col-12 col-sm-6 mb-3">
+              <label for="lst_tip_autor" class="required">Tipo de Autor</label>
+              <select class="custom-select" id="lst_tip_autor" name="lst_tip_autor" onChange="tipo_autor_mudou(document.protocolo_legislativo_form)" required>
+             <dtml-if expr="tip_natureza and tip_natureza=='4'">
+               <dtml-call expr="REQUEST.set('tip_autor', 2)">
+               <dtml-call expr="REQUEST.set('des_tipo_autor', 'Comissao')">
+             </dtml-if>
+              <option value="1&Parlamentar">Parlamentar</option>    
+              <dtml-unless des_tipo_autor> 
+                 <dtml-call expr="REQUEST.set('des_tipo_autor', 'Parlamentar')">
+              </dtml-unless>                       
+              <dtml-in expr="zsql.tipo_autor_obter_zsql(tip_autor='')">         
+                <dtml-if expr="des_tipo_autor!='Parlamentar'">                 
+                  <option <dtml-if expr="REQUEST.has_key('tip_autor') and tip_autor==_.int(REQUEST['tip_autor'])">
+                    selected </dtml-if>
+                    value="<dtml-var tip_autor>&<dtml-var des_tipo_autor url_quote>">
+                   <dtml-var des_tipo_autor>
+                  </option>
+                </dtml-if>
+              </dtml-in>
+             </select>
+    </div>
+    <div class="col-12 col-sm-6 mb-3">
+              <label for="lst_cod_autor" class="required">Nome do Autor</label>
+              <dtml-if expr="_.has_key('des_tipo_autor')"> 
+              <select class="custom-select" id="lst_cod_autor" name="lst_cod_autor" required>
+               <option value=0>Selecione</option>
+
+               <dtml-if expr="des_tipo_autor=='Parlamentar'">
+                   <dtml-in expr="zsql.autores_obter_zsql(txt_dat_apresentacao=dat_atual)">
+                         <option value="<dtml-var cod_autor>">
+                              <dtml-var nom_parlamentar> 
+                         </option>
+                   </dtml-in>
+     
+               <dtml-elif expr="des_tipo_autor=='Comissao'">
+                  <dtml-in expr="zsql.autor_obter_zsql(comissao='1')">
+                   <dtml-call expr="REQUEST.set('cod_autor_comissao', cod_autor)">
+                   <dtml-in expr="zsql.comissao_obter_zsql(cod_comissao=cod_comissao,ind_excluido=0)">
+                    <dtml-if expr="dat_extincao is None">
+                      <option value="<dtml-var cod_autor_comissao>">
+                            <dtml-var nom_comissao>
+                      </option>
+                    </dtml-if> 
+                   </dtml-in>
+                  </dtml-in>
+
+               <dtml-elif expr="des_tipo_autor=='Bancada'">
+                 <dtml-in expr="zsql.autor_obter_zsql(bancada='1')">
+                   <dtml-call expr="REQUEST.set('cod_autor_bancada', cod_autor)">
+                  <dtml-in expr="zsql.bancada_obter_zsql(num_legislatura=num_legislatura_sel,cod_bancada=cod_bancada,ind_excluido=0)">
+                      <option value="<dtml-var cod_autor_bancada>">
+                            <dtml-var nom_bancada>
+                         </option>
+                   </dtml-in>
+                  </dtml-in>
+
+                 <dtml-else>                                    
+                  <dtml-in expr="zsql.autor_obter_zsql(des_tipo_autor=des_tipo_autor)">
+                   <dtml-call expr="REQUEST.set('cod_autor_geral', cod_autor)">
+                      <option value="<dtml-var cod_autor_geral>">
+                         <dtml-var nom_autor> 
+                       </option>
+                    </dtml-in>
+                   </dtml-if>
+                </select>
+                <dtml-else>
+                 <input class="form-control" type="text" name="txt_nom_autor" value="<dtml-var nom_autor missing>" disabled>
+              </dtml-if>
+    </div>
+  </div>
+  
+  <div class="form-row">
+    <div class="col-6 mb-3">  
+                <label for="txt_num_paginas">Núm. Páginas</label>
+                <input class="form-control" type="number" id="txt_num_paginas" name="txt_num_paginas" maxlength="3" value="<dtml-var num_dias_prazo missing null="">"/>    
+    </div>
+    <div class="col-6 mb-3">  
+                 <label class="d-block">PDF Arquivo Digitalizado</label>
+                 <div class="custom-file">
+                   <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
+                   <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+                 </div>  
+    </div>
+  </div>    
+
+  <dtml-if expr="tip_natureza=='2' or tip_natureza=='3' or tip_natureza=='4'"> 
+  <div class="form-row">
+    <div class="col-12 col-sm-6 mb-3">  
+         <label for="lst_tip_id_basica" class="required">Matéria a Vincular</label>
+               <select class="custom-select" id="lst_tip_id_basica" name="lst_tip_id_basica" required>   
+                  <option value="0" disabled selected>Selecione o tipo</option>
+                  <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(ind_excluido=0,tip_natureza='P')">
+                    <option value="<dtml-var tip_materia missing>"> 
+                        <dtml-var sgl_tipo_materia> - <dtml-var des_tipo_materia>
+                    </option>
+                  </dtml-in>
+               </select>
+    </div>
+    <div class="col-6 col-sm-3 mb-3">   
+               <label for="txt_num_ident_basica" class="required">Número</label>                  
+               <input class="form-control number" type="number" id="txt_num_ident_basica" name="txt_num_ident_basica" value="<dtml-var num_ident_basica_sel missing>" />
+    </div>
+    <div class="col-6 col-sm-3 mb-3">                 
+               <label for="txt_ano_ident_basica" class="required">Ano</label>                  
+               <input class="form-control year" type="number" id="txt_ano_ident_basica" name="txt_ano_ident_basica" value="<dtml-var ano_ident_basica_sel missing>" />
+    </div>
+  </div>
+  </dtml-if>
+  
+  <div class="form-row">
+    <div class="col-12 mb-3">
+           <label for="txa_txt_observacao">Observações</label>
+           <textarea class="form-control auto-resize" id="txa_txt_observacao" name="txa_txt_observacao" rows="1"><dtml-var txt_observacao missing null=""></textarea>
+    </div>
+  </div>
+
+<div class="text-left">
+  <input class="btn btn-primary" type="button" name="button" value="Protocolar Matéria" onClick="campos_criticar()" />
+</div>
+
+</form>
+
+</div>
+</div>
+
+<script>
+autosize(document.querySelectorAll('textarea'));
+</script>
+
+<dtml-var standard_html_footer>

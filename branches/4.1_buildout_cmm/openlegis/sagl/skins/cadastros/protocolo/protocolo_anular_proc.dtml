@@ -1,0 +1,43 @@
+<dtml-if expr="zsql.materia_obter_zsql(num_protocolo=txt_num_protocolo, ano_ident_basica=txt_ano_protocolo, ind_excluido=0)">
+  <dtml-let mensagem="'Não foi possível anular! Existe uma matéria vinculada a este número de protocolo.'" tipo_mensagem="'danger'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-elif expr="zsql.documento_administrativo_obter_zsql(num_protocolo=txt_num_protocolo, ano_documento=txt_ano_protocolo, ind_excluido=0)">
+  <dtml-let mensagem="'Não foi possível anular! Existe um documento administrativo vinculado a este número de protocolo.'" tipo_mensagem="'danger'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
+
+<dtml-try>
+   <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo, ano_protocolo=txt_ano_protocolo)">
+      <dtml-call expr="REQUEST.set('cod_protocolo', cod_protocolo)">   
+   </dtml-in>
+   <dtml-call expr="REQUEST.set('metodo', zsql.protocolo_anular_zsql)">
+   <dtml-call expr="metodo(num_protocolo=txt_num_protocolo, ano_protocolo=txt_ano_protocolo, txt_user_anulacao=hdn_txt_user_anulacao, txt_ip_anulacao=pysc.get_ip(), txt_just_anulacao=txa_txt_just_anulacao)">
+
+<dtml-except>
+  <dtml-let mensagem="'Houve um erro! Não foi possível anular o número de protocolo!'" tipo_mensagem="'danger'">
+    <dtml-var mensagem_emitir>
+  </dtml-let> 
+
+<dtml-else>
+  <dtml-let mensagem="'Número de protocolo anulado com sucesso!'" url="hdn_url">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+
+  <dtml-comment>LOG DE AUDITORIA</dtml-comment>
+  <dtml-if dbcon_logs>
+    <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'protocolo_anular_proc',
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = cod_protocolo)"> 
+  </dtml-if>
+  
+</dtml-try>
+
+</dtml-if>
+

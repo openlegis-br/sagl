@@ -1,0 +1,73 @@
+<h1 class="firstHeading">Pareceres das Comissões</h1>
+
+  <dtml-in expr="zsql.despacho_inicial_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
+       <dtml-if previous-sequence>
+       <span>
+         <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var previous-sequence-start-number>">
+         Página Anterior (<dtml-var previous-sequence-size> resultados)</a>
+       <span>
+       </dtml-if previous-sequence>
+    <dtml-if sequence-start>   
+    <table class="table">
+      <thead class="table-secondary">
+       <tr> 
+         <th>Comissão</th>
+         <th width="35%">Relatoria</th>
+         <th width="15%">Parecer</th>
+       </tr>
+      </thead>
+    </dtml-if sequence-start>
+       <tr> 
+          <td>
+             <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Designação de Comissão" data-src="despacho_inicial/despacho_inicial_mostrar_proc?cod_materia=<dtml-var cod_materia>&num_ordem=<dtml-var num_ordem>&modal=1">          
+              <dtml-var nom_comissao_index missing>
+            </a>
+          </td>
+          <td>
+           <dtml-in expr="zsql.relatoria_obter_zsql(cod_comissao=cod_comissao_sel, cod_materia=cod_materia,num_ordem=num_ordem)">
+             <dtml-in expr="zsql.parlamentar_obter_zsql(cod_parlamentar=cod_parlamentar)">
+                <a href="#" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Relatoria" data-src="<dtml-var portal_url>/cadastros/comissao/materia/relatoria_mostrar_proc?cod_relatoria=<dtml-var cod_relatoria>&cod_materia=<dtml-var cod_materia missing>&cod_comissao=<dtml-var cod_comissao_sel missing>&num_ordem=<dtml-var num_ordem missing>&modal=1">               
+                   <dtml-var nom_parlamentar>
+                </a>
+             </dtml-in>
+             <dtml-else>
+               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                <a href="#" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Cadastro de Relatoria" data-src="<dtml-var portal_url>/cadastros/comissao/materia/relatoria_form?cod_materia=<dtml-var cod_materia missing>&cod_comissao=<dtml-var cod_comissao_sel missing>&num_ordem=<dtml-var num_ordem missing>&modal=1"> 
+                    Cadastrar Relatoria
+                  </a> 
+               </dtml-if>
+           </dtml-in>
+          </td>
+          <td>
+             <dtml-in expr="zsql.relatoria_obter_zsql(cod_comissao=cod_comissao_sel, cod_materia=cod_materia, num_ordem=num_ordem)">
+                <dtml-let id_parecer="_.str(cod_relatoria)+'_parecer.pdf'">
+                  <dtml-if "_.hasattr(sapl_documentos.parecer_comissao,id_parecer)">
+                    <dtml-let parecer="_.getattr(sapl_documentos.parecer_comissao,id_parecer).absolute_url">
+                       <a href="<dtml-var parecer>" target="_blank" title="Texto Original">
+                         <i class="fa fa-file-pdf" style="font-size: 21px;"></i><span class="d-none">PDF</span>
+                       </a>
+                    </dtml-let>
+                  <dtml-else>
+                      <i class="fa fa-file-pdf" style="font-size: 21px; color: #e9e9e9"></i>
+                  </dtml-if>
+                </dtml-let>
+             </dtml-in>
+          </td>
+       </tr>
+    <dtml-if sequence-end>
+       </table>
+    </dtml-if sequence-end>
+    <dtml-if next-sequence>
+       <span>
+         <a href="<dtml-var URL><dtml-var sequence-query>query_start=<dtml-var next-sequence-start-number>">
+         Próxima Página (<dtml-var next-sequence-size> resultados)</a>
+       </span>
+      </dtml-if next-sequence>
+  <dtml-else>
+      <p>Nenhuma Comissão foi designada para parecer.</p>
+      </table>
+   </dtml-in>
+    
+  <div class="text-left">
+     <button type="button" class="btn m btn-primary d-print-none" data-toggle="modal" data-target="#iFrameModal" data-title="Despacho Inicial" data-src="despacho_inicial/despacho_inicial_form?cod_materia=<dtml-var cod_materia>&modal=1">Designar Comissão</button>  
+  </div>

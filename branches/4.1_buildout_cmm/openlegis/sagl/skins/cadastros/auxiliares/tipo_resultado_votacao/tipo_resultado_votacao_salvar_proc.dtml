@@ -1,0 +1,35 @@
+<dtml-if hdn_tip_resultado>
+  <dtml-call expr="REQUEST.set('metodo', zsql.tipo_resultado_votacao_atualizar_zsql)">
+<dtml-elif expr="zsql.tipo_resultado_votacao_obter_zsql(nom_resultado=txt_nom_resultado)">
+  <dtml-call expr="REQUEST.set('erro', 1)">
+  <dtml-let mensagem="'Já existe um tipo de resultado da votação idêntico.'" tipo_mensagem="'danger'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+<dtml-else>
+  <dtml-in expr="zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=hdn_tip_resultado,
+                                                        nom_resultado = txt_nom_resultado,
+                                                        ind_excluido = 1)">
+        <dtml-call expr="REQUEST.set('metodo', zsql.tipo_resultado_votacao_atualizar_zsql)">
+        <dtml-call expr="REQUEST.set('hdn_tip_resultado', tip_resultado_votacao)">
+    <dtml-else>
+        <dtml-call expr="REQUEST.set('metodo', zsql.tipo_resultado_votacao_incluir_zsql)">
+    </dtml-in>
+</dtml-if>
+
+<dtml-unless erro>
+  <dtml-try>
+    <dtml-call expr="metodo(tip_resultado_votacao = hdn_tip_resultado,
+                            nom_resultado         = txt_nom_resultado,
+                            ind_excluido          = 0)">
+
+  <dtml-except>
+    <dtml-let mensagem="'Não foi possível salvar o tipo de resultado da votação. Tente novamente!'" tipo_mensagem="'danger'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+
+  <dtml-else>
+    <dtml-let mensagem="'Tipo de resultado de votação salvo com sucesso!'">
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+</dtml-unless>

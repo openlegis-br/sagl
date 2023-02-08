@@ -1,0 +1,90 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+
+  function comissao_criticar(form){
+
+      var form = document.despacho_inicial_form;
+           
+      if (form.lst_cod_comissao.value == ""){
+          $('#lst_cod_comissao').addClass('is-invalid');      
+          alert("A Comissão deve ser selecionada!");
+          form.lst_nom_comissao.focus();
+          return false;
+      }
+      form.submit();
+  }
+    
+
+  function despacho_inicial_excluir(){
+      
+       if (confirm("Deseja realmente excluir?")) {
+          location.href="despacho_inicial_excluir_proc?cod_materia=<dtml-var cod_materia missing>&cod_comissao=<dtml-var cod_comissao_sel missing>&num_ordem=<dtml-var num_ordem missing>&modal=1";
+       }
+  } 
+
+</script>
+
+<h1 class="firstHeading">Designação de Comissão para Parecer</h1>
+
+<form name="despacho_inicial_form" method="post" action="despacho_inicial_salvar_proc">
+
+  <dtml-if cod_comissao_sel>
+     <dtml-in expr="zsql.relatoria_obter_zsql(cod_comissao=cod_comissao_sel, cod_materia=cod_materia, num_ordem=num_ordem, ind_excluido=0)">
+        <dtml-if cod_relatoria>
+           <dtml-call expr="REQUEST.set('temRelatoria', 1)">
+        </dtml-if>
+      </dtml-in>
+  </dtml-if>
+
+  <div class="form-row">
+    <div class="col-12 mb-3">
+       <label for="lst_cod_comissao" class="required">Selecione a Comissão</label>
+       <select class="custom-select" id="lst_cod_comissao" name="lst_cod_comissao" <dtml-if temRelatoria>onfocus="this.initialSelect = this.selectedIndex;" onchange="this.selectedIndex = this.initialSelect;"</dtml-if> required>
+          <option></option> 
+          <dtml-in expr="zsql.comissao_obter_zsql()">
+             <dtml-if expr="dat_extincao is None">
+                <option
+                  <dtml-if expr="_.has_key('num_ordem') and _.int(cod_comissao) == _.int(cod_comissao_sel)">
+                     selected
+                  </dtml-if>
+                  value="<dtml-var cod_comissao missing>"> 
+                  <dtml-var nom_comissao></option>
+             </dtml-if>
+          </dtml-in>
+       </select>
+       <div class="invalid-feedback">
+         Este campo é obrigatório!
+       </div>
+    </div>
+  </div>
+
+  <dtml-if temRelatoria>
+    <p class="text-left"><b>Informação:</b> Parecer da Comissão já emitido. Não é possível alterar os dados deste formulário.</p> 
+  </dtml-if>
+
+  <input type="hidden" name="cod_materia" value="<dtml-var cod_materia>">
+  <input type="hidden" name="num_ordem" value="<dtml-var num_ordem missing=0>">
+  <dtml-if num_ordem>
+    <input type="hidden" name="hdn_url" value="despacho_inicial_mostrar_proc?cod_materia=<dtml-var cod_materia>&num_ordem=<dtml-var num_ordem>&modal=1">
+  </dtml-if>
+  <input type="hidden" name="modal" value="1">
+
+  <div class="text-left">
+    <input type="button" class="btn btn-primary" value="Salvar" onClick="comissao_criticar()">
+    <dtml-if num_ordem>
+      <dtml-unless temRelatoria>
+         <input type="button" class="btn btn-danger" value="Excluir" onClick="despacho_inicial_excluir()">
+      </dtml-unless>
+    </dtml-if>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12 mt-2">
+       <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campo obrigatório</p>
+    </div>
+  </div>
+
+</form>
+
+<dtml-var standard_html_footer>

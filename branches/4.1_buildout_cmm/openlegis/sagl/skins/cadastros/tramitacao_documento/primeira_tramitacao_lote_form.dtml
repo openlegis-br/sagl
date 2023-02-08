@@ -1,0 +1,125 @@
+<dtml-var standard_html_header>
+
+<script src="javascript/data_validar.js"></script>
+
+<script>
+
+  function campos_criticar(form){
+
+      if (form.tram_tip_documento.selectedIndex == 0){
+          alert("O tipo de documento deve ser selecionado!");
+          form.lst_tip_documento.focus();
+          return false;
+      }
+
+      if (form.txt_data_inicial.value == ""){
+         alert("A data inicial deve ser preenchida!");
+         form.txt_data_inicial.focus();
+         return false;
+      }
+
+      if (form.txt_data_inicial.value != ""){ 
+           if (!IsValidDate(form.txt_data_inicial.value)){
+             alert("Digite uma data inicial válida!");
+             form.txt_data_inicial.focus();
+             form.txt_data_inicial.select();
+             return false;
+           }
+      }
+
+      if (form.txt_data_final.value == ""){
+         alert("A data final deve ser preenchida!");
+         form.txt_data_final.focus();
+         return false;
+      }
+
+      if (form.txt_data_final.value != ""){ 
+             if (!IsValidDate(form.txt_data_final.value)){
+               alert("Digite uma data final válida!");
+               form.txt_data_final.focus();
+               form.txt_data_final.select();
+               return false;
+             }
+      }
+
+      form.submit();
+  }
+//-->
+</script>
+
+<h1 class="firstHeading">Tramitação de Processos Administrativos</h1>
+
+<dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Modulo Administrativo'])">
+   <a class="btn btn-sm btn-primary mb-3 disabled" href="<dtml-var portal_url>/cadastros/tramitacao_documento/primeira_tramitacao_lote_form">Primeira Tramitação</a>
+</dtml-if>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/tramitacao_lote_form">Caixa de Entrada <dtml-if expr="pysc.caixa_entrada_administrativo_contar_pysc(cod_usuario=cod_usuario_corrente) > 0">(<dtml-var expr="pysc.caixa_entrada_administrativo_contar_pysc(cod_usuario=cod_usuario_corrente)">)</dtml-if></a>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/rascunhos_html">Rascunhos <dtml-in expr="zsql.tramitacao_administrativo_obter_zsql(cod_usuario_local=cod_usuario_corrente, ind_ult_tramitacao=1, ind_rascunho=1, ind_tramitacao=1)" size="1"><dtml-call expr="REQUEST.set('qtde', _['sequence-length'])">(<dtml-var qtde>)</dtml-in></a>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/itens_enviados_html">Enviadas</a>
+<a class="btn btn-sm btn-primary mb-3" href="<dtml-var portal_url>/cadastros/tramitacao_documento/arquivo_morto">Arquivo</a>
+
+<p class="text-muted font-weight-bold">Registro de primeira tramitação</p>
+
+
+<form name="primeira_tramitacao_lote_form" method="post" action="primeira_tramitacao_lote_tramitar_proc">
+
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3">
+      <label for="tram_tip_materia" class="required">Tipo de Documento</label>
+      <select class="custom-select"  name="tram_tip_documento">
+        <option value=""></option>
+          <dtml-in expr="zsql.tipo_documento_administrativo_obter_zsql(ind_excluido=0)">
+           <option value="<dtml-var tip_documento missing>"> 
+             <dtml-var sgl_tipo_documento> - <dtml-var des_tipo_documento>
+           </option>
+          </dtml-in>
+      </select>       
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_data_inicial" class="required">Data Inicial</label>
+        <dtml-call expr="REQUEST.set('data_atual', _.DateTime().strftime('%d/%m/%Y'))">      
+        <input type="text" class="form-control date" id="txt_data_inicial" name="txt_data_inicial" autocomplete="off" required />
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txt_data_final" class="required">Data Final</label>
+      <input type="text" class="form-control date" id="txt_data_final" name="txt_data_final" autocomplete="off" required />
+    </div>
+    <script>
+        $('#txt_data_inicial').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            maxDate: function () {
+                return $('#txt_data_final').val();
+            }
+        });
+        $('#txt_data_final').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome',
+            minDate: function () {
+                return $('#txt_data_inicial').val();
+            }
+        });      
+    </script>    
+ </div>  
+      
+ <div class="row">
+   <div class="col-12 text-left">
+    <input class="btn btn-primary" type="button" value="Pesquisar" onClick="campos_criticar(document.primeira_tramitacao_lote_form)" />
+   </div>
+ </div>
+
+
+
+
+
+
+
+
+</form>
+
+<dtml-var standard_html_footer>

@@ -1,0 +1,26 @@
+<dtml-comment>
+connection_id : dbcon_interlegis
+max_rows : 1000
+max_cache : 100
+arguments: cod_documento cod_materia ind_excluido=0
+</dtml-comment>
+
+SELECT 
+   dam.cod_vinculo,
+   dam.cod_documento,
+   dam.cod_materia,
+   DATE_FORMAT(da.dat_documento, '%d/%m/%Y') as data_documento
+
+FROM 
+  documento_administrativo_materia dam
+  LEFT JOIN documento_administrativo da ON dam.cod_documento = da.cod_documento
+
+<dtml-sqlgroup where>
+    <dtml-sqltest cod_documento column="dam.cod_documento" op="=" type="int" optional> <dtml-and>
+    <dtml-sqltest cod_materia   column="dam.cod_materia"   op="=" type="int" optional> <dtml-and>
+    <dtml-sqltest ind_excluido  column="dam.ind_excluido"  op="="  type="int" optional> <dtml-and>
+</dtml-sqlgroup>
+
+ORDER BY
+   cod_vinculo
+

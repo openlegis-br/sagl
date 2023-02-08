@@ -1,0 +1,57 @@
+  <dtml-if hdn_cod_pessoa>
+    <dtml-call expr="REQUEST.set('metodo', zsql.pessoa_atualizar_zsql)">
+  <dtml-else>
+    <dtml-call expr="REQUEST.set('metodo', zsql.pessoa_incluir_zsql)">
+  </dtml-if>
+  <dtml-try>
+    <dtml-call expr="metodo(
+        cod_pessoa		= hdn_cod_pessoa,
+	nom_pessoa	 	= txt_nom_pessoa,
+        dat_nascimento		= pysc.data_converter_pysc(data=txt_dat_nascimento),
+        doc_identidade	 	= txt_doc_identidade,
+        sex_pessoa		= rad_sex_pessoa,
+        des_estado_civil	= txt_des_estado_civil,
+	nom_conjuge		= txt_nom_conjuge,
+        num_dependentes	= txt_num_dependentes,
+	num_tit_eleitor	= txt_num_tit_eleitor,
+	end_residencial 	= txt_end_residencial,
+        num_imovel		= txt_num_imovel,
+        txt_complemento	= txa_txt_complemento,
+        num_cep		= txt_num_cep,
+	nom_bairro 		= txt_nom_bairro,
+	nom_cidade 		= txt_nom_cidade,
+	sgl_uf  		= txt_sgl_uf,
+	end_email 		= txt_end_email,
+	num_telefone 		= txt_num_telefone,
+	num_celular 		= txt_num_celular,
+	des_tempo_residencia	= txt_des_tempo_residencia,
+	des_profissao		= txt_des_profissao,
+	des_local_trabalho	= txt_des_local_trabalho,
+	txt_observacao 	= txa_txt_observacao
+        )">
+  <dtml-else>
+    <dtml-if expr="hdn_url[-1:]=='='">
+        <dtml-in expr="zsql.pessoa_incluida_codigo_obter_zsql()">
+          <dtml-call expr="REQUEST.set('hdn_url', hdn_url + _.str(cod_pessoa))">
+          <dtml-call expr="REQUEST.set('hdn_cod_pessoa', cod_pessoa)">
+        </dtml-in>
+    </dtml-if>
+    <dtml-let mensagem="'Visitante salvo com sucesso!'" url="hdn_url" >
+      <dtml-var mensagem_emitir>
+    </dtml-let>
+  </dtml-try>
+  
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo),'/')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),' at ')[-1])">
+  <dtml-call expr="REQUEST.set('metodo1', _.string.split(str(metodo1),'>')[0])">
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = metodo1,
+            IP           = pysc.get_ip(),
+            dados        = REQUEST.form.items(),
+            cod_registro = hdn_cod_pessoa)"> 
+</dtml-if>

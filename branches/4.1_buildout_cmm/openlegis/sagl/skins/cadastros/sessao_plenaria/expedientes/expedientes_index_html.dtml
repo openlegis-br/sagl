@@ -1,0 +1,68 @@
+<dtml-var standard_html_header>
+
+<script type="text/javascript">
+ function campos_criticar(){
+
+var form = document.expediente_form;
+var regexp_digitos = /\D+/;
+
+form.submit();
+}
+</script>
+
+<dtml-var sessao_plenaria_menu>
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active">
+
+<legend>Expedientes Diversos</legend>
+
+<form name="expediente_form" method="post" action="expedientes_salvar_proc">
+  <input type="hidden" name="hdn_url" value="index_html?cod_sessao_plen=<dtml-var cod_sessao_plen missing>&num_legislatura=<dtml-var num_legislatura missing>&cod_sessao_leg=<dtml-var cod_sessao_leg missing>&dat_sessao=<dtml-var dat_sessao missing>&tip_sessao=<dtml-var tip_sessao missing>" />
+  <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>">
+
+  <dtml-in expr="zsql.tipo_expediente_obter_zsql(ind_excluido=0)">
+    <input type="hidden" name="hdn_cod_expediente" value="<dtml-var cod_expediente missing>" />  
+    <p class="h6"><dtml-var nom_expediente></p>   
+    <dtml-if expr="zsql.expediente_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_expediente=cod_expediente, ind_excluido=0)">
+      <dtml-in expr="zsql.expediente_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_expediente=cod_expediente, ind_excluido=0)">
+         <div class="row mb-4">
+           <div class="col-12">
+             <textarea class="form-control" name="txa_txt_expediente" id="<dtml-var cod_expediente missing>"><dtml-var txt_expediente missing></textarea>
+           </div>
+         </div>             
+      </dtml-in>
+    <dtml-else>
+       <div class="row">
+         <div class="col-12 mb-3">
+           <textarea class="form-control expediente" name="txa_txt_expediente" id="<dtml-var cod_expediente missing>"></textarea>
+         </div>
+       </div>         
+    </dtml-if>
+  </dtml-in>
+  <div clas="text-left">
+     <input class="btn btn-primary" type="submit" name="button" value="Salvar" />
+  </div>
+</form>
+</div>
+</div>
+
+<script>
+tinymce.init({
+  mode : "textareas",
+  language: 'pt_BR',
+  height: 250,
+  paste_as_text: true,
+  plugins: [
+    'advlist autolink link image lists charmap print preview hr anchor pagebreak',
+    'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+    'table emoticons template paste help'
+  ],
+  toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
+    ' link image | print preview media fullpage | ',
+  menubar: 'edit view insert format tools help',
+  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+});
+</script>
+
+<dtml-var standard_html_footer>

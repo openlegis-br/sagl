@@ -1,0 +1,27 @@
+<dtml-call expr="REQUEST.set('filename', codigo + '.pdf')">
+
+<dtml-in expr="zsql.assinatura_documento_obter_zsql(tipo_doc='peticao',codigo=codigo)">
+    <dtml-call "REQUEST.set('cod_assinatura_doc', cod_assinatura_doc)">
+    <dtml-call "REQUEST.set('arquivo_assinado', str(cod_assinatura_doc) + '.pdf')">
+</dtml-in>
+
+ <dtml-if expr="_.hasattr(sapl_documentos.administrativo,filename)">
+      <dtml-call "sapl_documentos.administrativo.manage_delObjects(filename)">
+ </dtml-if>
+
+ <dtml-if expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados,arquivo_assinado)">
+      <dtml-call "sapl_documentos.documentos_assinados.manage_delObjects(arquivo_assinado)">
+      <dtml-in expr="zsql.assinatura_documento_obter_zsql(codigo=codigo,tipo_doc='peticao')">
+           <dtml-call expr="zsql.assinatura_documento_excluir_zsql(
+                            cod_assinatura_doc  = cod_assinatura_doc,
+                            codigo              = codigo,
+                            tipo_doc            = tipo_doc)">
+      </dtml-in>
+ </dtml-if>
+
+
+  <dtml-let mensagem="'Arquivo PDF excluído com sucesso!'" filename="filename" codigo="codigo" hdn_lst_assunto="hdn_lst_assunto" txa_txt_assunto="hdn_txt_assunto">
+     <dtml-var peticionamento_eletronico_form>
+  </dtml-let>
+
+

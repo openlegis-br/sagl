@@ -1,0 +1,477 @@
+<dtml-var standard_html_header>
+
+<script>
+
+$(document).ready(function() {
+
+   $('#tram_form').on('submit', function(e){
+    
+     if($('#file_nom_arquivo').val() != '') {
+         $(function () {
+            $('#hdn_file').val("1");
+         });     
+     };
+   })
+  
+   $('#inlineRadio1').click(function() {
+      $('#file_nom_arquivo').prop('disabled', true);
+    });
+    $('#inlineRadio2').click(function() {
+      $('#file_nom_arquivo').prop('disabled', true);
+    });
+    $('#inlineRadio3').click(function() {
+      $('#file_nom_arquivo').prop('disabled', false);
+    });      
+
+    bsCustomFileInput.init()
+   
+});
+
+</script>
+
+<script>
+$(document).ready(function(){
+<dtml-unless hdn_cod_tramitacao>
+        var unid_origem = $("#lst_cod_unid_tram_local").val();
+        $.ajax({
+            url: 'unidades_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_unid_tram_dest").empty();
+                $("#lst_cod_usuario_dest").empty();                                
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+        $.ajax({
+            url: 'status_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_status").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_status").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        }); 
+</dtml-unless>
+    $("#lst_cod_unid_tram_dest").change(function(){
+        var unid_dest = $(this).val();
+        $.ajax({
+            url: 'usuarios_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_dest},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_usuario_dest").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_usuario_dest").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+    });
+    $("#lst_cod_unid_tram_local").change(function(){
+        var unid_origem = $(this).val();
+        $.ajax({
+            url: 'unidades_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_unid_tram_dest").empty();
+                $("#lst_cod_usuario_dest").empty();                                
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_unid_tram_dest").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });
+        var unid_origem = $(this).val();
+        $.ajax({
+            url: 'status_carregar_pysc',
+            type: 'post',
+            data: {svalue:unid_origem},
+            dataType: 'json',
+            success:function(response){
+                var len = response.length;
+                $("#lst_cod_status").empty();
+                for( var i = 0; i<len; i++){
+                    var id = response[i]['id'];
+                    var name = response[i]['name'];
+                    $("#lst_cod_status").append("<option value='"+id+"'>"+name+"</option>");
+                }
+            }
+        });        
+    });    
+});
+</script>
+
+
+<h1 class="firstHeading">Tramitação de Matéria Legislativa</h1>
+
+<dtml-call expr="REQUEST.set('cod_materia', hdn_cod_materia)">
+
+<div class="card mb-4">
+  <div class="card-body bg-light text-center">
+    <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia)">  
+       <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+          <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var hdn_cod_materia>" target="_blank">
+       <dtml-else>
+          <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var expr="pysc.b64encode_pysc(codigo=hdn_cod_materia)">" target="_blank">
+       </dtml-if>
+       <p class="h5"><dtml-var des_tipo_materia> nº <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a> - 
+         <dtml-in expr="zsql.autoria_obter_zsql(cod_materia=hdn_cod_materia)">
+            <dtml-var nom_autor_join><dtml-unless sequence-end>,</dtml-unless>
+         </dtml-in></p>
+          <dtml-var txt_ementa>
+    </dtml-in>
+  </div>
+</div>
+
+<dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
+   <dtml-if cod_usuario>
+      <dtml-call expr="REQUEST.set('cod_usuario_corrente', int(cod_usuario))">
+   </dtml-if>
+</dtml-in>
+
+<dtml-if hdn_cod_tramitacao>
+   <dtml-call expr="REQUEST.SESSION.set('hdn_cod_tramitacao', hdn_cod_tramitacao)">
+   <dtml-in expr="zsql.tramitacao_obter_zsql(cod_tramitacao=hdn_cod_tramitacao)">
+      <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_local', int(cod_unid_tram_local))">
+      <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_dest', int(cod_unid_tram_dest))">
+      <dtml-call expr="REQUEST.set('hdn_cod_status', int(cod_status))">
+      <dtml-call expr="REQUEST.set('ind_urgencia', ind_urgencia)">
+      <dtml-call expr="REQUEST.set('hdn_txt_tramitacao', txt_tramitacao)">
+      <dtml-call expr="REQUEST.set('dat_encaminha', dat_encaminha)">
+      <dtml-call expr="REQUEST.set('dat_fim_prazo', dat_fim_prazo)">
+      <dtml-if expr="hdn_cod_tramitacao and cod_usuario_dest">
+         <dtml-call expr="REQUEST.set('cod_usuario_dest', int(cod_usuario_dest))">
+      <dtml-else>
+         <dtml-call expr="REQUEST.set('cod_usuario_dest', '')">
+      </dtml-if>
+   </dtml-in>
+<dtml-else>
+  <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
+     <dtml-call expr="REQUEST.set('hdn_cod_unid_tram_local',cod_unid_tramitacao)">
+  </dtml-in>   
+</dtml-if>
+
+<form id="tram_form" name="tram_form" method="post" action="tramitacao_salvar_proc" enctype="multipart/form-data" class="needs-validation" novalidate>
+
+  <input type="hidden" name="hdn_cod_usuario_corrente" value="<dtml-var cod_usuario_corrente missing>" />
+  <input type="hidden" name="hdn_cod_tramitacao" value="<dtml-var hdn_cod_tramitacao missing>" />
+  <input type="hidden" name="hdn_cod_materia" value="<dtml-var hdn_cod_materia missing>" />
+  <input type="hidden" id="hdn_file" name="hdn_file" value="0"/>
+  <input type="hidden" name="modal" value="1"/>    
+
+  <div class="form-row">
+    <div class="col-12 col-md-3 mb-3">
+       <label for="txt_dat_tramitacao" class="required">Data da Tramitação</label>
+       <dtml-unless dat_tramitacao>
+          <dtml-call expr="REQUEST.set('dat_tramitacao', _.DateTime().strftime('%d/%m/%Y %H:%M'))">
+       </dtml-unless>
+       <input type="hidden" name="hdn_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" />       
+       <input class="form-control" type="text" name="txt_dat_tramitacao" id="txt_dat_tramitacao" value="<dtml-var dat_tramitacao missing>" readonly required autocomplete="off" />
+       <dtml-comment>       
+        <script>
+        $('#txt_dat_tramitacao').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script> 
+       </dtml-comment>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>        
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_cod_unid_tram_local" class="required">Unidade de Origem</label>  
+       <dtml-if expr="not _.has_key('hdn_cod_tramitacao') and zsql.tramitacao_pesquisar_zsql(cod_materia=cod_materia)">
+          <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
+             <option value="">Selecione</option>          
+             <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+                 <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>" <dtml-if expr="cod_unid_tramitacao == cod_unid_tram">selected</dtml-if>>
+                      <dtml-var nom_unidade_join>
+                    </option>
+                 </dtml-in>
+             </dtml-in>
+          </select>
+       <dtml-elif expr="_.has_key('hdn_cod_tramitacao') and zsql.tramitacao_pesquisar_zsql(cod_materia=cod_materia)">
+          <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
+             <option value="">Selecione</option>
+             <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+                 <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_local)">
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>"
+                    <dtml-if expr="cod_unid_tram and cod_unid_tram_local == cod_unid_tramitacao"> selected</dtml-if> >
+                      <dtml-var nom_unidade_join>
+                    </option>
+                 </dtml-in>
+             </dtml-in>
+          </select>          
+       <dtml-else>
+          <select class="custom-select" id="lst_cod_unid_tram_local" name="lst_cod_unid_tram_local" required>
+             <option value="">Selecione</option>
+              <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
+                    <option 
+                    value="<dtml-var cod_unid_tramitacao>">
+                       <dtml-var nom_unidade_join>
+                    </option>
+               </dtml-in>
+          </select> 
+       </dtml-if>
+       <div class="invalid-feedback">
+          Este campo é obrigatório!
+       </div>
+    </div>    
+    <div class="col-12 col-md-3 mb-3">
+      <label for="txt_nom_usuario"class="d-block">Usuário de Origem</label>
+      <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">      
+         <input class="form-control" type="text" id="txt_nom_usuario" value="<dtml-var nom_completo>" disabled> 
+         <input type="hidden" name="hdn_cod_usuario_local" id="hdn_cod_usuario_local" value="<dtml-var cod_usuario_corrente>">     
+     </dtml-in>
+    </div>     
+  </div> 
+ 
+  <div class="form-row">
+    <div class="col-12 col-md-3 mb-3">
+      <label for="txt_dat_encaminha">Encaminhamento</label>
+      <input class="form-control " type="text" name="txt_dat_encaminha" id="txt_dat_encaminha" value="<dtml-var dat_encaminha missing null="">" readonly required/>      
+    </div>  
+    <div class="col-12 col-md-6 mb-3">
+      <label for="lst_cod_unid_tram_dest" class="required">Unidade de Destino</label>
+       <dtml-if expr="not _.has_key('hdn_cod_tramitacao')">
+          <select class="custom-select" name="lst_cod_unid_tram_dest" id="lst_cod_unid_tram_dest" required>
+             <option value=""></option>
+          </select>
+       <dtml-elif expr="_.has_key('hdn_cod_tramitacao') and zsql.tramitacao_pesquisar_zsql(cod_materia=cod_materia)">
+          <select class="custom-select" id="lst_cod_unid_tram_dest" name="lst_cod_unid_tram_dest" required>
+             <option value="">Selecione</option>
+             <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+                 <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_dest)">
+                 <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
+                    <option value="<dtml-var cod_unid_tramitacao>"
+                    <dtml-if expr="cod_unid_tram and cod_unid_tram_dest == cod_unid_tramitacao"> selected</dtml-if> >
+                      <dtml-var nom_unidade_join>
+                    </option>
+                 </dtml-in>
+             </dtml-in>
+          </select>          
+       <dtml-else>
+          <select class="custom-select" id="lst_cod_unid_tram_dest" name="lst_cod_unid_tram_dest" required>
+             <option>Selecione</option>
+              <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
+                    <option 
+                    value="<dtml-var cod_unid_tramitacao>">
+                       <dtml-var nom_unidade_join>
+                    </option>
+               </dtml-in>
+          </select> 
+       </dtml-if>
+      <div class="invalid-feedback">
+        Este campo é obrigatório!
+      </div>          
+    </div>
+    <div class="col-12 col-md-3 mb-3">
+      <label for="lst_cod_usuario_dest">Usuário de Destino</label>   
+       <select class="custom-select" name="lst_cod_usuario_dest" id="lst_cod_usuario_dest">
+          <option value="<dtml-var cod_usuario_dest missing>">
+              <dtml-if cod_usuario_dest>
+                <dtml-in expr="zsql.usuario_obter_zsql(cod_usuario=cod_usuario_dest)">
+                  <dtml-var nom_completo>
+                </dtml-in>
+              </dtml-if>
+          </option>
+      </select>    
+    </div>  
+  </div> 
+  <div class="form-row">
+    <div class="col-12 col-md-6 mb-3"> 
+      <label for="lst_cod_status" class="required">Status</label>
+      <dtml-if expr="not _.has_key('hdn_cod_tramitacao')">      
+         <select class="custom-select" id="lst_cod_status" name="lst_cod_status" required>
+            <option value=""></option>
+         </select>
+      <dtml-else>
+         <select class="custom-select" id="lst_cod_status" name="lst_cod_status" required>      
+         <dtml-in expr="zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1)">
+             <dtml-call expr="REQUEST.set('cod_unid_tram', cod_unid_tram_local)">
+             <dtml-call expr="REQUEST.set('hdn_cod_status', cod_status)">             
+             <dtml-in expr="zsql.unidade_tramitacao_obter_zsql(cod_unid_tramitacao=cod_unid_tram,ind_leg=1)">
+                <dtml-call expr="REQUEST.set('status_permitidos',status_permitidos_sel)">
+             </dtml-in>
+         </dtml-in>
+             <option value="">Selecione</option>
+             <dtml-in expr="zsql.status_tramitacao_obter_zsql()">
+              <dtml-if expr="_.str(cod_status) in _.string.split(_.str(status_permitidos),',')">
+                <option 
+                   <dtml-if expr="_.has_key('hdn_cod_status') and int(hdn_cod_status)==int(cod_status)"> selected
+                   </dtml-if>
+                  value="<dtml-var cod_status>">
+                <dtml-var sgl_status> - <dtml-var des_status></option>
+              </dtml-if>
+             </dtml-in>
+         </select>     
+      </dtml-if>
+       <div class="invalid-feedback">
+         Este campo é obrigatório!
+       </div> 
+    </div>   
+    <div class="col-12 col-md-3 mb-3">
+      <label for="txt_dat_fim_prazo">Data de Fim de Prazo</label>
+      <input class="form-control date" type="text" name="txt_dat_fim_prazo" id="txt_dat_fim_prazo" value="<dtml-var dat_fim_prazo missing>" autocomplete="off" />
+        <script>
+        $('#txt_dat_fim_prazo').datepicker({
+            locale: 'pt-br',
+            icons: {rightIcon: '<i class="fa fa-fw fa-calendar-alt"></i>'},
+            format: 'dd/mm/yyyy',
+            uiLibrary: 'bootstrap4',
+            iconsLibrary: 'fontawesome'
+        });
+        </script>       
+    </div> 
+    <div class="col-6 col-md-3 mb-3">
+      <label for="txa_dat_recebimento">Recebimento</label>    
+      <input class="form-control" type="text" id="txa_dat_recebimento" value="<dtml-var dat_recebimento missing null>" readonly>
+    </div>      
+    <div class="col-12 col-md-3 mb-3">
+      <label class="d-block required">Urgente ?</label>
+      <dtml-in expr="[(1,'Sim'),(0,'Não')]">
+         <div class="custom-control custom-radio custom-control-inline">     
+           <input type="radio" id="rad<dtml-var expr="_['sequence-item'][0]">" name="rad_ind_urgencia" value="<dtml-var sequence-key>" class="custom-control-input" 
+                 <dtml-if expr="_.has_key('hdn_cod_tramitacao') and ind_urgencia==_['sequence-key']">checked
+                 <dtml-elif expr="not _.has_key('hdn_cod_tramitacao') and _['sequence-item']=='Não'">checked
+                 </dtml-if> />
+             <label class="custom-control-label" for="rad<dtml-var expr="_['sequence-item'][0]">"><dtml-var sequence-item></label>
+         </div>
+      </dtml-in>    
+    </div>
+
+   <dtml-if hdn_cod_tramitacao>
+    <dtml-call expr="REQUEST.set('pdf', _.str(hdn_cod_tramitacao)+'_tram.pdf')">
+    <dtml-call expr="REQUEST.set('pdf_assinado', _.str(hdn_cod_tramitacao)+'_tram_signed.pdf')">
+    <dtml-if "_.hasattr(sapl_documentos.materia.tramitacao,pdf)"> 
+      <div class="col-12 col-sm-3 col-lg-3 mb-3">
+        <label class="d-block">Despacho em PDF</label>
+        <div class="btn-group" role="group" aria-label="tram_button">
+          <dtml-let pdf="_.getattr(sapl_documentos.materia.tramitacao,pdf).absolute_url">
+             <a class="btn btn-secondary" target="_blank" href="<dtml-var pdf>?<dtml-var expr="ZopeTime().timeTime()">">
+                <i class="far fa-file-pdf"></i> Visualizar
+             </a>
+          </dtml-let>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-6 form-group">
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio2" name="radTI" value="G" checked />        
+          <label class="form-check-label" for="inlineRadio2">Gerar despacho</label>
+       </div>    
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio3" name="radTI" value="S" />        
+          <label class="form-check-label" for="inlineRadio3">Anexar</label>
+       </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio1" name="radTI" value="M" />        
+          <label class="form-check-label" for="inlineRadio1">Manter</label>
+       </div> 
+       <div class="custom-file">
+         <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" disabled="1">
+         <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+       </div>       
+      </div>
+      </div>
+     </div>      
+    <dtml-else>
+      <div class="col-6 form-group">
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio2" name="radTI" value="G" checked />        
+          <label class="form-check-label" for="inlineRadio2">Gerar despacho</label>
+       </div>    
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio3" name="radTI" value="S" />        
+          <label class="form-check-label" for="inlineRadio3">Anexar</label>
+       </div>
+       <div class="custom-file">
+         <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" disabled="1">
+         <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+       </div>       
+      </div>
+      </div>
+     </div>
+    </dtml-if>
+   <dtml-else>
+      <div class="col-6 form-group">
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio2" name="radTI" value="G" checked />        
+          <label class="form-check-label" for="inlineRadio2">Gerar despacho</label>
+       </div>    
+       <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" id="inlineRadio3" name="radTI" value="S"/>        
+          <label class="form-check-label" for="inlineRadio3">Anexar</label>
+       </div>
+       <div class="custom-file">
+         <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf" disabled="1">
+         <label class="custom-file-label" for="file_nom_arquivo">Selecione o arquivo</label>
+       </div>       
+      </div>
+      </div>
+     </div>   
+   </dtml-if>
+  </div>
+
+  <div class="form-row">
+    <div class="col-12 mb-3">
+      <label for="txa_txt_tramitacao">Texto do Despacho</label>
+      <textarea class="form-control" name="txa_txt_tramitacao" id="txa_txt_tramitacao" rows="1"><dtml-var hdn_txt_tramitacao missing></textarea>
+    </div>
+  </div>
+
+ <div class="row">
+   <div class="col-12 text-left mt-2">
+     <button type="submit" id="btn_tramitar" class="btn btn-primary">Salvar</button>
+  <dtml-unless modal>
+     <input class="btn btn-secondary" type="button" value="Voltar aos Rascunhos" onClick="location.href='<dtml-var portal_url>/cadastros/tramitacao_materia/rascunhos_html'">
+  </dtml-unless>
+ </div>
+
+</form>
+  
+<script>
+tinymce.init({
+  selector: '#txa_txt_tramitacao',
+  language: 'pt_BR',
+  height: 250,
+  paste_as_text: true,
+  plugins: [
+    'advlist autolink link image lists charmap print preview hr anchor pagebreak',
+    'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+    'table emoticons template paste help'
+  ],
+  toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
+    ' link image | print preview media fullpage | ',
+  menubar: 'edit view insert format tools help',
+  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+});
+</script>
+  
+<dtml-var standard_html_footer>
