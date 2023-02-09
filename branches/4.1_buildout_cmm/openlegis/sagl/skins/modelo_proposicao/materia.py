@@ -50,32 +50,35 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
         inf_basicas_dic['par_prefeito'] = prefeito.sgl_partido        
     materia_vinculada = ''
     nom_autor = []
-    autores = context.zsql.autor_obter_zsql(cod_autor = materia.cod_autor)
-    fields = autores.data_dictionary().keys()
-    for autor in autores:
-        autor_dic = {}
-        for field in fields:
-            if autor.cod_parlamentar != None:
-               parlamentares = context.zsql.parlamentar_obter_zsql(cod_parlamentar = autor.cod_parlamentar)
-               for parlamentar in parlamentares:
-                   if parlamentar.sex_parlamentar == 'M':
-                      nom_cargo = 'Vereador'
-                   elif parlamentar.sex_parlamentar == 'F':
-                      nom_cargo = 'Vereadora'
-                   if parlamentar.sgl_partido != None:
-                      partido_autor = parlamentar.sgl_partido
-                   else:
-                      partido_autor = ''
-                   autor_dic['nome_autor'] = parlamentar.nom_completo
-                   autor_dic['apelido_autor'] = parlamentar.nom_parlamentar
-                   autor_dic['partido'] = partido_autor
-                   autor_dic['cargo'] = nom_cargo
-            else:
-               autor_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper()
-               autor_dic['apelido_autor'] = autor.nom_autor_join.decode('utf-8').upper()
-               autor_dic['partido'] = ''
-               autor_dic['cargo'] = autor.des_cargo
-            autor_dic['cod_autor'] = int(autor['cod_autor'])
+    autorias = context.zsql.autoria_obter_zsql(cod_materia=cod_materia)
+    fields = autorias.data_dictionary().keys()
+    for autoria in autorias:
+        autores = context.zsql.autor_obter_zsql(cod_autor = autoria.cod_autor)
+        fields = autores.data_dictionary().keys()
+        for autor in autores:
+            autor_dic = {}
+            for field in fields:
+                if autor.cod_parlamentar != None:
+                   parlamentares = context.zsql.parlamentar_obter_zsql(cod_parlamentar = autor.cod_parlamentar)
+                   for parlamentar in parlamentares:
+                       if parlamentar.sex_parlamentar == 'M':
+                          nom_cargo = 'Vereador'
+                       elif parlamentar.sex_parlamentar == 'F':
+                          nom_cargo = 'Vereadora'
+                       if parlamentar.sgl_partido != None:
+                          partido_autor = parlamentar.sgl_partido
+                       else:
+                          partido_autor = ''
+                       autor_dic['nome_autor'] = parlamentar.nom_completo
+                       autor_dic['apelido_autor'] = parlamentar.nom_parlamentar
+                       autor_dic['partido'] = partido_autor
+                       autor_dic['cargo'] = nom_cargo
+                else:
+                   autor_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper()
+                   autor_dic['apelido_autor'] = autor.nom_autor_join.decode('utf-8').upper()
+                   autor_dic['partido'] = ''
+                   autor_dic['cargo'] = autor.des_cargo
+                autor_dic['cod_autor'] = int(autor['cod_autor'])
         nom_autor.append(autor_dic)
 
 data_atual = DateTime().strftime("%d/%m/%Y")
