@@ -468,6 +468,19 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.reuniao_comissao.manage_addFile(id=nom_arquivo_pdf,file=data)
 
+    def carga_comissao_gerar(self, inf_basicas_dic, dic_materia, nom_comissao, presidente, vicepresidente, membro, suplente):
+        url = self.sapl_documentos.modelo.absolute_url() + "/carga_comissao.odt"
+        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        output_file_odt = "carga_comissao.odt"
+        renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
+        renderer.run()
+        data = open(output_file_odt, "rb").read()
+        for file in [output_file_odt]:
+            os.unlink(file)
+        self.REQUEST.RESPONSE.headers['Content-Type'] = 'application/vnd.oasis.opendocument.text'
+        self.REQUEST.RESPONSE.headers['Content-Disposition'] = 'attachment; filename="%s"'%output_file_odt
+        return data
+
     def comunicado_emendas_gerar_odt(self, inf_basicas_dic, dic_materia, lst_vereadores, nom_presidente, modelo_comunicado):
         url = self.sapl_documentos.modelo.absolute_url() + "/%s" % modelo_comunicado
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
