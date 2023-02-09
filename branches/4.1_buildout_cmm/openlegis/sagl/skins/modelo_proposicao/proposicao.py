@@ -39,7 +39,7 @@ inf_basicas_dic['des_tipo_proposicao'] = ''
 
 for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao):
     inf_basicas_dic['des_tipo_proposicao']= proposicao.des_tipo_proposicao
-    num_proposicao = 'PN ' + str(cod_proposicao)
+    num_proposicao = str(cod_proposicao)
     nom_arquivo = str(proposicao.cod_proposicao)+'.odt'
     des_tipo_materia = proposicao.des_tipo_proposicao.decode('utf-8').upper()
     num_ident_basica = ''
@@ -71,36 +71,66 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
               inf_basicas_dic['nom_relator'] = relator.nom_autor_join
           inf_basicas_dic['nom_presidente_comissao'] = 'XXXXXXXX'
 
-    apelido_autor = ''
     nom_autor = []
     autores = context.zsql.autor_obter_zsql(cod_autor = proposicao.cod_autor)
     fields = autores.data_dictionary().keys()
     for autor in autores:
         autor_dic = {}
-        for field in fields:
-            nom_parlamentar = ''
-            partido_autor = ''
-            nom_cargo = ''                
+        for field in fields:              
             if autor.cod_parlamentar != None:
                parlamentares = context.zsql.parlamentar_obter_zsql(cod_parlamentar = autor.cod_parlamentar)
                for parlamentar in parlamentares:
-                   nom_parlamentar = " - " + parlamentar.nom_parlamentar
                    if parlamentar.sex_parlamentar == 'M':
                       nom_cargo = 'Vereador'
                    elif parlamentar.sex_parlamentar == 'F':
-                      nom_cargo = 'Vereadora'                       
-                   if parlamentar.sgl_partido !=None:
-                      partido_autor = nom_cargo + ' - ' + parlamentar.sgl_partido
+                      nom_cargo = 'Vereadora'
+                   if parlamentar.sgl_partido != None:
+                      partido_autor = parlamentar.sgl_partido
                    else:
-                      partido_autor = nom_cargo
-                   autor_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper() + '\n' + partido_autor
-                   autor_dic['apelido_autor'] = partido_autor
+                      partido_autor = ''
+                   autor_dic['nome_autor'] = parlamentar.nom_completo
+                   autor_dic['apelido_autor'] = parlamentar.nom_parlamentar
+                   autor_dic['partido'] = partido_autor
+                   autor_dic['cargo'] = nom_cargo
             else:
                autor_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper()
-               autor_dic['apelido_autor'] = ''
-               autor_dic['cod_autor'] = autor['cod_autor']
+               autor_dic['apelido_autor'] = autor.nom_autor_join.decode('utf-8').upper()
+               autor_dic['partido'] = ''
+               autor_dic['cargo'] = autor.des_cargo
+            autor_dic['cod_autor'] = int(autor['cod_autor'])
         nom_autor.append(autor_dic)
 
-return st.proposicao_gerar_odt(inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, apelido_autor, modelo_proposicao, modelo_path)
+data_atual = DateTime().strftime("%d/%m/%Y")
 
-#return inf_basicas_dic['id_materia']
+subscritores = []
+outros_autores = context.zsql.autores_obter_zsql(txt_dat_apresentacao=data_atual)
+fields = outros_autores.data_dictionary().keys()
+for autor in outros_autores:
+    outros_dic = {}
+    for field in fields:
+        if autor.cod_parlamentar != None:
+           parlamentares = context.zsql.parlamentar_obter_zsql(cod_parlamentar = autor.cod_parlamentar)
+           for parlamentar in parlamentares:
+               if parlamentar.sgl_partido != None:
+                  partido_autor = parlamentar.sgl_partido
+               else:
+                  partido_autor = "Sem partido"
+               if parlamentar.sex_parlamentar == 'M':
+                  cargo = "Vereador"
+               elif parlamentar.sex_parlamentar == 'F':
+                  cargo = "Vereadora"
+           outros_dic['nome_autor'] = parlamentar.nom_completo
+           outros_dic['apelido_autor'] = parlamentar.nom_parlamentar
+           outros_dic['partido'] = partido_autor
+           outros_dic['cargo'] = cargo
+        outros_dic['cod_autor'] = int(autor['cod_autor'])
+    subscritores.append(outros_dic)
+
+outros=[]
+for autor in nom_autor:
+    for subscritor in subscritores:
+        if autor.get('cod_autor',autor) != subscritor.get('cod_autor',subscritor):
+           outros.append(subscritor)
+subscritores = outros
+
+return st.proposicao_gerar_odt(inf_basicas_dic, num_proposicao, nom_arquivo, des_tipo_materia, num_ident_basica, ano_ident_basica, txt_ementa, materia_vinculada, dat_apresentacao, nom_autor, subscritores, modelo_proposicao, modelo_path)
