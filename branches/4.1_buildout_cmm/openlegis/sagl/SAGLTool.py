@@ -468,7 +468,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             os.unlink(file)
             self.sapl_documentos.reuniao_comissao.manage_addFile(id=nom_arquivo_pdf,file=data)
 
-    def comunicado_emendas_gerar(self, inf_basicas_dic, dic_materia, lst_vereadores, nom_presidente, modelo_comunicado):
+    def comunicado_emendas_gerar_odt(self, inf_basicas_dic, dic_materia, lst_vereadores, nom_presidente, modelo_comunicado):
         url = self.sapl_documentos.modelo.absolute_url() + "/%s" % modelo_comunicado
         template_file = cStringIO.StringIO(urllib.urlopen(url).read())
         output_file_odt = "comunicado-emendas.odt"
