@@ -62,7 +62,7 @@ for despacho in context.zsql.despacho_inicial_obter_zsql(cod_materia=cod_materia
                    nome_autor = autor.nom_autor_join
     comissao = context.zsql.comissao_obter_zsql(cod_comissao=despacho.cod_comissao_sel)[0]
     nom_comissao = comissao.nom_comissao.upper()
-    for periodo in context.zsql.periodo_comp_comissao_obter_zsql(data=DateTime(materia.data_apresentacao),cod_comissao=comissao.cod_comissao):
+    for periodo in context.zsql.periodo_comp_comissao_obter_zsql(data=DateTime(materia.dat_apresentacao, datefmt='international').strftime('%Y-%m-%d'), cod_comissao=comissao.cod_comissao):
       cod_periodo = periodo.cod_periodo_comp
 
 lst_suplentes = []
