@@ -50,7 +50,7 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
         inf_basicas_dic['par_prefeito'] = prefeito.sgl_partido        
     materia_vinculada = ''
     nom_autor = []
-    autores = context.zsql.autor_obter_zsql(cod_autor = proposicao.cod_autor)
+    autores = context.zsql.autor_obter_zsql(cod_autor = materia.cod_autor)
     fields = autores.data_dictionary().keys()
     for autor in autores:
         autor_dic = {}
