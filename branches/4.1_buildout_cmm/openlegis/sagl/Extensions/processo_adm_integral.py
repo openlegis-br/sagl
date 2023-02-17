@@ -3,6 +3,7 @@ import os
 import cStringIO
 from DateTime import DateTime
 from PyPDF4 import PdfFileWriter, PdfFileReader, PdfFileMerger
+from PyPDF4.utils import PdfReadError
 from pdfrw import PdfReader, PdfWriter, PageMerge, IndirectPdfDict
 
 from reportlab.pdfbase import pdfmetrics
@@ -42,6 +43,7 @@ def processo_adm_gerar_pdf(context):
              for protocolo in context.zsql.protocolo_obter_zsql(num_protocolo=docvinculado.num_protocolo_vinculado, ano_protocolo=docvinculado.ano_documento_vinculado):
                  dic_anexo["data"] = DateTime(protocolo.dat_timestamp, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
           dic_anexo["arquivo"] = getattr(context.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral_signed.pdf')
+          dic_anexo["id"] = getattr(context.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral_signed.pdf').absolute_url()
           anexos.append(dic_anexo)
        elif hasattr(context.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral.pdf'):
           dic_anexo = {}
@@ -50,29 +52,38 @@ def processo_adm_gerar_pdf(context):
              for protocolo in context.zsql.protocolo_obter_zsql(num_protocolo=docvinculado.num_protocolo_vinculado, ano_protocolo=docvinculado.ano_documento_vinculado):
                  dic_anexo["data"] = DateTime(protocolo.dat_timestamp, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
           dic_anexo["arquivo"] = getattr(context.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral.pdf')
+          dic_anexo["id"] = getattr(context.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral.pdf').absolute_url()
           anexos.append(dic_anexo)
     for docadm in context.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=documento.cod_documento, ind_excluido=0):
        if hasattr(context.sapl_documentos.administrativo, str(docadm.cod_documento_acessorio) + '.pdf'):
           dic_anexo = {}
           dic_anexo["data"] = DateTime(docadm.dat_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
           dic_anexo["arquivo"] = getattr(context.sapl_documentos.administrativo, str(docadm.cod_documento_acessorio) + '.pdf')
+          dic_anexo["id"] = getattr(context.sapl_documentos.administrativo, str(docadm.cod_documento_acessorio) + '.pdf').absolute_url()
           anexos.append(dic_anexo)
     for tram in context.zsql.tramitacao_administrativo_obter_zsql(cod_documento=documento.cod_documento, rd_ordem='1', ind_excluido=0):
         if hasattr(context.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
            dic_anexo = {}
            dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
            dic_anexo["arquivo"] = getattr(context.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
+           dic_anexo["id"] = getattr(context.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf').absolute_url()
            anexos.append(dic_anexo)
         elif hasattr(context.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf'):
            dic_anexo = {}
            dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
            dic_anexo["arquivo"] = getattr(context.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf')
+           dic_anexo["id"] = getattr(context.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf').absolute_url()
            anexos.append(dic_anexo)
     anexos.sort(key=lambda dic: dic['data'])
     for dic in anexos:
         arquivo_doc = cStringIO.StringIO(str(dic['arquivo'].data))
-        texto_anexo = PdfFileReader(arquivo_doc, strict=False)
-        merger.append(texto_anexo)
+        try:
+           texto_anexo = PdfFileReader(arquivo_doc, strict=False)
+        except:
+           msg = msg = 'O arquivo "' + str(dic['id']) + '" não é um documento PDF válido.'
+           raise ValueError(msg)
+        else:
+           merger.append(texto_anexo)
     output_file_pdf = cStringIO.StringIO()
     merger.write(output_file_pdf)
     merger.close()
