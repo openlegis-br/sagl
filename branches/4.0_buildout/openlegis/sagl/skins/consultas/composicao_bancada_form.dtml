@@ -1,0 +1,60 @@
+<dtml-var standard_html_header>
+
+<h1 class="firstHeading">Lista de Membros - <dtml-var nome_bancada></h1>
+
+<dtml-in expr="zsql.periodo_comp_bancada_obter_zsql(cod_periodo_comp=cod_periodo_comp)">
+  <dtml-call expr="REQUEST.set('dat_inicio', dat_inicio_periodo)">
+  <dtml-call expr="REQUEST.set('dat_fim', dat_fim_periodo)">
+</dtml-in>
+
+<h6 class="mb-3">Período de Composição: <dtml-var dat_inicio> a <dtml-var dat_fim></h6>
+
+  <dtml-in expr="zsql.composicao_bancada_obter_zsql(cod_bancada=cod_bancada,cod_periodo_comp=cod_periodo_comp)">
+    <dtml-if sequence-start>
+ <div class="table-responsive mt-2">
+    <table class="table">
+    <thead class="table-secondary">
+     <tr>
+       <th>Vereador</th>
+       <th width="30%">Cargo na Bancada</th>
+       <th width="20%">Designação</th>
+       <th width="20%">Desligamento</th>
+     </tr>
+    </thead>
+    <tbody> 
+    </dtml-if sequence-start>
+
+      <tr>
+       <td>
+         <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Parlamentar', 'Operador Tabela auxiliar'])">
+           <a href="<dtml-var portal_url>/cadastros/bancada/composicao_bancada_mostrar_proc?cod_comp_bancada=<dtml-var cod_comp_bancada>&num_legislatura=<dtml-var num_legislatura>">
+         <dtml-else>
+           <a href="<dtml-var portal_url>/consultas/parlamentar/parlamentar_mostrar_proc?cod_parlamentar=<dtml-var cod_parlamentar>">
+         </dtml-if>
+           <dtml-var nom_parlamentar></a>
+        </td>
+       <td><dtml-var des_cargo></td>
+       <td><dtml-var dat_designacao></td>
+       <td><dtml-var dat_desligamento missing null></td>
+      </tr>
+    <dtml-if sequence-end>
+      </tbody>
+     </table>
+   </div>
+    </dtml-if>
+  <dtml-else>
+    <div class="text-left">
+         <p>Não há nenhum membro cadastrado.</p>
+    </div>
+  </dtml-in>
+
+   <div class="row">
+    <div class="col-12 text-left">
+     <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Parlamentar'])">
+        <a class="btn btn-primary d-print-none mb-3" href="<dtml-var portal_url>/cadastros/bancada/composicao_bancada_form?cod_bancada=<dtml-var cod_bancada>&cod_periodo_comp=<dtml-var cod_periodo_comp>&num_legislatura=<dtml-var num_legislatura>"><i class="fa fa-fw fa-plus"></i> Incluir Membro</a>
+     </dtml-if>
+        <a class="btn btn-secondary d-print-none mb-3" href ="javascript:history.back()"><i class="fa fa-fw fa-undo"></i> Voltar</a>
+    </div>
+   </div>
+
+<dtml-var standard_html_footer>
