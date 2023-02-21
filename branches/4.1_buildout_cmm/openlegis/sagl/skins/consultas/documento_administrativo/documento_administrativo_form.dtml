@@ -198,6 +198,7 @@ $(function () {
  </dtml-in>
  </dtml-if> 
 
+
  <dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento,ind_excluido=0)">
     <dtml-call expr="REQUEST.set('temDocAC', 1)">
  </dtml-in>
@@ -211,6 +212,7 @@ $(function () {
       </dtml-in>
      </dtml-if>
  </dtml-let>
+
 
 <dtml-if expr="_.has_key('temDocAC') or _.has_key('add_doc')">
   <div id="accordion" class="docAC">
@@ -272,14 +274,14 @@ $(function () {
                    </div>
                 </form> 
               </div>   
-            </dtml-if>
+             </dtml-if>
           </dtml-let>
-        
+
           <dtml-in expr="zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
             <dtml-if sequence-start>
               <div class="table-responsive">            
                <table class="table table-sm mb-0">
-                 <thead">
+                 <thead>
                    <tr>
                      <th>Identificação do Documento</th>
                      <th>Autoria</th>                     
@@ -299,8 +301,9 @@ $(function () {
                             <i class="fa fa-fw fa-file-pdf"></i>
                          </dtml-if>
                           <dtml-var nom_documento>
-                        </a>
-                        <dtml-if expr="sapl_documentos.props_sagl.restpki_access_token!='' and dbcon_logs">
+			</a>
+
+			<dtml-if expr="sapl_documentos.props_sagl.restpki_access_token!='' and dbcon_logs">
                              <dtml-let isAnon="portal_membership.isAnonymousUser()">                      
                                 <dtml-if expr="not isAnon">
                                   <dtml-in expr="zsql.logs_pesquisar_zsql(cod_registro=cod_documento_acessorio, modulo='documento_acessorio_adm', ordem=1)">
@@ -309,18 +312,18 @@ $(function () {
                                  <dtml-in expr="zsql.usuario_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
                                     <dtml-call expr="REQUEST.set('usuario_logado', col_username)">
                                  </dtml-in>
+                                 <dtml-if expr="_.has_key('add_doc') and _.has_key('usuario_doc') and _.has_key('usuario_logado') and usuario_doc==usuario_logado">
+                                   <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento_acessorio, tipo_doc='doc_acessorio_adm')">
+                                   <dtml-else>
+                                      <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_documento_acessorio>&tipo_doc=doc_acessorio_adm&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
+                                   </dtml-if>
+                                   <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_documento_acessorio>&tipo_doc=doc_acessorio_adm&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
+                                   <button type="button" class="btn btn-sm btn-danger" onClick="documento_acessorio_excluir(<dtml-var cod_documento_acessorio missing>)"><i class="fas fa-trash"></i> Excluir</button>
+                                 </dtml-if>
                                 </dtml-if>
-                              </dtml-let>
-                           <dtml-if expr="_.has_key('add_doc') and _.has_key('usuario_doc') and _.has_key('usuario_logado') and usuario_doc==usuario_logado">
-                             <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento_acessorio, tipo_doc='doc_acessorio_adm')">             
-                             <dtml-else>
-                                <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinar Digitalmente" data-src="<dtml-var portal_url>/generico/assinador/pades-signature_html?codigo=<dtml-var cod_documento_acessorio>&tipo_doc=doc_acessorio_adm&modal=1"><i class="fas fa-file-signature"></i> Assinar</button>
-                             </dtml-if>
-                             <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_documento_acessorio>&tipo_doc=doc_acessorio_adm&modal=1"><i class="fas fa-file-signature"></i> Assinaturas</button>
-                             <button type="button" class="btn btn-sm btn-danger" onClick="documento_acessorio_excluir(<dtml-var cod_documento_acessorio missing>)"><i class="fas fa-trash"></i> Excluir</button>
-                           </dtml-if>
+                             </dtml-let>
                         </dtml-if>
-                      </dtml-let>
+		      </dtml-let>
                     <dtml-else>
                        <dtml-var nom_documento>
                     </dtml-if>
@@ -339,7 +342,8 @@ $(function () {
               </div>
             </dtml-if>
          </dtml-in>
-        </div>
+
+	</div>
       </div>
     </div>         
 </dtml-if> 
