@@ -1787,6 +1787,18 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for proposicao in self.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposicao):
           num_proposicao = proposicao.cod_proposicao
           nom_autor = proposicao.nom_autor
+          nom_cargo = ''
+          if proposicao.des_tipo_autor == 'Parlamentar':
+             autor = self.zsql.autor_obter_zsql(cod_autor = proposicao.cod_autor)[0]
+             parlamentares = self.zsql.parlamentar_obter_zsql(cod_parlamentar = autor.cod_parlamentar)
+             for parlamentar in parlamentares:
+                 nom_autor = parlamentar.nom_parlamentar
+                 if parlamentar.sex_parlamentar == 'M':
+                    nom_cargo = ' do Vereador '
+                 elif parlamentar.sex_parlamentar == 'F':
+                    nom_cargo = ' da Vereadora '
+                 else:
+                    nom_cargo = ' - '
           cod_validacao_doc = ''
           outros = ''
           qtde_assinaturas = []
@@ -1809,30 +1821,30 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
               if materia.num_protocolo != None and materia.num_protocolo != '':
                  for protocolo in self.zsql.protocolo_obter_zsql(num_protocolo=materia.num_protocolo, ano_protocolo=materia.ano_ident_basica):
                      info_protocolo = ' - Protocolo nº ' + str(protocolo.num_protocolo) + '/' + str(protocolo.ano_protocolo) + ' recebido em ' + self.pysc.iso_to_port_pysc(protocolo.dat_protocolo) + ' ' + protocolo.hor_protocolo + ' - '
-              texto = str(materia.des_tipo_materia.decode('utf-8').upper())+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+              texto = str(materia.des_tipo_materia.decode('utf-8'))+' nº '+ str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica) + str(nom_cargo) + str(nom_autor)
               storage_path = self.sapl_documentos.materia
               nom_pdf_saida = str(materia.cod_materia) + "_texto_integral.pdf"
           elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao!='Emenda' and proposicao.des_tipo_proposicao!='Mensagem Aditiva' and proposicao.des_tipo_proposicao!='Substitutivo' and proposicao.des_tipo_proposicao!='Parecer' and proposicao.des_tipo_proposicao!='Parecer de Comissão'):
             for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=proposicao.cod_mat_ou_doc):
               for materia in self.zsql.materia_obter_zsql(cod_materia=documento.cod_materia):
-                  materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+                  materia = str(materia.sgl_tipo_materia)+' nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
               info_protocolo = '- Recebido em ' + proposicao.dat_recebimento + ' - '
-              texto = str(documento.des_tipo_documento.decode('utf-8').upper())+' - ' + str(materia)
+              texto = str(documento.des_tipo_documento.decode('utf-8'))+' - ' + str(materia)
               storage_path = self.sapl_documentos.materia
               nom_pdf_saida = str(documento.cod_documento) + ".pdf"
           elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao=='Emenda' or proposicao.des_tipo_proposicao=='Mensagem Aditiva'):
             for emenda in self.zsql.emenda_obter_zsql(cod_emenda=proposicao.cod_emenda):
               for materia in self.zsql.materia_obter_zsql(cod_materia=emenda.cod_materia):
-                  materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
+                  materia = str(materia.sgl_tipo_materia)+' nº '+ str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)
               info_protocolo = '- Recebida em ' + proposicao.dat_recebimento + ' - '
-              texto = 'EMENDA ' + str(emenda.des_tipo_emenda.decode('utf-8').upper())+' Nº '+ str(emenda.num_emenda) + ' AO ' + str(materia)
+              texto = 'Emenda ' + str(emenda.des_tipo_emenda.decode('utf-8'))+' Nº '+ str(emenda.num_emenda) + ' ao ' + str(materia)
               storage_path = self.sapl_documentos.emenda
               nom_pdf_saida = str(emenda.cod_emenda) + "_emenda.pdf"
           elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao=='Substitutivo'):
             for substitutivo in self.zsql.substitutivo_obter_zsql(cod_substitutivo=proposicao.cod_substitutivo):
               for materia in self.zsql.materia_obter_zsql(cod_materia=substitutivo.cod_materia):
-                  materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-              texto = 'SUBSTITUTIVO' + ' Nº '+ str(substitutivo.num_substitutivo) + ' AO ' + str(materia)
+                  materia = str(materia.sgl_tipo_materia)+' nº '+ str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)
+              texto = 'Substitutivo' + ' nº '+ str(substitutivo.num_substitutivo) + ' ao ' + str(materia)
               storage_path = self.sapl_documentos.substitutivo
               nom_pdf_saida = str(substitutivo.cod_substitutivo) + "_substitutivo.pdf"
           elif proposicao.ind_mat_ou_doc=='D' and (proposicao.des_tipo_proposicao=='Parecer' or proposicao.des_tipo_proposicao=='Parecer de Comissão'):
@@ -1840,14 +1852,14 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
               for comissao in self.zsql.comissao_obter_zsql(cod_comissao=relatoria.cod_comissao):
                   sgl_comissao = comissao.sgl_comissao
               for materia in self.zsql.materia_obter_zsql(cod_materia=proposicao.cod_mat_ou_doc):
-                  materia = str(materia.sgl_tipo_materia)+' Nº '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-              texto = 'PARECER ' + sgl_comissao + ' Nº '+ str(relatoria.num_parecer) + '/' +str(relatoria.ano_parecer) + ' AO ' + str(materia)
+                  materia = str(materia.sgl_tipo_materia)+' nº '+ str(materia.num_ident_basica)+'-'+str(materia.ano_ident_basica)
+              texto = 'Parecer ' + sgl_comissao + ' nº '+ str(relatoria.num_parecer) + '/' +str(relatoria.ano_parecer) + ' ao ' + str(materia)
               storage_path = self.sapl_documentos.parecer_comissao
               nom_pdf_saida = str(relatoria.cod_relatoria) + "_parecer.pdf"
 
         if self.sapl_documentos.props_sagl.restpki_access_token!='':
-           mensagem1 = texto + info_protocolo + 'Esta é uma cópia do original assinado digitalmente por ' + nom_autor + outros
-           mensagem2 = 'Para validar o documento, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ cod_validacao_doc + '.'
+           mensagem1 = str(info_protocolo) + 'Esta é uma cópia do original assinado digitalmente por ' + str(nom_autor) + str(outros)
+           mensagem2 = 'Para validar o documento, leia o código QR ou acesse ' + self.url()+'/conferir_assinatura'+' e informe o código '+ str(cod_validacao_doc) + '.'
         else:
            mensagem1 = ''
            mensagem2 = ''
@@ -1907,13 +1919,13 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         packet2 = StringIO.StringIO()
         d = canvas.Canvas(packet2, pagesize=A4)
         d.setFillColorRGB(0,0,0)
-        d.setFont("Arial_Bold", 13)
+        d.setFont("Arial_Bold", 12)
         # alinhamento a esquerda
-        #d.drawString(85, 700, texto)
+        d.drawString(85, 700, texto)
         # alinhamento centralizado
-        d.drawCentredString(pwidth/2, 700, texto)
+        #d.drawCentredString(pwidth/2, 700, texto)
         # nome autor abaixo da numeracao
-        d.setFont("Arial_Italic", 10)
+        #d.setFont("Arial_Italic", 10)
         #d.drawCentredString(pwidth/2, 688, nome_autor)
         d.save()
         packet2.seek(0)
