@@ -1921,7 +1921,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         d.setFillColorRGB(0,0,0)
         d.setFont("Arial_Bold", 12)
         # alinhamento a esquerda
-        d.drawString(85, 700, texto)
+        d.drawString(56, 703, texto)
         # alinhamento centralizado
         #d.drawCentredString(pwidth/2, 700, texto)
         # nome autor abaixo da numeracao
