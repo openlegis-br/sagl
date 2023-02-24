@@ -47,6 +47,7 @@ import cStringIO #py2
 import uuid
 from appy.pod.renderer import Renderer
 from PyPDF4 import PdfFileWriter, PdfFileReader, PdfFileMerger
+from PyPDF4.utils import PdfReadError
 from pdfrw import PdfReader, PdfWriter, PageMerge
 from pdfrw.toreportlab import makerl
 from pdfrw.buildxobj import pagexobj
@@ -1518,6 +1519,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                  for protocolo in self.zsql.protocolo_obter_zsql(num_protocolo=docvinculado.num_protocolo_vinculado, ano_protocolo=docvinculado.ano_documento_vinculado):
                      dic_anexo["data"] = DateTime(protocolo.dat_timestamp, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
               dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral_signed.pdf')
+              dic_anexo["id"] = getattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral_signed.pdf').absolute_url()
               anexos.append(dic_anexo)
            elif hasattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral.pdf'):
               dic_anexo = {}
@@ -1526,29 +1528,38 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                  for protocolo in self.zsql.protocolo_obter_zsql(num_protocolo=docvinculado.num_protocolo_vinculado, ano_protocolo=docvinculado.ano_documento_vinculado):
                      dic_anexo["data"] = DateTime(protocolo.dat_timestamp, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
               dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral.pdf')
+              dic_anexo["id"] = getattr(self.sapl_documentos.administrativo, str(docvinculado.cod_documento_vinculado) + '_texto_integral.pdf').absolute_url()
               anexos.append(dic_anexo)
         for docadm in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=documento.cod_documento, ind_excluido=0):
            if hasattr(self.sapl_documentos.administrativo, str(docadm.cod_documento_acessorio) + '.pdf'):
               dic_anexo = {}
               dic_anexo["data"] = DateTime(docadm.dat_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
               dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(docadm.cod_documento_acessorio) + '.pdf')
+              dic_anexo["id"] = getattr(self.sapl_documentos.administrativo, str(docadm.cod_documento_acessorio) + '.pdf').absolute_url()
               anexos.append(dic_anexo)
         for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=documento.cod_documento, rd_ordem='1', ind_excluido=0):
             if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf').absolute_url()
                anexos.append(dic_anexo)
             elif hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf').absolute_url()
                anexos.append(dic_anexo)
         anexos.sort(key=lambda dic: dic['data'])
         for dic in anexos:
             arquivo_doc = cStringIO.StringIO(str(dic['arquivo'].data))
-            texto_anexo = PdfFileReader(arquivo_doc, strict=False)
-            merger.append(texto_anexo)
+            try:
+               texto_anexo = PdfFileReader(arquivo_doc, strict=False)
+            except:
+               msg = msg = 'O arquivo "' + str(dic['id']) + '" não é um documento PDF válido.'
+               raise ValueError(msg)
+            else:
+               merger.append(texto_anexo)
         output_file_pdf = cStringIO.StringIO()
         merger.write(output_file_pdf)
         merger.close()
@@ -1627,12 +1638,14 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(substitutivo.dat_apresentacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf').absolute_url()
                anexos.append(dic_anexo)
         for eme in self.zsql.emenda_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
             if hasattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(eme.dat_apresentacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf').absolute_url()
                anexos.append(dic_anexo)
         for relat in self.zsql.relatoria_obter_zsql(cod_materia=cod_materia,ind_excluido=0):
             if hasattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf'):
@@ -1641,47 +1654,59 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                for proposicao in self.zsql.proposicao_obter_zsql(cod_parecer=relat.cod_relatoria):
                    dic_anexo["data"] = DateTime(proposicao.dat_recebimento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf').absolute_url()
                anexos.append(dic_anexo)
         for anexada in self.zsql.anexada_obter_zsql(cod_materia_principal=cod_materia,ind_excluido=0):
             if hasattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(anexada.dat_anexacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.materia, str(anexada.cod_materia_anexada) + '_texto_integral.pdf').absolute_url()
                anexos.append(dic_anexo)
         for docadm in self.zsql.documento_administrativo_materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0):
             if hasattr(self.sapl_documentos.administrativo, str(docadm.cod_documento) + '_texto_integral.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(docadm.data_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(docadm.cod_documento) + '_texto_integral.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.administrativo, str(docadm.cod_documento) + '_texto_integral.pdf').absolute_url()
                anexos.append(dic_anexo)
         for documento in self.zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia, ind_excluido=0):
             if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(documento.dat_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf').absolute_url()
                anexos.append(dic_anexo)
         for tram in self.zsql.tramitacao_obter_zsql(cod_materia=cod_materia, rd_ordem='1', ind_excluido=0):
             if hasattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf').absolute_url()
                anexos.append(dic_anexo)
             elif hasattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram_signed.pdf').absolute_url()
                anexos.append(dic_anexo)
         for norma in self.zsql.materia_buscar_norma_juridica_zsql(cod_materia = cod_materia):
             if hasattr(self.sapl_documentos.norma_juridica, str(norma.cod_norma) + '_texto_integral.pdf'):
                dic_anexo = {}
                dic_anexo["data"] = DateTime(norma.dat_norma, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.norma_juridica, str(norma.cod_norma) + '_texto_integral.pdf')
+               dic_anexo["id"] = getattr(self.sapl_documentos.norma_juridica, str(norma.cod_norma) + '_texto_integral.pdf').absolute_url()
                anexos.append(dic_anexo)
         anexos.sort(key=lambda dic: dic['data'])
         for dic in anexos:
             arquivo_doc = cStringIO.StringIO(str(dic['arquivo'].data))
-            texto_anexo = PdfFileReader(arquivo_doc)
-            merger.append(texto_anexo)
+            try:
+               texto_anexo = PdfFileReader(arquivo_doc, strict=False)
+            except:
+               msg = 'O arquivo "' + str(dic['id']) + '" não é um documento PDF válido.'
+               raise ValueError(msg)
+            else:
+               merger.append(texto_anexo)
         output_file_pdf = cStringIO.StringIO()
         merger.write(output_file_pdf)
         merger.close()
