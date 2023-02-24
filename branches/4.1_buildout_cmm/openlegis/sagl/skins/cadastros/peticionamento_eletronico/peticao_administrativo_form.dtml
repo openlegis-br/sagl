@@ -101,6 +101,39 @@ function addFileField() {
     p.appendChild(document.createElement("br"));
 }
 
+ window.onload = function(){  
+    var url = document.location.toString();
+    if (url.match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+    }
+    //Change hash for page-reload
+    $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').on('shown', function (e) {
+        window.location.hash = e.target.hash;
+    }); 
+} 
+
+$(document).ready(() => {
+  let url = location.href.replace(/\/$/, "");
+   if (location.hash) {
+    const hash = url.split("#");
+    $('#nav_materia a[href="#'+hash[1]+'"]').tab("show");
+    url = location.href.replace(/\/#/, "#");
+    history.replaceState(null, null, url);
+  } 
+
+  $('a[data-toggle="tab"]').on("click", function() {
+    let newUrl;
+    const hash = $(this).attr("href");
+    if(hash == "#home") {
+      newUrl = url.split("#")[0];
+    } else {
+      newUrl = url.split("#")[0] + hash;
+    }
+    newUrl += "";
+    history.replaceState(null, null, newUrl);
+  });
+});
+
 </script>
 
 <script>
@@ -188,6 +221,22 @@ $(document).ready(function(){
    <dtml-else>
       <dtml-call "REQUEST.set('nom_completo', AUTHENTICATED_USER)">
    </dtml-in>
+
+
+<ul class="nav nav-tabs border-0 mt-2" id="nav_materia" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="index-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Dados Básicos</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <dtml-unless cod_peticao>disabled</dtml-unless>" id="doc-tab" data-toggle="tab" href="#docs" role="tab" aria-controls="docs" aria-selected="false">
+      Documentos Acessórios
+    </a>
+  </li>
+</ul>
+
+
+<div class="tab-content bg-white">
+  <div class="tab-pane p-3 border fade show active" id="home">
 
 <form enctype="multipart/form-data" id="peticionamento_form" name="peticionamento_form" method="post" action="peticao_administrativo_salvar_proc">
      <input type="hidden" name="modal" value="1" />              
@@ -320,28 +369,6 @@ $(document).ready(function(){
   </div>
 </dtml-if>
 
-  <dtml-if cod_peticao>
-    <div class="form-row">
-       <div class="col-12">
-         <label class="form-label d-block">Anexos em PDF</label>
-           <small id="link_add_file">
-             <a class="btn btn-sm btn-light mb-3" onclick="addFileField(); return false;" href="#"><i class="fa fa-fw fa-plus"></i>Anexar Arquivo</a>
-           </small>
-         <dtml-in expr="pysc.anexo_peticao_pysc(str(cod_peticao), listar=True)" prefix="file">
-            <dtml-if expr="_.hasattr(sapl_documentos.peticao, file_item)">
-               <dtml-let documento="_.getattr(sapl_documentos.peticao,file_item).absolute_url">
-                  <a target="_blank" href="<dtml-var documento>">
-                    <i class="fa fa-fw fa-file-pdf"></i><dtml-var file_item>
-                  </a>
-                  <a class="btn btn-sm btn-danger" href="javascript:void(0)" onclick="location.href='anexo_excluir?anexo=<dtml-var file_item>&cod_peticao=<dtml-var cod_peticao missing>&modal=1'"> Excluir</a>
-               </dtml-let>
-            </dtml-if>
-         </dtml-in>
-         <span class="d-block mb-2" id="arquivos_anexos"></span>
-         </div>
-    </div>
-  </dtml-if>
-
   <div class="form-row">
     <div class="col-12 mb-3">
       <div class="form-check">
@@ -393,18 +420,76 @@ $(document).ready(function(){
            <button type="submit" id="btn_protocolo" class="btn btn-primary">Protocolar</button>
          </dtml-if>
          <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/peticionamento_eletronico/peticao_excluir_proc?cod_peticao=<dtml-var cod_peticao missing>&modal=1" data-confirm="Deseja realmente excluir esta petição?">Excluir Petição</a> 
-       </form>
 <dtml-else>
   <div class="text-left">
       <input class="btn btn-primary" type="button" value="Cadastrar Petição" onClick="campos_criticar()" />
   </div>
 </dtml-if>
 
- <div class="row">
+ <div class="form-row">
     <div class="col-md-12 mt-2">
        <p class="text-muted small"><i class="fas fa-asterisk text-danger"></i> Campos obrigatórios</p>
     </div>
+ </div>
+
+ </form>
+
+</div></div>
+
+<dtml-if cod_peticao>
+<div class="tab-pane p-3 border fade" id="docs">
+  <dtml-in expr="pysc.anexo_peticao_pysc(str(cod_peticao), listar=True)" prefix="file">
+      <dtml-if sequence-start>
+        <div class="table-responsive mb-3">           
+        <table class="table table-bordered">
+          <thead class="table-secondary">
+            <tr>
+              <th>Identificação do Documento</th>
+              <th>Ações</th>                      
+            </tr>
+          </thead>
+       </dtml-if>
+     <dtml-if expr="_.hasattr(sapl_documentos.peticao, file_item)">
+        <tr>
+          <td>         
+            <dtml-let documento="_.getattr(sapl_documentos.peticao,file_item).absolute_url">
+               <a target="_blank" href="<dtml-var documento>">
+                 <i class="fa fa-fw fa-file-pdf"></i>
+                 <dtml-let titulo="_.getattr(sapl_documentos.peticao,file_item).title_or_id">
+                    <dtml-var titulo>
+                 </dtml-let>
+               </a>
+            </dtml-let>
+          </td>
+          <td>
+             <a class="btn btn-sm btn-danger" href="javascript:void(0)" onclick="location.href='anexo_excluir?anexo=<dtml-var file_item>&cod_peticao=<dtml-var cod_peticao missing>&modal=1'"> Excluir</a>
+          </td>
+        </tr>
+      <dtml-if sequence-end>
+        </table>
+        </div>
+      </dtml-if>
+     </dtml-if>
+  </dtml-in>
+
+  <form class="form-inline" enctype="multipart/form-data" id="anexo_form" name="anexo_form" method="post" action="anexo_salvar">
+     <input type="hidden" name="modal" value="1" />              
+     <input type="hidden" name="hdn_cod_peticao" value="<dtml-var cod_peticao missing>" />
+     <input type="hidden" name="cod_usuario_corrente" value="<dtml-var cod_usuario_corrente>" />
+     <input type="hidden" name="hdn_url" value="peticao_mostrar_proc?modal=1&cod_peticao=<dtml-var cod_peticao missing>#docs" />
+
+     <div class="form-group mb-2">
+        <label for="file_nom_anexo" class="sr-only">Selecione o Documento</label>
+        <input type="file" class="form-control-file" name="file_nom_anexo" id="file_nom_anexo" required>
+     </div>
+     <div class="form-group mx-sm-3 mb-2">
+        <label for="txt_descricao_anexo" class="sr-only">Descrição</label>
+        <input type="text" class="form-control" id="txt_descricao_anexo" name="txt_descricao_anexo" required placeholder="Descrição do Documento" />
+     </div>
+     <button type="submit" class="btn btn-primary btn-sm mb-2">Incluir</button>
+  </form>
 </div>
+</dtml-if>
 
 <script>
   autosize(document.querySelectorAll('textarea'));

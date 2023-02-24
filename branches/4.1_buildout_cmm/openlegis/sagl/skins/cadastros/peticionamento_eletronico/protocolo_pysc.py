@@ -81,7 +81,7 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
     anexos = context.pysc.anexo_peticao_pysc(str(cod_peticao),listar=True)
     for item in anexos:
         id_anexo = string.split(item,'.')[0]
-        nom_doc = 'Anexo ' + string.split(id_anexo,'_')[2]
+        nom_doc = getattr(context.sapl_documentos.peticao, id_anexo + '.pdf').title
         context.zsql.documento_acessorio_administrativo_incluir_zsql(tip_documento=tip_documento, cod_documento=int(cod_documento), nom_autor_documento=txt_interessado, dat_documento=DateTime().strftime('%Y-%m-%d %H:%M:%S'), nom_documento=nom_doc)
         for cod_acessorio in context.zsql.documento_acessorio_administrativo_incluido_codigo_obter_zsql():
             id_pdf = str(cod_acessorio.cod_documento_acessorio)+'.pdf'

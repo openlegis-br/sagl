@@ -1,0 +1,26 @@
+<dtml-try>
+    <dtml-if expr="pysc.arquivo_pdf_validar_pysc(file=file_nom_anexo)">
+       <dtml-call expr="REQUEST.set('nom_arquivo', pysc.anexo_peticao_pysc(hdn_cod_peticao,nomear=True))">
+       <dtml-call expr="sapl_documentos.peticao.manage_addFile(id=nom_arquivo, file=file_nom_anexo, title=txt_descricao_anexo)">
+    </dtml-if>
+<dtml-except>
+  <dtml-let mensagem="'Documento rejeitado !'" mensagem_obs="'O arquivo enviado não é um documento PDF válido.'" tipo_mensagem="'danger'" modal="'1'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>  
+<dtml-else>
+
+  <dtml-let mensagem="'Documento acessório incluído com sucesso!'" url="'peticao_mostrar_proc?cod_peticao='+hdn_cod_peticao+'&modal=1#docs'" modal="'1'">
+    <dtml-var mensagem_emitir>
+  </dtml-let>
+</dtml-try>
+
+<dtml-comment>LOG DE AUDITORIA</dtml-comment>
+<dtml-if dbcon_logs>
+  <dtml-call expr="zsql.logs_registrar_zsql(
+            usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
+            data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
+            modulo       = _.string.split(_['REQUEST']['URL1'],'/')[-1],
+            metodo       = 'anexo_peticao_adicionar',
+            IP           = pysc.get_ip(),
+            cod_registro = hdn_cod_peticao)"> 
+</dtml-if>
