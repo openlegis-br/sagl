@@ -423,19 +423,26 @@ $(function () {
             </dtml-if>
          <dtml-elif prop_devolvida>
            <label for="txt_dat_devolucao" class="d-block"><span style="color: #DE1E1E">Data de Devolução</span></label>
-           <input class="form-control" type="text" id="txt_dat_devolucao" name="txt_dat_devolucao" value="<dtml-var dat_devolucao missing> (<dtml-var txt_justif_devolucao missing>)" disabled />
+           <input class="form-control" type="text" id="txt_dat_devolucao" name="txt_dat_devolucao" value="<dtml-var dat_devolucao missing>" disabled />
          </dtml-if> 
        </div>           
   </dtml-if>  
     </div>
 
+  <dtml-if prop_devolvida>
+    <div class="form-row">
+       <div class="col-12 mb-2">
+         <span style="color: #DE1E1E">Justificativa da devolução:</span> <dtml-var txt_justif_devolucao missing>
+       </div>
+    </div>
+  </dtml-if>
+
     <div class="form-row">       
       <div class="col-12 mb-3">
         <label for="txt_descricao" class="required">Ementa</label>      
-        <textarea class="form-control auto-resize" id="txt_descricao" name="txt_descricao" rows="2" maxlength="400" <dtml-if expr="prop_recebida and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">readonly</dtml-if><dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar']) and prop_enviada or prop_devolvida)">readonly</dtml-if>><dtml-var txt_descricao missing></textarea>      
+        <textarea class="form-control auto-resize" id="txt_descricao" name="txt_descricao" rows="2" maxlength="500" <dtml-if expr="prop_recebida and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">readonly</dtml-if><dtml-if expr="(AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar']) and prop_enviada or prop_devolvida)">readonly</dtml-if>><dtml-var txt_descricao missing></textarea>      
       </div>
     </div>
-
 
 
   <div class="form-row" id="divMat" <dtml-if expr="not _.has_key('cod_proposicao') or ind_mat_ou_doc=='M'">style="display:none;"</dtml-if>>
@@ -491,13 +498,20 @@ $(function () {
   <dtml-if expr="AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar'])">
    <div class="form-row mb-2">  
      <div class="col-12 col-lg-6 mb-3">
-       <label class="form-label d-block">Texto Editável (ODT)</label>     
+       <label class="form-label d-block">Texto Editável (ODT)</label>
+         <dtml-let id_original="_.str(cod_proposicao)+'_original.odt'">
+           <dtml-if "_.hasattr(sapl_documentos.proposicao,id_original)">
+             <dtml-let documento="_.getattr(sapl_documentos.proposicao,id_original).absolute_url">
+               <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Visualização de Arquivo" data-src="<dtml-var portal_url>/generico/view_odt?arquivo_odt=<dtml-var documento>&<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-fw fa-file-alt"></i>ODT Original</button>
+             </dtml-let>
+           </dtml-if>
+         </dtml-let>  
          <dtml-let id_documento="_.str(cod_proposicao)+'.odt'">
             <dtml-if "_.hasattr(sapl_documentos.proposicao,id_documento)">
                <dtml-let documento="_.getattr(sapl_documentos.proposicao,id_documento).absolute_url">
                   <dtml-call expr="REQUEST.set('nome_arquivo',_.str(cod_proposicao)+'.odt')">
                   <dtml-if prop_enviada>
-                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Visualização de Arquivo" data-src="<dtml-var portal_url>/generico/view_odt?arquivo_odt=<dtml-var documento>&<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-fw fa-file-alt"></i>Visualizar</button>
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Visualização de Arquivo" data-src="<dtml-var portal_url>/generico/view_odt?arquivo_odt=<dtml-var documento>&<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-fw fa-file-alt"></i>ODT Revisado</button>
                   <dtml-else>
                     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Edição de Arquivo ODT" data-src="<dtml-var portal_url>/webeditor/editorProposicao?<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" data-toggle="tooltip" data-placement="bottom" title="Editor Online"><i class="fa fa-fw fa-edit"></i>Editar</button>
                     <button type="button" class="btn btn-secondary" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/proposicao/externalEdit_/<dtml-var nome_arquivo>.zem'" data-toggle="tooltip" data-placement="bottom" title="Editar no LibreOffice"><i class="fas fa-fw fa-external-link-alt"></i>LibreOffice</button>
@@ -561,7 +575,8 @@ $(function () {
                   <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/proposicao/texto_pdf_excluir_proc?cod_proposicao=<dtml-var cod_proposicao missing>" data-confirm="Deseja realmente excluir o texto PDF da proposição?"><i class="fas fa-trash"></i> Excluir PDF</a> 
                </dtml-if>                                 
             </dtml-let>
-          <dtml-else>    
+          <dtml-else>
+            <dtml-if expr="des_tipo_autor != 'Parlamentar' and des_tipo_autor != 'Mesa Diretora'">
               <div class="input-group">
                 <div class="custom-file">
                   <input type="file" class="custom-file-input" id="file_nom_arquivo" name="file_nom_arquivo" accept="application/pdf">
@@ -577,7 +592,8 @@ $(function () {
                      <input type="button" class="btn btn-secondary" value="Gerar do ODT" onclick="javascript:texto_pdf_gerar()" />
                    </div>
                 </dtml-if>
-              </div>                
+              </div>
+	    </dtml-if>
           </dtml-if>
      </div>     
    </div>
@@ -658,8 +674,7 @@ $(function () {
                </dtml-if>
                <dtml-if expr="not prop_recebida and not prop_devolvida">
                   <a class="btn btn-danger" href="<dtml-var portal_url>/cadastros/proposicao/texto_pdf_excluir_proc?cod_proposicao=<dtml-var cod_proposicao missing>" data-confirm="Deseja realmente excluir o texto PDF da proposição?"><i class="fas fa-trash"></i> Excluir PDF</a> 
-               </dtml-if>    
-                                          
+               </dtml-if>                                              
             </dtml-let>              
            <dtml-else>
               <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">   
@@ -714,7 +729,7 @@ $(function () {
         <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">
         <dtml-if expr="_.hasattr(sapl_documentos.proposicao,id_documento_assinado) and AUTHENTICATED_USER.has_role(['Autor'])">
            <input class="btn btn-success" type="button" value="Enviar para Protocolo" onClick="proposicao_enviar()" />
-        <dtml-elif expr="_.hasattr(sapl_documentos.proposicao,id_documento) and not _.hasattr(sapl_documentos.proposicao,id_pdf) and AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar']) and des_tipo_autor == 'Parlamentar'">
+        <dtml-elif expr="_.hasattr(sapl_documentos.proposicao,id_documento) and not _.hasattr(sapl_documentos.proposicao,id_pdf) and AUTHENTICATED_USER.has_role(['Autor', 'Assessor Parlamentar']) and (des_tipo_autor == 'Parlamentar' or des_tipo_autor == 'Mesa Diretora')">
            <input class="btn btn-success" type="button" value="Enviar para Revisão" onClick="proposicao_enviar()" />
         </dtml-if>
       </dtml-if>
@@ -733,9 +748,9 @@ $(function () {
                </dtml-let>                
             <dtml-else>
                <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
-                  <dtml-unless dat_solicitacao_devolucao>
-                    <input class="btn btn-primary" type="button" value="Incorporar" onClick="proposicao_incorporar(document.proposicao_form)" />
-                  </dtml-unless>
+                <dtml-unless dat_solicitacao_devolucao>
+                  <input class="btn btn-primary" type="button" value="Incorporar" onClick="proposicao_incorporar(document.proposicao_form)" />
+                </dtml-unless>
                </dtml-if>
             </dtml-if>
          </dtml-if>
@@ -744,7 +759,7 @@ $(function () {
 </dtml-if>
 </form>
 
-<dtml-if expr="_.has_key('cod_proposicao')">
+<dtml-if expr="_.has_key('cod_proposicao') and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
   <form name="observacao_form" method="post" action="proposicao_salvar_observacao_proc">
     <input type="hidden" name="hdn_cod_proposicao" value="<dtml-var cod_proposicao missing>" />
     <div class="form-row mt-3">
@@ -754,7 +769,7 @@ $(function () {
          <dtml-else>
             <legend>Observações</legend>                               
             <label for="txa_txt_observacao" class="d-none required">Observações</label>                      
-            <textarea class="form-control" name="txa_txt_observacao" id="txa_txt_observacao" rows="2" <dtml-if expr=" cod_mat_ou_doc or prop_devolvida">readonly</dtml-if>><dtml-if txt_observacao><dtml-var txt_observacao missing></dtml-if></textarea>
+            <textarea class="form-control" name="txa_txt_observacao" id="txa_txt_observacao" rows="2" <dtml-if expr="cod_mat_ou_doc or prop_devolvida">readonly</dtml-if>><dtml-if txt_observacao><dtml-var txt_observacao missing></dtml-if></textarea>
          </dtml-if cod_mat_ou_doc>	
        </div>
     </div>
@@ -784,6 +799,24 @@ $(function () {
 
 <script>
 autosize(document.querySelectorAll('textarea'));
+</script>
+
+<script>
+tinymce.init({
+  selector: '#txa_txt_observacao',
+  language: 'pt_BR',
+  height: 250,
+  paste_as_text: true,
+  plugins: [
+    'advlist autolink link image lists charmap print preview hr anchor pagebreak',
+    'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
+    'table emoticons template paste help'
+  ],
+  toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
+    ' link image | print preview media fullpage | ',
+  menubar: 'edit view insert format tools help',
+  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+});
 </script>
 
 <dtml-var standard_html_footer>
