@@ -81,7 +81,7 @@ def materias(lst_materias):
         if dic['parecer']!= 0 and dic['parecer']!= '':
             dic_itens = []
             for parecer in dic['pareceres']:
-                item = parecer['link_materia']'
+                item = parecer['link_materia']
                 dic_itens.append(item) 
             itens = ', '.join(['%s' % (value) for (value) in dic_itens])
             tmp_data+='\t\t<para style="P2"><b>Pareceres de Comissões: </b><font color="#126e90">' + itens + '</font></para>'
