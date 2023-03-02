@@ -111,14 +111,10 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia,
         dic_parecer = {}
         comissao = context.zsql.comissao_obter_zsql(cod_comissao=relatoria.cod_comissao)[0]
         relator = context.zsql.parlamentar_obter_zsql(cod_parlamentar=relatoria.cod_parlamentar)[0]
-        dic_parecer['relatoria'] = 'Relatoria: ' + relator.nom_parlamentar
-        dic_parecer['comissao'] = comissao.nom_comissao
-        dic_parecer['conclusao'] = ''
-        dic_parecer['resultado'] = ''
         dic_parecer["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/parecer_comissao/' + str(relatoria.cod_relatoria) + '_parecer.pdf' + '">' + 'Parecer ' + comissao.sgl_comissao + ' nº ' + str(relatoria.num_parecer) + '/' + str(relatoria.ano_parecer) + '</link>'
         lst_pareceres.append(dic_parecer)
         lst_qtde_pareceres.append(relatoria.cod_relatoria)
-    dic["pareceres"] = ', '.join(['%s' % (value) for (value) in lst_pareceres])  
+    dic["pareceres"] = lst_pareceres
     dic["parecer"] = len(lst_qtde_pareceres)
 
     dic['norma_vinculada'] = ''
