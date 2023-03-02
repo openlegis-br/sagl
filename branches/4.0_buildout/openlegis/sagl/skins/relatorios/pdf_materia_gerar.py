@@ -78,6 +78,8 @@ def materias(lst_materias):
             tmp_data+='\t\t<para style="P2"> '+ txt_ementa +' </para>\n'
             tmp_data+='\t\t<para style="P2"><b>Autoria: </b>' + str(dic['nom_autor']) + '</para>'
             tmp_data+='\t\t<para style="P2"><b>Data de Apresentação: </b>' + str(dic['dat_apresentacao']) + '</para>'
+        if dic['parecer']!= 0 and dic['parecer']!= '':
+            tmp_data+='\t\t<para style="P2"><b>Pareceres de Comissões: </b>' + dic['pareceres'] + '</para>'
         if dic['localizacao_atual'] !=None and dic['localizacao_atual'] !="":
             tmp_data+='\t\t<para style="P2"><b>Localização Atual: </b>' + dic['localizacao_atual'] + '</para>'
         if dic['des_situacao'] !=None and dic['des_situacao'] !=" ":
