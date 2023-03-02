@@ -87,9 +87,6 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia,
         lista_autor.append(nome_autor)
     dic["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor])
     dic['localizacao_atual'] = ''
-    dic['des_situacao'] = ''
-    dic['dat_tramitacao'] = ''
-
     for tramitacao in context.zsql.tramitacao_obter_zsql(cod_materia=materia.cod_materia,ind_ult_tramitacao=1):
         if tramitacao.cod_unid_tram_dest:
            cod_unid_tram = tramitacao.cod_unid_tram_dest
@@ -106,6 +103,19 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia,
         dic['des_situacao'] = tramitacao.des_status
         dic['ultima_acao'] = tramitacao.txt_tramitacao
         dic['dat_tramitacao'] = tramitacao.dat_tramitacao
+
+    dic["parecer"] = ''
+    lst_qtde_pareceres = []
+    lst_pareceres = []
+    for relatoria in context.zsql.relatoria_obter_zsql(cod_materia=materia.cod_materia):
+        dic_parecer = {}
+        comissao = context.zsql.comissao_obter_zsql(cod_comissao=relatoria.cod_comissao)[0]
+        relator = context.zsql.parlamentar_obter_zsql(cod_parlamentar=relatoria.cod_parlamentar)[0]
+        dic_parecer["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/parecer_comissao/' + str(relatoria.cod_relatoria) + '_parecer.pdf' + '">' + 'Parecer ' + comissao.sgl_comissao + ' nº ' + str(relatoria.num_parecer) + '/' + str(relatoria.ano_parecer) + '</link>'
+        lst_pareceres.append(dic_parecer)
+        lst_qtde_pareceres.append(relatoria.cod_relatoria)
+    dic["pareceres"] = lst_pareceres
+    dic["parecer"] = len(lst_qtde_pareceres)
 
     dic['norma_vinculada'] = ''
     for norma_vinculada in context.zsql.materia_buscar_norma_juridica_zsql(cod_materia=materia.cod_materia):
