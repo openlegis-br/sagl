@@ -142,37 +142,6 @@ $(document).ready(() => {
   </div>
 </div>
 
-<a
- <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='0'">
-    class="btn btn-sm btn-primary mb-3 disabled" 
-  <dtml-else>
-    class="btn btn-sm btn-primary mb-3"   
-  </dtml-if>
-href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_enviado=0">Em elaboração</a>
-<a
-  <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='1'">
-     class="btn btn-sm btn-primary mb-3 disabled"
-  <dtml-else> 
-     class="btn btn-sm btn-primary mb-3"      
-  </dtml-if>
-  href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_enviado=1">Enviadas
-</a>
-<a
-  <dtml-if expr="_.has_key('ind_devolvido') and ind_devolvido=='1'">
-     class="btn btn-sm btn-primary mb-3 disabled"
-  <dtml-else> 
-     class="btn btn-sm btn-primary mb-3"      
-  </dtml-if>
-  href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_devolvido=1">Devolvidas
-</a>
-
-<dtml-unless ind_enviado>
-  <dtml-call expr="REQUEST.set('ind_enviado', '0')">
-</dtml-unless>
-<dtml-unless ind_devolvido>
-  <dtml-call expr="REQUEST.set('ind_devolvido', 0)">
-</dtml-unless>
-
   <dtml-if expr="AUTHENTICATED_USER.has_role(['Assessor Parlamentar'])">
     <dtml-in expr="zsql.assessor_parlamentar_obter_zsql(col_username=AUTHENTICATED_USER.getUserName())">
       <dtml-in expr="zsql.autor_obter_zsql(cod_parlamentar=cod_parlamentar)">
@@ -182,6 +151,53 @@ href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_envia
   <dtml-else>
     <dtml-call expr="REQUEST.set('col_username',AUTHENTICATED_USER.getUserName())">
   </dtml-if>
+
+<a
+ <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='0'">
+    class="btn btn-sm btn-primary mb-3 disabled" 
+  <dtml-else>
+    class="btn btn-sm btn-primary mb-3"   
+  </dtml-if>
+href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_enviado=0">Em elaboração
+  <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado='0', ind_devolvido='0', col_username=col_username)">
+     <dtml-if sequence-start>
+         [<dtml-var sequence-length>]
+     </dtml-if sequence-start>
+  </dtml-in>
+</a>
+<a
+  <dtml-if expr="_.has_key('ind_enviado') and ind_enviado=='1'">
+     class="btn btn-sm btn-primary mb-3 disabled"
+  <dtml-else> 
+     class="btn btn-sm btn-primary mb-3"      
+  </dtml-if>
+  href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_enviado=1">Enviadas
+  <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado='1', ind_devolvido='0', col_username=col_username)">
+     <dtml-if sequence-start>
+         [<dtml-var sequence-length>]
+     </dtml-if sequence-start>
+  </dtml-in>
+</a>
+<a
+  <dtml-if expr="_.has_key('ind_devolvido') and ind_devolvido=='1'">
+     class="btn btn-sm btn-primary mb-3 disabled"
+  <dtml-else> 
+     class="btn btn-sm btn-primary mb-3"      
+  </dtml-if>
+  href="<dtml-var portal_url>/cadastros/proposicao/proposicao_index_html?ind_devolvido=1">Devolvidas
+  <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_devolvido='1', col_username=col_username)">
+     <dtml-if sequence-start>
+         [<dtml-var sequence-length>]
+     </dtml-if sequence-start>
+  </dtml-in>
+</a>
+
+<dtml-unless ind_enviado>
+  <dtml-call expr="REQUEST.set('ind_enviado', '0')">
+</dtml-unless>
+<dtml-unless ind_devolvido>
+  <dtml-call expr="REQUEST.set('ind_devolvido', 0)">
+</dtml-unless>
 
 <dtml-if expr="ind_enviado=='0' and ind_devolvido==0">
 <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_enviado=ind_enviado, ind_devolvido=ind_devolvido, col_username=col_username)">
