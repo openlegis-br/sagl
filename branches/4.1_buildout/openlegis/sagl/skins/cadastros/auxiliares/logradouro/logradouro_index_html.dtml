@@ -1,20 +1,33 @@
 <dtml-var standard_html_header>
 
+
 <script type="text/javascript">
 
 $(document).ready(function() {
-
-    $('#logradouros').DataTable( {
+    // Setup - add a text input to each footer cell
+    $('#logradouros tfoot td').each(function () {
+        var title = $(this).text();
+        $(this).html('<input type="text" class="form-control form-control-sm" placeholder="' + title + '" />');
+    });
+    var table = $('#logradouros').DataTable( {
+        initComplete: function () {
+            // Apply the search
+            this.api()
+                .columns()
+                .every(function () {
+                    var that = this;
+                     $('input', this.footer()).on('keyup change clear', function () {
+                        if (that.search() !== this.value) {
+                            that.search(this.value).draw();
+                        }
+                    });
+                });
+        },
         "responsive": true,
         "bStateSave": true,        
-        "fnStateSave": function (oSettings, oData) {
-            localStorage.setItem('loDataTable', JSON.stringify(oData));
-        },
-        "fnStateLoad": function (oSettings) {
-            return JSON.parse(localStorage.getItem('loDataTable'));
-        },
         "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
         "lengthChange": true,
+        "order": [[ 0, "asc" ]],
         "buttons": [
             {
                 extend: 'collection',
@@ -60,12 +73,21 @@ $(document).ready(function() {
             next:       "Próximo",
             last:       "Último"
           },
+         "buttons": {
+           print: "Imprimir",
+           copy: "Copiar",
+           copyTitle: "Cópia bem sucedida",
+           copySuccess: {
+            1: "Uma linha copiada com sucesso",
+            _: "%d linhas copiadas com sucesso"
+          }
+        }
         }
     });
+    table.buttons().container()
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
 });
-
 </script>
-
 
  <div class="row mb-2">
       <div class="col-12 col-md-8 align-self-center">
@@ -102,7 +124,20 @@ $(document).ready(function() {
             </dtml-if>
         </tr>
     <dtml-if sequence-end>
+    <tfoot>
+     <tr>  
+      <td>Logradouro</td>
+      <td>Bairro</td>
+      <td>CEP</td>
+      <td>Localidade</td>
+     </tr>
+    </tfoot>
    </table>
+    <div id="panelBtn" class="d-print-none" style="margin-bottom: 20px;">
+      <div class="row">
+         <div class="col-sm-12 mt-2"></div>
+      </div>
+    </div>
     </dtml-if sequence-end>
  <dtml-else>
    <p>Nenhum logradouro cadastrado.</td>
