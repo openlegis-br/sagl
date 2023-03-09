@@ -2833,12 +2833,14 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         session = requests.Session()
         session.auth = (API_USER, API_PASSWORD)
         auth = session.post(API_ENDPOINT)
-        response = session.post(API_ENDPOINT, data=self.create_payload(cod_materia))
+        with session as s:
+             response = s.post(API_ENDPOINT, data=self.create_payload(cod_materia))
 
-        if (response.status_code == 200):
+        if (str(response.status_code) == '200'):
             r = response.json()
             protocolo = r[0]['numero_protocolo']
-            data = DateTime(r[0]['criado_em']).strftime('%d/%m/%Y às %H:%M:%S')
+            data = r[0]['criado_em']
+            #data = DateTime(r[0]['criado_em']).strftime('%d/%m/%Y às %H:%M:%S')
             return 'Protocolado na Prefeitura Municipal sob nº ' + str(protocolo) + ' em ' + str(data)
         else:
             r = response.json()
