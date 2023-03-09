@@ -81,7 +81,7 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
     anexos = context.pysc.anexo_peticao_pysc(str(cod_peticao),listar=True)
     for item in anexos:
         id_anexo = string.split(item,'.')[0] + '.pdf'
-        arquivo = getattr(context.sapl_documentos.peticao, id_anexo)
+        arquivo = context.sapl_documentos.peticao[id_anexo]
         nom_doc = arquivo.title
         data_doc = arquivo.bobobase_modification_time()
         data = DateTime(data_doc, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
