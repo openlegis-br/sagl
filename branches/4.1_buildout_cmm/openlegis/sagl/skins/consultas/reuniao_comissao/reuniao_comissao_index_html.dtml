@@ -39,25 +39,10 @@
 </dtml-if>
 
 <div class="form-row">
-  <div class="col-12 col-sm-6 mt-1 mb-4">
-     <label for="lst_comissao">Selecione a Comissão</label>
-     <select class="custom-select" id="lst_comissao" name="lst_comissao" onChange="atualiza_comissao(lst_ano_reuniao[lst_ano_reuniao.selectedIndex].value, lst_comissao[lst_comissao.selectedIndex].value, lst_situacao[lst_situacao.selectedIndex].value)">
-         <option value=""></option>
-         <dtml-in expr="zsql.comissao_obter_zsql()">
-             <option value="<dtml-var cod_comissao missing>" 
-               <dtml-if expr="_.has_key('cod_comissao_sel') and cod_comissao == cod_comissao_sel">
-                 selected
-                 <dtml-call expr="REQUEST.set('cod_comissao_sel', cod_comissao)">
-               </dtml-if>>
-                <dtml-var nom_comissao>
-             </option>
-         </dtml-in>
-     </select>
-  </div> 
-   <div class="col-6 col-sm-3 mt-1 mb-4">
+  <div class="col-12 col-sm-3 mt-1 mb-4">
     <label for="lst_ano_reuniao">Selecione o Ano</label>
     <select class="custom-select" id="lst_ano_reuniao" name="lst_ano_reuniao"  onChange="atualiza_ano_reuniao(lst_ano_reuniao[lst_ano_reuniao.selectedIndex].value, lst_comissao[lst_comissao.selectedIndex].value, lst_situacao[lst_situacao.selectedIndex].value)">
-      <option value=""></option>    
+      <option value="">Todos</option>    
       <dtml-in expr="zsql.ano_reuniao_comissao_obter_zsql()">
         <option value="<dtml-var ano_reuniao missing>" 
           <dtml-if expr="((not _.has_key('ano_reuniao_sel') and (_.DateTime().year() == ano_reuniao)))
@@ -70,14 +55,29 @@
         </option>
       </dtml-in>
     </select>
-   </div>
-   <div class="col-6 col-sm-3 mt-1 mb-4">
+  </div>
+  <div class="col-12 col-sm-6 mt-1 mb-4">
+     <label for="lst_comissao">Selecione a Comissão</label>
+     <select class="custom-select" id="lst_comissao" name="lst_comissao" onChange="atualiza_comissao(lst_ano_reuniao[lst_ano_reuniao.selectedIndex].value, lst_comissao[lst_comissao.selectedIndex].value, lst_situacao[lst_situacao.selectedIndex].value)">
+         <option value="">Todas</option>
+         <dtml-in expr="comissoes_carregar_pysc()" mapping>
+             <option value="<dtml-var cod_comissao missing>" 
+               <dtml-if expr="_.has_key('cod_comissao_sel') and cod_comissao == cod_comissao_sel">
+                 selected
+                 <dtml-call expr="REQUEST.set('cod_comissao_sel', cod_comissao)">
+               </dtml-if>>
+                <dtml-var nom_comissao>
+             </option>
+         </dtml-in>
+     </select>
+  </div> 
+  <div class="col-12 col-sm-3 mt-1 mb-4">
    <dtml-if expr="not _.has_key('status_sel')">
-      <dtml-call expr="REQUEST.set('status_sel', 'Agendadas')">
+      <dtml-call expr="REQUEST.set('status_sel', '')">
    </dtml-if>   
     <label for="lst_situacao">Situação</label>
     <select class="custom-select" id="lst_situacao" name="lst_situacao"  onChange="atualiza_situacao_reuniao(lst_ano_reuniao[lst_ano_reuniao.selectedIndex].value, lst_comissao[lst_comissao.selectedIndex].value, lst_situacao[lst_situacao.selectedIndex].value)">
-      <option value=""></option> 
+      <option value="">Qualquer</option> 
       <option value="Agendadas"
           <dtml-if expr="(_.has_key('status_sel') and str(status_sel)=='Agendadas')">
              selected
@@ -87,7 +87,7 @@
              selected
           </dtml-if>>Encerradas</option>          
     </select>
-   </div>   
+  </div>   
 </div>
 
 <dtml-if expr="not _.has_key('cod_comissao_sel')">
