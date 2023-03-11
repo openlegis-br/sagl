@@ -18,7 +18,7 @@ if svalue == '':
        dic = {}
        dic['cod_comissao'] = reuniao.cod_comissao
        dic['nom_comissao'] = comissao.nom_comissao
-   comissaoArray.append(dic)
+       comissaoArray.append(dic)
 
 if svalue != '':
    for reuniao in context.zsql.reuniao_comissao_obter_zsql(ano_reuniao = svalue):
@@ -26,7 +26,7 @@ if svalue != '':
        dic = {}   
        dic['cod_comissao'] = reuniao.cod_comissao
        dic['nom_comissao'] = comissao.nom_comissao
-   comissaoArray.append(dic)
+       comissaoArray.append(dic)
 
 comissaoArray = [
     e
