@@ -5,7 +5,7 @@
 $(document).ready(function() {
     var table = $('#jdTable').DataTable( {
         "responsive": true,
-         "order": [[ 2, "asc" ], [ 0, "asc" ]],
+        "order": [[ 2, "asc" ], [ 0, "asc" ]],
         "buttons": [
             {
                 extend: 'collection',
@@ -62,8 +62,26 @@ $(document).ready(function() {
         }
         }
     });
+
+    $('#lst_tip_comissao').on('change', function(){
+     table.columns(1).search(this.value).draw();   
+    });
+
+    $(".filter-atividade").on("change", function(e) {
+      var searchTerms = [];
+      $.each($(".filter-atividade"), function(i, elem) {
+          if ($(elem).prop("checked")) {
+              if($(this).val() != "all"){
+                  searchTerms.push("^" + $(this).val() + "$");
+              }
+          }
+      });
+      table.column(2).search(searchTerms.join("|"), true, false, true).draw();
+    });
+
     table.buttons().container()
-        .appendTo( '#panelBtn .col-sm-12:eq(0)' );  
+        .appendTo( '#panelBtn .col-sm-12:eq(0)' );
+
 });
 </script>
 
@@ -78,37 +96,78 @@ $(document).ready(function() {
       </div>
  </div>
 
-        <table id="jdTable" class="table ">
-            <thead class="table-secondary">
-                <tr>
-                    <th>Nome</th>
-                    <th>Tipo</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <dtml-in expr="zsql.comissao_obter_zsql(ind_excluido=0,)">
-                    <tr>
-                        <td>
-                           <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
-                              <a href="<dtml-var portal_url>/cadastros/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><dtml-var nom_comissao></a>
-                           <dtml-else>
-                              <a href="<dtml-var portal_url>/consultas/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><dtml-var nom_comissao></a>
-                           </dtml-if>
-                        </td>
-                        <td><dtml-var nom_tipo_comissao></td>
-                        <td>
-                            <dtml-if dat_extincao>Inativa<dtml-else>Ativa</dtml-if>
-                        </td>
-                    </tr>
-                </dtml-in>
-            </tbody>
-        </table>
-
-    <div id="panelBtn" class="d-print-none" style="margin-bottom: 20px;">
-      <div class="row">
-         <div class="col-sm-12 mt-2"></div>
-      </div>
+ <div class="row">
+    <div class="col-12 col-lg-7">
+       <div class="form-group row">
+         <label for="lst_tip_comissao" class="col-12 col-sm-4 col-form-label">Tipo de Comissão:</label>
+         <div class="col-12 col-sm-8">
+           <select class="custom-select" id="lst_tip_comissao" name="lst_tip_comissao">
+              <option value="">Todos</option>
+              <dtml-in expr="zsql.tipo_comissao_obter_zsql()">   
+                 <option 
+                   value="<dtml-var nom_tipo_comissao>"><dtml-var nom_tipo_comissao></option>
+              </dtml-in>
+           </select>
+         </div>
+       </div>
     </div>
+    <div class="col-12 col-lg-5">
+        <div class="form-group row">
+           <div class="col-12 text-center">
+             <div class="form-check form-check-inline">
+              <input class="filter-atividade form-check-input" type="radio" name="filter" id="ativas" value="Ativa" />
+              <label class="form-check-label" for="ativas">
+                Ativas
+              </label>
+             </div>
+             <div class="form-check form-check-inline">
+              <input class="filter-atividade form-check-input" type="radio" name="filter" id="inativas" value="Inativa" />
+              <label class="form-check-label" for="inativas">
+                Inativas
+              </label>
+             </div>
+             <div class="form-check form-check-inline">
+              <input class="filter-atividade form-check-input" type="radio" name="filter" id="todas" value="all"  checked="checked" />
+              <label class="form-check-label" for="todas">
+                Todos os status
+              </label>
+             </div>
+           </div>
+         </div>
+    </div>
+ </div>
+
+ <table id="jdTable" class="table ">
+     <thead class="table-secondary">
+         <tr>
+             <th>Nome</th>
+             <th>Tipo</th>
+             <th>Status</th>
+         </tr>
+     </thead>
+     <tbody>
+         <dtml-in expr="zsql.comissao_obter_zsql(ind_excluido=0,)">
+             <tr>
+                 <td>
+                    <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Comissao'])">
+                       <a href="<dtml-var portal_url>/cadastros/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><dtml-var nom_comissao></a>
+                    <dtml-else>
+                       <a href="<dtml-var portal_url>/consultas/comissao/comissao_mostrar_proc?cod_comissao=<dtml-var cod_comissao>"><dtml-var nom_comissao></a>
+                    </dtml-if>
+                 </td>
+                 <td><dtml-var nom_tipo_comissao></td>
+                 <td>
+                     <dtml-if dat_extincao>Inativa<dtml-else>Ativa</dtml-if>
+                 </td>
+             </tr>
+         </dtml-in>
+     </tbody>
+ </table>
+
+ <div id="panelBtn" class="d-print-none" style="margin-bottom: 20px;">
+   <div class="row">
+      <div class="col-sm-12 mt-2"></div>
+   </div>
+ </div>
 
 <dtml-var standard_html_footer>
