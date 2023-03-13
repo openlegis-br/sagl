@@ -473,7 +473,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def carga_comissao_gerar(self, inf_basicas_dic, dic_materia, nom_comissao, presidente, vicepresidente, membro, suplente):
         url = self.sapl_documentos.modelo.absolute_url() + "/carga_comissao.odt"
-        template_file = cStringIO.StringIO(urllib.urlopen(url).read())
+        odtFile = cStringIO.StringIO(six.moves.urllib.request.urlopen(url).read())
         output_file_odt = "carga_comissao.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
@@ -1336,12 +1336,18 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         template_file = cStringIO.StringIO(str(modelo.data))
         brasao_file = self.get_brasao()
         exec('brasao = brasao_file')
-        # atribui imagem1 no locals
-        image_one = self.get_proposicao_image_one(num_proposicao)
-        exec ('image1 = image_one')
-        # atribui imagem2 no locals
-        image_two = self.get_proposicao_image_two(num_proposicao)
-        exec ('image2 = image_two')
+        if inf_basicas_dic['des_tipo_proposicao'] == 'Requerimento de Solicitação':
+           # atribui imagem1 no locals
+           id_imagem1 = str(inf_basicas_dic['cod_proposicao'])+'_image1.jpg'
+           if hasattr(self.sapl_documentos.proposicao, id_imagem1):
+              image_one = self.get_proposicao_image_one(inf_basicas_dic['cod_proposicao'])
+              exec ('image1 = image_one')
+           # atribui imagem2 no locals
+           id_imagem2 = str(inf_basicas_dic['cod_proposicao'])+'_image2.jpg'
+           if hasattr(self.sapl_documentos.proposicao, id_imagem2):
+              image_two = self.get_proposicao_image_two(inf_basicas_dic['cod_proposicao'])
+              exec ('image2 = image_two')
+
         output_file_odt = "%s"%nom_arquivo
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
@@ -2912,6 +2918,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             r = response.json()
             msg = r[0]['Detail'] + 'Houve um erro ao enviar a matéria para a Prefeitura. Código da matéria: ' + cod_materia
             raise ValueError(msg)
+
 
 
     def cep_buscar(self, numcep):

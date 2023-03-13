@@ -112,6 +112,7 @@
        }
   } 
 
+
 $(document).ready(function () {
   bsCustomFileInput.init()
 })
@@ -215,6 +216,34 @@ $(function () {
     })
 }); 
 
+</script>
+
+<script>
+    $(function () {
+        $("#postjq").click(function (event)
+        {
+            event.preventDefault();
+            var $post = {};
+            $post.lst_tip_proposicao = $("#lst_tip_proposicao option:selected").text();
+            $post.lst_tip_id_basica = $('#lst_tip_id_basica').val();
+            $post.txt_num_ident_basica = $('#txt_num_ident_basica').val();
+            $post.txt_ano_ident_basica = $('#txt_ano_ident_basica').val();
+            $.ajax({
+                url: 'ementa_buscar_pysc',
+                type: 'POST',
+                data: $post,
+                dataType: 'json',
+                success:function(response){
+                    var len = response.length;
+                    $("#txt_descricao").empty();
+                    for( var i = 0; i<len; i++){
+                        var ementa = response[i]['ementa'];
+                        $("#txt_descricao").val(ementa);
+                    }
+                }
+            });
+        });
+    });
 </script>
 
 <dtml-unless dat_envio>
@@ -384,8 +413,7 @@ $(function () {
                             selected
                          </dtml-if>
                        </dtml-if>
-                       value="<dtml-var tip_proposicao>&<dtml-var ind_mat_ou_doc>&<dtml-var nom_modelo url_quote>"><dtml-var des_tipo_proposicao>
-                     </option>
+                       value="<dtml-var tip_proposicao>&<dtml-var ind_mat_ou_doc>&<dtml-var nom_modelo url_quote>"><dtml-var des_tipo_proposicao></option>
                    </dtml-if>
                 <dtml-else>
                    <option
@@ -394,11 +422,10 @@ $(function () {
                            selected
                         </dtml-if>
                      </dtml-if>
-                     value="<dtml-var tip_proposicao>&<dtml-var ind_mat_ou_doc>&<dtml-var nom_modelo url_quote>"><dtml-var des_tipo_proposicao>
-                   </option>
+                     value="<dtml-var tip_proposicao>&<dtml-var ind_mat_ou_doc>&<dtml-var nom_modelo url_quote>"><dtml-var des_tipo_proposicao></option>
                 </dtml-if>
               </dtml-in>
-         </select>       
+         </select>     
        </div>
   <dtml-if cod_proposicao>       
        <div class="col-12 col-md-6 mb-3"> 
@@ -458,7 +485,6 @@ $(function () {
       </div>
     </div>
 
-
   <div class="form-row" id="divMat" <dtml-if expr="not _.has_key('cod_proposicao') or ind_mat_ou_doc=='M'">style="display:none;"</dtml-if>>
     <div class="col-12 col-md-6 mb-3">
       <label for="lst_tip_id_basica">Matéria Principal</label>
@@ -477,22 +503,25 @@ $(function () {
              </dtml-in>
           </select>
     </div>
-    <div class="col-6 col-md-3 mb-3">
+    <div class="col-4 col-md-2 mb-3">
       <label for="txt_num_ident_basica">Número</label> 
       <input class="form-control number" type="number" id="txt_num_ident_basica" name="txt_num_ident_basica" value="<dtml-var num_ident_basica_sel missing null="1">" 
         <dtml-if "not _.has_key('num_ident_basica_sel') or prop_recebida">
            disabled 
         </dtml-if>  />    
     </div>
-    <div class="col-6 col-md-3 mb-3">
+    <div class="col-4 col-md-2 mb-3">
       <label for="txt_ano_ident_basica">Ano</label>
       <input class="form-control year" type="number" id="txt_ano_ident_basica" name="txt_ano_ident_basica" value="<dtml-var ano_ident_basica_sel missing>" 
         <dtml-if "not _.has_key('ano_ident_basica_sel') or prop_recebida"> 
            disabled
         </dtml-if> />
     </div>
+    <div class="col-4 col-md-2 mb-3">
+        <label class="label" for="postjq"><span class="text-white">Obter Ementa</span></label>
+        <input id="postjq" type="button" class="btn btn-secondary btn-block" value="Obter Ementa" />
+    </div>
   </div>
-
 
   <dtml-if cod_proposicao>
     <div class="form-row">       
