@@ -473,7 +473,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
     def carga_comissao_gerar(self, inf_basicas_dic, dic_materia, nom_comissao, presidente, vicepresidente, membro, suplente):
         url = self.sapl_documentos.modelo.absolute_url() + "/carga_comissao.odt"
-        odtFile = cStringIO.StringIO(six.moves.urllib.request.urlopen(url).read())
+        template_file = cStringIO.StringIO(six.moves.urllib.request.urlopen(url).read())
         output_file_odt = "carga_comissao.odt"
         renderer = Renderer(template_file, locals(), output_file_odt, pythonWithUnoPath='/usr/bin/python3',forceOoCall=True)
         renderer.run()
