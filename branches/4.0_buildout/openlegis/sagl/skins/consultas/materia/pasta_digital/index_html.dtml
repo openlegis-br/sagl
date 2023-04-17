@@ -1,0 +1,197 @@
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1">
+    <title>Pasta Digital - <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></dtml-in></title>
+    <link href="styles.css" rel="stylesheet">
+
+    <script src="scripts.js"></script>
+    <script type="text/javascript">window.application = "/";</script>
+    <script>
+        function load(iframe) {
+            var contentWindow = iframe.contentWindow;
+            contentWindow.focus();
+            var viewerContainer = contentWindow.document.getElementById('viewerContainer');
+            var antes = 0;
+            var depois = 0;
+            contentWindow.onkeydown = function (evt) {
+                evt = evt || window.event;
+                var key = evt.keyCode || evt.which;
+                if (key == 33 && viewerContainer.scrollTop == 0) {
+                    prevPagina();
+                } else if (key == 34 && viewerContainer.scrollTop + viewerContainer.offsetHeight == viewerContainer.scrollHeight) {
+                    nextPagina();
+                }
+            }
+
+            contentWindow.onwheel = function (e) {
+                if (e.deltaY < 0) {
+                    depois = 0;
+                } else if (e.deltaY > 0) {
+                    antes = 0;
+                }
+                if (e.deltaY < 0 && viewerContainer.scrollTop == 0) {
+                    if (antes++ > 1) {
+                        antes = 0;
+                        prevPagina();
+                    }
+                }
+                if (e.deltaY > 0 && viewerContainer.scrollTop + viewerContainer.offsetHeight == viewerContainer.scrollHeight) {
+                    if (depois++ > 1) {
+                        depois = 0;
+                        nextPagina();
+                    }
+                }
+            };
+        }
+
+        function prevPagina() {
+            var pagina = parseInt($('#pagina').val()) - 1;
+            if (pagina < 1) return;
+            $('#pagina').val(pagina);
+            goPagina();
+        }
+
+        function nextPagina() {
+            var pagina = parseInt($('#pagina').val()) + 1;
+            if ($('a[data-pagina-geral="' + pagina + '"]').length <= 0) return;
+            $('#pagina').val(pagina);
+            goPagina();
+        }
+
+        function goPagina() {
+            var pagina = $('#pagina').val();
+            if (!pagina) {
+                return;
+            }
+            $('.pagina-atual').removeClass('pagina-atual');
+            var a = $('a[data-pagina-geral="' + pagina + '"]');
+            a.addClass('pagina-atual');
+            var link = a.attr('href');
+            if (!link) {
+                alert('Página inválida!');
+                return;
+            }
+            $('#iframeViewer').attr('src', link);
+        }
+        $(function () {
+            $('#pagina').keypress(function (e) {
+                if (event.keyCode == 13) {
+                    goPagina();
+                    return false;
+                }
+            });
+            $('.link-pagina').click(function () {
+                $('#pagina').val($(this).data('pagina-geral'));
+                $('.pagina-atual').removeClass('pagina-atual');
+                $(this).addClass('pagina-atual');
+            });
+        });
+
+    </script>
+</head>
+
+<body class="print">
+    <div>
+        <nav class="navbar navbar-inverse navbar-static-top navbar-fixed-side navbar-fixed-side-left">
+            <dtml-call expr="REQUEST.set('existe_logo', 0)">
+            <dtml-call expr="REQUEST.set('id_logo', sapl_documentos.props_sagl.id_logo)">
+            <dtml-in expr="sapl_documentos.props_sagl.objectValues('Image')">
+              <dtml-if expr="id == id_logo">
+                <dtml-call expr="REQUEST.set('existe_logo', 1)">
+              </dtml-if>
+            </dtml-in>
+            <div class="navbar-header-logo">
+               <dtml-if "not existe_logo">
+                  <img class="img-fluid float-left" src="<dtml-var portal_url>/imagens/brasao.gif" alt="Brasão da Casa Legislativa" />
+               <dtml-else>
+                  <img class="img-fluid float-left" src="sapl_documentos/props_sagl/<dtml-var id_logo>" alt="Brasão da Casa Legislativa" />
+               </dtml-if>
+                <h1><dtml-var "sapl_documentos.props_sagl.nom_casa" missing></h1>
+            </div>
+            <div class="col-lg-12">
+               <div class="row text-center">
+                 <p class="h4">Pasta Digital - <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></dtml-in></p>
+               </div>
+            </div>
+            <div class="container">
+<form action="processo_integral" method="post" target="_blank">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Navegação</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <div class="text-center">
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="form-inline">
+                            <div class="form-group col-md-9">
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        Página
+                                    </div>
+                                    <input type="text" class="form-control" id="pagina" placeholder="Documento" value="1" autocomplete="off">
+                                    <div class="input-group-btn">
+                                        <a class="btn btn-danger" href="javascript: goPagina()" title="Exibir">Exibir</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group text-center col-md-3">
+                                <div class="input-group">
+                                    <div class="input-group-btn">
+                                        <a class="btn btn-success" href="javascript: prevPagina()" title="Página anterior"><span class="fa fa-backward"></span></a>
+                                    </div>
+
+                                    <div class="input-group-btn">
+                                        <a class="btn btn-success" href="javascript: nextPagina()" title="Próxima página"><span class="fa fa-forward"></span></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <dtml-in expr="pastadigital(cod_materia=str(cod_materia))" mapping>
+                       <dtml-if sequence-start>
+                         <div id="navbar" class="navbar-collapse collapse">
+                           <ol>
+                       </dtml-if>
+                           <li>
+                            <i aria-hidden="true" class="fa fa-file-pdf-o"></i>
+                            <a data-id="<dtml-var cod_materia>" data-pagina="<dtml-var sequence-number>" data-pagina-geral="<dtml-var sequence-number>" href="<dtml-var portal_url>/js/pdfjs/web/viewer?file=<dtml-var url>" target="iframeViewer" title="<dtml-var title> - <dtml-var data>" class="link-pagina titulo <dtml-if sequence-start>pagina-atual</dtml-if>"><dtml-var title> </a> 
+                            <dtml-comment><span class="badge"><dtml-var paginas_doc> pág.</span></dtml-comment>
+                            <dtml-call expr="REQUEST.set('id_doc', _['sequence-number'])">
+                            <dtml-in expr="paginas" mapping>
+                              <ul>
+                                 <li>
+                                    <a data-pagina="<dtml-var sequence-number>" data-pagina-geral="<dtml-var id_doc>.<dtml-var num_pagina>" href="<dtml-var portal_url>/js/pdfjs/web/viewer?file=<dtml-var url>#page=<dtml-var sequence-number>" target="iframeViewer" class="link-pagina">
+                                    <i aria-hidden="true" class="fa fa-file"></i>
+                                       Página <dtml-var id_doc>.<dtml-var num_pagina> </a>
+                                 </li>
+                              </ul>
+                            </dtml-in>
+                           </li>
+                       <dtml-if sequence-end>
+                         </ol>
+                         <p class="h4 text-center">Total de páginas: <dtml-var paginas_geral></p>
+                        </div>
+                       </dtml-if>
+                    </dtml-in>
+                    <div class="form-group col-lg-12"><input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" /><button type="submit" class="btn btn-primary btn-block" value="Processo Integral" title="Processo Integral"><i aria-hidden="true" class="fa fa-print fa-lg"></i> Processo Integral</button></div>
+         </form>            
+    </div>
+   </nav>
+
+   </div>
+
+  <main>
+    <dtml-in expr="pastadigital(cod_materia=str(cod_materia))" mapping>
+       <dtml-if sequence-start>     
+         <iframe onload="load(this)" id="iframeViewer" name="iframeViewer" src="<dtml-var portal_url>/js/pdfjs/web/viewer?file=<dtml-var url>#page=1" allowfullscreen=""></iframe>
+       </dtml-if>
+    </dtml-in>
+  </main>
+
+</body>
+</html>
