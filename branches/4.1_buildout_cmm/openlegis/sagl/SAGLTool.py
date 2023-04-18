@@ -2954,7 +2954,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                if materia.num_protocolo != None:
                   for protocolo in self.zsql.protocolo_obter_zsql(num_protocolo=materia.num_protocolo, ano_protocolo=materia.ano_ident_basica):
                       dic_doc["data"] = DateTime(protocolo.dat_timestamp, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
-               dic_doc["data"] = DateTime(materia.dat_apresentacao, datefmt='international').strftime('%d/%m/%Y %H:%M')
                dic_doc["arquivo"] = getattr(self.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf')
                dic_doc["url"] = getattr(self.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf').absolute_url()
                arquivo =  cStringIO.StringIO(str(dic_doc["arquivo"].data))
