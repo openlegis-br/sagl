@@ -12,7 +12,7 @@ from Products.CMFCore.utils import getToolByName
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_base
 
-from App.class_init import InitializeClass
+from AccessControl.class_init import InitializeClass
 
 _TOOL_ID = 'portal_setup'
 _DEFAULT_PROFILE = 'openlegis.sagl:default'
