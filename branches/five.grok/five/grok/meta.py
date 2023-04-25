@@ -24,7 +24,7 @@ import grokcore.view
 import martian
 
 from AccessControl.security import protectClass, protectName
-from App.class_init import InitializeClass as initializeClass
+from AccessControl.class_init import InitializeClass as initializeClass
 
 
 if interfaces.HAVE_FORMLIB:
