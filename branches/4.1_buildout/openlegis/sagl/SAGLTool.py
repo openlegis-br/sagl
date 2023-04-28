@@ -77,7 +77,7 @@ browser = Browser()
 
 ## Troca de senha
 from AccessControl.SecurityInfo import ClassSecurityInfo
-
+from AccessControl import getSecurityManager
 security = ClassSecurityInfo()
 
 from AccessControl import Permissions
@@ -2976,18 +2976,32 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    pasta.append(dic_relat)
 
             for documento in self.zsql.documento_acessorio_obter_zsql(cod_materia = cod_materia, ind_excluido=0):
+                anon = getSecurityManager().getUser()
                 if hasattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
                    dic_anexo = {}
                    dic_anexo["id"] = ''
                    dic_anexo["title"] = documento.des_tipo_documento + ' - ' + documento.nom_documento
                    dic_anexo["data"] = DateTime(documento.dat_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
-                   dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf')
-                   dic_anexo["url"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf').absolute_url()
-                   dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
-                   arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
+                   if documento.ind_publico == 1:
+                      dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf')
+                   elif documento.ind_publico == 0:
+                      if (str(anon) == 'Anonymous User'):
+                         dic_anexo["arquivo"] = getattr(self.sapl_documentos.modelo, 'lgpd-page.pdf')
+                         dic_anexo["url"] = getattr(self.sapl_documentos.modelo, 'lgpd-page.pdf').absolute_url()
+                      else:
+                         dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf')
+                         dic_anexo["url"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf').absolute_url()
                    existing_pdf = PdfFileReader(arquivo)
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
-                   dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
+                   arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
+                   if documento.ind_publico == 1:
+                      dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
+                   elif documento.ind_publico == 0:
+                      if (str(anon) == 'Anonymous User'):
+                         lgpd_page = getattr(self.sapl_documentos.modelo, 'lgpd-page.pdf')
+                         dic_anexo["arquivob64"] = base64.b64encode(str(lgpd_page.data))
+                      else:
+                         dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
                    paginas = []
                    for page_num, i in enumerate(list(range(dic_anexo["paginas_doc"])), start=1):
                        dic_paginas = {}
