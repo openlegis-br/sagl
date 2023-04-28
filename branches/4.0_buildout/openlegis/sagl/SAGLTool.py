@@ -2976,6 +2976,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    dic_anexo["data"] = DateTime(documento.dat_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                    if documento.ind_publico == 1:
                       dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf')
+                      dic_anexo["url"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf').absolute_url()
                    elif documento.ind_publico == 0:
                       if (str(anon) == 'Anonymous User'):
                          dic_anexo["arquivo"] = getattr(self.sapl_documentos.modelo, 'lgpd-page.pdf')
