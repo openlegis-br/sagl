@@ -1,17 +1,39 @@
 <dtml-var standard_html_header>
 
+  <dtml-in expr="zsql.tipo_expediente_obter_zsql(ind_excluido=0)">
+     <dtml-if expr="'Executivo' in nom_expediente">
+        <dtml-call expr="REQUEST.set('expediente_executivo', cod_expediente)">
+     </dtml-if>
+  </dtml-in>
+
 <script type="text/javascript">
  function campos_criticar(){
+   var form = document.expediente_form;
+   var regexp_digitos = /\D+/;
+   form.submit();
+ }
 
-var form = document.expediente_form;
-var regexp_digitos = /\D+/;
+    $(function () {
+        $("#postjq").click(function (event)
+        {
+            event.preventDefault();
+            var $post = {};
+            $.ajax({
+                url: 'respostas_obter_pysc',
+                type: 'POST',
+                data: $post,
+                dataType: 'json',
+                success:function(response){
+                    var respostas = response;
+                        tinymce.get("<dtml-var expediente_executivo>").setContent(response);
 
-form.submit();
-}
+                }
+            });
+        });
+    });
 </script>
 
 <dtml-var sessao_plenaria_menu>
-
 <div class="tab-content bg-white">
   <div class="tab-pane p-3 border fade show active">
 
@@ -23,14 +45,18 @@ form.submit();
 
   <dtml-in expr="zsql.tipo_expediente_obter_zsql(ind_excluido=0)">
     <input type="hidden" name="hdn_cod_expediente" value="<dtml-var cod_expediente missing>" />  
-    <p class="h6"><dtml-var nom_expediente></p>   
+    <p class="h6"><dtml-var nom_expediente>
+          <dtml-if expr="'Executivo' in nom_expediente">
+            <a href="#" id="postjq" class="btn btn-sm btn-link ml-5"><i class="fa fa-tasks"></i> Listar</a>
+         </dtml-if>
+    </p>
     <dtml-if expr="zsql.expediente_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_expediente=cod_expediente, ind_excluido=0)">
       <dtml-in expr="zsql.expediente_obter_zsql(cod_sessao_plen=cod_sessao_plen, cod_expediente=cod_expediente, ind_excluido=0)">
          <div class="row mb-4">
            <div class="col-12">
              <textarea class="form-control" name="txa_txt_expediente" id="<dtml-var cod_expediente missing>"><dtml-var txt_expediente missing></textarea>
            </div>
-         </div>             
+         </div>
       </dtml-in>
     <dtml-else>
        <div class="row">
@@ -61,6 +87,7 @@ tinymce.init({
   toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | ' +
     ' link image | print preview media fullpage | ',
   menubar: 'edit view insert format tools help',
+  forced_root_block_attrs : { style: 'text-align: justify;' },
   content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
 });
 </script>
