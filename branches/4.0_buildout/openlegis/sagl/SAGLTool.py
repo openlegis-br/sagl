@@ -2984,9 +2984,9 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                       else:
                          dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf')
                          dic_anexo["url"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf').absolute_url()
+                   arquivo = cStringIO.StringIO(str(dic_anexo["arquivo"].data))
                    existing_pdf = PdfFileReader(arquivo)
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
-                   arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
                    if documento.ind_publico == 1:
                       dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
                    elif documento.ind_publico == 0:
@@ -3012,6 +3012,86 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                    dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
                    dic_anexo["url"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf').absolute_url()
+                   arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
+                   existing_pdf = PdfFileReader(arquivo)
+                   dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
+                   dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
+                   dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
+                   paginas = []
+                   for page_num, i in enumerate(list(range(dic_anexo["paginas_doc"])), start=1):
+                       dic_paginas = {}
+                       dic_paginas["num_pagina"] = page_num
+                       paginas.append(dic_paginas)
+                   dic_anexo["paginas"] = paginas
+                   dic_anexo["paginas_geral"] = ''
+                   pasta.append(dic_anexo)
+
+        pasta.sort(key=lambda dic: dic['data'])
+
+        total = 0
+        for i in pasta:
+            total += i['paginas_doc']
+        for i in pasta:
+            i['paginas_geral'] = total
+
+        return pasta
+
+    def pasta_adm_digital(self, cod_documento):
+
+        for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
+            pasta = []
+            if hasattr(self.sapl_documentos.administrativo, str(documento.cod_documento) + '_texto_integral.pdf'):
+               dic_doc = {}
+               dic_doc["id"] = str(documento.sgl_tipo_documento) + ' ' + str(documento.num_documento) + '/' + str(documento.ano_documento)
+               dic_doc["title"] = str(documento.des_tipo_documento) + ' nº ' + str(documento.num_documento) + '/' + str(documento.ano_documento)
+               dic_doc["data"] = DateTime(documento.dat_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
+               if documento.num_protocolo != None:
+                  for protocolo in self.zsql.protocolo_obter_zsql(num_protocolo=documento.num_protocolo, ano_protocolo=documento.ano_documento):
+                      dic_doc["data"] = DateTime(protocolo.dat_timestamp, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
+               dic_doc["arquivo"] = getattr(self.sapl_documentos.administrativo, str(documento.cod_documento) + '_texto_integral.pdf')
+               dic_doc["url"] = getattr(self.sapl_documentos.administrativo, str(documento.cod_documento) + '_texto_integral.pdf').absolute_url()
+               arquivo =  cStringIO.StringIO(str(dic_doc["arquivo"].data))
+               existing_pdf = PdfFileReader(arquivo)
+               dic_doc["paginas_doc"] = existing_pdf.getNumPages()
+               dic_doc["arquivob64"] = base64.b64encode(str(dic_doc["arquivo"].data))
+               paginas = []
+               for page_num, i in enumerate(list(range(dic_doc["paginas_doc"])), start=1):
+                   dic_paginas = {}
+                   dic_paginas["num_pagina"] = page_num
+                   paginas.append(dic_paginas)
+               dic_doc["paginas"] = paginas
+               dic_doc["paginas_geral"] = paginas
+               pasta.append(dic_doc)
+
+            for doc in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0):
+                if hasattr(self.sapl_documentos.administrativo, str(doc.cod_documento_acessorio,) + '.pdf'):
+                   dic_anexo = {}
+                   dic_anexo["id"] = ''
+                   dic_anexo["title"] = doc.nom_documento
+                   dic_anexo["data"] = DateTime(doc.dat_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
+                   dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(doc.cod_documento_acessorio) + '.pdf')
+                   dic_anexo["url"] = getattr(self.sapl_documentos.administrativo, str(doc.cod_documento_acessorio) + '.pdf').absolute_url()
+                   arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
+                   existing_pdf = PdfFileReader(arquivo)
+                   dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
+                   dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
+                   paginas = []
+                   for page_num, i in enumerate(list(range(dic_anexo["paginas_doc"])), start=1):
+                       dic_paginas = {}
+                       dic_paginas["num_pagina"] = page_num
+                       paginas.append(dic_paginas)
+                   dic_anexo["paginas"] = paginas
+                   dic_anexo["paginas_geral"] = ''
+                   pasta.append(dic_anexo)
+
+            for tram in self.zsql.tramitacao_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0):
+                if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
+                   dic_anexo = {}
+                   dic_anexo["id"] = ''
+                   dic_anexo["title"] = 'Tramitação'
+                   dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
+                   dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
+                   dic_anexo["url"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf').absolute_url()
                    arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
                    existing_pdf = PdfFileReader(arquivo)
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()

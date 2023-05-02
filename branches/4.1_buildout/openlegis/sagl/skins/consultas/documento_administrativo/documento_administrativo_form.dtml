@@ -63,6 +63,9 @@ $(function () {
         </dtml-in>
         <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_texto_integral.pdf')">
         <dtml-if expr="_.hasattr(sapl_documentos.administrativo,id_documento)">
+          <form class="" action="pasta_digital" method="post" target="_blank">
+          <input type="hidden" name="cod_documento" value="<dtml-var cod_documento>" />
+          <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-folder"></i> Pasta Digital</button>
           <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento).absolute_url">        
              <a class="btn btn-sm btn-primary" target="_blank" href="<dtml-var documento>">
                <dtml-if expr="_.has_key('cod_assinatura_doc') and _.hasattr(sapl_documentos.documentos_assinados, cod_assinatura_doc+'.pdf')">
@@ -72,6 +75,7 @@ $(function () {
                </dtml-if>
              </a>
           </dtml-let>
+          </form>
         </dtml-if>
       </div>
  </div>
@@ -132,7 +136,7 @@ $(function () {
            <dtml-elif expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
               <a href="<dtml-var portal_url>/cadastros/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>">
            <dtml-else>
-              <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>" >  
+              <a href="<dtml-var portal_url>/consultas/documento_administrativo/documento_administrativo_mostrar_proc?cod_documento=<dtml-var cod_documento_vinculado>">  
            </dtml-if>                            
            <b><dtml-var sgl_tipo_documento_vinculado> <dtml-var num_documento_vinculado>/<dtml-var ano_documento_vinculado></b></a></p>
            <dtml-unless sequence-end>,</dtml-unless>
@@ -204,7 +208,7 @@ $(function () {
  </dtml-in>
 
  <dtml-let isAnon="portal_membership.isAnonymousUser()">
-    <dtml-if expr="not isAnon">
+    <dtml-if expr="not isAnon and _.has_key('cod_usuario_corrente')">
       <dtml-in expr="zsql.usuario_unid_tram_obter_zsql(cod_usuario=cod_usuario_corrente)">
          <dtml-if expr="_.has_key('cod_ult_unidade') and int(cod_ult_unidade) == int(cod_unid_tramitacao)">
             <dtml-call expr="REQUEST.set('add_doc', 1)">
@@ -227,7 +231,6 @@ $(function () {
       </div>
       <div id="collapsedoc" class="collapse" aria-labelledby="headingOne" data-parent=".docAC">
         <div class="card-body">
-
          <dtml-let isAnon="portal_membership.isAnonymousUser()">
              <dtml-if expr="not isAnon and _.has_key('add_doc')">      
                  <button type="button" class="btn btn-sm btn-secondary mb-2" data-toggle="popover" title="Documento Acessório"><i class="fas fa-plus-circle"></i> Incluir</button>

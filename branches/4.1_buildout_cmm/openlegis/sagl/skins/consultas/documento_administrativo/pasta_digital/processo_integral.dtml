@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="<dtml-var portal_url>/js/pdfjs/"/>
+  <meta charset="UTF-8">
+  <title><dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento = cod_documento)"><dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></dtml-in></title>
+  <link rel="shortcut icon" type="image/x-icon" href="<dtml-var portal_url>/imagens/favicon.ico">
+  <style media="print">
+    .noPrint{ display: none; }
+    .yesPrint{ display: block !important; }
+  </style>
+  <link	rel="stylesheet" href="<dtml-var portal_url>/js/printjs/print.min.css" />
+</head>
+<body onload="load()">
+
+<div>
+  <div align="center"><span><dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento = cod_documento)"><dtml-var des_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></dtml-in></span>
+  <span>  - Página: <span id="page_num"></span> / <span id="page_count"></span></span>
+    <button id="prev" class="noPrint"><<</button>
+    <button id="next" class="noPrint">>></button>
+    <button id="multiple-pdf">Imprimir</button>
+  </div>
+</div>
+
+<div>
+  <canvas id="the-canvas" style="border:1px solid black; width:100%"></canvas>
+</div>
+
+
+<script id="script">
+
+<dtml-in expr="pastadigital(cod_documento=str(cod_documento))" mapping>
+   <dtml-if sequence-start>
+      var urls = [
+   </dtml-if>
+        "<dtml-var url>",
+   <dtml-if sequence-end>
+      ];
+   </dtml-if>
+</dtml-in>
+
+<dtml-in expr="pastadigital(cod_documento=str(cod_documento))" mapping>
+   <dtml-if sequence-start>
+      var pdfs_list = [
+   </dtml-if>
+        "<dtml-var arquivob64>"<dtml-unless sequence-end>,</dtml-unless>
+   <dtml-if sequence-end>
+      ];
+   </dtml-if>
+</dtml-in>
+
+var pdfDocs = [],
+  /**
+   * @property {PageInfo}
+   */
+  current = {},
+  totalPageCount = 0,
+  pageNum = 1,
+  pageRendering = false,
+  pageNumPending = null,
+  scale = 2.5,
+  canvas = document.getElementById("the-canvas"),
+  ctx = canvas.getContext("2d");
+
+/**
+ * Get page info from document, resize canvas accordingly, and render page.
+ * @param num Page number.
+ */
+function renderPage(num) {
+  pageRendering = true;
+  current = getPageInfo(num);
+  // Using promise to fetch the page
+  pdfDocs[current.documentIndex].getPage(current.pageNumber).then(function(page) {
+    var viewport = page.getViewport({ scale: scale });
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    // Render PDF page into canvas context
+    var renderContext = {
+      canvasContext: ctx,
+      viewport: viewport,
+    };
+    var renderTask = page.render(renderContext);
+
+    // Wait for rendering to finish
+    renderTask.promise.then(function() {
+      pageRendering = false;
+      if (pageNumPending !== null) {
+        // New page rendering is pending
+        renderPage(pageNumPending);
+        pageNumPending = null;
+      }
+    });
+  });
+
+  // Update page counters
+  document.getElementById("page_num").textContent = pageNum;
+}
+
+/**
+ * If another page rendering in progress, waits until the rendering is
+ * finished. Otherwise, executes rendering immediately.
+ */
+function queueRenderPage(num) {
+  if (pageRendering) {
+    pageNumPending = num;
+  } else {
+    renderPage(num);
+  }
+}
+
+/**
+ * Displays previous page.
+ */
+function onPrevPage() {
+  if (pageNum <= 1) {
+    return;
+  }
+  pageNum--;
+  queueRenderPage(pageNum);
+}
+
+document.getElementById("prev").addEventListener("click", onPrevPage);
+
+/**
+ * Displays next page.
+ */
+function onNextPage() {
+  if (pageNum >= totalPageCount && current.documentIndex + 1 === pdfDocs.length) {
+    return;
+  }
+
+  pageNum++;
+  queueRenderPage(pageNum);
+}
+
+document.getElementById("next").addEventListener("click", onNextPage);
+
+/**
+ * @returns PageNumber
+ */
+  function getPageInfo(num) {
+    let totalPageCount = 0;
+
+    for (let i = 0; i < pdfDocs.length; i++) {
+      let currentCount = pdfDocs[i].numPages;
+      totalPageCount += currentCount;
+      if (num <= totalPageCount) {
+        return {
+          documentIndex: i,
+          pageNumber: (currentCount - (totalPageCount - num)),
+        };
+      }
+    }
+
+    return false;
+  }
+
+function getTotalPageCount() {
+  var totalPageCount = 0;
+  for (var docIdx = 0; docIdx < pdfDocs.length; docIdx++) {
+    totalPageCount += pdfDocs[docIdx].numPages;
+  }
+  return totalPageCount;
+}
+
+var loadedCount = 0;
+
+function load() {
+  // Load PDFs one after another
+  pdfjsLib.getDocument(urls[loadedCount])
+    .promise.then(function(pdfDoc_) {
+    console.log("loaded PDF " + loadedCount);
+    pdfDocs.push(pdfDoc_);
+    loadedCount++;
+    if (loadedCount !== urls.length) {
+      return load();
+    }
+
+    console.log("Finished loading");
+    totalPageCount = getTotalPageCount();
+    document.getElementById("page_count").textContent = totalPageCount;
+
+    // Initial/first page rendering
+    renderPage(pageNum);
+  });
+}
+</script>
+
+<script src="<dtml-var portal_url>/js/pdfjs/build/pdf.js"></script>
+
+<script src="<dtml-var portal_url>/js/printjs/print.min.js"></script>
+
+<script type="module">
+var multiplBase64Pdfs = pdfs_list;
+/**
+ * Merge different PDF file & save or print as one single PDF file
+ */
+const printMultipleBase64Pdfs = () => {
+  getMultiplePngImagesWithImgTag().then((multiplePngImagesWithImgTag) => {
+    // Now we have all converted base64 PNGs in image tag and we are ready to render them as html content to print as one single file with Print.js
+    printJS({
+      printable: multiplePngImagesWithImgTag,
+      type: 'raw-html',
+      base64: false,
+    });
+  });
+};
+
+/**
+ * 	Iterate all base64 PDF files and continuously add in one variable as multiple base64 PNG files
+ *  Render multiple base64 PNG files in one html and print it in one single PDF file
+ */
+const getMultiplePngImagesWithImgTag = () => {
+  return new Promise((resolve, reject) => {
+    var docPromiseList = [];
+    multiplBase64Pdfs.forEach((doc, index) => {
+      docPromiseList.push(convertBase64PdfToBase64Png(doc));
+    });
+
+    // So far we have all our base64 PNG files.Now only thing left to do is to merge them  and save or print them as single PDF file
+
+    // We will use concept of PDF.js here i.e.render multiple base64 PNG files in one html and print it in one single PDF file
+
+    Promise.all(docPromiseList)
+      .then((res) => {
+        if (res && res.length) {
+          let doc = '';
+          // These two loops are getting base64 PNG where
+          // first loop is for each document and second loop is for each page of document
+          for (let i = 0; i < res.length; i++) {
+            for (let j = 0; j < res[i].length; j++) {
+              // get all docs in base64PNG in order to print with Print.js with docType as rawHTML
+              doc = doc.concat(
+                `<div style="text-align:center"><img src="${res[i][j]}"/ style="object-fit:cover;"></div><br/>`
+              );
+            }
+            doc = doc.concat(`<div style="page-break-before: always;"></div>`);
+          }
+          resolve(doc);
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
+const convertBase64PdfToBase64Png = (base64PDF) => {
+  return new Promise((resolve, reject) => {
+    // Loaded via <script> tag, create shortcut to access PDF.js exports.
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    // The workerSrc property shall be specified.
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '<dtml-var portal_url>/js/pdfjs/build/pdf.worker.js';
+
+    // atob() is used to convert base64 encoded PDF to binary-like data.
+    // (See also https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/
+    // Base64_encoding_and_decoding.)
+    var pdfData = atob(base64PDF);
+
+    // Using DocumentInitParameters object to load binary data.
+    pdfjsLib
+      .getDocument({ data: pdfData })
+      .promise.then((pdf) => {
+        let totalPages = pdf.numPages;
+        let totalPagePromiseList = [];
+        for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
+          totalPagePromiseList.push(
+            convertEachBase64PdfPageToBase64PngPage(pdf, currentPage)
+          );
+        }
+        Promise.all(totalPagePromiseList)
+          .then((newRes) => {
+            resolve(newRes);
+          })
+          .catch((newError) => {
+            reject(newError);
+          });
+      })
+      .catch((error) => {
+        // PDF loading error
+        reject(error);
+      });
+  });
+};
+
+/*
+ * Get Base64PNG from base64PDF for each page
+ */
+const convertEachBase64PdfPageToBase64PngPage = (pdf, currentPage) => {
+  return new Promise((resolve, reject) => {
+    pdf.getPage(currentPage).then((page) => {
+      var scale = 1.5;
+      var viewport = page.getViewport({ scale: scale });
+
+      // Prepare canvas using PDF page dimensions
+      var canvas = document.createElement('canvas');
+      var context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      // Render PDF page into canvas context
+      var renderContext = {
+        canvasContext: context,
+        viewport: viewport,
+      };
+
+      page
+        .render(renderContext)
+        .promise.then(() => {
+          resolve(canvas.toDataURL()); // Returns the content of the current canvas as an image
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  });
+};
+
+//#endregion
+
+//#region Event listners
+
+
+/**
+ *
+ */
+document
+  .getElementById('multiple-pdf')
+  .addEventListener('click', printMultipleBase64Pdfs);
+
+//#endregion
+
+</script>
+
+</body>
+</html>

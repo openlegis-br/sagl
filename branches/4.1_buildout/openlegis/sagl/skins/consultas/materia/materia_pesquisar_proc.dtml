@@ -254,24 +254,38 @@
                <b>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Acessório<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>:</b>
             </dtml-if>
              <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
-             <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
-               <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-                 <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
-                      <dtml-if expr="nom_documento != None">
-                        <dtml-var nom_documento>
-                      <dtml-else>
-                        <dtml-var des_tipo_documento>
-                      </dtml-if>
-                 </a>
-               </dtml-let>
+             <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
+               <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
+                 <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
+                   <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                        <dtml-if expr="nom_documento != None">
+                          <dtml-var nom_documento>
+                        <dtml-else>
+                          <dtml-var des_tipo_documento>
+                        </dtml-if>
+                   </a>
+                </dtml-let>
+               </dtml-if>
              <dtml-else>
-                <dtml-if expr="nom_documento != None">
-                  <dtml-var nom_documento>
-                <dtml-else>
-                  <dtml-var des_tipo_documento>
-                </dtml-if>
+               <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento) and ind_publico==1">
+                 <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
+                   <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                        <dtml-if expr="nom_documento != None">
+                          <dtml-var nom_documento>
+                        <dtml-else>
+                          <dtml-var des_tipo_documento>
+                        </dtml-if>
+                   </a>
+                 </dtml-let>
+               <dtml-else>
+                  <dtml-if expr="nom_documento != None">
+                    <dtml-var nom_documento>
+                  <dtml-else>
+                    <dtml-var des_tipo_documento>
+                  </dtml-if>
+               </dtml-if>
              </dtml-if>
-            <dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
+             <dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
           </dtml-in>
       </div>
     </div>

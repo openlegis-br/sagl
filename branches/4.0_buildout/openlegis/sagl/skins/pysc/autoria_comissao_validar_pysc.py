@@ -4,7 +4,7 @@
 ##bind namespace=
 ##bind script=script
 ##bind subpath=traverse_subpath
-##parameters=txt_dat_apresentacao="01-01-1001", cod_comissao
+##parameters=txt_dat_apresentacao, cod_comissao
 ##title=
 ##
 """

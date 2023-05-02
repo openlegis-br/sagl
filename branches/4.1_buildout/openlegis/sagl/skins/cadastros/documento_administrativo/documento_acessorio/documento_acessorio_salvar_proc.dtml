@@ -49,14 +49,19 @@
      </dtml-if>
   </dtml-if>
 
+  <dtml-if hdn_cod_documento>
+    <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento = hdn_cod_documento)">
+       <dtml-call expr="REQUEST.set('lst_tip_documento', tip_documento)">
+    </dtml-in>
+  </dtml-if>
   <dtml-if hdn_cod_documento_acessorio>
    <dtml-call expr="REQUEST.set('id_documento', _.str(hdn_cod_documento_acessorio)+'.pdf')">
-   <dtml-if "_.hasattr(sapl_documentos.administrativo,id_documento)">
-     <dtml-let documento="_.getattr(sapl_documentos.administrativo,id_documento) ">
-       <dtml-if expr="zsql.tipo_documento_administrativo_obter_zsql(tip_documento=lst_tip_documento,ind_publico=1,ind_excluido=0)">
-         <dtml-call "documento.manage_permission('View', roles=['Anonymous','Manager','Operador','Operador Modulo Administrativo'], acquire=0)">
+   <dtml-if "_.hasattr(sapl_documentos.administrativo, id_documento)">
+     <dtml-let documento="_.getattr(sapl_documentos.administrativo, id_documento) ">
+       <dtml-if expr="zsql.tipo_documento_administrativo_obter_zsql(tip_documento=lst_tip_documento, ind_publico=1, ind_excluido=0)">
+         <dtml-call "documento.manage_permission('View', roles=['Anonymous'], acquire=0)">
        <dtml-else>
-         <dtml-call "documento.manage_permission('View', roles=['Manager','Operador','Operador Modulo Administrativo'], acquire=1)">
+         <dtml-call "documento.manage_permission('View', roles=['Manager','Authenticated'], acquire=1)">
        </dtml-if>
      </dtml-let>
    </dtml-if>

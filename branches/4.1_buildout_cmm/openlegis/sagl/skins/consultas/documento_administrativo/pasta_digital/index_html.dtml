@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1">
-    <title><dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></dtml-in> - Pasta Digital</title>
+    <title><dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento = cod_documento)"><dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></dtml-in> - Pasta Digital</title>
     <link rel="stylesheet" href="<dtml-var portal_url>/css/all.min.css" />
     <link href="styles.css" rel="stylesheet">
     <link rel="shortcut icon" type="image/x-icon" href="<dtml-var portal_url>/imagens/favicon.ico">
@@ -112,7 +112,7 @@
             </div>
             <div class="col-lg-12">
                <div class="row text-center">
-                 <p class="h4">Pasta Digital - <dtml-in expr="zsql.materia_obter_zsql(cod_materia = cod_materia)"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></dtml-in></p>
+                 <p class="h4">Pasta Digital - <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento = cod_documento)"><dtml-var sgl_tipo_documento> <dtml-var num_documento>/<dtml-var ano_documento></dtml-in></p>
                </div>
             </div>
             <div class="container">
@@ -139,11 +139,13 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="form-group text-center col-md-3">
                                 <div class="input-group">
                                     <div class="input-group-btn">
                                         <a class="btn btn-success" href="javascript: prevPagina()" title="Página anterior"><span class="fa fa-backward"></span></a>
                                     </div>
+
                                     <div class="input-group-btn">
                                         <a class="btn btn-success" href="javascript: nextPagina()" title="Próxima página"><span class="fa fa-forward"></span></a>
                                     </div>
@@ -151,14 +153,14 @@
                             </div>
                         </div>
                     </div>
-                    <dtml-in expr="pastadigital(cod_materia=str(cod_materia))" mapping>
+                    <dtml-in expr="pastadigital(cod_documento=str(cod_documento))" mapping>
                        <dtml-if sequence-start>
                          <div id="navbar" class="navbar-collapse collapse">
                            <ol>
                        </dtml-if>
                            <li>
                             <i aria-hidden="true" class="fa fa-file-pdf"></i>
-                            <a data-id="<dtml-var cod_materia>" data-pagina="<dtml-var sequence-number>" data-pagina-geral="<dtml-var sequence-number>" href="<dtml-var portal_url>/js/pdfjs/web/viewer?file=<dtml-var url>" target="iframeViewer" title="<dtml-var title> - <dtml-var data>" class="link-pagina titulo <dtml-if sequence-start>pagina-atual</dtml-if>"><dtml-var title> </a> 
+                            <a data-id="<dtml-var cod_documento>" data-pagina="<dtml-var sequence-number>" data-pagina-geral="<dtml-var sequence-number>" href="<dtml-var portal_url>/js/pdfjs/web/viewer?file=<dtml-var url>" target="iframeViewer" title="<dtml-var title> - <dtml-var data>" class="link-pagina titulo <dtml-if sequence-start>pagina-atual</dtml-if>"><dtml-var title> </a> 
                             <dtml-comment><span class="badge"><dtml-var paginas_doc> pág.</span></dtml-comment>
                             <dtml-call expr="REQUEST.set('id_doc', _['sequence-number'])">
                             <dtml-in expr="paginas" mapping>
@@ -175,67 +177,53 @@
                          </ol>
                          <p class="h4 text-center">Total de páginas: <dtml-var paginas_geral></p>
                         </div>
-                        <div class="form-group col-lg-12"><input type="hidden" name="cod_materia" value="<dtml-var cod_materia>" /><button type="submit" class="btn btn-primary btn-block" value="Processo Integral" title="Processo Integral"><i aria-hidden="true" class="fa fa-print fa-lg"></i> Processo Integral</button></div>
-
-                        <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_anexada=cod_materia, ind_excluido=0)">
-                           <dtml-call expr="REQUEST.set('temAnexadora', cod_materia_principal)">
-                        </dtml-in>
-                        <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_principal=cod_materia, ind_excluido=0)">
-                           <dtml-call expr="REQUEST.set('temAnexada', cod_materia_anexada)">
-                        </dtml-in>
-                        <dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
-                           <dtml-call expr="REQUEST.set('temDocADM', 1)">
-                        </dtml-in>
-                        <dtml-in expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia=cod_materia)">
-                           <dtml-call expr="REQUEST.set('temNorma', cod_norma)">
-                        </dtml-in>
-                        <dtml-if expr="_.has_key('temAnexadora') or _.has_key('temAnexada') or _.has_key('temNorma') or _.has_key('temDocADM')">
-                          <div class="col-lg-12">
-                          <ul class="list-group">
-                        <dtml-if expr="_.has_key('temAnexadora') or _.has_key('temAnexada')">
-                            <li class="list-group-item list-group-item-light">
-                              <p><span class="h5 text-secondary"><strong>Matérias Relacionadas: </strong></span></p>
-                              <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_principal=cod_materia, ind_excluido=0)">
-                                   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_anexada, ind_excluido = 0)">
-                                     <a class="text-info" href="pasta_digital?cod_materia=<dtml-var cod_materia_anexada>" target="_blank"><dtml-var sgl_tipo_materia>-<dtml-var num_ident_basica missing null="">/<dtml-var ano_ident_basica missing null=""></a>
-                                   </dtml-in><dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
-                                 </dtml-in>
-                                 <dtml-in expr="zsql.anexada_obter_zsql(cod_materia_anexada=cod_materia, ind_excluido=0)">
-                                   <dtml-call expr="REQUEST.set('cod_materia_principal1', cod_materia_principal)">
-                                   <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia_principal, ind_excluido = 0)">
-                                     <a class="text-info" href="pasta_digital?cod_materia=<dtml-var cod_materia_principal1>" target="_blank"><dtml-var sgl_tipo_materia>-<dtml-var num_ident_basica missing null="">/<dtml-var ano_ident_basica missing null=""></a>
-                                   </dtml-in><dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
-                                 </dtml-in>
-                            </li>
-                        </dtml-if>
-                        <dtml-if expr="_.has_key('temDocADM')">
-                            <li class="list-group-item list-group-item-light">
-                              <dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0)">
-                              <dtml-if sequence-start>
-                                 <p><span class="h5 text-secondary"><strong>Documento<dtml-if expr="_['sequence-length'] > 1">s</dtml-if> Vinculado<dtml-if expr="_['sequence-length'] > 1">s</dtml-if>: </strong></span></p>
-                              </dtml-if>
-                              <dtml-in expr="zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
-                                <a class="text-info" href="<dtml-var portal_url>/consultas/documento_administrativo/pasta_digital/?cod_documento=<dtml-var cod_documento>" target="blank"><dtml-var sgl_tipo_documento>-<dtml-var num_documento>/<dtml-var ano_documento></a>
-                              </dtml-in><dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
-                              </dtml-in>
-                            </li>
-                        </dtml-if>
-                        <dtml-if expr="_.has_key('temNorma')">
-                            <li class="list-group-item list-group-item-light">
-                              <p><span class="h5 text-secondary"><strong>Norma Derivada: </strong></span></p>
-                              <dtml-in expr="zsql.materia_buscar_norma_juridica_zsql(cod_materia=cod_materia)">
-                                 <a class="text-info" data-pagina="999" data-pagina-geral="999" href="<dtml-var portal_url>/js/pdfjs/web/viewer?file=<dtml-var url>/sapl_documentos/norma_juridica/<dtml-var cod_norma>_texto_integral.pdf#page=1" target="iframeViewer" class="link-pagina">
-                                    <dtml-var sgl_norma> <dtml-var num_norma>/<dtml-var ano_norma>
-                                 </a>
-
-                              </dtml-in><dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
-                            </li>
-                         </dtml-if>
-                          </ul>
-                          </div>
-                        </dtml-if>
                        </dtml-if>
                     </dtml-in>
+                    <div class="form-group col-lg-12"><input type="hidden" name="cod_documento" value="<dtml-var cod_documento>" /><button type="submit" class="btn btn-primary btn-block" value="Processo Integral" title="Processo Integral"><i aria-hidden="true" class="fa fa-print fa-lg"></i> Processo Integral</button></div>
+                    <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculado = cod_documento)">
+                       <dtml-call expr="REQUEST.set('temVinculante', cod_vinculo)">
+                    </dtml-in>
+                   <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante = cod_documento)">
+                       <dtml-call expr="REQUEST.set('temVinculado', cod_vinculo)">
+                   </dtml-in>
+                   <dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+                       <dtml-call expr="REQUEST.set('temMateria', cod_materia)">
+                   </dtml-in>
+                   <dtml-if expr="_.has_key('temVinculante') or _.has_key('temVinculado') or _.has_key('temMateria')">
+                        <div class="col-lg-12">
+                          <ul class="list-group">
+                           <dtml-if expr="_.has_key('temVinculante') or _.has_key('temVinculado')">
+                            <li class="list-group-item list-group-item-light">
+                              <p><span class="h5 text-secondary"><strong>Documento Relacionados: </strong></span></p>
+                               <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculante = cod_documento)">
+                                <a class="text-info" href="pasta_digital?cod_documento=<dtml-var cod_documento_vinculado>" target="_blank"> 
+                                  <dtml-var sgl_tipo_documento_vinculado>-<dtml-var num_documento_vinculado>/<dtml-var ano_documento_vinculado>
+                                </a>
+                               </dtml-in>
+                               <dtml-in expr="zsql.documento_administrativo_vinculado_obter_zsql(cod_documento_vinculado = cod_documento)">
+                                <a class="text-info" href="pasta_digital?cod_documento=<dtml-var cod_documento_vinculante>" target="_blank"> 
+                                  <dtml-var sgl_tipo_documento_vinculante>-<dtml-var num_documento_vinculante>/<dtml-var ano_documento_vinculante>
+                                </a>
+                               </dtml-in><dtml-unless sequence-end></dtml-unless><dtml-if sequence-end>,</dtml-if>
+                            </li>
+                           </dtml-if>
+                           <dtml-if expr="_.has_key('temMateria')">
+                            <li class="list-group-item list-group-item-light">
+                             <dtml-in expr="zsql.documento_administrativo_materia_obter_zsql(cod_documento=cod_documento, ind_excluido=0)">
+                               <dtml-if sequence-start>
+                                  <p><span class="h5 text-secondary"><strong>Matérias Vinculadas: </strong></span></p>
+                               </dtml-if>
+                               <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_materia,ind_excluido=0)">
+                                 <a class="text-info" href="<dtml-var portal_url>/consultas/materia/pasta_digital?cod_materia=<dtml-var cod_materia>" target="_blank"> 
+                                   <dtml-var sgl_tipo_materia>-<dtml-var num_ident_basica>/<dtml-var ano_ident_basica>
+                                 </a>
+                               </dtml-in><dtml-unless sequence-end>,</dtml-unless><dtml-if sequence-end></dtml-if>
+                             </dtml-in>
+                            </li>
+                           </dtml-if>
+                          </ul>
+                        </div>
+                   </dtml-if>
          </form>            
     </div>
    </nav>
@@ -243,7 +231,7 @@
    </div>
 
   <main>
-    <dtml-in expr="pastadigital(cod_materia=str(cod_materia))" mapping>
+    <dtml-in expr="pastadigital(cod_documento=str(cod_documento))" mapping>
        <dtml-if sequence-start>     
          <iframe onload="load(this)" id="iframeViewer" name="iframeViewer" src="<dtml-var portal_url>/js/pdfjs/web/viewer?file=<dtml-var url>#page=1" allowfullscreen=""></iframe>
        </dtml-if>

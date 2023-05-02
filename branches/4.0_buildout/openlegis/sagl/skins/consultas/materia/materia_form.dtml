@@ -681,16 +681,32 @@ $(function () {
                    <tr>
                      <td>
                        <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'.pdf')">
-                       <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
-                          <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
-                             <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
-                               <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento, tipo_doc='doc_acessorio',ind_assinado=1, cod_usuario=None)">
-                                  <i class="fa fa-certificate"></i>
-                                <dtml-else>
-                                  <i class="fa fa-fw fa-file-pdf"></i>
-                               </dtml-if>
-                               <dtml-var des_tipo_documento> - <dtml-var nom_documento missing>
-                             </a>
+                         <dtml-if expr="_.hasattr(sapl_documentos.materia,id_documento)">
+                           <dtml-let documento="_.getattr(sapl_documentos.materia,id_documento).absolute_url">
+                              <dtml-if expr="AUTHENTICATED_USER.has_role(['Authenticated'])">
+                                 <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                                   <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento, tipo_doc='doc_acessorio',ind_assinado=1, cod_usuario=None)">
+                                      <i class="fa fa-certificate"></i>
+                                    <dtml-else>
+                                      <i class="fa fa-fw fa-file-pdf"></i>
+                                   </dtml-if>
+                                   <dtml-var des_tipo_documento> - <dtml-var nom_documento missing>
+                                 </a>
+                              <dtml-else>
+                                 <dtml-if expr="ind_publico==1">
+                                   <a href="<dtml-var documento>?<dtml-var expr="ZopeTime().timeTime()">" target="_blank">
+                                     <dtml-if expr="zsql.assinatura_documento_obter_zsql(codigo=cod_documento, tipo_doc='doc_acessorio', ind_assinado=1, cod_usuario=None)">
+                                        <i class="fa fa-certificate"></i>
+                                      <dtml-else>
+                                        <i class="fa fa-fw fa-file-pdf"></i>
+                                     </dtml-if>
+                                     <dtml-var des_tipo_documento> - <dtml-var nom_documento missing>
+                                   </a>
+                                 <dtml-else>
+                                     <dtml-var des_tipo_documento> - <dtml-var nom_documento missing>
+                                 </dtml-if>
+                              </dtml-if>
+
                            <dtml-if expr="sapl_documentos.props_sagl.restpki_access_token!='' and dbcon_logs">
                              <dtml-let isAnon="portal_membership.isAnonymousUser()">                      
                                 <dtml-if expr="not isAnon">
