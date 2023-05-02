@@ -3087,7 +3087,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 if hasattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
                    dic_anexo = {}
                    dic_anexo["id"] = ''
-                   dic_anexo["title"] = 'Tramitação'
+                   dic_anexo["title"] = 'Tramitação (' + str(tram.des_status) + ')'
                    dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                    dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
                    dic_anexo["url"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf').absolute_url()
@@ -3167,7 +3167,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                 if hasattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf'):
                    dic_anexo = {}
                    dic_anexo["id"] = ''
-                   dic_anexo["title"] = 'Tramitação'
+                   dic_anexo["title"] = 'Tramitação (' + str(tram.des_status) + ')'
                    dic_anexo["data"] = DateTime(tram.dat_tramitacao, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                    dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
                    dic_anexo["url"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf').absolute_url()
