@@ -16,7 +16,7 @@ lst_respostas = []
 for tramitacao in context.zsql.tramitacao_obter_zsql(cod_status=128, ind_ult_tramitacao=1):
     materia = context.zsql.materia_obter_zsql(cod_materia=tramitacao.cod_materia)[0]
     dic={}
-    dic['texto'] = 'Resposta eletrônica do Poder Executivo, protocolada em ' + DateTime(tramitacao.dat_tramitacao).strftime('%d/%m/%Y') + \
+    dic['texto'] = 'Resposta eletrônica do Poder Executivo, protocolada em ' + DateTime(tramitacao.dat_tramitacao, datefmt='international').strftime('%d/%m/%Y') + \
             ', ao ' + str(materia.des_tipo_materia) + ' nº ' + str(tramitacao.num_ident_basica)+'/'+str(tramitacao.ano_ident_basica)
     dic['cod_materia'] = tramitacao.cod_materia
     dic['cod_tramitacao'] = tramitacao.cod_tramitacao
