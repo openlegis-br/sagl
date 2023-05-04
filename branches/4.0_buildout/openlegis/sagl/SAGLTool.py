@@ -2675,7 +2675,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         nom_presidente = ''
         # obtem dados da sessao
-        if cod_sessao_plen != '0':
+        if cod_sessao_plen != '0' and cod_sessao_plen != '':
            for item in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao_plen):
                for tipo in self.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=item.tip_sessao):
                    id_sessao = str(item.num_sessao_plen) + 'ª Sessão ' + tipo.nom_sessao + ' - '
@@ -2686,25 +2686,21 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                for parlamentar in self.zsql.parlamentar_obter_zsql(cod_parlamentar=composicao.cod_parlamentar):
                    nom_presidente = str(parlamentar.nom_parlamentar.decode('utf-8').upper())
            if nom_presidente == '':
-              data = DateTime().strftime('%d/%m/%Y')
+              data = item.dat_inicio_sessao
               data1 = self.pysc.data_converter_pysc(data)
               for sleg in self.zsql.periodo_comp_mesa_obter_zsql(data=data1):
                   for cod_presidente in self.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp, cod_cargo=1):
                       for presidencia in self.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
                           nom_presidente = str(presidencia.nom_parlamentar.decode('utf-8').upper())
         else:
-           id_sessao = ""
-           data = DateTime().strftime('%d/%m/%Y')
-           data1 = self.pysc.data_converter_pysc(data)
-           for sleg in self.zsql.periodo_comp_mesa_obter_zsql(data=data1):
-               for cod_presidente in self.zsql.composicao_mesa_obter_zsql(cod_periodo_comp=sleg.cod_periodo_comp, cod_cargo=1):
-                   for presidencia in self.zsql.parlamentar_obter_zsql(cod_parlamentar=cod_presidente.cod_parlamentar):
-                       nom_presidente = str(presidencia.nom_parlamentar.decode('utf-8').upper())
+           id_sessao = ''
+           data = ''
+           nom_presidente = ''
 
         # prepara carimbo
         packet = StringIO.StringIO()
         can = canvas.Canvas(packet)
-        can.drawImage(logo, 490, 715,  width=50, height=50, mask='auto')
+        #can.drawImage(logo, 490, 715,  width=50, height=50, mask='auto')
         texto = "%s" % (str(nom_resultado.decode('utf-8').upper()))
         sessao = "%s%s" % (id_sessao, data)
         presidente = "%s " % (nom_presidente)
@@ -2712,11 +2708,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         pdfmetrics.registerFont(TTFont('Arial', '/usr/share/fonts/truetype/msttcorefonts/Arial.ttf'))
         pdfmetrics.registerFont(TTFont('Arial_Bold', '/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf'))
         can.setFont('Arial_Bold', 10)
-        can.drawString(400, 750, texto)
+        can.drawString(400, 740, texto)
         can.setFont('Arial', 9)
-        can.drawString(400, 740, sessao)
-        can.drawString(400, 730, presidente)
-        can.drawString(400, 720, cargo)
+        can.drawString(400, 730, sessao)
+        #can.drawString(400, 730, presidente)
+        #can.drawString(400, 720, cargo)
         can.showPage()
         can.save()
         new_pdf = PdfFileReader(packet)
