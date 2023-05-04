@@ -2565,16 +2565,33 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         if tipo_doc == 'doc_acessorio':
            for documento in self.zsql.documento_acessorio_obter_zsql(cod_documento=codigo):
                nom_arquivo_pdf = "%s"%documento.cod_documento+'.pdf'
-               if documento.ind_publico == '0' and hasattr(self.sapl_documentos.materia, nom_arquivo_pdf):
+               if str(documento.ind_publico) == '1' and hasattr(self.sapl_documentos.materia, nom_arquivo_pdf):
+                  pdf = getattr(self.sapl_documentos.materia, nom_arquivo_pdf)
+                  pdf.manage_permission('View', roles=['Anonymous'], acquire=0)
+               elif str(documento.ind_publico) == '0' and hasattr(self.sapl_documentos.materia, nom_arquivo_pdf):
                   pdf = getattr(self.sapl_documentos.materia, nom_arquivo_pdf)
                   pdf.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
 
         if tipo_doc == 'documento':
            for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=codigo):
                nom_arquivo_pdf = "%s"%documento.cod_documento+'_texto_integral.pdf'
-               if documento.ind_publico == '1' and hasattr(self.sapl_documentos.administrativo, nom_arquivo_pdf):
+               if str(documento.ind_publico) == '1' and hasattr(self.sapl_documentos.administrativo, nom_arquivo_pdf):
                   pdf = getattr(self.sapl_documentos.administrativo, nom_arquivo_pdf)
                   pdf.manage_permission('View', roles=['Anonymous'], acquire=0)
+               elif str(documento.ind_publico) == '0' and hasattr(self.sapl_documentos.administrativo, nom_arquivo_pdf):
+                  pdf = getattr(self.sapl_documentos.administrativo, nom_arquivo_pdf)
+                  pdf.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
+
+        if tipo_doc == 'doc_acessorio_adm':
+           for doc in self.zsql.documento_acessorio_administrativo_obter_zsql(cod_documento_acessorio=codigo):
+               documento = self.zsql.documento_administrativo_obter_zsql(cod_documento=doc.cod_documento)[0]
+               nom_arquivo_pdf = "%s"%doc.cod_documento_acessorio+'.pdf'
+               if str(documento.ind_publico) == '1' and hasattr(self.sapl_documentos.administrativo, nom_arquivo_pdf):
+                  pdf = getattr(self.sapl_documentos.administrativo, nom_arquivo_pdf)
+                  pdf.manage_permission('View', roles=['Anonymous'], acquire=0)
+               if str(documento.ind_publico) == '0' and hasattr(self.sapl_documentos.administrativo, nom_arquivo_pdf):
+                  pdf = getattr(self.sapl_documentos.administrativo, nom_arquivo_pdf)
+                  pdf.manage_permission('View', roles=['Manager','Authenticated'], acquire=0)
                 
         return 'ok'
 
