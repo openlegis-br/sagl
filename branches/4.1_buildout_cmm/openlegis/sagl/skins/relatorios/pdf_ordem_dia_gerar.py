@@ -71,7 +71,10 @@ def pauta(lst_splen, lst_pauta):
            tmp+='\t\t<para style="P2" spaceAfter="4">\n'
            tmp+='\t\t\t<font color="white"> </font>\n'
            tmp+='\t\t</para>\n'
-           tmp+='\t\t<para style="P1">(Pauta da Ordem do Dia)</para>\n'
+           if dicsp['ind_audiencia'] == 1:
+              tmp+='\t\t<para style="P1"></para>\n'
+           else:
+              tmp+='\t\t<para style="P1">(Pauta da Ordem do Dia)</para>\n'
            tmp+='\t\t<para style="P2" spaceAfter="12">\n'
            tmp+='\t\t\t<font color="white"> </font>\n'
            tmp+='\t\t</para>\n'
@@ -108,10 +111,11 @@ def pauta(lst_splen, lst_pauta):
             tmp+='\t\t\t<font color="white"> </font>\n'
             tmp+='\t\t</para>\n'
 
-        tmp+='\t\t<para style="P3"><b>Turno</b>: '+ dic['des_turno'] +' | <b>Quorum</b>: '+ dic['des_quorum']+' | <b>Tipo de Votação</b>: '+ dic['tip_votacao'] + '' + '</para>\n'
-        tmp+='\t\t<para style="P2" spaceAfter="8">\n'
-        tmp+='\t\t\t<font color="white"> </font>\n'
-        tmp+='\t\t</para>\n'
+        if dic['des_turno']!='':
+           tmp+='\t\t<para style="P3"><b>Turno</b>: '+ dic['des_turno'] +' | <b>Quorum</b>: '+ dic['des_quorum']+' | <b>Tipo de Votação</b>: '+ dic['tip_votacao'] + '' + '</para>\n'
+           tmp+='\t\t<para style="P2" spaceAfter="8">\n'
+           tmp+='\t\t\t<font color="white"> </font>\n'
+           tmp+='\t\t</para>\n'
 
         if dic['parecer']!= 0 and dic['parecer']!= '':
             tmp+='\t\t<para style="P3"><b><u>PARECERES:</u></b></para>\n\n'
@@ -183,7 +187,7 @@ def principal(sessao,imagem,dat_ordem,lst_splen,lst_pauta,dic_cabecalho,lst_roda
     tmp+='<?xml version="1.0" encoding="utf-8" standalone="no" ?>\n'
     tmp+='<!DOCTYPE document SYSTEM "rml_1_0.dtd">\n'
     tmp+='<document filename="relatorio.pdf">\n'
-    tmp+='\t<template pageSize="(21cm, 29.7cm)" title="Ordem do Dia" author="OpenLegis" allowSplitting="20">\n'
+    tmp+='\t<template pageSize="(21cm, 29.7cm)" title="Pauta" author="SAGL/OpenLegis" allowSplitting="20">\n'
     tmp+='\t\t<pageTemplate id="first">\n'
     tmp+='\t\t\t<pageGraphics>\n'
     tmp+=cabecalho(dic_cabecalho,dat_ordem,imagem)

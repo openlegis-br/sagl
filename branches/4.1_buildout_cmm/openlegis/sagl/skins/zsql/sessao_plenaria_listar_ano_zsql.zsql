@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : ano_sessao=""
+arguments : ano_sessao="" ind_audiencia
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
@@ -10,9 +10,15 @@ SELECT DISTINCT
 
 FROM
     sessao_plenaria
+    LEFT JOIN tipo_sessao_plenaria ON (sessao_plenaria.tip_sessao = tipo_sessao_plenaria.tip_sessao)
 
 <dtml-sqlgroup where>
     sessao_plenaria.ind_excluido = 0
+    <dtml-if expr="_.has_key('ind_audiencia') and ind_audiencia=='1'">
+      AND tipo_sessao_plenaria.nom_sessao = 'Audiencia Pública'
+    <dtml-else>
+      AND tipo_sessao_plenaria.nom_sessao != 'Audiencia Pública'
+    </dtml-if>
 </dtml-sqlgroup>
 
 ORDER BY YEAR(dat_inicio_sessao) DESC

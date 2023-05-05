@@ -1,6 +1,6 @@
 <dtml-var standard_html_header>
 
-<script type="text/javascript" src="<dtml-var portal_url>/javascript/data_validar.js" "></script>
+<script type="text/javascript" src="<dtml-var portal_url>/javascript/data_validar.js"></script>
 
 <script type="text/javascript">
 
@@ -21,7 +21,7 @@ function campos_criticar(){
     var regexp_digitos = /\D+/;
 
     if (form.lst_tip_sessao_plen.selectedIndex == 0){
-          alert("Escolha o tipo de sessão plenaria!");
+          alert("Escolha o tipo de <dtml-if expr="_.has_key('ind_audiencia')">audiência<dtml-else>sessão</dtml-if>!");
           form.lst_tip_sessao_plen.focus();
           return false;
     }
@@ -39,19 +39,19 @@ function campos_criticar(){
     }
 
     if (form.txt_dat_inicio_sessao.value == "") {
-         alert("A data da sessão deve ser preenchida!");
+         alert("A data da <dtml-if expr="_.has_key('ind_audiencia')">audiência<dtml-else>sessão</dtml-if> deve ser preenchida!");
          form.txt_dat_inicio_sessao.focus();
          return false;
     }
 
     if (form.txt_hr_inicio_sessao.value == "") {
-         alert("A hora de início da sessão deve ser preenchida!");
+         alert("A hora de início da <dtml-if expr="_.has_key('ind_audiencia')">audiência<dtml-else>sessão</dtml-if> deve ser preenchida!");
          form.txt_hr_inicio_sessao.focus();
          return false;
     }
 
     if (form.txt_num_sessao_plen.value == "") {
-         alert("O número da sessão deve ser preenchido!");
+         alert("O número da <dtml-if expr="_.has_key('ind_audiencia')">audiência<dtml-else>sessão</dtml-if> deve ser preenchido!");
          form.txt_num_sessao_plen.focus();
          return false;
     }
@@ -59,10 +59,9 @@ function campos_criticar(){
     form.submit();
   }
 
-
     function pauta_odt_gerar(){
         if (confirm("Confirma a geração da ordem do dia em formato ODT?")) {
-           location.href="<dtml-var portal_url>/modelo_proposicao/ordem_dia?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           location.href="<dtml-var portal_url>/modelo_proposicao/ordem_dia?cod_sessao_plen=<dtml-var cod_sessao_plen missing><dtml-if expr="_.has_key('ind_audiencia')">&ind_audiencia=1</dtml-if>";
            setTimeout(function(){window.location.reload(true)},2500);
            return true;
          }
@@ -71,7 +70,7 @@ function campos_criticar(){
 
     function pauta_pdf_gerar(){
         if (confirm("Confirma a geração da pauta da ordem do dia em formato PDF?")) {
-           location.href="<dtml-var portal_url>/modelo_proposicao/ordem_dia_pdf?cod_sessao_plen=<dtml-var cod_sessao_plen missing>";
+           location.href="<dtml-var portal_url>/modelo_proposicao/ordem_dia_pdf?cod_sessao_plen=<dtml-var cod_sessao_plen missing><dtml-if expr="_.has_key('ind_audiencia')">&ind_audiencia=1</dtml-if>";
            setTimeout(function(){window.location.reload(true)},2500);
            return true;
          }
@@ -163,10 +162,12 @@ $(document).ready(function(){
 </script>
 </dtml-unless> 
 
-<dtml-if cod_sessao_plen>
+<dtml-if expr="_.has_key('ind_audiencia')">
+  <dtml-var audiencia_publica_menu>
+<dtml-elif cod_sessao_plen>
   <dtml-var sessao_plenaria_menu>
 <dtml-else>
-  <h1 class="firstHeading">Cadastro de Sessão</h1>
+  <h1 class="firstHeading"><dtml-if expr="_.has_key('ind_audiencia')">Cadastro de Audiência Pública<dtml-else>Cadastro de Sessão</dtml-if></h1>
 </dtml-if>
 
 <div class="tab-content bg-white">
@@ -178,23 +179,25 @@ $(document).ready(function(){
   <input type="hidden" name="dat_sessao" value="<dtml-var dat_inicio_sessao missing>" />
   <input type="hidden" name="hdn_num_legislatura" value="<dtml-var num_legislatura missing>" />
   <input type="hidden" name="hdn_url" value="sessao_plenaria_mostrar_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>&dat_inicio_sessao=<dtml-var dat_inicio missing>&num_legislatura=<dtml-var num_legislatura missing>" />
+  <dtml-if expr="_.has_key('ind_audiencia')">
+    <input type="hidden" name="ind_audiencia" value="1" />
+  </dtml-if>
 
   <legend>Dados Básicos</legend>
   <div class="form-row">
      <div class="col-6 col-md-3 mb-3">
-       <label for="txt_num_sessao_plen" class="required">Número</label>
-        <input class="form-control number" type="number" id="txt_num_sessao_plen" name="txt_num_sessao_plen" value="<dtml-var num_sessao_plen missing null="">" required />
-        <div class="invalid-feedback">
-          Este campo é obrigatório!
-        </div>        
-     </div>
-     <div class="col-6 col-md-3 mb-3">
         <label for="lst_tip_sessao_plen" class="required">Tipo</label>
         <select class="custom-select" id="lst_tip_sessao_plen" name="lst_tip_sessao_plen" required>
-           <option value="0">Selecione </option>        
+           <option value="0">Selecione </option>
            <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql()">
               <option
-                 <dtml-if expr="not _.has_key('cod_sessao_plen') and 1 ==_.int(sessao_plenaria_form.tip_sessao)">
+                 <dtml-if expr="not _.has_key('cod_sessao_plen') and _.has_key('ind_audiencia') and 'Audiência Pública' ==_.str(sessao_plenaria_form.nom_sessao)">
+                    selected
+                 </dtml-if>
+                 <dtml-if expr=" _.has_key('cod_sessao_plen') and _.has_key('ind_audiencia') and 'Audiência Pública' ==_.str(sessao_plenaria_form.nom_sessao)">
+                    selected
+                 </dtml-if> 
+                 <dtml-if expr="not _.has_key('cod_sessao_plen') and 'Ordinária' ==_.str(sessao_plenaria_form.nom_sessao)">
                     selected
                  </dtml-if>              
                  <dtml-if expr="_.has_key('cod_sessao_plen') and _.int(tip_sessao)==_.int(sessao_plenaria_form.tip_sessao)">
@@ -207,6 +210,13 @@ $(document).ready(function(){
         <div class="invalid-feedback">
           Este campo é obrigatório!
         </div>           
+     </div>
+     <div class="col-6 col-md-3 mb-3">
+       <label for="txt_num_sessao_plen" class="required">Número</label>
+        <input class="form-control number" type="number" id="txt_num_sessao_plen" name="txt_num_sessao_plen" value="<dtml-var num_sessao_plen missing null="">" required />
+        <div class="invalid-feedback">
+          Este campo é obrigatório!
+        </div>        
      </div>
      <div class="col-6 col-md-3 mb-3">
         <label for="lst_num_legislatura" class="required">Legislatura</label>
@@ -328,18 +338,32 @@ $(document).ready(function(){
   });        
   </script> 
 
-  <legend>Documentos da Sessão</legend>
+<dtml-if expr="_.has_key('ind_audiencia')">
+  <div class="form-row">
+    <div class="col-12 mb-3">
+     <label for="txt_tema" class="form-label d-block">Tema da Audiência</label>
+    <textarea class="form-control auto-resize" id="txt_tema" name="txt_tema" rows="2"><dtml-var tip_expediente missing></textarea>
+    <script>
+      autosize(document.querySelectorAll('textarea'));
+    </script>
+    </div>
+  </div>
+<dtml-else>
+  <input type="hidden" name="txt_tema" value="" />
+</dtml-if>
+
+  <legend>Documentos<dtml-if expr="_.has_key('ind_audiencia')"><dtml-else> da Sessão</dtml-if></legend>
   <dtml-if cod_sessao_plen>
      <div class="form-row">
         <div class="col-12 col-md-6 mb-3">
-           <label class="form-label d-block">ODT Ordem do Dia</label>
+           <label class="form-label d-block"><dtml-if expr="_.has_key('ind_audiencia')">ODT Pauta<dtml-else>ODT Ordem do Dia</dtml-if></label>
            <dtml-let id_documento_odt="_.str(cod_sessao_plen)+'_pauta_sessao.odt'">
               <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_documento_odt)">
                  <dtml-let documento_odt="_.getattr(sapl_documentos.pauta_sessao,id_documento_odt).absolute_url">
                     <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_sessao_plen)+'_pauta_sessao.odt')">
                     <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Visualização de Arquivo" data-src="<dtml-var portal_url>/generico/view_odt?arquivo_odt=<dtml-var documento_odt>&<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-fw fa-file-alt"></i>Visualizar</button>
                     <button type="button" class="btn btn-sm btn-secondary" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/pauta_sessao/externalEdit_/<dtml-var nome_arquivo_odt>.zem'" data-toggle="tooltip" data-placement="bottom" title="Editar no LibreOffice"><i class="fas fa-fw fa-external-link-alt"></i>LibreOffice</button>
-                    <a class="btn btn-sm btn-danger" href="pauta_odt_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>" data-confirm="Deseja realmente excluir o arquivo ODT da Ordem do Dia?"><i class="fas fa-trash"></i> Excluir</a>
+                    <a class="btn btn-sm btn-danger" href="pauta_odt_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing><dtml-if expr="_.has_key('ind_audiencia')">&ind_audiencia=1</dtml-if>" data-confirm="Deseja realmente excluir o arquivo ODT da Ordem do Dia?"><i class="fas fa-trash"></i> Excluir</a>
                  </dtml-let>
               <dtml-else>           
                  <a  class="btn btn-sm btn-secondary" href="javascript:pauta_odt_gerar();">Gerar ODT</a>
@@ -347,7 +371,7 @@ $(document).ready(function(){
            </dtml-let>
         </div>
         <div class="col-12 col-md-6 mb-3">        
-           <label class="form-label d-block">PDF Ordem do Dia</label>
+           <label class="form-label d-block"><dtml-if expr="_.has_key('ind_audiencia')">PDF Pauta<dtml-else>PDF Ordem do Dia</dtml-if></label>
            <dtml-let documento_odt="_.str(cod_sessao_plen)+'_pauta_sessao.odt'">
               <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,documento_odt)">
                  <dtml-call expr="REQUEST.set('temODT', 1)">
@@ -364,7 +388,7 @@ $(document).ready(function(){
                    <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_sessao_plen>&tipo_doc=pauta&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
                 </dtml-if>
                 <a class="btn btn-sm btn-secondary" target="_blank" href="pauta_completa_pysc?cod_sessao_plen=<dtml-var cod_sessao_plen>"><i class="fas fa-fw fa-file-download"></i>Pauta Completa</a>
-                <a class="btn btn-sm btn-danger" href="pauta_pdf_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>" data-confirm="Deseja realmente excluir o arquivo PDF da Ordem do Dia?"><i class="fas fa-trash"></i> Excluir</a> 
+                <a class="btn btn-sm btn-danger" href="pauta_pdf_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing><dtml-if expr="_.has_key('ind_audiencia')">&ind_audiencia=1</dtml-if>" data-confirm="Deseja realmente excluir o arquivo PDF da Ordem do Dia?"><i class="fas fa-trash"></i> Excluir</a> 
              </dtml-let>
           <dtml-elif "_.hasattr(sapl_documentos.pauta_sessao,id_pauta_assinada)">
              <dtml-let pauta="_.getattr(sapl_documentos.pauta_sessao,id_pauta_assinada).absolute_url">
@@ -380,12 +404,13 @@ $(document).ready(function(){
              <dtml-if expr="_.has_key('temODT')">
                 <a class="btn btn-sm btn-secondary" href="javascript:pauta_pdf_gerar()">Gerar PDF do ODT</a>
              <dtml-else>
-                <a class="btn btn-sm btn-secondary" href="<dtml-var portal_url>/relatorios/pdf_ordem_dia_preparar_pysc?data=<dtml-var dat_inicio_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen>"
+                <a class="btn btn-sm btn-secondary" href="<dtml-var portal_url>/relatorios/pdf_ordem_dia_preparar_pysc?data=<dtml-var dat_inicio_sessao>&cod_sessao_plen=<dtml-var cod_sessao_plen><dtml-if expr="_.has_key('ind_audiencia')">&ind_audiencia=1</dtml-if>"
 target="_blank">Gerar PDF</a>
              </dtml-if>
           </dtml-if>
         </div>
      </div>
+     <dtml-if expr="not _.has_key('ind_audiencia')">
      <div class="form-row">
         <div class="col-12 col-md-6 mb-3">     
           <label class="form-label d-block">ODT Lista de Oradores</label>
@@ -426,12 +451,14 @@ target="_blank">Gerar PDF</a>
           </dtml-if>
         </div>
      </div>
+    </dtml-if>
   </dtml-if>
   
   <div class="form-row">
    <dtml-if cod_sessao_plen>
      <div class="col-12 col-md-6 mb-3">
-       <label class="form-label d-block">ODT Ata da Sessão</label>
+      <dtml-unless ind_audiencia>
+       <label class="form-label d-block">ODT Ata<dtml-if expr="_.has_key('ind_audiencia')"><dtml-else> da Sessão</dtml-if></label>
        <dtml-let id_documento_odt="_.str(cod_sessao_plen)+'_ata_sessao.odt'">
           <dtml-if "_.hasattr(sapl_documentos.ata_sessao,id_documento_odt)">
              <dtml-call expr="REQUEST.set('temAtaODT', 1)">
@@ -439,16 +466,17 @@ target="_blank">Gerar PDF</a>
                 <dtml-call expr="REQUEST.set('nome_arquivo_odt',_.str(cod_sessao_plen)+'_ata_sessao.odt')">
                 <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Visualização de Arquivo" data-src="<dtml-var portal_url>/generico/view_odt?arquivo_odt=<dtml-var documento_odt>&<dtml-var expr="ZopeTime().timeTime()">"><i class="fa fa-fw fa-file-alt"></i>Visualizar</button>
                 <button type="button" class="btn btn-sm btn-secondary" onclick="javascript:location.href='&dtml-URL1;/sapl_documentos/ata_sessao/externalEdit_/<dtml-var nome_arquivo_odt>.zem'" data-toggle="tooltip" data-placement="bottom" title="Editar no LibreOffice"><i class="fas fa-fw fa-external-link-alt"></i>LibreOffice</button>
-                <a class="btn btn-sm btn-danger" href="ata_odt_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>" data-confirm="Deseja realmente excluir o arquivo ODT da Ata da Sessão?"><i class="fas fa-trash"></i> Excluir</a>                   
+                <a class="btn btn-sm btn-danger" href="ata_odt_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>" data-confirm="Deseja realmente excluir o arquivo ODT da Ata<dtml-if expr="_.has_key('ind_audiencia')"><dtml-else> da Sessão</dtml-if>?"><i class="fas fa-trash"></i> Excluir</a>                   
                </dtml-let>
           <dtml-else>
                <a class="btn btn-sm btn-secondary" href="javascript:ata_odt_gerar();">Gerar ODT</a>
           </dtml-if>
        </dtml-let>
+      </dtml-unless>
      </div>
     </dtml-if>
-     <div class="col-12 col-md-6 mb-3">
-        <label class="form-label d-block">PDF Ata da Sessão</label>
+     <div class="col-12 <dtml-unless ind_audiencia>col-md-6</dtml-unless> mb-3">
+        <label class="form-label d-block">PDF Ata<dtml-if expr="_.has_key('ind_audiencia')"><dtml-else> da Sessão</dtml-if></label>
         <dtml-if cod_sessao_plen>
            <dtml-call expr="REQUEST.set('id_ata', _.str(cod_sessao_plen)+'_ata_sessao.pdf')">
            <dtml-call expr="REQUEST.set('id_ata_assinada', _.str(cod_sessao_plen)+'_ata_sessao_signed.pdf')">
@@ -460,7 +488,7 @@ target="_blank">Gerar PDF</a>
                  <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
                    <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_sessao_plen>&tipo_doc=ata&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
                  </dtml-if>
-                 <a class="btn btn-sm btn-danger" href="ata_pdf_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>" data-confirm="Deseja realmente excluir o arquivo PDF da Ata da Sessão?"><i class="fas fa-trash"></i> Excluir</a>                                
+                 <a class="btn btn-sm btn-danger" href="ata_pdf_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing><dtml-if expr="_.has_key('ind_audiencia')">&ind_audiencia=1</dtml-if>" data-confirm="Deseja realmente excluir o arquivo PDF da Ata<dtml-if expr="_.has_key('ind_audiencia')"><dtml-else> da Sessão</dtml-if>?"><i class="fas fa-trash"></i> Excluir</a>                                
               </dtml-let>
            <dtml-elif "_.hasattr(sapl_documentos.ata_sessao,id_ata_assinada)">
               <dtml-let ata="_.getattr(sapl_documentos.ata_sessao,id_ata_assinada).absolute_url">
@@ -470,7 +498,7 @@ target="_blank">Gerar PDF</a>
                  <dtml-if "sapl_documentos.props_sagl.restpki_access_token!=''">
                    <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#iFrameModal" data-title="Assinaturas Digitais" data-src="<dtml-var portal_url>/cadastros/assinatura/assinatura_solicitar_form?codigo=<dtml-var cod_sessao_plen>&tipo_doc=ata&modal=1"><i class="fas fa-file-signature"></i>Assinaturas</button>
                  </dtml-if>
-                 <a class="btn btn-sm btn-danger" href="ata_pdf_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>" data-confirm="Deseja realmente excluir o arquivo PDF da Ata da Sessão?"><i class="fas fa-trash"></i> Excluir</a>                    
+                 <a class="btn btn-sm btn-danger" href="ata_pdf_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>" data-confirm="Deseja realmente excluir o arquivo PDF da Ata<dtml-if expr="_.has_key('ind_audiencia')"><dtml-else> da Sessão</dtml-if>?"><i class="fas fa-trash"></i> Excluir</a>                    
               </dtml-let>
            <dtml-else>
               <div class="input-group">
@@ -499,8 +527,8 @@ target="_blank">Gerar PDF</a>
            </div>        
         </dtml-if>
      </div>
-     <div class="col-12 col-md-6 mb-3">     
-       <label class="form-label d-block">PDF Roteiro da Sessão</label>
+     <div class="col-12 col-md-12 mb-3">     
+       <label class="form-label d-block">PDF Roteiro<dtml-if expr="_.has_key('ind_audiencia')"><dtml-else> da Sessão</dtml-if></label>
        <dtml-if cod_sessao_plen>
           <dtml-call expr="REQUEST.set('id_roteiro', _.str(cod_sessao_plen)+'_roteiro_sessao.pdf')">
           <dtml-if "_.hasattr(sapl_documentos.pauta_sessao,id_roteiro)">
@@ -508,7 +536,7 @@ target="_blank">Gerar PDF</a>
                 <a class="btn btn-sm btn-secondary" target="_blank" href="<dtml-var roteiro>?<dtml-var expr="ZopeTime().timeTime()">">
                   <i class="fa fa-fw fa-file-pdf"></i>Visualizar
                 </a>
-                <a class="btn btn-sm btn-danger" href="roteiro_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing>" data-confirm="Deseja realmente excluir o arquivo PDF do Roteiro da Sessão?"><i class="fas fa-trash"></i> Excluir</a> 
+                <a class="btn btn-sm btn-danger" href="roteiro_excluir_proc?cod_sessao_plen=<dtml-var cod_sessao_plen missing><dtml-if expr="_.has_key('ind_audiencia')">&ind_audiencia=1</dtml-if>" data-confirm="Deseja realmente excluir o arquivo PDF do Roteiro<dtml-if expr="_.has_key('ind_audiencia')"><dtml-else> da Sessão</dtml-if>?"><i class="fas fa-trash"></i> Excluir</a> 
              </dtml-let>
           <dtml-else>
              <div class="custom-file">
@@ -556,7 +584,7 @@ target="_blank">Gerar PDF</a>
              Preencha o código de incorporação do player de vídeo.
          </small>         
      </div>
-     <div class="col-12 col-md-6 mb-3">  
+     <div class="col-12 col-md-12 mb-3">  
          <label for="txt_url_fotos">Álbum de Fotos</label>
          <div class="input-group">
            <input class="form-control" type="text" id="txt_url_fotos" name="txt_url_fotos" maxlength="150" value="<dtml-var url_fotos missing null="">" autocomplete="off" />

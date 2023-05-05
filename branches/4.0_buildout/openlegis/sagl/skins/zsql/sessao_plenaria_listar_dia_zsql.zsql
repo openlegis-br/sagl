@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : ano_sessao="" mes_sessao=""
+arguments : ano_sessao="" mes_sessao="" ind_audiencia
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
@@ -9,9 +9,16 @@ SELECT DISTINCT
    DATE_FORMAT( dat_inicio_sessao,  '%d' ) AS dia_sessao
 FROM
    sessao_plenaria
-WHERE
-   ind_excluido=0
+   LEFT JOIN tipo_sessao_plenaria ON (sessao_plenaria.tip_sessao = tipo_sessao_plenaria.tip_sessao)
+<dtml-sqlgroup where>
+   sessao_plenaria.ind_excluido=0
    and YEAR(dat_inicio_sessao) = <dtml-sqlvar ano_sessao type="int">
    and MONTH(dat_inicio_sessao) = <dtml-sqlvar mes_sessao type="int">
+   <dtml-if expr="_.has_key('ind_audiencia') and (ind_audiencia=='1' or ind_audiencia==1)">
+     AND tipo_sessao_plenaria.nom_sessao = 'Audiencia Pública'
+   <dtml-else>
+     AND tipo_sessao_plenaria.nom_sessao != 'Audiencia Pública'
+   </dtml-if>
+</dtml-sqlgroup>
 ORDER 
    BY DAY(dat_inicio_sessao) DESC

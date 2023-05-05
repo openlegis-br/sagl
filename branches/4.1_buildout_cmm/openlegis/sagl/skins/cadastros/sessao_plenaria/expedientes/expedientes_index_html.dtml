@@ -33,16 +33,23 @@
     });
 </script>
 
-<dtml-var sessao_plenaria_menu>
+<dtml-if expr="_.has_key('ind_audiencia')">
+  <dtml-var audiencia_publica_menu>
+<dtml-elif cod_sessao_plen>
+  <dtml-var sessao_plenaria_menu>
+</dtml-if>
 <div class="tab-content bg-white">
   <div class="tab-pane p-3 border fade show active">
 
 <legend>Expedientes Diversos</legend>
 
 <form name="expediente_form" method="post" action="expedientes_salvar_proc">
-  <input type="hidden" name="hdn_url" value="index_html?cod_sessao_plen=<dtml-var cod_sessao_plen missing>&num_legislatura=<dtml-var num_legislatura missing>&cod_sessao_leg=<dtml-var cod_sessao_leg missing>&dat_sessao=<dtml-var dat_sessao missing>&tip_sessao=<dtml-var tip_sessao missing>" />
+  <dtml-if expr="_.has_key('ind_audiencia')">
+    <input type="hidden" name="hdn_url" value="index_html?cod_sessao_plen=<dtml-var cod_sessao_plen missing>&num_legislatura=<dtml-var num_legislatura missing>&cod_sessao_leg=<dtml-var cod_sessao_leg missing>&dat_sessao=<dtml-var dat_sessao missing>&tip_sessao=<dtml-var tip_sessao missing>&ind_audiencia=1" />
+ <dtml-elif cod_sessao_plen>
+    <input type="hidden" name="hdn_url" value="index_html?cod_sessao_plen=<dtml-var cod_sessao_plen missing>&num_legislatura=<dtml-var num_legislatura missing>&cod_sessao_leg=<dtml-var cod_sessao_leg missing>&dat_sessao=<dtml-var dat_sessao missing>&tip_sessao=<dtml-var tip_sessao missing>" />
+ </dtml-if>
   <input type="hidden" name="hdn_cod_sessao_plen" value="<dtml-var cod_sessao_plen missing>">
-
   <dtml-in expr="zsql.tipo_expediente_obter_zsql(ind_excluido=0)">
     <input type="hidden" name="hdn_cod_expediente" value="<dtml-var cod_expediente missing>" />  
     <p class="h6"><dtml-var nom_expediente>

@@ -70,7 +70,7 @@
 
   function ordem_dia_excluir(){
        if (confirm("Deseja realmente excluir?")) {
-          location.href="ordem_dia_excluir_proc?cod_ordem=<dtml-var cod_ordem missing>&cod_sessao_plen=<dtml-var cod_sessao_plen>&modal=1";
+          location.href="ordem_dia_excluir_proc?cod_ordem=<dtml-var cod_ordem missing>&cod_sessao_plen=<dtml-var cod_sessao_plen><dtml-if expr="_.has_key('ind_audiencia')">&ind_audiencia=1</dtml-if>&modal=1";
        }
   }
 
@@ -81,7 +81,7 @@
 	location.href="ementa_buscar_proc?tip_ident_basica="+form.lst_tip_id_basica[form.lst_tip_id_basica.selectedIndex].value+
           "&num_ident_basica="+form.txt_num_ident_basica.value+"&ano_ident_basica="+
           form.txt_ano_ident_basica.value+"&cod_ordem="+form.cod_ordem.value+
-          "&dat_ordem="+form.txt_dat_ordem.value+"&num_ordem="+form.txt_num_ordem.value+"&tip_votacao="+form.rad_tip_votacao.value+"&tip_sessao_plen="+form.lst_tip_sessao[form.lst_tip_sessao.selectedIndex].value+"&cod_sessao_plen=<dtml-var cod_sessao_plen>&modal=1";
+          "&dat_ordem="+form.txt_dat_ordem.value+"&num_ordem="+form.txt_num_ordem.value+"&tip_votacao="+form.rad_tip_votacao.value+"&tip_sessao_plen="+form.lst_tip_sessao[form.lst_tip_sessao.selectedIndex].value+"&cod_sessao_plen=<dtml-var cod_sessao_plen><dtml-if expr="_.has_key('ind_audiencia')">&ind_audiencia=1</dtml-if>&modal=1";
      }
   }
 
@@ -89,10 +89,42 @@
 
 <h1 class="firstHeading">Matéria Legislativa</h1> 
 
+<dtml-if expr="_.has_key('ind_audiencia')">
+  <dtml-call expr="REQUEST.set('metodo', 'zsql.sessao_plenaria_obter_zsql(cod_sessao_plen =' + cod_sessao_plen +' , ind_audiencia=1, ind_excluido=0')">
+<dtml-else>
+  <dtml-call expr="REQUEST.set('metodo', 'zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)')">
+</dtml-if>
+
 <form name="ordem_dia_form" method="post" action="ordem_dia_salvar_proc">
-      <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
        <table class="table table-borderless">
         <tr>
+    <dtml-if expr="_.has_key('ind_audiencia')">
+      <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_audiencia=1, ind_excluido=0)">
+          <td>
+            <label for="txt_dat_ordem" class="required">Data da Pauta</label>
+            <input class="form-control" type="text" name="txt_dat_ordem" id="txt_dat_ordem" readonly="readonly"
+               <dtml-if lst_dat_ordem> value="<dtml-var lst_dat_ordem>"
+               <dtml-else> value="<dtml-var dat_inicio_sessao>"
+	       </dtml-if> />
+          </td>
+          <td>
+            <label for="lst_tip_sessao" class="required">Tipo de Evento</label>
+            <select class="custom-select" id="lst_tip_sessao" name="lst_tip_sessao" onfocus="this.initialSelect = this.selectedIndex;" onchange="this.selectedIndex = this.initialSelect;" required>
+              <dtml-in expr="zsql.tipo_sessao_plenaria_obter_zsql(ind_audiencia='1', ind_excluido=0)">
+                 <option
+                   <dtml-if expr="_.has_key('cod_ordem') and _.int(tip_sessao)==_.int(ordem_dia_form.tip_sessao)">
+                      selected
+                   <dtml-elif expr="_.int(tip_sessao)==_.int(ordem_dia_form.tip_sessao)">
+                      selected
+                   </dtml-if>
+                   value="<dtml-var tip_sessao>"><dtml-var nom_sessao>
+                  </option>
+               </dtml-in>
+            </select>
+          </td>
+       </dtml-in>
+    <dtml-else>
+      <dtml-in expr="zsql.sessao_plenaria_obter_zsql(cod_sessao_plen = cod_sessao_plen, ind_excluido=0)">
           <td>
             <label for="txt_dat_ordem" class="required">Data da Sessão</label>
             <input class="form-control" type="text" name="txt_dat_ordem" id="txt_dat_ordem" readonly="readonly"
@@ -115,6 +147,8 @@
                </dtml-in>
             </select>
           </td>
+       </dtml-in>
+    </dtml-if>
 	  <td>
             <label for="txt_num_ordem" class="required">Nº de Ordem</label>
             <dtml-unless cod_ordem>
@@ -223,13 +257,15 @@
            </td>
         </tr>
     </table>
-</dtml-in>
 
 <div class="text-center">
    <input class="btn btn-primary" type="button" value="Salvar" onClick="campos_criticar(document.ordem_dia_form)" />
    <dtml-if cod_ordem>
       <input type="hidden" name="flag_atualizar" value="<dtml-var cod_ordem missing>" />
       <input class="btn btn-danger" type="button" value="Excluir" onClick="ordem_dia_excluir()" />
+   </dtml-if>
+   <dtml-if expr="_.has_key('ind_audiencia')">
+       <input type="hidden" name="ind_audiencia" value="1'" />
    </dtml-if>
    <dtml-if cod_materia>
       <a class="btn btn-secondary" target="_blank" href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>">Consultar Matéria</a>

@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_sessao_plen="" cod_ordem="" dat_inicio_sessao="" ano_sessao="" mes_sessao="" dia_sessao="" num_sessao_plen="" tip_sessao="" hoje="" proximas="" anteriores="" ind_excluido=0
+arguments : cod_sessao_plen="" cod_ordem="" dat_inicio_sessao="" ano_sessao="" mes_sessao="" dia_sessao="" num_sessao_plen="" tip_sessao="" hoje="" proximas="" anteriores="" ind_audiencia ind_excluido=0
 max_rows : 3000
 max_cache : 100
 </dtml-comment>
@@ -17,6 +17,7 @@ SELECT
        sessao_plenaria.num_legislatura,
        sessao_plenaria.num_sessao_plen,
        sessao_plenaria.tip_sessao,
+       sessao_plenaria.tip_expediente,
        sessao_plenaria.url_fotos,
        sessao_plenaria.url_audio,
        sessao_plenaria.url_video,
@@ -24,14 +25,16 @@ SELECT
        sessao_legislativa.num_sessao_leg
 
 FROM
-   sessao_plenaria left join sessao_legislativa on (sessao_plenaria.cod_sessao_leg=sessao_legislativa.cod_sessao_leg)
+   sessao_plenaria
+   LEFT JOIN tipo_sessao_plenaria ON (sessao_plenaria.tip_sessao = tipo_sessao_plenaria.tip_sessao)
+   LEFT JOIN sessao_legislativa ON (sessao_plenaria.cod_sessao_leg=sessao_legislativa.cod_sessao_leg)
 
   <dtml-sqlgroup where>
     <dtml-sqltest cod_sessao_plen   op="=" type="int" optional><dtml-and>
     <dtml-sqltest num_sessao_plen   op="=" type="int" optional><dtml-and>
     <dtml-sqltest dat_inicio_sessao op="=" type="nb" optional><dtml-and>
     <dtml-if expr="tip_sessao and tip_sessao != '-1'">
-    tip_sessao = <dtml-sqlvar tip_sessao type="int" optional> and
+    sessao_plenaria.tip_sessao = <dtml-sqlvar tip_sessao type="int" optional> and
     </dtml-if>
     <dtml-if ano_sessao>
     YEAR(dat_inicio_sessao) = <dtml-sqlvar ano_sessao type="int"> and
@@ -50,6 +53,11 @@ FROM
     </dtml-if>
     <dtml-if expr="anteriores and anteriores == 1">
     DATE(dat_inicio_sessao) < now() and
+    </dtml-if>
+    <dtml-if expr="_.has_key('ind_audiencia') and (ind_audiencia=='1' or ind_audiencia==1)">
+      tipo_sessao_plenaria.nom_sessao = 'Audiencia Pública' AND 
+    <dtml-else>
+      tipo_sessao_plenaria.nom_sessao != 'Audiencia Pública' AND
     </dtml-if>
     sessao_plenaria.cod_sessao_plen != 0 and
     sessao_plenaria.ind_excluido = 0 
