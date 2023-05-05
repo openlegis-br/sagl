@@ -38,8 +38,8 @@ for documento in context.zsql.documento_acessorio_obter_zsql(cod_documento=cod_d
        txt_ementa = documento.txt_ementa
     else:
        txt_ementa = " "
-    dat_documento = documento.dat_documento
-    data_documento = context.pysc.data_converter_por_extenso_pysc(data=documento.dat_documento)    
+    dat_documento = DateTime(documento.dat_documento, datefmt='international').strftime('%d/%m/%Y')
+    data_documento = context.pysc.data_converter_por_extenso_pysc(data=dat_documento)    
     apelido_autor = ''
     nom_autor = []
     for proposicao in context.zsql.proposicao_obter_zsql(ind_mat_ou_doc='D', cod_mat_ou_doc=cod_documento):
