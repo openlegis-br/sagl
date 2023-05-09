@@ -38,8 +38,8 @@ for documento in context.zsql.documento_administrativo_obter_zsql(cod_documento=
     num_documento = documento.num_documento
     ano_documento = documento.ano_documento
     txt_ementa = documento.txt_assunto
-    dat_documento = documento.dat_documento
-    dia_documento = DateTime(documento.dat_documento, datefmt='international').strftime('%d/%m/%Y')
+    dat_documento = DateTime(documento.dat_documento, datefmt='international').strftime('%d/%m/%Y')
+    dia_documento = context.pysc.data_converter_por_extenso_pysc(data=dat_documento) 
     nom_autor = documento.txt_interessado
 
 # Presidente
