@@ -2974,7 +2974,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                dic_doc["arquivo"] = getattr(self.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf')
                dic_doc["url"] = getattr(self.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf').absolute_url()
                arquivo =  cStringIO.StringIO(str(dic_doc["arquivo"].data))
-               existing_pdf = PdfFileReader(arquivo)
+               existing_pdf = PdfFileReader(arquivo, strict=False)
                dic_doc["paginas_doc"] = existing_pdf.getNumPages()
                dic_doc["arquivob64"] = base64.b64encode(str(dic_doc["arquivo"].data))
                paginas = []
@@ -2997,7 +2997,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    dic_anexo["arquivo"] = getattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf')
                    dic_anexo["url"] = getattr(self.sapl_documentos.substitutivo, str(substitutivo.cod_substitutivo) + '_substitutivo.pdf').absolute_url()
                    arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
-                   existing_pdf = PdfFileReader(arquivo)
+                   existing_pdf = PdfFileReader(arquivo, strict=False)
                    dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
                    paginas = []
@@ -3020,7 +3020,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    dic_anexo["arquivo"] = getattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf')
                    dic_anexo["url"] = getattr(self.sapl_documentos.emenda, str(eme.cod_emenda) + '_emenda.pdf').absolute_url()
                    arquivo = cStringIO.StringIO(str(dic_anexo["arquivo"].data))
-                   existing_pdf = PdfFileReader(arquivo)
+                   existing_pdf = PdfFileReader(arquivo, strict=False)
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
                    dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
@@ -3046,7 +3046,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    dic_relat["arquivo"] = getattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf')
                    dic_relat["url"] = getattr(self.sapl_documentos.parecer_comissao, str(relat.cod_relatoria) + '_parecer.pdf').absolute_url()
                    arquivo =  cStringIO.StringIO(str(dic_relat["arquivo"].data))
-                   existing_pdf = PdfFileReader(arquivo)
+                   existing_pdf = PdfFileReader(arquivo, strict=False)
                    dic_relat["paginas_doc"] = existing_pdf.getNumPages()
                    dic_relat["arquivob64"] = base64.b64encode(str(dic_relat["arquivo"].data))
                    dic_relat["paginas_doc"] = existing_pdf.getNumPages()
@@ -3076,8 +3076,8 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                       else:
                          dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf')
                          dic_anexo["url"] = getattr(self.sapl_documentos.materia, str(documento.cod_documento) + '.pdf').absolute_url()
-                   arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
-                   existing_pdf = PdfFileReader(arquivo)
+                   arquivo = cStringIO.StringIO(str(dic_anexo["arquivo"].data))
+                   existing_pdf = PdfFileReader(arquivo, strict=False)
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
                    if documento.ind_publico == 1:
                       dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
@@ -3105,7 +3105,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    dic_anexo["arquivo"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
                    dic_anexo["url"] = getattr(self.sapl_documentos.materia.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf').absolute_url()
                    arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
-                   existing_pdf = PdfFileReader(arquivo)
+                   existing_pdf = PdfFileReader(arquivo, strict=False)
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
                    dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
@@ -3128,6 +3128,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
 
         return pasta
 
+
     def pasta_adm_digital(self, cod_documento):
 
         for documento in self.zsql.documento_administrativo_obter_zsql(cod_documento=cod_documento):
@@ -3143,7 +3144,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                dic_doc["arquivo"] = getattr(self.sapl_documentos.administrativo, str(documento.cod_documento) + '_texto_integral.pdf')
                dic_doc["url"] = getattr(self.sapl_documentos.administrativo, str(documento.cod_documento) + '_texto_integral.pdf').absolute_url()
                arquivo =  cStringIO.StringIO(str(dic_doc["arquivo"].data))
-               existing_pdf = PdfFileReader(arquivo)
+               existing_pdf = PdfFileReader(arquivo, strict=False)
                dic_doc["paginas_doc"] = existing_pdf.getNumPages()
                dic_doc["arquivob64"] = base64.b64encode(str(dic_doc["arquivo"].data))
                paginas = []
@@ -3164,7 +3165,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(doc.cod_documento_acessorio) + '.pdf')
                    dic_anexo["url"] = getattr(self.sapl_documentos.administrativo, str(doc.cod_documento_acessorio) + '.pdf').absolute_url()
                    arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
-                   existing_pdf = PdfFileReader(arquivo)
+                   existing_pdf = PdfFileReader(arquivo, strict=False)
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
                    dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
                    paginas = []
@@ -3185,7 +3186,7 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
                    dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf')
                    dic_anexo["url"] = getattr(self.sapl_documentos.administrativo.tramitacao, str(tram.cod_tramitacao) + '_tram.pdf').absolute_url()
                    arquivo =  cStringIO.StringIO(str(dic_anexo["arquivo"].data))
-                   existing_pdf = PdfFileReader(arquivo)
+                   existing_pdf = PdfFileReader(arquivo, strict=False)
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
                    dic_anexo["arquivob64"] = base64.b64encode(str(dic_anexo["arquivo"].data))
                    dic_anexo["paginas_doc"] = existing_pdf.getNumPages()
@@ -3207,5 +3208,6 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
             i['paginas_geral'] = total
 
         return pasta
+
 
 InitializeClass(SAGLTool)
