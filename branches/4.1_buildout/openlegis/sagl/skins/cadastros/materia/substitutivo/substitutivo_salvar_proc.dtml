@@ -1,5 +1,14 @@
 <dtml-if hdn_cod_proposicao>
    <dtml-call expr="REQUEST.set('temProposicao',hdn_cod_proposicao!='')">
+   <dtml-if expr="sapl_documentos.props_sagl.numero_protocolo_anual == 1">
+      <dtml-in expr="zsql.protocolo_numero_obter_zsql(ano_protocolo = _.DateTime().strftime('%Y'))">
+         <dtml-call expr="REQUEST.set('txt_num_protocolo', int(novo_numero))">
+      </dtml-in>
+   <dtml-else>
+      <dtml-in expr="zsql.protocolo_codigo_obter_zsql()">
+         <dtml-call expr="REQUEST.set('txt_num_protocolo', int(novo_codigo))">
+      </dtml-in>
+   </dtml-if>
 </dtml-if>
 
 <dtml-if hdn_cod_substitutivo>
@@ -29,23 +38,27 @@
     </dtml-in>
   </dtml-unless>
 
-   <dtml-if expr="(_.has_key('hdn_cod_proposicao') and hdn_cod_proposicao!='') or (_.has_key('temProposicao'))">
-      <dtml-call expr="REQUEST.set('dat_recebimento', pysc.data_atual_iso_pysc())">    
-         <dtml-try> 
-            <dtml-call expr="zsql.trans_begin_zsql()"> 
-            <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao=hdn_cod_proposicao, dat_recebimento=dat_recebimento, cod_mat_ou_doc=cod_materia, cod_substitutivo=hdn_cod_substitutivo)">
-            <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">
-            <dtml-call expr="zsql.trans_commit_zsql()">
-         <dtml-except>
-            <dtml-call expr="zsql.trans_rollback_zsql()">                      
-         </dtml-try>
-   </dtml-if>
+  <dtml-if expr="(_.has_key('hdn_cod_proposicao') and hdn_cod_proposicao!='') or (_.has_key('temProposicao'))">
+     <dtml-call expr="REQUEST.set('dat_recebimento', pysc.data_atual_iso_pysc())">
+     <dtml-in expr="zsql.tipo_materia_legislativa_obter_zsql(tip_natureza='A',ind_excluido=0)">
+         <dtml-if expr="des_tipo_materia=='Substitutivo'">
+            <dtml-call expr="REQUEST.set('tip_materia', int(tip_materia))">
+         </dtml-if>
+     </dtml-in>
+     <dtml-call expr="REQUEST.set('txt_user', AUTHENTICATED_USER.getUserName())">
+     <dtml-try>
+        <dtml-call expr="zsql.protocolo_legislativo_incluir_zsql(num_protocolo=txt_num_protocolo, tip_protocolo=0, tip_processo=1, cod_materia_principal=cod_materia, tip_materia=tip_materia, tip_natureza_materia=2, txt_assunto_ementa=txa_txt_ementa, cod_autor=lst_cod_autor, txt_user_protocolo=txt_user)">
+        <dtml-call expr="zsql.proposicao_registrar_recebimento_zsql(cod_proposicao=hdn_cod_proposicao, dat_recebimento=dat_recebimento, cod_mat_ou_doc=cod_materia, cod_substitutivo=hdn_cod_substitutivo)">
+        <dtml-call expr="modelo_proposicao.proposicao_autuar(cod_proposicao=hdn_cod_proposicao)">
+     <dtml-except>
+     </dtml-try>
+  </dtml-if>
  
    <dtml-if expr="metodo==zsql.substitutivo_incluir_zsql">
-     <dtml-call expr="zsql.autoria_substitutivo_incluir_zsql(cod_autor=lst_cod_autor,cod_substitutivo=hdn_cod_substitutivo)">
+     <dtml-call expr="zsql.autoria_substitutivo_incluir_zsql(cod_autor=lst_cod_autor, cod_substitutivo=hdn_cod_substitutivo)">
      <dtml-if expr="txt_num_protocolo and txt_num_protocolo!=''">
         <dtml-call expr="REQUEST.set('ano', _.DateTime().strftime('%Y'))">
-        <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo,ano_protocolo=ano)">
+        <dtml-in expr="zsql.protocolo_obter_zsql(num_protocolo=txt_num_protocolo, ano_protocolo=ano)">
            <dtml-if sequence-start>
              <dtml-call expr="REQUEST.set('cod_protocolo', cod_protocolo)">
            </dtml-if>
@@ -149,7 +162,7 @@
 </dtml-try>
 
 <dtml-comment>LOG DE AUDITORIA</dtml-comment>
-<dtml-if dbcon_logs>
+<dtml-if expr="dbcon_logs and hdn_cod_substitutivo">
   <dtml-call expr="zsql.logs_registrar_zsql(
             usuario      = REQUEST['AUTHENTICATED_USER'].getUserName(), 
             data         = DateTime().strftime('%Y-%m-%d %H:%M:%S'),
