@@ -2508,13 +2508,17 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
            storage_path = self.sapl_documentos.pauta_sessao
            for metodo in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=codigo):
                for tipo in self.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=metodo.tip_sessao):
-                   sessao = str(metodo.num_sessao_plen) +  'ª Sessão ' + str(tipo.nom_sessao)+' - '+ str(metodo.dat_inicio_sessao)
+                   sessao = str(metodo.num_sessao_plen) + 'ª Sessão ' + str(tipo.nom_sessao)+' - '+ str(metodo.dat_inicio_sessao)
+           for metodo in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=codigo, ind_audiencia='1'):
+               sessao = 'Audiência Pública nº ' str(metodo.num_sessao_plen) + '/' + str(metodo.ano_sessao_plen)
            texto = 'PAUTA' + ' - ' + str(sessao)
         elif tipo_doc == 'ata':
            storage_path = self.sapl_documentos.ata_sessao
            for metodo in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=codigo):
                for tipo in self.zsql.tipo_sessao_plenaria_obter_zsql(tip_sessao=metodo.tip_sessao):
-                   sessao = str(metodo.num_sessao_plen) +  'ª Sessão ' + str(tipo.nom_sessao)+' - '+ str(metodo.dat_inicio_sessao)
+                   sessao = str(metodo.num_sessao_plen) + 'ª Sessão ' + str(tipo.nom_sessao)+' - '+ str(metodo.dat_inicio_sessao)
+           for metodo in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=codigo, ind_audiencia='1'):
+               sessao = 'Audiência Pública nº ' str(metodo.num_sessao_plen) + '/' + str(metodo.ano_sessao_plen)
            texto = 'ATA' + ' - ' + str(sessao)
         elif tipo_doc == 'norma':
            storage_path = self.sapl_documentos.norma_juridica
