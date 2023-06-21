@@ -65,7 +65,7 @@ for item in cod_documento:
     except:
        context.zsql.trans_rollback_zsql() 
 
-    if context.dbcon_logs:
+    if context.dbcon_logs and (item != '' and item != None):
        context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'tramitacao_documento', metodo = 'tramitacao_lote_salvar_pysc', cod_registro = item, IP = context.pysc.get_ip())
 
 
