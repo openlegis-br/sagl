@@ -8,6 +8,7 @@
 ##title=
 ##
 import simplejson as json
+from base64 import b64encode
 data = {}
 for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0):
     data['codmateria'] = materia.cod_materia
@@ -26,6 +27,8 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excl
     data['autoria'] = ', '.join(['%s' % (value) for (value) in lista_autor])
     data['linkarquivo'] = ''
     if hasattr(context.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf'):
+       arq = getattr(context.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf')
+       data['arquivo'] =  b64encode(str(arq.data))
        data['linkarquivo'] = context.portal_url() + '/sapl_documentos/materia/' + str(materia.cod_materia) + '_texto_integral.pdf'
     data['casalegislativa'] = context.sapl_documentos.props_sagl.nom_casa
     data['prazo'] = ''
@@ -35,4 +38,3 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excl
 serialized = json.dumps(data, sort_keys=True, indent=3, ensure_ascii=False).encode('utf8')
 print(serialized.decode())
 return printed
-
