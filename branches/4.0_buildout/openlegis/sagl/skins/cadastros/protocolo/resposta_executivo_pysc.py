@@ -103,9 +103,8 @@ def tramitar_materia(cod_documento, cod_materia, cod_protocolo, num_protocolo, c
         context.pysc.envia_acomp_materia_pysc(cod_materia = materia.cod_materia)  
         hdn_url = context.portal_url() + ''
         context.relatorios.pdf_tramitacao_preparar_pysc(hdn_cod_tramitacao = tramitacao.cod_tramitacao, hdn_url = hdn_url)
-
-    if context.dbcon_logs:
-       context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'tramitacao_materia', metodo = 'resposta_executivo_pysc', cod_registro = item, IP = context.pysc.get_ip())
+        if context.dbcon_logs:
+           context.zsql.logs_registrar_zsql(usuario = REQUEST['AUTHENTICATED_USER'].getUserName(), data = DateTime().strftime('%Y-%m-%d %H:%M:%S'), modulo = 'tramitacao_materia', metodo = 'resposta_executivo_pysc', cod_registro = tramitacao.cod_tramitacao, IP = context.pysc.get_ip())
 
     return criar_reposta(cod_protocolo, num_protocolo)
 
