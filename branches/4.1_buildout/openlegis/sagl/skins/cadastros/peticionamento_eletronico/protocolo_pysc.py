@@ -78,7 +78,7 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
        if context.zsql.assinatura_documento_obter_zsql(codigo=cod_peticao, tipo_doc='peticao',cod_usuario=None):
           context.pysc.assinaturas_obter_pysc(codigo_origem=cod_peticao, tipo_doc_origem='peticao', codigo_destino=cod_documento, tipo_doc_destino='documento')
 
-    anexos = context.pysc.anexo_peticao_pysc(str(10),listar=True)
+    anexos = context.pysc.anexo_peticao_pysc(str(cod_peticao),listar=True)
     for item in anexos:
         id_anexo = string.split(item,'.')[0] + '.pdf'
         arquivo = context.sapl_documentos.peticao[id_anexo]
