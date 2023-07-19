@@ -65,7 +65,7 @@
      </div>
    </div> 
    <div class="form-row">
-     <div class="col-12 mb-3">
+     <div class="col-6 mb-3">
             <label class="d-block" for="file_nom_arquivo">Texto Integral</label>
             <input type="hidden" name="hdn_file" value="0"/>
             <dtml-if cod_documento>
@@ -101,6 +101,29 @@
               <input type="hidden" name="radTI" value="I"/>
             </dtml-if>
      </div>
+   <div class="col-6 mb-3">
+      <label for="rad_ind_publico" class="required d-block">Acesso Público?</label>
+      <dtml-in expr="[(1,'Sim'), (0,'Não')]">
+        <div class="form-check form-check-inline">            
+          <input class="form-check-input" type="radio" id="rad<dtml-var expr="_['sequence-key']">" name="rad_ind_publico" value="<dtml-var expr="_['sequence-key']">" 
+          <dtml-if expr="not _.has_key('cod_documento') and _['sequence-item']=='Sim'">checked</dtml-if> 
+          <dtml-if cod_documento>
+             <dtml-call expr="REQUEST.set('id_documento', _.str(cod_documento)+'_documento.pdf')">
+             <dtml-if expr="_.hasattr(sapl_documentos.documento_comissao,id_documento)">
+               <dtml-let permissoes="verifica_permissao(_.getattr(sapl_documentos.documento_comissao,id_documento))">
+                  <dtml-if expr="'Anonymous' in permissoes and _['sequence-item']=='Sim'">
+                    checked
+                  <dtml-elif expr="'Anonymous' not in permissoes and _['sequence-item']=='Não'">
+                    checked
+                  </dtml-if>
+               </dtml-let>
+             </dtml-if>
+          </dtml-if>
+          />
+          <label class="form-check-label" for="rad<dtml-var expr="_['sequence-key']">"><dtml-var expr="_['sequence-item']"></label>
+        </div>
+      </dtml-in> 
+   </div>
    </div>
 
   <div class="text-left">
