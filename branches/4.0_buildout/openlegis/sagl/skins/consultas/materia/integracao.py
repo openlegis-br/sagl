@@ -26,10 +26,19 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia, ind_excl
         lista_autor.append(nome_autor)
     data['autoria'] = ', '.join(['%s' % (value) for (value) in lista_autor])
     data['linkarquivo'] = ''
+    data['arquivo'] = ''
     if hasattr(context.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf'):
        arq = getattr(context.sapl_documentos.materia, str(materia.cod_materia) + '_texto_integral.pdf')
        data['arquivo'] =  b64encode(str(arq.data))
        data['linkarquivo'] = context.portal_url() + '/sapl_documentos/materia/' + str(materia.cod_materia) + '_texto_integral.pdf'
+    data['link_Autografo'] = ''
+    data['arquivo_Autografo'] = ''
+    for documento in context.zsql.documento_acessorio_obter_zsql(cod_materia=materia.cod_materia, ind_excluido=0):
+        if documento.des_tipo_documento == 'Autógrafo':
+           if hasattr(context.sapl_documentos.materia, str(documento.cod_documento) + '.pdf'):
+              arq_doc = getattr(context.sapl_documentos.materia, str(documento.cod_documento) + '.pdf')
+              data['link_Autografo'] = context.portal_url() + '/sapl_documentos/materia/' + str(documento.cod_documento) + '.pdf'
+              data['arquivo_Autografo'] = b64encode(str(arq_doc.data))
     data['casalegislativa'] = context.sapl_documentos.props_sagl.nom_casa
     data['prazo'] = ''
     for tram in context.zsql.tramitacao_obter_zsql(cod_materia=cod_materia, ind_ult_tramitacao=1):
