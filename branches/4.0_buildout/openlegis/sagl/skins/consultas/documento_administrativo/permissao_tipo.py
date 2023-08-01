@@ -54,4 +54,6 @@ lst_tipo = [
     if lst_tipo.index(e) == i
     ]
 
+lst_tipo.sort(key=lambda dic: dic_tipo['des_tipo_documento'])
+
 return lst_tipo
