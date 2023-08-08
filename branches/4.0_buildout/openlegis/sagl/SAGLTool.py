@@ -2421,9 +2421,12 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         elif tipo_doc == 'parecer_comissao':
            storage_path = self.sapl_documentos.parecer_comissao
            for metodo in self.zsql.relatoria_obter_zsql(cod_relatoria=codigo):
+               for comissao in self.zsql.comissao_obter_zsql(cod_comissao=metodo.cod_comissao):
+                   sgl_comissao = str(comissao.sgl_comissao)
+               parecer = str(metodo.num_parecer)+'/'+str(metodo.ano_parecer)
                for materia in self.zsql.materia_obter_zsql(cod_materia=metodo.cod_materia):
                    materia = str(materia.sgl_tipo_materia)+' '+ str(materia.num_ident_basica)+'/'+str(materia.ano_ident_basica)
-           texto = 'PARECER Nº '+ str(metodo.num_ordem) + ' - ' + str(materia)
+           texto = 'Parecer ' + str(sgl_comissao) + ' nº ' + str(parecer) + ' ao ' + str(materia)
         elif tipo_doc == 'pauta':
            storage_path = self.sapl_documentos.pauta_sessao
            for metodo in self.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=codigo):
