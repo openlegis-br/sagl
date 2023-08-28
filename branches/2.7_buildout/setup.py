@@ -60,7 +60,7 @@ setup(name='il.sapl',
           'grokcore.view == 2.7',
           'grokcore.viewlet == 1.10.1',
           'martian == 0.14',
-          'reportlab == 2.7',
+          'reportlab == 3.6.13',
           'trml2pdf==1.2',
       ],
       entry_points="""
