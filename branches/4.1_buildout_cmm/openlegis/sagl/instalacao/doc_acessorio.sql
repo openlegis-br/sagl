@@ -1,3 +1,5 @@
+ALTER TABLE `relatoria` CHANGE `dat_desig_relator` `dat_desig_relator` DATETIME NOT NULL;
+
 ALTER TABLE `documento_acessorio_administrativo` CHANGE `dat_documento` `dat_documento` DATETIME NULL DEFAULT NULL;
 
 ALTER TABLE `documento_acessorio` CHANGE `dat_documento` `dat_documento` DATETIME NULL DEFAULT NULL;
