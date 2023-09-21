@@ -85,6 +85,13 @@ def materias(lst_materias):
                 dic_itens.append(item) 
             itens = ', '.join(['%s' % (value) for (value) in dic_itens])
             tmp_data+='\t\t<para style="P2"><b>Pareceres de Comissões: </b><font color="#126e90">' + itens + '</font></para>'
+        if dic['documento']!= 0 and dic['documento']!= '':
+            dic_itens = []
+            for documento in dic['documentos']:
+                item = documento['link_materia']
+                dic_itens.append(item)
+            itens = ', '.join(['%s' % (value) for (value) in dic_itens])
+            tmp_data+='\t\t<para style="P2"><b>Documentos Acessórios: </b><font color="#126e90">' + itens + '</font></para>'
 
         if dic['localizacao_atual'] !=None and dic['localizacao_atual'] !="":
             tmp_data+='\t\t<para style="P2"><b>Localização Atual: </b>' + dic['localizacao_atual'] + '</para>'
