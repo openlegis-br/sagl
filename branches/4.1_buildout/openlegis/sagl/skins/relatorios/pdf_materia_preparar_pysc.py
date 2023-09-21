@@ -117,6 +117,17 @@ for materia in context.zsql.materia_pesquisar_zsql(tip_id_basica=tipo_materia,
     dic["pareceres"] = lst_pareceres
     dic["parecer"] = len(lst_qtde_pareceres)
 
+    dic["documento"] = ''
+    lst_qtde_documentos = []
+    lst_documentos = []
+    for documento in context.zsql.documento_acessorio_obter_zsql(cod_materia = materia.cod_materia, ind_excluido=0):
+        dic_documento = {}
+        dic_documento["link_materia"] = '<link href="' + context.sapl_documentos.absolute_url() + '/materia/' + str(documento.cod_documento) + '.pdf' + '">' + str(documento.nom_documento) + '</link>'
+        lst_documentos.append(dic_documento)
+        lst_qtde_documentos.append(documento.cod_documento)
+    dic["documentos"] = lst_documentos
+    dic["documento"] = len(lst_qtde_documentos)
+
     dic['norma_vinculada'] = ''
     for norma_vinculada in context.zsql.materia_buscar_norma_juridica_zsql(cod_materia=materia.cod_materia):
         dic['norma_vinculada']= norma_vinculada.sgl_norma+" "+str(norma_vinculada.num_norma)+"/"+str(norma_vinculada.ano_norma)
