@@ -46,8 +46,9 @@ except ImportError:
 import cStringIO #py2
 import uuid
 from appy.pod.renderer import Renderer
-from PyPDF4 import PdfFileWriter, PdfFileReader, PdfFileMerger
-from PyPDF4.utils import PdfReadError
+from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
+#from PyPDF4 import PdfFileWriter, PdfFileReader, PdfFileMerger
+#from PyPDF4.utils import PdfReadError
 from pdfrw import PdfReader, PdfWriter, PageMerge
 from pdfrw.toreportlab import makerl
 from pdfrw.buildxobj import pagexobj
