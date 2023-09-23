@@ -2,8 +2,9 @@
 import os
 import cStringIO
 from DateTime import DateTime
-from PyPDF4 import PdfFileWriter, PdfFileReader, PdfFileMerger
-from PyPDF4.utils import PdfReadError
+from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
+#from PyPDF4 import PdfFileWriter, PdfFileReader, PdfFileMerger
+#from PyPDF4.utils import PdfReadError
 from pdfrw import PdfReader, PdfWriter, PageMerge, IndirectPdfDict
 
 from reportlab.pdfbase import pdfmetrics
