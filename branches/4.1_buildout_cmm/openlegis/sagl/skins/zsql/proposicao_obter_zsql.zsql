@@ -1,6 +1,6 @@
 <dtml-comment>
 connection_id : dbcon_interlegis
-arguments : cod_proposicao="" cod_autor="" des_tipo_proposicao="" tip_proposicao="" dat_envio="" ind_excluido=0 col_username="" dat_recebimento="" ind_mat_ou_doc="" tip_mat_ou_doc="" cod_mat_ou_doc="" cod_emenda="" cod_substitutivo="" cod_parecer="" ind_enviado="" ind_pendente="" ind_recebido="" ind_devolvido="" ind_incorporado="" cod_parlamentar=""
+arguments : cod_proposicao="" cod_autor="" des_tipo_proposicao="" tip_proposicao="" dat_envio="" ind_excluido=0 col_username="" dat_recebimento="" ind_mat_ou_doc="" tip_mat_ou_doc="" cod_mat_ou_doc="" cod_emenda="" cod_substitutivo="" cod_parecer="" ind_enviado="" ind_pendente="" ind_recebido="" ind_devolvido="" ind_incorporado="" ind_pedido_devolucao="" cod_parlamentar=""
 max_rows : 1000
 max_cache : 100
 </dtml-comment>
@@ -58,7 +58,6 @@ FROM
     <dtml-sqltest cod_parecer          op="=" column="p.cod_parecer" type="int" optional> <dtml-and>
     <dtml-if expr="ind_enviado=='1'">
         p.dat_envio IS NOT NULL 
-
     <dtml-elif expr="ind_enviado=='0'">
         p.dat_envio IS NULL
     </dtml-if>
@@ -91,6 +90,13 @@ FROM
     <dtml-elif expr="ind_incorporado==0">
         p.cod_mat_ou_doc IS NULL
     </dtml-if>
+    <dtml-and>
+    <dtml-if expr="ind_pedido_devolucao==1 or ind_pedido_devolucao=='1'">
+        p.dat_solicitacao_devolucao IS NOT NULL
+        AND p.dat_devolucao IS NULL
+    <dtml-elif expr="ind_pedido_devolucao==0 or ind_pedido_devolucao=='0'">
+        p.dat_solicitacao_devolucao IS NULL
+    </dtml-if>
 </dtml-sqlgroup>
 
 ORDER BY 
@@ -107,4 +113,3 @@ ORDER BY
    p.dat_envio DESC, 
    p.cod_proposicao DESC
  </dtml-if>
-
