@@ -10,13 +10,13 @@
 
 REQUEST = context.REQUEST
 RESPONSE = REQUEST.RESPONSE
-session = REQUEST.SESSION
 
 revisao = []
 assinatura = []
 protocolo = []
 incorporado = []
 devolvido = []
+pedido_devolucao = []
 qtde = ''
 
 if caixa == 'revisao' or caixa == 'assinatura' or caixa == 'protocolo':
@@ -31,7 +31,7 @@ if caixa == 'revisao' or caixa == 'assinatura' or caixa == 'protocolo':
        if proposicao.dat_recebimento==None and hasattr(context.sapl_documentos.proposicao,id_documento) and not hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
           assinatura.append(proposicao.cod_proposicao)
 
-       if proposicao.dat_envio!=None and proposicao.dat_recebimento==None and  hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
+       if proposicao.dat_envio!=None and proposicao.dat_recebimento==None and proposicao.dat_solicitacao_devolucao==None and hasattr(context.sapl_documentos.proposicao,id_documento_assinado):
           protocolo.append(proposicao.cod_proposicao)
 
    if caixa == 'revisao':
@@ -49,21 +49,27 @@ if caixa == 'revisao' or caixa == 'assinatura' or caixa == 'protocolo':
 
 if caixa == 'incorporado':
    for proposicao in context.zsql.proposicao_obter_zsql(ind_excluido=0, ind_incorporado=1):
-          incorporado.append(proposicao.cod_proposicao)
+       incorporado.append(proposicao.cod_proposicao)
           
    if len(incorporado) > 0:
       qtde = '[' + str(len(incorporado)) + ']'
    else: qtde = '' 
 
-
 if caixa == 'devolvido':
    for proposicao in context.zsql.proposicao_obter_zsql(ind_excluido=0, ind_devolvido='1'):
-          devolvido.append(proposicao.cod_proposicao)
+       devolvido.append(proposicao.cod_proposicao)
 
    if len(devolvido) > 0:
       qtde = '[' + str(len(devolvido)) + ']'
    else: qtde = '' 
 
-return qtde
+if caixa == 'pedido_devolucao':
+   for proposicao in context.zsql.proposicao_obter_zsql(ind_excluido=0, ind_pedido_devolucao='1'):
+       pedido_devolucao.append(proposicao.cod_proposicao)
 
+   if len(pedido_devolucao) > 0:
+      qtde = '[' + str(len(pedido_devolucao)) + ']'
+   else: qtde = ''
+
+return qtde
 
