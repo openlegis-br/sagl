@@ -1,1 +1,342 @@
 
+<script type="text/javascript">
+window.onload = setupRefresh;
+
+function setupRefresh() {
+  setTimeout("refreshPage();", 600000);
+}
+function refreshPage() {
+   window.location = location.href;
+}
+</script>
+
+<style>
+.display {
+    font-size: 90%;
+}
+</style>
+
+<dtml-if expr="envrec=='E' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
+    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido=0)">  
+       <dtml-if sequence-start>
+         <p class="text-muted font-weight-bold">Proposições em elaboração ou revisão textual</p>
+	  <table class="table table-striped display" id="pendentes">
+              <thead>
+	        <tr>  
+	          <th width="15%">Envio</th>
+	          <th>Tipo</th>
+	          <th>Ementa</th>
+	          <th>Autor</th>
+	        </tr>
+               </thead>
+               </tbody>
+       </dtml-if sequence-start>
+       <dtml-call expr="REQUEST.set('id_odt', _.str(cod_proposicao)+'.odt')"> 
+       <dtml-call expr="REQUEST.set('id_pdf', _.str(cod_proposicao)+'.pdf')">              
+       <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">          
+       <dtml-if expr="(dat_envio!='')">
+        <dtml-if expr="not zsql.assinatura_documento_obter_zsql(tipo_doc='proposicao',codigo=cod_proposicao)">       
+           <dtml-if expr="(dat_recebimento==None and _.hasattr(sapl_documentos.proposicao,id_odt) and not _.hasattr(sapl_documentos.proposicao,id_pdf) and not _.hasattr(sapl_documentos.proposicao,id_documento_assinado))">
+
+            <dtml-if sequence-even>
+              <tr>
+            <dtml-else>
+              <tr class="even">
+            </dtml-if> 
+            <td>
+               <a href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>&ind_pendente=1">
+                   <b><dtml-var dat_envio></b>
+               </a>
+            </td>
+            <td><dtml-var des_tipo_proposicao></td>
+            <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
+            <td><dtml-var nom_autor></td>
+            </tr>
+          </dtml-if>
+         </dtml-if>
+       </dtml-if>
+       <dtml-if sequence-end>
+          </tbody>
+              <tfoot>
+                <tr>  
+		  <th>Envio</th>
+		  <th>Tipo</th>
+	          <th>Ementa</th>
+		  <th>Autor</th>
+                </tr>
+              </tfoot>
+         </table>
+       </dtml-if sequence-end>
+        <dtml-else>
+           <p class="text-muted">Não há proposições para revisão textual.</p>        
+    </dtml-in>
+
+<dtml-elif expr="envrec=='P' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
+    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido=0)">  
+       <dtml-if sequence-start>
+         <p class="text-muted font-weight-bold">Proposições revisadas e aguardando assinatura digital</p>
+	  <table class="table table-striped display" id="assinatura">
+              <thead>
+	        <tr>  
+	          <th width="15%">Envio</th>
+	          <th>Tipo</th>
+	          <th>Ementa</th>
+	          <th>Autor</th>
+	        </tr>
+               </thead>
+               <tbody>
+       </dtml-if sequence-start>
+       <dtml-call expr="REQUEST.set('id_documento', _.str(cod_proposicao)+'.pdf')">
+       <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">          
+          <dtml-if expr="(dat_recebimento==None and _.hasattr(sapl_documentos.proposicao,id_documento)) and not _.hasattr(sapl_documentos.proposicao,id_documento_assinado)">
+            <dtml-if sequence-even>
+              <tr>
+            <dtml-else>
+              <tr class="even">
+            </dtml-if> 
+            <td>
+               <a href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>&ind_pendente=1">
+                   <b><dtml-var dat_envio></b>
+               </a>
+            </td>
+            <td><dtml-var des_tipo_proposicao></td>
+            <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
+            <td><dtml-var nom_autor></td>
+            </tr>
+          </dtml-if>         
+       <dtml-if sequence-end>
+          </tbody>
+              <tfoot>
+                <tr>  
+		  <th>Envio</th>
+		  <th>Tipo</th>
+	          <th>Ementa</th>
+		  <th>Autor</th>
+                </tr>
+              </tfoot>
+         </table>
+       </dtml-if sequence-end>
+        <dtml-else>
+           <p class="text-muted">Não há proposições aguardando assinatura.</p>         
+    </dtml-in>
+
+<dtml-elif expr="envrec=='S' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pedido_devolucao='1')">  
+       <dtml-if sequence-start>
+         <p class="text-muted font-weight-bold">Proposições com devolução solicitada pelo autor</p>
+		    <table class="table table-striped display" id="pedido_devolucao">
+                       <thead>
+		        <tr>  
+		            <th width="15%">Data do Pedido</th>
+		            <th>Tipo</th>
+	                    <th>Ementa</th>
+		            <th>Autor</th>
+		        </tr>
+                       </thead>
+                       <tbody>
+       </dtml-if sequence-start>
+       <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">          
+       <dtml-if expr="(dat_envio!='')">
+
+             <dtml-if expr="(dat_recebimento==None and _.hasattr(sapl_documentos.proposicao,id_documento_assinado))">
+               <dtml-if sequence-even>
+                 <tr>
+               <dtml-else>
+                 <tr class="even">
+               </dtml-if> 
+               <td>
+                  <a href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>&ind_pendente=1">
+                      <b><dtml-var dat_solicitacao_devolucao></b>
+                  </a>
+               </td>
+               <td><dtml-var des_tipo_proposicao></td>
+               <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
+               <td><dtml-var nom_autor></td>
+               </tr>
+             </dtml-if>
+
+       </dtml-if>
+       <dtml-if sequence-end>
+          </tbody>
+              <tfoot>
+                <tr>  
+		  <th width="15%">Envio</th>
+		  <th>Tipo</th>
+	          <th>Ementa</th>
+		  <th>Autor</th>
+                </tr>
+              </tfoot>
+        </table>
+       </dtml-if sequence-end>
+        <dtml-else>
+           <p class="text-muted">Não há proposições para protocolo.</p>       
+    </dtml-in>
+
+<dtml-elif expr="envrec=='A' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_pedido_devolucao='0', ind_devolvido='0')">  
+       <dtml-if sequence-start>
+         <p class="text-muted font-weight-bold">Proposições assinadas e prontas para incorporação</p>
+		    <table class="table table-striped display" id="pendentes">
+                       <thead>
+		        <tr>  
+		            <th width="15%">Envio</th>
+		            <th>Tipo</th>
+	                    <th>Ementa</th>
+		            <th>Autor</th>
+		        </tr>
+                       </thead>
+                       <tbody>
+       </dtml-if sequence-start>
+       <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">          
+       <dtml-if expr="(dat_envio!='')">
+
+             <dtml-if expr="(dat_recebimento==None and _.hasattr(sapl_documentos.proposicao,id_documento_assinado))">
+               <dtml-if sequence-even>
+                 <tr>
+               <dtml-else>
+                 <tr class="even">
+               </dtml-if> 
+               <td>
+                  <a href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao>&ind_pendente=1">
+                      <b><dtml-var dat_envio></b>
+                  </a>
+               </td>
+               <td><dtml-var des_tipo_proposicao></td>
+               <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
+               <td><dtml-var nom_autor></td>
+               </tr>
+             </dtml-if>
+
+       </dtml-if>
+       <dtml-if sequence-end>
+          </tbody>
+              <tfoot>
+                <tr>  
+		  <th width="15%">Envio</th>
+		  <th>Tipo</th>
+	          <th>Ementa</th>
+		  <th>Autor</th>
+                </tr>
+              </tfoot>
+        </table>
+       </dtml-if sequence-end>
+        <dtml-else>
+           <p class="text-muted">Não há proposições para protocolo.</p>       
+    </dtml-in>
+
+   <dtml-elif expr="envrec=='I' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
+        <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_incorporado=1)" size=300>
+        <dtml-if sequence-start>
+            <p class="text-muted font-weight-bold">Histórico das últimas proposições incorporadas</p>        
+            <table id="incorporadas" class="table table-striped display">
+              <thead>
+                <tr>  
+                    <th width="15%">Incorporação</th>
+                    <th>Tipo</th>
+                    <th>Ementa</th>
+		    <th>Autor</th>
+                    <th>Vínculo</th>
+                </tr>
+              </thead>
+              <tbody>
+        </dtml-if sequence-start>
+                <dtml-if expr="(dat_envio!='')">
+                <dtml-if sequence-even>
+                   <tr>
+                <dtml-else>
+                  <tr class="even">
+                </dtml-if>
+                    <td><a href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao >"><b><dtml-var dat_recebimento></b></a></td>
+                    <td><dtml-var des_tipo_proposicao></td>
+                    <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
+                    <td><dtml-var nom_autor></td>
+                  <dtml-if expr="ind_mat_ou_doc=='D' and cod_emenda==None and cod_substitutivo==None and cod_parecer==None">                    
+                     <dtml-in expr="zsql.documento_acessorio_obter_zsql(cod_documento=cod_mat_ou_doc)">
+                       <dtml-call expr="REQUEST.set('cod_mat', cod_materia)">
+                     <dtml-else>
+                       <dtml-var cod_mat_ou_doc>Falha no documento acessório.
+                     </dtml-in>
+                  <dtml-else>
+                     <dtml-call expr="REQUEST.set('cod_mat', cod_mat_ou_doc)">
+                  </dtml-if>
+                  <dtml-if cod_mat>
+                     <dtml-in expr="zsql.materia_obter_zsql(cod_materia=cod_mat)">
+                          <td>
+                            <dtml-if expr="AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
+                              <a href="<dtml-var portal_url>/cadastros/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
+                            <dtml-else>
+                              <a href="<dtml-var portal_url>/consultas/materia/materia_mostrar_proc?cod_materia=<dtml-var cod_materia>" target="_blank"><dtml-var sgl_tipo_materia> <dtml-var num_ident_basica>/<dtml-var ano_ident_basica></a>
+                            </dtml-if>
+                          </td>
+                    <dtml-else> 
+                          <td><dtml-var cod_mat missing>Falha no registro vinculado.</td>
+                    </dtml-in>
+
+                  <dtml-elif expr="cod_mat==None">
+                          <td><i>Não incorporada</i></td>
+                  <dtml-else>
+                          <td><b><dtml-var cod_mat missing></b>Falha na identificação da matéria!</td>
+                </dtml-if>
+                </tr>
+             </dtml-if>
+        <dtml-if sequence-end>
+             </tbody>
+              <tfoot>
+                <tr>  
+                    <th>Incorporação</th>
+                    <th>Tipo</th>
+                    <th>Ementa</th>
+		    <th>Autor</th>
+                    <th>Vínculo</th>
+                </tr>
+              </tfoot>
+            </table>
+        </dtml-if sequence-end>
+        <dtml-else>
+           <p class="text-muted">Não há proposições incorporadas.</p>
+        </dtml-in>
+
+  <dtml-elif expr="envrec=='R' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
+        <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_devolvido='1')" size=100>
+        <dtml-if sequence-start>
+            <p class="text-muted font-weight-bold">Proposições devolvidas ao autor</p>
+            <table id="devolvidas" class="table table-striped display">
+              <thead>
+                <tr>  
+                   <th width="15%">Devolução</th>
+                   <th>Tipo</th>
+                   <th>Ementa</th>
+                   <th>Autor</th>
+                </tr>
+             </thead>
+             <tbody>
+        </dtml-if sequence-start>
+         <dtml-if expr="(dat_envio!='')">
+         <dtml-if sequence-even>
+            <tr>
+         <dtml-else>
+            <tr class="even">
+         </dtml-if>
+           <td><a href="<dtml-var portal_url>/cadastros/proposicao/proposicao_mostrar_proc?cod_proposicao=<dtml-var cod_proposicao >"><b><dtml-var dat_devolucao missing null=""></b></a></td>
+            <td><dtml-var des_tipo_proposicao></td>
+            <td><dtml-var txt_descricao> [NPE<dtml-var cod_proposicao missing>]</td>
+            <td><dtml-var nom_autor></td>
+          </tr>
+       </dtml-if>
+        <dtml-if sequence-end>
+             </tbody>
+              <tfoot>
+                <tr>  
+                   <th>Devolução</th>
+                   <th>Tipo</th>
+                   <th>Ementa</th>
+                   <th>Autor</th>
+                </tr>
+              </tfoot>
+            </table>
+        </dtml-if sequence-end>
+        <dtml-else>
+           <p class="text-muted">Não há proposições devolvidas.</p>
+        </dtml-in>
+
+</dtml-if>
