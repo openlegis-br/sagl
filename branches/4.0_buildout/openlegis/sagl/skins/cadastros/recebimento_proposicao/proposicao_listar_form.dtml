@@ -16,7 +16,7 @@ function refreshPage() {
 </style>
 
 <dtml-if expr="envrec=='E' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
-    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido=0)">  
+    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_pedido_devolucao=0, ind_devolvido=0)">  
        <dtml-if sequence-start>
          <p class="text-muted font-weight-bold">Proposições em elaboração ou revisão textual</p>
 	  <table class="table table-striped display" id="pendentes">
@@ -71,7 +71,7 @@ function refreshPage() {
     </dtml-in>
 
 <dtml-elif expr="envrec=='P' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia', 'Revisor Proposicao'])">
-    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido=0)">  
+    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_pedido_devolucao=0, ind_devolvido=0)">  
        <dtml-if sequence-start>
          <p class="text-muted font-weight-bold">Proposições revisadas e aguardando assinatura digital</p>
 	  <table class="table table-striped display" id="assinatura">
@@ -134,10 +134,8 @@ function refreshPage() {
                        </thead>
                        <tbody>
        </dtml-if sequence-start>
-       <dtml-call expr="REQUEST.set('id_documento_assinado', _.str(cod_proposicao)+'_signed.pdf')">          
        <dtml-if expr="(dat_envio!='')">
-
-             <dtml-if expr="(dat_recebimento==None and _.hasattr(sapl_documentos.proposicao,id_documento_assinado))">
+             <dtml-if expr="(dat_recebimento==None)">
                <dtml-if sequence-even>
                  <tr>
                <dtml-else>
@@ -172,7 +170,7 @@ function refreshPage() {
     </dtml-in>
 
 <dtml-elif expr="envrec=='A' and AUTHENTICATED_USER.has_role(['Operador', 'Operador Materia'])">
-    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_pedido_devolucao='0', ind_devolvido='0')">  
+    <dtml-in expr="zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_pedido_devolucao=0, ind_devolvido='0')">  
        <dtml-if sequence-start>
          <p class="text-muted font-weight-bold">Proposições assinadas e prontas para incorporação</p>
 		    <table class="table table-striped display" id="pendentes">
