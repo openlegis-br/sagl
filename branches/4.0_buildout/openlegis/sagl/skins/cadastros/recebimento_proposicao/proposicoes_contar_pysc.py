@@ -20,7 +20,7 @@ pedido_devolucao = []
 qtde = ''
 
 if caixa == 'revisao' or caixa == 'assinatura' or caixa == 'protocolo':
-   for proposicao in context.zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_devolvido='0'):
+   for proposicao in context.zsql.proposicao_obter_zsql(ind_excluido=0, ind_pendente=1, ind_pedido_devolucao='0', ind_devolvido='0'):
        id_odt = str(proposicao.cod_proposicao) +'.odt'
        id_documento = str(proposicao.cod_proposicao) +'.pdf'
        id_documento_assinado = str(proposicao.cod_proposicao) +'_signed.pdf'
