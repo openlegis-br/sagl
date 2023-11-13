@@ -92,6 +92,11 @@ for proposicao in context.zsql.proposicao_obter_zsql(cod_proposicao=cod_proposic
                    autor_dic['apelido_autor'] = parlamentar.nom_parlamentar
                    autor_dic['partido'] = partido_autor
                    autor_dic['cargo'] = nom_cargo
+            elif autor.des_cargo == 'Prefeito Municipal' or autor.des_cargo == 'Prefeita Municipal':
+               for usuario in context.zsql.usuario_obter_zsql(col_username=autor.col_username):
+                   autor_dic['nome_autor'] = usuario.nom_completo.decode('utf-8').upper() + '\n' + autor.des_cargo
+                   autor_dic['apelido_autor'] = ''
+                   autor_dic['cod_autor'] = autor['cod_autor']
             else:
                autor_dic['nome_autor'] = autor.nom_autor_join.decode('utf-8').upper()
                autor_dic['apelido_autor'] = autor.nom_autor_join.decode('utf-8').upper()
