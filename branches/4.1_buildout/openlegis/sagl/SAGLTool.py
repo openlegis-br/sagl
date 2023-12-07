@@ -1667,7 +1667,11 @@ class SAGLTool(UniqueObject, SimpleItem, ActionProviderBase):
         for docadm in self.zsql.documento_administrativo_materia_obter_zsql(cod_materia=cod_materia, ind_excluido=0):
             if hasattr(self.sapl_documentos.administrativo, str(docadm.cod_documento) + '_texto_integral.pdf'):
                dic_anexo = {}
-               dic_anexo["data"] = DateTime(docadm.data_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
+               if docadm.num_protocolo_documento != '' and docadm.num_protocolo_documento != None:
+                  for protocolo in self.zsql.protocolo_obter_zsql(num_protocolo=docadm.num_protocolo_documento, ano_protocolo=docadm.ano_documento):
+                      dic_anexo["data"] = DateTime(protocolo.dat_timestamp, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
+               else:
+                  dic_anexo["data"] = DateTime(docadm.data_documento, datefmt='international').strftime('%Y-%m-%d %H:%M:%S')
                dic_anexo["arquivo"] = getattr(self.sapl_documentos.administrativo, str(docadm.cod_documento) + '_texto_integral.pdf')
                dic_anexo["id"] = getattr(self.sapl_documentos.administrativo, str(docadm.cod_documento) + '_texto_integral.pdf').absolute_url()
                anexos.append(dic_anexo)
