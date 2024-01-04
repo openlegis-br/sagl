@@ -45,7 +45,7 @@ for peticao in context.zsql.peticao_obter_zsql(cod_peticao=cod_peticao):
        for numero in context.zsql.protocolo_numero_obter_zsql(ano_protocolo = DateTime().strftime('%Y')):
            hdn_num_protocolo = int(numero.novo_numero)
     else:
-       for numero in zsql.protocolo_codigo_obter_zsql():
+       for numero in context.zsql.protocolo_codigo_obter_zsql():
            hdn_num_protocolo =  int(numero.novo_codigo)
 
 def criar_protocolo_adm(hdn_num_protocolo, tip_protocolo, tip_processo, tip_documento, txt_assunto_ementa, txt_interessado, txt_user_protocolo, numero, ano, data):
