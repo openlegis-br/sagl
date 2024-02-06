@@ -63,7 +63,7 @@ def criar_documento(numero,ano,data,tip_documento,hdn_num_protocolo,txt_interess
     if cod_documento_vinculado == 'Nulo':
        ind_tramitacao = 1
     else:
-       ind_tramitacao = 0
+       ind_tramitacao = 1
 
     context.zsql.documento_administrativo_incluir_zsql(num_documento=numero, ano_documento=ano, dat_documento=data, tip_documento=tip_documento, num_protocolo=hdn_num_protocolo, txt_interessado=txt_interessado, ind_tramitacao=ind_tramitacao, txt_assunto=txt_assunto_ementa, cod_assunto=tip_peticionamento)
     
