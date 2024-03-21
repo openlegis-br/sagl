@@ -176,51 +176,55 @@ for materia in context.zsql.materia_obter_zsql(cod_materia=cod_materia):
  for documento in context.zsql.documento_acessorio_obter_zsql(cod_materia=materia.cod_materia, ind_excluido=0):
      if documento.des_tipo_documento == 'Autógrafo':
         capa_dic['autografo'] = documento.nom_documento
-
+        
+ lst_anexada = []
+ 
  capa_dic['veto'] = ''
+ capa_dic['anexada'] = ''
+ 
  for anexada in context.zsql.anexada_obter_zsql(cod_materia_anexada=materia.cod_materia, ind_excluido=0):
-     for veto in context.zsql.materia_obter_zsql(cod_materia=anexada.cod_materia_principal, ind_excluido = 0):
-         if veto.des_tipo_materia == 'Veto':
-             nom_resultado = ''
-             for votacao in context.zsql.votacao_ordem_dia_obter_zsql(cod_materia=veto.cod_materia, ind_excluido=0):
-                if votacao.votacao_observacao != '':
-                   votacao_observacao = ' - ' + votacao.votacao_observacao
-                else:
-                   votacao_observacao = ''
-                if votacao.tip_resultado_votacao:
-                   for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=votacao.tip_turno):
-                       turno_discussao = turno.des_turno
-                   resultado = context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=votacao.tip_resultado_votacao, ind_excluido=0)
-                   for i in resultado:
-                       nom_resultado = ' (' + i.nom_resultado + ')'
-                       if votacao.votacao_observacao:
-                          votacao_observacao = votacao.ordem_observacao
-                else:
-                   nom_resultado = " (Não votado)"
-                   votacao_observacao = ""
-             capa_dic['veto'] = veto.des_tipo_materia + ' nº ' + str(veto.num_ident_basica) + '/' + str(veto.ano_ident_basica) + nom_resultado
+     for item in context.zsql.materia_obter_zsql(cod_materia=anexada.cod_materia_principal, ind_excluido = 0):
+         nom_resultado = ''
+         for votacao in context.zsql.votacao_ordem_dia_obter_zsql(cod_materia=item.cod_materia, ind_excluido=0):
+             if votacao.votacao_observacao != '':
+                votacao_observacao = ' - ' + votacao.votacao_observacao
+             else:
+                votacao_observacao = ''
+             if votacao.tip_resultado_votacao:
+                for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=votacao.tip_turno):
+                    turno_discussao = turno.des_turno
+                resultado = context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=votacao.tip_resultado_votacao, ind_excluido=0)
+                for i in resultado:
+                    nom_resultado = ' (' + i.nom_resultado + ')'
+                    if votacao.votacao_observacao:
+                       votacao_observacao = votacao.ordem_observacao
+             else:
+                nom_resultado = " (Não votado)"
+                votacao_observacao = ""
+         id_anexada = item.des_tipo_materia + ' nº ' + str(item.num_ident_basica) + '/' + str(item.ano_ident_basica) + nom_resultado
 
  for anexada in context.zsql.anexada_obter_zsql(cod_materia_principal=materia.cod_materia, ind_excluido=0):
-     for veto in context.zsql.materia_obter_zsql(cod_materia=anexada.cod_materia_anexada, ind_excluido = 0):
-         if veto.des_tipo_materia == 'Veto':
-             nom_resultado = ''
-             for votacao in context.zsql.votacao_ordem_dia_obter_zsql(cod_materia=veto.cod_materia, ind_excluido=0):
-                if votacao.votacao_observacao != '':
-                   votacao_observacao = ' - ' + votacao.votacao_observacao
-                else:
-                   votacao_observacao = ''
-                if votacao.tip_resultado_votacao:
-                   for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=votacao.tip_turno):
-                       turno_discussao = turno.des_turno
-                   resultado = context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=votacao.tip_resultado_votacao, ind_excluido=0)
-                   for i in resultado:
-                       nom_resultado = ' (' + i.nom_resultado + ')'
-                       if votacao.votacao_observacao:
-                          votacao_observacao = votacao.ordem_observacao
-                else:
-                   nom_resultado = " (Não votado)"
-                   votacao_observacao = ""
-             capa_dic['veto'] = veto.des_tipo_materia + ' nº ' + str(veto.num_ident_basica) + '/' + str(veto.ano_ident_basica) + nom_resultado
+     for item in context.zsql.materia_obter_zsql(cod_materia=anexada.cod_materia_anexada, ind_excluido = 0):
+         nom_resultado = ''
+         for votacao in context.zsql.votacao_ordem_dia_obter_zsql(cod_materia=item.cod_materia, ind_excluido=0):
+             if votacao.votacao_observacao != '':
+                votacao_observacao = ' - ' + votacao.votacao_observacao
+             else:
+                votacao_observacao = ''
+             if votacao.tip_resultado_votacao:
+                for turno in context.zsql.turno_discussao_obter_zsql(cod_turno=votacao.tip_turno):
+                    turno_discussao = turno.des_turno
+                resultado = context.zsql.tipo_resultado_votacao_obter_zsql(tip_resultado_votacao=votacao.tip_resultado_votacao, ind_excluido=0)
+                for i in resultado:
+                    nom_resultado = ' (' + i.nom_resultado + ')'
+                    if votacao.votacao_observacao:
+                       votacao_observacao = votacao.ordem_observacao
+             else:
+                nom_resultado = " (Não votado)"
+                votacao_observacao = ""
+         id_anexada = item.des_tipo_materia + ' nº ' + str(item.num_ident_basica) + '/' + str(item.ano_ident_basica) + nom_resultado
+
+ capa_dic['anexada'] = ', '.join(['%s' % (value) for (value) in lst_anexada])
 
  capa_dic['norma'] = None
  for norma in context.zsql.materia_buscar_norma_juridica_zsql(cod_materia=materia.cod_materia):
