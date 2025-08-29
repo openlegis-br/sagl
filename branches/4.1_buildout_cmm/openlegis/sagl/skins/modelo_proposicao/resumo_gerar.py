@@ -155,7 +155,7 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
   for item in context.zsql.expediente_materia_obter_zsql(cod_sessao_plen=cod_sessao_plen,ind_excluido=0):
     for materia in context.zsql.materia_obter_zsql(cod_materia=item.cod_materia,des_tipo_materia='Indicação',ind_excluido=0):
       dic_ind = {}
-      dic_ind['txt_ementa'] = materia.txt_ementa.encode('utf-8')
+      dic_ind['txt_ementa'] = materia.txt_ementa
       dic_ind['num_ident_basica'] = materia.num_ident_basica
       dic_ind['ano_ident_basica'] = materia.ano_ident_basica
       dic_ind['dat_apresentacao'] = materia.dat_apresentacao
