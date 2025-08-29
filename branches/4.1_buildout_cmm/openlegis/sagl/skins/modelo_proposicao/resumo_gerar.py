@@ -203,9 +203,9 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       fields = autores.data_dictionary().keys()
       lista_autor = []
       for autor in autores:
-	for field in fields:
+	      for field in fields:
                 nome_autor = autor['nom_autor_join']
-	lista_autor.append(nome_autor)
+	      lista_autor.append(nome_autor)
       dic_deliberacao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
       lst_deliberacao.append(dic_deliberacao)
   lst_deliberacao = [(i + 1, j) for i, j in enumerate(lst_deliberacao)]
@@ -236,9 +236,9 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       fields = autores.data_dictionary().keys()
       lista_autor = []
       for autor in autores:
-	for field in fields:
+	      for field in fields:
                 nome_autor = autor['nom_autor_join']
-	lista_autor.append(nome_autor)
+	      lista_autor.append(nome_autor)
       dic_pdiscussao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
       lst_pdiscussao.append(dic_pdiscussao)
   lst_pdiscussao = [(i + 1, j) for i, j in enumerate(lst_pdiscussao)]
@@ -269,9 +269,9 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       fields = autores.data_dictionary().keys()
       lista_autor = []
       for autor in autores:
-	for field in fields:
+	      for field in fields:
                 nome_autor = autor['nom_autor_join']
-	lista_autor.append(nome_autor)
+	      lista_autor.append(nome_autor)
       dic_sdiscussao["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
       lst_sdiscussao.append(dic_sdiscussao)
   lst_sdiscussao = [(i + 1, j) for i, j in enumerate(lst_sdiscussao)]
@@ -302,9 +302,9 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       fields = autores.data_dictionary().keys()
       lista_autor = []
       for autor in autores:
-	for field in fields:
+	      for field in fields:
                 nome_autor = autor['nom_autor_join']
-	lista_autor.append(nome_autor)
+	      lista_autor.append(nome_autor)
       dic_discussao_unica["nom_autor"] = ', '.join(['%s' % (value) for (value) in lista_autor]) 
       lst_discussao_unica.append(dic_discussao_unica)
   lst_discussao_unica = [(i + 1, j) for i, j in enumerate(lst_discussao_unica)]
@@ -336,4 +336,4 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
       inf_basicas_dic['nom_localidade']= local.nom_localidade.encode('utf-8')
       inf_basicas_dic['sgl_uf']= local.sgl_uf
 
-return st.resumo_gerar_odt(cod_sessao_plen, inf_basicas_dic, lst_requerimentos_pesar, lst_requerimentos_congratulacoes, lst_requerimentos, lst_indicacao, lst_deliberacao, lst_pdiscussao, lst_sdiscussao, lst_discussao_unica, lst_presidente, nom_arquivo)      
+return st.resumo_gerar_odt(cod_sessao_plen, inf_basicas_dic, lst_requerimentos_pesar, lst_requerimentos_congratulacoes, lst_requerimentos, lst_indicacao, lst_deliberacao, lst_pdiscussao, lst_sdiscussao, lst_discussao_unica, lst_presidente, nom_arquivo)
