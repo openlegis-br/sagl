@@ -142,8 +142,8 @@ for sessao in context.zsql.sessao_plenaria_obter_zsql(cod_sessao_plen=cod_sessao
          for proposicao in context.zsql.proposicao_obter_zsql(ind_mat_ou_doc='M',cod_mat_ou_doc=materia.cod_materia,ind_excluido=0):
            if proposicao:
              dic_requerimentos['num_proposicao'] = proposicao.cod_proposicao
-             dic_requerimentos['txt_consideracoes'] = proposicao.txt_descricao
-             dic_requerimentos['txt_pedido'] = proposicao.txt_pedido
+             dic_requerimentos['txt_consideracoes'] = ''
+             dic_requerimentos['txt_pedido'] = ''
            else:
              dic_requerimentos['num_proposicao'] = ''
              dic_requerimentos['txt_consideracoes'] = ''
